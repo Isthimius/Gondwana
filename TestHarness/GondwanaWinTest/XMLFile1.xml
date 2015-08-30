@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Tilesheet>
+  <add key="Width" value="64" />
+  <add key="Height" value="32" />
+  <add key="InitialOffsetX" value="1" />
+  <add key="InitialOffsetY" value="1" />
+  <add key="XPixelsBetweenTiles" value="1" />
+  <add key="YPixelsBetweenTiles" value="1" />
+  <add key="ExtraTopSpace" value="0" />
+</Tilesheet>

@@ -1,0 +1,11 @@
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\bin\Debug\Spot.exe.config
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\bin\Debug\Spot.exe
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\bin\Debug\Spot.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\bin\Debug\Spot.exe.CodeAnalysisLog.xml
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\bin\Debug\Spot.exe.lastcodeanalysissucceeded
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.csprojResolveAssemblyReference.cache
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.Properties.Resources.resources
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.Resources.resources
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.csproj.GenerateResource.Cache
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.exe
+e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.pdb

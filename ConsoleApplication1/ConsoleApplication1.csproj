@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{31F413D6-DF15-4F4A-8CB1-187A0A8DC170}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ConsoleApplication1</RootNamespace>
+    <AssemblyName>ConsoleApplication1</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gondwana.Common\Gondwana.Common.csproj">
+      <Project>{2aa95f8c-107e-4828-b78b-73e6806bfaf9}</Project>
+      <Name>Gondwana.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gondwana.Coordinates\Gondwana.Coordinates.csproj">
+      <Project>{d246b45a-2ede-4c25-8226-389416c30dbb}</Project>
+      <Name>Gondwana.Coordinates</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gondwana.Design\Gondwana.Design.csproj">
+      <Project>{f99b4503-50cc-4255-bb60-4beebaf11f4c}</Project>
+      <Name>Gondwana.Design</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gondwana.Input\Gondwana.Input.csproj">
+      <Project>{a140b921-dd8d-4cff-9103-3dc212ee1644}</Project>
+      <Name>Gondwana.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gondwana.Media\Gondwana.Media.csproj">
+      <Project>{ed8321ec-4bd3-4aa6-8bd0-83ea7dcd2ae4}</Project>
+      <Name>Gondwana.Media</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gondwana.Rendering\Gondwana.Rendering.csproj">
+      <Project>{fd33e739-1a43-4168-9c89-44c33c996dc7}</Project>
+      <Name>Gondwana.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gondwana.Resource\Gondwana.Resource.csproj">
+      <Project>{5f0752e1-37fd-4046-9d5e-edb95db14129}</Project>
+      <Name>Gondwana.Resource</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gondwana\Gondwana.csproj">
+      <Project>{32624317-3792-4df7-8f56-2aa81d5a4036}</Project>
+      <Name>Gondwana</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

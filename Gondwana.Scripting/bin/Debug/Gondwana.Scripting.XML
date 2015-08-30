@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Gondwana.Scripting</name>
+    </assembly>
+    <members>
+        <member name="M:Gondwana.Scripting.CommandLine.ToString">
+            <summary>
+            override of ValueType.ToString()
+            </summary>
+            <returns>The complete text string of the CommandLine as it is written in a script file</returns>
+        </member>
+        <member name="T:Gondwana.Scripting.IScriptable">
+            <summary>
+            Interface that enables the class instance to be written to a script
+            file by the <see cref="T:Gondwana.Scripting.Parser"/> static class
+            </summary>
+        </member>
+        <member name="T:Gondwana.Scripting.ScriptReadableBase">
+            <summary>
+            Base class that enables a derived class to be instantiated via a
+            <see cref="T:Gondwana.Scripting.ScriptSection"/> argument
+            </summary>
+        </member>
+    </members>
+</doc>

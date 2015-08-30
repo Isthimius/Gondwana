@@ -1,0 +1,5 @@
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Logging\bin\Debug\Gondwana.Logging.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Logging\bin\Debug\Gondwana.Logging.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Logging\obj\Debug\Gondwana.Logging.csprojResolveAssemblyReference.cache
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Logging\obj\Debug\Gondwana.Logging.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Logging\obj\Debug\Gondwana.Logging.pdb

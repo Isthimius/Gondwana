@@ -1,0 +1,5 @@
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Physics\bin\Debug\Gondwana.Physics.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Physics\bin\Debug\Gondwana.Physics.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Physics\obj\Debug\Gondwana.Physics.csprojResolveAssemblyReference.cache
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Physics\obj\Debug\Gondwana.Physics.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Physics\obj\Debug\Gondwana.Physics.pdb

@@ -1,0 +1,5 @@
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Scripting\bin\Debug\Gondwana.Scripting.XML
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Scripting\bin\Debug\Gondwana.Scripting.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Scripting\bin\Debug\Gondwana.Scripting.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Scripting\obj\Debug\Gondwana.Scripting.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Scripting\obj\Debug\Gondwana.Scripting.pdb

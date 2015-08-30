@@ -1,0 +1,14 @@
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\binaries\Ionic.BZip2.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\binaries\Ionic.Zip.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\binaries\Ionic.Zlib.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.XML
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.dll.CodeAnalysisLog.xml
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.dll.lastcodeanalysissucceeded
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Resource.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Ionic.Zip.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Resource.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.csprojResolveAssemblyReference.cache
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.dll
+e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.pdb

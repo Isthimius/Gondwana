@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="configuration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Gondwana">
+          <xs:complexType>
+            <xs:attribute name="TargetFPS" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="SamplingTimeForCPS" type="xs:decimal" use="required" />
+            <xs:attribute name="TimeBetweenKeyboardEvents" type="xs:decimal" use="required" />
+            <xs:attribute name="VisibleSurfaceRefreshTimer" type="xs:decimal" use="required" />
+            <xs:attribute name="ThrowExceptionOnMCIError" type="xs:boolean" use="required" />
+            <xs:attribute name="ResizedFrameCacheLimit" type="xs:unsignedByte" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 12.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
+<FxCopReport Version="12.0">
+ <Targets>
+  <Target Name="e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Design\bin\Debug\Gondwana.Design.exe">
+   <Modules>
+    <Module Name="gondwana.design.exe">
+     <Namespaces>
+      <Namespace Name="Gondwana.Design.Controls">
+       <Types>
+        <Type Name="AssetViewer" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
+           <Messages>
+            <Message Id="_stream" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2015-08-29 17:30:42Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Warning" Path="e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Design\Controls" File="AssetViewer.Designer.cs" Line="15">'AssetViewer' contains field 'AssetViewer._stream' that is of IDisposable type: 'Stream'. Change the Dispose method on 'AssetViewer' to call Dispose or Close on this field.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="MediaFile" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
+           <Messages>
+            <Message Id="_mediaFile" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2015-08-29 17:30:42Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Warning" Path="e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Design\Controls" File="MediaFile.Designer.cs" Line="15">'MediaFile' contains field 'MediaFile._mediaFile' that is of IDisposable type: 'MediaFile'. Change the Dispose method on 'MediaFile' to call Dispose or Close on this field.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="Gondwana.Design.Forms">
+       <Types>
+        <Type Name="CycleViewer" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
+           <Messages>
+            <Message Id="_grid" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2015-08-29 17:30:42Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Warning" Path="e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Design\Forms" File="CycleViewer.Designer.cs" Line="15">'CycleViewer' contains field 'CycleViewer._grid' that is of IDisposable type: 'GridPointMatrix'. Change the Dispose method on 'CycleViewer' to call Dispose or Close on this field.</Issue>
+            </Message>
+            <Message Id="_grids" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2015-08-29 17:30:42Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Warning" Path="e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Design\Forms" File="CycleViewer.Designer.cs" Line="15">'CycleViewer' contains field 'CycleViewer._grids' that is of IDisposable type: 'GridPointMatrixes'. Change the Dispose method on 'CycleViewer' to call Dispose or Close on this field.</Issue>
+            </Message>
+            <Message Id="_surface" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2015-08-29 17:30:42Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Warning" Path="e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Design\Forms" File="CycleViewer.Designer.cs" Line="15">'CycleViewer' contains field 'CycleViewer._surface' that is of IDisposable type: 'VisibleSurface'. Change the Dispose method on 'CycleViewer' to call Dispose or Close on this field.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213">
+   <Name>Disposable fields should be disposed</Name>
+   <Description>If a type that implements IDisposable owns fields that also implement IDisposable, the encapsulating type's Dispose() implementation should call Dispose() on each disposable field.</Description>
+   <Resolution Name="Default">{0} contains field {1} that is of IDisposable type: {2}. Change the Dispose method on {0} to call Dispose or Close on this field.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182328.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="usagerules.dll" Version="12.0.0.0" />
+  </Rule>
+ </Rules>
+ <Localized>
+  <String Key="Category">Category</String>
+  <String Key="Certainty">Certainty</String>
+  <String Key="CollapseAll">Collapse All</String>
+  <String Key="CheckId">Check Id</String>
+  <String Key="Error">Error</String>
+  <String Key="Errors">error(s)</String>
+  <String Key="ExpandAll">Expand All</String>
+  <String Key="Help">Help</String>
+  <String Key="Line">Line</String>
+  <String Key="Messages">message(s)</String>
+  <String Key="LocationNotStoredInPdb">[Location not stored in Pdb]</String>
+  <String Key="Project">Project</String>
+  <String Key="Resolution">Resolution</String>
+  <String Key="Rule">Rule</String>
+  <String Key="RuleFile">Rule File</String>
+  <String Key="RuleDescription">Rule Description</String>
+  <String Key="Source">Source</String>
+  <String Key="Status">Status</String>
+  <String Key="Target">Target</String>
+  <String Key="Warning">Warning</String>
+  <String Key="Warnings">warning(s)</String>
+  <String Key="ReportTitle">Code Analysis Report</String>
+ </Localized>
+</FxCopReport>

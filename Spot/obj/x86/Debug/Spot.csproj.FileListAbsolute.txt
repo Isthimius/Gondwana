@@ -1,0 +1,7 @@
+e:\TFS\Hidden Worlds Games\Gondwana\Spot\bin\Debug\Spot.exe
+e:\TFS\Hidden Worlds Games\Gondwana\Spot\bin\Debug\Spot.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Spot\obj\x86\Debug\Spot.Properties.Resources.resources
+e:\TFS\Hidden Worlds Games\Gondwana\Spot\obj\x86\Debug\Spot.csproj.GenerateResource.Cache
+e:\TFS\Hidden Worlds Games\Gondwana\Spot\obj\x86\Debug\Spot.exe
+e:\TFS\Hidden Worlds Games\Gondwana\Spot\obj\x86\Debug\Spot.pdb
+e:\TFS\Hidden Worlds Games\Gondwana\Spot\obj\x86\Debug\Spot.csprojResolveAssemblyReference.cache
