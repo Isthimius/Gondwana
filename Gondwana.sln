@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GondwanaWinTest", "TestHarness\GondwanaWinTest\GondwanaWinTest.csproj", "{6ED0ECF3-1B0A-4A1F-9EEF-A25D717D0BBA}"
 EndProject
@@ -42,65 +42,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "Cons
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Design", "Design", "{BE63A69A-9936-46A3-88B5-B6450618C7C2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC217C36-1278-4820-86D5-951EFEF6E28D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 14
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://localhost:8080/tfs/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Games\\Slider\\Slider.csproj
-		SccProjectTopLevelParentUniqueName1 = Gondwana.sln
-		SccProjectName1 = Games/Slider
-		SccLocalPath1 = Games\\Slider
-		SccProjectUniqueName2 = Gondwana.Common\\Gondwana.Common.csproj
-		SccProjectTopLevelParentUniqueName2 = Gondwana.sln
-		SccProjectName2 = Gondwana.Common
-		SccLocalPath2 = Gondwana.Common
-		SccProjectUniqueName3 = Gondwana.Coordinates\\Gondwana.Coordinates.csproj
-		SccProjectTopLevelParentUniqueName3 = Gondwana.sln
-		SccProjectName3 = Gondwana.Coordinates
-		SccLocalPath3 = Gondwana.Coordinates
-		SccProjectUniqueName4 = Gondwana.Input\\Gondwana.Input.csproj
-		SccProjectTopLevelParentUniqueName4 = Gondwana.sln
-		SccProjectName4 = Gondwana.Input
-		SccLocalPath4 = Gondwana.Input
-		SccProjectUniqueName5 = Gondwana.Media\\Gondwana.Media.csproj
-		SccProjectTopLevelParentUniqueName5 = Gondwana.sln
-		SccProjectName5 = Gondwana.Media
-		SccLocalPath5 = Gondwana.Media
-		SccProjectUniqueName6 = Gondwana.Rendering\\Gondwana.Rendering.csproj
-		SccProjectTopLevelParentUniqueName6 = Gondwana.sln
-		SccProjectName6 = Gondwana.Rendering
-		SccLocalPath6 = Gondwana.Rendering
-		SccProjectUniqueName7 = Gondwana\\Gondwana.csproj
-		SccProjectTopLevelParentUniqueName7 = Gondwana.sln
-		SccProjectName7 = Gondwana
-		SccLocalPath7 = Gondwana
-		SccProjectUniqueName8 = TestHarness\\GondwanaTest\\GondwanaTest.csproj
-		SccProjectTopLevelParentUniqueName8 = Gondwana.sln
-		SccProjectName8 = TestHarness/GondwanaTest
-		SccLocalPath8 = TestHarness\\GondwanaTest
-		SccProjectUniqueName9 = TestHarness\\GondwanaWinTest\\GondwanaWinTest.csproj
-		SccProjectTopLevelParentUniqueName9 = Gondwana.sln
-		SccProjectName9 = TestHarness/GondwanaWinTest
-		SccLocalPath9 = TestHarness\\GondwanaWinTest
-		SccProjectUniqueName10 = Games\\Spot\\Spot.csproj
-		SccProjectTopLevelParentUniqueName10 = Gondwana.sln
-		SccProjectName10 = Games/Spot
-		SccLocalPath10 = Games\\Spot
-		SccProjectUniqueName11 = Gondwana.Design\\Gondwana.Design.csproj
-		SccProjectTopLevelParentUniqueName11 = Gondwana.sln
-		SccProjectName11 = Gondwana.Design
-		SccLocalPath11 = Gondwana.Design
-		SccProjectUniqueName12 = Gondwana.Resource\\Gondwana.Resource.csproj
-		SccProjectTopLevelParentUniqueName12 = Gondwana.sln
-		SccProjectName12 = Gondwana.Resource
-		SccLocalPath12 = Gondwana.Resource
-		SccProjectUniqueName13 = ConsoleApplication1\\ConsoleApplication1.csproj
-		SccProjectTopLevelParentUniqueName13 = Gondwana.sln
-		SccProjectName13 = ConsoleApplication1
-		SccLocalPath13 = ConsoleApplication1
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -246,19 +193,22 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6ED0ECF3-1B0A-4A1F-9EEF-A25D717D0BBA} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
-		{F53C1412-F849-4FF4-AF05-5F94DE3632F7} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
-		{31F413D6-DF15-4F4A-8CB1-187A0A8DC170} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
-		{66E562F8-3982-4202-BC00-C73E10861AF5} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
-		{A140B921-DD8D-4CFF-9103-3DC212EE1644} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
-		{D35C157F-8E2A-4C84-B9FE-37144C125265} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
-		{ED8321EC-4BD3-4AA6-8BD0-83EA7DCD2AE4} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
 		{32624317-3792-4DF7-8F56-2AA81D5A4036} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
-		{FD33E739-1A43-4168-9C89-44C33C996DC7} = {66E562F8-3982-4202-BC00-C73E10861AF5}
 		{D246B45A-2EDE-4C25-8226-389416C30DBB} = {66E562F8-3982-4202-BC00-C73E10861AF5}
+		{A140B921-DD8D-4CFF-9103-3DC212EE1644} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
 		{2AA95F8C-107E-4828-B78B-73E6806BFAF9} = {D35C157F-8E2A-4C84-B9FE-37144C125265}
-		{5F0752E1-37FD-4046-9D5E-EDB95DB14129} = {D35C157F-8E2A-4C84-B9FE-37144C125265}
+		{ED8321EC-4BD3-4AA6-8BD0-83EA7DCD2AE4} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
+		{FD33E739-1A43-4168-9C89-44C33C996DC7} = {66E562F8-3982-4202-BC00-C73E10861AF5}
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C} = {5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}
+		{66E562F8-3982-4202-BC00-C73E10861AF5} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
+		{D35C157F-8E2A-4C84-B9FE-37144C125265} = {071AA1A7-4C04-44BA-BD0D-425F77874AA9}
+		{F53C1412-F849-4FF4-AF05-5F94DE3632F7} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA} = {5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}
 		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C} = {BE63A69A-9936-46A3-88B5-B6450618C7C2}
+		{5F0752E1-37FD-4046-9D5E-EDB95DB14129} = {D35C157F-8E2A-4C84-B9FE-37144C125265}
+		{31F413D6-DF15-4F4A-8CB1-187A0A8DC170} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
 	EndGlobalSection
 EndGlobal
