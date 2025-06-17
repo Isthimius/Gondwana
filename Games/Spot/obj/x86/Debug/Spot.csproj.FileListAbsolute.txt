@@ -9,3 +9,13 @@ e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.Resources.reso
 e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.csproj.GenerateResource.Cache
 e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.exe
 e:\TFS\Hidden Worlds Games\Gondwana\Games\Spot\obj\x86\Debug\Spot.pdb
+C:\github\isthimius\Gondwana\Games\Spot\bin\Debug\Spot.exe.config
+C:\github\isthimius\Gondwana\Games\Spot\bin\Debug\Spot.exe
+C:\github\isthimius\Gondwana\Games\Spot\bin\Debug\Spot.pdb
+C:\github\isthimius\Gondwana\Games\Spot\obj\x86\Debug\Spot.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\Games\Spot\obj\x86\Debug\Spot.Properties.Resources.resources
+C:\github\isthimius\Gondwana\Games\Spot\obj\x86\Debug\Spot.Resources.resources
+C:\github\isthimius\Gondwana\Games\Spot\obj\x86\Debug\Spot.csproj.GenerateResource.cache
+C:\github\isthimius\Gondwana\Games\Spot\obj\x86\Debug\Spot.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\Games\Spot\obj\x86\Debug\Spot.exe
+C:\github\isthimius\Gondwana\Games\Spot\obj\x86\Debug\Spot.pdb

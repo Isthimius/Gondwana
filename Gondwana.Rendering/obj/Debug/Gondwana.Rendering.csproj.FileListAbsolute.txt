@@ -18,3 +18,23 @@ e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Media.
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.Rendering.csprojResolveAssemblyReference.cache
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.Rendering.dll
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.Rendering.pdb
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\binaries\Ionic.BZip2.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\binaries\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\binaries\Ionic.Zlib.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Rendering.XML
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Rendering.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Rendering.pdb
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Common.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Media.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Common.pdb
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Common.xml
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Media.pdb
+C:\github\isthimius\Gondwana\Gondwana.Rendering\bin\Debug\Gondwana.Media.xml
+C:\github\isthimius\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.Rendering.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.Rendering.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.6B0CAE14.Up2Date
+C:\github\isthimius\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.Rendering.dll
+C:\github\isthimius\Gondwana\Gondwana.Rendering\obj\Debug\Gondwana.Rendering.pdb

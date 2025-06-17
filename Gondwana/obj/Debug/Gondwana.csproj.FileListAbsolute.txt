@@ -24,3 +24,29 @@ e:\TFS\Hidden Worlds Games\Gondwana\Gondwana\bin\Debug\Gondwana.Resource.pdb
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana\obj\Debug\Gondwana.csprojResolveAssemblyReference.cache
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana\obj\Debug\Gondwana.dll
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana\obj\Debug\Gondwana.pdb
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\binaries\Ionic.BZip2.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\binaries\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\binaries\Ionic.Zlib.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\App.config
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\App.xsd
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.dll.config
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.XML
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.pdb
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Common.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Input.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Media.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Common.pdb
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Common.xml
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Input.pdb
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Input.xml
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Media.pdb
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Media.xml
+C:\github\isthimius\Gondwana\Gondwana\bin\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\Gondwana\obj\Debug\Gondwana.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\Gondwana\obj\Debug\Gondwana.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\Gondwana\obj\Debug\Gondwana.csproj.Up2Date
+C:\github\isthimius\Gondwana\Gondwana\obj\Debug\Gondwana.dll
+C:\github\isthimius\Gondwana\Gondwana\obj\Debug\Gondwana.pdb

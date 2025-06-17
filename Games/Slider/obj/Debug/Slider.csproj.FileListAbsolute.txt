@@ -37,3 +37,43 @@ e:\TFS\Hidden Worlds Games\Gondwana\Games\Slider\obj\Debug\Slider.PuzzleForm.res
 e:\TFS\Hidden Worlds Games\Gondwana\Games\Slider\obj\Debug\Slider.csproj.GenerateResource.Cache
 e:\TFS\Hidden Worlds Games\Gondwana\Games\Slider\obj\Debug\Slider.exe
 e:\TFS\Hidden Worlds Games\Gondwana\Games\Slider\obj\Debug\Slider.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\binaries\Ionic.BZip2.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\binaries\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\binaries\Ionic.Zlib.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\App.config
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\App.xsd
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\assets\177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\assets\75143__willc2-45220__slide-cup-16b-44k-0-747s.wav
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Slider.exe.config
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Slider.exe
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Slider.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Common.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Coordinates.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Input.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Media.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Rendering.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Common.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Common.xml
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Coordinates.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Coordinates.xml
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Input.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Input.xml
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Media.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Media.xml
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Rendering.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Rendering.xml
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.pdb
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.xml
+C:\github\isthimius\Gondwana\Games\Slider\bin\Debug\Gondwana.dll.config
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.Properties.Resources.resources
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.PuzzleForm.resources
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.csproj.GenerateResource.cache
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.csproj.Up2Date
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.exe
+C:\github\isthimius\Gondwana\Games\Slider\obj\Debug\Slider.pdb

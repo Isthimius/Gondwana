@@ -9,3 +9,14 @@ e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Resource\bin\Debug\Ionic.Zip.dll
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.Resource.csprojResolveAssemblyReference.cache
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.Resource.dll
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\Gondwana.Resource\bin\Debug\binaries\Ionic.BZip2.dll
+C:\github\isthimius\Gondwana\Gondwana.Resource\bin\Debug\binaries\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Resource\bin\Debug\binaries\Ionic.Zlib.dll
+C:\github\isthimius\Gondwana\Gondwana.Resource\bin\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\Gondwana.Resource\bin\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\Gondwana.Resource\bin\Debug\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.Resource.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.Resource.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.DD429508.Up2Date
+C:\github\isthimius\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\Gondwana.Resource\obj\Debug\Gondwana.Resource.pdb

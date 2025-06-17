@@ -32,3 +32,38 @@ e:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.
 e:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaTest\obj\Debug\GondwanaTest.csprojResolveAssemblyReference.cache
 e:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaTest\obj\Debug\GondwanaTest.exe
 e:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaTest\obj\Debug\GondwanaTest.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\binaries\Ionic.BZip2.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\binaries\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\binaries\Ionic.Zlib.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\App.config
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\App.xsd
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\GondwanaTest.exe.config
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\GondwanaTest.exe
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\GondwanaTest.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Common.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Coordinates.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Input.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Media.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Rendering.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Common.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Common.xml
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Coordinates.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Coordinates.xml
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Input.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Input.xml
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Media.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Media.xml
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Rendering.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Rendering.xml
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.xml
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.dll.config
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\bin\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\obj\Debug\GondwanaTest.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\obj\Debug\GondwanaTest.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\obj\Debug\Gondwana.888AD43D.Up2Date
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\obj\Debug\GondwanaTest.exe
+C:\github\isthimius\Gondwana\TestHarness\GondwanaTest\obj\Debug\GondwanaTest.pdb

@@ -12,3 +12,17 @@ e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Resource.p
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.csprojResolveAssemblyReference.cache
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.dll
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.pdb
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\binaries\Ionic.BZip2.dll
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\binaries\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\binaries\Ionic.Zlib.dll
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.XML
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.dll
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Media.pdb
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Media\bin\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\Gondwana.Media\obj\Debug\Gondwana.09A27396.Up2Date
+C:\github\isthimius\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.dll
+C:\github\isthimius\Gondwana\Gondwana.Media\obj\Debug\Gondwana.Media.pdb

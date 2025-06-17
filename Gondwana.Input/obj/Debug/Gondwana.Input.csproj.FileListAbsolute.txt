@@ -18,3 +18,23 @@ e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Media.xml
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Input\obj\Debug\Gondwana.Input.csprojResolveAssemblyReference.cache
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Input\obj\Debug\Gondwana.Input.dll
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Input\obj\Debug\Gondwana.Input.pdb
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\binaries\Ionic.BZip2.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\binaries\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\binaries\Ionic.Zlib.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Input.XML
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Input.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Input.pdb
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Common.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Resource.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Media.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Ionic.Zip.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Common.pdb
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Common.xml
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Resource.pdb
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Media.pdb
+C:\github\isthimius\Gondwana\Gondwana.Input\bin\Debug\Gondwana.Media.xml
+C:\github\isthimius\Gondwana\Gondwana.Input\obj\Debug\Gondwana.Input.csproj.AssemblyReference.cache
+C:\github\isthimius\Gondwana\Gondwana.Input\obj\Debug\Gondwana.Input.csproj.CoreCompileInputs.cache
+C:\github\isthimius\Gondwana\Gondwana.Input\obj\Debug\Gondwana.86ED8B62.Up2Date
+C:\github\isthimius\Gondwana\Gondwana.Input\obj\Debug\Gondwana.Input.dll
+C:\github\isthimius\Gondwana\Gondwana.Input\obj\Debug\Gondwana.Input.pdb
