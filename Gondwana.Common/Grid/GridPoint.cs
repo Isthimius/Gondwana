@@ -1,8 +1,6 @@
 using Gondwana.Common;
-using Gondwana.Common.Drawing;
-using Gondwana.Common.Drawing.Animation;
-using System;
-using System.Drawing;
+using Gondwana.Drawing;
+using Gondwana.Drawing.Animation;
 using System.Runtime.Serialization;
 
 namespace Gondwana.Grid;

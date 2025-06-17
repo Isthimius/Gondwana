@@ -1,6 +1,6 @@
-﻿using System.Drawing;
+﻿using Gondwana.Common;
 
-namespace Gondwana.Common.Drawing.Sprites
+namespace Gondwana.Drawing.Sprites
 {
     public class MovePoint
     {

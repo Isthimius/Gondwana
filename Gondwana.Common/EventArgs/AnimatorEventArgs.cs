@@ -1,4 +1,4 @@
-﻿using Gondwana.Common.Drawing.Animation;
+﻿using Gondwana.Drawing.Animation;
 
 namespace Gondwana.Common.EventArgs
 {

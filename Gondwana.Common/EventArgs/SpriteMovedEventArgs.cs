@@ -1,4 +1,4 @@
-﻿using Gondwana.Common.Drawing.Sprites;
+﻿using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
 using System.Drawing;
 

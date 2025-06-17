@@ -1,6 +1,6 @@
 ﻿using Gondwana.Common;
 using Gondwana.Configuration;
-using Gondwana.Common.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Common.Win32;
 using System;
 using System.Collections.Generic;

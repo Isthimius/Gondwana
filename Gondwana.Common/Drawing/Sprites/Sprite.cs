@@ -1,10 +1,11 @@
-using Gondwana.Common.Drawing.Animation;
+using Gondwana.Common;
+using Gondwana.Drawing.Animation;
 using Gondwana.Common.Enums;
 using Gondwana.Common.EventArgs;
 using Gondwana.Grid;
 using System.Runtime.Serialization;
 
-namespace Gondwana.Common.Drawing.Sprites;
+namespace Gondwana.Drawing.Sprites;
 
 [DataContract(IsReference = true)]
 public class Sprite : Tile, IDisposable, ICloneable
@@ -22,7 +23,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     private GridPointMatrix parentGrid;
 
     private bool pauseMovement;
-    private Enums.HorizontalAlignment horizAlign;
+    private Common.Enums.HorizontalAlignment horizAlign;
     private VerticalAlignment vertAlign;
     private int nudgeX;
     private int nudgeY;
@@ -39,7 +40,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         movement = new Movement(this);
         pauseAnimation = false;
         pauseMovement = false;
-        horizAlign = Enums.HorizontalAlignment.Center;
+        horizAlign = Common.Enums.HorizontalAlignment.Center;
         vertAlign = VerticalAlignment.Bottom;
         nudgeX = 0;
         nudgeY = 0;
@@ -179,7 +180,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     }
 
     [DataMember]
-    public Enums.HorizontalAlignment HorizAlign
+    public Common.Enums.HorizontalAlignment HorizAlign
     {
         get { return horizAlign; }
         set

@@ -1,125 +1,122 @@
 using Gondwana.Common.Enums;
 using Gondwana.Common.EventArgs;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 
-namespace Gondwana.Common
+namespace Gondwana.Common;
+
+public static class VisibleSurfaces
 {
-    public static class VisibleSurfaces
+    #region fields
+    internal static List<VisibleSurfaceBase> _surfaces = new List<VisibleSurfaceBase>();
+    private static Rectangle maxSurfaceSize = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+    internal static VisibleSurfacesInstance instance = new VisibleSurfacesInstance(0);
+    #endregion
+
+    #region public members
+    public static int Count
     {
-        #region fields
-        internal static List<VisibleSurfaceBase> _surfaces = new List<VisibleSurfaceBase>();
-        private static Rectangle maxSurfaceSize = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
-        internal static VisibleSurfacesInstance instance = new VisibleSurfacesInstance(0);
-        #endregion
+        get { return _surfaces.Count; }
+    }
 
-        #region public members
-        public static int Count
+    public static ReadOnlyCollection<VisibleSurfaceBase> AllVisibleSurfaces
+    {
+        get { return _surfaces.AsReadOnly(); }
+    }
+
+    public static Rectangle MaxSurfaceSize
+    {
+        get { return maxSurfaceSize; }
+    }
+
+    public static double ForcedRefreshRate
+    {
+        get { return instance._refreshTimer; }
+        set { instance.SetVisibleSurfaceRefreshTimer(value); }
+    }
+    #endregion
+
+    #region public members
+    public static void Add(VisibleSurfaceBase surface)
+    {
+        if (!_surfaces.Contains(surface))
         {
-            get { return _surfaces.Count; }
+            _surfaces.Add(surface);
+            CalcMaxSurfaceSize();
+        }
+    }
+
+    public static void Remove(VisibleSurfaceBase surface)
+    {
+        if (_surfaces.Contains(surface))
+        {
+            _surfaces.Remove(surface);
+            CalcMaxSurfaceSize();
+        }
+    }
+    #endregion
+
+    #region private methods
+    private static void CalcMaxSurfaceSize()
+    {
+        maxSurfaceSize = new Rectangle();
+
+        foreach (VisibleSurfaceBase surface in _surfaces)
+        {
+            maxSurfaceSize = Rectangle.Union(maxSurfaceSize,
+                new Rectangle(0, 0, surface.Width, surface.Height));
         }
 
-        public static ReadOnlyCollection<VisibleSurfaceBase> AllVisibleSurfaces
+        // child Sprite creation dependent on VisibleSurface size, so recreate child Sprites
+        Gondwana.Drawing.Sprites.Sprites.CreateChildSprites();
+    }
+    #endregion
+
+    internal class VisibleSurfacesInstance
+    {
+        private Timers.Timer _timer;
+        private TimerEventHandler _timerDel;
+
+        internal double _refreshTimer;          // in seconds
+
+        // constructor
+        internal VisibleSurfacesInstance(double refreshTimer)
         {
-            get { return _surfaces.AsReadOnly(); }
+            _timerDel = new TimerEventHandler(this.Timer_Tick);
+            SetVisibleSurfaceRefreshTimer(refreshTimer);
         }
 
-        public static Rectangle MaxSurfaceSize
+        // finalizer for clean up
+        ~VisibleSurfacesInstance()
         {
-            get { return maxSurfaceSize; }
+            _timerDel = null;
+
+            if (_refreshTimer > 0)
+                _timer.Dispose();
         }
 
-        public static double ForcedRefreshRate
+        internal void SetVisibleSurfaceRefreshTimer(double refreshTimer)
         {
-            get { return instance._refreshTimer; }
-            set { instance.SetVisibleSurfaceRefreshTimer(value); }
-        }
-        #endregion
+            _refreshTimer = refreshTimer;
 
-        #region public members
-        public static void Add(VisibleSurfaceBase surface)
-        {
-            if (!_surfaces.Contains(surface))
+            if (_timer != null)
             {
-                _surfaces.Add(surface);
-                CalcMaxSurfaceSize();
+                _timer.Dispose();
+                _timer = null;
+            }
+
+            if (_refreshTimer > 0)
+            {
+                _timer = Timers.Timers.Add(TimerType.PostCycle, TimerCycles.Repeating, _refreshTimer);
+                _timer.engineTimer = true;
+
+                _timer.Tick += _timerDel;
             }
         }
 
-        public static void Remove(VisibleSurfaceBase surface)
+        private void Timer_Tick(TimerEventArgs e)
         {
-            if (_surfaces.Contains(surface))
-            {
-                _surfaces.Remove(surface);
-                CalcMaxSurfaceSize();
-            }
-        }
-        #endregion
-
-        #region private methods
-        private static void CalcMaxSurfaceSize()
-        {
-            maxSurfaceSize = new Rectangle();
-
-            foreach (VisibleSurfaceBase surface in _surfaces)
-            {
-                maxSurfaceSize = Rectangle.Union(maxSurfaceSize,
-                    new Rectangle(0, 0, surface.Width, surface.Height));
-            }
-
-            // child Sprite creation dependent on VisibleSurface size, so recreate child Sprites
-            Gondwana.Common.Drawing.Sprites.Sprites.CreateChildSprites();
-        }
-        #endregion
-
-        internal class VisibleSurfacesInstance
-        {
-            private Timers.Timer _timer;
-            private TimerEventHandler _timerDel;
-
-            internal double _refreshTimer;          // in seconds
-
-            // constructor
-            internal VisibleSurfacesInstance(double refreshTimer)
-            {
-                _timerDel = new TimerEventHandler(this.Timer_Tick);
-                SetVisibleSurfaceRefreshTimer(refreshTimer);
-            }
-
-            // finalizer for clean up
-            ~VisibleSurfacesInstance()
-            {
-                _timerDel = null;
-
-                if (_refreshTimer > 0)
-                    _timer.Dispose();
-            }
-
-            internal void SetVisibleSurfaceRefreshTimer(double refreshTimer)
-            {
-                _refreshTimer = refreshTimer;
-
-                if (_timer != null)
-                {
-                    _timer.Dispose();
-                    _timer = null;
-                }
-
-                if (_refreshTimer > 0)
-                {
-                    _timer = Timers.Timers.Add(TimerType.PostCycle, TimerCycles.Repeating, _refreshTimer);
-                    _timer.engineTimer = true;
-
-                    _timer.Tick += _timerDel;
-                }
-            }
-
-            private void Timer_Tick(TimerEventArgs e)
-            {
-                foreach (VisibleSurfaceBase surface in VisibleSurfaces._surfaces)
-                    surface.RenderBackbuffer(false);
-            }
+            foreach (VisibleSurfaceBase surface in VisibleSurfaces._surfaces)
+                surface.RenderBackbuffer(false);
         }
     }
 }
