@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Encryption;
 
 namespace Gondwana.Common.Resource;
 
@@ -10,15 +11,15 @@ public class EngineResourceFile : IDisposable
     public string FilePath { get; private set; }
 
     [DataMember]
-    public string Password { get; private set; }
+    public string? Password { get; private set; }
 
     [DataMember]
     public bool IsEncrypted { get; private set; }
 
-    private ZipFile _zipFile;
+    private ZipFile? _zipFile;
     private List<(string key, Func<Stream> getStream)> _pendingEntries = new();
 
-    public EngineResourceFile(string path, string password = null, bool encrypt = false)
+    public EngineResourceFile(string path, string? password = null, bool encrypt = false)
     {
         FilePath = path;
         Password = password;
@@ -55,7 +56,7 @@ public class EngineResourceFile : IDisposable
         if (_zipFile == null)
             LoadZip();
 
-        var entry = _zipFile.GetEntry(key);
+        var entry = _zipFile?.GetEntry(key);
         if (entry == null)
             return null;
 
