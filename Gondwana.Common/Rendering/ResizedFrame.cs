@@ -1,5 +1,5 @@
 ﻿using Gondwana.Common;
-using Gondwana.Common.Configuration;
+using Gondwana.Configuration;
 using Gondwana.Common.Drawing;
 using Gondwana.Common.Win32;
 using System;

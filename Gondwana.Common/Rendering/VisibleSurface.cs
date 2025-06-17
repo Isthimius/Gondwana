@@ -1,7 +1,7 @@
 using Gondwana.Common;
 using Gondwana.Common.Drawing.Direct;
 using Gondwana.Common.EventArgs;
-using Gondwana.Common.Grid;
+using Gondwana.Grid;
 using Gondwana.Common.Win32;
 using System;
 using System.Drawing;

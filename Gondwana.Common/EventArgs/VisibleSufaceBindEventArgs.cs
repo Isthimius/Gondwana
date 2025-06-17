@@ -1,4 +1,4 @@
-﻿using Gondwana.Common.Grid;
+﻿using Gondwana.Grid;
 
 namespace Gondwana.Common.EventArgs
 {

@@ -1,13 +1,10 @@
-using Gondwana.Common.Collisions;
 using Gondwana.Common.Drawing;
 using Gondwana.Common.Drawing.Animation;
 using Gondwana.Common.Drawing.Sprites;
 using Gondwana.Common.Enums;
-using Gondwana.Common.Grid;
+using Gondwana.Grid;
 using Gondwana.Common.Win32;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+using Gondwana.Grid.Collisions;
 using System.Runtime.Serialization;
 
 namespace Gondwana.Common

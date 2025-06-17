@@ -1,20 +1,14 @@
 using Gondwana.Common;
-using Gondwana.Common.Collisions;
-using Gondwana.Common.Configuration;
+using Gondwana.Configuration;
 using Gondwana.Common.Drawing.Direct;
 using Gondwana.Common.Drawing.Sprites;
 using Gondwana.Common.Enums;
 using Gondwana.Common.EventArgs;
-using Gondwana.Common.Grid;
+using Gondwana.Grid;
 using Gondwana.Common.Timers;
 using Gondwana.Common.Win32;
 using Gondwana.Input.Keyboard;
-using Gondwana.Media;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
+using Gondwana.Grid.Collisions;
 
 namespace Gondwana
 {

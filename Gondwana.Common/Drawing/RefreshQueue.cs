@@ -1,6 +1,6 @@
 using Gondwana.Common.Drawing.Sprites;
 using Gondwana.Common.EventArgs;
-using Gondwana.Common.Grid;
+using Gondwana.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
