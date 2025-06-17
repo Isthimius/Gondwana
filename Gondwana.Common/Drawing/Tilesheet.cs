@@ -153,7 +153,7 @@ namespace Gondwana.Common.Drawing
             {
                 var resFile = new EngineResourceFile(string.Format("tilesheet_{0}.zip", this.Name), null, false);
                 var converter = new ImageConverter();
-                resFile.Add(EngineResourceFileTypes.Bitmap, this.Name, (Stream)converter.ConvertTo(_bmp, typeof(Stream)));
+                //resFile.Add(EngineResourceFileTypes.Bitmap, this.Name, (Stream)converter.ConvertTo(_bmp, typeof(Stream)));
                 ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Bitmap, this.Name);
             }
         }

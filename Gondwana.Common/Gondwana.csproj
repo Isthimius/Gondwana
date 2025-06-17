@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<OutputType>Library</OutputType>
-		<RootNamespace>Gondwana.Common</RootNamespace>
-		<AssemblyName>Gondwana.Common</AssemblyName>
+		<RootNamespace>Gondwana</RootNamespace>
+		<AssemblyName>Gondwana</AssemblyName>
 		<UseWindowsForms>true</UseWindowsForms>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>

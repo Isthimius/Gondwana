@@ -50,7 +50,7 @@ namespace Gondwana
         static Engine()
         {
             Configuration = EngineConfiguration.Open();
-            MediaFile.MCIErrorsThrowExceptions = Configuration.Settings.MCIErrorsThrowExceptions;
+            //MediaFile.MCIErrorsThrowExceptions = Configuration.Settings.MCIErrorsThrowExceptions;
             _startTick = HighResTimer.GetCurrentTickCount();
             _lastCPSSamplingTick = _startTick;
             Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.Settings.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);

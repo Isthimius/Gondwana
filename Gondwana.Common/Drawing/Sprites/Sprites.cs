@@ -325,15 +325,15 @@ namespace Gondwana.Common.Drawing.Sprites
             // adjust X coord
             switch (sprite.HorizAlign)
             {
-                case HorizontalAlignment.Left:
+                case Enums.HorizontalAlignment.Left:
                     // no adjustment necessary
                     break;
-                case HorizontalAlignment.Center:
+                case Enums.HorizontalAlignment.Center:
                     // shift right by half the difference between Tile Width values
                     // if Sprite Width > GridPt Width, Sprite will shift left
                     pxlPt.X += (grid.GridPointWidth - size.Width) / 2;
                     break;
-                case HorizontalAlignment.Right:
+                case Enums.HorizontalAlignment.Right:
                     // shift right by the entire difference between Tile Width values
                     // if Sprite Width > GridPt Width, Sprite will shift left
                     pxlPt.X += (grid.GridPointWidth - size.Width);
@@ -383,15 +383,15 @@ namespace Gondwana.Common.Drawing.Sprites
             // adjust X coord
             switch (sprite.HorizAlign)
             {
-                case HorizontalAlignment.Left:
+                case Enums.HorizontalAlignment.Left:
                     // no adjustment necessary
                     break;
-                case HorizontalAlignment.Center:
+                case Enums.HorizontalAlignment.Center:
                     // shift left by half the difference between Tile Width values
                     // if Sprite Width > GridPt Width, Sprite will shift right
                     drawLocation.X -= (grid.GridPointWidth - drawLocation.Width) / 2;
                     break;
-                case HorizontalAlignment.Right:
+                case Enums.HorizontalAlignment.Right:
                     // shift left by the entire difference between Tile Width values
                     // if Sprite Width > GridPt Width, Sprite will shift right
                     drawLocation.X -= (grid.GridPointWidth - drawLocation.Width);
