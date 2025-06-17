@@ -18,23 +18,3 @@ e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Medi
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.Coordinates.csprojResolveAssemblyReference.cache
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.Coordinates.dll
 e:\TFS\Hidden Worlds Games\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.Coordinates.pdb
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\binaries\Ionic.BZip2.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\binaries\Ionic.Zip.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\binaries\Ionic.Zlib.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Coordinates.XML
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Coordinates.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Coordinates.pdb
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Common.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Resource.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Media.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Ionic.Zip.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Common.pdb
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Common.xml
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Resource.pdb
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Media.pdb
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\bin\Debug\Gondwana.Media.xml
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.Coordinates.csproj.AssemblyReference.cache
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.Coordinates.csproj.CoreCompileInputs.cache
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.8B84B4CE.Up2Date
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.Coordinates.dll
-C:\github\isthimius\Gondwana\Gondwana.Coordinates\obj\Debug\Gondwana.Coordinates.pdb

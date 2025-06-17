@@ -107,17 +107,9 @@
       <Project>{A140B921-DD8D-4CFF-9103-3DC212EE1644}</Project>
       <Name>Gondwana.Input</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gondwana.Media\Gondwana.Media.csproj">
-      <Project>{ED8321EC-4BD3-4AA6-8BD0-83EA7DCD2AE4}</Project>
-      <Name>Gondwana.Media</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Gondwana.Rendering\Gondwana.Rendering.csproj">
       <Project>{fd33e739-1a43-4168-9c89-44c33c996dc7}</Project>
       <Name>Gondwana.Rendering</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gondwana.Resource\Gondwana.Resource.csproj">
-      <Project>{5f0752e1-37fd-4046-9d5e-edb95db14129}</Project>
-      <Name>Gondwana.Resource</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj">
       <Project>{32624317-3792-4DF7-8F56-2AA81D5A4036}</Project>

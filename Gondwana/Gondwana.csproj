@@ -69,10 +69,6 @@
       <Project>{a140b921-dd8d-4cff-9103-3dc212ee1644}</Project>
       <Name>Gondwana.Input</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Gondwana.Media\Gondwana.Media.csproj">
-      <Project>{ed8321ec-4bd3-4aa6-8bd0-83ea7dcd2ae4}</Project>
-      <Name>Gondwana.Media</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

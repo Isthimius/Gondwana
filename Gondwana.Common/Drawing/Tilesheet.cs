@@ -1,6 +1,5 @@
 using Gondwana.Common.EventArgs;
 using Gondwana.Common.Win32;
-using Gondwana.Resource;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
+using Gondwana.Common.Resource;
 
 namespace Gondwana.Common.Drawing
 {
