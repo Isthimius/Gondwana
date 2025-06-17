@@ -24,7 +24,7 @@ namespace Gondwana.Common.Drawing.Sprites
         private GridPointMatrix parentGrid;
 
         private bool pauseMovement;
-        private HorizontalAlignment horizAlign;
+        private Enums.HorizontalAlignment horizAlign;
         private VerticalAlignment vertAlign;
         private int nudgeX;
         private int nudgeY;
@@ -41,7 +41,7 @@ namespace Gondwana.Common.Drawing.Sprites
             movement = new Movement(this);
             pauseAnimation = false;
             pauseMovement = false;
-            horizAlign = HorizontalAlignment.Center;
+            horizAlign = Enums.HorizontalAlignment.Center;
             vertAlign = VerticalAlignment.Bottom;
             nudgeX = 0;
             nudgeY = 0;
@@ -181,7 +181,7 @@ namespace Gondwana.Common.Drawing.Sprites
         }
 
         [DataMember]
-        public HorizontalAlignment HorizAlign
+        public Enums.HorizontalAlignment HorizAlign
         {
             get { return horizAlign; }
             set

@@ -32,7 +32,6 @@ Code for MediaFile class derived from code provided by Krazymir at http://www.co
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gondwana.Common\Gondwana.Common.csproj" />
-    <ProjectReference Include="..\Gondwana.Input\Gondwana.Input.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="App.xsd">

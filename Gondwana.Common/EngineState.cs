@@ -30,13 +30,13 @@ namespace Gondwana.Common
 
             return new EngineState()
             {
-                ResourceFiles = EngineResourceFile.GetAll(),
+                //ResourceFiles = EngineResourceFile.GetAll(),
                 Tilesheets = Tilesheet._tilesheets,
                 Cycles = Cycle._cycles,
                 GridsDisplay = GridPointMatrixes._allGridPointMatrixes,
                 Grids = GridPointMatrix._allGridPointMatrix,
                 Sprites = Gondwana.Common.Drawing.Sprites.Sprites._spriteList,
-                MediaFiles = MediaFile._mediaFiles
+                //MediaFiles = MediaFile._mediaFiles
             };
         }
 
@@ -109,13 +109,13 @@ namespace Gondwana.Common
         public void Clear()
         {
             ValueBag.Clear();
-            EngineResourceFile.ClearAll();
+            //EngineResourceFile.ClearAll();
             Tilesheet.ClearAllTilesheets();
             Cycle.ClearAllAnimationCycles();
             GridPointMatrixes.ClearAllGridPointMatrixes();
             GridPointMatrix.ClearAllGridPointMatrix();
             Gondwana.Common.Drawing.Sprites.Sprites.Clear();
-            MediaFile.DisposeAll();
+            //MediaFile.DisposeAll();
         }
 
         public void Save(string file, bool isBinary)

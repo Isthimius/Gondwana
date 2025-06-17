@@ -10,9 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gondwana.Common\Gondwana.Common.csproj" />
-    <ProjectReference Include="..\..\Gondwana.Coordinates\Gondwana.Coordinates.csproj" />
     <ProjectReference Include="..\..\Gondwana.Input\Gondwana.Input.csproj" />
-    <ProjectReference Include="..\..\Gondwana.Rendering\Gondwana.Rendering.csproj" />
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 </Project>
