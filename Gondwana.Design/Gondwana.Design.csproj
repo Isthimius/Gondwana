@@ -1,240 +1,66 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}</ProjectGuid>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gondwana.Design</RootNamespace>
-    <AssemblyName>Gondwana.Design</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\AssetFolder.cs">
+    <Compile Update="Controls\AssetFolder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\AssetFolder.Designer.cs">
-      <DependentUpon>AssetFolder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AssetViewer.cs">
+    <Compile Update="Controls\AssetViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\AssetViewer.Designer.cs">
-      <DependentUpon>AssetViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MediaFile.cs">
+    <Compile Update="Controls\MediaFile.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\MediaFile.Designer.cs">
-      <DependentUpon>MediaFile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MediaFileMenu.cs">
+    <Compile Update="Controls\MediaFileMenu.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\MediaFileMenu.Designer.cs">
-      <DependentUpon>MediaFileMenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\TilesheetMenu.cs">
+    <Compile Update="Controls\TilesheetMenu.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TilesheetMenu.Designer.cs">
-      <DependentUpon>TilesheetMenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\BitmapChangeColorPopUp.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\BitmapChangeColorPopUp.Designer.cs">
-      <DependentUpon>BitmapChangeColorPopUp.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Cycle.cs">
+    <Compile Update="Controls\Cycle.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Cycle.Designer.cs">
-      <DependentUpon>Cycle.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FramesBar.cs">
+    <Compile Update="Controls\FramesBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\FramesBar.Designer.cs">
-      <DependentUpon>FramesBar.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Grid.cs">
+    <Compile Update="Controls\Grid.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Grid.Designer.cs">
-      <DependentUpon>Grid.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\GridsDisplay.cs">
+    <Compile Update="Controls\GridsDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\GridsDisplay.Designer.cs">
-      <DependentUpon>GridsDisplay.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ProjectFile.cs">
+    <Compile Update="Controls\ProjectFile.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\ProjectFile.Designer.cs">
-      <DependentUpon>ProjectFile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ResourceFile.cs">
+    <Compile Update="Controls\ResourceFile.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\ResourceFile.Designer.cs">
-      <DependentUpon>ResourceFile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Sprite.cs">
+    <Compile Update="Controls\Sprite.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Sprite.Designer.cs">
-      <DependentUpon>Sprite.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Tilesheet.cs">
+    <Compile Update="Controls\Tilesheet.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Tilesheet.Designer.cs">
-      <DependentUpon>Tilesheet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DesignerState.cs" />
-    <Compile Include="Forms\CycleViewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CycleViewer.Designer.cs">
-      <DependentUpon>CycleViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptDesigner.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ScriptDesigner.Designer.cs">
-      <DependentUpon>ScriptDesigner.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility.cs" />
-    <EmbeddedResource Include="Controls\AssetFolder.resx">
-      <DependentUpon>AssetFolder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AssetViewer.resx">
-      <DependentUpon>AssetViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Cycle.resx">
-      <DependentUpon>Cycle.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FramesBar.resx">
-      <DependentUpon>FramesBar.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MediaFile.resx">
-      <DependentUpon>MediaFile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MediaFileMenu.resx">
-      <DependentUpon>MediaFileMenu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TilesheetMenu.resx">
-      <DependentUpon>TilesheetMenu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\BitmapChangeColorPopUp.resx">
-      <DependentUpon>BitmapChangeColorPopUp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ProjectFile.resx">
-      <DependentUpon>ProjectFile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ResourceFile.resx">
-      <DependentUpon>ResourceFile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Tilesheet.resx">
-      <DependentUpon>Tilesheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CycleViewer.resx">
-      <DependentUpon>CycleViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="ScriptDesigner.resx">
-      <DependentUpon>ScriptDesigner.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Gondwana.Common\Gondwana.Common.csproj">
-      <Project>{2aa95f8c-107e-4828-b78b-73e6806bfaf9}</Project>
-      <Name>Gondwana.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gondwana.Coordinates\Gondwana.Coordinates.csproj">
-      <Project>{d246b45a-2ede-4c25-8226-389416c30dbb}</Project>
-      <Name>Gondwana.Coordinates</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gondwana.Input\Gondwana.Input.csproj">
-      <Project>{a140b921-dd8d-4cff-9103-3dc212ee1644}</Project>
-      <Name>Gondwana.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gondwana.Rendering\Gondwana.Rendering.csproj">
-      <Project>{fd33e739-1a43-4168-9c89-44c33c996dc7}</Project>
-      <Name>Gondwana.Rendering</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj">
-      <Project>{32624317-3792-4df7-8f56-2aa81d5a4036}</Project>
-      <Name>Gondwana</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Gondwana.Common\Gondwana.Common.csproj" />
+    <ProjectReference Include="..\Gondwana.Coordinates\Gondwana.Coordinates.csproj" />
+    <ProjectReference Include="..\Gondwana.Input\Gondwana.Input.csproj" />
+    <ProjectReference Include="..\Gondwana.Rendering\Gondwana.Rendering.csproj" />
+    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\appfile.ico" />
@@ -280,12 +106,4 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

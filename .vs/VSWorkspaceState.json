@@ -1,7 +1,16 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\ConsoleApplication1",
+    "\\Gondwana.Common",
+    "\\Gondwana.Common\\Drawing",
+    "\\Gondwana.Common\\Drawing\\Sprites",
+    "\\Gondwana.Common\\Enums",
+    "\\Gondwana.Common\\Media",
+    "\\Gondwana.Common\\Resource",
+    "\\Gondwana.Common\\Utility",
+    "\\Gondwana.Resource"
   ],
-  "SelectedNode": "\\Gondwana.sln",
+  "SelectedNode": "\\Gondwana.Common\\EngineState.cs",
   "PreviewInSolutionExplorer": false
 }
