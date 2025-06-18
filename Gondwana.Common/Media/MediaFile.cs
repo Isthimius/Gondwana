@@ -9,10 +9,10 @@ public class MediaFile : IDisposable
 {
     private IWavePlayer? outputDevice;
     private AudioFileReader? audioFile;
-    private readonly bool isTempFile = false;       // only set in constructgor
-    private bool disposed = false;                  // to detect redundant calls
+    private readonly bool isTempFile;
+    private bool disposed;
 
-    public string FilePath { get; private set; }
+    public string FilePath { get; }
     public bool IsPlaying { get; private set; }
     public bool IsPaused { get; private set; }
     public bool Looping { get; set; }
@@ -20,14 +20,9 @@ public class MediaFile : IDisposable
     public float Volume
     {
         get => audioFile?.Volume ?? 1.0f;
-        set
-        {
-            if (audioFile != null)
-                audioFile.Volume = Math.Clamp(value, 0.0f, 1.0f);
-        }
+        set { if (audioFile != null) audioFile.Volume = Math.Clamp(value, 0.0f, 1.0f); }
     }
 
-    // Events
     public event EventHandler? PlaybackStarted;
     public event EventHandler? PlaybackPaused;
     public event EventHandler? PlaybackStopped;
@@ -39,33 +34,31 @@ public class MediaFile : IDisposable
 
     public MediaFile(EngineResourceFileIdentifier resId)
     {
-        if (resId == null || resId.Data == null)
-            throw new ArgumentException("Invalid resource identifier or empty data stream.");
+        ArgumentNullException.ThrowIfNull(resId);
+        ArgumentNullException.ThrowIfNull(resId.Data);
 
         string extension = Path.GetExtension(resId.ResourceName);
-        if (string.IsNullOrWhiteSpace(extension))
-            extension = ".wav"; // default if unknown
+        if (string.IsNullOrWhiteSpace(extension)) extension = ".wav";
 
         FilePath = SaveStreamToTempFile(resId.Data, extension);
         isTempFile = true;
     }
 
-    private static string SaveStreamToTempFile(Stream inputStream, string extension)
+    private static string SaveStreamToTempFile(Stream input, string extension)
     {
-        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + extension);
-        using var fileStream = File.Create(tempPath);
-        inputStream.CopyTo(fileStream);
+        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
+        using var fs = File.Create(tempPath);
+        input.CopyTo(fs);
         return tempPath;
     }
 
     public void Play()
     {
-        Stop(); // Ensure clean state
+        Stop();
 
         audioFile = new AudioFileReader(FilePath);
         outputDevice = new WaveOutEvent();
         outputDevice.Init(audioFile);
-
         outputDevice.PlaybackStopped += OnPlaybackStopped;
         outputDevice.Play();
 
@@ -106,7 +99,7 @@ public class MediaFile : IDisposable
     {
         if (Looping)
         {
-            Play(); // Replay from start
+            Play(); // Recursion is safe because Stop() clears state.
         }
         else
         {
@@ -124,34 +117,24 @@ public class MediaFile : IDisposable
         audioFile = null;
     }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposed)
-        {
-            if (disposing)
-            {
-                // Dispose managed resources
-                Stop();
-            }
-
-            // Dispose unmanaged resources
-            if (isTempFile && File.Exists(FilePath))
-            {
-                try { File.Delete(FilePath); } catch { /* ignore */ }
-            }
-
-            disposed = true;
-        }
-    }
-
     public void Dispose()
     {
-        Dispose(disposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
-    ~MediaFile()
+    ~MediaFile() => Dispose(false);
+
+    protected virtual void Dispose(bool disposing)
     {
-        Dispose(disposing: false);
+        if (disposed) return;
+        if (disposing) Stop();
+
+        if (isTempFile && File.Exists(FilePath))
+        {
+            try { File.Delete(FilePath); } catch { /* ignore */ }
+        }
+
+        disposed = true;
     }
 }
