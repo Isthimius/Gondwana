@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Gondwana;
+namespace Gondwana.Timers;
 
 public static class HighResTimer
 {

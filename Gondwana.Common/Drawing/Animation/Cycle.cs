@@ -1,6 +1,7 @@
 using Gondwana.Drawing.Sprites;
 using Gondwana.Common.Enums;
 using System.Runtime.Serialization;
+using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Animation;
 

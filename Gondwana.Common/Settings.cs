@@ -1,4 +1,5 @@
 using Gondwana.Common.Exceptions;
+using Gondwana.Timers;
 using System.Configuration;
 using System.Xml;
 
@@ -10,7 +11,6 @@ public static class Settings
     private static int targetFPS;
     private static double cpsSampling;
     private static double minKeyboardTime;
-    private static bool mciErrorsThrowExceptions;
     private static double visibleSurfaceRefreshTimer;
     private static int resizedFrameCacheLimit;
     #endregion
@@ -116,7 +116,6 @@ public static class Settings
         UpdateSetting(configFile, "default_throttle", targetFPS.ToString());
         UpdateSetting(configFile, "cps_sample_time", cpsSampling.ToString());
         UpdateSetting(configFile, "seconds_between_key_events", minKeyboardTime.ToString());
-        UpdateSetting(configFile, "throw_exception_on_mci_error", mciErrorsThrowExceptions.ToString());
         UpdateSetting(configFile, "visible_surface_refresh_timer", visibleSurfaceRefreshTimer.ToString());
 
         configFile.Save(configPath);

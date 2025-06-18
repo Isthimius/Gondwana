@@ -1,7 +1,7 @@
 ﻿using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Common.Win32;
-using Gondwana.Common.EventArgs;
+using Gondwana.Timers;
 
 namespace Gondwana.Rendering;
 
