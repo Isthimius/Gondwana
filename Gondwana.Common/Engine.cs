@@ -10,6 +10,8 @@ using Gondwana.Grid.Collisions;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.EventArgs;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gondwana;
 

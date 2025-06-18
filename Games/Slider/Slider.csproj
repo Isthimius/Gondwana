@@ -10,19 +10,14 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gondwana.Common\Gondwana.Common.csproj" />
-    <ProjectReference Include="..\..\Gondwana.Coordinates\Gondwana.Coordinates.csproj" />
-    <ProjectReference Include="..\..\Gondwana.Input\Gondwana.Input.csproj" />
-    <ProjectReference Include="..\..\Gondwana.Rendering\Gondwana.Rendering.csproj" />
-    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="assets\177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\75143__willc2-45220__slide-cup-16b-44k-0-747s.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Gondwana.Common\Gondwana.csproj" />
   </ItemGroup>
 </Project>

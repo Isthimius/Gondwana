@@ -1,42 +1,27 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <AssemblyTitle>Gondwana</AssemblyTitle>
-    <Description>My game engine... blah blah blah...
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
 
-Code for MediaFile class derived from code provided by Krazymir at http://www.codeproject.com/KB/audio-video/MP3Example.aspx</Description>
-    <Company>Hidden Worlds Games</Company>
-    <Product>Gondwana Game Engine Library</Product>
-    <Copyright>Copyright © 2009</Copyright>
-    <AssemblyVersion>2.0.0.%2a</AssemblyVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Gondwana.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Gondwana.XML</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.configuration" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Gondwana.Common\Gondwana.Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="App.xsd">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Gondwana</RootNamespace>
+		<AssemblyTitle>Gondwana</AssemblyTitle>
+		<Company>Hidden Worlds Games</Company>
+		<Product>Gondwana Game Engine Library</Product>
+		<Copyright>Copyright © 2009</Copyright>
+		<AssemblyVersion>2.0.0.*</AssemblyVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Update="App.xsd">
+			<SubType>Designer</SubType>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

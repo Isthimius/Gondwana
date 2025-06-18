@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace Gondwana.Common.Win32;
 
 /// <summary>

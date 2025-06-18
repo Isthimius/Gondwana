@@ -1,4 +1,6 @@
 using Gondwana.Common;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gondwana.Drawing.Direct;
 

@@ -1,9 +1,9 @@
 using Gondwana;
-using Gondwana.Common.Drawing;
-using Gondwana.Common.Drawing.Sprites;
+using Gondwana.Drawing;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Common.Enums;
-using Gondwana.Common.EventArgs;
-using Gondwana.Common.Grid;
+using Gondwana.EventArgs;
+using Gondwana.Grid;
 using Gondwana.Coordinates;
 using Gondwana.Media;
 using Gondwana.Rendering;

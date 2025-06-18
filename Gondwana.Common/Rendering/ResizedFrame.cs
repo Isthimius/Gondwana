@@ -2,6 +2,7 @@
 using Gondwana.Drawing;
 using Gondwana.Common.Win32;
 using Gondwana.Timers;
+using System.Drawing;
 
 namespace Gondwana.Rendering;
 

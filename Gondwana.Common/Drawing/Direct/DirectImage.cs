@@ -1,5 +1,6 @@
 using Gondwana.Common;
 using Gondwana.Common.Win32;
+using System.Drawing;
 
 namespace Gondwana.Drawing.Direct;
 

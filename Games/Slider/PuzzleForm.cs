@@ -1,4 +1,4 @@
-using Gondwana.Common.Drawing.Sprites;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Media;
 using System;
 using System.Collections.Generic;
@@ -26,36 +26,36 @@ namespace Slider
         {
             InitializeComponent();
             picBoxDC = picBox.CreateGraphics();
-            Program.slideSound = new MediaFile("slide", AssetDir + "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav", MediaFileType.wav);
-            Program.tadaSound = new MediaFile("tada", AssetDir + "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav", MediaFileType.wav);
+            //Program.slideSound = new MediaFile("slide", AssetDir + "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav", MediaFileType.wav);
+            //Program.tadaSound = new MediaFile("tada", AssetDir + "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav", MediaFileType.wav);
             Sprites.SpriteMovementStarted += Sprites_SpriteMovementStarted;
             Sprites.SpriteMovementStopped += Sprites_SpriteMovementStopped;
         }
 
-        void Sprites_SpriteMovementStarted(Gondwana.Common.EventArgs.SpriteMovementEventArgs e)
+        void Sprites_SpriteMovementStarted(Gondwana.EventArgs.SpriteMovementEventArgs e)
         {
 #if DEBUG
             Console.WriteLine(string.Format("{3}   start move '{0}' from {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
 #endif
-            Program.slideSound.Play();
+            //Program.slideSound.Play();
         }
 
-        void Sprites_SpriteMovementStopped(Gondwana.Common.EventArgs.SpriteMovementEventArgs e)
+        void Sprites_SpriteMovementStopped(Gondwana.EventArgs.SpriteMovementEventArgs e)
         {
 #if DEBUG
             Console.WriteLine(string.Format("{3}   end move '{0}' at {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
 #endif
 
             //if (!Program.puzzle._isShuffling)
-                Program.slideSound.Stop();
+                //Program.slideSound.Stop();
 
-            if (Program.puzzle.TotalPieces == Program.puzzle.TotalPiecesCorrect)
-                Program.tadaSound.Play();
+            //if (Program.puzzle.TotalPieces == Program.puzzle.TotalPiecesCorrect)
+            //    Program.tadaSound.Play();
         }
 
         private void btnBmpOpen_Click(object sender, EventArgs e)
         {
-            Gondwana.Common.Timers.Timers.Clear();
+            Gondwana.Timers.Timers.Clear();
 
             if (picBoxBmp != null)
             {
@@ -83,7 +83,7 @@ namespace Slider
             }
         }
 
-        void Sprites_SpriteMovePointFinished(Gondwana.Common.EventArgs.SpriteMovePointFinishedEventArgs e)
+        void Sprites_SpriteMovePointFinished(Gondwana.EventArgs.SpriteMovePointFinishedEventArgs e)
         {
             txtPieces.Text = Program.puzzle.TotalPieces.ToString();
             txtCorrect.Text = Program.puzzle.TotalPiecesCorrect.ToString();

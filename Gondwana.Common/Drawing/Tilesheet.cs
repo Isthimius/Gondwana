@@ -4,6 +4,7 @@ using Gondwana.Common.Win32;
 using Gondwana.Resource;
 using Gondwana.EventArgs;
 using Gondwana.Timers;
+using System.Drawing;
 
 namespace Gondwana.Drawing;
 

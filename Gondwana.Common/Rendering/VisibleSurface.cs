@@ -3,6 +3,8 @@ using Gondwana.Drawing.Direct;
 using Gondwana.EventArgs;
 using Gondwana.Grid;
 using Gondwana.Common.Win32;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gondwana.Rendering;
 
