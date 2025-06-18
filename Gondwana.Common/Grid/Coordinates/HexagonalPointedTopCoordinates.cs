@@ -3,9 +3,9 @@ using Gondwana.Common.Enums;
 using Gondwana.Grid;
 using System.Drawing;
 
-namespace Gondwana.Coordinates;
+namespace Gondwana.Grid.Coordinates;
 
-public class HexagonalFlatTopCoordinates : IGridCoordinates
+public class HexagonalPointedTopCoordinates : IGridCoordinates
 {
     public Point GetSrcPxlAtGridPt(GridPointMatrix matrix, PointF gridCoord)
     {

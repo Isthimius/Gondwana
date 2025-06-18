@@ -4,7 +4,7 @@ using Gondwana.Common.Enums;
 using Gondwana.Grid;
 using System.Drawing;
 
-namespace Gondwana.Coordinates;
+namespace Gondwana.Grid.Coordinates;
 
 public class SquareIsoCoordinates : IGridCoordinates
 {
@@ -12,8 +12,8 @@ public class SquareIsoCoordinates : IGridCoordinates
     {
         Point retVal = new Point();
 
-        retVal.X = (int)((float)matrix.GridPointWidth * (gridCoord.X - matrix.SourceGridPoint.X));
-        retVal.Y = (int)((float)matrix.GridPointHeight * (gridCoord.Y - matrix.SourceGridPoint.Y));
+        retVal.X = (int)(matrix.GridPointWidth * (gridCoord.X - matrix.SourceGridPoint.X));
+        retVal.Y = (int)(matrix.GridPointHeight * (gridCoord.Y - matrix.SourceGridPoint.Y));
 
         return retVal;
     }
@@ -22,8 +22,8 @@ public class SquareIsoCoordinates : IGridCoordinates
     {
         PointF retPt = new PointF();
 
-        retPt.X = ((float)(pixelPt.X - matrix.GridPointZeroPixel.X)) / (float)matrix.GridPointWidth;
-        retPt.Y = ((float)(pixelPt.Y - matrix.GridPointZeroPixel.Y)) / (float)matrix.GridPointHeight;
+        retPt.X = (pixelPt.X - matrix.GridPointZeroPixel.X) / (float)matrix.GridPointWidth;
+        retPt.Y = (pixelPt.Y - matrix.GridPointZeroPixel.Y) / (float)matrix.GridPointHeight;
 
         return retPt;
     }
@@ -33,8 +33,8 @@ public class SquareIsoCoordinates : IGridCoordinates
         List<GridPoint> retVal = new List<GridPoint>();
 
         // find upper-left and bottom-right X and Y grid coordinates
-        PointF ptUL = this.GetGridPtAtPxl(matrix, new Point(pixelRange.Left, pixelRange.Top));
-        PointF ptBR = this.GetGridPtAtPxl(matrix, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
+        PointF ptUL = GetGridPtAtPxl(matrix, new Point(pixelRange.Left, pixelRange.Top));
+        PointF ptBR = GetGridPtAtPxl(matrix, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
         
         // loop through all coordinates and add to return value
         for (int y = (int)Math.Floor(ptUL.Y); y <= (int)ptBR.Y; y++)
@@ -52,10 +52,10 @@ public class SquareIsoCoordinates : IGridCoordinates
         {
             if (Tilesheet.MaxExtraTopSpaceRatio > 0)
             {
-                foreach (GridPoint grPt in this.GetGridPtListInPxlRange(matrix,
+                foreach (GridPoint grPt in GetGridPtListInPxlRange(matrix,
                     new Rectangle(pixelRange.Left, pixelRange.Bottom,
                     pixelRange.Width,
-                    (int)Math.Ceiling(Tilesheet.MaxExtraTopSpaceRatio * (float)matrix.GridPointHeight)),
+                    (int)Math.Ceiling(Tilesheet.MaxExtraTopSpaceRatio * matrix.GridPointHeight)),
                     false))
                 {
                     if (grPt != null)
@@ -77,8 +77,8 @@ public class SquareIsoCoordinates : IGridCoordinates
     {
         Rectangle retVal = new Rectangle();
 
-        retVal.X = (int)((float)tile.ParentGrid.GridPointWidth * tile.GridCoordinates.X) + tile.ParentGrid.GridPointZeroPixel.X;
-        retVal.Y = (int)((float)tile.ParentGrid.GridPointHeight * tile.GridCoordinates.Y) + tile.ParentGrid.GridPointZeroPixel.Y;
+        retVal.X = (int)(tile.ParentGrid.GridPointWidth * tile.GridCoordinates.X) + tile.ParentGrid.GridPointZeroPixel.X;
+        retVal.Y = (int)(tile.ParentGrid.GridPointHeight * tile.GridCoordinates.Y) + tile.ParentGrid.GridPointZeroPixel.Y;
 
         retVal.Width = tile.ParentGrid.GridPointWidth;
         retVal.Height = tile.ParentGrid.GridPointHeight;
@@ -105,9 +105,9 @@ public class SquareIsoCoordinates : IGridCoordinates
         foreach (Tile tile in tileList)
         {
             if (retVal.IsEmpty)
-                retVal = this.GetPxlRangeAtGridPt(tile, inclOverlaps);
+                retVal = GetPxlRangeAtGridPt(tile, inclOverlaps);
             else
-                retVal = Rectangle.Union(retVal, this.GetPxlRangeAtGridPt(tile, inclOverlaps));
+                retVal = Rectangle.Union(retVal, GetPxlRangeAtGridPt(tile, inclOverlaps));
         }
 
         return retVal;
@@ -155,8 +155,8 @@ public class SquareIsoCoordinates : IGridCoordinates
 
     public PointF FindEquivGridCoord(PointF valColRow, int xUpperBound, int yUpperBound)
     {
-        float modX = (valColRow.X % (float)(xUpperBound + 1));
-        float modY = (valColRow.Y % (float)(yUpperBound + 1));
+        float modX = valColRow.X % (xUpperBound + 1);
+        float modY = valColRow.Y % (yUpperBound + 1);
 
         if (modX < 0)
             modX += xUpperBound + 1;

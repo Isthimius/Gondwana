@@ -4,7 +4,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Common.Enums;
 using Gondwana.EventArgs;
 using Gondwana.Grid;
-using Gondwana.Coordinates;
+using Gondwana.Grid.Coordinates;
 using Gondwana.Media;
 using Gondwana.Rendering;
 using System;
