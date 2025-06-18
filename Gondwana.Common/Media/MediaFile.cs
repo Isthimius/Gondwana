@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using NAudio.Wave;
-using Gondwana.Common.Resource;
+using Gondwana.Resource;
 
 namespace Gondwana.Media;
 
@@ -72,7 +72,7 @@ public class MediaFile : IDisposable
         IsPlaying = true;
         IsPaused = false;
 
-        PlaybackStarted?.Invoke(this, EventArgs.Empty);
+        PlaybackStarted?.Invoke(this, System.EventArgs.Empty);
     }
 
     public void Pause()
@@ -81,13 +81,13 @@ public class MediaFile : IDisposable
         {
             outputDevice?.Pause();
             IsPaused = true;
-            PlaybackPaused?.Invoke(this, EventArgs.Empty);
+            PlaybackPaused?.Invoke(this, System.EventArgs.Empty);
         }
         else if (IsPaused)
         {
             outputDevice?.Play();
             IsPaused = false;
-            PlaybackStarted?.Invoke(this, EventArgs.Empty);
+            PlaybackStarted?.Invoke(this, System.EventArgs.Empty);
         }
     }
 
@@ -99,7 +99,7 @@ public class MediaFile : IDisposable
         IsPlaying = false;
         IsPaused = false;
 
-        PlaybackStopped?.Invoke(this, EventArgs.Empty);
+        PlaybackStopped?.Invoke(this, System.EventArgs.Empty);
     }
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
@@ -112,7 +112,7 @@ public class MediaFile : IDisposable
         {
             IsPlaying = false;
             IsPaused = false;
-            PlaybackStopped?.Invoke(this, EventArgs.Empty);
+            PlaybackStopped?.Invoke(this, System.EventArgs.Empty);
         }
     }
 

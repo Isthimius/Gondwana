@@ -1,5 +1,4 @@
-using Gondwana.Common;
-using Gondwana.Common.EventArgs;
+using Gondwana.EventArgs;
 
 namespace Gondwana.Drawing.Sprites;
 

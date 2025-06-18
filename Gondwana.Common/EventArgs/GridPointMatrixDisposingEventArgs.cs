@@ -1,16 +1,15 @@
 ﻿using Gondwana.Grid;
 
-namespace Gondwana.Common.EventArgs
+namespace Gondwana.EventArgs;
+
+public delegate void GridPointMatrixDisposingEventHandler(GridPointMatrixDisposingEventArgs e);
+
+public class GridPointMatrixDisposingEventArgs : System.EventArgs
 {
-    public delegate void GridPointMatrixDisposingEventHandler(GridPointMatrixDisposingEventArgs e);
+    public GridPointMatrix Matrix;
 
-    public class GridPointMatrixDisposingEventArgs : System.EventArgs
+    protected internal GridPointMatrixDisposingEventArgs(GridPointMatrix matrix)
     {
-        public GridPointMatrix Matrix;
-
-        protected internal GridPointMatrixDisposingEventArgs(GridPointMatrix matrix)
-        {
-            Matrix = matrix;
-        }
+        Matrix = matrix;
     }
 }

@@ -3,12 +3,13 @@ using Gondwana.Configuration;
 using Gondwana.Common.Enums;
 using Gondwana.Common.EventArgs;
 using Gondwana.Grid;
-using Gondwana.Common.Timers;
+using Gondwana.Timers;
 using Gondwana.Common.Win32;
 using Gondwana.Input.Keyboard;
 using Gondwana.Grid.Collisions;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
+using Gondwana.EventArgs;
 
 namespace Gondwana;
 
@@ -126,7 +127,7 @@ public static class Engine
     #endregion
 
     #region private methods
-    private static void Application_Idle(object sender, EventArgs e)
+    private static void Application_Idle(object sender, System.EventArgs e)
     {
         while (IsApplicationIdle())
         {
@@ -183,7 +184,7 @@ public static class Engine
             BeforeBackgroundTasksExecute();
 
         // raise pre-cycle timer events
-        Timers.RaiseTimerEvents(TimerType.PreCycle, tick);
+        Timers.Timers.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
         Keyboard.RaiseKeyEvents(tick);
@@ -235,7 +236,7 @@ public static class Engine
             AfterEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // raise post-cycle timer events
-        Timers.RaiseTimerEvents(TimerType.PostCycle, tick);
+        Timers.Timers.RaiseTimerEvents(TimerType.PostCycle, tick);
     }
 
     private static void DrawRefreshQueues()

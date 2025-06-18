@@ -2,7 +2,7 @@ using Gondwana.Common;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Common.Enums;
-using Gondwana.Common.EventArgs;
+using Gondwana.EventArgs;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;

@@ -2,7 +2,7 @@
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
-using Gondwana.Common.Resource;
+using Gondwana.Resource;
 using Gondwana.Common.Utility;
 using Gondwana.Media;
 using System.IO.Compression;

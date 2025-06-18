@@ -1,15 +1,13 @@
-﻿
-namespace Gondwana.Common.EventArgs
+﻿namespace Gondwana.EventArgs;
+
+public delegate void TimerEventHandler(TimerEventArgs e);
+
+public class TimerEventArgs : System.EventArgs
 {
-    public delegate void TimerEventHandler(TimerEventArgs e);
+    public Timers.Timer GondwanaTimer;
 
-    public class TimerEventArgs : System.EventArgs
+    protected internal TimerEventArgs(Timers.Timer timer)
     {
-        public Timers.Timer GondwanaTimer;
-
-        protected internal TimerEventArgs(Timers.Timer timer)
-        {
-            GondwanaTimer = timer;
-        }
+        GondwanaTimer = timer;
     }
 }

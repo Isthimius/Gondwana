@@ -1,4 +1,4 @@
-﻿using Gondwana.Common.EventArgs;
+﻿using Gondwana.EventArgs;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 

@@ -1,18 +1,17 @@
 ﻿using Gondwana.Grid;
 
-namespace Gondwana.Common.EventArgs
+namespace Gondwana.EventArgs;
+
+public delegate void GridPointMatrixAddRemoveHandler(GridPointMatrixAddRemoveEventArgs e);
+
+public class GridPointMatrixAddRemoveEventArgs : System.EventArgs
 {
-    public delegate void GridPointMatrixAddRemoveHandler(GridPointMatrixAddRemoveEventArgs e);
+    public GridPointMatrixes Layers;
+    public GridPointMatrix Layer;
 
-    public class GridPointMatrixAddRemoveEventArgs : System.EventArgs
+    protected internal GridPointMatrixAddRemoveEventArgs(GridPointMatrixes grids, GridPointMatrix grid)
     {
-        public GridPointMatrixes Layers;
-        public GridPointMatrix Layer;
-
-        protected internal GridPointMatrixAddRemoveEventArgs(GridPointMatrixes grids, GridPointMatrix grid)
-        {
-            Layers = grids;
-            Layer = grid;
-        }
+        Layers = grids;
+        Layer = grid;
     }
 }

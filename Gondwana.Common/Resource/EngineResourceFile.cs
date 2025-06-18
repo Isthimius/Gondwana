@@ -2,7 +2,7 @@
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Encryption;
 
-namespace Gondwana.Common.Resource;
+namespace Gondwana.Resource;
 
 [DataContract(IsReference = true)]
 public class EngineResourceFile : IDisposable

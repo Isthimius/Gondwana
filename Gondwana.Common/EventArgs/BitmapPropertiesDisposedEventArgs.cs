@@ -1,16 +1,15 @@
 ﻿using Gondwana.Drawing;
 
-namespace Gondwana.Common.EventArgs
+namespace Gondwana.EventArgs;
+
+public delegate void TilesheetDisposedHandler(TilesheetDisposedEventArgs e);
+
+public class TilesheetDisposedEventArgs : System.EventArgs
 {
-    public delegate void TilesheetDisposedHandler(TilesheetDisposedEventArgs e);
+    public Tilesheet Tilesheet;
 
-    public class TilesheetDisposedEventArgs : System.EventArgs
+    protected internal TilesheetDisposedEventArgs(Tilesheet tilesheet)
     {
-        public Tilesheet Tilesheet;
-
-        protected internal TilesheetDisposedEventArgs(Tilesheet tilesheet)
-        {
-            Tilesheet = tilesheet;
-        }
+        Tilesheet = tilesheet;
     }
 }

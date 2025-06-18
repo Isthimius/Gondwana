@@ -1,9 +1,6 @@
-using System;
+namespace Gondwana.Common.Exceptions;
 
-namespace Gondwana.Common.Exceptions
+public class GondwanaSettingException : Exception
 {
-    public class GondwanaSettingException : Exception
-    {
-        public GondwanaSettingException(string msg, System.Exception innerExc) : base(msg, innerExc) { }
-    }
+    public GondwanaSettingException(string msg, System.Exception innerExc) : base(msg, innerExc) { }
 }

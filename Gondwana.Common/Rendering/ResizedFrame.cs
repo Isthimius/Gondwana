@@ -1,6 +1,7 @@
 ﻿using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Common.Win32;
+using Gondwana.Common.EventArgs;
 
 namespace Gondwana.Rendering;
 
@@ -108,7 +109,7 @@ internal class ResizedFrame : IDisposable
         ResizedGraphics.ReleaseHdc(hdc);
     }
 
-    private void Tilesheet_Disposed(Common.EventArgs.TilesheetDisposedEventArgs e)
+    private void Tilesheet_Disposed(EventArgs.TilesheetDisposedEventArgs e)
     {
         this.Dispose();
     }

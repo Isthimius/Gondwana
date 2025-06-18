@@ -1,9 +1,8 @@
-using Gondwana.Common.EventArgs;
-using Gondwana.Common.Win32;
 using System.Runtime.Serialization;
 using System.Drawing.Imaging;
-using Gondwana.Common.Resource;
-using Gondwana.Common;
+using Gondwana.Common.Win32;
+using Gondwana.Resource;
+using Gondwana.EventArgs;
 
 namespace Gondwana.Drawing;
 

@@ -1,27 +1,25 @@
-﻿
-namespace Gondwana.Common.EventArgs
+﻿namespace Gondwana.EventArgs;
+
+public delegate void EngineCycleEventHandler(EngineCycleEventArgs e);
+
+public class EngineCycleEventArgs : System.EventArgs
 {
-    public delegate void EngineCycleEventHandler(EngineCycleEventArgs e);
+    public long GrossCycles;
+    public long GrossCyclesTotal;
+    public long NetCycles;
+    public long NetCyclesTotal;
+    public double GrossCPS;
+    public double NetFPS;
 
-    public class EngineCycleEventArgs : System.EventArgs
+    private EngineCycleEventArgs() { }
+
+    public EngineCycleEventArgs(long grossCycles, long grossCyclesTotal, long netCycles, long netCyclesTotal, double grossCPS, double netFPS)
     {
-        public long GrossCycles;
-        public long GrossCyclesTotal;
-        public long NetCycles;
-        public long NetCyclesTotal;
-        public double GrossCPS;
-        public double NetFPS;
-
-        private EngineCycleEventArgs() { }
-
-        public EngineCycleEventArgs(long grossCycles, long grossCyclesTotal, long netCycles, long netCyclesTotal, double grossCPS, double netFPS)
-        {
-            GrossCycles = grossCycles;
-            GrossCyclesTotal = grossCyclesTotal;
-            NetCycles = netCycles;
-            NetCyclesTotal = netCyclesTotal;
-            GrossCPS = grossCPS;
-            NetFPS = netFPS;
-        }
+        GrossCycles = grossCycles;
+        GrossCyclesTotal = grossCyclesTotal;
+        NetCycles = netCycles;
+        NetCyclesTotal = netCyclesTotal;
+        GrossCPS = grossCPS;
+        NetFPS = netFPS;
     }
 }

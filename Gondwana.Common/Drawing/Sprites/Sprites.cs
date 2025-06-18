@@ -1,6 +1,5 @@
-using Gondwana.Common;
 using Gondwana.Common.Enums;
-using Gondwana.Common.EventArgs;
+using Gondwana.EventArgs;
 using Gondwana.Grid;
 using System.Collections.ObjectModel;
 

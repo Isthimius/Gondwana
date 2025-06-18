@@ -1,9 +1,6 @@
-using System;
+namespace Gondwana.Exceptions;
 
-namespace Gondwana.Common.Exceptions
+public class ResolutionChangeException : Exception
 {
-    public class ResolutionChangeException : Exception
-    {
-        public ResolutionChangeException(string msg) : base(msg) { }
-    }
+    public ResolutionChangeException(string msg) : base(msg) { }
 }

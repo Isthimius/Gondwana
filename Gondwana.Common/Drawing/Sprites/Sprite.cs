@@ -1,7 +1,6 @@
-using Gondwana.Common;
 using Gondwana.Drawing.Animation;
 using Gondwana.Common.Enums;
-using Gondwana.Common.EventArgs;
+using Gondwana.EventArgs;
 using Gondwana.Grid;
 using System.Runtime.Serialization;
 

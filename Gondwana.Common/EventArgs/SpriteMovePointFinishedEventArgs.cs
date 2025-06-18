@@ -1,20 +1,19 @@
 ﻿using Gondwana.Drawing.Sprites;
 
-namespace Gondwana.Common.EventArgs
+namespace Gondwana.EventArgs;
+
+public delegate void SpriteMovePointFinishedHandler(SpriteMovePointFinishedEventArgs e);
+
+public class SpriteMovePointFinishedEventArgs : System.EventArgs
 {
-    public delegate void SpriteMovePointFinishedHandler(SpriteMovePointFinishedEventArgs e);
+    public Sprite sprite;
+    public Movement movement;
+    public MovePoint movePoint;
 
-    public class SpriteMovePointFinishedEventArgs : System.EventArgs
+    protected internal SpriteMovePointFinishedEventArgs(Sprite _sprite, Movement _movement, MovePoint _movePoint)
     {
-        public Sprite sprite;
-        public Movement movement;
-        public MovePoint movePoint;
-
-        protected internal SpriteMovePointFinishedEventArgs(Sprite _sprite, Movement _movement, MovePoint _movePoint)
-        {
-            sprite = _sprite;
-            movement = _movement;
-            movePoint = _movePoint;
-        }
+        sprite = _sprite;
+        movement = _movement;
+        movePoint = _movePoint;
     }
 }

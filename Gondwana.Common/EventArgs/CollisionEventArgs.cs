@@ -1,7 +1,6 @@
 ﻿using Gondwana.Grid.Collisions;
-using System.Collections.Generic;
 
-namespace Gondwana.Common.EventArgs;
+namespace Gondwana.EventArgs;
 
 public delegate void CollisionEventHandler(CollisionEventArgs e);
 

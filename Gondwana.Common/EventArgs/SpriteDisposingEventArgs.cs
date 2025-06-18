@@ -1,16 +1,15 @@
 ﻿using Gondwana.Drawing.Sprites;
 
-namespace Gondwana.Common.EventArgs
+namespace Gondwana.EventArgs;
+
+public delegate void SpriteDisposingEventHandler(SpriteDisposingEventArgs e);
+
+public class SpriteDisposingEventArgs : System.EventArgs
 {
-    public delegate void SpriteDisposingEventHandler(SpriteDisposingEventArgs e);
+    public Sprite sprite;
 
-    public class SpriteDisposingEventArgs : System.EventArgs
+    protected internal SpriteDisposingEventArgs(Sprite _sprite)
     {
-        public Sprite sprite;
-
-        protected internal SpriteDisposingEventArgs(Sprite _sprite)
-        {
-            sprite = _sprite;
-        }
+        sprite = _sprite;
     }
 }

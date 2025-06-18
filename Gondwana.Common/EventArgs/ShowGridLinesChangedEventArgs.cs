@@ -1,20 +1,19 @@
 ﻿using Gondwana.Grid;
 
-namespace Gondwana.Common.EventArgs
+namespace Gondwana.EventArgs;
+
+public delegate void ShowGridLinesChangedEventHandler(ShowGridLinesChangedEventArgs e);
+
+public class ShowGridLinesChangedEventArgs : System.EventArgs
 {
-    public delegate void ShowGridLinesChangedEventHandler(ShowGridLinesChangedEventArgs e);
+    public GridPointMatrix Matrix;
+    public bool oldValue;
+    public bool newValue;
 
-    public class ShowGridLinesChangedEventArgs : System.EventArgs
+    protected internal ShowGridLinesChangedEventArgs(GridPointMatrix matrix, bool oldVal, bool newVal)
     {
-        public GridPointMatrix Matrix;
-        public bool oldValue;
-        public bool newValue;
-
-        protected internal ShowGridLinesChangedEventArgs(GridPointMatrix matrix, bool oldVal, bool newVal)
-        {
-            Matrix = matrix;
-            oldValue = oldVal;
-            newValue = newVal;
-        }
+        Matrix = matrix;
+        oldValue = oldVal;
+        newValue = newVal;
     }
 }

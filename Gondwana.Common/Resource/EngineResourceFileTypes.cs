@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Gondwana.Common.Resource;
+namespace Gondwana.Resource;
 
 [DataContract]
 public enum EngineResourceFileTypes

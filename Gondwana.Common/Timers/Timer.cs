@@ -1,5 +1,5 @@
 using Gondwana.Common.Enums;
-using Gondwana.Common.EventArgs;
+using Gondwana.EventArgs;
 
 namespace Gondwana.Timers;
 
