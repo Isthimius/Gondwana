@@ -4,6 +4,7 @@ using Gondwana.EventArgs;
 using Gondwana.Grid;
 using System.Runtime.Serialization;
 using System.Drawing;
+using Gondwana.Rendering;
 
 namespace Gondwana.Drawing.Sprites;
 

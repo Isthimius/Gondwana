@@ -1,7 +1,7 @@
 ﻿using Gondwana.Grid;
 using System.Drawing;
 
-namespace Gondwana;
+namespace Gondwana.Rendering;
 
 public interface IBackbuffer : IDisposable
 {

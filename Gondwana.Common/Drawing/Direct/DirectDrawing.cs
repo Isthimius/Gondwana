@@ -2,6 +2,7 @@ using Gondwana.Timers;
 using Gondwana.Grid;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using Gondwana.Rendering;
 
 namespace Gondwana.Drawing.Direct;
 

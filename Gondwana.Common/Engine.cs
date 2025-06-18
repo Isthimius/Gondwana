@@ -12,6 +12,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.EventArgs;
 using System.Drawing;
 using System.Windows.Forms;
+using Gondwana.Rendering;
 
 namespace Gondwana;
 

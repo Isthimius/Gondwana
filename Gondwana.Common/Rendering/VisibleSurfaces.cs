@@ -3,7 +3,7 @@ using Gondwana.EventArgs;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
-namespace Gondwana;
+namespace Gondwana.Rendering;
 
 public static class VisibleSurfaces
 {
@@ -68,7 +68,7 @@ public static class VisibleSurfaces
         }
 
         // child Sprite creation dependent on VisibleSurface size, so recreate child Sprites
-        Gondwana.Drawing.Sprites.Sprites.CreateChildSprites();
+        Drawing.Sprites.Sprites.CreateChildSprites();
     }
     #endregion
 
@@ -82,7 +82,7 @@ public static class VisibleSurfaces
         // constructor
         internal VisibleSurfacesInstance(double refreshTimer)
         {
-            _timerDel = new TimerEventHandler(this.Timer_Tick);
+            _timerDel = new TimerEventHandler(Timer_Tick);
             SetVisibleSurfaceRefreshTimer(refreshTimer);
         }
 
@@ -116,7 +116,7 @@ public static class VisibleSurfaces
 
         private void Timer_Tick(TimerEventArgs e)
         {
-            foreach (VisibleSurfaceBase surface in VisibleSurfaces._surfaces)
+            foreach (VisibleSurfaceBase surface in _surfaces)
                 surface.RenderBackbuffer(false);
         }
     }
