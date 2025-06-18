@@ -2,7 +2,7 @@ using Gondwana.Common.Exceptions;
 using System.Configuration;
 using System.Xml;
 
-namespace Gondwana.Common;
+namespace Gondwana;
 
 public static class Settings
 {
@@ -21,7 +21,6 @@ public static class Settings
         targetFPS = InitializeSetting<int>("TargetFPS", ref targetFPS);
         SamplingTimeForCPS = InitializeSetting<double>("SamplingTimeForCPS", ref cpsSampling);
         minKeyboardTime = InitializeSetting<double>("TimeBetweenKeyboardEvents", ref minKeyboardTime);
-        mciErrorsThrowExceptions = InitializeSetting<bool>("MCIErrorsThrowExceptions", ref mciErrorsThrowExceptions);
         VisibleSurfaceRefreshTimer = InitializeSetting<double>("VisibleSurfaceRefreshTimer", ref visibleSurfaceRefreshTimer);
         ResizedFrameCacheLimit = InitializeSetting<int>("ResizedFrameCacheLimit", ref resizedFrameCacheLimit);
     }
@@ -89,17 +88,8 @@ public static class Settings
         set
         {
             visibleSurfaceRefreshTimer = value;
-            Gondwana.Common.VisibleSurfaces.ForcedRefreshRate = value;
+            VisibleSurfaces.ForcedRefreshRate = value;
         }
-    }
-
-    /// <summary>
-    /// Determines whether or not MCI errors from the winmm.dll in the <see cref="Gondwana.Media.MediaPlayer"/> class are swallowed or thrown
-    /// </summary>
-    public static bool MCIErrorsThrowExceptions
-    {
-        get { return mciErrorsThrowExceptions; }
-        set { mciErrorsThrowExceptions = value; }
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿using Gondwana.Grid;
 
-namespace Gondwana.Common;
+namespace Gondwana;
 
 public interface IBackbuffer : IDisposable
 {

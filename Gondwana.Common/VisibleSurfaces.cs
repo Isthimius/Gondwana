@@ -2,7 +2,7 @@ using Gondwana.Common.Enums;
 using Gondwana.Common.EventArgs;
 using System.Collections.ObjectModel;
 
-namespace Gondwana.Common;
+namespace Gondwana;
 
 public static class VisibleSurfaces
 {

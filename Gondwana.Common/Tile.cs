@@ -7,7 +7,7 @@ using Gondwana.Common.Win32;
 using Gondwana.Grid.Collisions;
 using System.Runtime.Serialization;
 
-namespace Gondwana.Common;
+namespace Gondwana;
 
 [DataContract(IsReference = true)]
 [KnownType(typeof(GridPoint))]

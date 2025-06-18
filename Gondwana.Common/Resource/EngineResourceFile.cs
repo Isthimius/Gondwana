@@ -74,6 +74,7 @@ public class EngineResourceFile : IDisposable
         if (!string.IsNullOrEmpty(Password))
         {
             zipStream.Password = Password;
+
             //if (IsEncrypted)
             //    zipStream.Encryption = EncryptionAlgorithm.WinZipAes256;
         }

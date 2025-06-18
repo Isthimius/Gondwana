@@ -1,6 +1,6 @@
 using Gondwana.Common.Enums;
 
-namespace Gondwana.Common.Timers;
+namespace Gondwana.Timers;
 
 public static class Timers
 {

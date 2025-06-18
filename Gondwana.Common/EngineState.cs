@@ -8,7 +8,7 @@ using Gondwana.Media;
 using System.IO.Compression;
 using System.Runtime.Serialization;
 
-namespace Gondwana.Common;
+namespace Gondwana;
 
 [DataContract(Name = "GondwanaEngine")]
 public class EngineState

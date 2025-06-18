@@ -1,7 +1,7 @@
 using Gondwana.Common.Enums;
 using Gondwana.Common.EventArgs;
 
-namespace Gondwana.Common.Timers;
+namespace Gondwana.Timers;
 
 public class Timer : IDisposable
 {
