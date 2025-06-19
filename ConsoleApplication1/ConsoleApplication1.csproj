@@ -13,11 +13,6 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gondwana.Common\Gondwana.Common.csproj" />
-    <ProjectReference Include="..\Gondwana.Coordinates\Gondwana.Coordinates.csproj" />
-    <ProjectReference Include="..\Gondwana.Design\Gondwana.Design.csproj" />
-    <ProjectReference Include="..\Gondwana.Input\Gondwana.Input.csproj" />
-    <ProjectReference Include="..\Gondwana.Rendering\Gondwana.Rendering.csproj" />
     <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />

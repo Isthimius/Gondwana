@@ -2,23 +2,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GondwanaWinTest", "TestHarness\GondwanaWinTest\GondwanaWinTest.csproj", "{6ED0ECF3-1B0A-4A1F-9EEF-A25D717D0BBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GondwanaWinTest", "TestHarness\GondwanaWinTest\GondwanaWinTest.csproj", "{6ED0ECF3-1B0A-4A1F-9EEF-A25D717D0BBA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana", "Gondwana.Common\Gondwana.csproj", "{2AA95F8C-107E-4828-B78B-73E6806BFAF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gondwana", "Gondwana.Common\Gondwana.csproj", "{2AA95F8C-107E-4828-B78B-73E6806BFAF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slider", "Games\Slider\Slider.csproj", "{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slider", "Games\Slider\Slider.csproj", "{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GondwanaTest", "TestHarness\GondwanaTest\GondwanaTest.csproj", "{F53C1412-F849-4FF4-AF05-5F94DE3632F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GondwanaTest", "TestHarness\GondwanaTest\GondwanaTest.csproj", "{F53C1412-F849-4FF4-AF05-5F94DE3632F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spot", "Games\Spot\Spot.csproj", "{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spot", "Games\Spot\Spot.csproj", "{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Design", "Gondwana.Design\Gondwana.Design.csproj", "{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gondwana.Design", "Gondwana.Design\Gondwana.Design.csproj", "{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{31F413D6-DF15-4F4A-8CB1-187A0A8DC170}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{31F413D6-DF15-4F4A-8CB1-187A0A8DC170}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC217C36-1278-4820-86D5-951EFEF6E28D}"
 	ProjectSection(SolutionItems) = preProject
@@ -76,8 +76,8 @@ Global
 		{F53C1412-F849-4FF4-AF05-5F94DE3632F7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F53C1412-F849-4FF4-AF05-5F94DE3632F7}.Release|x86.ActiveCfg = Release|Any CPU
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Debug|x86.ActiveCfg = Debug|x86
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Debug|x86.Build.0 = Debug|x86
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Release|Any CPU.ActiveCfg = Release|x86
