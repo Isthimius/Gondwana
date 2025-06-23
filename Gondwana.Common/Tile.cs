@@ -315,32 +315,24 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     #region IComparable<Tile> Members
-    public int CompareTo(Tile tile)
+    public int CompareTo(Tile? tile)
     {
-        if (tile == null)
+        if (tile is null)
             return -1;
-        
+
         float thisLoc = GetTileLocForCompare(this);
         float tileLoc = GetTileLocForCompare(tile);
 
+        // Handle fixed position vs non-fixed first
         if (IsPositionFixed && !tile.IsPositionFixed)
             return -1;
-        else if (!(IsPositionFixed && !tile.IsPositionFixed))
+
+        if (!IsPositionFixed && tile.IsPositionFixed)
             return 1;
-        else if (thisLoc < tileLoc)
-            return -1;
-        else if (thisLoc > tileLoc)
-            return 1;
-        else if (zOrder < tile.zOrder)      // location is equal, use Z coord
-            return -1;
-        else if (zOrder > tile.zOrder)
-            return 1;
-        else if (GridCoordinates.X < tile.GridCoordinates.X)      // location and Z are equal, use X coord
-            return -1;
-        else if (GridCoordinates.X > tile.GridCoordinates.X)
-            return 1;
-        else                                // location, Z, and X are equal
-            return 0;
+
+        // Use tuple comparison for the rest (Y, Z, X)
+        return (thisLoc, zOrder, GridCoordinates.X)
+             .CompareTo((tileLoc, tile.zOrder, tile.GridCoordinates.X));
     }
     #endregion
 
