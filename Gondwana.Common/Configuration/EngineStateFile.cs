@@ -15,7 +15,7 @@ public class EngineStateFile : ConfigurationElement
     }
 
     /// <summary>
-    /// Path to a serialized <see cref="Gondwana.Common.EngineState"/> instance
+    /// Path to a serialized <see cref="Gondwana.EngineState"/> instance
     /// </summary>
     [ConfigurationProperty("Path", IsRequired = true)]
     public string Path
