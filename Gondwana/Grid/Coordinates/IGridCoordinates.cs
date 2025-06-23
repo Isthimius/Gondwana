@@ -1,8 +1,6 @@
-﻿using Gondwana.Common;
-using Gondwana.Common.Enums;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace Gondwana.Grid;
+namespace Gondwana.Grid.Coordinates;
 
 public interface IGridCoordinates
 {

@@ -1,5 +1,4 @@
-﻿
-namespace Gondwana.Common.Enums
+﻿namespace Gondwana.Grid
 {
     /// <summary>
     /// None -> no refresh needed

@@ -1,7 +1,5 @@
 ﻿using Gondwana.Common;
 using Gondwana.Drawing;
-using Gondwana.Common.Enums;
-using Gondwana.Grid;
 using System.Drawing;
 
 namespace Gondwana.Grid.Coordinates;

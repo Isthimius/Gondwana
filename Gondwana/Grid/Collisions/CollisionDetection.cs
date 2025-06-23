@@ -1,17 +1,17 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Gondwana.Common.Enums
+namespace Gondwana.Grid.Collisions
 {
     [DataContract]
-    public enum VerticalAlignment
+    public enum CollisionDetection
     {
         [EnumMember]
-        Top,
+        None,
 
         [EnumMember]
-        Middle,
-        
+        All,
+
         [EnumMember]
-        Bottom
+        OthersWithColDetect
     }
 }

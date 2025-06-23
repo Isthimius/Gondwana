@@ -21,7 +21,7 @@ public struct Frame
     [IgnoreDataMember]
     public Size Size
     {
-        get { return this.Tilesheet.TileSize; }
+        get { return Tilesheet.TileSize; }
     }
 
     public Frame(Tilesheet tilesheet, int xTile, int yTile)
@@ -33,36 +33,36 @@ public struct Frame
 
     public Bitmap GetBitmap()
     {
-        var sourceRect = this.Tilesheet.GetSourceRange(XTile, YTile);
+        var sourceRect = Tilesheet.GetSourceRange(XTile, YTile);
 
-        if ((new Rectangle(new Point(), this.Tilesheet.Bmp.Size)).Contains(sourceRect))
-            return this.Tilesheet.Bmp.Clone(sourceRect, this.Tilesheet.Bmp.PixelFormat);
+        if (new Rectangle(new Point(), Tilesheet.Bmp.Size).Contains(sourceRect))
+            return Tilesheet.Bmp.Clone(sourceRect, Tilesheet.Bmp.PixelFormat);
         else
             return null;
     }
 
     public Bitmap GetBitmapMask()
     {
-        if (this.Tilesheet.Mask == null)
+        if (Tilesheet.Mask == null)
             return null;
 
-        var sourceRect = this.Tilesheet.Mask.GetSourceRange(XTile, YTile);
-        var bmp = this.Tilesheet.Mask.Bmp.Clone(sourceRect, this.Tilesheet.Mask.Bmp.PixelFormat);
+        var sourceRect = Tilesheet.Mask.GetSourceRange(XTile, YTile);
+        var bmp = Tilesheet.Mask.Bmp.Clone(sourceRect, Tilesheet.Mask.Bmp.PixelFormat);
         return bmp;
     }
     
     public static bool operator ==(Frame f1, Frame f2)
     {
-        return (f1.Tilesheet.Equals(f2.Tilesheet) && (f1.XTile == f2.XTile) && (f1.YTile == f2.YTile));
+        return f1.Tilesheet.Equals(f2.Tilesheet) && f1.XTile == f2.XTile && f1.YTile == f2.YTile;
     }
 
     public static bool operator !=(Frame f1, Frame f2)
     {
-        return !(f1.Tilesheet.Equals(f2.Tilesheet) && (f1.XTile == f2.XTile) && (f1.YTile == f2.YTile));
+        return !(f1.Tilesheet.Equals(f2.Tilesheet) && f1.XTile == f2.XTile && f1.YTile == f2.YTile);
     }
 
     public override string ToString()
     {
-        return string.Format("{0} / x:{1} / y:{2}", this.Tilesheet.Name, this.XTile, this.YTile);
+        return string.Format("{0} / x:{1} / y:{2}", Tilesheet.Name, XTile, YTile);
     }
 }

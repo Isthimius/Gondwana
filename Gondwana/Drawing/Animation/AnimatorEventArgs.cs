@@ -1,6 +1,4 @@
-﻿using Gondwana.Drawing.Animation;
-
-namespace Gondwana.EventArgs;
+﻿namespace Gondwana.Drawing.Animation;
 
 public delegate void AnimatorEventHandler(AnimatorEventArgs e);
 

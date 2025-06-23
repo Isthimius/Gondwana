@@ -1,7 +1,6 @@
 using Gondwana;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Common.Enums;
 using Gondwana.EventArgs;
 using Gondwana.Grid;
 using Gondwana.Grid.Coordinates;

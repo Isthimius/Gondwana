@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Gondwana.Common.Enums
+namespace Gondwana.Drawing.Animation
 {
     /// <summary>
     /// Simple is self-terminating; the other two are repeating
