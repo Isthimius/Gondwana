@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Gondwana.Configuration;
+namespace Gondwana.State;
 
 /// <summary>
 /// List of <see cref="EngineStateFile"/> instances to load when the Engine initializes
@@ -27,8 +27,8 @@ public class EngineStateFiles : ConfigurationElementCollection, IEnumerable<Engi
 
     public new IEnumerator<EngineStateFile> GetEnumerator()
     {
-        foreach (var id in this.BaseGetAllKeys())
-            yield return (EngineStateFile)this.BaseGet(id);
+        foreach (var id in BaseGetAllKeys())
+            yield return (EngineStateFile)BaseGet(id);
     }
 
     public new EngineStateFile this[string id]

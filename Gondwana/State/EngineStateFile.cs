@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Gondwana.Configuration;
+namespace Gondwana.State;
 
 public class EngineStateFile : ConfigurationElement
 {
@@ -15,7 +15,7 @@ public class EngineStateFile : ConfigurationElement
     }
 
     /// <summary>
-    /// Path to a serialized <see cref="Gondwana.EngineState"/> instance
+    /// Path to a serialized <see cref="EngineState"/> instance
     /// </summary>
     [ConfigurationProperty("Path", IsRequired = true)]
     public string Path

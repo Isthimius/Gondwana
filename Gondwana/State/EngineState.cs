@@ -8,7 +8,7 @@ using Gondwana.Media;
 using System.IO.Compression;
 using System.Runtime.Serialization;
 
-namespace Gondwana;
+namespace Gondwana.State;
 
 [DataContract(Name = "GondwanaEngine")]
 public class EngineState
@@ -32,7 +32,7 @@ public class EngineState
             Cycles = Cycle._cycles,
             GridsDisplay = GridPointMatrixes._allGridPointMatrixes,
             Grids = GridPointMatrix._allGridPointMatrix,
-            Sprites = Gondwana.Drawing.Sprites.Sprites._spriteList,
+            Sprites = Drawing.Sprites.Sprites._spriteList,
             //MediaFiles = MediaFile._mediaFiles
         };
     }
@@ -111,17 +111,17 @@ public class EngineState
         Cycle.ClearAllAnimationCycles();
         GridPointMatrixes.ClearAllGridPointMatrixes();
         GridPointMatrix.ClearAllGridPointMatrix();
-        Gondwana.Drawing.Sprites.Sprites.Clear();
+        Drawing.Sprites.Sprites.Clear();
         //MediaFile.DisposeAll();
     }
 
     public void Save(string file, bool isBinary)
     {
-        var serializer = new DataContractSerializer(this.GetType());
+        var serializer = new DataContractSerializer(GetType());
 
         if (isBinary)
         {
-            byte[] streamBytes = BinarySerializer.Serialize<EngineState>(this);
+            byte[] streamBytes = BinarySerializer.Serialize(this);
 
             using (var filestream = new FileStream(file, FileMode.Create))
             using (var zipStream = new GZipStream(filestream, CompressionMode.Compress))

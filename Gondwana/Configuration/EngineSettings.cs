@@ -1,112 +1,75 @@
 ﻿using Gondwana.Rendering;
 using Gondwana.Timers;
-using System.Configuration;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Gondwana.Configuration;
 
 /// <summary>
 /// Settings used by the engine when cycling
 /// </summary>
-public class EngineSettings : ConfigurationElement
+public class EngineSettings
 {
-    #region ctor
-    internal EngineSettings()
-    {
-        SamplingTimeForCPSTicks = (long)(SamplingTimeForCPS * (double)HighResTimer.TicksPerSecond);
-    }
-    #endregion
+    private int _targetFPS = 60;
 
-    #region public properties
     /// <summary>
-    /// Target screen refresh rate for the Engine.  Setting the number
+    /// Target screen refresh rate for the Engine. Setting the number
     /// lower allows more time for the processor to perform background
-    /// Engine tasks.  Set the value to 0 for no upper limit.
+    /// Engine tasks. Set the value to 0 for no upper limit.
     /// </summary>
-    [ConfigurationProperty("TargetFPS", DefaultValue = "60")]
     public int TargetFPS
     {
-        get
-        {
-            int targetFPS = (int)this["TargetFPS"];
-
-            if (targetFPS < 0)
-                targetFPS = 0;
-
-            return targetFPS;
-        }
-        set
-        {
-            if (value < 0) { this["TargetFPS"] = 0; }
-            else { this["TargetFPS"] = value; }
-        }
+        get => _targetFPS;
+        set => _targetFPS = value < 0 ? 0 : value;
     }
+
+    private double _samplingTimeForCPS = 1.5;
 
     /// <summary>
     /// Total number of seconds between Cycles Per Second (CPS) calculation
     /// </summary>
-    [ConfigurationProperty("SamplingTimeForCPS", DefaultValue = "1.5")]
     public double SamplingTimeForCPS
     {
-        get { return (double)this["SamplingTimeForCPS"]; }
-        set
-        {
-            this["SamplingTimeForCPS"] = value;
-            SamplingTimeForCPSTicks = (long)(SamplingTimeForCPS * (double)HighResTimer.TicksPerSecond);
-        }
+        get => _samplingTimeForCPS;
+        set => _samplingTimeForCPS = value < 0 ? 0 : value;
     }
 
     /// <summary>
     /// Total number of system ticks between each CPS sampling
     /// </summary>
-    public long SamplingTimeForCPSTicks
-    {
-        get;
-        private set;
-    }
+    [JsonIgnore]
+    public long SamplingTimeForCPSTicks => (long)(SamplingTimeForCPS * HighResTimer.TicksPerSecond);
 
     /// <summary>
-    /// Minimum time (in seconds) allowed between Keyboard events.
+    /// Minimum time (in seconds) allowed between Keyboard events
     /// </summary>
-    [ConfigurationProperty("TimeBetweenKeyboardEvents", DefaultValue = "0.03")]
-    public double TimeBetweenKeyboardEvents
-    {
-        get { return (double)this["TimeBetweenKeyboardEvents"]; }
-        set { this["TimeBetweenKeyboardEvents"] = value; }
-    }
+    public double TimeBetweenKeyboardEvents { get; set; } = 0.03;
+
+    private double _visibleSurfaceRefreshTimer = 1.5;
 
     /// <summary>
     /// Time in seconds of forced refresh of entire area of all VisibleSurface instances
     /// </summary>
-    [ConfigurationProperty("VisibleSurfaceRefreshTimer", DefaultValue = "1.5")]
     public double VisibleSurfaceRefreshTimer
     {
-        get { return (double)this["VisibleSurfaceRefreshTimer"]; }
+        get => _visibleSurfaceRefreshTimer;
         set
         {
-            this["VisibleSurfaceRefreshTimer"] = value;
+            _visibleSurfaceRefreshTimer = value;
             VisibleSurfaces.ForcedRefreshRate = value;
         }
     }
 
     /// <summary>
-    /// Determines whether or not MCI errors from the winmm.dll in the <see cref="Gondwana.Media.MediaPlayer"/> class are swallowed or thrown
-    /// </summary>
-    [ConfigurationProperty("ThrowExceptionOnMCIError", DefaultValue = "false")]
-    public bool MCIErrorsThrowExceptions
-    {
-        get { return (bool)this["ThrowExceptionOnMCIError"]; }
-        set { this["ThrowExceptionOnMCIError"] = value; }
-    }
-
-    /// <summary>
     /// Total number of resized Frame stretched renderings allowed in cache.  Lowering this value may degrade performance, but lessen required system memory.
     /// </summary>
-    [ConfigurationProperty("ResizedFrameCacheLimit", DefaultValue = "100")]
-    public int ResizedFrameCacheLimit
-    {
-        get { return (int)this["ResizedFrameCacheLimit"]; }
-        set { this["ResizedFrameCacheLimit"] = value; }
-    }
+    public int ResizedFrameCacheLimit { get; set; } = 100;
 
-    #endregion
+    [OnDeserialized]
+    internal void OnDeserializedMethod(StreamingContext context)
+    {
+        // Re-trigger setter logic to recalculate dependent fields
+        TargetFPS = _targetFPS;
+        SamplingTimeForCPS = _samplingTimeForCPS;
+    }
 }

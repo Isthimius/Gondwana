@@ -1,5 +1,4 @@
 using Gondwana.Common;
-using Gondwana.Configuration;
 using Gondwana.Grid;
 using Gondwana.Timers;
 using Gondwana.Common.Win32;
@@ -10,6 +9,8 @@ using System.Windows.Forms;
 using Gondwana.Rendering;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Rendering.Direct;
+using Gondwana.State;
+using Gondwana.Configuration;
 
 namespace Gondwana;
 

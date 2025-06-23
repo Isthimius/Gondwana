@@ -1,15 +1,35 @@
-﻿using System.Configuration;
+﻿using Gondwana.State;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using System.Configuration;
+using System.Text.Json;
+
 
 namespace Gondwana.Configuration;
 
-public class EngineConfiguration : ConfigurationSection
+public class EngineConfiguration
 {
-    public const string ConfigSectionName = "Gondwana";
+    public const string ConfigFileName = "gondwana.json";
 
-    #region fields
-    private static string spath;
-    private static EngineConfiguration instance = null;
-    #endregion
+    public EngineSettings EngineSettings { get; private set; }
+
+    private EngineConfiguration() { }
+
+    public static EngineConfiguration Load(string jsonPath = ConfigFileName)
+    {
+        var configRoot = new ConfigurationBuilder()
+            .AddJsonFile(jsonPath, optional: false, reloadOnChange: true)
+            .Build();
+
+        var settings = configRoot.GetSection("EngineSettings").Get<EngineSettings>();
+        return new EngineConfiguration { Settings = settings ?? new EngineSettings() };
+    }
+
+    public void Save(string jsonPath = ConfigFileName)
+    {
+        var json = JsonSerializer.Serialize(Settings, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(jsonPath, json);
+    }
 
     #region public static methods
     ///<summary>
@@ -26,7 +46,7 @@ public class EngineConfiguration : ConfigurationSection
     ///</summary>
     public static EngineConfiguration Open(string path)
     {
-        if ((object)instance == null)
+        if (instance == null)
         {
             if (path.EndsWith(".config", StringComparison.InvariantCultureIgnoreCase))
                 spath = path.Remove(path.Length - 7);
@@ -70,9 +90,9 @@ public class EngineConfiguration : ConfigurationSection
     public void Save(ConfigurationSaveMode saveMode, string path)
     {
         if (path == spath)
-            this.CurrentConfiguration.Save(saveMode);
+            CurrentConfiguration.Save(saveMode);
         else
-            this.CurrentConfiguration.SaveAs(path, saveMode);
+            CurrentConfiguration.SaveAs(path, saveMode);
     }
     #endregion
 
@@ -82,7 +102,7 @@ public class EngineConfiguration : ConfigurationSection
     /// </summary>
     public string ConfigPath
     {
-        get { return this.CurrentConfiguration.FilePath; }
+        get { return CurrentConfiguration.FilePath; }
     }
 
     [ConfigurationProperty("Settings", IsRequired = true)]
