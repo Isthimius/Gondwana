@@ -3,7 +3,7 @@
 namespace Gondwana.Drawing.Collisions
 {
     [DataContract]
-    public enum CollisionDetection
+    public enum CollisionDetectionType
     {
         [EnumMember]
         None,

@@ -362,11 +362,11 @@ public static class Engine
                 // find the list of Tiles that need to be checked for collisions against tilePrimary
                 switch (tilePrimary.DetectCollision)
                 {
-                    case CollisionDetection.All:
+                    case CollisionDetectionType.All:
                         // cycle through all Tile objects marked for collisions, and all Sprite objects
                         secondaryList = allSpritesAndCollisionTiles;
                         break;
-                    case CollisionDetection.OthersWithColDetect:
+                    case CollisionDetectionType.OthersWithColDetect:
                         // only cycle through other Tile objects with detection turned on
                         secondaryList = Tile.TileCollisions;
                         break;

@@ -38,7 +38,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     protected internal List<Tile> childTiles;
     protected internal Animator animator;
     protected bool pauseAnimation;
-    protected CollisionDetection collisionDetection = CollisionDetection.None;
+    protected CollisionDetectionType collisionDetection = CollisionDetectionType.None;
     protected CollisionDetectionAdjustment adjustCollisionArea = new CollisionDetectionAdjustment();
     #endregion
 
@@ -156,12 +156,12 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     [DataMember]
-    public virtual CollisionDetection DetectCollision
+    public virtual CollisionDetectionType DetectCollision
     {
         get { return collisionDetection; }
         set
         {
-            if (value == CollisionDetection.None)
+            if (value == CollisionDetectionType.None)
             {
                 // if Tile in the collisions List, remove it
                 if (Tile.TileCollisions.IndexOf(this) != -1)
