@@ -14,6 +14,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gondwana.Common\Gondwana.csproj" />
+    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 </Project>

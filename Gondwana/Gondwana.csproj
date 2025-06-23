@@ -1,27 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
-		<UseWindowsForms>true</UseWindowsForms>
-
 		<OutputType>Library</OutputType>
 		<RootNamespace>Gondwana</RootNamespace>
-		<AssemblyTitle>Gondwana</AssemblyTitle>
-		<Company>Hidden Worlds Games</Company>
-		<Product>Gondwana Game Engine Library</Product>
-		<Copyright>Copyright © 2009</Copyright>
-		<AssemblyVersion>2.0.0.*</AssemblyVersion>
+		<AssemblyName>Gondwana</AssemblyName>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+	  <PackageReference Include="NAudio" Version="2.2.1" />
+	  <PackageReference Include="SharpZipLib" Version="1.4.2" />
+	  <PackageReference Include="SkiaSharp" Version="3.119.0" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<None Update="App.xsd">
-			<SubType>Designer</SubType>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
+	  <None Update="App.xsd">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <SubType>Designer</SubType>
+	  </None>
 	</ItemGroup>
+
 </Project>
