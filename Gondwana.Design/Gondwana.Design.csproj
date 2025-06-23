@@ -2,10 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
@@ -51,9 +47,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="icons\appfile.ico" />
     <Content Include="icons\bitmap.ico" />
     <Content Include="icons\blue_close.png" />
@@ -78,4 +71,7 @@
     <EmbeddedResource Include="icons\sprite2.ico" />
     <EmbeddedResource Include="icons\tilesheet.ico" />
   </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Gondwana.Common\Gondwana.csproj" />
+	</ItemGroup>
 </Project>

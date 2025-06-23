@@ -102,7 +102,6 @@
         private System.Windows.Forms.Button btnMask;
         private System.Windows.Forms.Button btnBackground;
         private System.Windows.Forms.Panel panel1;
-        private AxWMPLib.AxWindowsMediaPlayer axWMP;
 
     }
 }

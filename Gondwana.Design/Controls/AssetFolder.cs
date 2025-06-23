@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
+using Gondwana;
 
 namespace Gondwana.Design.Controls
 {
@@ -20,7 +21,7 @@ namespace Gondwana.Design.Controls
             Program.State.EngineStateFileLoaded += State_EngineStateFileLoaded;
         }
 
-        private void State_EngineStateFileLoaded(object sender, EventArgs e)
+        private void State_EngineStateFileLoaded(object sender,  EventArgs.EventArgs e)
         {
             lblPath.Text = Program.State.AssetsDirectory;
         }

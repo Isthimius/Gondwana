@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using Gondwana.Design.Forms;
 using Gondwana.Resource;
-using System.IO;
-using Gondwana.Design.Forms;
+using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 
 namespace Gondwana.Design.Controls
 {
@@ -101,10 +96,10 @@ namespace Gondwana.Design.Controls
 
                     if (!string.IsNullOrWhiteSpace(_file))
                     {
-                        axWMP.settings.autoStart = false;
-                        axWMP.Visible = true;
-                        axWMP.URL = _file;
-                        axWMP.Dock = DockStyle.Fill;
+                        //axWMP.settings.autoStart = false;
+                        //axWMP.Visible = true;
+                        //axWMP.URL = _file;
+                        //axWMP.Dock = DockStyle.Fill;
                     }
 
                     break;
@@ -112,7 +107,7 @@ namespace Gondwana.Design.Controls
                 case EngineResourceFileTypes.Cursor:
                     btnBackground.Visible = false;
                     btnMask.Visible = false;
-                    axWMP.Visible = false;
+                    //axWMP.Visible = false;
 
                     picBox = new PictureBox();
                     picBox.SizeMode = PictureBoxSizeMode.AutoSize;
@@ -134,14 +129,14 @@ namespace Gondwana.Design.Controls
                     btnBackground.Text = "Open File";
                     btnBackground.Visible = true;
                     btnMask.Visible = false;
-                    axWMP.Visible = false;
+                    //axWMP.Visible = false;
 
                     break;
 
                 default:
                     btnBackground.Visible = false;
                     btnMask.Visible = false;
-                    axWMP.Visible = false;
+                    //axWMP.Visible = false;
 
                     break;
             }
@@ -187,16 +182,16 @@ namespace Gondwana.Design.Controls
             panel1.MaximumSize = new Size(this.Width - 6, this.Height - 35);
         }
 
-        private void axWMP_Leave(object sender, EventArgs e)
-        {
-            axWMP.close();
-            axWMP.URL = null;
-        }
+        //private void axWMP_Leave(object sender, EventArgs e)
+        //{
+        //    axWMP.close();
+        //    axWMP.URL = null;
+        //}
 
-        private void AssetViewer_Leave(object sender, EventArgs e)
-        {
-            axWMP.close();
-            axWMP.URL = null;
-        }
+        //private void AssetViewer_Leave(object sender, EventArgs e)
+        //{
+        //    axWMP.close();
+        //    axWMP.URL = null;
+        //}
     }
 }
