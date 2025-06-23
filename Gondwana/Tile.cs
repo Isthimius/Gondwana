@@ -2,10 +2,10 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
 using Gondwana.Common.Win32;
-using Gondwana.Grid.Collisions;
 using System.Runtime.Serialization;
 using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Collisions;
 
 namespace Gondwana;
 

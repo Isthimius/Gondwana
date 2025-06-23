@@ -32,7 +32,7 @@ namespace Slider
             Sprites.SpriteMovementStopped += Sprites_SpriteMovementStopped;
         }
 
-        void Sprites_SpriteMovementStarted(Gondwana.EventArgs.SpriteMovementEventArgs e)
+        void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)
         {
 #if DEBUG
             Console.WriteLine(string.Format("{3}   start move '{0}' from {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
@@ -40,7 +40,7 @@ namespace Slider
             //Program.slideSound.Play();
         }
 
-        void Sprites_SpriteMovementStopped(Gondwana.EventArgs.SpriteMovementEventArgs e)
+        void Sprites_SpriteMovementStopped(SpriteMovementEventArgs e)
         {
 #if DEBUG
             Console.WriteLine(string.Format("{3}   end move '{0}' at {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
@@ -83,7 +83,7 @@ namespace Slider
             }
         }
 
-        void Sprites_SpriteMovePointFinished(Gondwana.EventArgs.SpriteMovePointFinishedEventArgs e)
+        void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
         {
             txtPieces.Text = Program.puzzle.TotalPieces.ToString();
             txtCorrect.Text = Program.puzzle.TotalPiecesCorrect.ToString();

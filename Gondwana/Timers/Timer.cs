@@ -1,5 +1,3 @@
-using Gondwana.EventArgs;
-
 namespace Gondwana.Timers;
 
 public class Timer : IDisposable

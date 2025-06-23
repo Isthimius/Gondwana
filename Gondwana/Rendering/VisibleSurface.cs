@@ -1,10 +1,9 @@
 using Gondwana.Common;
-using Gondwana.Drawing.Direct;
-using Gondwana.EventArgs;
 using Gondwana.Grid;
 using Gondwana.Common.Win32;
 using System.Drawing;
 using System.Windows.Forms;
+using Gondwana.Rendering.Direct;
 
 namespace Gondwana.Rendering;
 

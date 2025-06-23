@@ -110,7 +110,7 @@ internal class ResizedFrame : IDisposable
         ResizedGraphics.ReleaseHdc(hdc);
     }
 
-    private void Tilesheet_Disposed(EventArgs.TilesheetDisposedEventArgs e)
+    private void Tilesheet_Disposed(TilesheetDisposedEventArgs e)
     {
         this.Dispose();
     }

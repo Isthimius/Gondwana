@@ -1,17 +1,15 @@
 using Gondwana.Common;
 using Gondwana.Configuration;
-using Gondwana.Common.EventArgs;
 using Gondwana.Grid;
 using Gondwana.Timers;
 using Gondwana.Common.Win32;
 using Gondwana.Input.Keyboard;
-using Gondwana.Grid.Collisions;
-using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
-using Gondwana.EventArgs;
 using System.Drawing;
 using System.Windows.Forms;
 using Gondwana.Rendering;
+using Gondwana.Drawing.Collisions;
+using Gondwana.Rendering.Direct;
 
 namespace Gondwana;
 

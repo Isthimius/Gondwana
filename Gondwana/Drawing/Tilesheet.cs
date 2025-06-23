@@ -2,7 +2,6 @@ using System.Runtime.Serialization;
 using System.Drawing.Imaging;
 using Gondwana.Common.Win32;
 using Gondwana.Resource;
-using Gondwana.EventArgs;
 using Gondwana.Timers;
 using System.Drawing;
 

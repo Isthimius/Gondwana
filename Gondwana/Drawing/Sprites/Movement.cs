@@ -1,4 +1,3 @@
-using Gondwana.EventArgs;
 using Gondwana.Timers;
 using System.Drawing;
 
