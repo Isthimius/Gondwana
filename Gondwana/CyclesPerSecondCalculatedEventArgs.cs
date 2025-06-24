@@ -2,7 +2,7 @@
 
 public delegate void CyclesPerSecondCalculatedHandler(CyclesPerSecondCalculatedEventArgs e);
 
-public class CyclesPerSecondCalculatedEventArgs : System.EventArgs
+public class CyclesPerSecondCalculatedEventArgs : EventArgs
 {
     public long TotalGrossCycles;
     public long TotalNetCycles;

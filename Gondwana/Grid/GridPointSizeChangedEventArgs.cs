@@ -2,7 +2,7 @@
 
 public delegate void GridPointSizeChangedEventHandler(GridPointSizeChangedEventArgs e);
 
-public class GridPointSizeChangedEventArgs : System.EventArgs
+public class GridPointSizeChangedEventArgs : EventArgs
 {
     public GridPointMatrix layer;
     public int oldWidth;

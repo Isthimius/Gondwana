@@ -2,7 +2,7 @@
 
 public delegate void GridPointMatrixAddRemoveHandler(GridPointMatrixAddRemoveEventArgs e);
 
-public class GridPointMatrixAddRemoveEventArgs : System.EventArgs
+public class GridPointMatrixAddRemoveEventArgs : EventArgs
 {
     public GridPointMatrixes Layers;
     public GridPointMatrix Layer;

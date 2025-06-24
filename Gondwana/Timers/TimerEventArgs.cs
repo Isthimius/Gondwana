@@ -2,7 +2,7 @@
 
 public delegate void TimerEventHandler(TimerEventArgs e);
 
-public class TimerEventArgs : System.EventArgs
+public class TimerEventArgs : EventArgs
 {
     public Timer GondwanaTimer;
 

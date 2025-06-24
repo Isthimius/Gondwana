@@ -2,7 +2,7 @@
 
 public delegate void GridPointMatrixWrappingChangedEventHandler(GridPointMatrixWrappingChangedEventArgs e);
 
-public class GridPointMatrixWrappingChangedEventArgs : System.EventArgs
+public class GridPointMatrixWrappingChangedEventArgs : EventArgs
 {
     public GridPointMatrix layer;
     public bool oldHorizWrapping;

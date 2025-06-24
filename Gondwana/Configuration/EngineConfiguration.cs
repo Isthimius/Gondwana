@@ -1,122 +1,75 @@
-﻿using Gondwana.State;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using System.Configuration;
-using System.Text.Json;
-
+﻿using Gondwana.Rendering;
+using Gondwana.Timers;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Gondwana.Configuration;
 
+/// <summary>
+/// Settings used by the engine when cycling
+/// </summary>
 public class EngineConfiguration
 {
-    public const string ConfigFileName = "gondwana.json";
+    private int _targetFPS = 60;
 
-    public EngineSettings EngineSettings { get; private set; }
-
-    private EngineConfiguration() { }
-
-    public static EngineConfiguration Load(string jsonPath = ConfigFileName)
-    {
-        var configRoot = new ConfigurationBuilder()
-            .AddJsonFile(jsonPath, optional: false, reloadOnChange: true)
-            .Build();
-
-        var settings = configRoot.GetSection("EngineSettings").Get<EngineSettings>();
-        return new EngineConfiguration { Settings = settings ?? new EngineSettings() };
-    }
-
-    public void Save(string jsonPath = ConfigFileName)
-    {
-        var json = JsonSerializer.Serialize(Settings, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(jsonPath, json);
-    }
-
-    #region public static methods
-    ///<summary>
-    ///Get this configuration set from the application's default config file
-    ///</summary>
-    public static EngineConfiguration Open()
-    {
-        var assm = System.Reflection.Assembly.GetEntryAssembly();
-        return Open(assm.Location);
-    }
-
-    ///<summary>
-    /// Get this configuration set from a specific config file
-    ///</summary>
-    public static EngineConfiguration Open(string path)
-    {
-        if (instance == null)
-        {
-            if (path.EndsWith(".config", StringComparison.InvariantCultureIgnoreCase))
-                spath = path.Remove(path.Length - 7);
-            else
-                spath = path;
-
-            System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(spath);
-            if (config.Sections[ConfigSectionName] == null)
-            {
-                instance = new EngineConfiguration();
-                config.Sections.Add(ConfigSectionName, instance);
-                config.Save(ConfigurationSaveMode.Full);
-            }
-            else
-                instance = (EngineConfiguration)config.Sections[ConfigSectionName];
-        }
-
-        return instance;
-    }
-    #endregion
-
-    #region public methods
-    ///<summary>
-    ///Save the current property values to the config file
-    ///</summary>
-    public void Save()
-    {
-        Save(ConfigurationSaveMode.Full, spath);
-    }
-
-    public void Save(ConfigurationSaveMode saveMode)
-    {
-        Save(saveMode, spath);
-    }
-
-    public void Save(string path)
-    {
-        Save(ConfigurationSaveMode.Full, path);
-    }
-
-    public void Save(ConfigurationSaveMode saveMode, string path)
-    {
-        if (path == spath)
-            CurrentConfiguration.Save(saveMode);
-        else
-            CurrentConfiguration.SaveAs(path, saveMode);
-    }
-    #endregion
-
-    #region public properties
     /// <summary>
-    /// Path of config file holding current <see cref="EngineConfiguration"/> values
+    /// Target screen refresh rate for the Engine. Setting the number
+    /// lower allows more time for the processor to perform background
+    /// Engine tasks. Set the value to 0 for no upper limit.
     /// </summary>
-    public string ConfigPath
+    public int TargetFPS
     {
-        get { return CurrentConfiguration.FilePath; }
+        get => _targetFPS;
+        set => _targetFPS = value < 0 ? 0 : value;
     }
 
-    [ConfigurationProperty("Settings", IsRequired = true)]
-    public EngineSettings Settings
+    private double _samplingTimeForCPS = 1.5;
+
+    /// <summary>
+    /// Total number of seconds between Cycles Per Second (CPS) calculation
+    /// </summary>
+    public double SamplingTimeForCPS
     {
-        get { return (EngineSettings)this["Settings"]; }
-        set { this["Settings"] = value; }
+        get => _samplingTimeForCPS;
+        set => _samplingTimeForCPS = value < 0 ? 0 : value;
     }
 
-    [ConfigurationProperty("StateFiles", IsRequired = false, IsDefaultCollection = true)]
-    public EngineStateFiles StateFiles
+    /// <summary>
+    /// Total number of system ticks between each CPS sampling
+    /// </summary>
+    [JsonIgnore]
+    public long SamplingTimeForCPSTicks => (long)(SamplingTimeForCPS * HighResTimer.TicksPerSecond);
+
+    /// <summary>
+    /// Minimum time (in seconds) allowed between Keyboard events
+    /// </summary>
+    public double TimeBetweenKeyboardEvents { get; set; } = 0.03;
+
+    private double _visibleSurfaceRefreshTimer = 1.5;
+
+    /// <summary>
+    /// Time in seconds of forced refresh of entire area of all VisibleSurface instances
+    /// </summary>
+    public double VisibleSurfaceRefreshTimer
     {
-        get { return (EngineStateFiles)this["StateFiles"]; }
-        set { this["StateFiles"] = value; }
+        get => _visibleSurfaceRefreshTimer;
+        set
+        {
+            _visibleSurfaceRefreshTimer = value;
+            VisibleSurfaces.ForcedRefreshRate = value;
+        }
     }
-    #endregion
+
+    /// <summary>
+    /// Total number of resized Frame stretched renderings allowed in cache.  Lowering this value may degrade performance, but lessen required system memory.
+    /// </summary>
+    public int ResizedFrameCacheLimit { get; set; } = 100;
+
+    [OnDeserialized]
+    internal void OnDeserializedMethod(StreamingContext context)
+    {
+        // Re-trigger setter logic to recalculate dependent fields
+        TargetFPS = _targetFPS;
+        SamplingTimeForCPS = _samplingTimeForCPS;
+    }
 }

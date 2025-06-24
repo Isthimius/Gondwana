@@ -1,16 +1,15 @@
-using Gondwana.Common;
-using Gondwana.Grid;
-using Gondwana.Timers;
-using Gondwana.Common.Win32;
-using Gondwana.Input.Keyboard;
-using Gondwana.Drawing.Sprites;
 using System.Drawing;
 using System.Windows.Forms;
-using Gondwana.Rendering;
+using Gondwana.Common.Win32;
+using Gondwana.Configuration;
 using Gondwana.Drawing.Collisions;
+using Gondwana.Drawing.Sprites;
+using Gondwana.Grid;
+using Gondwana.Input.Keyboard;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
 using Gondwana.State;
-using Gondwana.Configuration;
+using Gondwana.Timers;
 
 namespace Gondwana;
 
@@ -45,24 +44,21 @@ public static class Engine
     #region constructor
     static Engine()
     {
-        Configuration = EngineConfiguration.Open();
+        Configuration = EngineConfigurationFile.Load();
         _startTick = HighResTimer.GetCurrentTickCount();
         _lastCPSSamplingTick = _startTick;
-        Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.Settings.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
+        Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.EngineConfig.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
 
         Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
 
         // deserialize all EngineState files listed in configuration
-        if (Configuration.StateFiles != null && Configuration.StateFiles.LoadAtStartup == true)
+        foreach (var stateFile in StateFiles)
         {
-            foreach (var stateFile in Configuration.StateFiles)
-            {
-                if (stateFile.LoadAtStartup == true)
-                    LoadEngineStateFile(stateFile.Path, stateFile.IsBinary);
-            }
+            if (stateFile.LoadAtStartup)
+                LoadEngineStateFile(stateFile.Path, stateFile.IsBinary);
         }
 
-        VisibleSurfaces.ForcedRefreshRate = Configuration.Settings.VisibleSurfaceRefreshTimer;
+        VisibleSurfaces.ForcedRefreshRate = Configuration.EngineConfig.VisibleSurfaceRefreshTimer;
         Application.Idle += Application_Idle;
     }
     #endregion
@@ -122,13 +118,15 @@ public static class Engine
         }
     }
 
-    public static EngineConfiguration Configuration { get; set; }
+    public static EngineConfigurationFile Configuration { get; set; }
+
+    public static EngineStateFile[] StateFiles { get; set; } = Array.Empty<EngineStateFile>();
 
     public static bool IsRunning { get; private set; }
     #endregion
 
     #region private methods
-    private static void Application_Idle(object sender, System.EventArgs e)
+    private static void Application_Idle(object sender, EventArgs e)
     {
         while (IsApplicationIdle())
         {
@@ -150,7 +148,7 @@ public static class Engine
         long tick = HighResTimer.GetCurrentTickCount();
 
         // throttle time hasn't passed; do background tasks
-        if ((Configuration.Settings.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.Settings.TargetFPS)) * (double)HighResTimer.TicksPerSecond))
+        if ((Configuration.EngineConfig.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.EngineConfig.TargetFPS)) * (double)HighResTimer.TicksPerSecond))
         {
             DoBackgroundTasks(tick);
 
@@ -174,7 +172,7 @@ public static class Engine
         _grossCycles++;
 
         // if 0 or negative, sampling is turned off
-        if (Configuration.Settings.SamplingTimeForCPS > 0)
+        if (Configuration.EngineConfig.SamplingTimeForCPS > 0)
             CalculateCPS(tick);
     }
 
@@ -478,7 +476,7 @@ public static class Engine
     private static void CalculateCPS(long tick)
     {
         // check if CPS Sampling time has passed
-        if (tick - _lastCPSSamplingTick >= Configuration.Settings.SamplingTimeForCPSTicks)
+        if (tick - _lastCPSSamplingTick >= Configuration.EngineConfig.SamplingTimeForCPSTicks)
         {
             _grossCPS = (double)(_grossCyclesThisMeasure * HighResTimer.TicksPerSecond) / (double)(tick - _lastCPSSamplingTick);
             _netFPS = (double)(_netCyclesThisMeasure * HighResTimer.TicksPerSecond) / (double)(tick - _lastCPSSamplingTick);
@@ -486,7 +484,7 @@ public static class Engine
             // raise the event
             if (CPSCalculated != null)
                 CPSCalculated(new CyclesPerSecondCalculatedEventArgs(
-                    _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.Settings.SamplingTimeForCPS));
+                    _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.EngineConfig.SamplingTimeForCPS));
 
             // reset values for next calculation
             _lastCPSSamplingTick = tick;

@@ -2,7 +2,7 @@
 
 public delegate void GridPointMatrixDisposingEventHandler(GridPointMatrixDisposingEventArgs e);
 
-public class GridPointMatrixDisposingEventArgs : System.EventArgs
+public class GridPointMatrixDisposingEventArgs : EventArgs
 {
     public GridPointMatrix Matrix;
 

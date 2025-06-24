@@ -2,7 +2,7 @@
 
 public delegate void ShowGridLinesChangedEventHandler(ShowGridLinesChangedEventArgs e);
 
-public class ShowGridLinesChangedEventArgs : System.EventArgs
+public class ShowGridLinesChangedEventArgs : EventArgs
 {
     public GridPointMatrix Matrix;
     public bool oldValue;

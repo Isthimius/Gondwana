@@ -2,7 +2,7 @@
 
 public delegate void TilesheetDisposedHandler(TilesheetDisposedEventArgs e);
 
-public class TilesheetDisposedEventArgs : System.EventArgs
+public class TilesheetDisposedEventArgs : EventArgs
 {
     public Tilesheet Tilesheet;
 

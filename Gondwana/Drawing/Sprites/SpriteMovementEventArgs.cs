@@ -2,7 +2,7 @@
 
 public delegate void SpriteMovementEventHandler(SpriteMovementEventArgs e);
 
-public class SpriteMovementEventArgs : System.EventArgs
+public class SpriteMovementEventArgs : EventArgs
 {
     public Sprite sprite;
     public Movement movement;

@@ -2,7 +2,7 @@
 
 public delegate void SpriteMovePointFinishedHandler(SpriteMovePointFinishedEventArgs e);
 
-public class SpriteMovePointFinishedEventArgs : System.EventArgs
+public class SpriteMovePointFinishedEventArgs : EventArgs
 {
     public Sprite sprite;
     public Movement movement;

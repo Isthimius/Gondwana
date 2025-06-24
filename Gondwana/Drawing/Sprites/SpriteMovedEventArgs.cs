@@ -4,7 +4,7 @@ namespace Gondwana.Drawing.Sprites;
 
 public delegate void SpriteMovedEventHandler(SpriteMovedEventArgs e);
 
-public class SpriteMovedEventArgs : System.EventArgs
+public class SpriteMovedEventArgs : EventArgs
 {
     public Sprite sprite;
     public PointF oldPt;

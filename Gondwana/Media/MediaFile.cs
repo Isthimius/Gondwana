@@ -65,7 +65,7 @@ public class MediaFile : IDisposable
         IsPlaying = true;
         IsPaused = false;
 
-        PlaybackStarted?.Invoke(this, System.EventArgs.Empty);
+        PlaybackStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public void Pause()
@@ -74,13 +74,13 @@ public class MediaFile : IDisposable
         {
             outputDevice?.Pause();
             IsPaused = true;
-            PlaybackPaused?.Invoke(this, System.EventArgs.Empty);
+            PlaybackPaused?.Invoke(this, EventArgs.Empty);
         }
         else if (IsPaused)
         {
             outputDevice?.Play();
             IsPaused = false;
-            PlaybackStarted?.Invoke(this, System.EventArgs.Empty);
+            PlaybackStarted?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -92,7 +92,7 @@ public class MediaFile : IDisposable
         IsPlaying = false;
         IsPaused = false;
 
-        PlaybackStopped?.Invoke(this, System.EventArgs.Empty);
+        PlaybackStopped?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
@@ -105,7 +105,7 @@ public class MediaFile : IDisposable
         {
             IsPlaying = false;
             IsPaused = false;
-            PlaybackStopped?.Invoke(this, System.EventArgs.Empty);
+            PlaybackStopped?.Invoke(this, EventArgs.Empty);
         }
     }
 

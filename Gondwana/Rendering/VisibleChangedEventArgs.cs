@@ -4,7 +4,7 @@ namespace Gondwana.Rendering;
 
 public delegate void VisibleChangedEventHandler(VisibleChangedEventArgs e);
 
-public class VisibleChangedEventArgs : System.EventArgs
+public class VisibleChangedEventArgs : EventArgs
 {
     public GridPointMatrix Matrix;
     public bool oldVisibleValue;

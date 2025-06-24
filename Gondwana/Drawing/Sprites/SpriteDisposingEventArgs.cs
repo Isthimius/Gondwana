@@ -2,7 +2,7 @@
 
 public delegate void SpriteDisposingEventHandler(SpriteDisposingEventArgs e);
 
-public class SpriteDisposingEventArgs : System.EventArgs
+public class SpriteDisposingEventArgs : EventArgs
 {
     public Sprite sprite;
 

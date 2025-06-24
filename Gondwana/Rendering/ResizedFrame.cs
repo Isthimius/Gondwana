@@ -13,7 +13,7 @@ internal class ResizedFrame : IDisposable
 
     internal static ResizedFrame GetResizedFrame(Frame frame, Size renderSize)
     {
-        var settings = EngineConfiguration.Open().Settings;
+        var settings = EngineConfigurationFile.Load().EngineConfig;
         ResizedFrame resizedFrame;
 
         if (ResizedFrameCache.TryGetValue(GetId(frame, renderSize), out resizedFrame) == false)

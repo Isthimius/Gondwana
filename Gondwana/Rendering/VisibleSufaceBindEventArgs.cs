@@ -4,7 +4,7 @@ namespace Gondwana.Rendering;
 
 public delegate void VisibleSurfaceBindEventHandler(VisibleSufaceBindEventArgs e);
 
-public class VisibleSufaceBindEventArgs : System.EventArgs
+public class VisibleSufaceBindEventArgs : EventArgs
 {
     public VisibleSurfaceBase Surface;
     public GridPointMatrixes OldBindValue;

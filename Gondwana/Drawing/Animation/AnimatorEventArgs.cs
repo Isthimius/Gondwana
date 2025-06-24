@@ -2,7 +2,7 @@
 
 public delegate void AnimatorEventHandler(AnimatorEventArgs e);
 
-public class AnimatorEventArgs : System.EventArgs
+public class AnimatorEventArgs : EventArgs
 {
     public Tile tile;
     public Animator animator;

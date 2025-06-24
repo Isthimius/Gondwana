@@ -5,7 +5,7 @@ namespace Gondwana.Drawing;
 
 internal delegate void RefreshQueueAreaAddedEventHandler(RefreshQueueAreaAddedEventArgs e);
 
-internal class RefreshQueueAreaAddedEventArgs : System.EventArgs
+internal class RefreshQueueAreaAddedEventArgs : EventArgs
 {
     internal GridPointMatrix layer;
     internal Rectangle area;

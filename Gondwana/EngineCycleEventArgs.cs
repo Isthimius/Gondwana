@@ -2,7 +2,7 @@
 
 public delegate void EngineCycleEventHandler(EngineCycleEventArgs e);
 
-public class EngineCycleEventArgs : System.EventArgs
+public class EngineCycleEventArgs : EventArgs
 {
     public long GrossCycles;
     public long GrossCyclesTotal;
