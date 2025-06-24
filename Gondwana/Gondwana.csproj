@@ -19,11 +19,4 @@
 	  <PackageReference Include="SkiaSharp" Version="3.119.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Update="App.xsd">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    <SubType>Designer</SubType>
-	  </None>
-	</ItemGroup>
-
 </Project>
