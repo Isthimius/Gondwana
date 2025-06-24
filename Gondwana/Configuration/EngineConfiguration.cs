@@ -1,6 +1,5 @@
 ﻿using Gondwana.Rendering;
 using Gondwana.Timers;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Gondwana.Configuration;
@@ -20,7 +19,7 @@ public class EngineConfiguration
     public int TargetFPS
     {
         get => _targetFPS;
-        set => _targetFPS = value < 0 ? 0 : value;
+        set => _targetFPS = value < 1 ? 1 : value;
     }
 
     private double _samplingTimeForCPS = 1.5;
@@ -64,12 +63,4 @@ public class EngineConfiguration
     /// Total number of resized Frame stretched renderings allowed in cache.  Lowering this value may degrade performance, but lessen required system memory.
     /// </summary>
     public int ResizedFrameCacheLimit { get; set; } = 100;
-
-    [OnDeserialized]
-    internal void OnDeserializedMethod(StreamingContext context)
-    {
-        // Re-trigger setter logic to recalculate dependent fields
-        TargetFPS = _targetFPS;
-        SamplingTimeForCPS = _samplingTimeForCPS;
-    }
 }

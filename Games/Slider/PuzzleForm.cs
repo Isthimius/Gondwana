@@ -79,8 +79,16 @@ namespace Slider
                     this.chkGrid.Enabled = true;
                     this.btnShuffle.Enabled = true;
                     Gondwana.Engine.Start();
+
+                    Gondwana.Engine.CPSCalculated += Engine_CPSCalculated;
                 }
             }
+        }
+
+        private void Engine_CPSCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs e)
+        {
+            lblInfo.Text = string.Format("FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
+                e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SamplingTime.ToString("N2"));
         }
 
         void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
