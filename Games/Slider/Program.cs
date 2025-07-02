@@ -8,8 +8,8 @@ namespace Slider
     static class Program
     {
         internal static Puzzle puzzle = null;
-        internal static MediaFile slideSound;
-        internal static MediaFile tadaSound;
+        internal static SoundResource slideSound;
+        internal static SoundResource tadaSound;
 
         /// <summary>
         /// The main entry point for the application.

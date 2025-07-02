@@ -96,7 +96,7 @@ public class EngineState
     public List<Sprite> Sprites { get; set; }
 
     [DataMember(Order = 7)]
-    public Dictionary<string, MediaFile> MediaFiles { get; set; }
+    public Dictionary<string, SoundResource> MediaFiles { get; set; }
     #endregion
 
     #region public methods

@@ -5,7 +5,7 @@ using Gondwana.Resource;
 namespace Gondwana.Media;
 
 [DataContract(IsReference = true)]
-public class MediaFile : IDisposable
+public class SoundResource : IDisposable
 {
     private IWavePlayer? outputDevice;
     private AudioFileReader? audioFile;
@@ -27,12 +27,12 @@ public class MediaFile : IDisposable
     public event EventHandler? PlaybackPaused;
     public event EventHandler? PlaybackStopped;
 
-    public MediaFile(string filePath)
+    public SoundResource(string filePath)
     {
         FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
     }
 
-    public MediaFile(EngineResourceFileIdentifier resId)
+    public SoundResource(EngineResourceFileIdentifier resId)
     {
         ArgumentNullException.ThrowIfNull(resId);
         ArgumentNullException.ThrowIfNull(resId.Data);
@@ -123,7 +123,7 @@ public class MediaFile : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    ~MediaFile() => Dispose(false);
+    ~SoundResource() => Dispose(false);
 
     protected virtual void Dispose(bool disposing)
     {
