@@ -33,6 +33,7 @@ public class EngineConfigurationFile : IDisposable
         return new EngineConfigurationFile
         {
             FileName = configFileName,
+            AutoSave = autoSave,
             EngineConfig = settings ?? new EngineConfiguration()
         };
     }
