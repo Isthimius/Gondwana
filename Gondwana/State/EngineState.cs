@@ -4,7 +4,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
 using Gondwana.Resource;
 using Gondwana.Common.Utility;
-using Gondwana.Media;
+using Gondwana.Audio;
 using System.IO.Compression;
 using System.Runtime.Serialization;
 

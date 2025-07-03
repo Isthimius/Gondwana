@@ -1,5 +1,5 @@
 using Gondwana.Drawing.Sprites;
-using Gondwana.Media;
+using Gondwana.Audio;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

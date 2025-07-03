@@ -3,7 +3,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
 using Gondwana.Grid.Coordinates;
-using Gondwana.Media;
+using Gondwana.Audio;
 using Gondwana.Rendering;
 using System;
 using System.Collections.Generic;

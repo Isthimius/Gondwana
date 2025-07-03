@@ -2,7 +2,7 @@
 using NAudio.Wave;
 using Gondwana.Resource;
 
-namespace Gondwana.Media;
+namespace Gondwana.Audio;
 
 [DataContract(IsReference = true)]
 public class SoundResource : IDisposable
