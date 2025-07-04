@@ -415,4 +415,5 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/.vs/VSWorkspaceState.json
 /.vs/Gondwana/v17/.suo
