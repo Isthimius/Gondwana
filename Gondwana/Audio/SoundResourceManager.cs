@@ -4,6 +4,7 @@ public partial class SoundResourceManager : IDisposable
 {
     private static readonly Lazy<SoundResourceManager> _instance = new(() => new SoundResourceManager());
 
+    private readonly Dictionary<string, SoundResource> _soundResources = new();
     private bool _disposed = false;
 
     private SoundResourceManager() { }
