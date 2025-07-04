@@ -1,120 +1,165 @@
-﻿using System.Runtime.Serialization;
-using NAudio.Wave;
-using Gondwana.Resource;
+﻿using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Gondwana.Audio;
 
 [DataContract(IsReference = true)]
 public class SoundResource : IDisposable
 {
-    private IWavePlayer? outputDevice;
-    private AudioFileReader? audioFile;
-    private readonly bool isTempFile;
+    private readonly IWavePlayer outputDevice;
+    private readonly WaveStream waveStream;
+    private VolumeSampleProvider volumeProvider;
+    private PanningSampleProvider panningProvider;
     private bool disposed;
 
-    public string FilePath { get; }
-    public bool IsPlaying { get; private set; }
-    public bool IsPaused { get; private set; }
-    public bool Looping { get; set; }
+    public event EventHandler PlaybackCompleted;
+    public Func<Task>? PlaybackCompletedAsync;
+    public event EventHandler Disposed;
 
+    private SoundResource() { }
+
+    internal SoundResource(WaveStream soundStream, float volume = 1.0f, float pan = 0.0f, string? filePath = null, bool isTempFile = false)
+    {
+        waveStream = soundStream;
+        outputDevice = new WaveOutEvent();
+        outputDevice.Init(BuildAudioGraph(soundStream, volume, pan));
+        outputDevice.PlaybackStopped += OnPlaybackStopped;
+        FilePath = filePath;
+        IsTempFile = isTempFile;
+    }
+
+    private ISampleProvider BuildAudioGraph(WaveStream source, float volume, float pan)
+    {
+        ISampleProvider baseProvider = source.ToSampleProvider();
+
+        if (baseProvider.WaveFormat.Channels == 1)
+            baseProvider = new MonoToStereoSampleProvider(baseProvider);
+
+        volumeProvider = new VolumeSampleProvider(baseProvider) { Volume = volume };
+        panningProvider = new PanningSampleProvider(volumeProvider) { Pan = pan };
+
+        return panningProvider;
+    }
+
+    [JsonIgnore]
+    public string? FilePath { get; } = null;
+
+    [JsonIgnore]
+    public bool IsTempFile { get; } = false;
+
+    [JsonIgnore]
+    public bool IsPaused => outputDevice.PlaybackState == PlaybackState.Paused;
+
+    [JsonIgnore]
+    public bool IsPlaying => outputDevice.PlaybackState == PlaybackState.Playing;
+
+    [JsonIgnore]
+    public TimeSpan CurrentTime
+    { 
+        get => waveStream.CurrentTime;
+        set => Seek(value);
+    }
+
+    [JsonIgnore]
+    public TimeSpan Duration => waveStream.TotalTime;
+
+    public bool IsLooping { get; set; }
+
+    /// <summary>
+    /// Gets or sets the volume of the audio output.
+    /// 0.0 is silent, 1.0 is full volume.
+    /// </summary>
     public float Volume
     {
-        get => audioFile?.Volume ?? 1.0f;
-        set { if (audioFile != null) audioFile.Volume = Math.Clamp(value, 0.0f, 1.0f); }
+        get => volumeProvider?.Volume ?? 1.0f;
+        set
+        {
+            if (volumeProvider != null)
+                volumeProvider.Volume = Math.Clamp(value, 0.0f, 1.0f);
+        }
     }
 
-    public event EventHandler? PlaybackStarted;
-    public event EventHandler? PlaybackPaused;
-    public event EventHandler? PlaybackStopped;
-
-    public SoundResource(string filePath)
+    /// <summary>
+    /// Gets or sets the stereo pan position of the audio output.
+    /// -1 is full left, 0 is center, and 1 is full right.
+    /// </summary>
+    public float Pan
     {
-        FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
+        get => panningProvider?.Pan ?? 0.0f;
+        set
+        {
+            if (panningProvider != null)
+                panningProvider.Pan = Math.Clamp(value, -1.0f, 1.0f);
+        }
     }
 
-    public SoundResource(EngineResourceFileIdentifier resId)
+    public void Play(bool fromStart = true)
     {
-        ArgumentNullException.ThrowIfNull(resId);
-        ArgumentNullException.ThrowIfNull(resId.Data);
+        if (fromStart)
+            waveStream.Position = 0;
 
-        string extension = Path.GetExtension(resId.ResourceName);
-        if (string.IsNullOrWhiteSpace(extension)) extension = ".wav";
-
-        FilePath = SaveStreamToTempFile(resId.Data, extension);
-        isTempFile = true;
-    }
-
-    private static string SaveStreamToTempFile(Stream input, string extension)
-    {
-        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
-        using var fs = File.Create(tempPath);
-        input.CopyTo(fs);
-        return tempPath;
-    }
-
-    public void Play()
-    {
-        Stop();
-
-        audioFile = new AudioFileReader(FilePath);
-        outputDevice = new WaveOutEvent();
-        outputDevice.Init(audioFile);
-        outputDevice.PlaybackStopped += OnPlaybackStopped;
-        outputDevice.Play();
-
-        IsPlaying = true;
-        IsPaused = false;
-
-        PlaybackStarted?.Invoke(this, EventArgs.Empty);
+        if (!IsPlaying)
+            outputDevice.Play();
     }
 
     public void Pause()
     {
-        if (IsPlaying && !IsPaused)
-        {
-            outputDevice?.Pause();
-            IsPaused = true;
-            PlaybackPaused?.Invoke(this, EventArgs.Empty);
-        }
-        else if (IsPaused)
-        {
-            outputDevice?.Play();
-            IsPaused = false;
-            PlaybackStarted?.Invoke(this, EventArgs.Empty);
-        }
+        if (IsPlaying)
+            outputDevice.Pause();
     }
 
-    public void Stop()
+    public void Resume()
     {
-        outputDevice?.Stop();
-        Cleanup();
-
-        IsPlaying = false;
-        IsPaused = false;
-
-        PlaybackStopped?.Invoke(this, EventArgs.Empty);
+        if (IsPaused)
+            outputDevice.Play();
     }
+
+    public void Seek(TimeSpan position)
+    {
+        if (position < TimeSpan.Zero)
+            position = TimeSpan.Zero;
+
+        if (position > waveStream.TotalTime)
+            position = waveStream.TotalTime;
+
+        var wasPlaying = IsPlaying;
+
+        Pause();
+        waveStream.CurrentTime = position;
+
+        if (wasPlaying)
+            Resume();
+    }
+
+    public void Stop() => outputDevice.Stop();
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
-        if (Looping)
-        {
-            Play(); // Recursion is safe because Stop() clears state.
-        }
-        else
-        {
-            IsPlaying = false;
-            IsPaused = false;
-            PlaybackStopped?.Invoke(this, EventArgs.Empty);
-        }
+        _ = HandlePlaybackStoppedAsync();
     }
 
-    private void Cleanup()
+    private async Task HandlePlaybackStoppedAsync()
     {
-        outputDevice?.Dispose();
-        audioFile?.Dispose();
-        outputDevice = null;
-        audioFile = null;
+        try
+        {
+            if (IsLooping)
+            {
+                Play();
+            }
+            else
+            {
+                PlaybackCompleted?.Invoke(this, EventArgs.Empty);
+
+                if (PlaybackCompletedAsync is not null)
+                    await PlaybackCompletedAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Logging
+        }
     }
 
     public void Dispose()
@@ -127,14 +172,22 @@ public class SoundResource : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (disposed) return;
-        if (disposing) Stop();
+        if (disposed)
+            return;
 
-        if (isTempFile && File.Exists(FilePath))
+        if (disposing)
+            Stop();
+
+        outputDevice.Dispose();
+        waveStream.Dispose();
+
+        if (IsTempFile && File.Exists(FilePath))
         {
-            try { File.Delete(FilePath); } catch { /* ignore */ }
+            try { File.Delete(FilePath); }
+            catch { /* ignore */ }
         }
 
         disposed = true;
+        Disposed?.Invoke(this, EventArgs.Empty);
     }
 }
