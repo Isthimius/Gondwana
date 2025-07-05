@@ -4,7 +4,7 @@ namespace Gondwana.Audio;
 
 public static class PlatformAudioFactory
 {
-    private static readonly Dictionary<string, Func<Stream, WaveStream>> _readers = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, (Func<Stream, WaveStream>, bool)> _readers = new(StringComparer.OrdinalIgnoreCase);
 
     static PlatformAudioFactory()
     {
@@ -13,9 +13,9 @@ public static class PlatformAudioFactory
         Register(".mp3", stream => new Mp3FileReader(stream));
     }
 
-    public static void Register(string extension, Func<Stream, WaveStream> readerFactory)
+    public static void Register(string extension, Func<Stream, WaveStream> readerFactory, bool requiresFile = false)
     {
-        _readers[NormalizeExt(extension)] = readerFactory;
+        _readers[NormalizeExt(extension)] = (readerFactory, requiresFile);
     }
 
     public static bool Supports(string fileNameOrExt)
@@ -29,12 +29,15 @@ public static class PlatformAudioFactory
         return _readers.Keys.OrderBy(ext => ext);
     }
 
-    internal static WaveStream CreateReader(Stream input, string fileNameOrExt)
+    internal static (WaveStream stream, bool requiresFile) CreateReader(Stream input, string fileNameOrExt)
     {
         var ext = NormalizeExt(Path.GetExtension(fileNameOrExt));
 
-        if (_readers.TryGetValue(ext, out var factory))
-            return factory(input);
+        if (_readers.TryGetValue(ext, out var entry))
+        {
+            var (factory, requiresFile) = entry;
+            return (factory(input), requiresFile);
+        }
 
         throw new NotSupportedException($"Format '{ext}' is not supported on this platform.");
     }

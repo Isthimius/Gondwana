@@ -27,7 +27,7 @@ public class SoundResourceManager : IDisposable
         var bytes = ms.ToArray();
         var newStream = new MemoryStream(bytes);
 
-        var reader = PlatformAudioFactory.CreateReader(newStream, filePath);
+        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, filePath);
         var sound = new SoundResource(key, reader, volume, pan, filePath, isTemp, bytes, Path.GetExtension(filePath));
         _soundResources[key] = sound;
     
@@ -45,12 +45,25 @@ public class SoundResourceManager : IDisposable
         var bytes = ms.ToArray();
         var newStream = new MemoryStream(bytes);
 
-        var reader = PlatformAudioFactory.CreateReader(stream, fileExt);
-        var sound = new SoundResource(key, reader, volume, pan, null, false, bytes, fileExt);
+        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(stream, fileExt);
+
+        string? filePath = null;
+        if (fileRequired)
+            filePath = SaveStreamToTempFile(ms, fileExt);
+
+        var sound = new SoundResource(key, reader, volume, pan, filePath, fileRequired, bytes, fileExt);
         _soundResources[key] = sound;
 
         RegisterLoadedSound(key, sound);
         return sound;
+    }
+
+    private string SaveStreamToTempFile(Stream input, string extension)
+    {
+        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
+        using var fs = File.Create(tempPath);
+        input.CopyTo(fs);
+        return tempPath;
     }
 
     public SoundResource Clone(string key, string? newKey = null, float? volume = null, float? pan = null)
