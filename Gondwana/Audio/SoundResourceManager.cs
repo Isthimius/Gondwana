@@ -5,51 +5,54 @@ namespace Gondwana.Audio;
 public class SoundResourceManager : IDisposable
 {
     private static readonly Lazy<SoundResourceManager> _instance = new(() => new SoundResourceManager());
-
     private readonly ConcurrentDictionary<string, SoundResource> _soundResources = new();
     private bool _disposed = false;
 
-    public event EventHandler<SoundResource>? SoundDisposed;
+    public event EventHandler<(string Key, SoundResource Resource)>? SoundDisposed;
 
     private SoundResourceManager() { }
 
-    public static SoundResourceManager Instance { get; } = _instance.Value;
+    public static SoundResourceManager Instance => _instance.Value;
 
     public SoundResource LoadFromFile(string key, string filePath, float volume = 1.0f, float pan = 0.0f, bool isTemp = false)
     {
         if (_soundResources.TryGetValue(key, out var existing))
             return existing;
 
-        var stream = File.OpenRead(filePath);
-
+        using var fileStream = File.OpenRead(filePath);
         using var ms = new MemoryStream();
-        stream.CopyTo(ms);
+        fileStream.CopyTo(ms);
         var bytes = ms.ToArray();
-        var newStream = new MemoryStream(bytes);
 
+        var newStream = new MemoryStream(bytes);
         var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, filePath);
+
         var sound = new SoundResource(key, reader, volume, pan, filePath, isTemp, bytes, Path.GetExtension(filePath));
         _soundResources[key] = sound;
-    
+
         RegisterLoadedSound(key, sound);
         return sound;
     }
 
-    public SoundResource LoadFromStream(string key, Stream stream, string fileExt, float volume = 1.0f, float pan = 0.0f)
+    public SoundResource LoadFromStream(string key, Stream input, string fileExt, float volume = 1.0f, float pan = 0.0f)
     {
         if (_soundResources.TryGetValue(key, out var existing))
-            existing.Dispose();
+        {
+            existing.Dispose(); // Replace existing
+        }
 
         using var ms = new MemoryStream();
-        stream.CopyTo(ms);
+        input.CopyTo(ms);
         var bytes = ms.ToArray();
-        var newStream = new MemoryStream(bytes);
 
-        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(stream, fileExt);
+        var newStream = new MemoryStream(bytes);
+        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, fileExt);
 
         string? filePath = null;
         if (fileRequired)
-            filePath = SaveStreamToTempFile(ms, fileExt);
+        {
+            filePath = SaveStreamToTempFile(new MemoryStream(bytes), fileExt);
+        }
 
         var sound = new SoundResource(key, reader, volume, pan, filePath, fileRequired, bytes, fileExt);
         _soundResources[key] = sound;
@@ -61,6 +64,7 @@ public class SoundResourceManager : IDisposable
     private string SaveStreamToTempFile(Stream input, string extension)
     {
         string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
+        input.Position = 0; // ensure we're at the beginning
         using var fs = File.Create(tempPath);
         input.CopyTo(fs);
         return tempPath;
@@ -71,8 +75,7 @@ public class SoundResourceManager : IDisposable
         if (!_soundResources.TryGetValue(key, out var original))
             throw new KeyNotFoundException($"SoundResource with key '{key}' not found.");
 
-        if (newKey == null)
-            newKey = $"{key}_clone_{Guid.NewGuid()}";
+        newKey ??= $"{key}_clone_{Guid.NewGuid()}";
 
         if (_soundResources.ContainsKey(newKey))
             throw new ArgumentException($"SoundResource with key '{newKey}' already exists.");
@@ -80,21 +83,27 @@ public class SoundResourceManager : IDisposable
         if (original.OriginalBytes == null || string.IsNullOrEmpty(original.OriginalExtension))
             throw new InvalidOperationException($"SoundResource '{key}' cannot be cloned – missing raw data.");
 
-        return LoadFromStream(newKey, new MemoryStream(original.OriginalBytes!), original.OriginalExtension!, original.Volume, original.Pan);
+        return LoadFromStream(
+            newKey,
+            new MemoryStream(original.OriginalBytes),
+            original.OriginalExtension,
+            volume ?? original.Volume,
+            pan ?? original.Pan
+        );
     }
 
     private void RegisterLoadedSound(string key, SoundResource sound)
     {
-        sound.Disposed += (s, e) =>
+        sound.Disposed += (_, _) =>
         {
-            if (_soundResources.Remove(key, out var resource))
-                SoundDisposed?.Invoke(this, sound);
+            if (_soundResources.TryRemove(key, out var removed))
+                SoundDisposed?.Invoke(this, (key, removed));
         };
     }
 
     public void Unload(string key)
     {
-        if (_soundResources.Remove(key, out var resource))
+        if (_soundResources.TryRemove(key, out var resource))
             resource.Dispose();
     }
 
