@@ -20,14 +20,17 @@ public class SoundResource : IDisposable
 
     private SoundResource() { }
 
-    internal SoundResource(WaveStream soundStream, float volume = 1.0f, float pan = 0.0f, string? filePath = null, bool isTempFile = false)
+    internal SoundResource(string key, WaveStream soundStream, float volume = 1.0f, float pan = 0.0f, string? filePath = null, bool isTempFile = false, byte[]? rawBytes = null, string? extension = null)
     {
+        Key = key;
         waveStream = soundStream;
         outputDevice = new WaveOutEvent();
         outputDevice.Init(BuildAudioGraph(soundStream, volume, pan));
         outputDevice.PlaybackStopped += OnPlaybackStopped;
         FilePath = filePath;
         IsTempFile = isTempFile;
+        OriginalBytes = rawBytes;
+        OriginalExtension = extension ?? Path.GetExtension(filePath ?? "") ?? ".wav";
     }
 
     private ISampleProvider BuildAudioGraph(WaveStream source, float volume, float pan)
@@ -42,6 +45,14 @@ public class SoundResource : IDisposable
 
         return panningProvider;
     }
+
+    public string Key { get; private set; }
+
+    [JsonIgnore]
+    public byte[]? OriginalBytes { get; private set; }
+
+    [JsonIgnore]
+    public string? OriginalExtension { get; private set; }
 
     [JsonIgnore]
     public string? FilePath { get; } = null;
