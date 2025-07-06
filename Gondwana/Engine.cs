@@ -179,7 +179,6 @@ public sealed class Engine
             CalculateCPS(tick);
     }
 
-
     private void DoBackgroundTasks(long tick)
     {
         if (BeforeBackgroundTasksExecute != null)
