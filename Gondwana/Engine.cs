@@ -13,36 +13,39 @@ using Gondwana.Timers;
 
 namespace Gondwana;
 
-public static class Engine
+public sealed class Engine
 {
+    private static readonly Lazy<Engine> _instance = new(() => new Engine());
+    public static Engine Instance => _instance.Value;
+
     #region private fields
-    private static long _startTick;
-    private static long _lastCPSSamplingTick;
-    private static long _lastTick = HighResTimer.GetCurrentTickCount();
+    private long _startTick;
+    private long _lastCPSSamplingTick;
+    private long _lastTick = HighResTimer.GetCurrentTickCount();
 
-    private static long _grossCycles = 0;
-    private static long _grossCyclesThisMeasure = 0;
-    private static long _netCycles = 0;
-    private static long _netCyclesThisMeasure = 0;
-    private static double _grossCPS = 0;
-    private static double _netFPS = 0;
+    private long _grossCycles = 0;
+    private long _grossCyclesThisMeasure = 0;
+    private long _netCycles = 0;
+    private long _netCyclesThisMeasure = 0;
+    private double _grossCPS = 0;
+    private double _netFPS = 0;
 
-    private static bool _backgroundRun = false;
+    private bool _hasBackgroundRun = false;
     #endregion
 
     #region events
     public delegate void BackgroundTaskExecuteHandler();
 
-    public static event BackgroundTaskExecuteHandler BeforeBackgroundTasksExecute;
-    public static event BackgroundTaskExecuteHandler AfterBackgroundTasksExecute;
-    public static event EngineCycleEventHandler BeforeEngineCycle;
-    public static event EngineCycleEventHandler AfterEngineCycle;
-    public static event CyclesPerSecondCalculatedHandler CPSCalculated;
-    public static event CollisionEventHandler TileCollisions;
+    public event BackgroundTaskExecuteHandler BeforeBackgroundTasksExecute;
+    public event BackgroundTaskExecuteHandler AfterBackgroundTasksExecute;
+    public event EngineCycleEventHandler BeforeEngineCycle;
+    public event EngineCycleEventHandler AfterEngineCycle;
+    public event CyclesPerSecondCalculatedHandler CPSCalculated;
+    public event CollisionEventHandler TileCollisions;
     #endregion
 
     #region constructor
-    static Engine()
+    private Engine()
     {
         Configuration = EngineConfigurationFile.Load();
         _startTick = HighResTimer.GetCurrentTickCount();
@@ -64,22 +67,22 @@ public static class Engine
     #endregion
 
     #region public methods
-    public static void Start()
+    public void Start()
     {
         IsRunning = true;
     }
 
-    public static void Stop()
+    public void Stop()
     {
         IsRunning = false;
     }
 
-    public static void ResetTotalTimeRunning()
+    public void ResetTotalTimeRunning()
     {
         _startTick = HighResTimer.GetCurrentTickCount();
     }
 
-    public static void ClearEngineState()
+    public void ClearEngineState()
     {
         State.Clear();
     }
@@ -91,23 +94,23 @@ public static class Engine
     #endregion
 
     #region public properties
-    public static double TotalSecondsEngineRunning
+    public double TotalSecondsEngineRunning
     {
         get { return (double)(HighResTimer.GetCurrentTickCount() - _startTick) / (double)HighResTimer.TicksPerSecond; }
     }
 
-    public static double CyclesPerSecond
+    public double CyclesPerSecond
     {
         get { return _grossCPS; }
     }
 
-    public static double FramesPerSecond
+    public double FramesPerSecond
     {
         get { return _netFPS; }
     }
 
-    private static EngineState _state = null;
-    public static EngineState State
+    private EngineState _state = null;
+    public EngineState State
     {
         get
         {
@@ -118,15 +121,15 @@ public static class Engine
         }
     }
 
-    public static EngineConfigurationFile Configuration { get; set; }
+    public EngineConfigurationFile Configuration { get; set; }
 
-    public static EngineStateFile[] StateFiles { get; set; } = Array.Empty<EngineStateFile>();
+    public EngineStateFile[] StateFiles { get; set; } = Array.Empty<EngineStateFile>();
 
-    public static bool IsRunning { get; private set; }
+    public bool IsRunning { get; private set; }
     #endregion
 
     #region private methods
-    private static void Application_Idle(object sender, EventArgs e)
+    private void Application_Idle(object sender, EventArgs e)
     {
         while (IsApplicationIdle())
         {
@@ -143,7 +146,7 @@ public static class Engine
         return pInvoke.PeekMessage(out result, IntPtr.Zero, (uint)0, (uint)0, (uint)0) == 0;
     }
 
-    private static void Cycle()
+    private void Cycle()
     {
         long tick = HighResTimer.GetCurrentTickCount();
 
@@ -153,18 +156,18 @@ public static class Engine
             DoBackgroundTasks(tick);
 
             // flag that the background tasks have been run this "tick"
-            _backgroundRun = true;
+            _hasBackgroundRun = true;
         }
         else        // Settings.Throttle time has passed since last tick...
         {
             // make sure background rendering done at least once
-            if (!_backgroundRun)
+            if (!_hasBackgroundRun)
                 DoBackgroundTasks(tick);
 
             DoForegroundTasks(tick);
 
             // this "tick" complete, reset flag for next tick
-            _backgroundRun = false;
+            _hasBackgroundRun = false;
         }
 
         // increment CPS counter
@@ -177,7 +180,7 @@ public static class Engine
     }
 
 
-    private static void DoBackgroundTasks(long tick)
+    private void DoBackgroundTasks(long tick)
     {
         if (BeforeBackgroundTasksExecute != null)
             BeforeBackgroundTasksExecute();
@@ -215,7 +218,7 @@ public static class Engine
             AfterBackgroundTasksExecute();
     }
 
-    private static void DoForegroundTasks(long tick)
+    private void DoForegroundTasks(long tick)
     {
         // raise event
         if (BeforeEngineCycle != null)
@@ -238,7 +241,7 @@ public static class Engine
         Timers.Timers.RaiseTimerEvents(TimerType.PostCycle, tick);
     }
 
-    private static void DrawRefreshQueues()
+    private void DrawRefreshQueues()
     {
         foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
         {
@@ -314,7 +317,7 @@ public static class Engine
         }
     }
 
-    private static void ClearRefreshQueues()
+    private void ClearRefreshQueues()
     {
         // step through all GridPointMatrixes objects
         foreach (GridPointMatrixes grids in GridPointMatrixes.GetAllGridPointMatrixes())
@@ -327,13 +330,13 @@ public static class Engine
         }
     }
 
-    private static void CycleAnimations(long tick)
+    private void CycleAnimations(long tick)
     {
         for (int i = 0; i < Tile.TilesAnimating.Count; i++)
             Tile.TilesAnimating[i].TileAnimator.CycleAnimation(tick);
     }
 
-    private static void RaiseCollisionEvent(long tick)
+    private void RaiseCollisionEvent(long tick)
     {
         // TODO: refactor this
 
@@ -388,7 +391,7 @@ public static class Engine
         }
     }
 
-    private static List<Collision> CheckForCollisions(Tile primary, List<Tile> secondaryList)
+    private List<Collision> CheckForCollisions(Tile primary, List<Tile> secondaryList)
     {
         List<Collision> collisions = new List<Collision>();
         Rectangle primaryLoc = primary.CollisionArea;
@@ -473,7 +476,7 @@ public static class Engine
         return collisions;
     }
 
-    private static void CalculateCPS(long tick)
+    private void CalculateCPS(long tick)
     {
         // check if CPS Sampling time has passed
         if (tick - _lastCPSSamplingTick >= Configuration.EngineConfig.SamplingTimeForCPSTicks)

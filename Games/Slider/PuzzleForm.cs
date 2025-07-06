@@ -74,13 +74,13 @@ namespace Slider
                 Program.puzzle = new Puzzle(picBoxDC, openFileBox.FileName, int.Parse(txtCol.Text), int.Parse(txtRow.Text), picBox.Size);
                 Sprites_SpriteMovePointFinished(null);
 
-                if (!Gondwana.Engine.IsRunning)
+                if (!Gondwana.Engine.Instance.IsRunning)
                 {
                     this.chkGrid.Enabled = true;
                     this.btnShuffle.Enabled = true;
-                    Gondwana.Engine.Start();
+                    Gondwana.Engine.Instance.Start();
 
-                    Gondwana.Engine.CPSCalculated += Engine_CPSCalculated;
+                    Gondwana.Engine.Instance.CPSCalculated += Engine_CPSCalculated;
                 }
             }
         }
@@ -160,7 +160,7 @@ namespace Slider
                 }
             }
 
-            Gondwana.Engine.Stop();
+            Gondwana.Engine.Instance.Stop();
         }
 
         private void PuzzleForm_FormClosed(object sender, FormClosedEventArgs e)
