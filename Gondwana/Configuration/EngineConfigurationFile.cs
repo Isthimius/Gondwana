@@ -8,36 +8,36 @@ public class EngineConfigurationFile : IDisposable
 {
     private const string _defaultConfigFileName = "gondwana.json";
 
-    #region constructors
     private EngineConfigurationFile() { }
 
-    public static EngineConfigurationFile CreateNew(string configFileName = _defaultConfigFileName, bool autoSave = false)
+    public static EngineConfigurationFile CreateNew(string? configFileName = null, bool? autoSave = null)
     {
         var config = new EngineConfigurationFile
         {
-            FileName = configFileName,
-            AutoSave = autoSave,
+            FileName = configFileName ?? _defaultConfigFileName,
+            AutoSave = autoSave ?? false,
             EngineConfig = new EngineConfiguration()
         };
 
         return config;
     }
 
-    public static EngineConfigurationFile Load(string configFileName = _defaultConfigFileName, bool autoSave = false)
+    public static EngineConfigurationFile Load(string? configFileName = null, bool? autoSave = null)
     {
+        var configFile = configFileName ?? _defaultConfigFileName;
+
         var configRoot = new ConfigurationBuilder()
-            .AddJsonFile(configFileName, optional: true, reloadOnChange: true)
+            .AddJsonFile(configFile, optional: true, reloadOnChange: true)
             .Build();
 
         var settings = configRoot.GetSection(nameof(EngineConfig)).Get<EngineConfiguration>();
         return new EngineConfigurationFile
         {
-            FileName = configFileName,
-            AutoSave = autoSave,
+            FileName = configFile,
+            AutoSave = autoSave ?? false,
             EngineConfig = settings ?? new EngineConfiguration()
         };
     }
-    #endregion
 
     [JsonIgnore]
     public string FileName { get; set; } = _defaultConfigFileName;

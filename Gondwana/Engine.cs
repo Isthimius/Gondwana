@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
 using Gondwana.Common.Win32;
 using Gondwana.Configuration;
 using Gondwana.Drawing.Collisions;
@@ -10,6 +11,8 @@ using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
 using Gondwana.State;
 using Gondwana.Timers;
+using Microsoft.Extensions.Logging;
+using Gondwana.Logging;
 
 namespace Gondwana;
 
@@ -19,6 +22,8 @@ public sealed class Engine
     public static Engine Instance => _instance.Value;
 
     #region private fields
+    private ILogger<Engine> _logger = GondwanaLogger.GetLogger<Engine>();
+
     private long _startTick;
     private long _lastCPSSamplingTick;
     private long _lastTick = HighResTimer.GetCurrentTickCount();
@@ -45,31 +50,70 @@ public sealed class Engine
     #endregion
 
     #region constructor
-    private Engine()
+    private Engine() { }
+
+    private bool _isInitialized = false;
+    private bool _isInitializing = false;
+
+    public void Initialize(ILoggerFactory? loggerFactory = null, string? configFileName = null, bool? autoSaveConfig = null)
     {
-        Configuration = EngineConfigurationFile.Load();
+        if (_isInitialized || _isInitializing)
+            return;
+
+        _isInitializing = true;
+
+        if (loggerFactory != null)
+        {
+            GondwanaLogger.Initialize(loggerFactory);
+            _logger = GondwanaLogger.GetLogger<Engine>();
+        }
+
+        Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
         _startTick = HighResTimer.GetCurrentTickCount();
         _lastCPSSamplingTick = _startTick;
         Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.EngineConfig.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
 
-        Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
-
-        // deserialize all EngineState files listed in configuration
-        foreach (var stateFile in StateFiles)
+        var baseDirectory = Path.GetDirectoryName(AppContext.BaseDirectory);
+        if (baseDirectory != null)
         {
-            if (stateFile.LoadAtStartup)
-                LoadEngineStateFile(stateFile.Path, stateFile.IsBinary);
+            Directory.SetCurrentDirectory(baseDirectory);
+        }
+        else
+        {
+            throw new InvalidOperationException("AppContext.BaseDirectory returned a null or invalid path.");
         }
 
         VisibleSurfaces.ForcedRefreshRate = Configuration.EngineConfig.VisibleSurfaceRefreshTimer;
-        Application.Idle += Application_Idle;
+
+        _isInitializing = false;
+        _isInitialized = true;
     }
     #endregion
 
     #region public methods
     public void Start()
     {
+        if (IsRunning)
+            return;
+
+        if (!IsInitialized)
+        {
+            // wait for initialization to complete
+            while (IsInitializing) { }
+
+            Initialize();
+        }
+
         IsRunning = true;
+
+        Task.Run(() =>
+        {
+            while (Instance.IsRunning)
+            {
+                Instance.Cycle();
+                //Thread.Yield(); // optional
+            }
+        });
     }
 
     public void Stop()
@@ -94,6 +138,12 @@ public sealed class Engine
     #endregion
 
     #region public properties
+    public bool IsInitialized => _isInitialized;
+
+    public bool IsInitializing => _isInitializing;
+
+    public bool IsRunning { get; private set; }
+
     public double TotalSecondsEngineRunning
     {
         get { return (double)(HighResTimer.GetCurrentTickCount() - _startTick) / (double)HighResTimer.TicksPerSecond; }
@@ -124,28 +174,9 @@ public sealed class Engine
     public EngineConfigurationFile Configuration { get; set; }
 
     public EngineStateFile[] StateFiles { get; set; } = Array.Empty<EngineStateFile>();
-
-    public bool IsRunning { get; private set; }
     #endregion
 
     #region private methods
-    private void Application_Idle(object sender, EventArgs e)
-    {
-        while (IsApplicationIdle())
-        {
-            if (IsRunning)
-                Cycle();
-            else
-                return;
-        }
-    }
-
-    private static bool IsApplicationIdle()
-    {
-        NativeMessage result;
-        return pInvoke.PeekMessage(out result, IntPtr.Zero, (uint)0, (uint)0, (uint)0) == 0;
-    }
-
     private void Cycle()
     {
         long tick = HighResTimer.GetCurrentTickCount();

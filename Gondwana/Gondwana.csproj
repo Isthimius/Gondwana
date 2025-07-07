@@ -17,6 +17,9 @@
 	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.6" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.6" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
 	  <PackageReference Include="NAudio" Version="2.2.1" />
 	  <PackageReference Include="OpenTK" Version="4.9.4" />
 	  <PackageReference Include="SharpZipLib" Version="1.4.2" />

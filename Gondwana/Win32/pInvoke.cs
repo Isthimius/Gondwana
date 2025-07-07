@@ -21,8 +21,5 @@ namespace Gondwana.Common.Win32
 
         [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern int DeleteObject(IntPtr hObject);
-
-        [DllImport("user32.dll")]
-        public static extern int PeekMessage(out NativeMessage message, IntPtr window, uint filterMin, uint filterMax, uint remove);
     }
 }
