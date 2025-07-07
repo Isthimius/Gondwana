@@ -11,8 +11,6 @@ public static class PlatformAudioFactory
         // Core format support
         Register(".wav", stream => new WaveFileReader(stream));
         Register(".mp3", stream => new Mp3FileReader(stream));
-        //Register(".mid", stream => Midi.MidiFileReader.CreateReader(stream));
-        //Register(".midi", stream => Midi.MidiFileReader.CreateReader(stream));
     }
 
     public static void Register(string extension, Func<Stream, WaveStream> readerFactory, bool requiresFile = false)

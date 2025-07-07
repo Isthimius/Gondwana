@@ -1,18 +1,16 @@
-using System.Drawing;
-using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
-using Gondwana.Common.Win32;
 using Gondwana.Configuration;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Extensibility;
 using Gondwana.Grid;
 using Gondwana.Input.Keyboard;
+using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
-using Gondwana.Logging;
+using System.Drawing;
 
 namespace Gondwana;
 
@@ -21,9 +19,9 @@ public sealed class Engine
     private static readonly Lazy<Engine> _instance = new(() => new Engine());
     public static Engine Instance => _instance.Value;
 
-    #region private fields
-    private ILogger<Engine> _logger = GondwanaLogger.GetLogger<Engine>();
+    public static ILogger<Engine> Logger => GondwanaLogger.GetLogger<Engine>();
 
+    #region private fields
     private long _startTick;
     private long _lastCPSSamplingTick;
     private long _lastTick = HighResTimer.GetCurrentTickCount();
@@ -55,7 +53,7 @@ public sealed class Engine
     private bool _isInitialized = false;
     private bool _isInitializing = false;
 
-    public void Initialize(ILoggerFactory? loggerFactory = null, string? configFileName = null, bool? autoSaveConfig = null)
+    public void Initialize(string? configFileName = null, bool? autoSaveConfig = null, ILoggerFactory? loggerFactory = null)
     {
         if (_isInitialized || _isInitializing)
             return;
@@ -63,10 +61,9 @@ public sealed class Engine
         _isInitializing = true;
 
         if (loggerFactory != null)
-        {
             GondwanaLogger.Initialize(loggerFactory);
-            _logger = GondwanaLogger.GetLogger<Engine>();
-        }
+
+        GondwanaInitRunner.Run(InitTiming.PreInit);
 
         Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
         _startTick = HighResTimer.GetCurrentTickCount();
@@ -84,6 +81,8 @@ public sealed class Engine
         }
 
         VisibleSurfaces.ForcedRefreshRate = Configuration.EngineConfig.VisibleSurfaceRefreshTimer;
+
+        GondwanaInitRunner.Run(InitTiming.PostInit);
 
         _isInitializing = false;
         _isInitialized = true;

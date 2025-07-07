@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Gondwana.Configuration;
 
-public class EngineConfigurationFile : IDisposable
+public partial class EngineConfigurationFile : IDisposable
 {
     private const string _defaultConfigFileName = "gondwana.json";
     private string _fileName = _defaultConfigFileName;

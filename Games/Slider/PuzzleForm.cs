@@ -121,7 +121,7 @@ namespace Slider
 
         private void btnShuffle_Click(object sender, EventArgs e)
         {
-            if (!Program.puzzle._isShuffling)
+            if (Program.puzzle != null && !Program.puzzle._isShuffling)
             {
                 int numberOfSlides = Program.puzzle.Rows * Program.puzzle.Columns * 3;
                 double slideTime = (double)15 / (double)numberOfSlides;
@@ -142,11 +142,14 @@ namespace Slider
 
         private void picBox_MouseClick(object sender, MouseEventArgs e)
         {
-            if (!Program.puzzle._isShuffling)
+            if (Program.puzzle != null)
             {
-                List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));
-                if (sprites.Count != 0)
-                    Program.puzzle.SlidePiece(sprites[0], 0.15);
+                if (!Program.puzzle._isShuffling)
+                {
+                    List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));
+                    if (sprites.Count != 0)
+                        Program.puzzle.SlidePiece(sprites[0], 0.15);
+                }
             }
         }
 
