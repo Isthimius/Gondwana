@@ -16,7 +16,7 @@ public class EngineState
 
     #region static methods
     /// <summary>
-    /// Captures the current values for the Gondwana.Common classes referenced by <see cref="EngineState"/>
+    /// Captures the current values for the Gondwana classes referenced by <see cref="EngineState"/>
     /// </summary>
     /// <returns></returns>
     public static EngineState GetEngineState()

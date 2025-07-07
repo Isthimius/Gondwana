@@ -38,7 +38,7 @@ public class SoundResourceManager : IDisposable
     {
         if (_soundResources.TryGetValue(key, out var existing))
         {
-            existing.Dispose(); // Replace existing
+            existing.Dispose(); // replace existing
         }
 
         using var ms = new MemoryStream();

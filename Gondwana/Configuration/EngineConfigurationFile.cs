@@ -7,6 +7,7 @@ namespace Gondwana.Configuration;
 public class EngineConfigurationFile : IDisposable
 {
     private const string _defaultConfigFileName = "gondwana.json";
+    private string _fileName = _defaultConfigFileName;
 
     private EngineConfigurationFile() { }
 
@@ -40,7 +41,14 @@ public class EngineConfigurationFile : IDisposable
     }
 
     [JsonIgnore]
-    public string FileName { get; set; } = _defaultConfigFileName;
+    public string FileName
+    {
+        get => Path.GetFileName(_fileName);
+        private set => _fileName = Path.GetFullPath(value);
+    }
+
+    [JsonIgnore]
+    public string FilePath => Path.GetFullPath(_fileName);
 
     [JsonIgnore]
     public bool AutoSave { get; set; } = false;
@@ -49,13 +57,14 @@ public class EngineConfigurationFile : IDisposable
 
     public void Save()
     {
-        Save(FileName);
+        Save(FilePath);
     }
 
     public void Save(string jsonPath)
     {
         var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(jsonPath, json);
+        FileName = jsonPath;
     }
 
     public void Dispose()
