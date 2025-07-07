@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using System.Xml;
 
-namespace Gondwana.Common.Utility;
+namespace Gondwana.State;
 
 public static class BinarySerializer
 {
