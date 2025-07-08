@@ -15,15 +15,16 @@ internal static class GondwanaInitRunner
 
         foreach (var dllPath in dllPaths)
         {
-            var assembly = Assembly.Load(dllPath);
+            var assembly = Assembly.LoadFrom(dllPath);
 
             foreach (var type in assembly.GetTypes())
             {
-                var initMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                var initMethods = type.GetMethods()
                     .Select(m => (Method: m, Attr: m.GetCustomAttribute<EngineInitAttribute>()))
                     .Where(pair =>
                         pair.Attr != null &&
                         pair.Attr.InitTiming == initTiming &&
+                        pair.Method.IsStatic &&
                         pair.Method.ReturnType == typeof(void) &&
                         pair.Method.GetParameters().Length == 0);
 

@@ -37,8 +37,8 @@ public class SoundResource : IDisposable
     {
         ISampleProvider baseProvider = source.ToSampleProvider();
 
-        if (baseProvider.WaveFormat.Channels == 1)
-            baseProvider = new MonoToStereoSampleProvider(baseProvider);
+        if (baseProvider.WaveFormat.Channels > 1)
+            baseProvider = new StereoToMonoSampleProvider(baseProvider);
 
         volumeProvider = new VolumeSampleProvider(baseProvider) { Volume = volume };
         panningProvider = new PanningSampleProvider(volumeProvider) { Pan = pan };

@@ -22,11 +22,5 @@ public static class GondwanaLogger
     public static ILoggerFactory EngineLoggerFactory => _loggerFactory;
 
     public static ILogger<T> GetLogger<T>() =>
-        (ILogger<T>)_loggerCache.GetOrAdd(typeof(T), static type =>
-        {
-            var genericMethod = typeof(ILoggerFactory)
-                .GetMethod(nameof(ILoggerFactory.CreateLogger), 1, Type.EmptyTypes)!
-                .MakeGenericMethod(type);
-            return (ILogger)genericMethod.Invoke(_loggerFactory, null)!;
-        });
+        (ILogger<T>)_loggerCache.GetOrAdd(typeof(T), _ => _loggerFactory.CreateLogger<T>());
 }
