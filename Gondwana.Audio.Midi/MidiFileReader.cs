@@ -5,7 +5,7 @@ using NAudio.Wave.SampleProviders;
 
 namespace Gondwana.Audio.Midi;
 
-internal static class MidiFileReader
+public static class MidiFileReader
 {
     private static readonly Lazy<SoundFont> _soundFont = new(() =>
     {
@@ -26,6 +26,12 @@ internal static class MidiFileReader
 
     //    _soundFont = new SoundFont(stream);
     //}
+
+    public static void RegisterDefaultReaders()
+    {
+        PlatformAudioFactory.Register(".mid", stream => MidiFileReader.CreateReader(stream));
+        PlatformAudioFactory.Register(".midi", stream => MidiFileReader.CreateReader(stream));
+    }
 
     public static WaveStream CreateReader(Stream stream)
     {

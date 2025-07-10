@@ -19,7 +19,7 @@ public sealed class Engine
     private static readonly Lazy<Engine> _instance = new(() => new Engine());
     public static Engine Instance => _instance.Value;
 
-    public static ILogger<Engine> Logger => GondwanaLogger.GetLogger<Engine>();
+    public static ILogger<Engine> Logger => EngineLogger.GetLogger<Engine>();
 
     #region private fields
     private long _startTick;
@@ -37,6 +37,24 @@ public sealed class Engine
     #endregion
 
     #region events
+    /// <summary>
+    /// Runs when Initialize() is called, prior to internal initialization.
+    /// This event will only be raised the first time Initialize() is called.
+    /// </summary>
+    public event EventHandler PreInitialization;
+
+    /// <summary>
+    /// Runs when Initalize() is called, after all other internal initialization is complete.
+    /// This event will only be raised the first time Initialize() is called.
+    /// </summary>
+    public event EventHandler PostInitialization;
+
+    /// <summary>
+    /// Runs when Initalize() is called, after all other internal initialization and
+    /// PostInitialization is complete. This event will be raised each time Initialize() is called.
+    /// </summary>
+    public event EventHandler InitializationComplete;
+
     public delegate void BackgroundTaskExecuteHandler();
 
     public event BackgroundTaskExecuteHandler BeforeBackgroundTasksExecute;
@@ -53,51 +71,41 @@ public sealed class Engine
     private bool _isInitialized = false;
     private bool _isInitializing = false;
 
-    public void Initialize(string? configFileName = null, bool? autoSaveConfig = null, ILoggerFactory? loggerFactory = null)
+    public void Initialize(string? configFileName = null, bool? autoSaveConfig = null)
     {
         if (_isInitialized || _isInitializing)
             return;
 
         _isInitializing = true;
 
-        if (loggerFactory != null)
-            GondwanaLogger.Initialize(loggerFactory);
-
-        GondwanaInitRunner.Run(InitTiming.PreInit);
+        PreInitialization?.Invoke(this, EventArgs.Empty);
 
         Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
-        _startTick = HighResTimer.GetCurrentTickCount();
-        _lastCPSSamplingTick = _startTick;
         Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.EngineConfig.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
-
-        var baseDirectory = Path.GetDirectoryName(AppContext.BaseDirectory);
-        if (baseDirectory != null)
-        {
-            Directory.SetCurrentDirectory(baseDirectory);
-        }
-        else
-        {
-            throw new InvalidOperationException("AppContext.BaseDirectory returned a null or invalid path.");
-        }
 
         VisibleSurfaces.ForcedRefreshRate = Configuration.EngineConfig.VisibleSurfaceRefreshTimer;
 
-        GondwanaInitRunner.Run(InitTiming.PostInit);
+        PostInitialization?.Invoke(this, EventArgs.Empty);
 
         _isInitializing = false;
         _isInitialized = true;
+
+        InitializationComplete?.Invoke(this, EventArgs.Empty);
     }
     #endregion
 
     #region public methods
     public void Start()
     {
+        if (IsPaused)
+            IsPaused = false;
+
         if (IsRunning)
             return;
 
         if (!IsInitialized)
         {
-            // wait for initialization to complete
+            // wait for previous initialization to complete
             while (IsInitializing) { }
 
             Initialize();
@@ -105,12 +113,18 @@ public sealed class Engine
 
         IsRunning = true;
 
+        _startTick = HighResTimer.GetCurrentTickCount();
+        _lastCPSSamplingTick = _startTick;
+
         Task.Run(() =>
         {
             while (Instance.IsRunning)
             {
-                Instance.Cycle();
-                //Thread.Yield(); // optional
+                if (!IsPaused)
+                {
+                    Instance.Cycle();
+                    //Thread.Yield(); // optional
+                }
             }
         });
     }
@@ -142,6 +156,8 @@ public sealed class Engine
     public bool IsInitializing => _isInitializing;
 
     public bool IsRunning { get; private set; }
+
+    public bool IsPaused { get; private set; } = false;
 
     public double TotalSecondsEngineRunning
     {

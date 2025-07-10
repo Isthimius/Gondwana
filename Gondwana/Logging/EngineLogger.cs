@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace Gondwana.Logging;
 
-public static class GondwanaLogger
+public static class EngineLogger
 {
     private static ILoggerFactory _loggerFactory = LoggerFactory.Create(static builder =>
     {

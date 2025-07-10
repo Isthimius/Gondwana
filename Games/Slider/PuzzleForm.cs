@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using Gondwana.Audio.Midi;
 
 namespace Slider
 {
@@ -78,11 +79,17 @@ namespace Slider
                 {
                     this.chkGrid.Enabled = true;
                     this.btnShuffle.Enabled = true;
+                    Gondwana.Engine.Instance.PostInitialization += Instance_PostInitialization;
                     Gondwana.Engine.Instance.Start();
 
                     Gondwana.Engine.Instance.CPSCalculated += Engine_CPSCalculated;
                 }
             }
+        }
+
+        private void Instance_PostInitialization(object sender, EventArgs e)
+        {
+            MidiFileReader.RegisterDefaultReaders();
         }
 
         private void Engine_CPSCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs e)
