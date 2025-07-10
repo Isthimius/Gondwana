@@ -29,8 +29,8 @@ public static class MidiFileReader
 
     public static void RegisterDefaultReaders()
     {
-        PlatformAudioFactory.Register(".mid", stream => MidiFileReader.CreateReader(stream));
-        PlatformAudioFactory.Register(".midi", stream => MidiFileReader.CreateReader(stream));
+        PlatformAudioFactory.Register(".mid", stream => CreateReader(stream));
+        PlatformAudioFactory.Register(".midi", stream => CreateReader(stream));
     }
 
     public static WaveStream CreateReader(Stream stream)
