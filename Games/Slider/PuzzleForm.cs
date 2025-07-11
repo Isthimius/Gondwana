@@ -48,7 +48,7 @@ namespace Slider
 #endif
 
             //if (!Program.puzzle._isShuffling)
-                //Program.slideSound.Stop();
+            //Program.slideSound.Stop();
 
             //if (Program.puzzle.TotalPieces == Program.puzzle.TotalPiecesCorrect)
             //    Program.tadaSound.Play();
@@ -206,6 +206,14 @@ namespace Slider
                 Program.slideSound.Play();
                 //Thread.Sleep(750);
             }
+        }
+
+        private void cmdPause_Click(object sender, EventArgs e)
+        {
+            if (!Gondwana.Engine.Instance.IsPaused)
+                Gondwana.Engine.Instance.Pause();
+            else
+                Gondwana.Engine.Instance.Start();
         }
     }
 }
