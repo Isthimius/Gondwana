@@ -4,10 +4,9 @@ using Gondwana.Grid;
 using Gondwana.Common.Win32;
 using System.Runtime.Serialization;
 using System.Drawing;
-using Gondwana.Drawing;
 using Gondwana.Drawing.Collisions;
 
-namespace Gondwana;
+namespace Gondwana.Drawing;
 
 [DataContract(IsReference = true)]
 [KnownType(typeof(GridPoint))]
@@ -71,7 +70,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             if (frame.Tilesheet == null)
                 return 0;
 
-            return (int)(frame.Tilesheet.ExtraTopSpaceToPrimaryRatio * (float)ParentGrid.GridPointHeight);
+            return (int)(frame.Tilesheet.ExtraTopSpaceToPrimaryRatio * ParentGrid.GridPointHeight);
         }
     }
 
@@ -84,7 +83,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             zOrder = value;
 
             if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
 
             if (childTiles != null)
             {
@@ -103,7 +102,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             visible = value;
 
             if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
 
             if (childTiles != null)
             {
@@ -123,7 +122,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             frame = value;
 
             if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
 
             if (childTiles != null)
             {
@@ -164,14 +163,14 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             if (value == CollisionDetectionType.None)
             {
                 // if Tile in the collisions List, remove it
-                if (Tile.TileCollisions.IndexOf(this) != -1)
-                    Tile.TileCollisions.Remove(this);
+                if (TileCollisions.IndexOf(this) != -1)
+                    TileCollisions.Remove(this);
             }
             else
             {
                 // if Tile not in the collisions List, add it
-                if (Tile.TileCollisions.IndexOf(this) == -1)
-                    Tile.TileCollisions.Add(this);
+                if (TileCollisions.IndexOf(this) == -1)
+                    TileCollisions.Add(this);
             }
 
             collisionDetection = value;
@@ -192,8 +191,8 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             Rectangle rect = DrawLocation;
             rect.Y += AdjustCollisionArea.Top;
             rect.X += AdjustCollisionArea.Left;
-            rect.Height += (AdjustCollisionArea.Bottom - AdjustCollisionArea.Top);
-            rect.Width += (AdjustCollisionArea.Right - AdjustCollisionArea.Left);
+            rect.Height += AdjustCollisionArea.Bottom - AdjustCollisionArea.Top;
+            rect.Width += AdjustCollisionArea.Right - AdjustCollisionArea.Left;
             return rect;
         }
     }
@@ -207,7 +206,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             rasterOp = value;
 
             if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
 
             if (childTiles != null)
             {
@@ -226,7 +225,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             enableFog = value;
 
             if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
 
             if (childTiles != null)
             {
@@ -245,7 +244,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     [IgnoreDataMember]
     public bool IsChildTile
     {
-        get { return (parentTile != null); }
+        get { return parentTile != null; }
     }
 
     /// <summary>

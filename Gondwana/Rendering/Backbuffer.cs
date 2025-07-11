@@ -2,6 +2,7 @@ using Gondwana.Common;
 using Gondwana.Grid;
 using Gondwana.Common.Win32;
 using System.Drawing;
+using Gondwana.Drawing;
 
 namespace Gondwana.Rendering;
 

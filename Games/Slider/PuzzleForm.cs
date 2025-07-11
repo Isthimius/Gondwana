@@ -89,7 +89,7 @@ namespace Slider
 
         private void Instance_PostInitialization(object sender, EventArgs e)
         {
-            MidiFileReader.RegisterDefaultReaders();
+            //MidiFileReader.RegisterDefaultReaders();
         }
 
         private void Engine_CPSCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs e)
