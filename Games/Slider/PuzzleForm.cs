@@ -210,10 +210,10 @@ namespace Slider
 
         private void cmdPause_Click(object sender, EventArgs e)
         {
-            if (!Gondwana.Engine.Instance.IsPaused)
-                Gondwana.Engine.Instance.Pause();
-            else
-                Gondwana.Engine.Instance.Start();
+        //    if (!Gondwana.Engine.Instance.IsPaused)
+        //        Gondwana.Engine.Instance.Pause();
+        //    else
+        //        Gondwana.Engine.Instance.Start();
         }
     }
 }

@@ -430,7 +430,7 @@ public static class Sprites
         {
             Sprite sprite = Tile.TilesMoving[i] as Sprite;
             if (sprite != null)
-                sprite.movement.MoveNext(tick);
+                sprite.movement?.MoveNext(tick);
         }
 
         // move by velocity

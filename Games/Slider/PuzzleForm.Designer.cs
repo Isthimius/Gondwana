@@ -213,6 +213,7 @@ namespace Slider
             // 
             // cmdPause
             // 
+            cmdPause.Enabled = false;
             cmdPause.Location = new System.Drawing.Point(13, 474);
             cmdPause.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             cmdPause.Name = "cmdPause";

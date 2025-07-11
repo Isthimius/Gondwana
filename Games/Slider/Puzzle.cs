@@ -262,6 +262,7 @@ namespace Slider
         private void Sprites_SpriteMovementStopped(SpriteMovementEventArgs e)
         {
             _spriteMoving = false;
+            slideSound.Stop();
 
             if (_isShuffling)
                 ShuffleNext();

@@ -97,9 +97,6 @@ public sealed class Engine
     #region public methods
     public void Start()
     {
-        if (IsPaused)
-            IsPaused = false;
-
         if (IsRunning)
             return;
 
@@ -120,21 +117,10 @@ public sealed class Engine
         {
             while (Instance.IsRunning)
             {
-                if (!IsPaused)
-                {
-                    Instance.Cycle();
-                    //Thread.Yield(); // optional
-                }
+                Instance.Cycle();
+                Thread.Yield(); // optional
             }
         });
-    }
-
-    public void Pause()
-    {
-        if (!IsPaused)
-        {
-            IsPaused = true;
-        }
     }
 
     public void Stop()
@@ -164,30 +150,6 @@ public sealed class Engine
     public bool IsInitializing => _isInitializing;
 
     public bool IsRunning { get; private set; }
-
-    private bool _isPaused = false;
-    private long _pauseStartTick = 0;
-    private long _totalTimePaused = 0;
-    public bool IsPaused 
-    {
-        get => _isPaused;
-        private set
-        {
-            // if is not currently paused, and activating pause, capture time
-            if (!_isPaused && value)
-            {
-                _pauseStartTick = HighResTimer.GetCurrentTick();
-            }
-
-            // if currently paused, and unpausing, accumulate total time paused
-            if (_isPaused && !value)
-            {
-                _totalTimePaused += HighResTimer.GetCurrentTick() - _pauseStartTick;
-            }
-
-            _isPaused = value;
-        }
-    }
 
     public double TotalSecondsEngineRunning
     {
@@ -224,7 +186,7 @@ public sealed class Engine
     #region private methods
     private void Cycle()
     {
-        long tick = HighResTimer.GetCurrentTick() - _totalTimePaused;
+        long tick = HighResTimer.GetCurrentTick();
 
         // throttle time hasn't passed; do background tasks
         if ((Configuration.EngineConfig.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.EngineConfig.TargetFPS)) * (double)HighResTimer.TicksPerSecond))
