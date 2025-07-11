@@ -1,40 +1,27 @@
-﻿using System.Configuration;
+﻿namespace Gondwana.State;
 
-namespace Gondwana.State;
-
-public class EngineStateFile : ConfigurationElement
+/// <summary>
+/// Represents a single engine state file configuration.
+/// </summary>
+public class EngineStateFile
 {
     /// <summary>
-    /// Unique identifier for entry
+    /// Unique identifier for the state file entry.
     /// </summary>
-    [ConfigurationProperty("ID", IsRequired = true, IsKey = true)]
-    public string ID
-    {
-        get { return (string)this["ID"]; }
-        set { this["ID"] = value; }
-    }
+    public string ID { get; set; } = string.Empty;
 
     /// <summary>
-    /// Path to a serialized <see cref="EngineState"/> instance
+    /// Path to a serialized <see cref="EngineState"/> instance.
     /// </summary>
-    [ConfigurationProperty("Path", IsRequired = true)]
-    public string Path
-    {
-        get { return (string)this["Path"]; }
-        set { this["Path"] = value; }
-    }
+    public string Path { get; set; } = string.Empty;
 
-    [ConfigurationProperty("IsBinary", IsRequired = false, DefaultValue = "false")]
-    public bool IsBinary
-    {
-        get { return (bool)this["IsBinary"]; }
-        set { this["IsBinary"] = value; }
-    }
+    /// <summary>
+    /// Whether the file is in binary format.
+    /// </summary>
+    public bool IsBinary { get; set; } = false;
 
-    [ConfigurationProperty("LoadAtStartup", IsRequired = false, DefaultValue = true)]
-    public bool LoadAtStartup
-    {
-        get { return (bool)base["LoadAtStartup"]; }
-        set { base["LoadAtStartup"] = value; }
-    }
+    /// <summary>
+    /// Whether to load this state file at engine startup.
+    /// </summary>
+    public bool LoadAtStartup { get; set; } = true;
 }

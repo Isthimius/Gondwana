@@ -32,7 +32,7 @@ public class EngineState
             GridsDisplay = GridPointMatrixes._allGridPointMatrixes,
             Grids = GridPointMatrix._allGridPointMatrix,
             Sprites = Drawing.Sprites.Sprites._spriteList,
-            //MediaFiles = MediaFile._mediaFiles
+            SoundResources = SoundResourceManager.Instance.GetAll()
         };
     }
 
@@ -95,7 +95,7 @@ public class EngineState
     public List<Sprite> Sprites { get; set; }
 
     [DataMember(Order = 7)]
-    public Dictionary<string, SoundResource> MediaFiles { get; set; }
+    public IDictionary<string, SoundResource> SoundResources { get; set; }
     #endregion
 
     #region public methods
@@ -111,7 +111,7 @@ public class EngineState
         GridPointMatrixes.ClearAllGridPointMatrixes();
         GridPointMatrix.ClearAllGridPointMatrix();
         Drawing.Sprites.Sprites.Clear();
-        //MediaFile.DisposeAll();
+        SoundResourceManager.Instance.Dispose();
     }
 
     public void Save(string file, bool isBinary)

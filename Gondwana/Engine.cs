@@ -15,7 +15,7 @@ using System.Drawing;
 
 namespace Gondwana;
 
-public sealed class Engine
+public sealed class Engine : IDisposable
 {
     private static readonly Lazy<Engine> _instance = new(() => new Engine());
     public static Engine Instance => _instance.Value;
@@ -168,6 +168,8 @@ public sealed class Engine
     }
 
     private EngineState _state = null;
+    public bool IsDisposed { get; private set; } = false;
+
     public EngineState State
     {
         get
@@ -532,6 +534,33 @@ public sealed class Engine
             _grossCyclesThisMeasure = 0;
             _netCyclesThisMeasure = 0;
         }
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!IsDisposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources here.
+            }
+
+            // Free unmanaged resources here (if any).
+
+            IsDisposed = true;
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~Engine()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: false);
     }
     #endregion
 }

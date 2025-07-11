@@ -17,7 +17,7 @@ public class EngineResourceFile : IDisposable
     public bool IsEncrypted { get; private set; }
 
     private ZipFile? _zipFile;
-    private List<(string key, Func<Stream> getStream)> _pendingEntries = new();
+    private readonly List<(string key, Func<Stream> getStream)> _pendingEntries = new();
 
     public EngineResourceFile(string path, string? password = null, bool encrypt = false)
     {
