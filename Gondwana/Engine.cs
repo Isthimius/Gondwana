@@ -2,7 +2,6 @@ using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Extensibility;
 using Gondwana.Grid;
 using Gondwana.Input.Keyboard;
 using Gondwana.Logging;
