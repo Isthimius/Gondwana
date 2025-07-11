@@ -58,7 +58,7 @@ namespace Slider
             surface.Erase();
 
             InitializeSprites(tileWidth, tileHeight);
-            //slideSound = SoundResourceManager.Instance.LoadFromFile("move", "X:\\github\\isthimius\\Gondwana\\Games\\Slider\\assets\\75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
+            slideSound = SoundResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
             //Gondwana.Scripting.Parser.WriteToFile("bmpProp_file.gond", System.IO.FileMode.Create, tilesheet);
             //Engine.ScriptEngineState("file.gond", true);
 
@@ -256,7 +256,7 @@ namespace Slider
         private void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)
         {
             _spriteMoving = true;
-            //slideSound.Play();
+            slideSound.Play();
         }
 
         private void Sprites_SpriteMovementStopped(SpriteMovementEventArgs e)
