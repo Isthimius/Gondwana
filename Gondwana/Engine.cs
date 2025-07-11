@@ -81,10 +81,10 @@ public sealed class Engine : IDisposable
 
         PreInitialization?.Invoke(this, EventArgs.Empty);
 
-        Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
-        Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.EngineConfig.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
+        Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig).EngineConfig;
+        Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
 
-        VisibleSurfaces.ForcedRefreshRate = Configuration.EngineConfig.VisibleSurfaceRefreshTimer;
+        VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
 
@@ -133,16 +133,6 @@ public sealed class Engine : IDisposable
     {
         _startTick = HighResTimer.GetCurrentTick();
     }
-
-    public void ClearEngineState()
-    {
-        State.Clear();
-    }
-
-    public static void LoadEngineStateFile(string file, bool isBinary)
-    {
-        EngineState.GetEngineState(file, isBinary);
-    }
     #endregion
 
     #region public properties
@@ -167,23 +157,11 @@ public sealed class Engine : IDisposable
         get { return _netFPS; }
     }
 
-    private EngineState _state = null;
     public bool IsDisposed { get; private set; } = false;
 
-    public EngineState State
-    {
-        get
-        {
-            if (_state == null)
-                _state = EngineState.GetEngineState();
+    public EngineState State { get; } = new EngineState();
 
-            return _state;
-        }
-    }
-
-    public EngineConfigurationFile Configuration { get; set; }
-
-    public EngineStateFile[] StateFiles { get; set; } = Array.Empty<EngineStateFile>();
+    public EngineConfiguration Configuration { get; set; }
     #endregion
 
     #region private methods
@@ -192,7 +170,7 @@ public sealed class Engine : IDisposable
         long tick = HighResTimer.GetCurrentTick();
 
         // throttle time hasn't passed; do background tasks
-        if ((Configuration.EngineConfig.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.EngineConfig.TargetFPS)) * (double)HighResTimer.TicksPerSecond))
+        if ((Configuration.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.TargetFPS)) * (double)HighResTimer.TicksPerSecond))
         {
             DoBackgroundTasks(tick);
 
@@ -216,7 +194,7 @@ public sealed class Engine : IDisposable
         _grossCycles++;
 
         // if 0 or negative, sampling is turned off
-        if (Configuration.EngineConfig.SamplingTimeForCPS > 0)
+        if (Configuration.SamplingTimeForCPS > 0)
             CalculateCPS(tick);
     }
 
@@ -519,7 +497,7 @@ public sealed class Engine : IDisposable
     private void CalculateCPS(long tick)
     {
         // check if CPS Sampling time has passed
-        if (tick - _lastCPSSamplingTick >= Configuration.EngineConfig.SamplingTimeForCPSTicks)
+        if (tick - _lastCPSSamplingTick >= Configuration.SamplingTimeForCPSTicks)
         {
             _grossCPS = (double)(_grossCyclesThisMeasure * HighResTimer.TicksPerSecond) / (double)(tick - _lastCPSSamplingTick);
             _netFPS = (double)(_netCyclesThisMeasure * HighResTimer.TicksPerSecond) / (double)(tick - _lastCPSSamplingTick);
@@ -527,7 +505,7 @@ public sealed class Engine : IDisposable
             // raise the event
             if (CPSCalculated != null)
                 CPSCalculated(new CyclesPerSecondCalculatedEventArgs(
-                    _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.EngineConfig.SamplingTimeForCPS));
+                    _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.SamplingTimeForCPS));
 
             // reset values for next calculation
             _lastCPSSamplingTick = tick;
@@ -542,10 +520,8 @@ public sealed class Engine : IDisposable
         {
             if (disposing)
             {
-                // Dispose managed resources here.
+                State.Clear();
             }
-
-            // Free unmanaged resources here (if any).
 
             IsDisposed = true;
         }

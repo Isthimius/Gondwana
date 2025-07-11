@@ -1,111 +1,44 @@
-﻿using Gondwana.Drawing;
+﻿using Gondwana.Audio;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
-using Gondwana.Resource;
-using Gondwana.Audio;
 using System.IO.Compression;
-using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gondwana.State;
 
-[DataContract(Name = "GondwanaEngine")]
 public class EngineState
 {
-    private EngineState() { ValueBag = new Dictionary<string, string>(); }
+    [JsonInclude]
+    public Dictionary<string, string> ValueBag { get; set; } = new();
 
-    #region static methods
-    /// <summary>
-    /// Captures the current values for the Gondwana classes referenced by <see cref="EngineState"/>
-    /// </summary>
-    /// <returns></returns>
-    public static EngineState GetEngineState()
-    {
-        var allTilesheets = Tilesheet.AllTilesheets;
-        allTilesheets.Sort((x, y) => string.Compare(x.MaskName, y.MaskName));
+    //[JsonInclude]
+    //public List<EngineResourceFile> ResourceFiles => EngineResourceFile.GetAll();
 
-        return new EngineState()
-        {
-            //ResourceFiles = EngineResourceFile.GetAll(),
-            Tilesheets = Tilesheet._tilesheets,
-            Cycles = Cycle._cycles,
-            GridsDisplay = GridPointMatrixes._allGridPointMatrixes,
-            Grids = GridPointMatrix._allGridPointMatrix,
-            Sprites = Drawing.Sprites.Sprites._spriteList,
-            SoundResources = SoundResourceManager.Instance.GetAll()
-        };
-    }
+    [JsonInclude]
+    public Dictionary<string, Tilesheet> Tilesheets => Tilesheet._tilesheets;
 
-    /// <summary>
-    /// Reads in the EngineState from a serialized file
-    /// </summary>
-    /// <param name="file">path of file containing EngineState serialization</param>
-    /// <param name="isBinary">whether or not the serialization file is binary encoded</param>
-    /// <returns></returns>
-    public static EngineState GetEngineState(string file, bool isBinary)
-    {
-        var serializer = new DataContractSerializer(typeof(EngineState));
-        Dictionary<string, string> valueBag = null;
+    [JsonInclude]
+    public Dictionary<string, Cycle> Cycles => Cycle._cycles;
 
-        // deserializing the file will load the instantiate the classes
-        if (isBinary)
-        {
-            using (var filestream = new FileStream(file, FileMode.Open))
-            using (var zipStream = new GZipStream(filestream, CompressionMode.Decompress))
-            using (var memStream = new MemoryStream())
-            {
-                zipStream.CopyTo(memStream);
-                valueBag = BinarySerializer.Deserialize<EngineState>(memStream.ToArray()).ValueBag;
-            }
-        }
-        else
-        {
-            using (var filestream = new FileStream(file, FileMode.Open))
-                valueBag = ((EngineState)serializer.ReadObject(filestream)).ValueBag;
-        }
+    [JsonInclude]
+    public List<GridPointMatrix> Grids => GridPointMatrix._allGridPointMatrix;
 
-        // calling GetEngineState() will set "this" properties to the
-        // List / Dictionary reference inclusive of all instantiated classes
-        var state = GetEngineState();
-        state.ValueBag = valueBag;
-        return state;
-    }
-    #endregion
+    [JsonInclude]
+    public List<GridPointMatrixes> GridsDisplay => GridPointMatrixes._allGridPointMatrixes;
 
-    #region properties
-    [DataMember(Order = 0)]
-    public Dictionary<string, string> ValueBag { get; set; }
+    [JsonInclude]
+    public List<Sprite> Sprites => Drawing.Sprites.Sprites._spriteList;
 
-    [DataMember(Order = 1)]
-    public List<EngineResourceFile> ResourceFiles { get; set; }
+    [JsonInclude]
+    public Dictionary<string, SoundResource> SoundResources => SoundResourceManager.Instance.GetAll();
 
-    [DataMember(Order = 2)]
-    public Dictionary<string, Tilesheet> Tilesheets { get; set; }
-
-    [DataMember(Order = 3)]
-    public Dictionary<string, Cycle> Cycles { get; set; }
-
-    [DataMember(Order = 4)]
-    public List<GridPointMatrix> Grids { get; set; }
-
-    [DataMember(Order = 5)]
-    public List<GridPointMatrixes> GridsDisplay { get; set; }
-
-    [DataMember(Order = 6)]
-    public List<Sprite> Sprites { get; set; }
-
-    [DataMember(Order = 7)]
-    public IDictionary<string, SoundResource> SoundResources { get; set; }
-    #endregion
-
-    #region public methods
-    /// <summary>
-    /// Clear all EngineState collection properties associated with the Engine class
-    /// </summary>
-    public void Clear()
+    internal void Clear()
     {
         ValueBag.Clear();
-        //EngineResourceFile.ClearAll();
+        //EngineResourceFile.ClearAllResourceFiles();
         Tilesheet.ClearAllTilesheets();
         Cycle.ClearAllAnimationCycles();
         GridPointMatrixes.ClearAllGridPointMatrixes();
@@ -114,23 +47,54 @@ public class EngineState
         SoundResourceManager.Instance.Dispose();
     }
 
-    public void Save(string file, bool isBinary)
+    public void SaveToFile(string path, bool compress = false)
     {
-        var serializer = new DataContractSerializer(GetType());
-
-        if (isBinary)
+        var json = JsonSerializer.Serialize(this, new JsonSerializerOptions
         {
-            byte[] streamBytes = BinarySerializer.Serialize(this);
+            WriteIndented = true,
+            IncludeFields = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        });
 
-            using (var filestream = new FileStream(file, FileMode.Create))
-            using (var zipStream = new GZipStream(filestream, CompressionMode.Compress))
-                zipStream.Write(streamBytes, 0, streamBytes.Length);
+        if (compress)
+        {
+            using var file = File.Create(path);
+            using var zip = new GZipStream(file, CompressionMode.Compress);
+            using var writer = new StreamWriter(zip);
+            writer.Write(json);
         }
         else
         {
-            using (var writer = new FileStream(file, FileMode.Create))
-                serializer.WriteObject(writer, this);
+            File.WriteAllText(path, json);
         }
     }
-    #endregion
+
+    public static EngineState LoadFromFile(string path, bool compressed = false)
+    {
+        string json;
+
+        if (compressed)
+        {
+            using var file = File.OpenRead(path);
+            using var zip = new GZipStream(file, CompressionMode.Decompress);
+            using var reader = new StreamReader(zip);
+            json = reader.ReadToEnd();
+        }
+        else
+        {
+            json = File.ReadAllText(path);
+        }
+
+        var result = JsonSerializer.Deserialize<EngineState>(json) ?? new EngineState();
+        var engineState = new EngineState();
+        engineState.ValueBag = result.ValueBag ?? new();
+
+        // TODO: step through and load all the things...!!!
+        //
+        //
+        //
+        //
+
+        return engineState;
+    }
 }

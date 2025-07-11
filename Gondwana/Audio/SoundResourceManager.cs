@@ -123,7 +123,7 @@ public class SoundResourceManager : IDisposable
 
     public IEnumerable<string> GetAllKeys() => _soundResources.Keys;
 
-    public IDictionary<string, SoundResource> GetAll() => _soundResources;
+    public Dictionary<string, SoundResource> GetAll() => _soundResources.ToDictionary();
 
     public void Dispose()
     {
