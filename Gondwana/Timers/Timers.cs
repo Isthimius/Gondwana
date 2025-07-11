@@ -17,7 +17,7 @@ public static class Timers
     #region public static methods
     public static Timer Add(string timerID, TimerType timerType, TimerCycles timerCycles, double timerLength)
     {
-        Timer timer = new Timer(timerType, timerCycles, HighResTimer.GetCurrentTickCount(), timerLength);
+        Timer timer = new Timer(timerType, timerCycles, HighResTimer.GetCurrentTick(), timerLength);
         _timers.Add(timerID, timer);
         timer.TimerID = timerID;
         return timer;

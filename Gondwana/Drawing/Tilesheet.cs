@@ -291,7 +291,7 @@ public class Tilesheet : IDisposable
     public string SaveToFile()
     {
         string file = Environment.CurrentDirectory + @"\" + this.Name + "_"
-            + HighResTimer.GetCurrentTickCount().ToString() + ".bmp";
+            + HighResTimer.GetCurrentTick().ToString() + ".bmp";
 
         return SaveToFile(file);
     }

@@ -21,7 +21,7 @@ public class Movement : IDisposable
     protected internal Movement(Sprite sprite)
     {
         _parent = sprite;
-        _lastTick = HighResTimer.GetCurrentTickCount();
+        _lastTick = HighResTimer.GetCurrentTick();
         _velocityX = 0;
         _velocityY = 0;
         _accelerationX = 0;
@@ -264,7 +264,7 @@ public class Movement : IDisposable
         // add Sprite to moving list
         Tile.TilesMoving.Add(_parent);
 
-        _lastTick = HighResTimer.GetCurrentTickCount();
+        _lastTick = HighResTimer.GetCurrentTick();
 
         // initialize MovePoint values based on Sprite's current state
         _movePoint.InitializeMovePoint();

@@ -57,7 +57,7 @@ internal class ResizedFrame : IDisposable
     {
         OriginalFrame = orig;
         RenderSize = render;
-        CreationTick = HighResTimer.GetCurrentTickCount();
+        CreationTick = HighResTimer.GetCurrentTick();
 
         // resize original Bitmap
         CreateResizedGDIBitmap(orig.Tilesheet, ref NewBmp, ref ResizedGraphics, ref hDC, ref hBmp);

@@ -24,7 +24,7 @@ public sealed class Engine
     #region private fields
     private long _startTick;
     private long _lastCPSSamplingTick;
-    private long _lastTick = HighResTimer.GetCurrentTickCount();
+    private long _lastTick = HighResTimer.GetCurrentTick();
 
     private long _grossCycles = 0;
     private long _grossCyclesThisMeasure = 0;
@@ -113,7 +113,7 @@ public sealed class Engine
 
         IsRunning = true;
 
-        _startTick = HighResTimer.GetCurrentTickCount();
+        _startTick = HighResTimer.GetCurrentTick();
         _lastCPSSamplingTick = _startTick;
 
         Task.Run(() =>
@@ -129,6 +129,14 @@ public sealed class Engine
         });
     }
 
+    public void Pause()
+    {
+        if (!IsPaused)
+        {
+            IsPaused = true;
+        }
+    }
+
     public void Stop()
     {
         IsRunning = false;
@@ -136,7 +144,7 @@ public sealed class Engine
 
     public void ResetTotalTimeRunning()
     {
-        _startTick = HighResTimer.GetCurrentTickCount();
+        _startTick = HighResTimer.GetCurrentTick();
     }
 
     public void ClearEngineState()
@@ -157,11 +165,33 @@ public sealed class Engine
 
     public bool IsRunning { get; private set; }
 
-    public bool IsPaused { get; private set; } = false;
+    private bool _isPaused = false;
+    private long _pauseStartTick = 0;
+    private long _totalTimePaused = 0;
+    public bool IsPaused 
+    {
+        get => _isPaused;
+        private set
+        {
+            // if is not currently paused, and activating pause, capture time
+            if (!_isPaused && value)
+            {
+                _pauseStartTick = HighResTimer.GetCurrentTick();
+            }
+
+            // if currently paused, and unpausing, accumulate total time paused
+            if (_isPaused && !value)
+            {
+                _totalTimePaused += HighResTimer.GetCurrentTick() - _pauseStartTick;
+            }
+
+            _isPaused = value;
+        }
+    }
 
     public double TotalSecondsEngineRunning
     {
-        get { return (double)(HighResTimer.GetCurrentTickCount() - _startTick) / (double)HighResTimer.TicksPerSecond; }
+        get { return (double)(HighResTimer.GetCurrentTick() - _startTick) / (double)HighResTimer.TicksPerSecond; }
     }
 
     public double CyclesPerSecond
@@ -194,7 +224,7 @@ public sealed class Engine
     #region private methods
     private void Cycle()
     {
-        long tick = HighResTimer.GetCurrentTickCount();
+        long tick = HighResTimer.GetCurrentTick() - _totalTimePaused;
 
         // throttle time hasn't passed; do background tasks
         if ((Configuration.EngineConfig.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.EngineConfig.TargetFPS)) * (double)HighResTimer.TicksPerSecond))

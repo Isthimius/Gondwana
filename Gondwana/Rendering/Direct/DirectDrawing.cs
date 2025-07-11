@@ -220,7 +220,7 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
         internal Movement(DirectDrawing drawing, double totalTime, Rectangle dest)
         {
             parent = drawing;
-            startTick = HighResTimer.GetCurrentTickCount();
+            startTick = HighResTimer.GetCurrentTick();
             lastTick = startTick;
             totalTicks = (long)(totalTime * HighResTimer.TicksPerSecond);
             startBounds = parent.Bounds;

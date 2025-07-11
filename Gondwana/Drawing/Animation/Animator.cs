@@ -13,7 +13,7 @@ public class Animator : IDisposable
     #region private/internal fields
     private Tile parent;
     private bool cycling = false;
-    private long LastTick = HighResTimer.GetCurrentTickCount();
+    private long LastTick = HighResTimer.GetCurrentTick();
     #endregion private/internal fields
 
     #region constructors / finalizer

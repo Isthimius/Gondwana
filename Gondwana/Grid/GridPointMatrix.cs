@@ -759,7 +759,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
             {
                 var oldVelocityY = _velocityY;
                 Stop();
-                lastTick = HighResTimer.GetCurrentTickCount();
+                lastTick = HighResTimer.GetCurrentTick();
                 _velocityX = value;
                 _velocityY = oldVelocityY;
                 IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
@@ -774,7 +774,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
             {
                 var oldVelocityX = _velocityX;
                 Stop();
-                lastTick = HighResTimer.GetCurrentTickCount();
+                lastTick = HighResTimer.GetCurrentTick();
                 _velocityX = oldVelocityX;
                 _velocityY = value;
                 IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
@@ -789,7 +789,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
             get { return _accelerationX; }
             set
             {
-                lastTick = HighResTimer.GetCurrentTickCount();
+                lastTick = HighResTimer.GetCurrentTick();
                 _accelerationX = value;
                 IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
             }
@@ -801,7 +801,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
             get { return _accelerationY; }
             set
             {
-                lastTick = HighResTimer.GetCurrentTickCount();
+                lastTick = HighResTimer.GetCurrentTick();
                 _accelerationY = value;
                 IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
             }
@@ -857,7 +857,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         {
             Stop();
 
-            startTick = HighResTimer.GetCurrentTickCount();
+            startTick = HighResTimer.GetCurrentTick();
             //lastTick = startTick;
             totalTicks = (long)(totalTime * HighResTimer.TicksPerSecond);
             startCoord = parent.SourceGridPoint;

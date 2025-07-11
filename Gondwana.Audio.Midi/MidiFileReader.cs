@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using MeltySynth;
+using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
@@ -16,21 +17,14 @@ public static class MidiFileReader
         return new SoundFont(stream);
     });
 
-    private static SoundFont SoundFont => _soundFont.Value;
-
-    //static MidiFileReader()
-    //{
-    //    var assembly = Assembly.GetExecutingAssembly();
-    //    using var stream = assembly.GetManifestResourceStream("Gondwana.Audio.Midi.TimGM6mb.sf2")
-    //        ?? throw new InvalidOperationException("Embedded SoundFont not found.");
-
-    //    _soundFont = new SoundFont(stream);
-    //}
+    public static SoundFont SoundFont => _soundFont.Value;
 
     public static void RegisterDefaultReaders()
     {
         PlatformAudioFactory.Register(".mid", stream => CreateReader(stream));
         PlatformAudioFactory.Register(".midi", stream => CreateReader(stream));
+
+        Engine.Logger.LogInformation("RegisterDefaultReaders() called");
     }
 
     public static WaveStream CreateReader(Stream stream)

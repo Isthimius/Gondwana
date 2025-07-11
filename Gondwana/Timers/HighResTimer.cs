@@ -17,7 +17,7 @@ public static class HighResTimer
     /// <summary>
     /// Gets the current tick count using the high-resolution timer.
     /// </summary>
-    public static long GetCurrentTickCount()
+    public static long GetCurrentTick()
     {
         return Stopwatch.GetTimestamp();
     }
@@ -35,6 +35,6 @@ public static class HighResTimer
     /// </summary>
     public static double GetElapsedSince(long start)
     {
-        return GetDuration(start, GetCurrentTickCount());
+        return GetDuration(start, GetCurrentTick());
     }
 }
