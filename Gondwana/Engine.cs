@@ -10,7 +10,6 @@ using Gondwana.Rendering.Direct;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
 
 namespace Gondwana;
 
