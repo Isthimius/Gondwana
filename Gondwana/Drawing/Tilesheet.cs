@@ -95,14 +95,14 @@ public class Tilesheet : IDisposable
 
     public Tilesheet(EngineResourceFile resFile, string entryName)
     {
-        ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Bitmap, entryName);
+        ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, entryName);
         InitVals(entryName, null, null, ResourceIdentifier);
         ValueBag = new Dictionary<string, string>();
     }
 
     public Tilesheet(EngineResourceFile resFile, string entryName, string tilesheetName)
     {
-        ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Bitmap, entryName);
+        ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, entryName);
         InitVals(tilesheetName, null, null, ResourceIdentifier);
         ValueBag = new Dictionary<string, string>();
     }
@@ -146,10 +146,10 @@ public class Tilesheet : IDisposable
         // if Bitmap is not a physical file and there is no ResourceFile, create resource file so it can be serialized
         if (string.IsNullOrWhiteSpace(_imgFile) && ResourceIdentifier == null)
         {
-            var resFile = new EngineResourceFile(string.Format("tilesheet_{0}.zip", this.Name), null, false);
+            var resFile = EngineResourceFile.LoadOrCreate(string.Format("tilesheet_{0}.zip", this.Name), null, false);
             var converter = new ImageConverter();
             //resFile.Add(EngineResourceFileTypes.Bitmap, this.Name, (Stream)converter.ConvertTo(_bmp, typeof(Stream)));
-            ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Bitmap, this.Name);
+            ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, this.Name);
         }
     }
 

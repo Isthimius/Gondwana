@@ -1,6 +1,7 @@
-﻿using Gondwana.Rendering;
+﻿using System.Text.Json.Serialization;
+using Gondwana.Rendering;
+using Gondwana.Resource;
 using Gondwana.Timers;
-using System.Text.Json.Serialization;
 
 namespace Gondwana.Configuration;
 
@@ -72,4 +73,15 @@ public class EngineConfiguration
     /// Only change if necessary for performance optimization. Default is 100.
     /// </summary>
     public int ResizedFrameCacheLimit { get; set; } = 100;
+
+    /// <summary>
+    /// Whether to load all resources at initialization.
+    /// If false, resources will be lazy loaded on demand.
+    /// </summary>
+    public bool LoadResourcesOnInitialize { get; set; } = false;
+
+    /// <summary>
+    /// Optional collection of resource archive files to mount at initialization.
+    /// </summary>
+    public List<EngineResourceFile>? ResourceFiles { get; set; }
 }

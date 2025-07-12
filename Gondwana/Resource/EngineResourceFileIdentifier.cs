@@ -1,11 +1,25 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Gondwana.Resource;
 
-[DataContract]
-public class EngineResourceFileIdentifier
+public sealed class EngineResourceFileIdentifier
 {
-    private EngineResourceFileIdentifier() { }
+    [JsonInclude]
+    public EngineResourceFile ResourceFile { get; private set; } = null!;
+
+    [JsonInclude]
+    public EngineResourceFileTypes ResourceType { get; private set; }
+
+    [JsonInclude]
+    public string ResourceName { get; private set; } = null!;
+
+    [JsonIgnore]
+    public bool IsValid => Data is not null;
+
+    [JsonIgnore]
+    public Stream? Data => ResourceFile?[ResourceType, ResourceName];
+
+    public EngineResourceFileIdentifier() { }
 
     public EngineResourceFileIdentifier(EngineResourceFile resFile, EngineResourceFileTypes resType, string entry)
     {
@@ -13,21 +27,6 @@ public class EngineResourceFileIdentifier
         ResourceType = resType;
         ResourceName = entry;
     }
-
-    [DataMember]
-    public EngineResourceFile ResourceFile { get; private set; }
-
-    [DataMember]
-    public EngineResourceFileTypes ResourceType { get; private set; }
-
-    [DataMember]
-    public string ResourceName { get; private set; }
-
-    [IgnoreDataMember]
-    public bool IsValid => Data != null;
-
-    [IgnoreDataMember]
-    public Stream Data => ResourceFile?[ResourceType, ResourceName];
 
     public override string ToString() =>
         $"Resource File {ResourceFile?.FilePath} / {ResourceType} / {ResourceName}";

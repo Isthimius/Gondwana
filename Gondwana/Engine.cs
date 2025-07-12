@@ -1,3 +1,4 @@
+using System.Drawing;
 using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Collisions;
@@ -7,6 +8,7 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
+using Gondwana.Resource;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
@@ -80,8 +82,11 @@ public sealed class Engine : IDisposable
         PreInitialization?.Invoke(this, EventArgs.Empty);
 
         Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig).EngineConfig;
-        Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
 
+        if (Configuration.LoadResourcesOnInitialize)
+            LoadResourceFiles();
+
+        Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
         VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
@@ -90,6 +95,30 @@ public sealed class Engine : IDisposable
         _isInitialized = true;
 
         InitializationComplete?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void LoadResourceFiles()
+    {
+        // Replace raw deserialized resource files with proper loaded instances
+        if (Configuration.ResourceFiles is { Count: > 0 })
+        {
+            var loadedResources = new List<EngineResourceFile>();
+
+            foreach (var raw in Configuration.ResourceFiles)
+            {
+                try
+                {
+                    var loaded = EngineResourceFile.LoadOrCreate(raw.FilePath, raw.Password, raw.IsEncrypted);
+                    loadedResources.Add(loaded);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to load resource file '{raw.FilePath}': {ex.Message}");
+                }
+            }
+
+            Configuration.ResourceFiles = loadedResources;
+        }
     }
     #endregion
 
