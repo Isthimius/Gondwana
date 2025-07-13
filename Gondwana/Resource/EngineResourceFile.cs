@@ -7,7 +7,7 @@ namespace Gondwana.Resource;
 public sealed class EngineResourceFile : IDisposable
 {
     private ZipFile? _zipFile;
-    private readonly List<(string Key, Func<Stream> GetStream)> _zipEntries = new();
+    private readonly Dictionary<EngineResourceFileEntry, Func<Stream>> _zipEntries = new();
     private bool _isLoaded = false;
 
     [JsonConstructor]
@@ -18,11 +18,12 @@ public sealed class EngineResourceFile : IDisposable
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("path cannot be null or empty.", nameof(path));
 
-        EngineResourceFile resourceFile = new();
-
-        resourceFile.FilePath = path;
-        resourceFile.Password = password;
-        resourceFile.IsEncrypted = encrypt;
+        EngineResourceFile resourceFile = new()
+        {
+            FilePath = path,
+            Password = password,
+            IsEncrypted = encrypt
+        };
 
         if (File.Exists(resourceFile.FilePath))
             resourceFile.LoadZip();
@@ -41,10 +42,8 @@ public sealed class EngineResourceFile : IDisposable
 
     private void EnsureLoaded()
     {
-        if (_isLoaded)
-            return;
-
-        LoadZip();
+        if (!_isLoaded)
+            LoadZip();
     }
 
     private void LoadZip()
@@ -52,9 +51,9 @@ public sealed class EngineResourceFile : IDisposable
         if (_isLoaded)
             return;
 
-        Engine.Logger.LogDebug("loading resource file: {FilePath}", FilePath);
+        Engine.Logger.LogDebug("Loading resource file: {FilePath}", FilePath);
 
-        _zipFile?.Close(); // ensure any previous zip is closed
+        _zipFile?.Close();
         _zipFile = new ZipFile(File.OpenRead(FilePath));
 
         if (!string.IsNullOrEmpty(Password))
@@ -67,14 +66,18 @@ public sealed class EngineResourceFile : IDisposable
             if (!entry.IsFile)
                 continue;
 
-            var key = entry.Name;
-
-            _zipEntries.Add((key, () =>
+            var key = EngineResourceFileEntry.FromString(entry.Name);
+            if (key == null)
             {
-                var zipEntry = _zipFile.GetEntry(key);
-                return zipEntry != null ? _zipFile!.GetInputStream(zipEntry) : Stream.Null;
+                Engine.Logger.LogWarning("Invalid entry in resource file: {EntryName}", entry.Name);
+                continue;
             }
-            ));
+
+            _zipEntries[key] = () =>
+            {
+                var zipEntry = _zipFile.GetEntry(key.ToString());
+                return zipEntry != null ? _zipFile!.GetInputStream(zipEntry) : Stream.Null;
+            };
         }
 
         _isLoaded = true;
@@ -82,14 +85,24 @@ public sealed class EngineResourceFile : IDisposable
 
     public void Add(EngineResourceFileTypes type, string name, Func<Stream> streamFactory)
     {
-        var key = $"{type}_{name.ToLower()}";
-        _zipEntries.Add((key, streamFactory));
+        var key = new EngineResourceFileEntry
+        {
+            ResourceType = type,
+            ResourceName = name
+        };
+
+        _zipEntries[key] = streamFactory;
     }
 
     public void Remove(EngineResourceFileTypes type, string name)
     {
-        var key = $"{type}_{name.ToLower()}";
-        _zipEntries.RemoveAll(entry => entry.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+        var key = new EngineResourceFileEntry
+        {
+            ResourceType = type,
+            ResourceName = name
+        };
+
+        _zipEntries.Remove(key);
     }
 
     public void AddFromFile(EngineResourceFileTypes type, string filePath)
@@ -104,17 +117,21 @@ public sealed class EngineResourceFile : IDisposable
     {
         EnsureLoaded();
 
-        var key = $"{type}_{name.ToLower()}";
-        var match = _zipEntries.FirstOrDefault(e => e.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+        var key = new EngineResourceFileEntry
+        {
+            ResourceType = type,
+            ResourceName = name
+        };
 
-        return match != default ? match.GetStream() : null;
+        return _zipEntries.TryGetValue(key, out var getStream) ? getStream() : null;
     }
 
+    public IEnumerable<EngineResourceFileEntry> GetAllEntries()
+    {
+        EnsureLoaded();
+        return _zipEntries.Keys;
+    }
 
-    /// <summary>
-    /// Saves the current state of the resource file to disk.
-    /// This will overwrite the existing file.
-    /// </summary>
     public void Save()
     {
         using var fs = File.Create(FilePath);
@@ -126,12 +143,12 @@ public sealed class EngineResourceFile : IDisposable
         if (!string.IsNullOrEmpty(Password))
         {
             zipStream.Password = Password;
-            // zipStream.Encryption = EncryptionAlgorithm.WinZipAes256; // optional: needs testing
+            // zipStream.Encryption = EncryptionAlgorithm.WinZipAes256; // optional
         }
 
         foreach (var (key, getStream) in _zipEntries)
         {
-            var entry = new ZipEntry(key)
+            var entry = new ZipEntry(key.ToString())
             {
                 DateTime = DateTime.Now
             };
@@ -148,12 +165,8 @@ public sealed class EngineResourceFile : IDisposable
 
     public void Dispose()
     {
-        if (_zipFile is not null)
-        {
-            _zipFile.Close();
-            _zipFile = null;
-        }
-
+        _zipFile?.Close();
+        _zipFile = null;
         _isLoaded = false;
     }
 }
