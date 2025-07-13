@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using Microsoft.Extensions.Logging;
+using NAudio.Wave;
 
 namespace Gondwana.Audio;
 
@@ -39,6 +40,8 @@ public static class PlatformAudioFactory
             return (factory(input), requiresFile);
         }
 
+
+        Engine.Logger.LogError("Unsupported audio format: {Extension}", ext);
         throw new NotSupportedException($"Format '{ext}' is not supported on this platform.");
     }
 
