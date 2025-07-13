@@ -108,7 +108,7 @@ public sealed class Engine : IDisposable
             {
                 try
                 {
-                    var loaded = EngineResourceFile.LoadOrCreate(raw.FilePath, raw.Password, raw.IsEncrypted);
+                    var loaded = EngineResourceFile.LoadOrCreate(raw.FilePath, raw.Password, raw.UseEncryption);
                     loadedResources.Add(loaded);
                 }
                 catch (Exception ex)
