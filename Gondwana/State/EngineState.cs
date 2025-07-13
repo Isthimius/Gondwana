@@ -3,6 +3,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
+using Gondwana.Resource;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,8 +15,8 @@ public class EngineState
     [JsonInclude]
     public Dictionary<string, string> ValueBag { get; set; } = new();
 
-    //[JsonInclude]
-    //public List<EngineResourceFile> ResourceFiles => EngineResourceFile.GetAll();
+    [JsonInclude]
+    public IEnumerable<EngineResourceFile> ResourceFiles => EngineResourceFile.AllResourceFiles;
 
     [JsonInclude]
     public Dictionary<string, Tilesheet> Tilesheets => Tilesheet._tilesheets;
@@ -38,7 +39,7 @@ public class EngineState
     internal void Clear()
     {
         ValueBag.Clear();
-        //EngineResourceFile.ClearAllResourceFiles();
+        EngineResourceFile.ClearAll();
         Tilesheet.ClearAllTilesheets();
         Cycle.ClearAllAnimationCycles();
         GridPointMatrixes.ClearAllGridPointMatrixes();

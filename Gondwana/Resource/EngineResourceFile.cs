@@ -6,12 +6,27 @@ namespace Gondwana.Resource;
 
 public sealed class EngineResourceFile : IDisposable
 {
+    private static List<EngineResourceFile> _allResourceFiles = new();
+
+    /// <summary>
+    /// Gets a read-only list of all instantiated <see cref="EngineResourceFile"/> instances."/>
+    /// </summary>
+    public static IReadOnlyList<EngineResourceFile> AllResourceFiles => _allResourceFiles.AsReadOnly();
+
+    public static void ClearAll()
+    {
+        foreach (var resourceFile in _allResourceFiles.ToList())
+        {
+            resourceFile.Dispose();
+        }
+    }
+
     private ZipFile? _zipFile;
     private readonly Dictionary<EngineResourceFileEntry, Func<Stream>> _zipEntries = new();
     private bool _isLoaded = false;
 
     [JsonConstructor]
-    private EngineResourceFile() { }
+    private EngineResourceFile() { _allResourceFiles.Add(this); }
 
     public static EngineResourceFile LoadOrCreate(string path, string? password = null, bool encrypt = false)
     {
@@ -190,5 +205,6 @@ public sealed class EngineResourceFile : IDisposable
         _zipFile?.Close();
         _zipFile = null;
         _isLoaded = false;
+        _allResourceFiles.Remove(this);
     }
 }
