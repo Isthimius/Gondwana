@@ -1,11 +1,10 @@
-﻿using NAudio.Wave;
+﻿using Microsoft.Extensions.Logging;
+using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Gondwana.Audio;
 
-[DataContract(IsReference = true)]
 public class SoundResource : IDisposable
 {
     private readonly IWavePlayer outputDevice;
@@ -14,8 +13,21 @@ public class SoundResource : IDisposable
     private PanningSampleProvider panningProvider;
     private bool disposed;
 
+    /// <summary>
+    /// Event that is raised when playback completes.
+    /// Will not be raised if the sound is looping.
+    /// </summary>
     public event EventHandler PlaybackCompleted;
+
+    /// <summary>
+    /// Asynchronous event that is invoked when playback completes.
+    /// Will not be invoked if the sound is looping.
+    /// </summary>
     public Func<Task>? PlaybackCompletedAsync;
+
+    /// <summary>
+    /// Event that is raised when the sound resource is disposed.
+    /// </summary>
     public event EventHandler Disposed;
 
     private SoundResource() { }
@@ -46,26 +58,50 @@ public class SoundResource : IDisposable
         return panningProvider;
     }
 
+    /// <summary>
+    /// Gets the unique key associated with this sound resource.
+    /// </summary>
     public string Key { get; private set; }
 
+    /// <summary>
+    /// Gets the original byte array of the audio data, if available.
+    /// </summary>
     [JsonIgnore]
     public byte[]? OriginalBytes { get; private set; }
 
+    /// <summary>
+    /// Gets the original file extension associated with the object, if available.
+    /// </summary>
     [JsonIgnore]
     public string? OriginalExtension { get; private set; }
 
+    /// <summary>
+    /// Gets the file path associated with the current object.
+    /// </summary>
     [JsonIgnore]
     public string? FilePath { get; } = null;
 
+    /// <summary>
+    /// Gets a value indicating whether the file is a temporary file saved from an input Stream.
+    /// </summary>
     [JsonIgnore]
     public bool IsTempFile { get; } = false;
 
+    /// <summary>
+    /// Gets a value indicating whether the playback is currently paused.
+    /// </summary>
     [JsonIgnore]
     public bool IsPaused => outputDevice.PlaybackState == PlaybackState.Paused;
 
+    /// <summary>
+    /// Gets a value indicating whether audio playback is currently active.
+    /// </summary>
     [JsonIgnore]
     public bool IsPlaying => outputDevice.PlaybackState == PlaybackState.Playing;
 
+    /// <summary>
+    /// Gets or sets the current playback position within the audio stream.
+    /// </summary>
     [JsonIgnore]
     public TimeSpan CurrentTime
     { 
@@ -73,9 +109,15 @@ public class SoundResource : IDisposable
         set => Seek(value);
     }
 
+    /// <summary>
+    /// Gets the total duration of the audio represented by the wave stream.
+    /// </summary>
     [JsonIgnore]
     public TimeSpan Duration => waveStream.TotalTime;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the playback is set to loop.
+    /// </summary>
     public bool IsLooping { get; set; }
 
     /// <summary>
@@ -106,6 +148,13 @@ public class SoundResource : IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts playback of the audio stream.
+    /// </summary>
+    /// <remarks>If the audio is already playing, calling this method has no effect.  Ensure the audio stream
+    /// is properly initialized before invoking this method.</remarks>
+    /// <param name="fromStart">A value indicating whether playback should start from the beginning of the audio stream.  <see langword="true"/>
+    /// to start from the beginning; otherwise, playback resumes from the current position.</param>
     public void Play(bool fromStart = true)
     {
         if (fromStart)
@@ -115,18 +164,36 @@ public class SoundResource : IDisposable
             outputDevice.Play();
     }
 
+    /// <summary>
+    /// Pauses playback if it is currently active.
+    /// </summary>
+    /// <remarks>This method pauses the playback only if it is currently in progress.  If playback is already
+    /// paused or not started, calling this method has no effect.</remarks>
     public void Pause()
     {
         if (IsPlaying)
             outputDevice.Pause();
     }
 
+    /// <summary>
+    /// Resumes playback if the output device is currently paused.
+    /// </summary>
+    /// <remarks>This method has no effect if the output device is not paused. Ensure that the output device
+    /// is properly initialized and in a paused state before calling this method.</remarks>
     public void Resume()
     {
         if (IsPaused)
             outputDevice.Play();
     }
 
+    /// <summary>
+    /// Seeks to the specified position within the audio stream.
+    /// </summary>
+    /// <remarks>If the audio is currently playing, it will be paused during the seek operation and resumed
+    /// afterward.</remarks>
+    /// <param name="position">The position to seek to, specified as a <see cref="TimeSpan"/>.  If the value is less than <see
+    /// cref="TimeSpan.Zero"/>, the position is set to the start of the stream.  If the value exceeds the total duration
+    /// of the stream, the position is set to the end of the stream.</param>
     public void Seek(TimeSpan position)
     {
         if (position < TimeSpan.Zero)
@@ -144,6 +211,12 @@ public class SoundResource : IDisposable
             Resume();
     }
 
+    /// <summary>
+    /// Stops the output device, halting any ongoing audio playback.
+    /// </summary>
+    /// <remarks>This method stops the audio output immediately. Ensure that any necessary cleanup or state
+    /// management is handled before calling this method, as it does not automatically reset or dispose of the output
+    /// device.</remarks>
     public void Stop() => outputDevice.Stop();
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
@@ -161,15 +234,15 @@ public class SoundResource : IDisposable
             }
             else
             {
-                PlaybackCompleted?.Invoke(this, EventArgs.Empty);
-
                 if (PlaybackCompletedAsync is not null)
                     await PlaybackCompletedAsync();
+
+                PlaybackCompleted?.Invoke(this, EventArgs.Empty);
             }
         }
         catch (Exception ex)
         {
-            // TODO: Logging
+            Engine.Logger.LogError(ex, "Error during playback completion handling for sound resource: {Key}", Key);
         }
     }
 
@@ -194,8 +267,14 @@ public class SoundResource : IDisposable
 
         if (IsTempFile && File.Exists(FilePath))
         {
-            try { File.Delete(FilePath); }
-            catch { /* ignore */ }
+            try
+            {
+                File.Delete(FilePath);
+            }
+            catch (Exception ex)
+            {
+                Engine.Logger.LogError(ex, "Failed to delete temporary sound file: {FilePath} for SoundResource: {Key}", FilePath, Key);
+            }
         }
 
         disposed = true;
