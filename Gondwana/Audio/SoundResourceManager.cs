@@ -8,10 +8,16 @@ public class SoundResourceManager : IDisposable
     private readonly ConcurrentDictionary<string, SoundResource> _soundResources = new();
     private bool _disposed = false;
 
+    /// <summary>
+    /// Event that is raised when a sound resource is disposed.
+    /// </summary>
     public event EventHandler<(string Key, SoundResource Resource)>? SoundDisposed;
 
     private SoundResourceManager() { }
 
+    /// <summary>
+    /// Singleton instance of the SoundResourceManager.
+    /// </summary>
     public static SoundResourceManager Instance => _instance.Value;
 
     public SoundResource LoadFromFile(string key, string filePath, float volume = 1.0f, float pan = 0.0f, bool isTemp = false)
@@ -101,12 +107,19 @@ public class SoundResourceManager : IDisposable
         };
     }
 
+    /// <summary>
+    /// Unloads a sound resource by its key, disposing of it and removing it from the manager.
+    /// </summary>
+    /// <param name="key">Unique identifier for SoundResource.</param>
     public void Unload(string key)
     {
         if (_soundResources.TryRemove(key, out var resource))
             resource.Dispose();
     }
 
+    /// <summary>
+    /// Clears all sound resources, disposing of each one.
+    /// </summary>
     public void Clear()
     {
         foreach (var resource in _soundResources.Values)

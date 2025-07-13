@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace Gondwana.Audio;
 
+/// <summary>
+/// Represents a sound resource that can be played, paused, resumed, and disposed.
+/// </summary>
 public class SoundResource : IDisposable
 {
     private readonly IWavePlayer outputDevice;
