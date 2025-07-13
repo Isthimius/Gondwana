@@ -4,6 +4,7 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
 using Gondwana.Resource;
+using Microsoft.Extensions.Logging;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -91,11 +92,33 @@ public class EngineState
         engineState.ValueBag = result.ValueBag ?? new();
 
         // TODO: step through and load all the things...!!!
+        LoadResourceFiles(result.ResourceFiles);
         //
         //
         //
         //
 
         return engineState;
+    }
+
+
+    private static void LoadResourceFiles(IEnumerable<EngineResourceFile> resourceFiles)
+    {
+        // Replace raw deserialized resource files with proper loaded instances
+        if (resourceFiles.Any())
+        {
+            foreach (var raw in resourceFiles)
+            {
+                try
+                {
+                    EngineResourceFile.LoadOrCreate(raw.FilePath, raw.Password, raw.UseEncryption);
+                }
+                catch (Exception ex)
+                {
+                    Engine.Logger.LogError(ex, "Failed to load resource file '{FilePath}'", raw.FilePath);
+                    throw;
+                }
+            }
+        }
     }
 }
