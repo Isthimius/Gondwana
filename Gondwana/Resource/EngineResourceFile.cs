@@ -130,6 +130,12 @@ public sealed class EngineResourceFile : IDisposable
         _zipEntries[key] = streamFactory;
     }
 
+    public void Add(EngineResourceFileTypes type, string filePath)
+    {
+        var name = Path.GetFileNameWithoutExtension(filePath);
+        Add(type, name, () => File.OpenRead(filePath));
+    }
+
     public void Remove(EngineResourceFileTypes type, string name)
     {
         var key = new EngineResourceFileEntry
@@ -139,12 +145,6 @@ public sealed class EngineResourceFile : IDisposable
         };
 
         _zipEntries.Remove(key);
-    }
-
-    public void AddFromFile(EngineResourceFileTypes type, string filePath)
-    {
-        var name = Path.GetFileNameWithoutExtension(filePath);
-        Add(type, name, () => File.OpenRead(filePath));
     }
 
     public Stream? this[EngineResourceFileTypes type, string name] => Get(type, name);

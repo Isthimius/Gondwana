@@ -217,9 +217,6 @@ public class SoundResource : IDisposable
     /// <summary>
     /// Stops the output device, halting any ongoing audio playback.
     /// </summary>
-    /// <remarks>This method stops the audio output immediately. Ensure that any necessary cleanup or state
-    /// management is handled before calling this method, as it does not automatically reset or dispose of the output
-    /// device.</remarks>
     public void Stop() => outputDevice.Stop();
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
