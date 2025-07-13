@@ -18,14 +18,14 @@ public sealed class EngineResourceFile : IDisposable
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("path cannot be null or empty.", nameof(path));
 
-        EngineResourceFile resourceFile = new()
+        var resourceFile = new EngineResourceFile
         {
             FilePath = path,
             Password = password,
-            IsEncrypted = encrypt
+            UseEncryption = encrypt
         };
 
-        if (File.Exists(resourceFile.FilePath))
+        if (File.Exists(path))
             resourceFile.LoadZip();
 
         return resourceFile;
@@ -38,7 +38,7 @@ public sealed class EngineResourceFile : IDisposable
     public string? Password { get; private set; } = null;
 
     [JsonInclude]
-    public bool IsEncrypted { get; private set; } = false;
+    public bool UseEncryption { get; private set; } = false;
 
     private void EnsureLoaded()
     {
@@ -51,36 +51,57 @@ public sealed class EngineResourceFile : IDisposable
         if (_isLoaded)
             return;
 
-        Engine.Logger.LogDebug("Loading resource file: {FilePath}", FilePath);
-
-        _zipFile?.Close();
-        _zipFile = new ZipFile(File.OpenRead(FilePath));
-
-        if (!string.IsNullOrEmpty(Password))
-            _zipFile.Password = Password;
-
-        _zipEntries.Clear();
-
-        foreach (ZipEntry entry in _zipFile)
+        try
         {
-            if (!entry.IsFile)
-                continue;
+            Engine.Logger.LogDebug("Loading resource file: {FilePath}", FilePath);
 
-            var key = EngineResourceFileEntry.FromString(entry.Name);
-            if (key == null)
+            _zipFile?.Close();
+            _zipFile = new ZipFile(File.OpenRead(FilePath));
+
+            if (!string.IsNullOrEmpty(Password))
+                _zipFile.Password = Password;
+
+            // Test decryption on first entry to validate password early
+            var testEntry = _zipFile.Cast<ZipEntry>().FirstOrDefault(e => e.IsFile);
+            if (testEntry != null)
             {
-                Engine.Logger.LogWarning("Invalid entry in resource file: {EntryName}", entry.Name);
-                continue;
+                using var testStream = _zipFile.GetInputStream(testEntry);
+                testStream.ReadByte(); // force decryption
             }
 
-            _zipEntries[key] = () =>
-            {
-                var zipEntry = _zipFile.GetEntry(key.ToString());
-                return zipEntry != null ? _zipFile!.GetInputStream(zipEntry) : Stream.Null;
-            };
-        }
+            _zipEntries.Clear();
 
-        _isLoaded = true;
+            foreach (ZipEntry entry in _zipFile)
+            {
+                if (!entry.IsFile)
+                    continue;
+
+                var key = EngineResourceFileEntry.FromString(entry.Name);
+                if (key == null)
+                {
+                    Engine.Logger.LogWarning("Invalid entry in resource file: {EntryName}", entry.Name);
+                    continue;
+                }
+
+                _zipEntries[key] = () =>
+                {
+                    var zipEntry = _zipFile.GetEntry(key.ToString());
+                    return zipEntry != null ? _zipFile!.GetInputStream(zipEntry) : Stream.Null;
+                };
+            }
+
+            _isLoaded = true;
+        }
+        catch (ZipException zex)
+        {
+            Engine.Logger.LogError(zex, "Decryption failed — check password or file integrity.");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Engine.Logger.LogError(ex, "Failed to load zip file.");
+            throw;
+        }
     }
 
     public void Add(EngineResourceFileTypes type, string name, Func<Stream> streamFactory)
@@ -141,10 +162,7 @@ public sealed class EngineResourceFile : IDisposable
         };
 
         if (!string.IsNullOrEmpty(Password))
-        {
             zipStream.Password = Password;
-            // zipStream.Encryption = EncryptionAlgorithm.WinZipAes256; // optional
-        }
 
         foreach (var (key, getStream) in _zipEntries)
         {
@@ -153,6 +171,9 @@ public sealed class EngineResourceFile : IDisposable
                 DateTime = DateTime.Now
             };
 
+            if (UseEncryption && !string.IsNullOrEmpty(Password))
+                entry.AESKeySize = 256;
+
             zipStream.PutNextEntry(entry);
 
             using var inputStream = getStream();
@@ -160,6 +181,7 @@ public sealed class EngineResourceFile : IDisposable
             zipStream.CloseEntry();
         }
 
+        Engine.Logger.LogInformation("Resource file saved: {FilePath} (Encrypted: {Encrypted})", FilePath, UseEncryption);
         _zipEntries.Clear();
     }
 

@@ -246,6 +246,7 @@ public class SoundResource : IDisposable
         catch (Exception ex)
         {
             Engine.Logger.LogError(ex, "Error during playback completion handling for sound resource: {Key}", Key);
+            throw;
         }
     }
 
@@ -276,7 +277,7 @@ public class SoundResource : IDisposable
             }
             catch (Exception ex)
             {
-                Engine.Logger.LogError(ex, "Failed to delete temporary sound file: {FilePath} for SoundResource: {Key}", FilePath, Key);
+                Engine.Logger.LogWarning(ex, "Failed to delete temporary sound file: {FilePath} for SoundResource: {Key}", FilePath, Key);
             }
         }
 

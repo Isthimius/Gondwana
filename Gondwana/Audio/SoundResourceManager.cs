@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using Gondwana.Resource;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Audio;
 
@@ -25,19 +27,8 @@ public class SoundResourceManager : IDisposable
         if (_soundResources.TryGetValue(key, out var existing))
             return existing;
 
-        using var fileStream = File.OpenRead(filePath);
-        using var ms = new MemoryStream();
-        fileStream.CopyTo(ms);
-        var bytes = ms.ToArray();
-
-        var newStream = new MemoryStream(bytes);
-        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, filePath);
-
-        var sound = new SoundResource(key, reader, volume, pan, filePath, isTemp, bytes, Path.GetExtension(filePath));
-        _soundResources[key] = sound;
-
-        RegisterLoadedSound(key, sound);
-        return sound;
+        var bytes = File.ReadAllBytes(filePath);
+        return LoadFromBytes(key, bytes, filePath, volume, pan);
     }
 
     public SoundResource LoadFromStream(string key, Stream input, string fileExt, float volume = 1.0f, float pan = 0.0f)
@@ -51,43 +42,66 @@ public class SoundResourceManager : IDisposable
         input.CopyTo(ms);
         var bytes = ms.ToArray();
 
-        var newStream = new MemoryStream(bytes);
-        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, fileExt);
-
-        string? filePath = null;
-        if (fileRequired)
-        {
-            filePath = SaveStreamToTempFile(new MemoryStream(bytes), fileExt);
-        }
-
-        var sound = new SoundResource(key, reader, volume, pan, filePath, fileRequired, bytes, fileExt);
-        _soundResources[key] = sound;
-
-        RegisterLoadedSound(key, sound);
-        return sound;
+        return LoadFromBytes(key, bytes, fileExt, volume, pan);
     }
 
-    private string SaveStreamToTempFile(Stream input, string extension)
+    public void LoadFromEngineResourceFile(EngineResourceFile resourceFile, float defaultVolume = 1.0f, float defaultPan = 0.0f)
     {
-        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
-        input.Position = 0; // ensure we're at the beginning
-        using var fs = File.Create(tempPath);
-        input.CopyTo(fs);
-        return tempPath;
+        foreach (var entry in resourceFile.GetAllEntries())
+        {
+            if (entry.ResourceType != EngineResourceFileTypes.Audio)
+                continue;
+
+            if (_soundResources.ContainsKey(entry.ResourceName))
+            {
+                Engine.Logger.LogDebug("SoundResource '{Key}' already loaded. Skipping.", entry.ResourceName);
+                continue;
+            }
+
+            var stream = resourceFile.Get(entry.ResourceType, entry.ResourceName);
+            if (stream == null)
+            {
+                Engine.Logger.LogWarning("Failed to retrieve stream for audio resource: {Key}", entry.ResourceName);
+                continue;
+            }
+
+            try
+            {
+                using var ms = new MemoryStream();
+                stream.CopyTo(ms);
+                var bytes = ms.ToArray();
+                LoadFromBytes(entry.ResourceName, bytes, entry.ResourceName, defaultVolume, defaultPan);
+                Engine.Logger.LogInformation("Loaded sound: {Key}", entry.ResourceName);
+            }
+            catch (Exception ex)
+            {
+                Engine.Logger.LogError(ex, "Error loading sound from resource file for key: {Key}", entry.ResourceName);
+                throw;
+            }
+        }
     }
 
-    public SoundResource Clone(string key, string? newKey = null, float? volume = null, float? pan = null)
+    public SoundResource? Clone(string key, string? newKey = null, float? volume = null, float? pan = null)
     {
         if (!_soundResources.TryGetValue(key, out var original))
-            throw new KeyNotFoundException($"SoundResource with key '{key}' not found.");
-
+        {
+            Engine.Logger.LogWarning("Attempted to clone non-existent SoundResource with key: {Key}", key);
+            return null;
+        }
+        
         newKey ??= $"{key}_clone_{Guid.NewGuid()}";
 
         if (_soundResources.ContainsKey(newKey))
-            throw new ArgumentException($"SoundResource with key '{newKey}' already exists.");
+        {
+            Engine.Logger.LogWarning("SoundResource with key '{Key}' already exists. Cannot clone.", newKey);
+            return null;
+        }
 
         if (original.OriginalBytes == null || string.IsNullOrEmpty(original.OriginalExtension))
-            throw new InvalidOperationException($"SoundResource '{key}' cannot be cloned – missing raw data.");
+        {
+            Engine.Logger.LogWarning("Cannot clone SoundResource '{Key}' – missing original bytes or extension.", key);
+            return null;
+        }
 
         return LoadFromStream(
             newKey,
@@ -137,6 +151,42 @@ public class SoundResourceManager : IDisposable
     public IEnumerable<string> GetAllKeys() => _soundResources.Keys;
 
     public Dictionary<string, SoundResource> GetAll() => _soundResources.ToDictionary();
+
+    private static string SaveStreamToTempFile(Stream input, string extension)
+    {
+        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
+        input.Position = 0; // ensure we're at the beginning
+        using var fs = File.Create(tempPath);
+        input.CopyTo(fs);
+        return tempPath;
+    }
+
+    private SoundResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
+    {
+        var newStream = new MemoryStream(bytes);
+        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, fileHint);
+
+        string? filePath = null;
+        if (fileRequired)
+        {
+            filePath = SaveStreamToTempFile(new MemoryStream(bytes), Path.GetExtension(fileHint));
+        }
+
+        var sound = new SoundResource(
+            key,
+            reader,
+            volume,
+            pan,
+            filePath,
+            fileRequired,
+            bytes,
+            Path.GetExtension(fileHint)
+        );
+
+        _soundResources[key] = sound;
+        RegisterLoadedSound(key, sound);
+        return sound;
+    }
 
     public void Dispose()
     {
