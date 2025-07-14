@@ -56,7 +56,7 @@ namespace Slider
 
         private void btnBmpOpen_Click(object sender, EventArgs e)
         {
-            Gondwana.Timers.Timer.Clear();
+            //Gondwana.Timers.Timer.Clear();
 
             if (picBoxBmp != null)
             {

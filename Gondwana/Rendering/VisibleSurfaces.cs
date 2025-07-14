@@ -108,8 +108,6 @@ public static class VisibleSurfaces
             if (_refreshTimer > 0)
             {
                 _timer = Timer.Add(TimerType.PostCycle, TimerCycles.Repeating, _refreshTimer);
-                _timer.engineTimer = true;
-
                 _timer.Tick += _timerDel;
             }
         }

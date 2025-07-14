@@ -8,7 +8,6 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
-using Gondwana.Resource;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
@@ -529,6 +528,7 @@ public sealed class Engine : IDisposable
         {
             if (disposing)
             {
+                Timer.ClearAll();
                 State.Clear();
             }
 

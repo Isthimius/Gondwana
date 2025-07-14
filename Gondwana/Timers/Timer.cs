@@ -1,32 +1,60 @@
-using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace Gondwana.Timers;
 
+/// <summary>
+/// Represents a high-resolution timer that can trigger events at specified intervals and supports various timer types
+/// and cycles.
+/// </summary>
+/// <remarks>The <see cref="Timer"/> class provides functionality for creating and managing timers that can
+/// trigger events based on a specified duration and cycle type. Timers can be paused, resumed, and disposed of when no
+/// longer needed. The class also supports managing multiple timers through static methods, such as adding, removing,
+/// and retrieving timers by their unique identifiers. This class is thread-safe for managing timers but does not
+/// guarantee thread safety for individual timer instances. Use appropriate synchronization if accessing instance
+/// members from multiple threads.</remarks>
 public sealed class Timer : IDisposable
 {
+    /// <summary>
+    /// Occurs when the timer interval has elapsed.
+    /// </summary>
+    /// <remarks>This event is raised each time the timer completes its interval.  Subscribers can handle this
+    /// event to execute custom logic at regular intervals. Ensure the timer is started and enabled for the event to be
+    /// raised.</remarks>
     public event TimerEventHandler? Tick;
 
+    /// <summary>
+    /// Gets the type of the timer, indicating whether it is a pre-cycle or post-cycle timer.
+    /// </summary>
     public TimerType Type { get; }
+
+    /// <summary>
+    /// Gets the current timer cycles, representing whether the timer is set to run once or repeatedly.
+    /// </summary>
     public TimerCycles Cycles { get; }
+
+    /// <summary>
+    /// Gets the length of the current timer interval in seconds.
+    /// </summary>
     public long Length { get; }
+
+    /// <summary>
+    /// Gets the unique identifier for the Timer.
+    /// </summary>
     public string TimerID { get; internal set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the Timer is currently paused.
+    /// </summary>
     public bool Paused { get; set; }
 
-    private long StartTick { get; }
-    private long LastEventTick { get; set; }
-    internal bool engineTimer;
+    private long _lastEventTick { get; set; }
     private bool _disposed;
-
-    private static readonly Dictionary<string, Timer> _timers = new();
-    public static bool PausedAll { get; set; }
 
     private Timer(TimerType type, TimerCycles cycles, long startTick, double length)
     {
         Type = type;
         Cycles = cycles;
-        StartTick = startTick;
-        LastEventTick = startTick;
+        _lastEventTick = startTick;
         Length = (long)(length * HighResTimer.TicksPerSecond);
         Paused = false;
     }
@@ -45,6 +73,23 @@ public sealed class Timer : IDisposable
     ~Timer() => Dispose();
 
     #region static members
+    private static readonly ConcurrentDictionary<string, Timer> _timers = new();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether all operations are globally paused.
+    /// </summary>
+    public static bool PausedAll { get; set; }
+
+    /// <summary>
+    /// Creates a new timer with the specified parameters and adds it to the collection of active timers.
+    /// </summary>
+    /// <remarks>The created timer is automatically added to the internal collection of active timers and can
+    /// be retrieved or managed using its <paramref name="timerID"/>.</remarks>
+    /// <param name="timerID">A unique identifier for the timer. Cannot be null or empty.</param>
+    /// <param name="type">Gets the type of the timer, indicating whether it is a pre-cycle or post-cycle timer.</param>
+    /// <param name="cycles">Gets the current timer cycles, representing whether the timer is set to run once or repeatedly.</param>
+    /// <param name="length">The duration of the timer in seconds.</param>
+    /// <returns>The newly created <see cref="Timer"/> instance.</returns>
     public static Timer Add(string timerID, TimerType type, TimerCycles cycles, double length)
     {
         var timer = new Timer(type, cycles, HighResTimer.GetCurrentTick(), length)
@@ -55,57 +100,80 @@ public sealed class Timer : IDisposable
         return timer;
     }
 
+    /// <summary>
+    /// Creates and adds a new timer with the specified type, cycle count, and duration.
+    /// </summary>
+    /// <param name="type">Gets the type of the timer, indicating whether it is a pre-cycle or post-cycle timer.</param>
+    /// <param name="cycles">Gets the current timer cycles, representing whether the timer is set to run once or repeatedly.</param>
+    /// <param name="length">The duration of the timer in seconds.</param>
+    /// <returns>A <see cref="Timer"/> instance representing the newly created timer.</returns>
     public static Timer Add(TimerType type, TimerCycles cycles, double length)
     {
         string timerID = Guid.NewGuid().ToString();
         return Add(timerID, type, cycles, length);
     }
 
+    /// <summary>
+    /// Removes the timer associated with the specified timer ID and releases its resources.
+    /// </summary>
+    /// <remarks>If a timer with the specified <paramref name="timerID"/> exists, it is disposed and removed
+    /// from the collection. If no timer is found for the given ID, the method performs no action.</remarks>
+    /// <param name="timerID">The unique identifier of the timer to remove. Cannot be null or empty.</param>
     public static void Remove(string timerID)
     {
         if (_timers.TryGetValue(timerID, out var timer))
             timer.Dispose();
     }
 
-    public static void Clear()
-    {
-        var toRemove = new List<string>();
-        foreach (var (key, timer) in _timers)
-        {
-            if (!timer.engineTimer)
-                toRemove.Add(key);
-        }
-
-        foreach (var key in toRemove)
-            Remove(key);
-    }
-
+    /// <summary>
+    /// Retrieves the <see cref="Timer"/> instance associated with the specified timer ID.
+    /// </summary>
+    /// <param name="timerID">The unique identifier of the timer to retrieve. Cannot be <see langword="null"/> or empty.</param>
+    /// <returns>The <see cref="Timer"/> instance associated with the specified timer ID.</returns>
     public static Timer Get(string timerID) => _timers[timerID];
 
-    public static void RaiseTimerEvents(TimerType type, long engineTick)
+    /// <summary>
+    /// Gets the total number of active timers.
+    /// </summary>
+    public static int Count => _timers.Count();
+
+    /// <summary>
+    /// Gets an array of timer identifiers currently managed by the Engine.
+    /// </summary>
+    public static string[] TimerIDs =>
+        _timers.Select(kvp => kvp.Key)
+               .ToArray();
+
+    internal static void ClearAll()
+    {
+        foreach (var timer in _timers.Values.ToList())
+            Remove(timer.TimerID);
+    }
+
+    internal static void RaiseTimerEvents(TimerType type, long engineTick)
     {
         var expired = new List<string>();
 
         foreach (var (key, timer) in _timers)
         {
-            // checking this TimerType? (i.e., PreCycle or PostCycle)
+            // checking this TimerType (i.e., PreCycle or PostCycle)
             if (timer.Type != type) continue;
 
             // "push" time forward for Paused Timer instances
             if (PausedAll || timer.Paused)
             {
-                timer.LastEventTick += (engineTick - timer.LastEventTick);
+                timer._lastEventTick += (engineTick - timer._lastEventTick);
                 continue;
             }
 
             // check if Timer.Length time has passed
-            while (engineTick - timer.LastEventTick >= timer.Length)
+            while (engineTick - timer._lastEventTick >= timer.Length)
             {
                 // save the time this event was scheduled to run
                 // might be different from current system tick, but storing this value
                 // will ensure that a lag in repeating timer events does not
                 // accumulate over time
-                timer.LastEventTick += timer.Length;
+                timer._lastEventTick += timer.Length;
                 timer.RaiseTickEvent();
 
                 // check for any expired timers
@@ -117,12 +185,5 @@ public sealed class Timer : IDisposable
         foreach (var key in expired)
             _timers.Remove(key);
     }
-
-    public static int Count => _timers.Count(kvp => !kvp.Value.engineTimer);
-
-    public static string[] TimerIDs =>
-        _timers.Where(kvp => !kvp.Value.engineTimer)
-               .Select(kvp => kvp.Key)
-               .ToArray();
     #endregion
 }
