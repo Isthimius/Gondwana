@@ -101,7 +101,6 @@ public class EngineState
         return engineState;
     }
 
-
     private static void LoadResourceFiles(IEnumerable<EngineResourceFile> resourceFiles)
     {
         // Replace raw deserialized resource files with proper loaded instances

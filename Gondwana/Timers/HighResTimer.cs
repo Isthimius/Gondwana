@@ -2,6 +2,12 @@
 
 namespace Gondwana.Timers;
 
+/// <summary>
+/// Provides utility methods for working with the system's high-resolution timer.
+/// </summary>
+/// <remarks>The <see cref="HighResTimer"/> class offers methods to retrieve high-resolution tick counts and
+/// calculate elapsed time with precision. It relies on the <see cref="System.Diagnostics.Stopwatch"/> class to access
+/// the system's high-resolution performance counter, if available.</remarks>
 public static class HighResTimer
 {
     /// <summary>

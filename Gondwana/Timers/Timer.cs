@@ -22,11 +22,6 @@ public class Timer : IDisposable
         Paused = false;
     }
 
-    ~Timer()
-    {
-        this.Dispose();
-    }
-
     public string TimerID
     {
         get;
@@ -42,12 +37,15 @@ public class Timer : IDisposable
 
     public bool Paused { get; set; }
 
-    #region IDisposable Members
+    ~Timer()
+    {
+        this.Dispose();
+    }
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
         Timers._timers.Remove(TimerID);
         this.Tick = null;
     }
-    #endregion
 }
