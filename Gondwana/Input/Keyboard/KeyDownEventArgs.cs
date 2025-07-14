@@ -1,19 +1,17 @@
-﻿using System.Windows.Forms;
+﻿namespace Gondwana.Input.Keyboard;
 
-namespace Gondwana.Input.Keyboard;
-
-public class KeyDownEventArgs : EventArgs
+public sealed class KeyDownEventArgs : EventArgs
 {
-    public KeyEventConfiguration KeyConfig;
-    public bool IsShift;
-    public bool IsAlt;
-    public bool IsCtrl;
+    public KeyEventConfiguration KeyConfig { get; }
+    public ModifierState Modifiers { get; }
 
-    protected internal KeyDownEventArgs(KeyEventConfiguration keycfg)
+    public bool IsShift => Modifiers.HasFlag(ModifierState.Shift);
+    public bool IsCtrl => Modifiers.HasFlag(ModifierState.Ctrl);
+    public bool IsAlt => Modifiers.HasFlag(ModifierState.Alt);
+
+    public KeyDownEventArgs(KeyEventConfiguration config, ModifierState modifiers)
     {
-        KeyConfig = keycfg;
-        IsShift = Keyboard.Keyboard.GetAsyncKeyState(Keys.ShiftKey);
-        IsAlt = Keyboard.Keyboard.GetAsyncKeyState(Keys.Menu);
-        IsCtrl = Keyboard.Keyboard.GetAsyncKeyState(Keys.LControlKey) || Keyboard.Keyboard.GetAsyncKeyState(Keys.RControlKey);
+        KeyConfig = config;
+        Modifiers = modifiers;
     }
 }

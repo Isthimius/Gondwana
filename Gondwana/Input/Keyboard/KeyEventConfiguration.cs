@@ -1,31 +1,27 @@
 using Gondwana.Timers;
-using System.Windows.Forms;
 
 namespace Gondwana.Input.Keyboard;
 
 public struct KeyEventConfiguration
 {
-    public Keys Key;
-    private long _ticksBetweenEvents;
-    public double TimeBetweenEvents
-    {
-        get { return (double)_ticksBetweenEvents / (double)HighResTimer.TicksPerSecond; }
-        set { _ticksBetweenEvents = (long)(value * (double)HighResTimer.TicksPerSecond); }
-    }
-    
+    public string Key; // Could be "A", "Enter", "ArrowUp", etc.
     public bool Paused;
     internal long LastKeyEvent;
+    private long _ticksBetweenEvents;
 
-    public KeyEventConfiguration(Keys key, double timeBetweenEvents, bool paused)
+    public double TimeBetweenEvents
+    {
+        get => (double)_ticksBetweenEvents / HighResTimer.TicksPerSecond;
+        set => _ticksBetweenEvents = (long)(value * HighResTimer.TicksPerSecond);
+    }
+
+    public KeyEventConfiguration(string key, double timeBetweenEvents, bool paused)
     {
         Key = key;
         Paused = paused;
         LastKeyEvent = 0;
-        _ticksBetweenEvents = (long)(timeBetweenEvents * (double)HighResTimer.TicksPerSecond);
+        _ticksBetweenEvents = (long)(timeBetweenEvents * HighResTimer.TicksPerSecond);
     }
 
-    internal bool ReadyForNextEvent(long tick)
-    {
-        return (tick - LastKeyEvent >= _ticksBetweenEvents);
-    }
+    public bool ReadyForNextEvent(long tick) => tick - LastKeyEvent >= _ticksBetweenEvents;
 }

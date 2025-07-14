@@ -91,7 +91,7 @@ public sealed class Engine : IDisposable
             }
         }
 
-        Keyboard.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
+        KeyboardHandler.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
         VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
