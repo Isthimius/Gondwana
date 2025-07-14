@@ -7,41 +7,69 @@ public sealed class GamepadHandler
     public static GamepadHandler Instance { get; } = new();
     private GamepadHandler() { }
 
-    private readonly Dictionary<string, GamepadButtonEventConfiguration> _buttonConfigs = new();
-    private bool _paused;
+    private readonly Dictionary<string, Dictionary<string, GamepadButtonEventConfiguration>> _configsByGamepadId = new();
 
     public long DefaultTicksBetweenEvents { get; set; } = HighResTimer.TicksPerSecond / 10;
     public event Action<GamepadButtonDownEventArgs>? ButtonDown;
 
-    public void Update(long tick, IGamepadAdapter? adapter = null)
+    public bool PauseAllInput { get; set; }
+
+    public void Update(long tick, IEnumerable<IGamepadAdapter> adapters)
     {
-        if (_paused || ButtonDown is null || adapter is null)
-            return;
+        if (PauseAllInput || ButtonDown is null || adapters is null) return;
 
-        foreach (var kvp in _buttonConfigs)
+        foreach (var adapter in adapters)
         {
-            var button = kvp.Key;
-            var config = kvp.Value;
+            if (!_configsByGamepadId.TryGetValue(adapter.GamepadId, out var configs))
+                continue;
 
-            if (config.Paused || !adapter.PressedButtons.Contains(button)) continue;
-
-            if (config.ReadyForNextEvent(tick))
+            foreach (var kvp in configs)
             {
-                config.LastEventTick = tick;
-                _buttonConfigs[button] = config;
+                var button = kvp.Key;
+                var config = kvp.Value;
 
-                ButtonDown?.Invoke(new GamepadButtonDownEventArgs(config, adapter));
+                if (config.Paused || !adapter.PressedButtons.Contains(button)) continue;
+
+                if (config.ReadyForNextEvent(tick))
+                {
+                    config.LastEventTick = tick;
+                    configs[button] = config;
+
+                    ButtonDown?.Invoke(new GamepadButtonDownEventArgs(config, adapter));
+                }
             }
         }
     }
 
-    public void StartMonitoringButton(string button, double timeBetweenEvents = -1)
+    public void StartMonitoringButton(string gamepadId, string button, double timeBetweenEvents = -1)
     {
         if (timeBetweenEvents < 0)
-            timeBetweenEvents = (double)DefaultTicksBetweenEvents / HighResTimer.TicksPerSecond;
+            timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenGamepadEvents;
 
-        _buttonConfigs[button] = new GamepadButtonEventConfiguration(button, timeBetweenEvents, false);
+        if (!_configsByGamepadId.TryGetValue(gamepadId, out var configMap))
+        {
+            configMap = new Dictionary<string, GamepadButtonEventConfiguration>();
+            _configsByGamepadId[gamepadId] = configMap;
+        }
+
+        configMap[button] = new GamepadButtonEventConfiguration(button, timeBetweenEvents, false);
     }
 
-    public void StopMonitoringButton(string button) => _buttonConfigs.Remove(button);
+    public void StopMonitoringButton(string gamepadId, string button)
+    {
+        if (_configsByGamepadId.TryGetValue(gamepadId, out var configMap))
+        {
+            configMap.Remove(button);
+        }
+    }
+
+    public void StopMonitoringAllButtons(string gamepadId)
+    {
+        _configsByGamepadId.Remove(gamepadId);
+    }
+
+    public IReadOnlyDictionary<string, IReadOnlyDictionary<string, GamepadButtonEventConfiguration>> AllButtonConfigsByGamepadId
+        => _configsByGamepadId.ToDictionary(
+            entry => entry.Key,
+            entry => (IReadOnlyDictionary<string, GamepadButtonEventConfiguration>)entry.Value);
 }

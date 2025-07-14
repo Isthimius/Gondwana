@@ -4,7 +4,9 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
+using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
+using Gondwana.Input.Keyboard.WinForms;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
@@ -72,7 +74,11 @@ public sealed class Engine : IDisposable
     private bool _isInitialized = false;
     private bool _isInitializing = false;
 
-    public void Initialize(string? configFileName = null, bool? autoSaveConfig = null)
+    public void Initialize(
+        string? configFileName = null,
+        bool? autoSaveConfig = null,
+        IKeyboardAdapter? keyboardAdapter = null,
+        List<IGamepadAdapter>? gamepadAdapters = null)
     {
         if (_isInitialized || _isInitializing)
             return;
@@ -91,8 +97,9 @@ public sealed class Engine : IDisposable
             }
         }
 
-        KeyboardHandler.Instance.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
         VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
+        KeyboardAdapter ??= keyboardAdapter;
+        GamepadAdapters ??= gamepadAdapters;
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
 
@@ -170,6 +177,10 @@ public sealed class Engine : IDisposable
     public EngineState State { get; } = new EngineState();
 
     public EngineConfiguration Configuration { get; set; }
+
+    public IKeyboardAdapter? KeyboardAdapter { get; set; } = null;
+
+    public List<IGamepadAdapter>? GamepadAdapters { get; set; } = new();
     #endregion
 
     #region private methods
@@ -215,7 +226,10 @@ public sealed class Engine : IDisposable
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
-        KeyboardHandler.Instance.Update(tick, null);
+        KeyboardHandler.Instance.Update(tick, KeyboardAdapter);
+
+        // check for gamepad events
+        GamepadHandler.Instance.Update(tick, GamepadAdapters);
 
         // perform any timed GridPointMatrix scrolling
         foreach (GridPointMatrix matrix in GridPointMatrix.GetAllGridPointMatrix())

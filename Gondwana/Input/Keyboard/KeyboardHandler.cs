@@ -9,7 +9,6 @@ namespace Gondwana.Input.Keyboard;
 public sealed class KeyboardHandler
 {
     private readonly Dictionary<string, KeyEventConfiguration> _keyConfigs = new();
-    private bool _allPause;
 
     /// <summary>
     /// Singleton instance of the KeyboardHandler.
@@ -27,18 +26,9 @@ public sealed class KeyboardHandler
     public event Action<KeyDownEventArgs>? KeyDown;
 
     /// <summary>
-    /// The default interval (in ticks) between repeated key events.
-    /// </summary>
-    public long DefaultTicksBetweenKeyEvents { get; set; } = 0;
-
-    /// <summary>
     /// Pauses all key events globally.
     /// </summary>
-    public bool PauseAllKeyEvents
-    {
-        get => _allPause;
-        set => _allPause = value;
-    }
+    public bool PauseAllKeyEvents { get; set; }
 
     /// <summary>
     /// Updates internal key states and raises throttled key down events.
@@ -48,7 +38,7 @@ public sealed class KeyboardHandler
     /// <param name="modifiers">Optional modifier state</param>
     public void Update(long tick, IKeyboardAdapter? keyboardAdapter = null)
     {
-        if (_allPause || KeyDown is null || keyboardAdapter is null) return;
+        if (PauseAllKeyEvents || KeyDown is null || keyboardAdapter is null) return;
 
         foreach (var kvp in _keyConfigs)
         {
@@ -70,7 +60,7 @@ public sealed class KeyboardHandler
     public void StartMonitoringKey(string key, double timeBetweenEvents = -1)
     {
         if (timeBetweenEvents < 0)
-            timeBetweenEvents = (double)DefaultTicksBetweenKeyEvents / HighResTimer.TicksPerSecond;
+            timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenKeyboardEvents;
 
         _keyConfigs[key] = new KeyEventConfiguration(key, timeBetweenEvents, false);
     }
@@ -79,21 +69,5 @@ public sealed class KeyboardHandler
 
     public void StopMonitoringAllKeys() => _keyConfigs.Clear();
 
-    public void SetKeyEventPause(string key, bool paused)
-    {
-        if (_keyConfigs.TryGetValue(key, out var config))
-        {
-            config.Paused = paused;
-            _keyConfigs[key] = config;
-        }
-    }
-
-    public void SetTimeBetweenEvents(string key, double timeBetweenEvents)
-    {
-        if (_keyConfigs.TryGetValue(key, out var config))
-        {
-            config.TimeBetweenEvents = timeBetweenEvents;
-            _keyConfigs[key] = config;
-        }
-    }
+    public IReadOnlyDictionary<string, KeyEventConfiguration> AllKeyConfigs => _keyConfigs;
 }

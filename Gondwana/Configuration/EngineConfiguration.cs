@@ -50,6 +50,13 @@ public class EngineConfiguration
     /// </summary>
     public double TimeBetweenKeyboardEvents { get; set; } = 0.03;
 
+    /// <summary>
+    /// Minimum time (in seconds) allowed between Gamepad events.
+    /// Use this to prevent flooding the system with too many events at once (holding down a button, etc).
+    /// Default is 0.03 seconds (30 milliseconds).
+    /// </summary>
+    public double TimeBetweenGamepadEvents { get; set; } = 0.03;
+
     private double _visibleSurfaceRefreshTimer = 1.5;
 
     /// <summary>
