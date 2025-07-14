@@ -1,2 +1,2 @@
 # Gondwana
-C# 2D game engine
+C# Pixel Game Engine
