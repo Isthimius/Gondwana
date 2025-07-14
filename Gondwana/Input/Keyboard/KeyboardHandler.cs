@@ -46,7 +46,7 @@ public sealed class KeyboardHandler
     /// <param name="tick">Current global tick</param>
     /// <param name="keyStates">Set of currently pressed keys (as strings or codes)</param>
     /// <param name="modifiers">Optional modifier state</param>
-    public void Update(long tick, IKeyboardAdapter keyboardAdapter = null)
+    public void Update(long tick, IKeyboardAdapter? keyboardAdapter = null)
     {
         if (_allPause || KeyDown is null || keyboardAdapter is null) return;
 
