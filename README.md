@@ -1,2 +1,2 @@
 # Gondwana
-C# 2D game engine
+C# 2D Pizel Game Engine
