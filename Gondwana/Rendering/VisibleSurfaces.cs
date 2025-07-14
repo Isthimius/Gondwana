@@ -1,6 +1,7 @@
 using Gondwana.Timers;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using Timer = Gondwana.Timers.Timer;
 
 namespace Gondwana.Rendering;
 
@@ -73,7 +74,7 @@ public static class VisibleSurfaces
 
     internal class VisibleSurfacesInstance
     {
-        private Timers.Timer _timer;
+        private Timer _timer;
         private TimerEventHandler _timerDel;
 
         internal double _refreshTimer;          // in seconds
@@ -106,7 +107,7 @@ public static class VisibleSurfaces
 
             if (_refreshTimer > 0)
             {
-                _timer = Timers.Timers.Add(TimerType.PostCycle, TimerCycles.Repeating, _refreshTimer);
+                _timer = Timer.Add(TimerType.PostCycle, TimerCycles.Repeating, _refreshTimer);
                 _timer.engineTimer = true;
 
                 _timer.Tick += _timerDel;

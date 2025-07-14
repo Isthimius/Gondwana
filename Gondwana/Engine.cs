@@ -12,6 +12,7 @@ using Gondwana.Resource;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
+using Timer = Gondwana.Timers.Timer;
 
 namespace Gondwana;
 
@@ -212,7 +213,7 @@ public sealed class Engine : IDisposable
             BeforeBackgroundTasksExecute();
 
         // raise pre-cycle timer events
-        Timers.Timers.RaiseTimerEvents(TimerType.PreCycle, tick);
+        Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
         Keyboard.RaiseKeyEvents(tick);
@@ -264,7 +265,7 @@ public sealed class Engine : IDisposable
             AfterEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // raise post-cycle timer events
-        Timers.Timers.RaiseTimerEvents(TimerType.PostCycle, tick);
+        Timer.RaiseTimerEvents(TimerType.PostCycle, tick);
     }
 
     private void DrawRefreshQueues()
