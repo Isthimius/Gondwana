@@ -9,18 +9,18 @@ public struct KeyEventConfiguration
     internal long LastKeyEvent;
     private long _ticksBetweenEvents;
 
-    public double TimeBetweenEvents
-    {
-        get => (double)_ticksBetweenEvents / HighResTimer.TicksPerSecond;
-        set => _ticksBetweenEvents = (long)(value * HighResTimer.TicksPerSecond);
-    }
-
     public KeyEventConfiguration(string key, double timeBetweenEvents, bool paused)
     {
         Key = key;
         Paused = paused;
         LastKeyEvent = 0;
         _ticksBetweenEvents = (long)(timeBetweenEvents * HighResTimer.TicksPerSecond);
+    }
+
+    public double TimeBetweenEvents
+    {
+        get => (double)_ticksBetweenEvents / HighResTimer.TicksPerSecond;
+        set => _ticksBetweenEvents = (long)(value * HighResTimer.TicksPerSecond);
     }
 
     public bool ReadyForNextEvent(long tick) => tick - LastKeyEvent >= _ticksBetweenEvents;

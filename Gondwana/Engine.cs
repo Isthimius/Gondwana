@@ -91,7 +91,7 @@ public sealed class Engine : IDisposable
             }
         }
 
-        KeyboardHandler.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
+        KeyboardHandler.Instance.DefaultTicksBetweenKeyEvents = (long)(Configuration.TimeBetweenKeyboardEvents * (double)HighResTimer.TicksPerSecond);
         VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
@@ -215,7 +215,7 @@ public sealed class Engine : IDisposable
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
-        Keyboard.RaiseKeyEvents(tick);
+        KeyboardHandler.Instance.Update(tick, null);
 
         // perform any timed GridPointMatrix scrolling
         foreach (GridPointMatrix matrix in GridPointMatrix.GetAllGridPointMatrix())

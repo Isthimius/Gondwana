@@ -20,7 +20,6 @@
 	  <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.7" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.7" />
 	  <PackageReference Include="NAudio" Version="2.2.1" />
-	  <PackageReference Include="OpenTK" Version="4.9.4" />
 	  <PackageReference Include="SharpZipLib" Version="1.4.2" />
 	  <PackageReference Include="SkiaSharp" Version="3.119.0" />
 	</ItemGroup>
@@ -29,6 +28,10 @@
 	  <None Update="gondwana.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Input\Gamepad\" />
 	</ItemGroup>
 
 </Project>
