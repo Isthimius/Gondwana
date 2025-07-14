@@ -1,9 +1,8 @@
-﻿using Gondwana.Input.Keyboard;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
-namespace Gondwana.Input.EventArgs;
+namespace Gondwana.Input.Keyboard;
 
-public class KeyDownEventArgs : System.EventArgs
+public class KeyDownEventArgs : EventArgs
 {
     public KeyEventConfiguration KeyConfig;
     public bool IsShift;
