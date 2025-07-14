@@ -65,7 +65,7 @@ public sealed class Timer : IDisposable
     {
         if (_disposed) return;
         GC.SuppressFinalize(this);
-        _timers.Remove(TimerID);
+        _timers.TryRemove(TimerID, out _);
         Tick = null;
         _disposed = true;
     }
@@ -73,6 +73,7 @@ public sealed class Timer : IDisposable
     ~Timer() => Dispose();
 
     #region static members
+
     private static readonly ConcurrentDictionary<string, Timer> _timers = new();
 
     /// <summary>
@@ -121,7 +122,7 @@ public sealed class Timer : IDisposable
     /// <param name="timerID">The unique identifier of the timer to remove. Cannot be null or empty.</param>
     public static void Remove(string timerID)
     {
-        if (_timers.TryGetValue(timerID, out var timer))
+        if (_timers.TryRemove(timerID, out var timer))
             timer.Dispose();
     }
 
@@ -135,26 +136,24 @@ public sealed class Timer : IDisposable
     /// <summary>
     /// Gets the total number of active timers.
     /// </summary>
-    public static int Count => _timers.Count();
+    public static int Count => _timers.Count;
 
     /// <summary>
     /// Gets an array of timer identifiers currently managed by the Engine.
     /// </summary>
-    public static string[] TimerIDs =>
-        _timers.Select(kvp => kvp.Key)
-               .ToArray();
+    public static string[] TimerIDs => _timers.Keys.ToArray();
 
     internal static void ClearAll()
     {
-        foreach (var timer in _timers.Values.ToList())
-            Remove(timer.TimerID);
+        foreach (var key in _timers.Keys.ToArray())
+            Remove(key);
     }
 
     internal static void RaiseTimerEvents(TimerType type, long engineTick)
     {
         var expired = new List<string>();
 
-        foreach (var (key, timer) in _timers)
+        foreach (var (key, timer) in _timers.ToArray())
         {
             // checking this TimerType (i.e., PreCycle or PostCycle)
             if (timer.Type != type) continue;
@@ -183,7 +182,7 @@ public sealed class Timer : IDisposable
         }
 
         foreach (var key in expired)
-            _timers.Remove(key);
+            _timers.TryRemove(key, out _);
     }
     #endregion
 }
