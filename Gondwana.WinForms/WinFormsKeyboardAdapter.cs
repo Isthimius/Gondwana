@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using Microsoft.Extensions.Logging;
+using System.Windows.Forms;
 
 namespace Gondwana.Input.Keyboard.WinForms;
 
@@ -22,6 +23,8 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
         _form.KeyDown += OnKeyDown;
         _form.KeyUp += OnKeyUp;
         _form.FormClosed += (_, __) => Dispose();
+
+        Engine.Logger.LogInformation("WinFormsKeyboardAdapter initialized. Starting to poll key presses.");
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -57,5 +60,7 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
     {
         _form.KeyDown -= OnKeyDown;
         _form.KeyUp -= OnKeyUp;
+
+        Engine.Logger.LogInformation("WinFormsKeyboardAdapter disposed.");
     }
 }
