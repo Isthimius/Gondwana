@@ -99,7 +99,7 @@ public sealed class Engine : IDisposable
 
         VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
         KeyboardAdapter ??= keyboardAdapter;
-        GamepadAdapters ??= gamepadAdapters;
+        GamepadAdapters = gamepadAdapters ?? new List<IGamepadAdapter>();
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
 

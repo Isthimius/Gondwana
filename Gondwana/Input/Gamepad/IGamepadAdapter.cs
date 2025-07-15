@@ -6,4 +6,6 @@ public interface IGamepadAdapter
     IReadOnlyCollection<string> PressedButtons { get; }
     GamepadStickState? LeftStick { get; }
     GamepadStickState? RightStick { get; }
+    public float LeftTrigger { get; }
+    public float RightTrigger { get; }
 }

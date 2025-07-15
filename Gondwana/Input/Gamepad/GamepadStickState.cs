@@ -6,9 +6,13 @@ public readonly struct GamepadStickState
     public float Y { get; }
 
     /// <summary>
-    /// Raw input values before normalization (e.g., from XInput or SDL2)
+    /// Raw horizontal value before normalization (e.g., from XInput or SDL2)
     /// </summary>
     public int RawX { get; }
+
+    /// <summary>
+    /// Raw vertical value before normalization (e.g., from XInput or SDL2)
+    /// </summary>
     public int RawY { get; }
 
     public GamepadStickState(float x, float y, int rawX = 0, int rawY = 0)
@@ -19,6 +23,15 @@ public readonly struct GamepadStickState
         RawY = rawY;
     }
 
+    /// <summary>
+    /// Creates a <see cref="GamepadStickState"/> instance from raw 16-bit signed integer values.
+    /// </summary>
+    /// <remarks>The method normalizes the raw input values to a floating-point range of [-1, 1]  to represent
+    /// the stick's position, while preserving the original raw values for reference.</remarks>
+    /// <param name="rawX">The raw X-axis value, ranging from -32768 to 32767.</param>
+    /// <param name="rawY">The raw Y-axis value, ranging from -32768 to 32767.</param>
+    /// <returns>A <see cref="GamepadStickState"/> representing the normalized stick position,  with X and Y values clamped to
+    /// the range [-1, 1], and the original raw values.</returns>
     public static GamepadStickState FromRaw16(int rawX, int rawY)
     {
         const float range = 32767f; // signed range: -32768 to 32767
@@ -27,6 +40,15 @@ public readonly struct GamepadStickState
         return new GamepadStickState(normX, normY, rawX, rawY);
     }
 
+    /// <summary>
+    /// Creates a <see cref="GamepadStickState"/> instance from raw 16-bit unsigned integer values.
+    /// </summary>
+    /// <remarks>The raw input values are normalized to the range [-1, 1] based on the assumption that the
+    /// midpoint (32768) represents the neutral position, and the range extends from 0 to 65535.</remarks>
+    /// <param name="rawX">The raw X-axis value, represented as an unsigned 16-bit integer.</param>
+    /// <param name="rawY">The raw Y-axis value, represented as an unsigned 16-bit integer.</param>
+    /// <returns>A <see cref="GamepadStickState"/> instance with normalized X and Y values in the range [-1, 1], along with the
+    /// original raw input values.</returns>
     public static GamepadStickState FromRawUnsigned16(ushort rawX, ushort rawY)
     {
         float normX = (rawX - 32768f) / 32767f;
