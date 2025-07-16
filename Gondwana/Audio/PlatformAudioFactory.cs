@@ -31,14 +31,13 @@ public static class PlatformAudioFactory
         return _readers.Keys.OrderBy(ext => ext);
     }
 
-    internal static (WaveStream stream, bool requiresFile) CreateReader(Stream input, string fileNameOrExt)
+    internal static (Func<Stream, WaveStream> factory, bool requiresFile) GetReaderFactory(string fileNameOrExt)
     {
         var ext = NormalizeExt(Path.GetExtension(fileNameOrExt));
 
         if (_readers.TryGetValue(ext, out var entry))
         {
-            var (factory, requiresFile) = entry;
-            return (factory(input), requiresFile);
+            return entry;
         }
 
         Engine.Logger.LogError("Unsupported audio format: {Extension}", ext);

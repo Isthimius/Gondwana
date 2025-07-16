@@ -124,28 +124,40 @@ public sealed class SoundResourceManager : IDisposable
 
     private SoundResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
     {
-        var newStream = new MemoryStream(bytes);
-        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, fileHint);
+        if (_soundResources.TryGetValue(key, out var existing))
+        {
+            existing.soundResource.Dispose(); // replace existing
+        }
 
-        string? filePath = fileHint;
+        string ext = Path.GetExtension(fileHint);
+        var (readerFactory, requiresFile) = PlatformAudioFactory.GetReaderFactory(ext);
+
+        Stream streamForReader;
         string? tempFilePath = null;
 
-        if (fileRequired)
+        if (requiresFile)
         {
-            tempFilePath = SaveStreamToTempFile(new MemoryStream(bytes), Path.GetExtension(fileHint));
+            tempFilePath = SaveStreamToTempFile(new MemoryStream(bytes), ext);
+            streamForReader = File.OpenRead(tempFilePath);
         }
+        else
+        {
+            streamForReader = new MemoryStream(bytes);
+        }
+
+        var reader = readerFactory(streamForReader);
 
         var sound = new SoundResource(
             key,
             reader,
             volume,
             pan,
-            filePath,
+            fileHint,
             bytes,
             tempFilePath
         );
 
-        _soundResources[key] = (sound, fileRequired ? filePath : "");
+        _soundResources[key] = (sound, fileRequired ? tempFilePath : null);
         RegisterLoadedSound(key, sound);
         return sound;
     }

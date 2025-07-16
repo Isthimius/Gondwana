@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Gondwana.Input.Keyboard;
+using Gondwana.Input.Keyboard.WinForms;
+using Microsoft.Extensions.Logging;
 using System.Windows.Forms;
 
-namespace Gondwana.Input.Keyboard.WinForms;
+namespace Gondwana.WinForms.Input.Keyboard;
 
 /// <summary>
 /// Passive WinForms key state collector that feeds the KeyboardHandler.
@@ -15,7 +17,7 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
     public ICollection<string> PressedKeys => _pressedKeys;
     public ModifierState CurrentModifiers => _mods;
 
-    public WinFormsKeyboardAdapter(Form form)
+    internal WinFormsKeyboardAdapter(Form form)
     {
         _form = form ?? throw new ArgumentNullException(nameof(form));
         _form.KeyPreview = true;

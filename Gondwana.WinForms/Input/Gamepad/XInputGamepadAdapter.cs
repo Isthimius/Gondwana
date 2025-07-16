@@ -1,6 +1,7 @@
-﻿using static Gondwana.Input.Gamepad.WinForms.XInput;
+﻿using Gondwana.Input.Gamepad;
+using static Gondwana.WinForms.Input.Gamepad.XInput;
 
-namespace Gondwana.Input.Gamepad.WinForms;
+namespace Gondwana.WinForms.Input.Gamepad;
 
 public sealed class XInputGamepadAdapter : IGamepadAdapter
 {
