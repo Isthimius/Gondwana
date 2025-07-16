@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Gondwana.Audio.Midi;
+using Gondwana.WinForms;
 
 namespace Slider
 {
@@ -84,6 +85,8 @@ namespace Slider
 
                     Gondwana.Engine.Instance.CPSCalculated += Engine_CPSCalculated;
                 }
+
+                Gondwana.Engine.Instance.InitializeWinFormsKeyboardAdapter(this);
             }
         }
 

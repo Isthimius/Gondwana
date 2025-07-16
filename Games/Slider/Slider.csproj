@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gondwana.Audio.Midi\Gondwana.Audio.Midi.csproj" />
+    <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 </Project>

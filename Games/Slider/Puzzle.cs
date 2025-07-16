@@ -8,6 +8,7 @@ using Gondwana.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Gondwana.WinForms;
 
 namespace Slider
 {
@@ -67,6 +68,9 @@ namespace Slider
 
             Sprites.SpriteMovementStarted += delMoveStart;
             Sprites.SpriteMovementStopped += delMoveStop;
+
+            Engine.Instance.InitializeWinFormsAudioFormats();
+            Engine.Instance.InitializeXInputGamepadManager();
         }
 
         ~Puzzle()

@@ -178,6 +178,7 @@ public sealed class Engine : IDisposable
 
     public EngineConfiguration Configuration { get; set; }
 
+    // TODO: this should be tied to VisibleSurface(s) somehow
     public IKeyboardAdapter? KeyboardAdapter { get; set; } = null;
 
     public List<IGamepadAdapter>? GamepadAdapters { get; set; } = new();

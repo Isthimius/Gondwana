@@ -1,5 +1,4 @@
 using Gondwana.Input.Keyboard.WinForms;
-using Gondwana.Timers;
 
 namespace Gondwana.Input.Keyboard;
 
@@ -38,21 +37,19 @@ public sealed class KeyboardHandler
     /// <param name="modifiers">Optional modifier state</param>
     public void Update(long tick, IKeyboardAdapter? keyboardAdapter = null)
     {
-        if (PauseAllKeyEvents || KeyDown is null || keyboardAdapter is null) return;
+        if (PauseAllKeyEvents || keyboardAdapter is null) return;
 
         foreach (var kvp in _keyConfigs)
         {
             var key = kvp.Key;
             var config = kvp.Value;
-
+            
             if (config.Paused || !keyboardAdapter.PressedKeys.Contains(key)) continue;
 
             if (config.ReadyForNextEvent(tick))
             {
                 config.LastKeyEvent = tick;
                 _keyConfigs[key] = config;
-
-                KeyDown?.Invoke(new KeyDownEventArgs(config, keyboardAdapter.CurrentModifiers));
             }
         }
     }

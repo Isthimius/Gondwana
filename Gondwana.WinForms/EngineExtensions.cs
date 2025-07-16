@@ -13,12 +13,17 @@ public static class EngineExtensions
         WinFormsAudioSupport.RegisterExtendedAudioFormats();
     }
 
-    public static XInputGamepadManager InitializeXInputGamepadManager(this Engine engine)
+    public static void InitializeXInputGamepadManager(this Engine engine)
     {
-        return XInputGamepadManager.Start();
+        foreach (var adapter in XInputGamepadManager.Start().ConnectedAdapters)
+        {
+            Engine.Instance.GamepadAdapters!.Add(adapter);
+        }
+
+        return;
     }
 
-    public static WinFormsKeyboardAdapter InitializeWinFormsKeyboardAdapter(this Engine engine, Form form)
+    public static void InitializeWinFormsKeyboardAdapter(this Engine engine, Form form)
     {
         if (form == null)
         {
@@ -26,6 +31,8 @@ public static class EngineExtensions
             throw new ArgumentNullException(nameof(form));
         }
 
-        return new WinFormsKeyboardAdapter(form);
+        // TODO: make this Keyboard attachable to VisibleSurface
+        Engine.Instance.KeyboardAdapter = new WinFormsKeyboardAdapter(form);
+        return;
     }
 }

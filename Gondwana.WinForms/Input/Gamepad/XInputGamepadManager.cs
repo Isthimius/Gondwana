@@ -5,7 +5,8 @@ namespace Gondwana.WinForms.Input.Gamepad;
 
 public sealed class XInputGamepadManager
 {
-    public static XInputGamepadManager? Instance { get; private set; } = new XInputGamepadManager();
+    // TODO: include manager class in Engine; generic manager should be top-level singleton there
+    public static XInputGamepadManager? Instance { get; private set; }
 
     private XInputGamepadManager()
     {
