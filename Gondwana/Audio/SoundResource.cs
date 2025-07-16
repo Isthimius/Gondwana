@@ -49,7 +49,7 @@ public class SoundResource : IDisposable
         Key = key;
         waveStream = soundStream;
         outputDevice = new WaveOutEvent();
-        outputDevice.Init(BuildAudioGraph(soundStream, volume, pan));
+        outputDevice.Init(BuildAudioGraph(waveStream, volume, pan));
         outputDevice.PlaybackStopped += OnPlaybackStopped;
         FilePathOrExtension = filePathOrExt;
         Extension = NormalizeExt(filePathOrExt ?? Path.GetExtension(filePathOrExt ?? ""));

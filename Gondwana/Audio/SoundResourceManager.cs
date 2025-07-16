@@ -122,6 +122,34 @@ public sealed class SoundResourceManager : IDisposable
         );
     }
 
+    private SoundResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
+    {
+        var newStream = new MemoryStream(bytes);
+        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, fileHint);
+
+        string? filePath = fileHint;
+        string? tempFilePath = null;
+
+        if (fileRequired)
+        {
+            tempFilePath = SaveStreamToTempFile(new MemoryStream(bytes), Path.GetExtension(fileHint));
+        }
+
+        var sound = new SoundResource(
+            key,
+            reader,
+            volume,
+            pan,
+            filePath,
+            bytes,
+            tempFilePath
+        );
+
+        _soundResources[key] = (sound, fileRequired ? filePath : "");
+        RegisterLoadedSound(key, sound);
+        return sound;
+    }
+
     private void RegisterLoadedSound(string key, SoundResource sound)
     {
         sound.Disposed += (_, _) =>
@@ -175,34 +203,6 @@ public sealed class SoundResourceManager : IDisposable
         kvp => kvp.Key,
         kvp => kvp.Value.soundResource
     );
-
-    private SoundResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
-    {
-        var newStream = new MemoryStream(bytes);
-        var (reader, fileRequired) = PlatformAudioFactory.CreateReader(newStream, fileHint);
-
-        string? filePath = fileHint;
-        string? tempFilePath = null;
-
-        if (fileRequired)
-        {
-            tempFilePath = SaveStreamToTempFile(new MemoryStream(bytes), Path.GetExtension(fileHint));
-        }
-
-        var sound = new SoundResource(
-            key,
-            reader,
-            volume,
-            pan,
-            filePath,
-            bytes,
-            tempFilePath
-        );
-
-        _soundResources[key] = (sound, fileRequired ? filePath : "");
-        RegisterLoadedSound(key, sound);
-        return sound;
-    }
 
     private static string SaveStreamToTempFile(Stream input, string extension)
     {
