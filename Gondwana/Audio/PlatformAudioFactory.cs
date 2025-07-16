@@ -16,6 +16,7 @@ public static class PlatformAudioFactory
 
     public static void Register(string extension, Func<Stream, WaveStream> readerFactory, bool requiresFile = false)
     {
+        Engine.Logger.LogDebug("Registering audio reader for extension: {Extension}", extension);
         _readers[NormalizeExt(extension)] = (readerFactory, requiresFile);
     }
 
@@ -40,11 +41,10 @@ public static class PlatformAudioFactory
             return (factory(input), requiresFile);
         }
 
-
         Engine.Logger.LogError("Unsupported audio format: {Extension}", ext);
         throw new NotSupportedException($"Format '{ext}' is not supported on this platform.");
     }
 
-    private static string NormalizeExt(string ext)
+    internal static string NormalizeExt(string ext)
         => ext.StartsWith('.') ? ext.ToLowerInvariant() : "." + ext.ToLowerInvariant();
 }

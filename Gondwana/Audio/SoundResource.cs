@@ -3,6 +3,8 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.Text.Json.Serialization;
 
+using static Gondwana.Audio.PlatformAudioFactory;
+
 namespace Gondwana.Audio;
 
 /// <summary>
@@ -23,7 +25,7 @@ public class SoundResource : IDisposable
     public event EventHandler PlaybackCompleted;
 
     /// <summary>
-    /// Asynchronous event that is invoked when playback completes.
+    /// Asynchronous callback that is invoked when playback completes.
     /// Will not be invoked if the sound is looping.
     /// </summary>
     public Func<Task>? PlaybackCompletedAsync;
@@ -35,17 +37,24 @@ public class SoundResource : IDisposable
 
     private SoundResource() { }
 
-    internal SoundResource(string key, WaveStream soundStream, float volume = 1.0f, float pan = 0.0f, string? filePath = null, bool isTempFile = false, byte[]? rawBytes = null, string? extension = null)
+    internal SoundResource(
+        string key,
+        WaveStream soundStream,
+        float volume = 1.0f,
+        float pan = 0.0f,
+        string? filePathOrExt = null,
+        byte[]? rawBytes = null,
+        string? tempFilePath = null)
     {
         Key = key;
         waveStream = soundStream;
         outputDevice = new WaveOutEvent();
         outputDevice.Init(BuildAudioGraph(soundStream, volume, pan));
         outputDevice.PlaybackStopped += OnPlaybackStopped;
-        FilePath = filePath;
-        IsTempFile = isTempFile;
+        FilePathOrExtension = filePathOrExt;
+        Extension = NormalizeExt(filePathOrExt ?? Path.GetExtension(filePathOrExt ?? ""));
         OriginalBytes = rawBytes;
-        OriginalExtension = extension ?? Path.GetExtension(filePath ?? "") ?? ".wav";
+        TempFilePath = tempFilePath;
     }
 
     private ISampleProvider BuildAudioGraph(WaveStream source, float volume, float pan)
@@ -73,22 +82,23 @@ public class SoundResource : IDisposable
     public byte[]? OriginalBytes { get; private set; }
 
     /// <summary>
-    /// Gets the original file extension associated with the object, if available.
+    /// Gets the file extension associated with the object, if available.
     /// </summary>
     [JsonIgnore]
-    public string? OriginalExtension { get; private set; }
+    public string? Extension { get; private set; }
 
     /// <summary>
     /// Gets the file path associated with the current object.
     /// </summary>
+    /// <remarks>If passing an extension, it must begin with "."</remarks>
     [JsonIgnore]
-    public string? FilePath { get; } = null;
+    public string? FilePathOrExtension { get; }
 
     /// <summary>
-    /// Gets a value indicating whether the file is a temporary file saved from an input Stream.
+    /// Gets or sets the temporary file path used for WaveReaders that require a file on disk.
     /// </summary>
     [JsonIgnore]
-    public bool IsTempFile { get; } = false;
+    public string? TempFilePath { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether the playback is currently paused.
@@ -101,6 +111,12 @@ public class SoundResource : IDisposable
     /// </summary>
     [JsonIgnore]
     public bool IsPlaying => outputDevice.PlaybackState == PlaybackState.Playing;
+
+    /// <summary>
+    /// Gets the current playback state of the output device.
+    /// </summary>
+    [JsonIgnore]
+    public PlaybackState State => outputDevice.PlaybackState;
 
     /// <summary>
     /// Gets or sets the current playback position within the audio stream.
@@ -221,10 +237,17 @@ public class SoundResource : IDisposable
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
-        _ = HandlePlaybackStoppedAsync();
+        if (e.Exception != null)
+        {
+            Engine.Logger.LogError(e.Exception, "PlaybackStopped due to error for sound: {Key}", Key);
+        }
+        else
+        {
+            HandlePlaybackStopped();
+        }
     }
 
-    private async Task HandlePlaybackStoppedAsync()
+    private void HandlePlaybackStopped()
     {
         try
         {
@@ -235,7 +258,19 @@ public class SoundResource : IDisposable
             else
             {
                 if (PlaybackCompletedAsync is not null)
-                    await PlaybackCompletedAsync();
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await PlaybackCompletedAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            Engine.Logger.LogError(ex, "PlaybackCompletedAsync threw an exception.");
+                        }
+                    });
+                }
 
                 PlaybackCompleted?.Invoke(this, EventArgs.Empty);
             }
@@ -266,15 +301,15 @@ public class SoundResource : IDisposable
         outputDevice.Dispose();
         waveStream.Dispose();
 
-        if (IsTempFile && File.Exists(FilePath))
+        if (TempFilePath is not null)
         {
             try
             {
-                File.Delete(FilePath);
+                File.Delete(TempFilePath);
             }
             catch (Exception ex)
             {
-                Engine.Logger.LogWarning(ex, "Failed to delete temporary sound file: {FilePath} for SoundResource: {Key}", FilePath, Key);
+                Engine.Logger.LogError(ex, "Failed to delete temporary file {TempFilePath} for sound resource {Key}", TempFilePath, Key);
             }
         }
 

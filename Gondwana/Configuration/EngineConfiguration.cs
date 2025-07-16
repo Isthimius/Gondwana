@@ -9,7 +9,7 @@ namespace Gondwana.Configuration;
 /// <summary>
 /// Settings used by the engine when cycling
 /// </summary>
-public class EngineConfiguration
+public partial class EngineConfiguration
 {
     private int _targetFPS = 60;
 
