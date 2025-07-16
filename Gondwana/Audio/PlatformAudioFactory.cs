@@ -5,7 +5,7 @@ namespace Gondwana.Audio;
 
 public static class PlatformAudioFactory
 {
-    private static readonly Dictionary<string, (Func<Stream, WaveStream>, bool)> _readers = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, (Func<Stream, WaveStream> readerFactory, bool requiresFile)> _readers = new(StringComparer.OrdinalIgnoreCase);
 
     static PlatformAudioFactory()
     {
