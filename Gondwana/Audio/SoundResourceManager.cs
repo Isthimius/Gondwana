@@ -157,7 +157,7 @@ public sealed class SoundResourceManager : IDisposable
             tempFilePath
         );
 
-        _soundResources[key] = (sound, fileRequired ? tempFilePath : null);
+        _soundResources[key] = (sound, requiresFile ? tempFilePath : null);
         RegisterLoadedSound(key, sound);
         return sound;
     }
