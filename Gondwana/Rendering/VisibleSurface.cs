@@ -1,8 +1,5 @@
-using Gondwana.Common.Win32;
 using Gondwana.Grid;
-using Gondwana.Rendering.Direct;
-using System.Drawing;
-using System.Windows.Forms;
+using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
@@ -12,43 +9,38 @@ public class VisibleSurface : VisibleSurfaceBase
 
     public event EventHandler<VisibleSufaceBindEventArgs>? VisibleSurfaceBind;
 
-    public VisibleSurface(Graphics graphics, int width, int height)
+    public VisibleSurface(int width, int height)
         : base(width, height)
     {
-        Canvas = graphics;
-        Buffer = new Backbuffer(this);
+        Surface = SKSurface.Create(new SKImageInfo(width, height));
+        Canvas = Surface.Canvas;
+
+        Buffer = new Backbuffer(width, height);
         RedrawDirtyRectangleOnly = true;
     }
 
-    public VisibleSurface(Graphics graphics, int width, int height, GridPointMatrixes drawSource)
+    public VisibleSurface(int width, int height, GridPointMatrixes drawSource)
         : base(width, height)
     {
-        Canvas = graphics;
-        Buffer = new Backbuffer(this)
+        Surface = SKSurface.Create(new SKImageInfo(width, height));
+        Canvas = Surface.Canvas;
+
+        Buffer = new Backbuffer(width, height)
         {
             DrawSource = drawSource
         };
         RedrawDirtyRectangleOnly = true;
     }
 
-    public VisibleSurface(Control surface)
-        : base(surface.Width, surface.Height)
-    {
-        Canvas = surface.CreateGraphics();
-        Buffer = new Backbuffer(this);
-        RedrawDirtyRectangleOnly = true;
-    }
+    /// <summary>
+    /// Backing surface for visible rendering target.
+    /// </summary>
+    public SKSurface Surface { get; }
 
-    public VisibleSurface(Control surface, GridPointMatrixes drawSource)
-        : base(surface.Width, surface.Height)
-    {
-        Canvas = surface.CreateGraphics();
-        Buffer = new Backbuffer(this)
-        {
-            DrawSource = drawSource
-        };
-        RedrawDirtyRectangleOnly = true;
-    }
+    /// <summary>
+    /// Render target canvas exposed for external drawing, if needed.
+    /// </summary>
+    public SKCanvas Canvas { get; }
 
     public override bool RedrawDirtyRectangleOnly
     {
@@ -60,16 +52,14 @@ public class VisibleSurface : VisibleSurfaceBase
 
             if (Buffer is Backbuffer backbuffer)
             {
-                backbuffer.DirtyRectangle = new Rectangle(0, 0, Buffer.Width, Buffer.Height);
+                backbuffer.DirtyRectangle = new System.Drawing.Rectangle(0, 0, Buffer.Width, Buffer.Height);
             }
         }
     }
 
     public override void Erase()
     {
-        var hCanvas = Canvas.GetHCanvas();
-        Win32Support.DrawBitmap(hCanvas, 0, 0, Width, Height, hCanvas, 0, 0, Width, Height, TernaryRasterOperations.BLACKNESS);
-        Canvas.ReleaseHCanvas(hCanvas);
+        Buffer.Erase();
     }
 
     public override void Bind(GridPointMatrixes layers)
@@ -83,58 +73,33 @@ public class VisibleSurface : VisibleSurfaceBase
         VisibleSurfaceBind?.Invoke(this, new VisibleSufaceBindEventArgs(this, oldBind, layers));
     }
 
-    protected internal void RenderBackbuffer()
+    public override void RenderBackbuffer(bool resetDirtyRegion = true)
     {
         RenderFromBackbuffer();
-    }
 
-    public override void RenderBackbuffer(bool onlyDirtyRectangle)
-    {
-        if (onlyDirtyRectangle)
-            RenderBackbufferRect();
-        else
-            RenderBackbufferAll();
+        if (resetDirtyRegion && Buffer is Backbuffer backbuffer)
+        {
+            backbuffer.DirtyRectangle = System.Drawing.Rectangle.Empty;
+        }
     }
 
     private void RenderBackbufferAll()
     {
-        var hCanvas = Canvas.GetHCanvas();
-        var hCanvasBuffer = Buffer.Canvas.GetHCanvas();
-
-        Win32Support.DrawBitmap(hCanvas, 0, 0, Width, Height, hCanvasBuffer, 0, 0, Width, Height, TernaryRasterOperations.SRCCOPY);
-
-        Canvas.ReleaseHCanvas(hCanvas);
-        Buffer.Canvas.ReleaseHCanvas(hCanvasBuffer);
+        using var snapshot = Buffer.Snapshot();
+        Canvas.DrawImage(snapshot, new SKPoint(0, 0));
     }
 
     private void RenderBackbufferRect()
     {
-        if (Buffer is not Backbuffer backbuffer || backbuffer.DirtyRectangle.IsEmpty)
+        if (Buffer is not Backbuffer backbuffer)
             return;
 
-        var hCanvas = Canvas.GetHCanvas();
-        var hCanvasBuffer = Buffer.Canvas.GetHCanvas();
+        var dirty = backbuffer.DirtyRectangle;
+        if (dirty.IsEmpty)
+            return;
 
-        Win32Support.DrawBitmap(hCanvas, backbuffer.DirtyRectangle, hCanvasBuffer, backbuffer.DirtyRectangle, TernaryRasterOperations.SRCCOPY);
-
-        Canvas.ReleaseHCanvas(hCanvas);
-        Buffer.Canvas.ReleaseHCanvas(hCanvasBuffer);
-
-        backbuffer.DirtyRectangle = new Rectangle();
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        VisibleSurfaceBind = null;
-
-        var drawings = new DirectDrawing[DirectDrawing.Count];
-        DirectDrawing.AllDirectDrawings.CopyTo(drawings, 0);
-
-        foreach (var drawing in drawings)
-        {
-            if (drawing.Surface == this)
-                drawing.Dispose();
-        }
+        using var snapshot = backbuffer.Snapshot();
+        var skRect = dirty.ToSKRect();
+        Canvas.DrawImage(snapshot, skRect, skRect);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Gondwana.Grid;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Rendering;
 
@@ -14,7 +13,7 @@ public abstract class VisibleSurfaceBase : IDisposable
     }
 
     public virtual SKCanvas Canvas { get; protected internal set; } = default!;
-    public virtual IBackbuffer Buffer { get; protected internal set; } = default!;
+    public virtual Backbuffer Buffer { get; protected internal set; } = default!;
 
     public virtual int Height { get; protected internal set; }
     public virtual int Width { get; protected internal set; }

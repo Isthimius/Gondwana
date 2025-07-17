@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Gondwana.Rendering;
 
-public class Backbuffer : IBackbuffer
+public class Backbuffer
 {
     private readonly SKSurface _surface;
     private readonly Rectangle _range;
@@ -52,6 +52,8 @@ public class Backbuffer : IBackbuffer
 
     public int Width => _range.Width;
     public int Height => _range.Height;
+
+    public SKImage Snapshot() => _surface.Snapshot();
 
     public SolidBrush FogBrush
     {
