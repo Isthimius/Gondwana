@@ -40,7 +40,7 @@ public struct Frame
 
         var srcRect = Tilesheet.GetSourceRange(XTile, YTile);
 
-        if (!Tilesheet.SkBitmap.Info.Rect.Contains(srcRect))
+        if (!Tilesheet.SkBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
             return null;
 
         // Create a temporary surface and draw the tile region onto it
@@ -55,16 +55,13 @@ public struct Frame
         // Handle the mask (if present)
         SKBitmap? croppedMask = null;
         if (Tilesheet.Mask?.SkBitmap is SKBitmap maskBitmap &&
-            maskBitmap.Info.Rect.Contains(srcRect.ToSKRect()))
+            maskBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
         {
             croppedMask = new SKBitmap(srcRect.Width, srcRect.Height);
-            maskBitmap.ReadPixels(
-                new SKImageInfo(srcRect.Width, srcRect.Height),
-                croppedMask.GetPixels(),
-                croppedMask.RowBytes,
-                srcRect.Left,
-                srcRect.Top
-            );
+
+            using var canvas = new SKCanvas(croppedMask);
+            canvas.Clear(SKColors.Transparent);
+            canvas.DrawBitmap(maskBitmap, srcRect.ToSKRect(), new SKRect(0, 0, srcRect.Width, srcRect.Height));
         }
 
         // Encode the surface as an image to memory and decode back into SKBitmap
