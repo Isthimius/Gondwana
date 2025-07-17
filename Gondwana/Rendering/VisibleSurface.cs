@@ -1,8 +1,6 @@
-using Gondwana.Common;
 using Gondwana.Common.Win32;
 using Gondwana.Grid;
 using Gondwana.Rendering.Direct;
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 

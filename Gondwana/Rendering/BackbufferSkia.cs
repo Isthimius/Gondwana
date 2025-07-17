@@ -1,138 +1,138 @@
-﻿using Gondwana.Drawing;
+﻿using SkiaSharp;
 using Gondwana.Grid;
-using SkiaSharp;
+using Gondwana.Drawing;
 using System.Drawing;
+using static SkiaExtensions;
 
 namespace Gondwana.Rendering;
 
-public class BackbufferSkia : IBackbuffer, IDisposable
+public class SkiaBackbuffer : IBackbufferSkia
 {
-    private SKSurface surface;
-    private SKCanvas canvas;
-    private SKBitmap bitmap;
-    private SKPaint fogPaint;
-    private SKPaint gridPaint;
-    private Rectangle dirtyRect;
-    private GridPointMatrixes? source;
+    private readonly SKSurface _surface;
+    private readonly SKBitmap _bitmap;
+    private readonly Rectangle _range;
 
-    public int Width { get; }
-    public int Height { get; }
+    private SKPaint _fogPaint = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
+    private SKPaint _gridPaint = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
 
-    public BackbufferSkia(int width, int height)
+    private GridPointMatrixes _source;
+    private Rectangle _dirtyRectangle = Rectangle.Empty;
+
+    public SkiaBackbuffer(int width, int height)
     {
-        Width = width;
-        Height = height;
-
-        var info = new SKImageInfo(width, height);
-        surface = SKSurface.Create(info);
-        canvas = surface.Canvas;
-
-        fogPaint = new SKPaint
-        {
-            Color = new SKColor(0, 0, 0, 128),
-            Style = SKPaintStyle.Fill
-        };
-
-        gridPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            StrokeWidth = 1,
-            Style = SKPaintStyle.Stroke
-        };
-
-        dirtyRect = Rectangle.Empty;
+        _bitmap = new SKBitmap(width, height);
+        _surface = SKSurface.Create(new SKImageInfo(width, height));
+        _range = new Rectangle(0, 0, width, height);
     }
 
-    public Rectangle DirtyRectangle
-    {
-        get => dirtyRect;
-        set => dirtyRect = value;
-    }
+    public SKCanvas Canvas => _surface.Canvas;
 
-    public GridPointMatrixes? DrawSource
+    public GridPointMatrixes DrawSource
     {
-        get => source;
+        get => _source;
         set
         {
-            if (source != null)
-                source.Disposing -= Source_Disposing;
+            if (_source != null)
+                _source.Disposing -= SourceDisposing;
 
-            source = value;
-            if (source != null)
+            _source = value;
+
+            if (_source != null)
             {
-                source.Disposing += Source_Disposing;
-                source.RefreshNeeded = MatrixesRefreshType.All;
+                _source.Disposing += SourceDisposing;
+                _source.RefreshNeeded = MatrixesRefreshType.All;
             }
         }
     }
 
-    public SKCanvas Canvas => canvas;
-
-    public Graphics DC => throw new NotImplementedException();
-
-    public SolidBrush FogBrush { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public Pen GridPen { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-    public void SaveToFile(string path)
+    public Rectangle DirtyRectangle
     {
-        using var image = surface.Snapshot();
+        get => _dirtyRectangle;
+        internal set => _dirtyRectangle = value;
+    }
+
+    public int Width => _range.Width;
+    public int Height => _range.Height;
+
+    public SolidBrush FogBrush
+    {
+        get => throw new NotSupportedException("Use SKPaint-based customization.");
+        set => _fogPaint = new SKPaint { Color = value.Color.ToSKColor(), IsAntialias = true };
+    }
+
+    public Pen GridPen
+    {
+        get => throw new NotSupportedException("Use SKPaint-based customization.");
+        set => _gridPaint = new SKPaint
+        {
+            Color = value.Color.ToSKColor(),
+            IsStroke = true,
+            StrokeWidth = value.Width
+        };
+    }
+
+    public void SaveToFile(string file)
+    {
+        using var image = _surface.Snapshot();
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        using var stream = File.OpenWrite(path);
+        using var stream = File.OpenWrite(file);
         data.SaveTo(stream);
     }
 
-    public void Erase()
-    {
-        canvas.Clear(SKColors.Black);
-        dirtyRect = new Rectangle(0, 0, Width, Height);
-    }
-
-    public void DrawFog(Tile tile)
-    {
-        var path = new SKPath();
-        foreach (var pt in tile.OutlinePoints)
-        {
-            path.LineTo(pt.X, pt.Y);
-        }
-        path.Close();
-        canvas.DrawPath(path, fogPaint);
-    }
-
-    public void DrawGridLines(Tile tile)
-    {
-        var path = new SKPath();
-        foreach (var pt in tile.OutlinePoints)
-        {
-            path.LineTo(pt.X, pt.Y);
-        }
-        path.Close();
-        canvas.DrawPath(path, gridPaint);
-    }
-
-    public void Dispose()
-    {
-        fogPaint.Dispose();
-        gridPaint.Dispose();
-        surface.Dispose();
-    }
-
-    private void Source_Disposing(GridPointMatrixesDisposingEventArgs e)
-    {
-        source = null;
-    }
+    public void Erase() => Erase(_range);
 
     public void Erase(Rectangle pxlRange)
     {
-        throw new NotImplementedException();
+        var intersect = Rectangle.Intersect(pxlRange, _range);
+        if (intersect.IsEmpty) return;
+
+        Canvas.Save();
+        Canvas.ClipRect(intersect.ToSKRect());
+        Canvas.Clear(SKColors.Black);
+        Canvas.Restore();
+
+        AddToDirtyRectangle(intersect);
     }
 
     public void Erase(IList<Rectangle> areas)
     {
-        throw new NotImplementedException();
+        foreach (var rect in areas)
+            Erase(rect);
     }
 
     public void DrawTiles(IList<Tile> tiles)
     {
-        throw new NotImplementedException();
+        foreach (var tile in tiles)
+        {
+            if (!tile.Visible) continue;
+
+            // TODO: Load tile.CurrentFrame.Tilesheet.SKBitmap source
+            // and draw with masking if needed
+            // Canvas.DrawBitmap(...)
+
+            if (tile.EnableFog)
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), _fogPaint);
+
+            if (tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), _gridPaint);
+        }
+    }
+
+    public void Dispose()
+    {
+        _surface.Dispose();
+        _bitmap.Dispose();
+        _fogPaint.Dispose();
+        _gridPaint.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    private void SourceDisposing(GridPointMatrixesDisposingEventArgs e) => _source = null;
+
+    private void AddToDirtyRectangle(Rectangle area)
+    {
+        if (area.IsEmpty) return;
+
+        _dirtyRectangle = _dirtyRectangle.IsEmpty ? area : Rectangle.Union(_dirtyRectangle, area);
     }
 }
