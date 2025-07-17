@@ -1,7 +1,6 @@
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
-using Gondwana.Common.Win32;
 using System.Runtime.Serialization;
 using System.Drawing;
 using Gondwana.Drawing.Collisions;
@@ -32,7 +31,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     protected internal bool visible;
 
     protected internal Frame frame;
-    protected internal TernaryRasterOperations rasterOp = TernaryRasterOperations.SRCCOPY;
     protected internal bool enableFog = false;
     protected internal List<Tile> childTiles;
     protected internal Animator animator;
@@ -194,25 +192,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             rect.Height += AdjustCollisionArea.Bottom - AdjustCollisionArea.Top;
             rect.Width += AdjustCollisionArea.Right - AdjustCollisionArea.Left;
             return rect;
-        }
-    }
-
-    [DataMember]
-    public virtual TernaryRasterOperations RasterOp
-    {
-        get { return rasterOp; }
-        set
-        {
-            rasterOp = value;
-
-            if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.RasterOp = value;
-            }
         }
     }
 

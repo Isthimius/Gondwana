@@ -1,4 +1,3 @@
-using Gondwana.Common;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using System.Drawing;
@@ -38,7 +37,6 @@ public class GridPoint : Tile, IDisposable
         zOrder = gridPoint.zOrder;
         visible = gridPoint.visible;
         frame = gridPoint.frame;
-        rasterOp = gridPoint.rasterOp;
         enableFog = gridPoint.enableFog;
         Tag = gridPoint.Tag;
 
