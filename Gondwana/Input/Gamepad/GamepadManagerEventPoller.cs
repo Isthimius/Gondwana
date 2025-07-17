@@ -16,10 +16,12 @@ public sealed class GamepadManagerEventPoller
         _configsByGamepadId.Clear();
 
         Adapters = adapters;
-
-        foreach (var adapter in adapters)
+        if (adapters is not null)
         {
-            _configsByGamepadId[adapter.GamepadId] = new Dictionary<string, GamepadButtonEventConfiguration>();
+            foreach (var adapter in adapters)
+            {
+                _configsByGamepadId[adapter.GamepadId] = new Dictionary<string, GamepadButtonEventConfiguration>();
+            }
         }
     }
 

@@ -1,98 +1,88 @@
 using Gondwana.Common;
-using Gondwana.Grid;
 using Gondwana.Common.Win32;
+using Gondwana.Grid;
+using Gondwana.Rendering.Direct;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Gondwana.Rendering.Direct;
 
 namespace Gondwana.Rendering;
 
 public class VisibleSurface : VisibleSurfaceBase
 {
-    #region private delegates
-    private delegate void RenderFromBackbufferDel();
-    private RenderFromBackbufferDel RenderFromBackbuffer;
-    #endregion
+    private Action RenderFromBackbuffer = () => { };
 
-    public event VisibleSurfaceBindEventHandler VisibleSurfaceBind;
+    public event EventHandler<VisibleSufaceBindEventArgs>? VisibleSurfaceBind;
 
-    #region constructors / finalizer
-    public VisibleSurface(Graphics graphics, int wdth, int hght)
-        : base(wdth, hght)
+    public VisibleSurface(Graphics graphics, int width, int height)
+        : base(width, height)
     {
-        base.DC = graphics;
-        base.Buffer = new Backbuffer(this);
-        this.RedrawDirtyRectangleOnly = true;
+        DC = graphics;
+        Buffer = new Backbuffer(this);
+        RedrawDirtyRectangleOnly = true;
     }
 
-    public VisibleSurface(Graphics graphics, int wdth, int hght, GridPointMatrixes drawSource)
-        : base(wdth, hght)
+    public VisibleSurface(Graphics graphics, int width, int height, GridPointMatrixes drawSource)
+        : base(width, height)
     {
-        base.DC = graphics;
-        base.Buffer = new Backbuffer(this)
-            {
-                DrawSource = drawSource
-            };
-        this.RedrawDirtyRectangleOnly = true;
+        DC = graphics;
+        Buffer = new Backbuffer(this)
+        {
+            DrawSource = drawSource
+        };
+        RedrawDirtyRectangleOnly = true;
     }
 
     public VisibleSurface(Control surface)
         : base(surface.Width, surface.Height)
     {
-        base.DC = surface.CreateGraphics();
-        base.Buffer = new Backbuffer(this);
-        this.RedrawDirtyRectangleOnly = true;
+        DC = surface.CreateGraphics();
+        Buffer = new Backbuffer(this);
+        RedrawDirtyRectangleOnly = true;
     }
 
     public VisibleSurface(Control surface, GridPointMatrixes drawSource)
         : base(surface.Width, surface.Height)
     {
-        base.DC = surface.CreateGraphics();
-        base.Buffer = new Backbuffer(this)
-            {
-                DrawSource = drawSource
-            };
-        this.RedrawDirtyRectangleOnly = true;
+        DC = surface.CreateGraphics();
+        Buffer = new Backbuffer(this)
+        {
+            DrawSource = drawSource
+        };
+        RedrawDirtyRectangleOnly = true;
     }
 
-    ~VisibleSurface()
+    public override bool RedrawDirtyRectangleOnly
     {
-        Dispose();
-    }
-    #endregion
-
-    #region public properties
-    public virtual new bool RedrawDirtyRectangleOnly
-    {
-        get { return base.RedrawDirtyRectangleOnly; }
-        set
+        get => base.RedrawDirtyRectangleOnly;
+        protected internal set
         {
             base.RedrawDirtyRectangleOnly = value;
-            if (base.RedrawDirtyRectangleOnly)
-                RenderFromBackbuffer = new RenderFromBackbufferDel(RenderBackbufferRect);
-            else
-                RenderFromBackbuffer = new RenderFromBackbufferDel(RenderBackbufferAll);
+            RenderFromBackbuffer = value ? RenderBackbufferRect : RenderBackbufferAll;
 
-            ((Backbuffer)Buffer).DirtyRectangle = new Rectangle(0, 0, Buffer.Width, Buffer.Height);
+            if (Buffer is Backbuffer backbuffer)
+            {
+                backbuffer.DirtyRectangle = new Rectangle(0, 0, Buffer.Width, Buffer.Height);
+            }
         }
     }
-    #endregion
 
-    #region public / protected methods
     public override void Erase()
     {
-        IntPtr hDC = DC.GetHdc();
-        Win32Support.DrawBitmap(hDC, 0, 0, Width, Height, hDC, 0, 0, Width, Height, TernaryRasterOperations.BLACKNESS);
-        DC.ReleaseHdc(hDC);
+        var hdc = DC.GetHdc();
+        Win32Support.DrawBitmap(hdc, 0, 0, Width, Height, hdc, 0, 0, Width, Height, TernaryRasterOperations.BLACKNESS);
+        DC.ReleaseHdc(hdc);
     }
 
     public override void Bind(GridPointMatrixes layers)
     {
-        GridPointMatrixes oldBind = Buffer.DrawSource;
-        ((Backbuffer)Buffer).DrawSource = layers;
+        if (Buffer is not Backbuffer backbuffer)
+            return;
 
-        if (VisibleSurfaceBind != null)
-            VisibleSurfaceBind(new VisibleSufaceBindEventArgs(this, oldBind, layers));
+        var oldBind = backbuffer.DrawSource;
+        backbuffer.DrawSource = layers;
+
+        VisibleSurfaceBind?.Invoke(this, new VisibleSufaceBindEventArgs(this, oldBind, layers));
     }
 
     protected internal void RenderBackbuffer()
@@ -107,54 +97,46 @@ public class VisibleSurface : VisibleSurfaceBase
         else
             RenderBackbufferAll();
     }
-    #endregion
 
-    #region private methods
     private void RenderBackbufferAll()
     {
-        IntPtr hDC = DC.GetHdc();
-        IntPtr hDCBuffer = Buffer.DC.GetHdc();
+        var hdc = DC.GetHdc();
+        var hdcBuffer = Buffer.DC.GetHdc();
 
-        Win32Support.DrawBitmap(hDC, 0, 0, Width, Height, hDCBuffer, 0, 0, Width, Height, TernaryRasterOperations.SRCCOPY);
+        Win32Support.DrawBitmap(hdc, 0, 0, Width, Height, hdcBuffer, 0, 0, Width, Height, TernaryRasterOperations.SRCCOPY);
 
-        DC.ReleaseHdc(hDC);
-        Buffer.DC.ReleaseHdc(hDCBuffer);
+        DC.ReleaseHdc(hdc);
+        Buffer.DC.ReleaseHdc(hdcBuffer);
     }
 
     private void RenderBackbufferRect()
     {
-        if (!Buffer.DirtyRectangle.IsEmpty)
-        {
-            IntPtr hDC = DC.GetHdc();
-            IntPtr hDCBuffer = Buffer.DC.GetHdc();
+        if (Buffer is not Backbuffer backbuffer || backbuffer.DirtyRectangle.IsEmpty)
+            return;
 
-            Win32Support.DrawBitmap(hDC, Buffer.DirtyRectangle, hDCBuffer, Buffer.DirtyRectangle, TernaryRasterOperations.SRCCOPY);
+        var hdc = DC.GetHdc();
+        var hdcBuffer = Buffer.DC.GetHdc();
 
-            DC.ReleaseHdc(hDC);
-            Buffer.DC.ReleaseHdc(hDCBuffer);
+        Win32Support.DrawBitmap(hdc, backbuffer.DirtyRectangle, hdcBuffer, backbuffer.DirtyRectangle, TernaryRasterOperations.SRCCOPY);
 
-            // dirty rectangle drawn, so clear it out for next cycle
-            ((Backbuffer)Buffer).DirtyRectangle = new Rectangle();
-        }
+        DC.ReleaseHdc(hdc);
+        Buffer.DC.ReleaseHdc(hdcBuffer);
+
+        backbuffer.DirtyRectangle = new Rectangle();
     }
-    #endregion
 
-    #region IDisposable Members
-    public virtual void Dispose()
+    public override void Dispose()
     {
-        GC.SuppressFinalize(this);
-
         base.Dispose();
         VisibleSurfaceBind = null;
 
-        DirectDrawing[] drawings = new DirectDrawing[DirectDrawing.Count];
+        var drawings = new DirectDrawing[DirectDrawing.Count];
         DirectDrawing.AllDirectDrawings.CopyTo(drawings, 0);
 
-        for (int i = 0; i < drawings.GetLength(0); i++)
+        foreach (var drawing in drawings)
         {
-            if (drawings[i].Surface == this)
-                drawings[i].Dispose();
+            if (drawing.Surface == this)
+                drawing.Dispose();
         }
     }
-    #endregion
 }
