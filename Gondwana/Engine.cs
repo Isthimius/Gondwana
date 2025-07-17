@@ -98,7 +98,6 @@ public sealed class Engine : IDisposable
         }
 
         VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
-        KeyboardAdapter ??= keyboardAdapter;
         GamepadAdapters = gamepadAdapters ?? new List<IGamepadAdapter>();
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
@@ -179,8 +178,9 @@ public sealed class Engine : IDisposable
     public EngineConfiguration Configuration { get; set; }
 
     // TODO: this should be tied to VisibleSurface(s) somehow
-    public IKeyboardAdapter? KeyboardAdapter { get; set; } = null;
+    public KeyboardHandler KeyboardHandler { get; set; } = null;
 
+    // TODO: make this GamepadManager
     public List<IGamepadAdapter>? GamepadAdapters { get; set; } = new();
     #endregion
 
@@ -227,10 +227,10 @@ public sealed class Engine : IDisposable
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
-        KeyboardHandler.Instance.Update(tick, KeyboardAdapter);
+        KeyboardHandler.Instance?.Update(tick);
 
         // check for gamepad events
-        GamepadHandler.Instance.Update(tick, GamepadAdapters);
+        GamepadHandler.Instance?.Update(tick, GamepadAdapters);
 
         // perform any timed GridPointMatrix scrolling
         foreach (GridPointMatrix matrix in GridPointMatrix.GetAllGridPointMatrix())

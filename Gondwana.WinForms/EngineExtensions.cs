@@ -1,4 +1,5 @@
-﻿using Gondwana.WinForms.Audio;
+﻿using Gondwana.Input.Keyboard;
+using Gondwana.WinForms.Audio;
 using Gondwana.WinForms.Input.Gamepad;
 using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
@@ -25,14 +26,15 @@ public static class EngineExtensions
 
     public static void InitializeWinFormsKeyboardAdapter(this Engine engine, Form form)
     {
+        Engine.Logger.LogInformation("Initializing WinFormsKeyboardAdapter...");
+
         if (form == null)
         {
             Engine.Logger.LogError("WinFormsKeyboardAdapter initialization failed: Form cannot be null.");
             throw new ArgumentNullException(nameof(form));
         }
 
-        // TODO: make this Keyboard attachable to VisibleSurface
-        Engine.Instance.KeyboardAdapter = new WinFormsKeyboardAdapter(form);
-        return;
+        // TODO: make this KeyboardAdapter attachable to VisibleSurface
+        KeyboardHandler.Initialize(new WinFormsKeyboardAdapter(form));
     }
 }
