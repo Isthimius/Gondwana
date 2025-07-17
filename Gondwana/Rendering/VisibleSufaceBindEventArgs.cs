@@ -2,15 +2,16 @@
 
 namespace Gondwana.Rendering;
 
-public delegate void VisibleSurfaceBindEventHandler(VisibleSufaceBindEventArgs e);
-
 public class VisibleSufaceBindEventArgs : EventArgs
 {
-    public VisibleSurfaceBase Surface;
-    public GridPointMatrixes OldBindValue;
-    public GridPointMatrixes NewBindValue;
+    public VisibleSurfaceBase Surface { get; }
+    public GridPointMatrixes OldBindValue { get; }
+    public GridPointMatrixes NewBindValue { get; }
 
-    public VisibleSufaceBindEventArgs(VisibleSurfaceBase surface, GridPointMatrixes oldBind, GridPointMatrixes newBind)
+    public VisibleSufaceBindEventArgs(
+        VisibleSurfaceBase surface,
+        GridPointMatrixes oldBind,
+        GridPointMatrixes newBind)
     {
         Surface = surface;
         OldBindValue = oldBind;

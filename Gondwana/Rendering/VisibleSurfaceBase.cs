@@ -12,26 +12,29 @@ public abstract class VisibleSurfaceBase : IDisposable
         VisibleSurfaces.Add(this);
     }
 
-    ~VisibleSurfaceBase()
-    {
-        Dispose();
-    }
-
-    public virtual Graphics DC { get; protected internal set; }
-    public virtual IBackbuffer Buffer { get; protected internal set; }
+    public virtual Graphics DC { get; protected internal set; } = default!;
+    public virtual IBackbuffer Buffer { get; protected internal set; } = default!;
 
     public virtual int Height { get; protected internal set; }
     public virtual int Width { get; protected internal set; }
     public virtual bool RedrawDirtyRectangleOnly { get; protected internal set; }
 
-    abstract public void Erase();
-    abstract public void RenderBackbuffer(bool onlyDirtyRectangle);
-    abstract public void Bind(GridPointMatrixes layers);
+    public abstract void Erase();
+    public abstract void RenderBackbuffer(bool onlyDirtyRectangle);
+    public abstract void Bind(GridPointMatrixes layers);
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Buffer.Dispose();
+            VisibleSurfaces.Remove(this);
+        }
+    }
 
     public virtual void Dispose()
     {
+        Dispose(true);
         GC.SuppressFinalize(this);
-        VisibleSurfaces.Remove(this);
-        Buffer.Dispose();
     }
 }
