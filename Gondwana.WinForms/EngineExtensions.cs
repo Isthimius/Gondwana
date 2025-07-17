@@ -1,4 +1,5 @@
-﻿using Gondwana.Input.Keyboard;
+﻿using Gondwana.Input.Gamepad;
+using Gondwana.Input.Keyboard;
 using Gondwana.WinForms.Audio;
 using Gondwana.WinForms.Input.Gamepad;
 using Gondwana.WinForms.Input.Keyboard;
@@ -16,12 +17,7 @@ public static class EngineExtensions
 
     public static void InitializeXInputGamepadManager(this Engine engine)
     {
-        foreach (var adapter in XInputGamepadManager.Start().ConnectedAdapters)
-        {
-            Engine.Instance.GamepadAdapters!.Add(adapter);
-        }
-
-        return;
+        Engine.Instance.GamepadManager = XInputGamepadManager.Start();
     }
 
     public static void InitializeWinFormsKeyboardAdapter(this Engine engine, Form form)
@@ -35,6 +31,6 @@ public static class EngineExtensions
         }
 
         // TODO: make this KeyboardAdapter attachable to VisibleSurface
-        KeyboardHandler.Initialize(new WinFormsKeyboardAdapter(form));
+        KeyboardEventPoller.Initialize(new WinFormsKeyboardAdapter(form));
     }
 }

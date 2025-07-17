@@ -78,7 +78,7 @@ public sealed class Engine : IDisposable
         string? configFileName = null,
         bool? autoSaveConfig = null,
         IKeyboardAdapter? keyboardAdapter = null,
-        List<IGamepadAdapter>? gamepadAdapters = null)
+        IGamepadManager<IGamepadAdapter>? gamepadManager = null)
     {
         if (_isInitialized || _isInitializing)
             return;
@@ -98,7 +98,7 @@ public sealed class Engine : IDisposable
         }
 
         VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
-        GamepadAdapters = gamepadAdapters ?? new List<IGamepadAdapter>();
+        GamepadManager = gamepadManager;
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
 
@@ -117,7 +117,7 @@ public sealed class Engine : IDisposable
 
         if (!IsInitialized)
         {
-            // wait for previous initialization to complete
+            // wait for any previous initialization to complete
             while (IsInitializing) { }
 
             Initialize();
@@ -178,10 +178,25 @@ public sealed class Engine : IDisposable
     public EngineConfiguration Configuration { get; set; }
 
     // TODO: this should be tied to VisibleSurface(s) somehow
-    public KeyboardHandler KeyboardHandler { get; set; } = null;
+    public KeyboardEventPoller KeyboardHandler { get; set; } = null;
 
-    // TODO: make this GamepadManager
-    public List<IGamepadAdapter>? GamepadAdapters { get; set; } = new();
+    private IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
+
+    /// <summary>
+    /// Gets or sets the gamepad manager responsible for handling gamepad input.
+    /// </summary>
+    /// <remarks>Setting this property attaches an update callback to the engine cycle, polling attached adapters</remarks>
+    public IGamepadManager<IGamepadAdapter>? GamepadManager
+    {
+        get => _gamepadManager;
+        set
+        {
+            GamepadManagerEventPoller.Initialize(value?.ConnectedAdapters);
+            _gamepadManager = value;
+        }
+    }
+
+    public GamepadManagerEventPoller? GamepadManagerEventPoller { get => GamepadManagerEventPoller.Instance; }
     #endregion
 
     #region private methods
@@ -189,7 +204,7 @@ public sealed class Engine : IDisposable
     {
         long tick = HighResTimer.GetCurrentTick();
 
-        // throttle time hasn't passed; do background tasks
+        // throttle time hasn't passed; just do background tasks
         if ((Configuration.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.TargetFPS)) * (double)HighResTimer.TicksPerSecond))
         {
             DoBackgroundTasks(tick);
@@ -227,10 +242,10 @@ public sealed class Engine : IDisposable
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
-        KeyboardHandler.Instance?.Update(tick);
+        KeyboardEventPoller.Instance?.PollForEvents(tick);
 
         // check for gamepad events
-        GamepadHandler.Instance?.Update(tick, GamepadAdapters);
+        GamepadManagerEventPoller.Instance?.PollForEvents(tick);
 
         // perform any timed GridPointMatrix scrolling
         foreach (GridPointMatrix matrix in GridPointMatrix.GetAllGridPointMatrix())
@@ -268,6 +283,9 @@ public sealed class Engine : IDisposable
         // render to each VisibleSurface
         foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
             surface.RenderBackbuffer(surface.RedrawDirtyRectangleOnly);
+
+        // check for gamepad events
+        GamepadManager?.Update();
 
         // save time of this last tick; increment CPS counter
         _lastTick = tick;

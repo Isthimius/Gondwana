@@ -9,7 +9,7 @@ public struct KeyEventConfiguration
     internal long LastKeyEvent;
     private long _ticksBetweenEvents;
 
-    public KeyEventConfiguration(string key, double timeBetweenEvents, bool paused)
+    public KeyEventConfiguration(string key, double timeBetweenEvents = 0, bool paused = false)
     {
         Key = key;
         Paused = paused;

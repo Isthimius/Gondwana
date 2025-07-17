@@ -1,24 +1,53 @@
-﻿using Gondwana.Timers;
+﻿namespace Gondwana.Input.Gamepad;
 
-namespace Gondwana.Input.Gamepad;
-
-public sealed class GamepadHandler
+public sealed class GamepadManagerEventPoller
 {
-    public static GamepadHandler Instance { get; } = new();
-    private GamepadHandler() { }
-
     private readonly Dictionary<string, Dictionary<string, GamepadButtonEventConfiguration>> _configsByGamepadId = new();
+    
+    /// <summary>
+    /// Gets the singleton instance of the <see cref="GamepadManagerEventPoller"/> class.
+    /// </summary>
+    public static GamepadManagerEventPoller? Instance { get; private set; } = new();
 
-    public long DefaultTicksBetweenEvents { get; set; } = HighResTimer.TicksPerSecond / 10;
-    public event Action<GamepadButtonDownEventArgs>? ButtonDown;
+    private GamepadManagerEventPoller() { }
+
+    private GamepadManagerEventPoller(IEnumerable<IGamepadAdapter>? adapters)
+    {
+        _configsByGamepadId.Clear();
+
+        Adapters = adapters;
+
+        foreach (var adapter in adapters)
+        {
+            _configsByGamepadId[adapter.GamepadId] = new Dictionary<string, GamepadButtonEventConfiguration>();
+        }
+    }
+
+    public static void Initialize(IEnumerable<IGamepadAdapter>? adapters)
+    {
+        Instance = new GamepadManagerEventPoller(adapters);
+    }
+
+    public IEnumerable<IGamepadAdapter>? Adapters { get; private set; }
 
     public bool PauseAllInput { get; set; }
 
-    public void Update(long tick, IEnumerable<IGamepadAdapter> adapters)
-    {
-        if (PauseAllInput || ButtonDown is null || adapters is null) return;
+    public event Action<GamepadButtonDownEventArgs>? ButtonDown;
 
-        foreach (var adapter in adapters)
+    /// <summary>
+    /// Polls the provided gamepad adapters for button and trigger states and raises events.
+    /// </summary>
+    /// <remarks>This method iterates through the provided gamepad adapters and checks for button press events
+    /// based on their configurations. If a button press is detected and the configuration is ready for the next event,
+    /// the <see cref="ButtonDown"/> event is invoked. The method respects global input pause settings and individual
+    /// button configuration pause states.</remarks>
+    /// <param name="tick">The current tick value, used to determine event timing and readiness.</param>
+    /// <param name="adapters">A collection of gamepad adapters to poll for button press events.</param>
+    public void PollForEvents(long tick)
+    {
+        if (PauseAllInput || ButtonDown is null || Adapters is null) return;
+
+        foreach (var adapter in Adapters)
         {
             if (!_configsByGamepadId.TryGetValue(adapter.GamepadId, out var configs))
                 continue;

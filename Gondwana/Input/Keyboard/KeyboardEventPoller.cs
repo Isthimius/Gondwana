@@ -1,3 +1,4 @@
+using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard.WinForms;
 using Microsoft.Extensions.Logging;
 
@@ -6,39 +7,38 @@ namespace Gondwana.Input.Keyboard;
 /// <summary>
 /// Cross-platform singleton keyboard handler with throttling and manual input state feeding.
 /// </summary>
-public sealed class KeyboardHandler
+public sealed class KeyboardEventPoller
 {
     private readonly Dictionary<string, KeyEventConfiguration> _keyConfigs = new();
 
     /// <summary>
-    /// Singleton instance of the KeyboardHandler.
+    /// Singleton instance of the <see cref="KeyboardEventPoller"/> class.
     /// </summary>
-    public static KeyboardHandler Instance { get; private set; }
+    public static KeyboardEventPoller? Instance { get; private set; }
 
-    /// <summary>
-    /// Prevents external instantiation.
-    /// </summary>
-    private KeyboardHandler() { }
+    private KeyboardEventPoller() { }
 
-    private KeyboardHandler(IKeyboardAdapter adapter)
+    private KeyboardEventPoller(IKeyboardAdapter adapter)
     {
-        CurrentAdapter = adapter;
+        Adapter = adapter;
     }
 
     public static void Initialize(IKeyboardAdapter adapter)
     {
-        Instance = new KeyboardHandler(adapter);
+        Instance = new KeyboardEventPoller(adapter);
     }
 
     /// <summary>
     /// Gets the current keyboard adapter in use.
     /// </summary>
-    public IKeyboardAdapter? CurrentAdapter { get; private set; }
+    public IKeyboardAdapter? Adapter { get; private set; }
 
     /// <summary>
     /// Pauses all key events globally.
     /// </summary>
     public bool PauseAllKeyEvents { get; set; }
+
+    public event Action<KeyDownEventArgs>? KeyDown;
 
     /// <summary>
     /// Updates internal key states and raises throttled key down events.
@@ -46,24 +46,23 @@ public sealed class KeyboardHandler
     /// <param name="tick">Current global tick</param>
     /// <param name="keyStates">Set of currently pressed keys (as strings or codes)</param>
     /// <param name="modifiers">Optional modifier state</param>
-    public void Update(long tick)
+    public void PollForEvents(long tick)
     {
-        if (PauseAllKeyEvents || CurrentAdapter is null) return;
-
-        if (CurrentAdapter.PressedKeys.Any())
-            Engine.Logger.LogInformation("KeyboardHandler Update: CurrentAdapter.PressedKeys = {PressedKeys}", string.Join(", ", CurrentAdapter.PressedKeys));
+        if (PauseAllKeyEvents || Adapter is null) return;
 
         foreach (var kvp in _keyConfigs)
         {
             var key = kvp.Key;
             var config = kvp.Value;
             
-            if (config.Paused || !CurrentAdapter.PressedKeys.Contains(key)) continue;
+            if (config.Paused || !Adapter.PressedKeys.Contains(key)) continue;
 
             if (config.ReadyForNextEvent(tick))
             {
                 config.LastKeyEvent = tick;
                 _keyConfigs[key] = config;
+
+                KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentModifiers));
             }
         }
     }
