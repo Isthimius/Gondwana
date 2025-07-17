@@ -15,7 +15,7 @@ public class VisibleSurface : VisibleSurfaceBase
     public VisibleSurface(Graphics graphics, int width, int height)
         : base(width, height)
     {
-        DC = graphics;
+        Canvas = graphics;
         Buffer = new Backbuffer(this);
         RedrawDirtyRectangleOnly = true;
     }
@@ -23,7 +23,7 @@ public class VisibleSurface : VisibleSurfaceBase
     public VisibleSurface(Graphics graphics, int width, int height, GridPointMatrixes drawSource)
         : base(width, height)
     {
-        DC = graphics;
+        Canvas = graphics;
         Buffer = new Backbuffer(this)
         {
             DrawSource = drawSource
@@ -34,7 +34,7 @@ public class VisibleSurface : VisibleSurfaceBase
     public VisibleSurface(Control surface)
         : base(surface.Width, surface.Height)
     {
-        DC = surface.CreateGraphics();
+        Canvas = surface.CreateGraphics();
         Buffer = new Backbuffer(this);
         RedrawDirtyRectangleOnly = true;
     }
@@ -42,7 +42,7 @@ public class VisibleSurface : VisibleSurfaceBase
     public VisibleSurface(Control surface, GridPointMatrixes drawSource)
         : base(surface.Width, surface.Height)
     {
-        DC = surface.CreateGraphics();
+        Canvas = surface.CreateGraphics();
         Buffer = new Backbuffer(this)
         {
             DrawSource = drawSource
@@ -67,9 +67,9 @@ public class VisibleSurface : VisibleSurfaceBase
 
     public override void Erase()
     {
-        var hdc = DC.GetHdc();
-        Win32Support.DrawBitmap(hdc, 0, 0, Width, Height, hdc, 0, 0, Width, Height, TernaryRasterOperations.BLACKNESS);
-        DC.ReleaseHdc(hdc);
+        var hCanvas = Canvas.GetHCanvas();
+        Win32Support.DrawBitmap(hCanvas, 0, 0, Width, Height, hCanvas, 0, 0, Width, Height, TernaryRasterOperations.BLACKNESS);
+        Canvas.ReleaseHCanvas(hCanvas);
     }
 
     public override void Bind(GridPointMatrixes layers)
@@ -98,13 +98,13 @@ public class VisibleSurface : VisibleSurfaceBase
 
     private void RenderBackbufferAll()
     {
-        var hdc = DC.GetHdc();
-        var hdcBuffer = Buffer.DC.GetHdc();
+        var hCanvas = Canvas.GetHCanvas();
+        var hCanvasBuffer = Buffer.Canvas.GetHCanvas();
 
-        Win32Support.DrawBitmap(hdc, 0, 0, Width, Height, hdcBuffer, 0, 0, Width, Height, TernaryRasterOperations.SRCCOPY);
+        Win32Support.DrawBitmap(hCanvas, 0, 0, Width, Height, hCanvasBuffer, 0, 0, Width, Height, TernaryRasterOperations.SRCCOPY);
 
-        DC.ReleaseHdc(hdc);
-        Buffer.DC.ReleaseHdc(hdcBuffer);
+        Canvas.ReleaseHCanvas(hCanvas);
+        Buffer.Canvas.ReleaseHCanvas(hCanvasBuffer);
     }
 
     private void RenderBackbufferRect()
@@ -112,13 +112,13 @@ public class VisibleSurface : VisibleSurfaceBase
         if (Buffer is not Backbuffer backbuffer || backbuffer.DirtyRectangle.IsEmpty)
             return;
 
-        var hdc = DC.GetHdc();
-        var hdcBuffer = Buffer.DC.GetHdc();
+        var hCanvas = Canvas.GetHCanvas();
+        var hCanvasBuffer = Buffer.Canvas.GetHCanvas();
 
-        Win32Support.DrawBitmap(hdc, backbuffer.DirtyRectangle, hdcBuffer, backbuffer.DirtyRectangle, TernaryRasterOperations.SRCCOPY);
+        Win32Support.DrawBitmap(hCanvas, backbuffer.DirtyRectangle, hCanvasBuffer, backbuffer.DirtyRectangle, TernaryRasterOperations.SRCCOPY);
 
-        DC.ReleaseHdc(hdc);
-        Buffer.DC.ReleaseHdc(hdcBuffer);
+        Canvas.ReleaseHCanvas(hCanvas);
+        Buffer.Canvas.ReleaseHCanvas(hCanvasBuffer);
 
         backbuffer.DirtyRectangle = new Rectangle();
     }

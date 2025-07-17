@@ -1,12 +1,13 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Grid;
+using SkiaSharp;
 using System.Drawing;
 
 namespace Gondwana.Rendering;
 
 public interface IBackbuffer : IDisposable
 {
-    Graphics DC { get; }
+    SKCanvas Canvas { get; }
     SolidBrush FogBrush { get; set; }
     Pen GridPen { get; set; }
 

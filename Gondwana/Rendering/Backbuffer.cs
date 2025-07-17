@@ -1,334 +1,174 @@
-using Gondwana.Common;
+﻿using SkiaSharp;
 using Gondwana.Grid;
-using Gondwana.Common.Win32;
-using System.Drawing;
 using Gondwana.Drawing;
+using System.Drawing;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Gondwana.Rendering;
 
 public class Backbuffer : IBackbuffer
 {
-    #region private / internal field declarations
-    protected internal Graphics dc;
-    private Rectangle range;
-    private Rectangle dirtyRectangle = new Rectangle();
-    private GridPointMatrixes source;
-    private SolidBrush fogBrush;
-    private Pen gridPen;
-    //private bool showGrid;
-    #endregion
+    private readonly SKSurface _surface;
+    private readonly Rectangle _range;
 
-    #region delegates
-    private GridPointMatrixesDisposingEventHandler matrixDisposeDel;
-    #endregion
+    private SKPaint _fogPaint = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
+    private SKPaint _gridPaint = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
 
-    #region constructors / finalizer
-    protected internal Backbuffer(VisibleSurface visSurface)
+    private GridPointMatrixes _source;
+    private Rectangle _dirtyRectangle = Rectangle.Empty;
+
+    public Backbuffer(int width, int height)
     {
-        // make the dimensions equal to the VisibleSurface dimensions
-        range = new Rectangle(0, 0, visSurface.Width, visSurface.Height);
-
-        // create a new temp GDI+ Bitmap to get old GDI32 bitmap handle
-        Bitmap memBmp = new Bitmap(range.Width, range.Height, visSurface.DC);
-
-        // obtain handle to VisibleSurface Graphics object for Backbuffer instantiation
-        IntPtr visDC = visSurface.DC.GetHdc();
-
-        // create a DC compatible with the visible surface DC
-        IntPtr compatDC = pInvoke.CreateCompatibleDC(visDC);
-
-        // associate the new bitmap handle with the Backbuffer DC
-        pInvoke.SelectObject(compatDC, memBmp.GetHbitmap());
-
-        //create a GDI+ Graphics object for the Backbuffer
-        dc = Graphics.FromHdc(compatDC);
-
-        // release handle to VisibleSurface Graphics object
-        visSurface.DC.ReleaseHdc(visDC);
-
-        // Dispose of temp GDI+ Bitmap
-        memBmp.Dispose();
-
-        // set default FogPen value to black with 128 alpha blending
-        fogBrush = new SolidBrush(Color.FromArgb(128, Color.Black));
-
-        // set default GridPen value to white
-        gridPen = new Pen(Color.White);
-
-        //showGrid = false;
-
-        matrixDisposeDel = new GridPointMatrixesDisposingEventHandler(source_Disposing);
+        _surface = SKSurface.Create(new SKImageInfo(width, height));
+        _range = new Rectangle(0, 0, width, height);
     }
 
-    ~Backbuffer()
-    {
-        Dispose();
-    }
-    #endregion
-
-    #region properties
-    public Rectangle DirtyRectangle
-    {
-        get { return dirtyRectangle; }
-        internal set { dirtyRectangle = value; }
-    }
-
-    public int Width
-    {
-        get { return range.Width; }
-    }
-
-    public int Height
-    {
-        get { return range.Height; }
-    }
-
-    public Graphics DC
-    {
-        get { return dc; }
-    }
+    public SKCanvas Canvas => _surface.Canvas;
 
     public GridPointMatrixes DrawSource
     {
-        get { return source; }
-        internal set
+        get => _source;
+        set
         {
-            // remove the subscription to the old source
-            if (source != null)
-                source.Disposing -= matrixDisposeDel;
+            if (_source != null)
+                _source.Disposing -= SourceDisposing;
 
-            // subscribe to the new source
-            source = value;
-            if (source != null)
+            _source = value;
+
+            if (_source != null)
             {
-                source.Disposing += matrixDisposeDel;
-                source.RefreshNeeded = MatrixesRefreshType.All;
+                _source.Disposing += SourceDisposing;
+                _source.RefreshNeeded = MatrixesRefreshType.All;
             }
         }
     }
 
+    public Rectangle DirtyRectangle
+    {
+        get => _dirtyRectangle;
+        internal set => _dirtyRectangle = value;
+    }
+
+    public int Width => _range.Width;
+    public int Height => _range.Height;
+
     public SolidBrush FogBrush
     {
-        get { return fogBrush; }
-        set
-        {
-            fogBrush = value;
-            if (source != null)
-                source.RefreshNeeded = MatrixesRefreshType.All;
-        }
+        get => throw new NotSupportedException("Use SKPaint-based customization.");
+        set => _fogPaint = new SKPaint { Color = value.Color.ToSKColor(), IsAntialias = true };
     }
 
     public Pen GridPen
     {
-        get { return gridPen; }
-        set
+        get => throw new NotSupportedException("Use SKPaint-based customization.");
+        set => _gridPaint = new SKPaint
         {
-            gridPen = value;
-            if (source != null)
-                source.RefreshNeeded = MatrixesRefreshType.All;
-        }
+            Color = value.Color.ToSKColor(),
+            IsStroke = true,
+            StrokeWidth = value.Width
+        };
     }
-    #endregion
 
-    #region public / internal methods
     public void SaveToFile(string file)
     {
-        Bitmap toSave = new Bitmap(range.Width, range.Height, dc);
-        Graphics graphics = Graphics.FromImage(toSave);
-
-        IntPtr graphicsDC = graphics.GetHdc();
-        IntPtr hDC = dc.GetHdc();
-        Win32Support.DrawBitmap(graphicsDC, range, hDC, range, TernaryRasterOperations.SRCCOPY);
-        dc.ReleaseHdc(hDC);
-        graphics.ReleaseHdc(graphicsDC);
-
-        toSave.Save(file);
-        graphics.Dispose();
-        toSave.Dispose();
+        using var image = _surface.Snapshot();
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        using var stream = File.OpenWrite(file);
+        data.SaveTo(stream);
     }
 
-    public void Erase()
-    {
-        Erase(range);
-    }
+    public void Erase() => Erase(_range);
 
     public void Erase(Rectangle pxlRange)
     {
-        IntPtr hDC = dc.GetHdc();
-        pxlRange = Rectangle.Intersect(pxlRange, range);
-        Win32Support.DrawBitmap(hDC, pxlRange, hDC, pxlRange, TernaryRasterOperations.BLACKNESS);
-        AddToDirtyRectangle(pxlRange);
-        dc.ReleaseHdc(hDC);
+        var intersect = Rectangle.Intersect(pxlRange, _range);
+        if (intersect.IsEmpty) return;
+
+        Canvas.Save();
+        Canvas.ClipRect(intersect.ToSKRect());
+        Canvas.Clear(SKColors.Black);
+        Canvas.Restore();
+
+        AddToDirtyRectangle(intersect);
     }
 
     public void Erase(IList<Rectangle> areas)
     {
-        if (areas.Count == 0)
-            return;
-
-        IntPtr hDC = dc.GetHdc();
-        foreach (Rectangle area in areas)
-        {
-            Rectangle pxlRange = Rectangle.Intersect(area, range);
-            Win32Support.DrawBitmap(hDC, pxlRange, hDC, pxlRange,
-                TernaryRasterOperations.BLACKNESS);
-            AddToDirtyRectangle(pxlRange);
-        }
-
-        dc.ReleaseHdc(hDC);
+        foreach (var rect in areas)
+            Erase(rect);
     }
 
     public void DrawTiles(IList<Tile> tiles)
     {
-        IntPtr hDC = dc.GetHdc();
-
-        foreach (Tile tile in tiles)
-            DrawTile(tile, ref hDC);
-
-        dc.ReleaseHdc(hDC);
-
-        // draw grid lines if turned on
-        foreach (Tile tile in tiles)
+        foreach (var tile in tiles)
         {
-            if (tile.ParentGrid.ShowGridLines)
+            if (!tile.Visible)
+                continue;
+
+            var destRect = tile.DrawLocation.ToSKRect();
+            var frame = tile.CurrentFrame;
+            var bmp = frame.GetBitmap();
+            var mask = frame.GetBitmapMask();
+
+            if (bmp != null)
             {
-                if (tile.IsPositionFixed)
-                    DrawGridLines(tile);
+                var skBitmap = tile.CurrentFrame.GetSkiaBitmap();
+                if (skBitmap != null)
+                    Canvas.DrawBitmap(skBitmap, destRect);
             }
-        }
 
-        // draw fog for GridPoint objects where turned on
-        foreach (Tile tile in tiles)
-        {
             if (tile.EnableFog)
-                DrawFog(tile);
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), _fogPaint);
+
+            if (tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), _gridPaint);
         }
     }
-    #endregion
 
-    #region private methods
-    private void DrawTile(Tile tile, ref IntPtr hDC)
+    public static SKBitmap CombineBitmapWithMask(Bitmap color, Bitmap? mask)
     {
-        Rectangle tileLoc = tile.DrawLocation;
+        var width = color.Width;
+        var height = color.Height;
+        var skBitmap = new SKBitmap(width, height);
 
-        // redraw each "refresh area"
-        foreach (Rectangle refreshRect in tile.DrawLocationRefresh)
+        for (int y = 0; y < height; y++)
         {
-            // clip the DrawLocationRefresh to Backbuffer if necessary
-            Rectangle tempRefreshLoc = Rectangle.Intersect(refreshRect, range);
-
-            // if the Tile is outside the range, has no Tilesheet, or is not visible, return without blitting
-            if ((tempRefreshLoc.IsEmpty) || (tile.CurrentFrame.Tilesheet == null) || (tile.Visible == false))
-                return;
-
-            // check if source Frame needs to be resized
-            ResizedFrame resizedFrame = null;
-            if (tileLoc.Size != tile.CurrentFrame.Tilesheet.TileSize)
-                resizedFrame = ResizedFrame.GetResizedFrame(tile.CurrentFrame, tileLoc.Size);
-
-            // get source refresh range, hDC, and related mask hdc
-            Rectangle _srcRefreshRange;
-            IntPtr _srcHDCMask;
-            IntPtr _srcHDC;
-
-            if (resizedFrame == null)
+            for (int x = 0; x < width; x++)
             {
-                // get the source Rectangle being rendered and Graphics / DC handles from the Tilesheet object
-                _srcRefreshRange = tile.CurrentFrame.Tilesheet.GetSourceRange(tile.CurrentFrame.XTile, tile.CurrentFrame.YTile);
-                _srcHDC = tile.CurrentFrame.Tilesheet.hDC;
+                var pixel = color.GetPixel(x, y);
+                byte alpha = 255;
 
-                if (tile.CurrentFrame.Tilesheet.Mask != null)
-                    _srcHDCMask = tile.CurrentFrame.Tilesheet.Mask.hDC;
-                else
-                    _srcHDCMask = default(IntPtr);
-            }
-            else
-            {
-                // get the source Rectangle being rendered and Graphics / DC handles from the ResizedFrame object
-                _srcRefreshRange = new Rectangle(new Point(0, 0), resizedFrame.RenderSize);
-                _srcHDCMask = resizedFrame.hDCMask;
-                _srcHDC = resizedFrame.hDC;
-            }
+                if (mask != null)
+                {
+                    var maskPixel = mask.GetPixel(x, y);
+                    alpha = (byte)(255 - maskPixel.R); // assuming white = transparent in mask
+                }
 
-            // if only refreshing part of the Tile...
-            if (tileLoc.Size != tempRefreshLoc.Size)
-                // capture just the section of the source Tilesheet that needs to be refreshed on Backbuffer
-                _srcRefreshRange = GetSourceBmpRangeForRefresh(_srcRefreshRange, tempRefreshLoc, tileLoc);
-
-            // if the Tilesheet has a mask...
-            if (tile.CurrentFrame.Tilesheet.Mask != null)
-            {
-                // AND the mask
-                Win32Support.DrawBitmap(hDC, tempRefreshLoc,
-                    _srcHDCMask, _srcRefreshRange,
-                    TernaryRasterOperations.SRCAND);
-
-                // PAINT the primary
-                Win32Support.DrawBitmap(hDC, tempRefreshLoc,
-                    _srcHDC, _srcRefreshRange,
-                    TernaryRasterOperations.SRCPAINT);
-            }
-            else
-            {
-                // use the specified Tile.RasterOp
-                Win32Support.DrawBitmap(hDC, tempRefreshLoc,
-                    _srcHDC, _srcRefreshRange, tile.RasterOp);
+                var skColor = new SKColor(pixel.R, pixel.G, pixel.B, alpha);
+                skBitmap.SetPixel(x, y, skColor);
             }
         }
+
+        return skBitmap;
     }
 
-    private void DrawFog(Tile tile)
+    public void Dispose()
     {
-        dc.FillPolygon(fogBrush, tile.OutlinePoints);
+        _surface.Dispose();
+        _fogPaint.Dispose();
+        _gridPaint.Dispose();
+        GC.SuppressFinalize(this);
     }
 
-    private void DrawGridLines(Tile tile)
-    {
-        dc.DrawPolygon(gridPen, tile.OutlinePoints);
-    }
-
-    private Rectangle GetSourceBmpRangeForRefresh(Rectangle srcBmpRefreshRange, Rectangle tempRefreshLoc, Rectangle tileLoc)
-    {
-        float shiftLeftRatio = (float)(tempRefreshLoc.Left - tileLoc.Left) / (float)tileLoc.Width;
-        float shiftTopRatio = (float)(tempRefreshLoc.Top - tileLoc.Top) / (float)tileLoc.Height;
-        float ratioWidth = (float)tempRefreshLoc.Width / (float)tileLoc.Width;
-        float ratioHeight = (float)tempRefreshLoc.Height / (float)tileLoc.Height;
-
-        Rectangle tmpSrcRange = srcBmpRefreshRange;
-        tmpSrcRange.X += (int)Math.Floor((float)srcBmpRefreshRange.Width * shiftLeftRatio);
-        tmpSrcRange.Y += (int)Math.Floor((float)srcBmpRefreshRange.Height * shiftTopRatio);
-        tmpSrcRange.Width = (int)((float)srcBmpRefreshRange.Width * ratioWidth);
-        tmpSrcRange.Height = (int)((float)srcBmpRefreshRange.Height * ratioHeight);
-
-        return Rectangle.Intersect(srcBmpRefreshRange, tmpSrcRange);
-        //return tmpSrcRange;
-    }
+    private void SourceDisposing(GridPointMatrixesDisposingEventArgs e) => _source = null;
 
     private void AddToDirtyRectangle(Rectangle area)
     {
-        // update dirtyRectangle to include area drawn
-        if (!area.IsEmpty)
-        {
-            if (dirtyRectangle.IsEmpty)
-                dirtyRectangle = area;
-            else
-                dirtyRectangle = Rectangle.Union(dirtyRectangle, area);
-        }
-    }
+        if (area.IsEmpty) return;
 
-    private void source_Disposing(GridPointMatrixesDisposingEventArgs e)
-    {
-        source = null;
+        _dirtyRectangle = _dirtyRectangle.IsEmpty
+            ? area
+            : Rectangle.Union(_dirtyRectangle, area);
     }
-    #endregion
-
-    #region IDisposable Members
-    public void Dispose()
-    {
-        dc.Dispose();
-        fogBrush.Dispose();
-        gridPen.Dispose();
-        GC.SuppressFinalize(this);
-    }
-    #endregion
 }
