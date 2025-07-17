@@ -15,6 +15,7 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
     private ModifierState _mods;
 
     public ICollection<string> PressedKeys => _pressedKeys;
+
     public ModifierState CurrentModifiers => _mods;
 
     // TODO: tie in with VisibleSurface

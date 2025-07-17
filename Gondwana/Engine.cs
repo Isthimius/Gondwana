@@ -284,7 +284,7 @@ public sealed class Engine : IDisposable
         foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
             surface.RenderBackbuffer(surface.RedrawDirtyRectangleOnly);
 
-        // check for gamepad events
+        // poll state of gamepad(s)
         GamepadManager?.Update();
 
         // save time of this last tick; increment CPS counter

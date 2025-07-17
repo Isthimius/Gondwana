@@ -26,6 +26,9 @@ public sealed class XInputGamepadAdapter : IGamepadAdapter
         GamepadId = $"XInput_{controllerIndex}";
     }
 
+    /// <summary>
+    /// if calling in a tight loop, ensure the calls are throttled to the engine's framerate
+    /// </summary>
     internal void Poll()
     {
         _pressedButtons.Clear();
