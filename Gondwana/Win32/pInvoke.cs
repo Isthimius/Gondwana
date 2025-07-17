@@ -12,14 +12,5 @@ namespace Gondwana.Common.Win32
 
         [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern int StretchBlt(IntPtr hObject, int nXDest, int nYDest, int nWidth, int nHeight, IntPtr hObjSource, int nXSrc, int nYSrc, int nSrcWidth, int nSrcHeight, TernaryRasterOperations dwRop);
-
-        [DllImport("gdi32.dll", ExactSpelling = true)]
-        public static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
-
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern IntPtr CreateCompatibleDC(IntPtr hDC);
-
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern int DeleteObject(IntPtr hObject);
     }
 }

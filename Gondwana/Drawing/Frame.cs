@@ -1,6 +1,7 @@
+using Gondwana.Rendering;
+using SkiaSharp;
 using System.Drawing;
 using System.Runtime.Serialization;
-using SkiaSharp;
 
 namespace Gondwana.Drawing;
 
@@ -14,10 +15,10 @@ public struct Frame
     public readonly Tilesheet Tilesheet;
 
     [DataMember]
-    public readonly int XTile;      // xTile * bmp.TileWidth = starting point for source bitmap
+    public readonly int XTile;
 
     [DataMember]
-    public readonly int YTile;      // yTile * bmp.TileHeight = starting point for source bitmap
+    public readonly int YTile;
 
     private SKBitmap? _cachedSkBitmap;
 
@@ -32,63 +33,66 @@ public struct Frame
         _cachedSkBitmap = null;
     }
 
-    public Bitmap GetBitmap()
-    {
-        var sourceRect = Tilesheet.GetSourceRange(XTile, YTile);
-
-        if (new Rectangle(Point.Empty, Tilesheet.Bmp.Size).Contains(sourceRect))
-            return Tilesheet.Bmp.Clone(sourceRect, Tilesheet.Bmp.PixelFormat);
-        else
-            return null;
-    }
-
-    public Bitmap GetBitmapMask()
-    {
-        if (Tilesheet.Mask == null)
-            return null;
-
-        var sourceRect = Tilesheet.Mask.GetSourceRange(XTile, YTile);
-        return Tilesheet.Mask.Bmp.Clone(sourceRect, Tilesheet.Mask.Bmp.PixelFormat);
-    }
-
     public SKBitmap? GetSkiaBitmap()
     {
         if (_cachedSkBitmap != null)
             return _cachedSkBitmap;
 
-        var color = GetBitmap();
-        if (color == null)
+        var srcRect = Tilesheet.GetSourceRange(XTile, YTile);
+
+        if (!Tilesheet.SkBitmap.Info.Rect.Contains(srcRect))
             return null;
 
-        var mask = GetBitmapMask();
-        _cachedSkBitmap = Gondwana.Rendering.Backbuffer.CombineBitmapWithMask(color, mask);
+        // Create a temporary surface and draw the tile region onto it
+        using var surface = SKSurface.Create(new SKImageInfo(srcRect.Width, srcRect.Height));
+        surface.Canvas.Clear(SKColors.Transparent);
+        surface.Canvas.DrawBitmap(
+            Tilesheet.SkBitmap,
+            srcRect.ToSKRect(),
+            new SKRect(0, 0, srcRect.Width, srcRect.Height)
+        );
+
+        // Handle the mask (if present)
+        SKBitmap? croppedMask = null;
+        if (Tilesheet.Mask?.SkBitmap is SKBitmap maskBitmap &&
+            maskBitmap.Info.Rect.Contains(srcRect.ToSKRect()))
+        {
+            croppedMask = new SKBitmap(srcRect.Width, srcRect.Height);
+            maskBitmap.ReadPixels(
+                new SKImageInfo(srcRect.Width, srcRect.Height),
+                croppedMask.GetPixels(),
+                croppedMask.RowBytes,
+                srcRect.Left,
+                srcRect.Top
+            );
+        }
+
+        // Encode the surface as an image to memory and decode back into SKBitmap
+        using var image = surface.Snapshot();
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        using var stream = new MemoryStream();
+        data.SaveTo(stream);
+        stream.Position = 0;
+
+        using var cropped = SKBitmap.Decode(stream);
+
+        // Combine with optional mask
+        _cachedSkBitmap = Gondwana.Rendering.Backbuffer.CombineBitmapWithMask(cropped, croppedMask);
         return _cachedSkBitmap;
     }
 
     public static bool operator ==(Frame f1, Frame f2)
-    {
-        return f1.Tilesheet.Equals(f2.Tilesheet) && f1.XTile == f2.XTile && f1.YTile == f2.YTile;
-    }
+        => f1.Tilesheet.Equals(f2.Tilesheet) && f1.XTile == f2.XTile && f1.YTile == f2.YTile;
 
     public static bool operator !=(Frame f1, Frame f2)
-    {
-        return !(f1 == f2);
-    }
+        => !(f1 == f2);
 
     public override bool Equals(object? obj)
-    {
-        if (obj is Frame other)
-            return this == other;
-        return false;
-    }
+        => obj is Frame other && this == other;
 
     public override int GetHashCode()
-    {
-        return HashCode.Combine(Tilesheet, XTile, YTile);
-    }
+        => HashCode.Combine(Tilesheet, XTile, YTile);
 
     public override string ToString()
-    {
-        return $"{Tilesheet.Name} / x:{XTile} / y:{YTile}";
-    }
+        => $"{Tilesheet.Name} / x:{XTile} / y:{YTile}";
 }

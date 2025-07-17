@@ -110,8 +110,8 @@ public class Backbuffer
 
             var destRect = tile.DrawLocation.ToSKRect();
             var frame = tile.CurrentFrame;
-            var bmp = frame.GetBitmap();
-            var mask = frame.GetBitmapMask();
+            var bmp = frame.GetSkiaBitmap();
+            var mask = frame.GetSkiaBitmap();
 
             if (bmp != null)
             {
@@ -128,31 +128,38 @@ public class Backbuffer
         }
     }
 
-    public static SKBitmap CombineBitmapWithMask(Bitmap color, Bitmap? mask)
+    public static SKBitmap CombineBitmapWithMask(SKBitmap color, SKBitmap? mask)
     {
-        var width = color.Width;
-        var height = color.Height;
-        var skBitmap = new SKBitmap(width, height);
+        if (color == null)
+            throw new ArgumentNullException(nameof(color));
+
+        int width = color.Width;
+        int height = color.Height;
+
+        var output = new SKBitmap(width, height);
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                var pixel = color.GetPixel(x, y);
+                var colorPixel = color.GetPixel(x, y);
                 byte alpha = 255;
 
                 if (mask != null)
                 {
-                    var maskPixel = mask.GetPixel(x, y);
-                    alpha = (byte)(255 - maskPixel.R); // assuming white = transparent in mask
+                    if (x < mask.Width && y < mask.Height)
+                    {
+                        var maskPixel = mask.GetPixel(x, y);
+                        alpha = (byte)(255 - maskPixel.Red); // assumes white (255) = transparent
+                    }
                 }
 
-                var skColor = new SKColor(pixel.R, pixel.G, pixel.B, alpha);
-                skBitmap.SetPixel(x, y, skColor);
+                var finalColor = new SKColor(colorPixel.Red, colorPixel.Green, colorPixel.Blue, alpha);
+                output.SetPixel(x, y, finalColor);
             }
         }
 
-        return skBitmap;
+        return output;
     }
 
     public void Dispose()
