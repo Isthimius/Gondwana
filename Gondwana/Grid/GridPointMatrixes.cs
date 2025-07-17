@@ -1,5 +1,4 @@
 using Gondwana.Drawing;
-using Gondwana.Rendering;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;

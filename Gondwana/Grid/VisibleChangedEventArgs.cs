@@ -1,6 +1,4 @@
-﻿using Gondwana.Grid;
-
-namespace Gondwana.Rendering;
+﻿namespace Gondwana.Grid;
 
 public delegate void VisibleChangedEventHandler(VisibleChangedEventArgs e);
 

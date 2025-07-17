@@ -35,7 +35,7 @@ public sealed class GamepadManagerEventPoller
     public event Action<GamepadButtonDownEventArgs>? ButtonDown;
 
     /// <summary>
-    /// Polls the provided gamepad adapters for button and trigger states and raises events.
+    /// Polls the provided gamepad adapters for button and trigger values, and raises events.
     /// </summary>
     /// <remarks>This method iterates through the provided gamepad adapters and checks for button press events
     /// based on their configurations. If a button press is detected and the configuration is ready for the next event,
