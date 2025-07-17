@@ -33,7 +33,7 @@ public sealed class Tilesheet : IDisposable
     {
         _name = name;
         _skBitmap = bitmap;
-        Tilesheet._tilesheets[_name] = this;
+        _tilesheets[_name] = this;
     }
 
     public Tilesheet(string name, Stream stream)
@@ -50,7 +50,7 @@ public sealed class Tilesheet : IDisposable
         ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, entryName);
         _name = entryName;
         _skBitmap = SKBitmap.Decode(ResourceIdentifier.Data);
-        Tilesheet._tilesheets[_name] = this;
+        _tilesheets[_name] = this;
     }
 
     public Tilesheet(Tilesheet baseSheet, string name, string file)
@@ -66,7 +66,7 @@ public sealed class Tilesheet : IDisposable
         _name = name;
         _skBitmap = SKBitmap.Decode(file);
         ImageFilePath = file;
-        Tilesheet._tilesheets[_name] = this;
+        _tilesheets[_name] = this;
     }
 
     [JsonIgnore]
@@ -75,9 +75,9 @@ public sealed class Tilesheet : IDisposable
         get => _name;
         set
         {
-            Tilesheet._tilesheets.Remove(_name);
+            _tilesheets.Remove(_name);
             _name = value;
-            Tilesheet._tilesheets[_name] = this;
+            _tilesheets[_name] = this;
         }
     }
 

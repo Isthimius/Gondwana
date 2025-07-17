@@ -2,8 +2,6 @@ namespace Gondwana.Rendering.Direct;
 
 public static class DirectDrawings
 {
-    //internal static List<DirectDrawing> drawInstances = new List<DirectDrawing>();
-
     public static void RenderAll()
     {
         DirectDrawing._instances.Sort();

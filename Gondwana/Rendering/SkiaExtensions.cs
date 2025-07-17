@@ -1,6 +1,8 @@
 ﻿using SkiaSharp;
 using System.Drawing;
 
+namespace Gondwana.Rendering;
+
 public static class SkiaExtensions
 {
     public static SKColor ToSKColor(this Color color)

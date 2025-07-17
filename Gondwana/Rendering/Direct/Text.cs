@@ -1,69 +1,61 @@
-using Gondwana.Common;
-using Gondwana.Rendering;
+using SkiaSharp;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace Gondwana.Rendering.Direct;
 
 public class Text : DirectDrawing
 {
-    #region private fields
     private string _text;
-    private Font _font;
-    private Color _foreColor;
-    private Color _backColor;
-    private TextFormatFlags _flags;
-    #endregion
+    private string _fontFamily;
+    private float _fontSize;
+    private SKColor _foreColor;
+    private SKColor _backColor;
 
-    #region constructors / finalizer
-    public Text(VisibleSurfaceBase surface, string text, Font font,
-        Rectangle bounds, Color foreColor, Color backColor)
+    public Text(VisibleSurfaceBase surface, string text, Font font, Rectangle bounds, Color foreColor, Color backColor)
         : base(surface, bounds)
     {
-        InstantiateNew(text, font, foreColor, backColor, TextFormatFlags.Default);
+        _text = text;
+        _fontFamily = font.FontFamily.Name;
+        _fontSize = font.Size;
+        _foreColor = foreColor.ToSKColor();
+        _backColor = backColor.ToSKColor();
     }
 
-    public Text(VisibleSurfaceBase surface, string text, Font font, Rectangle bounds,
-        Color foreColor, Color backColor, TextFormatFlags flags)
-        : base(surface, bounds)
-    {
-        InstantiateNew(text, font, foreColor, backColor, flags);
-    }
-
-    ~Text()
-    {
-        Dispose();
-    }
-    #endregion
-
-    #region public properties
     public string TextDisplay
     {
-        get { return _text; }
+        get => _text;
         set
         {
             _text = value;
             ForceRefresh();
         }
     }
-    #endregion
 
-    #region private methods
-    private void InstantiateNew(string text, Font font,
-        Color foreColor, Color backColor, TextFormatFlags flags)
-    {
-        _text = text;
-        _font = font;
-        _foreColor = foreColor;
-        _backColor = backColor;
-        _flags = flags;
-    }
-    #endregion
-
-    #region inherited from DirectDrawing
     protected internal override void Render()
     {
-        TextRenderer.DrawText(_surface.Buffer.DC, _text, _font, _bounds, _foreColor, _backColor, _flags);
+        var canvas = _surface.Buffer.Canvas;
+        var rect = Bounds.ToSKRect();
+
+        // Fill background
+        using var bgPaint = new SKPaint { Color = _backColor };
+        canvas.DrawRect(rect, bgPaint);
+
+        // Draw text
+        using var font = SKFontManager.Default.MatchFamily(_fontFamily) is { } tf
+            ? SKTypeface.FromFamilyName(_fontFamily)
+            : SKTypeface.Default;
+
+        using var paint = new SKPaint
+        {
+            Typeface = font,
+            TextSize = _fontSize,
+            IsAntialias = true,
+            Color = _foreColor,
+            IsStroke = false
+        };
+
+        var x = rect.Left;
+        var y = rect.MidY + _fontSize / 2f; // approximate centering
+        canvas.DrawText(_text, x, y, paint);
     }
-    #endregion
 }
