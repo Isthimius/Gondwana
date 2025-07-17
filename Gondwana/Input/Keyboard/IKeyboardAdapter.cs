@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Keyboard.WinForms;
+﻿namespace Gondwana.Input.Keyboard;
 
 /// <summary>
 /// Represents an adapter for keyboard input, providing access to the currently pressed keys and active modifier states.

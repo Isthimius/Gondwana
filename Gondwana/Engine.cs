@@ -6,7 +6,6 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
-using Gondwana.Input.Keyboard.WinForms;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
