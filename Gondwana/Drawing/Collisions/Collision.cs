@@ -1,5 +1,3 @@
-using Gondwana.Common;
-
 namespace Gondwana.Drawing.Collisions;
 
 // TODO: refactor Collision class
