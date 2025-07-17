@@ -39,14 +39,14 @@ namespace Slider
         {
             tilesheet = new Tilesheet("picture", imgFile);
 
-            int tileWidth = (int)((float)tilesheet.Bmp.Width / (float)columns);
-            int tileHeight = (int)((float)tilesheet.Bmp.Height / (float)rows);
+            int tileWidth = (int)((float)tilesheet.SkBitmap.Width / (float)columns);
+            int tileHeight = (int)((float)tilesheet.SkBitmap.Height / (float)rows);
             int adjWidth = tileWidth * columns;
             int adjHeight = tileHeight * rows;
 
             tilesheet.TileSize = new Size(tileWidth, tileHeight);
 
-            originalSize = tilesheet.Bmp.Size;
+            originalSize = new Size(tilesheet.SkBitmap.Width, tilesheet.SkBitmap.Height);
             numColumns = columns;
             numRows = rows;
             adjustedSize = new Size(adjWidth, adjHeight);
@@ -55,7 +55,7 @@ namespace Slider
             matrix.CoordinateSystem = new SquareIsoCoordinates();
             matrixes = new GridPointMatrixes(matrix);
 
-            surface = new VisibleSurface(dc, size.Width, size.Height, matrixes);
+            surface = new VisibleSurface(size.Width, size.Height, matrixes);
             surface.Erase();
 
             InitializeSprites(tileWidth, tileHeight);
