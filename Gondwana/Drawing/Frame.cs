@@ -33,10 +33,13 @@ public struct Frame
         _cachedSkBitmap = null;
     }
 
+    // TODO: this is causing issues with .Snapshot()
     public SKBitmap? GetSkiaBitmap()
     {
         if (_cachedSkBitmap != null)
             return _cachedSkBitmap;
+
+        if (Tilesheet is null) return null;
 
         var srcRect = Tilesheet.GetSourceRange(XTile, YTile);
 

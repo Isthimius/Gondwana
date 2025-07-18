@@ -53,6 +53,7 @@ public class Backbuffer
     public int Width => _range.Width;
     public int Height => _range.Height;
 
+    private SKImage _skImage = null;
     public SKImage Snapshot() => _surface.Snapshot();
 
     public SolidBrush FogBrush
