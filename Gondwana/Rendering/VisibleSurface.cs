@@ -7,7 +7,7 @@ public class VisibleSurface : VisibleSurfaceBase
 {
     private Action RenderFromBackbuffer = () => { };
 
-    public event EventHandler<VisibleSufaceBindEventArgs>? VisibleSurfaceBind;
+    public event EventHandler<VisibleSurfaceBindEventArgs>? VisibleSurfaceBind;
 
     public VisibleSurface(int width, int height)
         : base(width, height)
@@ -38,7 +38,7 @@ public class VisibleSurface : VisibleSurfaceBase
     public SKSurface Surface { get; }
 
     /// <summary>
-    /// Render target canvas exposed for external drawing, if needed.
+    /// Render target canvas exposed for external drawing.
     /// </summary>
     public SKCanvas Canvas { get; }
 
@@ -49,11 +49,7 @@ public class VisibleSurface : VisibleSurfaceBase
         {
             base.RedrawDirtyRectangleOnly = value;
             RenderFromBackbuffer = value ? RenderBackbufferRect : RenderBackbufferAll;
-
-            if (Buffer is Backbuffer backbuffer)
-            {
-                backbuffer.DirtyRectangle = new System.Drawing.Rectangle(0, 0, Buffer.Width, Buffer.Height);
-            }
+            Buffer.DirtyRectangle = new System.Drawing.Rectangle(0, 0, Buffer.Width, Buffer.Height);
         }
     }
 
@@ -70,7 +66,7 @@ public class VisibleSurface : VisibleSurfaceBase
         var oldBind = backbuffer.DrawSource;
         backbuffer.DrawSource = layers;
 
-        VisibleSurfaceBind?.Invoke(this, new VisibleSufaceBindEventArgs(this, oldBind, layers));
+        VisibleSurfaceBind?.Invoke(this, new VisibleSurfaceBindEventArgs(this, oldBind, layers));
     }
 
     public override void RenderBackbuffer(bool resetDirtyRegion = true)

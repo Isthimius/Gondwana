@@ -2,7 +2,6 @@
 using Gondwana.Grid;
 using Gondwana.Drawing;
 using System.Drawing;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Gondwana.Rendering;

@@ -2,13 +2,13 @@
 
 namespace Gondwana.Rendering;
 
-public class VisibleSufaceBindEventArgs : EventArgs
+public class VisibleSurfaceBindEventArgs : EventArgs
 {
     public VisibleSurfaceBase Surface { get; }
     public GridPointMatrixes OldBindValue { get; }
     public GridPointMatrixes NewBindValue { get; }
 
-    public VisibleSufaceBindEventArgs(
+    public VisibleSurfaceBindEventArgs(
         VisibleSurfaceBase surface,
         GridPointMatrixes oldBind,
         GridPointMatrixes newBind)
