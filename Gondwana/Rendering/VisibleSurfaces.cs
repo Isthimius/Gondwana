@@ -6,7 +6,7 @@ namespace Gondwana.Rendering;
 public static class VisibleSurfaces
 {
     private static readonly List<VisibleSurfaceBase> _surfaces = new();
-    private static Rectangle _maxSurfaceSize = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+    private static Rectangle _maxSurfaceSize = new();
     private static readonly VisibleSurfacesInstance _instance = new(0);
 
     public static int Count => _surfaces.Count;
