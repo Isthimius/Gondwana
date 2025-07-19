@@ -8,7 +8,7 @@ namespace Gondwana.Rendering.Direct;
 /// </summary>
 /// <remarks>The <see cref="TextBlock"/> class provides methods to configure text properties such as font, color,
 /// alignment, and additional effects like shadow and outline. It supports text wrapping and vertical alignment within a
-/// specified rectangular area. This class is useful for rendering styled text in graphical applications.
+/// specified rectangular area.
 /// </remarks>
 /// <example>
 /// var block = new TextBlock(surface, new Rectangle(0, 0, 400, 200))
