@@ -1,117 +1,41 @@
 using Gondwana.Timers;
 using Gondwana.Grid;
-using System.Collections.ObjectModel;
 using System.Drawing;
 
 namespace Gondwana.Rendering.Direct;
 
 public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 {
-    #region static members
-    internal static List<DirectDrawing> _instances = new List<DirectDrawing>();
+    public event EventHandler<DirectDrawing> Disposing;
 
-    public static ReadOnlyCollection<DirectDrawing> Instances
-    {
-        get { return _instances.AsReadOnly(); }
-    }
-
-    public static void RenderAll()
-    {
-        _instances.Sort();
-
-        foreach (DirectDrawing drawing in _instances)
-        {
-            if (drawing.Bounds.IntersectsWith(drawing.Surface.Buffer.DirtyRectangle))
-            {
-                if (drawing._dirty)
-                {
-                    drawing.Render();
-                    drawing._dirty = false;
-                }
-            }
-        }
-    }
-
-    public static void Clear()
-    {
-        for (int i = 0; i < _instances.Count; i++)
-            _instances[i].Dispose();
-    }
-
-    public static void Clear(string name)
-    {
-        DirectDrawing tmpDraw = GetDirectDrawing(name);
-
-        if (tmpDraw != null)
-            tmpDraw.Dispose();
-    }
-
-    public static List<DirectDrawing> AllDirectDrawings
-    {
-        get { return _instances; }
-    }
-
-    public static int Count
-    {
-        get { return _instances.Count; }
-    }
-
-    public static DirectDrawing GetDirectDrawing(string name)
-    {
-        foreach (DirectDrawing drawing in _instances)
-        {
-            if (drawing.Name == name)
-                return drawing;
-        }
-
-        return null;
-    }
-    #endregion
-
-    #region private / protected fields
-    protected VisibleSurfaceBase _surface;
+    protected readonly VisibleSurfaceBase _surface;
     protected Rectangle _bounds;
     protected int _zOrder;
-    private GridPointMatrixes _drawSource = null;
-    private string _Name;
-    internal Movement _movement;
+    protected GridPointMatrixes? _drawSource;
+    internal Movement? _movement;
     internal bool _dirty = true;
-    #endregion
+    private bool _disposed = false;
 
-    #region abstract methods
     protected internal abstract void Render();
-    #endregion
 
-    #region constructors / finalizer
-    public DirectDrawing(VisibleSurfaceBase surface, Rectangle bounds)
+    protected DirectDrawing(VisibleSurfaceBase surface, Rectangle bounds)
     {
-        _instances.Add(this);
-
+        DirectDrawingManager.Add(this);
         _surface = surface;
         _bounds = bounds;
         _zOrder = 0;
-        _Name = Guid.NewGuid().ToString();
-
+        Name = Guid.NewGuid().ToString();
         _drawSource = _surface.Buffer.DrawSource;
-
         ForceRefresh();
     }
 
-    ~DirectDrawing()
-    {
-        Dispose();
-    }
-    #endregion
+    ~DirectDrawing() => Dispose(false);
 
-    #region public properties
-    public VisibleSurfaceBase Surface
-    {
-        get { return _surface; }
-    }
+    public VisibleSurfaceBase Surface => _surface;
 
     public Rectangle Bounds
     {
-        get { return _bounds; }
+        get => _bounds;
         set
         {
             ForceRefresh();
@@ -122,7 +46,7 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     public int ZOrder
     {
-        get { return _zOrder; }
+        get => _zOrder;
         set
         {
             _zOrder = value;
@@ -130,91 +54,92 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
         }
     }
 
-    public string Name
-    {
-        get { return _Name; }
-        set { _Name = value; }
-    }
+    public string Name { get; set; }
 
-    public bool IsScrolling
-    {
-        get
-        {
-            if (_movement == null)
-                return false;
-            else
-                return true;
-        }
-    }
-    #endregion
+    public bool IsScrolling => _movement != null;
 
-    #region public / internal methods
     public void ScrollSourceGridPoint(double totalTime, Rectangle destBounds)
     {
-        if (_movement != null)
-            _movement.parent = null;
-
+        _movement?.Reset();
         _movement = new Movement(this, totalTime, destBounds);
     }
 
     public void StopScrolling()
     {
-        if (_movement != null)
-        {
-            _movement.parent = null;
-            _movement = null;
-        }
+        _movement?.Reset();
+        _movement = null;
     }
 
     public void MoveNext(long tick)
     {
-        if (_movement != null)
-        {
-            if (_movement.MoveNext(tick))
-                _movement = null;
-        }
+        if (_movement?.MoveNext(tick) == true)
+            _movement = null;
     }
 
     public void ForceRefresh()
     {
-        GridPointMatrixes matrixes = _surface.Buffer.DrawSource;
-
-        if (matrixes != null && matrixes.Count != 0)
+        var matrixes = _surface.Buffer.DrawSource;
+        if (matrixes?.Count > 0)
             matrixes[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
         _dirty = true;
     }
-    #endregion
 
-    #region IComparable<DirectDrawing> Members
-    public int CompareTo(DirectDrawing other)
-    {
-        if (_zOrder < other._zOrder)
-            return -1;
-        else if (_zOrder > other._zOrder)
-            return 1;
-        else
-            return 0;
-    }
-    #endregion
+    public int CompareTo(DirectDrawing? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
 
-    #region IDisposable Members
     public void Dispose()
     {
+        Dispose(true);
         GC.SuppressFinalize(this);
-        _instances.Remove(this);
-        ForceRefresh();
     }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
+
+        if (disposing)
+        {
+            Disposing?.Invoke(this, this);
+        }
+
+        _disposed = true;
+    }
+
+    #region Equality & Operators
+
+    public override bool Equals(object? obj) => ReferenceEquals(this, obj);
+
+    public override int GetHashCode() => HashCode.Combine(Name);
+
+    public static bool operator ==(DirectDrawing? left, DirectDrawing? right) =>
+        ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
+
+    public static bool operator !=(DirectDrawing? left, DirectDrawing? right) => !(left == right);
+
+    public static bool operator <(DirectDrawing? left, DirectDrawing? right) =>
+        ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
+
+    public static bool operator <=(DirectDrawing? left, DirectDrawing? right) =>
+        ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
+
+    public static bool operator >(DirectDrawing? left, DirectDrawing? right) =>
+        !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
+
+    public static bool operator >=(DirectDrawing? left, DirectDrawing? right) =>
+        ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
+
     #endregion
 
+    #region Movement Inner Class
     internal class Movement
     {
-        internal DirectDrawing parent;
-        internal long startTick;
-        internal long lastTick;
-        internal long totalTicks;
-        internal Rectangle startBounds;
-        internal Rectangle destBounds;
+        internal DirectDrawing? parent;
+        private readonly long startTick;
+        private long lastTick;
+        private readonly long totalTicks;
+        private readonly Rectangle startBounds;
+        private readonly Rectangle destBounds;
 
         internal Movement(DirectDrawing drawing, double totalTime, Rectangle dest)
         {
@@ -226,40 +151,30 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
             destBounds = dest;
         }
 
-        internal bool IsFinished(long tick)
-        {
-            if (tick >= startTick + totalTicks)
-                return true;
-            else
-                return false;
-        }
+        internal bool IsFinished(long tick) => tick >= startTick + totalTicks;
 
         internal bool MoveNext(long tick)
         {
-            bool finished = IsFinished(tick);
-
-            if (finished)
+            if (IsFinished(tick))
             {
-                parent.Bounds = destBounds;
+                parent!.Bounds = destBounds;
                 parent = null;
-            }
-            else
-            {
-                double percentComplete = (tick - startTick) / (double)totalTicks;
-
-                int newX = startBounds.X +
-                    (int)((destBounds.X - startBounds.X) * percentComplete);
-                int newY = startBounds.Y +
-                    (int)((destBounds.Y - startBounds.Y) * percentComplete);
-                int newWidth = startBounds.Width +
-                    (int)((destBounds.Width - startBounds.Width) * percentComplete);
-                int newHeight = startBounds.Height +
-                    (int)((destBounds.Height - startBounds.Height) * percentComplete);
-
-                parent.Bounds = new Rectangle(newX, newY, newWidth, newHeight);
+                return true;
             }
 
-            return finished;
+            double percent = (tick - startTick) / (double)totalTicks;
+
+            int newX = startBounds.X + (int)((destBounds.X - startBounds.X) * percent);
+            int newY = startBounds.Y + (int)((destBounds.Y - startBounds.Y) * percent);
+            int newWidth = startBounds.Width + (int)((destBounds.Width - startBounds.Width) * percent);
+            int newHeight = startBounds.Height + (int)((destBounds.Height - startBounds.Height) * percent);
+
+            parent!.Bounds = new Rectangle(newX, newY, newWidth, newHeight);
+            lastTick = tick;
+            return false;
         }
+
+        internal void Reset() => parent = null;
     }
+    #endregion
 }

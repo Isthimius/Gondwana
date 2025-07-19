@@ -251,7 +251,7 @@ public sealed class Engine : IDisposable
             matrix.MoveNext(tick);
 
         // perform any timed DirectDrawing scrolling
-        foreach (DirectDrawing drawing in DirectDrawing.AllDirectDrawings)
+        foreach (DirectDrawing drawing in DirectDrawingManager._instances)
             drawing.MoveNext(tick);
 
         // cycle Animator frames
@@ -312,7 +312,7 @@ public sealed class Engine : IDisposable
                 backbuffer.Erase();
 
                 // force refresh of all DirectDrawing objects
-                foreach (DirectDrawing drawing in DirectDrawing.AllDirectDrawings)
+                foreach (DirectDrawing drawing in DirectDrawingManager._instances)
                     drawing.ForceRefresh();
             }
             else
@@ -325,7 +325,7 @@ public sealed class Engine : IDisposable
 
                     case MatrixesRefreshType.Queue:
                         // erase any DirectDrawing that intersects with a refresh area
-                        foreach (DirectDrawing direct in DirectDrawing.AllDirectDrawings)
+                        foreach (DirectDrawing direct in DirectDrawingManager._instances)
                         {
                             if (grids.BackmostVisibleLayer.RefreshQueue.AreaIntersectsRefreshArea(direct.Bounds))
                                 direct.ForceRefresh();
@@ -345,7 +345,7 @@ public sealed class Engine : IDisposable
                         backbuffer.Erase();
 
                         // force refresh of all DirectDrawing objects
-                        foreach (DirectDrawing drawing in DirectDrawing.AllDirectDrawings)
+                        foreach (DirectDrawing drawing in DirectDrawingManager._instances)
                             drawing.ForceRefresh();
 
                         // draw from back to front from visible layers array
@@ -371,7 +371,7 @@ public sealed class Engine : IDisposable
             }
 
             // draw all DirectDrawing objects that overlap with dirty rectangles and are "dirty"
-            DirectDrawing.RenderAll();
+            DirectDrawingManager.RenderAll();
         }
     }
 
