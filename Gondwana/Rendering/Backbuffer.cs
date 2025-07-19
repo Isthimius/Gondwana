@@ -56,23 +56,6 @@ public class Backbuffer
     private SKImage _skImage = null;
     public SKImage Snapshot() => _surface.Snapshot();
 
-    public SolidBrush FogBrush
-    {
-        get => throw new NotSupportedException("Use SKPaint-based customization.");
-        set => _fogPaint = new SKPaint { Color = value.Color.ToSKColor(), IsAntialias = true };
-    }
-
-    public Pen GridPen
-    {
-        get => throw new NotSupportedException("Use SKPaint-based customization.");
-        set => _gridPaint = new SKPaint
-        {
-            Color = value.Color.ToSKColor(),
-            IsStroke = true,
-            StrokeWidth = value.Width
-        };
-    }
-
     public void SaveToFile(string file)
     {
         using var image = _surface.Snapshot();
