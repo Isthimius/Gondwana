@@ -75,13 +75,6 @@ public partial class EngineConfiguration
     }
 
     /// <summary>
-    /// Total number of resized Frame stretched renderings allowed in cache.
-    /// Lowering this value may degrade performance, but lessen required system memory.
-    /// Only change if necessary for performance optimization. Default is 100.
-    /// </summary>
-    public int ResizedFrameCacheLimit { get; set; } = 100;
-
-    /// <summary>
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.
     /// </summary>
     public List<string>? StateFiles { get; set; }

@@ -1,4 +1,3 @@
-using Gondwana.Timers;
 using System.Collections.ObjectModel;
 using System.Drawing;
 

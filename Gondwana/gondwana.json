@@ -4,7 +4,6 @@
     "SamplingTimeForCPS": 1.5,
     "TimeBetweenKeyboardEvents": 0.03,
     "TimeBetweenGamepadEvents": 0.03,
-    "VisibleSurfaceRefreshTimer": 1.5,
-    "ResizedFrameCacheLimit": 100
+    "VisibleSurfaceRefreshTimer": 1.5
   }
 }

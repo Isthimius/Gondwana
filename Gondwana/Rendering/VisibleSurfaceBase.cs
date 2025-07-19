@@ -27,7 +27,8 @@ public abstract class VisibleSurfaceBase : IDisposable
     {
         if (disposing)
         {
-            Buffer.Dispose();
+            Canvas?.Dispose();
+            Buffer?.Dispose();
             VisibleSurfaces.Remove(this);
         }
     }
