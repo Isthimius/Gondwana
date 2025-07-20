@@ -2,32 +2,36 @@
 using Gondwana.Grid;
 using Gondwana.Drawing;
 using System.Drawing;
-using System.IO;
 
 namespace Gondwana.Rendering;
 
-public class Backbuffer
+public sealed class BitmapBackbuffer : IBackbuffer
 {
-    private readonly SKSurface _surface;
+    private readonly SKBitmap _bitmap;
+    private readonly SKCanvas _canvas;
     private readonly Rectangle _range;
 
-    private SKPaint _fogPaint = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
-    private SKPaint _gridPaint = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
-
-    private GridPointMatrixes _source;
+    private GridPointMatrixes? _source;
     private Rectangle _dirtyRectangle = Rectangle.Empty;
 
-    public Backbuffer(int width, int height)
+    public BitmapBackbuffer(int width, int height)
     {
-        _surface = SKSurface.Create(new SKImageInfo(width, height));
+        _bitmap = new SKBitmap(width, height, true);
+        _canvas = new SKCanvas(_bitmap);
         _range = new Rectangle(0, 0, width, height);
     }
 
-    public SKCanvas Canvas => _surface.Canvas;
+    public int Width => _range.Width;
+    public int Height => _range.Height;
+    public SKPaint FogPaint { get; set; } = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
+    public SKPaint GridPaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
+
+
+    public SKCanvas Canvas => _canvas;
 
     public GridPointMatrixes DrawSource
     {
-        get => _source;
+        get => _source!;
         set
         {
             if (_source != null)
@@ -46,18 +50,17 @@ public class Backbuffer
     public Rectangle DirtyRectangle
     {
         get => _dirtyRectangle;
-        internal set => _dirtyRectangle = value;
+        set => _dirtyRectangle = value;
     }
 
-    public int Width => _range.Width;
-    public int Height => _range.Height;
-
-    private SKImage _skImage = null;
-    public SKImage Snapshot() => _surface.Snapshot();
+    public SKImage Snapshot()
+    {
+        return SKImage.FromBitmap(_bitmap);
+    }
 
     public void SaveToFile(string file)
     {
-        using var image = _surface.Snapshot();
+        using var image = Snapshot();
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
         using var stream = File.OpenWrite(file);
         data.SaveTo(stream);
@@ -70,10 +73,10 @@ public class Backbuffer
         var intersect = Rectangle.Intersect(pxlRange, _range);
         if (intersect.IsEmpty) return;
 
-        Canvas.Save();
-        Canvas.ClipRect(intersect.ToSKRect());
-        Canvas.Clear(SKColors.Black);
-        Canvas.Restore();
+        _canvas.Save();
+        _canvas.ClipRect(intersect.ToSKRect());
+        _canvas.Clear(SKColors.Black);
+        _canvas.Restore();
 
         AddToDirtyRectangle(intersect);
     }
@@ -94,20 +97,18 @@ public class Backbuffer
             var destRect = tile.DrawLocation.ToSKRect();
             var frame = tile.CurrentFrame;
             var bmp = frame.GetSkiaBitmap();
-            var mask = frame.GetSkiaBitmap();
+            var mask = frame.GetSkiaBitmap(); // May be replaced with actual mask handling
 
             if (bmp != null)
             {
-                var skBitmap = tile.CurrentFrame.GetSkiaBitmap();
-                if (skBitmap != null)
-                    Canvas.DrawBitmap(skBitmap, destRect);
+                _canvas.DrawBitmap(bmp, destRect);
             }
 
             if (tile.EnableFog)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), _fogPaint);
+                _canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), FogPaint);
 
             if (tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), _gridPaint);
+                _canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), GridPaint);
         }
     }
 
@@ -128,13 +129,10 @@ public class Backbuffer
                 var colorPixel = color.GetPixel(x, y);
                 byte alpha = 255;
 
-                if (mask != null)
+                if (mask != null && x < mask.Width && y < mask.Height)
                 {
-                    if (x < mask.Width && y < mask.Height)
-                    {
-                        var maskPixel = mask.GetPixel(x, y);
-                        alpha = (byte)(255 - maskPixel.Red); // assumes white (255) = transparent
-                    }
+                    var maskPixel = mask.GetPixel(x, y);
+                    alpha = (byte)(255 - maskPixel.Red);
                 }
 
                 var finalColor = new SKColor(colorPixel.Red, colorPixel.Green, colorPixel.Blue, alpha);
@@ -147,13 +145,12 @@ public class Backbuffer
 
     public void Dispose()
     {
-        _surface.Dispose();
-        _fogPaint.Dispose();
-        _gridPaint.Dispose();
+        _canvas.Dispose();
+        _bitmap.Dispose();
+        FogPaint.Dispose();
+        GridPaint.Dispose();
         GC.SuppressFinalize(this);
     }
-
-    private void SourceDisposing(GridPointMatrixesDisposingEventArgs e) => _source = null;
 
     private void AddToDirtyRectangle(Rectangle area)
     {
@@ -163,4 +160,6 @@ public class Backbuffer
             ? area
             : Rectangle.Union(_dirtyRectangle, area);
     }
+
+    private void SourceDisposing(GridPointMatrixesDisposingEventArgs e) => _source = null;
 }

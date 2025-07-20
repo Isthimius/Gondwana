@@ -15,20 +15,7 @@ public class VisibleSurface : VisibleSurfaceBase
         Surface = SKSurface.Create(new SKImageInfo(width, height));
         Canvas = Surface.Canvas;
 
-        Buffer = new Backbuffer(width, height);
-        RedrawDirtyRectangleOnly = true;
-    }
-
-    public VisibleSurface(int width, int height, GridPointMatrixes drawSource)
-        : base(width, height)
-    {
-        Surface = SKSurface.Create(new SKImageInfo(width, height));
-        Canvas = Surface.Canvas;
-
-        Buffer = new Backbuffer(width, height)
-        {
-            DrawSource = drawSource
-        };
+        Buffer = BackbufferFactory.Create(width, height);
         RedrawDirtyRectangleOnly = true;
     }
 
@@ -60,11 +47,8 @@ public class VisibleSurface : VisibleSurfaceBase
 
     public override void Bind(GridPointMatrixes layers)
     {
-        if (Buffer is not Backbuffer backbuffer)
-            return;
-
-        var oldBind = backbuffer.DrawSource;
-        backbuffer.DrawSource = layers;
+        var oldBind = Buffer.DrawSource;
+        Buffer.DrawSource = layers;
 
         VisibleSurfaceBind?.Invoke(this, new VisibleSurfaceBindEventArgs(this, oldBind, layers));
     }
@@ -73,9 +57,9 @@ public class VisibleSurface : VisibleSurfaceBase
     {
         RenderFromBackbuffer();
 
-        if (resetDirtyRegion && Buffer is Backbuffer backbuffer)
+        if (resetDirtyRegion)
         {
-            backbuffer.DirtyRectangle = System.Drawing.Rectangle.Empty;
+            Buffer.DirtyRectangle = System.Drawing.Rectangle.Empty;
         }
     }
 
@@ -87,14 +71,11 @@ public class VisibleSurface : VisibleSurfaceBase
 
     private void RenderBackbufferRect()
     {
-        if (Buffer is not Backbuffer backbuffer)
-            return;
-
-        var dirty = backbuffer.DirtyRectangle;
+        var dirty = Buffer.DirtyRectangle;
         if (dirty.IsEmpty)
             return;
 
-        using var snapshot = backbuffer.Snapshot();
+        using var snapshot = Buffer.Snapshot();
         var skRect = dirty.ToSKRect();
         Canvas.DrawImage(snapshot, skRect, skRect);
     }

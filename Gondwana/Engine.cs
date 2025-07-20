@@ -303,7 +303,7 @@ public sealed class Engine : IDisposable
     {
         foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
         {
-            Backbuffer backbuffer = surface.Buffer;
+            var backbuffer = surface.Buffer;
             GridPointMatrixes grids = backbuffer.DrawSource;
 
             if (grids == null || grids.Count == 0)

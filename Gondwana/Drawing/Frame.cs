@@ -77,7 +77,7 @@ public struct Frame
         using var cropped = SKBitmap.Decode(stream);
 
         // Combine with optional mask
-        _cachedSkBitmap = Gondwana.Rendering.Backbuffer.CombineBitmapWithMask(cropped, croppedMask);
+        _cachedSkBitmap = Gondwana.Rendering.GpuBackbuffer.CombineBitmapWithMask(cropped, croppedMask);
         return _cachedSkBitmap;
     }
 

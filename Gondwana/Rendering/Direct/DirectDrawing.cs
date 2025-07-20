@@ -11,7 +11,6 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
     protected readonly VisibleSurfaceBase _surface;
     protected Rectangle _bounds;
     protected int _zOrder;
-    protected GridPointMatrixes? _drawSource;
     internal Movement? _movement;
     internal bool _dirty = true;
     private bool _disposed = false;
@@ -25,7 +24,6 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
         _bounds = bounds;
         _zOrder = 0;
         Name = Guid.NewGuid().ToString();
-        _drawSource = _surface.Buffer.DrawSource;
         ForceRefresh();
     }
 
@@ -78,11 +76,11 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     public void ForceRefresh()
     {
-        var matrixes = _surface.Buffer.DrawSource;
-        if (matrixes?.Count > 0)
-            matrixes[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
+        //var matrixes = _surface.Buffer.DrawSource;
+        //if (matrixes?.Count > 0)
+        //    matrixes[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
-        _dirty = true;
+        //_dirty = true;
     }
 
     public int CompareTo(DirectDrawing? other) => _zOrder.CompareTo(other?._zOrder ?? 0);

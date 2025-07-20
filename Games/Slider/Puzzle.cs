@@ -55,7 +55,8 @@ namespace Slider
             matrix.CoordinateSystem = new SquareIsoCoordinates();
             matrixes = new GridPointMatrixes(matrix);
 
-            surface = new VisibleSurface(size.Width, size.Height, matrixes);
+            //surface = new VisibleSurface(size.Width, size.Height, matrixes);
+            surface = new VisibleSurface(size.Width, size.Height);
             surface.Erase();
 
             InitializeSprites(tileWidth, tileHeight);
