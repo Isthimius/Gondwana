@@ -16,7 +16,6 @@ public sealed class Tilesheet : IDisposable
     [JsonInclude] public int InitialOffsetY;
     [JsonInclude] public int XPixelsBetweenTiles;
     [JsonInclude] public int YPixelsBetweenTiles;
-    [JsonInclude] public Tilesheet? Mask;
 
     [JsonInclude] private Size _tileSize;
     [JsonInclude] private string _name = string.Empty;
@@ -59,7 +58,6 @@ public sealed class Tilesheet : IDisposable
         InitialOffsetY = baseSheet.InitialOffsetY;
         XPixelsBetweenTiles = baseSheet.XPixelsBetweenTiles;
         YPixelsBetweenTiles = baseSheet.YPixelsBetweenTiles;
-        Mask = baseSheet.Mask;
         _tileSize = baseSheet._tileSize;
         _extraTopSpace = baseSheet._extraTopSpace;
         ValueBag = new(baseSheet.ValueBag);
@@ -107,7 +105,6 @@ public sealed class Tilesheet : IDisposable
 
     [JsonIgnore] public int PrimaryHeight => _tileSize.Height - _extraTopSpace;
     [JsonIgnore] public float ExtraTopSpaceToPrimaryRatio => (float)_extraTopSpace / PrimaryHeight;
-    [JsonIgnore] public string MaskName => Mask?.Name ?? string.Empty;
 
     public Rectangle GetSourceRange(int xTile, int yTile)
     {

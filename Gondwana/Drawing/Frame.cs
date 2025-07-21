@@ -36,8 +36,6 @@ public struct Frame
     // TODO: this is causing issues with .Snapshot()
     public SKBitmap? GetSkiaBitmap()
     {
-        return null;
-
         if (_cachedSkBitmap != null)
             return _cachedSkBitmap;
 
@@ -56,18 +54,6 @@ public struct Frame
             srcRect.ToSKRect(),
             new SKRect(0, 0, srcRect.Width, srcRect.Height)
         );
-
-        // Handle the mask (if present)
-        SKBitmap? croppedMask = null;
-        if (Tilesheet.Mask?.SkBitmap is SKBitmap maskBitmap &&
-            maskBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
-        {
-            croppedMask = new SKBitmap(srcRect.Width, srcRect.Height);
-
-            using var canvas = new SKCanvas(croppedMask);
-            canvas.Clear(SKColors.Transparent);
-            canvas.DrawBitmap(maskBitmap, srcRect.ToSKRect(), new SKRect(0, 0, srcRect.Width, srcRect.Height));
-        }
 
         // Encode the surface as an image to memory and decode back into SKBitmap
         using var image = surface.Snapshot();
