@@ -241,18 +241,18 @@ public sealed class Engine : IDisposable
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
-        KeyboardEventPoller.Instance?.PollForEvents(tick);
+        //KeyboardEventPoller.Instance?.PollForEvents(tick);
 
         // check for gamepad events
-        GamepadManagerEventPoller.Instance?.PollForEvents(tick);
+        //GamepadManagerEventPoller.Instance?.PollForEvents(tick);
 
         // perform any timed GridPointMatrix scrolling
         foreach (GridPointMatrix matrix in GridPointMatrix.GetAllGridPointMatrix())
             matrix.MoveNext(tick);
 
         // perform any timed DirectDrawing scrolling
-        foreach (DirectDrawing drawing in DirectDrawingManager._instances)
-            drawing.MoveNext(tick);
+        //foreach (DirectDrawing drawing in DirectDrawingManager._instances)
+        //    drawing.MoveNext(tick);
 
         // cycle Animator frames
         CycleAnimations(tick);
@@ -264,10 +264,10 @@ public sealed class Engine : IDisposable
         RaiseCollisionEvent(tick);
 
         // refresh all VisibleSurface backbuffers
-        DrawRefreshQueues();
+        //DrawRefreshQueues();
 
         // all attached VisibleSurface backbuffers drawn; clear the refresh queues
-        ClearRefreshQueues();
+        //ClearRefreshQueues();
 
         if (AfterBackgroundTasksExecute != null)
             AfterBackgroundTasksExecute();

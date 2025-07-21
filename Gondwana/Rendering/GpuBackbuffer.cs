@@ -33,10 +33,10 @@ public sealed class GpuBackbuffer : BackbufferBase
 
     public override void Dispose()
     {
+        base.Dispose();
+
         _surface.Dispose();
         _renderTarget.Dispose();
         _grContext.Dispose();
-        FogPaint.Dispose();
-        GridPaint.Dispose();
     }
 }

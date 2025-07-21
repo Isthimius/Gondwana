@@ -20,9 +20,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
     public override void Dispose()
     {
+        base.Dispose();
+
         _canvas.Dispose();
         _bitmap.Dispose();
-        FogPaint.Dispose();
-        GridPaint.Dispose();
     }
 }

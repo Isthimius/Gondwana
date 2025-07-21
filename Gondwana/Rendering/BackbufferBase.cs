@@ -99,5 +99,9 @@ public abstract class BackbufferBase : IDisposable
         data.SaveTo(stream);
     }
 
-    public abstract void Dispose();
+    public virtual void Dispose()
+    {
+        FogPaint.Dispose();
+        GridPaint.Dispose();
+    }
 }

@@ -6,14 +6,18 @@ public static class BackbufferFactory
 {
     public static BackbufferBase Create(int width, int height)
     {
-        try
+        if (Engine.Instance.Configuration.UseGpuBackbuffer)
         {
-            return new GpuBackbuffer(width, height);
+            try
+            {
+                return new GpuBackbuffer(width, height);
+            }
+            catch (Exception ex)
+            {
+                Engine.Logger.LogWarning(ex, "Failed to create GPU backbuffer, falling back to bitmap backbuffer.");
+            }
         }
-        catch (Exception ex)
-        {
-            Engine.Logger.LogWarning(ex, "Failed to create GPU backbuffer, falling back to bitmap backbuffer.");
-            return new BitmapBackbuffer(width, height);
-        }
+
+        return new BitmapBackbuffer(width, height);
     }
 }

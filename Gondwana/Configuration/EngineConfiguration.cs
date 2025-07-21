@@ -75,6 +75,11 @@ public partial class EngineConfiguration
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the GPU backbuffer is used for rendering.
+    /// </summary>
+    public bool UseGpuBackbuffer { get; set; } = true;
+
+    /// <summary>
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.
     /// </summary>
     public List<string>? StateFiles { get; set; }

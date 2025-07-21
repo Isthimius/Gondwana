@@ -36,6 +36,8 @@ public struct Frame
     // TODO: this is causing issues with .Snapshot()
     public SKBitmap? GetSkiaBitmap()
     {
+        return null;
+
         if (_cachedSkBitmap != null)
             return _cachedSkBitmap;
 
