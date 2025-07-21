@@ -25,7 +25,9 @@ public sealed class SoundResourceManager : IDisposable
     public SoundResource LoadFromFile(string key, string filePath, float volume = 1.0f, float pan = 0.0f)
     {
         if (_soundResources.TryGetValue(key, out var existing))
-            return existing.Item1;
+        {
+            existing.soundResource.Dispose(); // replace existing
+        }
 
         var bytes = File.ReadAllBytes(filePath);
         return LoadFromBytes(key, bytes, filePath, volume, pan);
@@ -124,11 +126,6 @@ public sealed class SoundResourceManager : IDisposable
 
     private SoundResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
     {
-        if (_soundResources.TryGetValue(key, out var existing))
-        {
-            existing.soundResource.Dispose(); // replace existing
-        }
-
         string ext = Path.GetExtension(fileHint);
         var (readerFactory, requiresFile) = PlatformAudioFactory.GetReaderFactory(ext);
 
@@ -137,6 +134,7 @@ public sealed class SoundResourceManager : IDisposable
 
         if (requiresFile)
         {
+            // TODO: how does this play with the WinForms implementation of PlatformAudioFactory?
             tempFilePath = SaveStreamToTempFile(new MemoryStream(bytes), ext);
             streamForReader = File.OpenRead(tempFilePath);
         }
