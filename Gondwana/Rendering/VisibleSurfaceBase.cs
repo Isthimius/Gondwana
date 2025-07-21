@@ -13,7 +13,7 @@ public abstract class VisibleSurfaceBase : IDisposable
     }
 
     public virtual SKCanvas Canvas { get; protected internal set; } = default!;
-    public virtual IBackbuffer Buffer { get; protected internal set; } = default!;
+    public virtual BackbufferBase Buffer { get; protected internal set; } = default!;
 
     public virtual int Height { get; protected internal set; }
     public virtual int Width { get; protected internal set; }

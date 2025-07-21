@@ -4,7 +4,7 @@ namespace Gondwana.Rendering;
 
 public static class BackbufferFactory
 {
-    public static IBackbuffer Create(int width, int height)
+    public static BackbufferBase Create(int width, int height)
     {
         try
         {
