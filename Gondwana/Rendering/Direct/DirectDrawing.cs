@@ -1,5 +1,4 @@
 using Gondwana.Timers;
-using Gondwana.Grid;
 using System.Drawing;
 
 namespace Gondwana.Rendering.Direct;

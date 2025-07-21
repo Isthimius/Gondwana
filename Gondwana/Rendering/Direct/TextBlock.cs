@@ -69,7 +69,7 @@ public class TextBlock : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = _surface.Buffer.Canvas;
+        var canvas = _surface.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();
 
         using var bg = new SKPaint { Color = _backColor };

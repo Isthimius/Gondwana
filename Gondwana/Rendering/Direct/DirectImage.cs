@@ -23,7 +23,7 @@ public class DirectImage : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = _surface.Buffer.Canvas;
+        var canvas = _surface.Backbuffer.Canvas;
         var destRect = Bounds.ToSKRect();
 
         var bitmap = _tilesheet.SkBitmap;

@@ -119,7 +119,7 @@ public class DirectRectangle : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = _surface.Buffer.Canvas;
+        var canvas = _surface.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();
 
         if (_strokeAlign != StrokeAlign.Center && !_isFilled)

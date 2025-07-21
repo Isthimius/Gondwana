@@ -309,7 +309,7 @@ public sealed class Engine : IDisposable
     {
         foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
         {
-            var backbuffer = surface.Buffer;
+            var backbuffer = surface.Backbuffer;
             GridPointMatrixes grids = backbuffer.DrawSource;
 
             if (grids == null || grids.Count == 0)
@@ -342,7 +342,7 @@ public sealed class Engine : IDisposable
 
                         // draw from back to front from visible layers array
                         for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
-                            surface.Buffer.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
+                            surface.Backbuffer.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
 
                         break;
 
@@ -365,7 +365,7 @@ public sealed class Engine : IDisposable
                                 new Rectangle(0, 0, surface.Width, surface.Height), false);
 
                             // draw to backbuffer
-                            surface.Buffer.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
+                            surface.Backbuffer.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
                         }
 
                         break;
