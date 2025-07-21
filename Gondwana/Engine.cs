@@ -174,10 +174,16 @@ public sealed class Engine : IDisposable
 
     public EngineState State { get; } = new EngineState();
 
-    public EngineConfiguration Configuration { get; set; }
+    private EngineConfiguration? _config = new();
+
+    public EngineConfiguration Configuration
+    {
+        get => _config ??= new EngineConfiguration();
+        set => _config = value;
+    }
 
     // TODO: this should be tied to VisibleSurface(s) somehow
-    public KeyboardEventPoller KeyboardHandler { get; set; } = null;
+    public KeyboardEventPoller? KeyboardHandler { get; set; } = null;
 
     private IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
 

@@ -239,7 +239,7 @@ public class SoundResource : IDisposable
     {
         if (e.Exception != null)
         {
-            Engine.Logger.LogError(e.Exception, "PlaybackStopped due to error for sound: {Key}", Key);
+            Engine.Logger.LogError(e.Exception, "PlaybackStopped due to error for sound: {Key}\r\n{errorDesc}", Key, e.ToString());
         }
         else
         {
