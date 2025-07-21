@@ -8,7 +8,7 @@ namespace Gondwana.Resource;
 /// <remarks>This class provides functionality to parse a string representation of an engine resource file entry
 /// and to compare entries for equality. The string representation is expected in the format
 /// 'ResourceType_ResourceName'.</remarks>
-public class EngineResourceFileEntry : IEquatable<EngineResourceFileEntry>
+public sealed class EngineResourceFileEntry : IEquatable<EngineResourceFileEntry>
 {
     /// <summary>
     /// Gets or sets the type of resource associated with the engine.

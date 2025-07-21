@@ -2,6 +2,9 @@
 
 namespace Gondwana.Resource;
 
+/// <summary>
+/// Represents an identifier for a specific resource within a file, including its type and name.
+/// </summary>
 public sealed class EngineResourceFileIdentifier
 {
     [JsonInclude]

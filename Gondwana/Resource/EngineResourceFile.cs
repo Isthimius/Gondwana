@@ -4,6 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace Gondwana.Resource;
 
+/// <summary>
+/// Represents a resource file used by the engine, providing functionality to load, manage, and save resources.
+/// </summary>
+/// <remarks>The <see cref="EngineResourceFile"/> class allows for the creation, loading, and management of
+/// resource files used by the engine. It supports encryption, resource retrieval by type and name, and saving resources
+/// to a zip file. Instances of this class are tracked globally and can be accessed via the <see
+/// cref="AllResourceFiles"/> property.</remarks>
 public sealed class EngineResourceFile : IDisposable
 {
     private static List<EngineResourceFile> _allResourceFiles = new();
