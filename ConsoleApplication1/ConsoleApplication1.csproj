@@ -13,9 +13,10 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gondwana.Common\Gondwana.csproj" />
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 </Project>
