@@ -1,4 +1,5 @@
-using Gondwana.Common.EventArgs;
+using Gondwana;
+using Gondwana.Drawing.Sprites;
 using System;
 using System.Drawing;
 
@@ -14,8 +15,8 @@ namespace GondwanaTest
             TestRectangles();
 
 
-            Gondwana.Engine.AfterEngineCycle += new Gondwana.Common.EventArgs.EngineCycleEventHandler(Engine_AfterEngineCycle);
-            Gondwana.Engine.CPSCalculated += new Gondwana.Common.EventArgs.CyclesPerSecondCalculatedHandler(EngineCPSCalculated);
+            Gondwana.Engine.Instance.AfterEngineCycle += new Gondwana.EngineCycleEventHandler(Engine_AfterEngineCycle);
+            Gondwana.Engine.Instance.CPSCalculated += new Gondwana.CyclesPerSecondCalculatedHandler(EngineCPSCalculated);
 
             /*
             do
@@ -24,9 +25,9 @@ namespace GondwanaTest
             } while (totalEngineCycles < 1000);
             */
 
-            Console.WriteLine("Total Time running: " + Gondwana.Engine.TotalSecondsEngineRunning.ToString());
+            Console.WriteLine("Total Time running: " + Gondwana.Engine.Instance.TotalSecondsEngineRunning.ToString());
 
-            Console.WriteLine("Test enum: " + Gondwana.Common.Enums.HorizontalAlignment.Center.ToString());
+            Console.WriteLine("Test enum: " + HorizontalAlignment.Center.ToString());
             //HorizontalAlignment val = HorizontalAlignment.Center;
             //switch (val.ToString())
             //{
@@ -68,7 +69,7 @@ namespace GondwanaTest
             totalEngineCycles++;
         }
 
-        private static void EngineCPSCalculated(Gondwana.Common.EventArgs.CyclesPerSecondCalculatedEventArgs e)
+        private static void EngineCPSCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs e)
         {
             totalTimesCPSCalcd++;
             Console.WriteLine("Gross Cycles: " + e.TotalGrossCycles.ToString());
