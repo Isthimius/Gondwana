@@ -9,8 +9,8 @@ public class DirectImage : DirectDrawing
 {
     private readonly Tilesheet _tilesheet;
 
-    public DirectImage(VisibleSurfaceBase surface, Rectangle bounds, Tilesheet tilesheet)
-        : base(surface, bounds)
+    public DirectImage(BackbufferBase buffer, Rectangle bounds, Tilesheet tilesheet)
+        : base(buffer, bounds)
     {
         if (tilesheet == null)
         {
@@ -23,7 +23,7 @@ public class DirectImage : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = _surface.Backbuffer.Canvas;
+        var canvas = Buffer.Canvas;
         var destRect = Bounds.ToSKRect();
 
         var bitmap = _tilesheet.SkBitmap;

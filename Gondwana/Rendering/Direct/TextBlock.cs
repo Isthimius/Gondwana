@@ -46,8 +46,8 @@ public class TextBlock : DirectDrawing
     private SKTextAlign _hAlign = SKTextAlign.Left;
     private VerticalAlign _vAlign = VerticalAlign.Top;
 
-    public TextBlock(VisibleSurfaceBase surface, Rectangle bounds)
-        : base(surface, bounds)
+    public TextBlock(BackbufferBase buffer, Rectangle bounds)
+        : base(buffer, bounds)
     {
     }
 
@@ -69,7 +69,7 @@ public class TextBlock : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = _surface.Backbuffer.Canvas;
+        var canvas = Buffer.Canvas;
         var rect = Bounds.ToSKRect();
 
         using var bg = new SKPaint { Color = _backColor };

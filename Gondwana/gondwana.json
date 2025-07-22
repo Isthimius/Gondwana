@@ -5,6 +5,6 @@
     "TimeBetweenKeyboardEvents": 0.03,
     "TimeBetweenGamepadEvents": 0.03,
     "VisibleSurfaceRefreshTimer": 1.5,
-    "UseGpuBackbuffer": true
+    "UseGpuBackbuffer": false
   }
 }

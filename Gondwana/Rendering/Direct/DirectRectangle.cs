@@ -52,10 +52,10 @@ public class DirectRectangle : DirectDrawing
     private StrokeAlign _strokeAlign = StrokeAlign.Center;
 
     public DirectRectangle(
-        VisibleSurfaceBase surface,
+        BackbufferBase buffer,
         Rectangle bounds,
         Color color)
-        : base(surface, bounds)
+        : base(buffer, bounds)
     {
         _paint = new SKPaint
         {
@@ -119,7 +119,7 @@ public class DirectRectangle : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = _surface.Backbuffer.Canvas;
+        var canvas = Buffer.Canvas;
         var rect = Bounds.ToSKRect();
 
         if (_strokeAlign != StrokeAlign.Center && !_isFilled)

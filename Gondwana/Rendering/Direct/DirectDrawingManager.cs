@@ -19,7 +19,7 @@ public static class DirectDrawingManager
 
         foreach (var drawing in _instances)
         {
-            if (!drawing.Bounds.IntersectsWith(drawing.Surface.Backbuffer.DirtyRectangle))
+            if (!drawing.Bounds.IntersectsWith(drawing.Buffer.DirtyRectangle))
                 continue;
 
             if (drawing._dirty)

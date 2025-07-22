@@ -7,7 +7,7 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 {
     public event EventHandler<DirectDrawing> Disposing;
 
-    protected readonly VisibleSurfaceBase _surface;
+    protected readonly BackbufferBase _buffer;
     protected Rectangle _bounds;
     protected int _zOrder;
     internal Movement? _movement;
@@ -16,10 +16,10 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     protected internal abstract void Render();
 
-    protected DirectDrawing(VisibleSurfaceBase surface, Rectangle bounds)
+    protected DirectDrawing(BackbufferBase buffer, Rectangle bounds)
     {
         DirectDrawingManager.Add(this);
-        _surface = surface;
+        _buffer = buffer;
         _bounds = bounds;
         _zOrder = 0;
         Name = Guid.NewGuid().ToString();
@@ -28,7 +28,7 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     ~DirectDrawing() => Dispose(false);
 
-    public VisibleSurfaceBase Surface => _surface;
+    public BackbufferBase Buffer => _buffer;
 
     public Rectangle Bounds
     {
@@ -133,7 +133,6 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
     {
         internal DirectDrawing? parent;
         private readonly long startTick;
-        private long lastTick;
         private readonly long totalTicks;
         private readonly Rectangle startBounds;
         private readonly Rectangle destBounds;
@@ -142,7 +141,6 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
         {
             parent = drawing;
             startTick = HighResTimer.GetCurrentTick();
-            lastTick = startTick;
             totalTicks = (long)(totalTime * HighResTimer.TicksPerSecond);
             startBounds = parent.Bounds;
             destBounds = dest;
@@ -167,7 +165,6 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
             int newHeight = startBounds.Height + (int)((destBounds.Height - startBounds.Height) * percent);
 
             parent!.Bounds = new Rectangle(newX, newY, newWidth, newHeight);
-            lastTick = tick;
             return false;
         }
 
