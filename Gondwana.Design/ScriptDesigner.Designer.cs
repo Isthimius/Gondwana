@@ -66,13 +66,21 @@
             this.imgListIcons = new System.Windows.Forms.ImageList(this.components);
             this.splitUD = new System.Windows.Forms.SplitContainer();
             this.fswAssets = new System.IO.FileSystemWatcher();
+            // TODO MainMenu is no longer supported. Use MenuStrip instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menu = new System.Windows.Forms.MainMenu(this.components);
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuFile = new System.Windows.Forms.MenuItem();
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuSave = new System.Windows.Forms.MenuItem();
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuSaveAs = new System.Windows.Forms.MenuItem();
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuOpen = new System.Windows.Forms.MenuItem();
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuNew = new System.Windows.Forms.MenuItem();
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuItem6 = new System.Windows.Forms.MenuItem();
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuExit = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitLR)).BeginInit();
             this.splitLR.Panel1.SuspendLayout();
@@ -246,12 +254,14 @@
             // 
             // menu
             // 
-            this.menu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
+                                                this.menu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuFile});
             // 
             // menuFile
             // 
             this.menuFile.Index = 0;
+            // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             this.menuFile.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuSave,
             this.menuSaveAs,
@@ -324,13 +334,21 @@
         private System.Windows.Forms.ImageList imgListIcons;
         private System.IO.FileSystemWatcher fswAssets;
         internal System.Windows.Forms.TreeView treeSelect;
+        // TODO MainMenu is no longer supported. Use MenuStrip instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MainMenu menu;
+        // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MenuItem menuFile;
+        // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MenuItem menuSave;
+        // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MenuItem menuSaveAs;
+        // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MenuItem menuOpen;
+        // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MenuItem menuNew;
+        // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MenuItem menuItem6;
+        // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
         private System.Windows.Forms.MenuItem menuExit;
 
     }
