@@ -8,9 +8,9 @@ namespace Gondwana.Rendering;
 public abstract class BackbufferBase : IDisposable
 {
     protected readonly Rectangle _range;
-    protected GridPointMatrixes _drawSource;
+    protected GridPointMatrixes? _drawSource;
 
-    public BackbufferBase(int width, int height, GridPointMatrixes drawSource)
+    protected BackbufferBase(int width, int height, GridPointMatrixes drawSource)
     { 
         _range = new Rectangle(0, 0, width, height);
         DrawSource = drawSource;

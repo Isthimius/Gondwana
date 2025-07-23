@@ -140,11 +140,6 @@ public sealed class Engine : IDisposable
     {
         IsRunning = false;
     }
-
-    public void ResetTotalTimeRunning()
-    {
-        _startTick = HighResTimer.GetCurrentTick();
-    }
     #endregion
 
     #region public properties
@@ -153,6 +148,10 @@ public sealed class Engine : IDisposable
     public bool IsInitializing => _isInitializing;
 
     public bool IsRunning { get; private set; }
+
+    public int BufferWidth { get; set; } = 0;
+
+    public int BufferHeight { get; set; } = 0;
 
     public double TotalSecondsEngineRunning
     {
@@ -286,11 +285,9 @@ public sealed class Engine : IDisposable
         if (BeforeEngineCycle != null)
             BeforeEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
-        // TODO: how to trigger rendering? hook into BeforeEngineCycle event? new Event?
-
         // render to each VisibleSurface
-        //foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
-        //    surface.RenderBackbuffer(surface.RedrawDirtyRectangleOnly);
+        foreach (var surface in VisibleSurface._allVisibleSurfaces)
+            surface.RenderBackbuffer();
 
         // poll state of gamepad(s)
         GamepadManager?.Update();
@@ -310,7 +307,7 @@ public sealed class Engine : IDisposable
 
     private void DrawRefreshQueues()
     {
-        foreach (var surface in VisibleSurfaceBase._allVisibleSurfaces)
+        foreach (var surface in VisibleSurface._allVisibleSurfaces)
         {
             var backbuffer = surface.Backbuffer;
             GridPointMatrixes grids = backbuffer.DrawSource;

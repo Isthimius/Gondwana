@@ -57,7 +57,7 @@ namespace Slider
 
             //surface = new VisibleSurface(size.Width, size.Height, matrixes);
             surface = new VisibleSurface(size.Width, size.Height);
-            surface.Erase();
+            surface.Backbuffer.Erase();
 
             InitializeSprites(tileWidth, tileHeight);
             slideSound = SoundResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");

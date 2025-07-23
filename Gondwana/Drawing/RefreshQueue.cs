@@ -50,8 +50,9 @@ public class RefreshQueue : IDisposable
     #region public methods
     public void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherMatrixes)
     {
+        // TODO: track and present MaxSurfaceSize from VisibleSurface
         // limit refresh range to screen resolution
-        pixelRange.Intersect(VisibleSurfaces.MaxSurfaceSize);
+        //pixelRange.Intersect(VisibleSurface._allVisibleSurfaces.MaxSurfaceSize);
 
         // cascade to other refresh queues if required
         if (cascadeToOtherMatrixes)

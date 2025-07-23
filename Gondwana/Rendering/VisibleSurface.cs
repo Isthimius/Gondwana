@@ -1,68 +1,113 @@
-using Gondwana.Grid;
-using SkiaSharp;
+﻿using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.Rendering;
 
-public class VisibleSurface : VisibleSurfaceBase
+public sealed class VisibleSurface : IDisposable
 {
-    private Action RenderFromBackbuffer = () => { };
+    internal static List<VisibleSurface> _allVisibleSurfaces { get; } = new();
+
+    public static IReadOnlyList<VisibleSurface> AllVisibleSurfaces => _allVisibleSurfaces.AsReadOnly();
 
     public event EventHandler<VisibleSurfaceBindEventArgs>? VisibleSurfaceBind;
 
     public VisibleSurface(int width, int height)
-        : base(width, height)
     {
-        RedrawDirtyRectangleOnly = true;
+        Width = width;
+        Height = height;
+        _allVisibleSurfaces.Add(this);
     }
 
-    public override bool RedrawDirtyRectangleOnly
+    public BackbufferBase? Backbuffer { get; private set; }
+
+    public int Height { get; private set; }
+    public int Width { get; private set; }
+
+    private Action RenderFromBackbuffer = () => { };
+    private bool _redrawDirtyRectangleOnly = true;
+
+    public VisibleSurfaceRenderAdapter? Renderer { get; set; } = null;
+
+    public bool RedrawDirtyRectangleOnly
     {
-        get => base.RedrawDirtyRectangleOnly;
-        protected internal set
+        get => _redrawDirtyRectangleOnly;
+        set
         {
-            base.RedrawDirtyRectangleOnly = value;
+            _redrawDirtyRectangleOnly = value;
             RenderFromBackbuffer = value ? RenderBackbufferRect : RenderBackbufferAll;
-            Backbuffer.DirtyRectangle = new System.Drawing.Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+
+            if (Backbuffer is not null)
+                Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
         }
     }
 
-    public override void Erase()
-    {
-        Backbuffer.Erase();
-    }
-
-    public override void Bind(BackbufferBase backbuffer)
-    {
-        var oldBind = Backbuffer;
-        Backbuffer = backbuffer;
-
-        VisibleSurfaceBind?.Invoke(this, new VisibleSurfaceBindEventArgs(this, oldBind, backbuffer));
-    }
-
-    public override void RenderBackbuffer(bool resetDirtyRegion = true)
+    public void RenderBackbuffer()
     {
         RenderFromBackbuffer();
 
-        if (resetDirtyRegion)
+        if (Backbuffer is not null)
+            Backbuffer.DirtyRectangle = Rectangle.Empty;
+    }
+
+    public void Bind(BackbufferBase buffer)
+    {
+        var oldBuffer = Backbuffer;
+        Backbuffer = buffer;
+
+        VisibleSurfaceBind?.Invoke(this, new VisibleSurfaceBindEventArgs(oldBuffer, buffer));
+    }
+
+    #region IDisposable
+    private bool _disposed;
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public void Dispose(bool disposing)
+    {
+        if (!_disposed)
         {
-            Backbuffer.DirtyRectangle = System.Drawing.Rectangle.Empty;
+            if (disposing)
+            {
+                // Dispose managed resources
+                Backbuffer?.Dispose();
+                _allVisibleSurfaces.Remove(this);
+            }
+
+            _disposed = true;
         }
     }
 
+    ~VisibleSurface()
+    {
+        Dispose(false);
+    }
+    #endregion
+
+    #region private methods
     private void RenderBackbufferAll()
     {
-        using var snapshot = Backbuffer.Snapshot();
-        Canvas.DrawImage(snapshot, new SKPoint(0, 0));
+        if (Renderer != null)
+        {
+            using var snapshot = Backbuffer?.Snapshot();
+            Renderer.Render(snapshot!, new SKRectI(0, 0, Backbuffer?.Width ?? 0, Backbuffer?.Height ?? 0));
+        }
     }
 
     private void RenderBackbufferRect()
     {
-        var dirty = Backbuffer.DirtyRectangle;
+        var dirty = Backbuffer?.DirtyRectangle ?? Rectangle.Empty;
         if (dirty.IsEmpty)
             return;
 
-        using var snapshot = Backbuffer.Snapshot();
-        var skRect = dirty.ToSKRect();
-        Canvas.DrawImage(snapshot, skRect, skRect);
+        if (Renderer != null)
+        {
+            using var snapshot = Backbuffer?.Snapshot();
+            Renderer.Render(snapshot!, dirty.ToSKRectI());
+        }
     }
+    #endregion
 }

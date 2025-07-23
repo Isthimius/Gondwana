@@ -2,17 +2,12 @@
 
 public class VisibleSurfaceBindEventArgs : EventArgs
 {
-    public VisibleSurfaceBase Surface { get; }
-    public BackbufferBase OldBindValue { get; }
-    public BackbufferBase NewBindValue { get; }
+    public BackbufferBase? OldBackbuffer { get; }
+    public BackbufferBase? NewBackbuffer { get; }
 
-    public VisibleSurfaceBindEventArgs(
-        VisibleSurfaceBase surface,
-        BackbufferBase oldBind,
-        BackbufferBase newBind)
+    public VisibleSurfaceBindEventArgs(BackbufferBase? oldBuffer, BackbufferBase? newBuffer)
     {
-        Surface = surface;
-        OldBindValue = oldBind;
-        NewBindValue = newBind;
+        OldBackbuffer = oldBuffer;
+        NewBackbuffer = newBuffer;
     }
 }
