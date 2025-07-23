@@ -10,7 +10,7 @@ namespace Gondwana.Drawing;
 /// </summary>
 public sealed class Tilesheet : IDisposable
 {
-    public event TilesheetDisposedHandler? Disposed;
+    public event EventHandler<TilesheetDisposedEventArgs> Disposed;
 
     [JsonInclude] public int InitialOffsetX;
     [JsonInclude] public int InitialOffsetY;
@@ -143,7 +143,7 @@ public sealed class Tilesheet : IDisposable
         Tilesheet._tilesheets.Remove(_name);
         RecalcMaxOverlapRatio();
         _skBitmap.Dispose();
-        Disposed?.Invoke(new TilesheetDisposedEventArgs(this));
+        Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
     }
 
     internal static Dictionary<string, Tilesheet> _tilesheets = new();

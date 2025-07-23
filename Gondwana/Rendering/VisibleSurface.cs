@@ -12,22 +12,8 @@ public class VisibleSurface : VisibleSurfaceBase
     public VisibleSurface(int width, int height)
         : base(width, height)
     {
-        Surface = SKSurface.Create(new SKImageInfo(width, height));
-        Canvas = Surface.Canvas;
-
-        Backbuffer = BackbufferFactory.Create(width, height);
         RedrawDirtyRectangleOnly = true;
     }
-
-    /// <summary>
-    /// Backing surface for visible rendering target.
-    /// </summary>
-    public SKSurface Surface { get; }
-
-    /// <summary>
-    /// Render target canvas exposed for external drawing.
-    /// </summary>
-    public SKCanvas Canvas { get; }
 
     public override bool RedrawDirtyRectangleOnly
     {
@@ -45,12 +31,12 @@ public class VisibleSurface : VisibleSurfaceBase
         Backbuffer.Erase();
     }
 
-    public override void Bind(GridPointMatrixes layers)
+    public override void Bind(BackbufferBase backbuffer)
     {
-        var oldBind = Backbuffer.DrawSource;
-        Backbuffer.DrawSource = layers;
+        var oldBind = Backbuffer;
+        Backbuffer = backbuffer;
 
-        VisibleSurfaceBind?.Invoke(this, new VisibleSurfaceBindEventArgs(this, oldBind, layers));
+        VisibleSurfaceBind?.Invoke(this, new VisibleSurfaceBindEventArgs(this, oldBind, backbuffer));
     }
 
     public override void RenderBackbuffer(bool resetDirtyRegion = true)

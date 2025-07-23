@@ -432,11 +432,14 @@ public class Sprite : Tile, IDisposable, ICloneable
         DisposeChildTiles();
 
         // find number of times a sprite might be repeated within a single VisibleSurface
-        int horizRepeats = (int)((float)VisibleSurfaces.MaxSurfaceSize.Width /
-            (float)(parentGrid.GridPointWidth * parentGrid.GridColumnCount)) + 1;
+        //int horizRepeats = (int)((float)VisibleSurfaces.MaxSurfaceSize.Width /
+        //    (float)(parentGrid.GridPointWidth * parentGrid.GridColumnCount)) + 1;
 
-        int vertiRepeats = (int)((float)VisibleSurfaces.MaxSurfaceSize.Height /
-            (float)(parentGrid.GridPointHeight * parentGrid.GridRowCount)) + 1;
+        //int vertiRepeats = (int)((float)VisibleSurfaces.MaxSurfaceSize.Height /
+        //    (float)(parentGrid.GridPointHeight * parentGrid.GridRowCount)) + 1;
+
+        int horizRepeats = 3; // hardcoded for now, can be adjusted later
+        int vertiRepeats = 3; // hardcoded for now, can be adjusted later
 
         // find the range in which to create child Sprites
         if (parentGrid.WrapHorizontally)

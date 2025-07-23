@@ -1,17 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Gondwana.Grid;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering;
 
 public static class BackbufferFactory
 {
-    public static BackbufferBase Create(int width, int height)
+    public static BackbufferBase Create(int width, int height, GridPointMatrixes drawSource)
     {
         if (Engine.Instance.Configuration.UseGpuBackbuffer)
         {
             try
             {
-                return new GpuBackbuffer(width, height);
+                return new GpuBackbuffer(width, height, drawSource);
             }
             catch (Exception ex)
             {
@@ -19,6 +20,6 @@ public static class BackbufferFactory
             }
         }
 
-        return new BitmapBackbuffer(width, height);
+        return new BitmapBackbuffer(width, height, drawSource);
     }
 }

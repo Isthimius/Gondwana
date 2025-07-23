@@ -8,9 +8,13 @@ namespace Gondwana.Rendering;
 public abstract class BackbufferBase : IDisposable
 {
     protected readonly Rectangle _range;
-    protected GridPointMatrixes? _source;
+    protected GridPointMatrixes _drawSource;
 
-    public BackbufferBase(int width, int height) => _range = new Rectangle(0, 0, width, height);
+    public BackbufferBase(int width, int height, GridPointMatrixes drawSource)
+    { 
+        _range = new Rectangle(0, 0, width, height);
+        DrawSource = drawSource;
+    }
 
     public abstract SKCanvas Canvas { get; }
     public abstract SKImage Snapshot();
@@ -24,18 +28,18 @@ public abstract class BackbufferBase : IDisposable
 
     public GridPointMatrixes DrawSource
     {
-        get => _source!;
+        get => _drawSource!;
         set
         {
-            if (_source != null)
-                _source.Disposing -= OnSourceDisposing;
+            if (_drawSource != null)
+                _drawSource.Disposing -= OnSourceDisposing;
 
-            _source = value;
+            _drawSource = value;
 
-            if (_source != null)
+            if (_drawSource != null)
             {
-                _source.Disposing += OnSourceDisposing;
-                _source.RefreshNeeded = MatrixesRefreshType.All;
+                _drawSource.Disposing += OnSourceDisposing;
+                _drawSource.RefreshNeeded = MatrixesRefreshType.All;
             }
         }
     }
@@ -89,7 +93,7 @@ public abstract class BackbufferBase : IDisposable
             : Rectangle.Union(DirtyRectangle, area);
     }
 
-    protected void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => _source = null;
+    protected void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => _drawSource = null;
 
     public virtual void SaveToFile(string filePath, SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {

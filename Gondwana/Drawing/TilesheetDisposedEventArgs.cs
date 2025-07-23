@@ -1,7 +1,5 @@
 ﻿namespace Gondwana.Drawing;
 
-public delegate void TilesheetDisposedHandler(TilesheetDisposedEventArgs e);
-
 public class TilesheetDisposedEventArgs : EventArgs
 {
     public Tilesheet Tilesheet;

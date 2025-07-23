@@ -96,7 +96,6 @@ public sealed class Engine : IDisposable
             }
         }
 
-        VisibleSurfaces.ForcedRefreshRate = Configuration.VisibleSurfaceRefreshTimer;
         GamepadManager = gamepadManager;
 
         PostInitialization?.Invoke(this, EventArgs.Empty);
@@ -247,14 +246,16 @@ public sealed class Engine : IDisposable
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
 
         // check for keyboard events
-        //KeyboardEventPoller.Instance?.PollForEvents(tick);
+        KeyboardEventPoller.Instance?.PollForEvents(tick);
 
         // check for gamepad events
-        //GamepadManagerEventPoller.Instance?.PollForEvents(tick);
+        GamepadManagerEventPoller.Instance?.PollForEvents(tick);
 
         // perform any timed GridPointMatrix scrolling
         foreach (GridPointMatrix matrix in GridPointMatrix.GetAllGridPointMatrix())
             matrix.MoveNext(tick);
+
+        // TODO: re-enable this... also, should be before or after other Tile animations? assuming before, since that worked before...
 
         // perform any timed DirectDrawing scrolling
         //foreach (DirectDrawing drawing in DirectDrawingManager._instances)
@@ -270,10 +271,10 @@ public sealed class Engine : IDisposable
         RaiseCollisionEvent(tick);
 
         // refresh all VisibleSurface backbuffers
-        //DrawRefreshQueues();
+        DrawRefreshQueues();
 
         // all attached VisibleSurface backbuffers drawn; clear the refresh queues
-        //ClearRefreshQueues();
+        ClearRefreshQueues();
 
         if (AfterBackgroundTasksExecute != null)
             AfterBackgroundTasksExecute();
@@ -285,9 +286,11 @@ public sealed class Engine : IDisposable
         if (BeforeEngineCycle != null)
             BeforeEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
+        // TODO: how to trigger rendering? hook into BeforeEngineCycle event? new Event?
+
         // render to each VisibleSurface
-        foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
-            surface.RenderBackbuffer(surface.RedrawDirtyRectangleOnly);
+        //foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
+        //    surface.RenderBackbuffer(surface.RedrawDirtyRectangleOnly);
 
         // poll state of gamepad(s)
         GamepadManager?.Update();
@@ -307,13 +310,14 @@ public sealed class Engine : IDisposable
 
     private void DrawRefreshQueues()
     {
-        foreach (VisibleSurfaceBase surface in VisibleSurfaces.AllVisibleSurfaces)
+        foreach (var surface in VisibleSurfaceBase._allVisibleSurfaces)
         {
             var backbuffer = surface.Backbuffer;
             GridPointMatrixes grids = backbuffer.DrawSource;
 
             if (grids == null || grids.Count == 0)
             {
+                // TODO: do we need to this, really?
                 // clear the entire backbuffer each pass
                 backbuffer.Erase();
 
