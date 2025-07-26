@@ -363,7 +363,7 @@ public sealed class Engine : IDisposable
 
                             // find and add all Tile objects in range to queue
                             grids.VisibleGridPointMatrixList[i].RefreshQueue.AddPixelRangeToRefreshQueue(
-                                new Rectangle(0, 0, surface.Width, surface.Height), false);
+                                new Rectangle(0, 0, surface.Renderer.DestWidth, surface.Renderer.DestHeight), false);
 
                             // draw to backbuffer
                             surface.Backbuffer.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);

@@ -11,39 +11,24 @@ public sealed class VisibleSurface : IDisposable
 
     public event EventHandler<VisibleSurfaceBindEventArgs>? VisibleSurfaceBind;
 
-    public VisibleSurface(int width, int height)
+    public VisibleSurface(VisibleSurfaceRenderAdapter visibleSurfaceRenderAdapter)
     {
-        Width = width;
-        Height = height;
+        Renderer = visibleSurfaceRenderAdapter;
         _allVisibleSurfaces.Add(this);
     }
 
     public BackbufferBase? Backbuffer { get; private set; }
 
-    public int Height { get; private set; }
-    public int Width { get; private set; }
+    public VisibleSurfaceRenderAdapter? Renderer { get; private set; } = null;
 
-    private Action RenderFromBackbuffer = () => { };
-    private bool _redrawDirtyRectangleOnly = true;
-
-    public VisibleSurfaceRenderAdapter? Renderer { get; set; } = null;
-
-    public bool RedrawDirtyRectangleOnly
-    {
-        get => _redrawDirtyRectangleOnly;
-        set
-        {
-            _redrawDirtyRectangleOnly = value;
-            RenderFromBackbuffer = value ? RenderBackbufferRect : RenderBackbufferAll;
-
-            if (Backbuffer is not null)
-                Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
-        }
-    }
+    public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
     public void RenderBackbuffer()
     {
-        RenderFromBackbuffer();
+        if (RedrawDirtyRectangleOnly)
+            RenderBackbufferRect();
+        else
+            RenderBackbufferAll();
 
         if (Backbuffer is not null)
             Backbuffer.DirtyRectangle = Rectangle.Empty;
