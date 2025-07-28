@@ -1,5 +1,6 @@
 ﻿using SkiaSharp;
 using System.Drawing;
+using System.Timers;
 
 namespace Gondwana.Rendering;
 
@@ -13,8 +14,9 @@ public sealed class VisibleSurface : IDisposable
 
     public VisibleSurface(VisibleSurfaceRenderAdapter visibleSurfaceRenderAdapter)
     {
-        Renderer = visibleSurfaceRenderAdapter;
         _allVisibleSurfaces.Add(this);
+
+        Renderer = visibleSurfaceRenderAdapter;
     }
 
     public BackbufferBase? Backbuffer { get; private set; }
@@ -57,7 +59,7 @@ public sealed class VisibleSurface : IDisposable
         {
             if (disposing)
             {
-                // Dispose managed resources
+                // managed resources
                 Backbuffer?.Dispose();
                 _allVisibleSurfaces.Remove(this);
             }

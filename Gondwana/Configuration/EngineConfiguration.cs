@@ -57,14 +57,6 @@ public partial class EngineConfiguration
     public double TimeBetweenGamepadEvents { get; set; } = 0.03;
 
     /// <summary>
-    /// Time in seconds of forced refresh of entire area of all VisibleSurface instances.
-    /// Use this to force a full redraw of all visible surfaces, such as when the game window is resized,
-    /// or is partially obscured by another window.
-    /// Default is 1.5 seconds.
-    /// </summary>
-    public double VisibleSurfaceRefreshTimer { get; set; } = 1.5;
-
-    /// <summary>
     /// Gets or sets a value indicating whether the GPU backbuffer is used for rendering.
     /// </summary>
     public bool UseGpuBackbuffer { get; set; } = false;

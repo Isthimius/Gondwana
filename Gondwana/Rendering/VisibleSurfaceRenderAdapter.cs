@@ -4,10 +4,15 @@ namespace Gondwana.Rendering;
 
 public abstract class VisibleSurfaceRenderAdapter
 {
-    public readonly int DestWidth;
-    public readonly int DestHeight;
+    public int DestWidth { get; protected set; }
+    public int DestHeight { get; protected set; }
 
     protected VisibleSurfaceRenderAdapter(int destWidth, int destHeight)
+    {
+        SetDestinationSize(destWidth, destHeight);
+    }
+
+    protected void SetDestinationSize(int destWidth, int destHeight)
     {
         DestWidth = destWidth;
         DestHeight = destHeight;
