@@ -13,7 +13,7 @@ public static class DirectDrawingManager
     public static DirectDrawing? GetDirectDrawing(string name) =>
         _instances.FirstOrDefault(d => d.Name == name);
 
-    public static void RenderAll()
+    internal static void RenderAll()
     {
         _instances.Sort();
 
