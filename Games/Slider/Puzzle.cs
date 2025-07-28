@@ -27,7 +27,7 @@ namespace Slider
         private Size adjustedSize;
         private Point openSpace;
 
-        private VisibleSurface surface;
+        private RenderSurfaceHost surface;
         private Tilesheet tilesheet;
         private GridPointMatrixes matrixes;
 

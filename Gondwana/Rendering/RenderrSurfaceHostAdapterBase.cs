@@ -2,12 +2,12 @@
 
 namespace Gondwana.Rendering;
 
-public abstract class VisibleSurfaceRenderAdapter
+public abstract class RenderrSurfaceHostAdapterBase
 {
     public int DestWidth { get; protected set; }
     public int DestHeight { get; protected set; }
 
-    protected VisibleSurfaceRenderAdapter(int destWidth, int destHeight)
+    protected RenderrSurfaceHostAdapterBase(int destWidth, int destHeight)
     {
         SetDestinationSize(destWidth, destHeight);
     }

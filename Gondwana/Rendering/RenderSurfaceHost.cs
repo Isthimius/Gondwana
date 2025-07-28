@@ -1,27 +1,26 @@
 ﻿using SkiaSharp;
 using System.Drawing;
-using System.Timers;
 
 namespace Gondwana.Rendering;
 
-public sealed class VisibleSurface : IDisposable
+public sealed class RenderSurfaceHost : IDisposable
 {
-    internal static List<VisibleSurface> _allVisibleSurfaces { get; } = new();
+    internal static List<RenderSurfaceHost> _allRenderSurfaceHosts { get; } = new();
 
-    public static IReadOnlyList<VisibleSurface> AllVisibleSurfaces => _allVisibleSurfaces.AsReadOnly();
+    public static IReadOnlyList<RenderSurfaceHost> AllRenderSurfaceHosts => _allRenderSurfaceHosts.AsReadOnly();
 
-    public event EventHandler<VisibleSurfaceBindEventArgs>? VisibleSurfaceBind;
+    public event EventHandler<RenderSurfaceHostBindEventArgs>? VisibleSurfaceBind;
 
-    public VisibleSurface(VisibleSurfaceRenderAdapter visibleSurfaceRenderAdapter)
+    public RenderSurfaceHost(RenderrSurfaceHostAdapterBase visibleSurfaceRenderAdapter)
     {
-        _allVisibleSurfaces.Add(this);
+        _allRenderSurfaceHosts.Add(this);
 
         Renderer = visibleSurfaceRenderAdapter;
     }
 
     public BackbufferBase? Backbuffer { get; private set; }
 
-    public VisibleSurfaceRenderAdapter? Renderer { get; private set; } = null;
+    public RenderrSurfaceHostAdapterBase? Renderer { get; private set; } = null;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
@@ -41,7 +40,7 @@ public sealed class VisibleSurface : IDisposable
         var oldBuffer = Backbuffer;
         Backbuffer = buffer;
 
-        VisibleSurfaceBind?.Invoke(this, new VisibleSurfaceBindEventArgs(oldBuffer, buffer));
+        VisibleSurfaceBind?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldBuffer, buffer));
     }
 
     #region IDisposable
@@ -61,14 +60,14 @@ public sealed class VisibleSurface : IDisposable
             {
                 // managed resources
                 Backbuffer?.Dispose();
-                _allVisibleSurfaces.Remove(this);
+                _allRenderSurfaceHosts.Remove(this);
             }
 
             _disposed = true;
         }
     }
 
-    ~VisibleSurface()
+    ~RenderSurfaceHost()
     {
         Dispose(false);
     }
@@ -77,10 +76,10 @@ public sealed class VisibleSurface : IDisposable
     #region private methods
     private void RenderBackbufferAll()
     {
-        if (Renderer != null)
+        if (Renderer != null && Backbuffer is not null)
         {
-            using var snapshot = Backbuffer?.Snapshot();
-            Renderer.Render(snapshot!, new SKRectI(0, 0, Backbuffer?.Width ?? 0, Backbuffer?.Height ?? 0));
+            using var snapshot = Backbuffer.Snapshot();
+            Renderer.Render(snapshot, new SKRectI(0, 0, Backbuffer?.Width ?? 0, Backbuffer?.Height ?? 0));
         }
     }
 
@@ -90,10 +89,10 @@ public sealed class VisibleSurface : IDisposable
         if (dirty.IsEmpty)
             return;
 
-        if (Renderer != null)
+        if (Renderer != null && Backbuffer is not null)
         {
-            using var snapshot = Backbuffer?.Snapshot();
-            Renderer.Render(snapshot!, dirty.ToSKRectI());
+            using var snapshot = Backbuffer.Snapshot();
+            Renderer.Render(snapshot, dirty.ToSKRectI());
         }
     }
     #endregion

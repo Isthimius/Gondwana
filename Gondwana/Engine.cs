@@ -286,7 +286,7 @@ public sealed class Engine : IDisposable
             BeforeEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // render to each VisibleSurface
-        foreach (var surface in VisibleSurface._allVisibleSurfaces)
+        foreach (var surface in RenderSurfaceHost._allRenderSurfaceHosts)
             surface.RenderBackbuffer();
 
         // poll state of gamepad(s)
@@ -307,7 +307,7 @@ public sealed class Engine : IDisposable
 
     private void DrawRefreshQueues()
     {
-        foreach (var surface in VisibleSurface._allVisibleSurfaces)
+        foreach (var surface in RenderSurfaceHost._allRenderSurfaceHosts)
         {
             var backbuffer = surface.Backbuffer;
             GridPointMatrixes grids = backbuffer.DrawSource;
