@@ -22,7 +22,9 @@ public abstract class BackbufferBase : IDisposable
     protected BackbufferBase(int width, int height, GridPointMatrixes? drawSource = null)
     { 
         _range = new Rectangle(0, 0, width, height);
-        DrawSource = drawSource;
+
+        if (drawSource != null)
+            Bind(drawSource);
 
         _allBackbuffers.Add(this);
     }
@@ -38,7 +40,7 @@ public abstract class BackbufferBase : IDisposable
     public Rectangle DirtyRectangle { get; set; } = Rectangle.Empty;
     public SKColor ClearColor { get; set; } = SKColors.Black;
 
-    public GridPointMatrixes? DrawSource { get; private set; }
+    public GridPointMatrixes? DrawSource { get; private set; } = null;
 
     public void Bind(GridPointMatrixes drawSource)
     {
