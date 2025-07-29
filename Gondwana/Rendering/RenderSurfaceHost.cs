@@ -9,38 +9,40 @@ public sealed class RenderSurfaceHost : IDisposable
 
     public static IReadOnlyList<RenderSurfaceHost> AllRenderSurfaceHosts => _allRenderSurfaceHosts.AsReadOnly();
 
-    public event EventHandler<RenderSurfaceHostBindEventArgs>? VisibleSurfaceBind;
+    public event EventHandler<RenderSurfaceHostBindEventArgs>? RenderSurfaceHostBind;
 
-    public RenderSurfaceHost(RenderSurfaceAdapterBase visibleSurfaceRenderAdapter)
+    private RenderSurfaceHost() { }
+
+    public RenderSurfaceHost(RenderSurfaceAdapterBase visibleSurfaceRenderAdapter, BackbufferBase? backbuffer = null)
     {
         _allRenderSurfaceHosts.Add(this);
 
         Renderer = visibleSurfaceRenderAdapter;
+
+        if (backbuffer != null)
+            Bind(backbuffer);
     }
 
-    public BackbufferBase? Backbuffer { get; private set; }
+    public void Bind(BackbufferBase? buffer)
+    {
+        var oldBuffer = Backbuffer;
+        Backbuffer = buffer;
+
+        RenderSurfaceHostBind?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldBuffer, buffer));
+    }
+
+    public BackbufferBase? Backbuffer { get; private set; } = null;
 
     public RenderSurfaceAdapterBase? Renderer { get; private set; } = null;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
-    public void RenderBackbuffer()
+    internal void RenderBackbuffer()
     {
         if (RedrawDirtyRectangleOnly)
             RenderBackbufferRect();
         else
             RenderBackbufferAll();
-
-        if (Backbuffer is not null)
-            Backbuffer.DirtyRectangle = Rectangle.Empty;
-    }
-
-    public void Bind(BackbufferBase buffer)
-    {
-        var oldBuffer = Backbuffer;
-        Backbuffer = buffer;
-
-        VisibleSurfaceBind?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldBuffer, buffer));
     }
 
     #region IDisposable
@@ -59,7 +61,7 @@ public sealed class RenderSurfaceHost : IDisposable
             if (disposing)
             {
                 // managed resources
-                Backbuffer?.Dispose();
+                Backbuffer = null;
                 _allRenderSurfaceHosts.Remove(this);
             }
 

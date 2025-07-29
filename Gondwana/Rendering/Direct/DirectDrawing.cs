@@ -55,7 +55,7 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     public bool IsScrolling => _movement != null;
 
-    public void ScrollSourceGridPoint(double totalTime, Rectangle destBounds)
+    public void ScrollToSourceGridPoint(double totalTime, Rectangle destBounds)
     {
         _movement?.Reset();
         _movement = new Movement(this, totalTime, destBounds);
@@ -67,13 +67,13 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
         _movement = null;
     }
 
-    public void MoveNext(long tick)
+    internal void MoveNext(long tick)
     {
         if (_movement?.MoveNext(tick) == true)
             _movement = null;
     }
 
-    public void ForceRefresh()
+    internal void ForceRefresh()
     {
         //var matrixes = _surface.Buffer.DrawSource;
         //if (matrixes?.Count > 0)

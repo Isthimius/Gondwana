@@ -285,9 +285,12 @@ public sealed class Engine : IDisposable
         if (BeforeEngineCycle != null)
             BeforeEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
-        // render to each VisibleSurface
+        // render to each RenderSurfaceHost
         foreach (var surface in RenderSurfaceHost._allRenderSurfaceHosts)
             surface.RenderBackbuffer();
+
+        // all RenderSurfaceHost backbuffers rendered; clear the dirty rectangles
+        BackbufferBase._resetAllDirtyRectangles();
 
         // poll state of gamepad(s)
         GamepadManager?.Update();

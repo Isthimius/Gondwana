@@ -7,13 +7,24 @@ namespace Gondwana.Rendering;
 
 public abstract class BackbufferBase : IDisposable
 {
-    protected readonly Rectangle _range;
-    protected GridPointMatrixes? _drawSource;
+    internal static List<BackbufferBase> _allBackbuffers { get; } = new();
 
-    protected BackbufferBase(int width, int height, GridPointMatrixes drawSource)
+    internal static void _resetAllDirtyRectangles()
+    {
+        foreach (var backbuffer in _allBackbuffers)
+        {
+            backbuffer.DirtyRectangle = Rectangle.Empty;
+        }
+    }
+
+    protected readonly Rectangle _range;
+
+    protected BackbufferBase(int width, int height, GridPointMatrixes? drawSource = null)
     { 
         _range = new Rectangle(0, 0, width, height);
         DrawSource = drawSource;
+
+        _allBackbuffers.Add(this);
     }
 
     public abstract SKCanvas Canvas { get; }
@@ -27,25 +38,23 @@ public abstract class BackbufferBase : IDisposable
     public Rectangle DirtyRectangle { get; set; } = Rectangle.Empty;
     public SKColor ClearColor { get; set; } = SKColors.Black;
 
-    public GridPointMatrixes DrawSource
+    public GridPointMatrixes? DrawSource { get; private set; }
+
+    public void Bind(GridPointMatrixes drawSource)
     {
-        get => _drawSource!;
-        set
+        if (DrawSource != null)
+            DrawSource.Disposing -= OnSourceDisposing;
+
+        DrawSource = drawSource;
+
+        if (DrawSource != null)
         {
-            if (_drawSource != null)
-                _drawSource.Disposing -= OnSourceDisposing;
-
-            _drawSource = value;
-
-            if (_drawSource != null)
-            {
-                _drawSource.Disposing += OnSourceDisposing;
-                _drawSource.RefreshNeeded = MatrixesRefreshType.All;
-            }
+            DrawSource.Disposing += OnSourceDisposing;
+            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
         }
     }
 
-    public void DrawTiles(IList<Tile> tiles)
+    internal void DrawTiles(IList<Tile> tiles)
     {
         foreach (var tile in tiles)
         {
@@ -94,7 +103,7 @@ public abstract class BackbufferBase : IDisposable
             : Rectangle.Union(DirtyRectangle, area);
     }
 
-    protected void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => _drawSource = null;
+    protected void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;
 
     public virtual void SaveToFile(string filePath, SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {
@@ -108,5 +117,7 @@ public abstract class BackbufferBase : IDisposable
     {
         FogPaint.Dispose();
         GridPaint.Dispose();
+
+        _allBackbuffers.Remove(this);
     }
 }
