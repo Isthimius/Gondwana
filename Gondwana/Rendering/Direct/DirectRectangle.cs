@@ -8,7 +8,7 @@ namespace Gondwana.Rendering.Direct;
 /// </summary>
 /// <remarks>The <see cref="DirectRectangle"/> class provides methods to configure various visual aspects of a
 /// rectangle, including its fill state, stroke width, corner radius, dash pattern, blend mode, and stroke alignment. It
-/// is designed to be used with a visible surface and can be rendered onto a canvas.</remarks>
+/// is designed to be used with a RenderSurfaceHost and can be rendered onto a canvas.</remarks>
 ///
 /// <example>
 /// 

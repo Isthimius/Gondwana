@@ -12,7 +12,7 @@ namespace Gondwana.Rendering.Direct;
 /// </remarks>
 /// <example>
 /// var block = new TextBlock(surface, new Rectangle(0, 0, 400, 200))
-///    .SetText("Gondwana welcomes you to the new frontier of rendering!")
+///    .SetText("Gondwana welcomes you to the new frontier of text rendering!")
 ///    .SetFont(typeface, 24f, minSize: 14f)
 ///    .SetColors(Color.White, Color.Navy)
 ///    .SetAlignment(SKTextAlign.Center, SKParagraphAlignment.Center)

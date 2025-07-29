@@ -25,6 +25,7 @@ public abstract class BackbufferBase : IDisposable
     public int Width => _range.Width;
     public int Height => _range.Height;
     public Rectangle DirtyRectangle { get; set; } = Rectangle.Empty;
+    public SKColor ClearColor { get; set; } = SKColors.Black;
 
     public GridPointMatrixes DrawSource
     {
@@ -72,7 +73,7 @@ public abstract class BackbufferBase : IDisposable
 
         Canvas.Save();
         Canvas.ClipRect(intersect.ToSKRect());
-        Canvas.Clear(SKColors.Black);
+        Canvas.Clear(ClearColor);
         Canvas.Restore();
 
         AddToDirtyRectangle(intersect);

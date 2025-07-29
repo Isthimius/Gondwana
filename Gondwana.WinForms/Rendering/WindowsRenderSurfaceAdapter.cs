@@ -3,14 +3,14 @@ using SkiaSharp.Views.Desktop;
 
 namespace Gondwana.Rendering
 {
-    public class WindowsVisibleSurfaceRenderAdapter : RenderrSurfaceHostAdapterBase, IDisposable
+    public class WindowsRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
     {
         private readonly SKControl _control;
         private SKImage? _currentImage;
         private SKRectI _sourceRect;
         private SKRect _destRect;
 
-        public WindowsVisibleSurfaceRenderAdapter(SKControl control)
+        public WindowsRenderSurfaceAdapter(SKControl control)
             : base(control.Width, control.Height)
         {
             _control = control;

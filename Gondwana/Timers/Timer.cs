@@ -4,7 +4,7 @@ namespace Gondwana.Timers;
 
 /// <summary>
 /// Represents a high-resolution timer that can trigger events at specified intervals and supports various timer types
-/// and cycles.
+/// and cycles. This class is designed to be used within the Gondwana engine.
 /// </summary>
 /// <remarks>The <see cref="Timer"/> class provides functionality for creating and managing timers that can
 /// trigger events based on a specified duration and cycle type. Timers can be paused, resumed, and disposed of when no

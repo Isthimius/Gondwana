@@ -14,9 +14,6 @@ public static class SkiaExtensions
     public static SKRectI ToSKRectI(this Rectangle rect)
         => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 
-    public static Rectangle ToRectangle(this SKRectI rect)
-        => new(rect.Left, rect.Top, (rect.Right - rect.Left), (rect.Bottom - rect.Top));
-
     public static SKPoint[] ToSKPoints(this Point[] points)
         => points.Select(p => new SKPoint(p.X, p.Y)).ToArray();
 }

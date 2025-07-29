@@ -11,7 +11,7 @@ public sealed class RenderSurfaceHost : IDisposable
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? VisibleSurfaceBind;
 
-    public RenderSurfaceHost(RenderrSurfaceHostAdapterBase visibleSurfaceRenderAdapter)
+    public RenderSurfaceHost(RenderSurfaceAdapterBase visibleSurfaceRenderAdapter)
     {
         _allRenderSurfaceHosts.Add(this);
 
@@ -20,7 +20,7 @@ public sealed class RenderSurfaceHost : IDisposable
 
     public BackbufferBase? Backbuffer { get; private set; }
 
-    public RenderrSurfaceHostAdapterBase? Renderer { get; private set; } = null;
+    public RenderSurfaceAdapterBase? Renderer { get; private set; } = null;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
