@@ -13,14 +13,10 @@ public sealed class RenderSurfaceHost : IDisposable
 
     private RenderSurfaceHost() { }
 
-    public RenderSurfaceHost(RenderSurfaceAdapterBase visibleSurfaceRenderAdapter, BackbufferBase? backbuffer = null)
+    public RenderSurfaceHost(RenderSurfaceAdapterBase visibleSurfaceRenderAdapter)
     {
         _allRenderSurfaceHosts.Add(this);
-
         Renderer = visibleSurfaceRenderAdapter;
-
-        if (backbuffer != null)
-            Bind(backbuffer);
     }
 
     public void Bind(BackbufferBase? buffer)
