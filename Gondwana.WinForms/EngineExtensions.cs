@@ -30,7 +30,6 @@ public static class EngineExtensions
             throw new ArgumentNullException(nameof(form));
         }
 
-        // TODO: make this KeyboardAdapter attachable to VisibleSurface
         KeyboardEventPoller.Initialize(new WinFormsKeyboardAdapter(form));
     }
 }

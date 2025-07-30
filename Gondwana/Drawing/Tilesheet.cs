@@ -1,7 +1,9 @@
-using Gondwana.Resource;
-using SkiaSharp;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.Text.Json.Serialization;
+using Gondwana.Rendering;
+using Gondwana.Resource;
+using SkiaSharp;
 
 namespace Gondwana.Drawing;
 
@@ -10,6 +12,8 @@ namespace Gondwana.Drawing;
 /// </summary>
 public sealed class Tilesheet : IDisposable
 {
+    private SKBitmap?[,]? _tileCache;
+
     public event EventHandler<TilesheetDisposedEventArgs> Disposed;
 
     [JsonInclude] public int InitialOffsetX;
@@ -65,6 +69,48 @@ public sealed class Tilesheet : IDisposable
         _skBitmap = SKBitmap.Decode(file);
         ImageFilePath = file;
         _tilesheets[_name] = this;
+
+        CacheTiles();
+    }
+
+    private void CacheTiles()
+    {
+        ClearCache();
+
+        int xTiles = (_skBitmap.Width - InitialOffsetX + XPixelsBetweenTiles) / (_tileSize.Width + XPixelsBetweenTiles);
+        int yTiles = (_skBitmap.Height - InitialOffsetY + YPixelsBetweenTiles) / (_tileSize.Height + YPixelsBetweenTiles);
+
+        _tileCache = new SKBitmap[xTiles, yTiles];
+
+        for (int y = 0; y < yTiles; y++)
+        {
+            for (int x = 0; x < xTiles; x++)
+            {
+                var srcRect = GetSourceRange(x, y);
+                if (!SkBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
+                    continue;
+
+                var subset = new SKBitmap(_tileSize.Width, _tileSize.Height);
+                if (SkBitmap.ExtractSubset(subset, srcRect.ToSKRectI()))
+                    _tileCache[x, y] = subset;
+            }
+        }
+    }
+
+    private void ClearCache()
+    {
+        if (_tileCache == null) return;
+
+        for (int y = 0; y < _tileCache.GetLength(1); y++)
+        {
+            for (int x = 0; x < _tileCache.GetLength(0); x++)
+            {
+                _tileCache[x, y]?.Dispose();
+                _tileCache[x, y] = null;
+            }
+        }
+
+        _tileCache = null;
     }
 
     [JsonIgnore]
@@ -89,6 +135,7 @@ public sealed class Tilesheet : IDisposable
         {
             _tileSize = value;
             RecalcMaxOverlapRatio();
+            CacheTiles();
         }
     }
 
@@ -100,38 +147,43 @@ public sealed class Tilesheet : IDisposable
         {
             _extraTopSpace = value;
             RecalcMaxOverlapRatio();
+            CacheTiles();
         }
     }
 
     [JsonIgnore] public int PrimaryHeight => _tileSize.Height - _extraTopSpace;
     [JsonIgnore] public float ExtraTopSpaceToPrimaryRatio => (float)_extraTopSpace / PrimaryHeight;
 
-    public Rectangle GetSourceRange(int xTile, int yTile)
+    private Rectangle GetSourceRange(int xTile, int yTile)
     {
         int x = (xTile * (_tileSize.Width + XPixelsBetweenTiles)) + InitialOffsetX;
         int y = (yTile * (_tileSize.Height + YPixelsBetweenTiles)) + InitialOffsetY;
         return new Rectangle(new Point(x, y), _tileSize);
     }
 
-    public List<Frame> GetFrames()
+    public SKBitmap? this[int x, int y]
     {
-        var frames = new List<Frame>();
-        int xTile = 0, yTile = 0;
-        var range = GetSourceRange(xTile, yTile);
-        int x = range.X, y = range.Y;
+        get => _tileCache?[x, y];
+    }
 
-        while (y < _skBitmap.Height)
+    public Dictionary<(int x, int y), SKBitmap> GetAllTiles()
+    {
+        if (_tileCache == null)
+            throw new InvalidOperationException("Tile cache has not been initialized.");
+
+        var frames = new Dictionary<(int x, int y), SKBitmap>();
+
+        int xTiles = _tileCache.GetLength(0);
+        int yTiles = _tileCache.GetLength(1);
+
+        for (int y = 0; y < yTiles; y++)
         {
-            while (x < _skBitmap.Width)
+            for (int x = 0; x < xTiles; x++)
             {
-                frames.Add(new Frame(this, xTile, yTile));
-                range = GetSourceRange(++xTile, yTile);
-                x = range.X;
+                var bmp = _tileCache[x, y];
+                if (bmp != null)
+                    frames[(x, y)] = bmp;
             }
-            xTile = 0;
-            range = GetSourceRange(xTile, ++yTile);
-            x = range.X;
-            y = range.Y;
         }
 
         return frames;
@@ -142,14 +194,16 @@ public sealed class Tilesheet : IDisposable
         GC.SuppressFinalize(this);
         Tilesheet._tilesheets.Remove(_name);
         RecalcMaxOverlapRatio();
+        ClearCache();
         _skBitmap.Dispose();
         Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
     }
 
+    #region static
     internal static Dictionary<string, Tilesheet> _tilesheets = new();
 
     public static int Count => _tilesheets.Count;
-    public static List<Tilesheet> AllTilesheets => _tilesheets.Values.ToList();
+    public static List<Tilesheet> GetAllTilesheets() => _tilesheets.Values.ToList();
     public static List<string> GetTilesheetKeys() => _tilesheets.Keys.ToList();
     public static Tilesheet? GetTilesheet(string name) => _tilesheets.TryGetValue(name, out var ts) ? ts : null;
 
@@ -171,4 +225,5 @@ public sealed class Tilesheet : IDisposable
     {
         MaxExtraTopSpaceRatio = _tilesheets.Values.Count == 0 ? 0 : _tilesheets.Values.Max(ts => ts.ExtraTopSpaceToPrimaryRatio);
     }
+    #endregion
 }

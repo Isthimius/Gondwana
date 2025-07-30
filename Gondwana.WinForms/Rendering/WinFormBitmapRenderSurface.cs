@@ -29,7 +29,8 @@ public partial class WinFormBitmapRenderSurface : Form
         RenderSurfaceHost = new RenderSurfaceHost(renderAdapter);
 
         // Create the Backbuffer
-        var buffer = new BitmapBackbuffer(skControl.Width, skControl.Height);
+        var screenBounds = Screen.FromControl(this).Bounds;
+        var buffer = new BitmapBackbuffer(screenBounds.Width, screenBounds.Height);
 
         // Bind the buffer to the surface
         RenderSurfaceHost.Bind(buffer);

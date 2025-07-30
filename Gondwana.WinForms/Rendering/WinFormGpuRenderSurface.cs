@@ -29,7 +29,8 @@ public partial class WinFormGpuRenderSurface : Form
         RenderSurfaceHost = new RenderSurfaceHost(renderAdapter);
 
         // GPU Backbuffer requires OpenGL context, which SKGLControl has now provided
-        var buffer = new GpuBackbuffer(skGlControl.Width, skGlControl.Height);
+        var screenBounds = Screen.FromControl(this).Bounds;
+        var buffer = new GpuBackbuffer(screenBounds.Width, screenBounds.Height);
 
         // Bind buffer to surface host
         RenderSurfaceHost.Bind(buffer);

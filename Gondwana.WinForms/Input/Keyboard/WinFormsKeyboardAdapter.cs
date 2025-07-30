@@ -1,6 +1,5 @@
 ﻿using Gondwana.Input.Keyboard;
 using Microsoft.Extensions.Logging;
-using System.Windows.Forms;
 
 namespace Gondwana.WinForms.Input.Keyboard;
 
@@ -17,7 +16,6 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     public ModifierState CurrentModifiers => _mods;
 
-    // TODO: tie in with VisibleSurface
     internal WinFormsKeyboardAdapter(Form form)
     {
         _form = form ?? throw new ArgumentNullException(nameof(form));

@@ -63,7 +63,7 @@ public abstract class BackbufferBase : IDisposable
             if (!tile.Visible) continue;
             if (!DirtyRectangle.IntersectsWith(tile.DrawLocation)) continue;
 
-            var bitmap = tile.CurrentFrame.GetSkiaBitmap();
+            var bitmap = tile.CurrentFrame.SkBitmap;
             if (bitmap != null)
                 Canvas.DrawBitmap(bitmap, tile.DrawLocation.ToSKRect());
 
