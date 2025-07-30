@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Drawing;
 using System.Text.Json.Serialization;
 using Gondwana.Rendering;
@@ -16,26 +15,12 @@ public sealed class Tilesheet : IDisposable
 
     public event EventHandler<TilesheetDisposedEventArgs> Disposed;
 
-    [JsonInclude] public int InitialOffsetX;
-    [JsonInclude] public int InitialOffsetY;
-    [JsonInclude] public int XPixelsBetweenTiles;
-    [JsonInclude] public int YPixelsBetweenTiles;
-
-    [JsonInclude] private Size _tileSize;
-    [JsonInclude] private string _name = string.Empty;
-    [JsonInclude] private int _extraTopSpace;
-    [JsonInclude] public Dictionary<string, string> ValueBag = new();
-    [JsonInclude] public EngineResourceFileIdentifier? ResourceIdentifier { get; private set; }
-    [JsonInclude] public string ImageFilePath { get; private set; } = string.Empty;
-
-    private SKBitmap _skBitmap = null!;
-
     private Tilesheet() { }
 
     public Tilesheet(string name, SKBitmap bitmap)
     {
         _name = name;
-        _skBitmap = bitmap;
+        SkBitmap = bitmap;
         _tilesheets[_name] = this;
     }
 
@@ -52,7 +37,7 @@ public sealed class Tilesheet : IDisposable
     {
         ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, entryName);
         _name = entryName;
-        _skBitmap = SKBitmap.Decode(ResourceIdentifier.Data);
+        SkBitmap = SKBitmap.Decode(ResourceIdentifier.Data);
         _tilesheets[_name] = this;
     }
 
@@ -66,19 +51,146 @@ public sealed class Tilesheet : IDisposable
         _extraTopSpace = baseSheet._extraTopSpace;
         ValueBag = new(baseSheet.ValueBag);
         _name = name;
-        _skBitmap = SKBitmap.Decode(file);
+        SkBitmap = SKBitmap.Decode(file);
         ImageFilePath = file;
         _tilesheets[_name] = this;
-
-        CacheTiles();
     }
 
-    private void CacheTiles()
+    [JsonInclude]
+    private string _name = string.Empty;
+
+    [JsonIgnore]
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _tilesheets.Remove(_name);
+            _name = value;
+            _tilesheets[_name] = this;
+        }
+    }
+
+    [JsonIgnore]
+    public SKBitmap SkBitmap { get; private set; }
+
+    [JsonInclude]
+    private Size _tileSize;
+
+    [JsonIgnore]
+    public Size TileSize
+    {
+        get => _tileSize;
+        set
+        {
+            _tileSize = value;
+            RecalcMaxOverlapRatio();
+            BuildTileCache();
+        }
+    }
+
+    [JsonInclude]
+    private int _extraTopSpace;
+
+    [JsonIgnore]
+    public int ExtraTopSpace
+    {
+        get => _extraTopSpace;
+        set
+        {
+            _extraTopSpace = value;
+            RecalcMaxOverlapRatio();
+            BuildTileCache();
+        }
+    }
+
+    [JsonInclude]
+    private int _initialOffsetX;
+
+    [JsonIgnore]
+    public int InitialOffsetX
+    {
+        get => _initialOffsetX;
+        set
+        {
+            _initialOffsetX = value;
+            BuildTileCache();
+        }
+    }
+
+    [JsonInclude]
+    private int _initialOffsetY;
+
+    [JsonIgnore]
+    public int InitialOffsetY
+    {
+        get => _initialOffsetY;
+        set
+        {
+            _initialOffsetY = value;
+            BuildTileCache();
+        }
+    }
+
+    [JsonInclude]
+    private int _xPixelsBetweenTiles;
+
+    [JsonIgnore]
+    public int XPixelsBetweenTiles
+    {
+        get => _xPixelsBetweenTiles;
+        set
+        {
+            _xPixelsBetweenTiles = value;
+            BuildTileCache();
+        }
+    }
+
+    [JsonInclude]
+    private int _yPixelsBetweenTiles;
+
+    [JsonIgnore]
+    public int YPixelsBetweenTiles
+    {
+        get => _yPixelsBetweenTiles;
+        set
+        {
+            _yPixelsBetweenTiles = value;
+            BuildTileCache();
+        }
+    }
+
+    [JsonInclude]
+    public Dictionary<string, string> ValueBag = new();
+
+    [JsonInclude]
+    public EngineResourceFileIdentifier? ResourceIdentifier { get; private set; }
+
+    [JsonInclude]
+    public string ImageFilePath { get; private set; } = string.Empty;
+
+    [JsonIgnore]
+    public int PrimaryHeight => _tileSize.Height - _extraTopSpace;
+    
+    [JsonIgnore]
+    public float ExtraTopSpaceToPrimaryRatio => (float)_extraTopSpace / PrimaryHeight;
+
+    private Rectangle GetTileBounds(int xTile, int yTile)
+    {
+        int x = (xTile * (_tileSize.Width + XPixelsBetweenTiles)) + InitialOffsetX;
+        int y = (yTile * (_tileSize.Height + YPixelsBetweenTiles)) + InitialOffsetY;
+        return new Rectangle(new Point(x, y), _tileSize);
+    }
+
+    private void BuildTileCache()
     {
         ClearCache();
 
-        int xTiles = (_skBitmap.Width - InitialOffsetX + XPixelsBetweenTiles) / (_tileSize.Width + XPixelsBetweenTiles);
-        int yTiles = (_skBitmap.Height - InitialOffsetY + YPixelsBetweenTiles) / (_tileSize.Height + YPixelsBetweenTiles);
+        if (TileSize.Width <= 0 || TileSize.Height <= 0)
+            return;
+
+        int xTiles = (SkBitmap.Width - InitialOffsetX + XPixelsBetweenTiles) / (_tileSize.Width + XPixelsBetweenTiles);
+        int yTiles = (SkBitmap.Height - InitialOffsetY + YPixelsBetweenTiles) / (_tileSize.Height + YPixelsBetweenTiles);
 
         _tileCache = new SKBitmap[xTiles, yTiles];
 
@@ -86,7 +198,7 @@ public sealed class Tilesheet : IDisposable
         {
             for (int x = 0; x < xTiles; x++)
             {
-                var srcRect = GetSourceRange(x, y);
+                var srcRect = GetTileBounds(x, y);
                 if (!SkBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
                     continue;
 
@@ -113,65 +225,26 @@ public sealed class Tilesheet : IDisposable
         _tileCache = null;
     }
 
-    [JsonIgnore]
-    public string Name
-    {
-        get => _name;
-        set
-        {
-            _tilesheets.Remove(_name);
-            _name = value;
-            _tilesheets[_name] = this;
-        }
-    }
-
-    [JsonIgnore] public SKBitmap SkBitmap => _skBitmap;
-
-    [JsonIgnore]
-    public Size TileSize
-    {
-        get => _tileSize;
-        set
-        {
-            _tileSize = value;
-            RecalcMaxOverlapRatio();
-            CacheTiles();
-        }
-    }
-
-    [JsonIgnore]
-    public int ExtraTopSpace
-    {
-        get => _extraTopSpace;
-        set
-        {
-            _extraTopSpace = value;
-            RecalcMaxOverlapRatio();
-            CacheTiles();
-        }
-    }
-
-    [JsonIgnore] public int PrimaryHeight => _tileSize.Height - _extraTopSpace;
-    [JsonIgnore] public float ExtraTopSpaceToPrimaryRatio => (float)_extraTopSpace / PrimaryHeight;
-
-    private Rectangle GetSourceRange(int xTile, int yTile)
-    {
-        int x = (xTile * (_tileSize.Width + XPixelsBetweenTiles)) + InitialOffsetX;
-        int y = (yTile * (_tileSize.Height + YPixelsBetweenTiles)) + InitialOffsetY;
-        return new Rectangle(new Point(x, y), _tileSize);
-    }
-
     public SKBitmap? this[int x, int y]
     {
-        get => _tileCache?[x, y];
+        get
+        {
+            if (_tileCache == null)
+                BuildTileCache();
+
+            if (x < 0 || y < 0 || x >= _tileCache.GetLength(0) || y >= _tileCache.GetLength(1))
+                return null;
+
+            return _tileCache?[x, y];
+        }
     }
 
     public Dictionary<(int x, int y), SKBitmap> GetAllTiles()
     {
         if (_tileCache == null)
-            throw new InvalidOperationException("Tile cache has not been initialized.");
+            BuildTileCache();
 
-        var frames = new Dictionary<(int x, int y), SKBitmap>();
+        var tiles = new Dictionary<(int x, int y), SKBitmap>();
 
         int xTiles = _tileCache.GetLength(0);
         int yTiles = _tileCache.GetLength(1);
@@ -182,20 +255,20 @@ public sealed class Tilesheet : IDisposable
             {
                 var bmp = _tileCache[x, y];
                 if (bmp != null)
-                    frames[(x, y)] = bmp;
+                    tiles[(x, y)] = bmp;
             }
         }
 
-        return frames;
+        return tiles;
     }
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        Tilesheet._tilesheets.Remove(_name);
+        _tilesheets.Remove(_name);
         RecalcMaxOverlapRatio();
         ClearCache();
-        _skBitmap.Dispose();
+        SkBitmap.Dispose();
         Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
     }
 

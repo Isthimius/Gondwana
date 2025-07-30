@@ -18,16 +18,16 @@ public struct Frame
     [JsonInclude]
     public readonly int YTile;
 
-    [JsonIgnore]
-    public readonly Size Size => Tilesheet.TileSize;
-
-    [JsonIgnore]
-    public readonly SKBitmap? SkBitmap => Tilesheet[XTile, YTile];
-
     public Frame(Tilesheet tilesheet, int xTile, int yTile)
     {
         Tilesheet = tilesheet;
         XTile = xTile;
         YTile = yTile;
     }
+
+    [JsonIgnore]
+    public readonly Size Size => Tilesheet.TileSize;
+
+    [JsonIgnore]
+    public readonly SKBitmap? SkBitmap => Tilesheet[XTile, YTile];
 }
