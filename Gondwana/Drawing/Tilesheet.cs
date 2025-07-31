@@ -56,6 +56,12 @@ public sealed class Tilesheet : IDisposable
         _tilesheets[_name] = this;
     }
 
+    [JsonIgnore]
+    public SKBitmap SkBitmap { get; private set; }
+
+    [JsonIgnore]
+    public SKBitmap? SkBitmapOriginal { get; private set; } = null;
+
     [JsonInclude]
     private string _name = string.Empty;
 
@@ -70,9 +76,6 @@ public sealed class Tilesheet : IDisposable
             _tilesheets[_name] = this;
         }
     }
-
-    [JsonIgnore]
-    public SKBitmap SkBitmap { get; private set; }
 
     [JsonInclude]
     private Size _tileSize;
@@ -175,6 +178,19 @@ public sealed class Tilesheet : IDisposable
     [JsonIgnore]
     public float OverlapTopSpaceToPrimaryRatio => (float)_overlapTopSpace / PrimaryHeight;
 
+    public void ApplyMask(SKColor? maskColor = null, byte tolerance = 0)
+    {
+        if (SkBitmap == null || SkBitmap.IsEmpty)
+            throw new ArgumentException("Invalid bitmap.");
+
+        var targetColor = maskColor ?? SKColors.White;
+
+        SkBitmapOriginal = SkBitmap.Copy();
+
+        ApplyAlphaMaskInPlace(SkBitmap, targetColor, tolerance);
+        BuildTileCache();
+    }
+
     private Rectangle GetTileBounds(int xTile, int yTile)
     {
         int x = (xTile * (_tileSize.Width + XPixelsBetweenTiles)) + InitialOffsetX;
@@ -232,7 +248,7 @@ public sealed class Tilesheet : IDisposable
             if (_tileCache == null)
                 BuildTileCache();
 
-            if (x < 0 || y < 0 || x >= _tileCache.GetLength(0) || y >= _tileCache.GetLength(1))
+            if (x < 0 || y < 0 || x >= _tileCache!.GetLength(0) || y >= _tileCache.GetLength(1))
                 return null;
 
             return _tileCache?[x, y];
@@ -246,7 +262,7 @@ public sealed class Tilesheet : IDisposable
 
         var tiles = new Dictionary<(int x, int y), SKBitmap>();
 
-        int xTiles = _tileCache.GetLength(0);
+        int xTiles = _tileCache!.GetLength(0);
         int yTiles = _tileCache.GetLength(1);
 
         for (int y = 0; y < yTiles; y++)
@@ -273,7 +289,7 @@ public sealed class Tilesheet : IDisposable
     }
 
     #region static
-    internal static Dictionary<string, Tilesheet> _tilesheets = new();
+    internal readonly static Dictionary<string, Tilesheet> _tilesheets = new();
 
     public static int Count => _tilesheets.Count;
     public static List<Tilesheet> GetAllTilesheets() => _tilesheets.Values.ToList();
@@ -297,6 +313,49 @@ public sealed class Tilesheet : IDisposable
     private static void RecalcMaxOverlapRatio()
     {
         MaxOverlappingTopSpaceRatio = _tilesheets.Values.Count == 0 ? 0 : _tilesheets.Values.Max(ts => ts.OverlapTopSpaceToPrimaryRatio);
+    }
+
+    public static void ApplyAlphaMaskInPlace(SKBitmap bitmap, SKColor targetColor, byte tolerance = 0)
+    {
+        if (bitmap == null || bitmap.IsEmpty)
+            throw new ArgumentException("Invalid bitmap.");
+
+        int width = bitmap.Width;
+        int height = bitmap.Height;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                var color = bitmap.GetPixel(x, y);
+
+                if (IsColorClose(color, targetColor, tolerance))
+                {
+                    // Make the pixel fully transparent
+                    var newColor = new SKColor(color.Red, color.Green, color.Blue, 0);
+                    bitmap.SetPixel(x, y, newColor);
+                }
+                else
+                {
+                    // Optional: ensure opaque for all other pixels
+                    if (color.Alpha != 255)
+                    {
+                        var opaqueColor = new SKColor(color.Red, color.Green, color.Blue, 255);
+                        bitmap.SetPixel(x, y, opaqueColor);
+                    }
+                }
+            }
+        }
+
+        bitmap.NotifyPixelsChanged(); // Useful if it's shared with GPU
+    }
+
+    private static bool IsColorClose(SKColor a, SKColor b, byte tolerance)
+    {
+        return
+            Math.Abs(a.Red - b.Red) <= tolerance &&
+            Math.Abs(a.Green - b.Green) <= tolerance &&
+            Math.Abs(a.Blue - b.Blue) <= tolerance;
     }
     #endregion
 }

@@ -26,7 +26,10 @@ public sealed class GpuBackbuffer : BackbufferBase
             _grContext,
             _renderTarget,
             GRSurfaceOrigin.BottomLeft,
-            SKColorType.Rgba8888) ?? throw new InvalidOperationException("Could not create GPU surface.");
+            SKColorType.Rgba8888,
+            SKAlphaType.Premul,     // 🔄 Added for correct alpha interpretation
+            null                    // color space (null means sRGB)
+        ) ?? throw new InvalidOperationException("Could not create GPU surface.");
     }
 
     public override SKCanvas Canvas => _surface.Canvas;
