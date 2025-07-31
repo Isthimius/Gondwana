@@ -3,9 +3,9 @@ using SkiaSharp.Views.Desktop;
 
 namespace Gondwana.WinForms.Rendering;
 
-public partial class WinFormGpuRenderSurface : Form
+public partial class WinFormBitmapRenderSurfaceForm : Form
 {
-    public WinFormGpuRenderSurface()
+    public WinFormBitmapRenderSurfaceForm()
     {
         InitializeComponent();
         InitializeRendering();
@@ -15,24 +15,24 @@ public partial class WinFormGpuRenderSurface : Form
 
     private void InitializeRendering()
     {
-        // Create and dock the GPU-backed SKGLControl
-        var skGlControl = new SKGLControl
+        // Create and dock the SKControl (acts as our display canvas)
+        var skControl = new SKControl
         {
             Dock = DockStyle.Fill
         };
-        Controls.Add(skGlControl);
+        this.Controls.Add(skControl);
 
-        // Create the GPU-capable render adapter
-        var renderAdapter = new WinFormGpuRenderSurfaceAdapter(skGlControl);
+        // Create the render adapter for the SKControl
+        var renderAdapter = new WinFormBitmapRenderSurfaceAdapter(skControl);
 
-        // Create the surface host with the adapter
+        // Create the surface and hook the adapter
         RenderSurfaceHost = new RenderSurfaceHost(renderAdapter);
 
-        // GPU Backbuffer requires OpenGL context, which SKGLControl has now provided
+        // Create the Backbuffer
         var screenBounds = Screen.FromControl(this).Bounds;
-        var buffer = new GpuBackbuffer(screenBounds.Width, screenBounds.Height);
+        var buffer = new BitmapBackbuffer(screenBounds.Width, screenBounds.Height);
 
-        // Bind buffer to surface host
+        // Bind the buffer to the surface
         RenderSurfaceHost.Bind(buffer);
     }
 

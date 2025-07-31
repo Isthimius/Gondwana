@@ -280,7 +280,7 @@ namespace Slider
             GC.SuppressFinalize(this);
             tilesheet.Dispose();
             matrixes.Dispose();
-            surface.Dispose();
+            //surface.Dispose();
             Sprites.Clear();
             Sprites.SpriteMovementStarted -= delMoveStart;
             Sprites.SpriteMovementStopped -= delMoveStop;

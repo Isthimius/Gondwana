@@ -1,6 +1,6 @@
 ﻿namespace Gondwana.WinForms.Rendering
 {
-    partial class WinFormGpuRenderSurface
+    partial class WinFormGpuRenderSurfaceForm
     {
         /// <summary>
         /// Required designer variable.

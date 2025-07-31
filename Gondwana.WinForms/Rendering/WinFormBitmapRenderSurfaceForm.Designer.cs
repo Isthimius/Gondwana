@@ -1,6 +1,6 @@
 ﻿namespace Gondwana.WinForms.Rendering
 {
-    partial class WinFormBitmapRenderSurface
+    partial class WinFormBitmapRenderSurfaceForm
     {
         /// <summary>
         /// Required designer variable.
