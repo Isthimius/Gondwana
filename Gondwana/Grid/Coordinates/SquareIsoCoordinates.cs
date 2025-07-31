@@ -47,12 +47,12 @@ public class SquareIsoCoordinates : IGridCoordinates
         // check for overlaps if required
         if (includeOverlaps)
         {
-            if (Tilesheet.MaxExtraTopSpaceRatio > 0)
+            if (Tilesheet.MaxOverlappingTopSpaceRatio > 0)
             {
                 foreach (GridPoint grPt in GetGridPtListInPxlRange(matrix,
                     new Rectangle(pixelRange.Left, pixelRange.Bottom,
                     pixelRange.Width,
-                    (int)Math.Ceiling(Tilesheet.MaxExtraTopSpaceRatio * matrix.GridPointHeight)),
+                    (int)Math.Ceiling(Tilesheet.MaxOverlappingTopSpaceRatio * matrix.GridPointHeight)),
                     false))
                 {
                     if (grPt != null)
@@ -85,7 +85,7 @@ public class SquareIsoCoordinates : IGridCoordinates
         {
             // if the Bmp has overlapping pixels at the top (defined in Tilesheet),
             // move the rectangle up (subtract from Y) and increase Height
-            if (tile.CurrentFrame.Tilesheet != null && tile.CurrentFrame.Tilesheet.ExtraTopSpace != 0)
+            if (tile.CurrentFrame.Tilesheet != null && tile.CurrentFrame.Tilesheet.OverlappingTopSpace != 0)
             {
                 retVal.Y -= tile.OverlappingPixels;
                 retVal.Height += tile.OverlappingPixels;

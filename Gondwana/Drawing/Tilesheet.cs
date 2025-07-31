@@ -48,7 +48,7 @@ public sealed class Tilesheet : IDisposable
         XPixelsBetweenTiles = baseSheet.XPixelsBetweenTiles;
         YPixelsBetweenTiles = baseSheet.YPixelsBetweenTiles;
         _tileSize = baseSheet._tileSize;
-        _extraTopSpace = baseSheet._extraTopSpace;
+        _overlapTopSpace = baseSheet._overlapTopSpace;
         ValueBag = new(baseSheet.ValueBag);
         _name = name;
         SkBitmap = SKBitmap.Decode(file);
@@ -90,15 +90,15 @@ public sealed class Tilesheet : IDisposable
     }
 
     [JsonInclude]
-    private int _extraTopSpace;
+    private int _overlapTopSpace;
 
     [JsonIgnore]
-    public int ExtraTopSpace
+    public int OverlappingTopSpace
     {
-        get => _extraTopSpace;
+        get => _overlapTopSpace;
         set
         {
-            _extraTopSpace = value;
+            _overlapTopSpace = value;
             RecalcMaxOverlapRatio();
             BuildTileCache();
         }
@@ -170,10 +170,10 @@ public sealed class Tilesheet : IDisposable
     public string ImageFilePath { get; private set; } = string.Empty;
 
     [JsonIgnore]
-    public int PrimaryHeight => _tileSize.Height - _extraTopSpace;
+    public int PrimaryHeight => _tileSize.Height - _overlapTopSpace;
     
     [JsonIgnore]
-    public float ExtraTopSpaceToPrimaryRatio => (float)_extraTopSpace / PrimaryHeight;
+    public float OverlapTopSpaceToPrimaryRatio => (float)_overlapTopSpace / PrimaryHeight;
 
     private Rectangle GetTileBounds(int xTile, int yTile)
     {
@@ -292,11 +292,11 @@ public sealed class Tilesheet : IDisposable
             ts.Dispose();
     }
 
-    public static float MaxExtraTopSpaceRatio { get; private set; }
+    public static float MaxOverlappingTopSpaceRatio { get; private set; }
 
     private static void RecalcMaxOverlapRatio()
     {
-        MaxExtraTopSpaceRatio = _tilesheets.Values.Count == 0 ? 0 : _tilesheets.Values.Max(ts => ts.ExtraTopSpaceToPrimaryRatio);
+        MaxOverlappingTopSpaceRatio = _tilesheets.Values.Count == 0 ? 0 : _tilesheets.Values.Max(ts => ts.OverlapTopSpaceToPrimaryRatio);
     }
     #endregion
 }

@@ -68,7 +68,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             if (frame.Tilesheet == null)
                 return 0;
 
-            return (int)(frame.Tilesheet.ExtraTopSpaceToPrimaryRatio * ParentGrid.GridPointHeight);
+            return (int)(frame.Tilesheet.OverlapTopSpaceToPrimaryRatio * ParentGrid.GridPointHeight);
         }
     }
 
