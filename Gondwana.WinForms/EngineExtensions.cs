@@ -1,10 +1,8 @@
-﻿using Gondwana.Input.Gamepad;
-using Gondwana.Input.Keyboard;
+﻿using Gondwana.Input.Keyboard;
 using Gondwana.WinForms.Audio;
 using Gondwana.WinForms.Input.Gamepad;
 using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
-using System.Windows.Forms;
 
 namespace Gondwana.WinForms;
 
@@ -20,16 +18,16 @@ public static class EngineExtensions
         Engine.Instance.GamepadManager = XInputGamepadManager.Start();
     }
 
-    public static void InitializeWinFormsKeyboardAdapter(this Engine engine, Form form)
+    public static void InitializeWinFormsKeyboardAdapter(this Engine engine, Control control)
     {
         Engine.Logger.LogInformation("Initializing WinFormsKeyboardAdapter...");
 
-        if (form == null)
+        if (control == null)
         {
-            Engine.Logger.LogError("WinFormsKeyboardAdapter initialization failed: Form cannot be null.");
-            throw new ArgumentNullException(nameof(form));
+            Engine.Logger.LogError("WinFormsKeyboardAdapter initialization failed: Control cannot be null.");
+            throw new ArgumentNullException(nameof(control));
         }
 
-        KeyboardEventPoller.Initialize(new WinFormsKeyboardAdapter(form));
+        KeyboardEventPoller.Initialize(new WinFormsKeyboardAdapter(control));
     }
 }

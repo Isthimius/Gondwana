@@ -8,7 +8,7 @@ namespace Gondwana.WinForms.Input.Keyboard;
 /// </summary>
 public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 {
-    private readonly Form _form;
+    private readonly Control _control;
     private readonly HashSet<string> _pressedKeys = new();
     private ModifierState _mods;
 
@@ -16,14 +16,23 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     public ModifierState CurrentModifiers => _mods;
 
-    internal WinFormsKeyboardAdapter(Form form)
+    internal WinFormsKeyboardAdapter(Control control)
     {
-        _form = form ?? throw new ArgumentNullException(nameof(form));
-        _form.KeyPreview = true;
+        _control = control ?? throw new ArgumentNullException(nameof(control));
+        _control.KeyDown += OnKeyDown;
+        _control.KeyUp += OnKeyUp;
 
-        _form.KeyDown += OnKeyDown;
-        _form.KeyUp += OnKeyUp;
-        _form.FormClosed += (_, __) => Dispose();
+        // Only set KeyPreview and handle FormClosed if it's actually a Form
+        if (control is Form form)
+        {
+            form.KeyPreview = true;
+            form.FormClosed += (_, __) => Dispose();
+        }
+        else
+        {
+            // If it's not a Form, hook into the general Disposed event
+            _control.Disposed += (_, __) => Dispose();
+        }
 
         Engine.Logger.LogInformation("WinFormsKeyboardAdapter initialized. Starting to poll key presses.");
     }
@@ -59,8 +68,8 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     public void Dispose()
     {
-        _form.KeyDown -= OnKeyDown;
-        _form.KeyUp -= OnKeyUp;
+        _control.KeyDown -= OnKeyDown;
+        _control.KeyUp -= OnKeyUp;
 
         Engine.Logger.LogInformation("WinFormsKeyboardAdapter disposed.");
     }

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Gondwana.Audio.Midi;
 using Gondwana.WinForms;
+using Microsoft.Extensions.Logging;
 
 namespace Slider
 {
@@ -36,9 +37,7 @@ namespace Slider
 
         void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)
         {
-#if DEBUG
-            Console.WriteLine(string.Format("{3}   start move '{0}' from {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
-#endif
+            Gondwana.Engine.Logger.LogDebug(string.Format("{3}   start move '{0}' from {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
             //Program.slideSound.Play();
         }
 

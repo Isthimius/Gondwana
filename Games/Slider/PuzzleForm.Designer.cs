@@ -43,9 +43,7 @@ namespace Slider
             txtPieces = new System.Windows.Forms.TextBox();
             chkGrid = new System.Windows.Forms.CheckBox();
             lblCoord = new System.Windows.Forms.Label();
-            button1 = new System.Windows.Forms.Button();
             lblInfo = new System.Windows.Forms.Label();
-            cmdPause = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)picBox).BeginInit();
             SuspendLayout();
             // 
@@ -190,17 +188,6 @@ namespace Slider
             lblCoord.TabIndex = 12;
             lblCoord.Text = "coordinates";
             // 
-            // button1
-            // 
-            button1.Location = new System.Drawing.Point(18, 372);
-            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            button1.Name = "button1";
-            button1.Size = new System.Drawing.Size(88, 27);
-            button1.TabIndex = 13;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
-            // 
             // lblInfo
             // 
             lblInfo.AutoSize = true;
@@ -211,27 +198,12 @@ namespace Slider
             lblInfo.TabIndex = 14;
             lblInfo.Text = "misc_disp";
             // 
-            // cmdPause
-            // 
-            cmdPause.Enabled = false;
-            cmdPause.Location = new System.Drawing.Point(13, 474);
-            cmdPause.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            cmdPause.Name = "cmdPause";
-            cmdPause.Size = new System.Drawing.Size(159, 46);
-            cmdPause.TabIndex = 15;
-            cmdPause.TabStop = false;
-            cmdPause.Text = "Pause";
-            cmdPause.UseVisualStyleBackColor = true;
-            cmdPause.Click += cmdPause_Click;
-            // 
             // PuzzleForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1150, 825);
-            Controls.Add(cmdPause);
             Controls.Add(lblInfo);
-            Controls.Add(button1);
             Controls.Add(lblCoord);
             Controls.Add(chkGrid);
             Controls.Add(label3);
@@ -274,8 +246,6 @@ namespace Slider
         private System.Windows.Forms.TextBox txtPieces;
         private System.Windows.Forms.CheckBox chkGrid;
         private System.Windows.Forms.Label lblCoord;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label lblInfo;
-        private System.Windows.Forms.Button cmdPause;
     }
 }
