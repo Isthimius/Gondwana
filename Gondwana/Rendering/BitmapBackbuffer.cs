@@ -11,7 +11,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
     public BitmapBackbuffer(int width, int height, GridPointMatrixes? drawSource = null)
         : base(width, height, drawSource)
     {
-        _bitmap = new SKBitmap(width, height, true);
+        _bitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
         _canvas = new SKCanvas(_bitmap);
     }
 
@@ -22,7 +22,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
     {
         base.Dispose();
 
-        _canvas.Dispose();
-        _bitmap.Dispose();
+        _canvas?.Dispose();
+        _bitmap?.Dispose();
     }
 }

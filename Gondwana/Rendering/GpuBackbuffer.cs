@@ -3,12 +3,12 @@ using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
-public sealed class GpuBackbuffer : BackbufferBase
+public class GpuBackbuffer : BackbufferBase
 {
     private readonly GRContext _grContext;
     private readonly GRBackendRenderTarget _renderTarget;
     private readonly SKSurface _surface;
-
+    
     public GpuBackbuffer(int width, int height, GridPointMatrixes? drawSource = null)
         : base(width, height, drawSource)
     {
@@ -27,8 +27,7 @@ public sealed class GpuBackbuffer : BackbufferBase
             _renderTarget,
             GRSurfaceOrigin.BottomLeft,
             SKColorType.Rgba8888,
-            SKAlphaType.Premul,     // 🔄 Added for correct alpha interpretation
-            null                    // color space (null means sRGB)
+            (SKColorSpace?)null                    // color space (null means sRGB)
         ) ?? throw new InvalidOperationException("Could not create GPU surface.");
     }
 
@@ -39,8 +38,8 @@ public sealed class GpuBackbuffer : BackbufferBase
     {
         base.Dispose();
 
-        _surface.Dispose();
-        _renderTarget.Dispose();
-        _grContext.Dispose();
+        _surface?.Dispose();
+        _renderTarget?.Dispose();
+        _grContext?.Dispose();
     }
 }

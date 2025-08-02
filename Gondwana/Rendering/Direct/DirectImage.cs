@@ -2,6 +2,7 @@ using Gondwana.Drawing;
 using System.Drawing;
 using SkiaSharp;
 using Microsoft.Extensions.Logging;
+using Gondwana.Skia;
 
 namespace Gondwana.Rendering.Direct;
 

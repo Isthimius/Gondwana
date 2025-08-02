@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Text.Json.Serialization;
-using Gondwana.Rendering;
 using Gondwana.Resource;
+using Gondwana.Skia;
 using SkiaSharp;
 
 namespace Gondwana.Drawing;
@@ -38,6 +38,7 @@ public sealed class Tilesheet : IDisposable
         ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, entryName);
         _name = entryName;
         SkBitmap = SKBitmap.Decode(ResourceIdentifier.Data);
+        ClearTilesheet(_name);  // clear previous instance if exists
         _tilesheets[_name] = this;
     }
 
@@ -183,12 +184,21 @@ public sealed class Tilesheet : IDisposable
         if (SkBitmap == null || SkBitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
 
-        var targetColor = maskColor ?? SKColors.White;
-
         SkBitmapOriginal = SkBitmap.Copy();
 
-        ApplyAlphaMaskInPlace(SkBitmap, targetColor, tolerance);
+        var targetColor = maskColor ?? SKColors.White;
+
+        SkiaHelper.ApplyAlphaMask(SkBitmap, targetColor, tolerance);
+        SkiaHelper.PremultiplyAlpha(SkBitmap);
         BuildTileCache();
+    }
+
+    public byte[] ToByteArray(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+    {
+        if (SkBitmap == null || SkBitmap.IsEmpty)
+            throw new ArgumentException("Invalid bitmap.");
+
+        return SkiaHelper.EncodeBitmapToBytes(SkBitmap, format, quality);
     }
 
     private Rectangle GetTileBounds(int xTile, int yTile)
@@ -284,7 +294,8 @@ public sealed class Tilesheet : IDisposable
         _tilesheets.Remove(_name);
         RecalcMaxOverlapRatio();
         ClearCache();
-        SkBitmap.Dispose();
+        SkBitmap?.Dispose();
+        SkBitmapOriginal?.Dispose();
         Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
     }
 
@@ -313,49 +324,6 @@ public sealed class Tilesheet : IDisposable
     private static void RecalcMaxOverlapRatio()
     {
         MaxOverlappingTopSpaceRatio = _tilesheets.Values.Count == 0 ? 0 : _tilesheets.Values.Max(ts => ts.OverlapTopSpaceToPrimaryRatio);
-    }
-
-    public static void ApplyAlphaMaskInPlace(SKBitmap bitmap, SKColor targetColor, byte tolerance = 0)
-    {
-        if (bitmap == null || bitmap.IsEmpty)
-            throw new ArgumentException("Invalid bitmap.");
-
-        int width = bitmap.Width;
-        int height = bitmap.Height;
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                var color = bitmap.GetPixel(x, y);
-
-                if (IsColorClose(color, targetColor, tolerance))
-                {
-                    // Make the pixel fully transparent
-                    var newColor = new SKColor(color.Red, color.Green, color.Blue, 0);
-                    bitmap.SetPixel(x, y, newColor);
-                }
-                else
-                {
-                    // Optional: ensure opaque for all other pixels
-                    if (color.Alpha != 255)
-                    {
-                        var opaqueColor = new SKColor(color.Red, color.Green, color.Blue, 255);
-                        bitmap.SetPixel(x, y, opaqueColor);
-                    }
-                }
-            }
-        }
-
-        bitmap.NotifyPixelsChanged(); // Useful if it's shared with GPU
-    }
-
-    private static bool IsColorClose(SKColor a, SKColor b, byte tolerance)
-    {
-        return
-            Math.Abs(a.Red - b.Red) <= tolerance &&
-            Math.Abs(a.Green - b.Green) <= tolerance &&
-            Math.Abs(a.Blue - b.Blue) <= tolerance;
     }
     #endregion
 }

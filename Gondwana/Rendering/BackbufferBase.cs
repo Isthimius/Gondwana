@@ -2,6 +2,7 @@
 using Gondwana.Grid;
 using Gondwana.Drawing;
 using System.Drawing;
+using Gondwana.Skia;
 
 namespace Gondwana.Rendering;
 
@@ -107,12 +108,11 @@ public abstract class BackbufferBase : IDisposable
 
     protected void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;
 
-    public virtual void SaveToFile(string filePath, SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+    public virtual byte[] EncodeImage(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {
         using var image = Snapshot();
         using var data = image.Encode(format, quality);
-        using var stream = File.OpenWrite(filePath);
-        data.SaveTo(stream);
+        return data.ToArray();
     }
 
     public virtual void Dispose()
