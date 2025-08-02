@@ -108,7 +108,7 @@ public abstract class BackbufferBase : IDisposable
 
     protected void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;
 
-    public virtual byte[] EncodeImage(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+    public virtual byte[] ToByteArray(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {
         using var image = Snapshot();
         using var data = image.Encode(format, quality);
