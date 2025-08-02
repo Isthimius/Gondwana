@@ -15,7 +15,11 @@ public sealed class XInputGamepadManager : IGamepadManager<XInputGamepadAdapter>
 
     public static XInputGamepadManager Start() => Instance = new XInputGamepadManager();
 
-    public static void Stop() => Instance = null;
+    public static void Stop()
+    {
+        Engine.Logger.LogInformation("Stopping XInputGamepadManager and removing all XInputGamepadAdapter.");
+        Instance = null;
+    }
 
     private readonly Dictionary<int, XInputGamepadAdapter> _activeAdapters = new();
 
