@@ -28,7 +28,7 @@ namespace Slider
         public PuzzleForm()
         {
             InitializeComponent();
-            picBoxDC = picBox.CreateGraphics();
+            //picBoxDC = picBox.CreateGraphics();
             //Program.slideSound = new MediaFile("slide", AssetDir + "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav", MediaFileType.wav);
             //Program.tadaSound = new MediaFile("tada", AssetDir + "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav", MediaFileType.wav);
             Sprites.SpriteMovementStarted += Sprites_SpriteMovementStarted;
@@ -72,7 +72,7 @@ namespace Slider
                 if (Program.puzzle != null)
                     Program.puzzle.Dispose();
 
-                Program.puzzle = new Puzzle(picBoxDC, openFileBox.FileName, int.Parse(txtCol.Text), int.Parse(txtRow.Text), picBox.Size);
+                Program.puzzle = new Puzzle(winFormBitmapRenderSurfaceControl1.RenderSurfaceHost, openFileBox.FileName, int.Parse(txtCol.Text), int.Parse(txtRow.Text), winFormBitmapRenderSurfaceControl1.Size);
                 Sprites_SpriteMovePointFinished(null);
 
                 if (!Gondwana.Engine.Instance.IsRunning)
@@ -149,19 +149,6 @@ namespace Slider
             }
         }
 
-        private void picBox_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (Program.puzzle != null)
-            {
-                if (!Program.puzzle._isShuffling)
-                {
-                    List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));
-                    if (sprites.Count != 0)
-                        Program.puzzle.SlidePiece(sprites[0], 0.15);
-                }
-            }
-        }
-
         private void chkGrid_CheckedChanged(object sender, EventArgs e)
         {
             Program.puzzle.ShowGridLines = chkGrid.Checked;
@@ -169,14 +156,14 @@ namespace Slider
 
         private void PuzzleForm_Load(object sender, EventArgs e)
         {
-            picBox.Size = new Size(this.Width - picBox.Left, this.Height);
+            winFormBitmapRenderSurfaceControl1.Size = new Size(this.Width - winFormBitmapRenderSurfaceControl1.Left, this.Height);
         }
 
         private void PuzzleForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (Program.puzzle != null)
             {
-                if (Program.puzzle._spriteMoving == true)
+                if (Program.puzzle._spriteMoving)
                 {
                     e.Cancel = true;
                     return;
@@ -192,30 +179,26 @@ namespace Slider
                 Program.puzzle.Dispose();
         }
 
-        private void picBox_MouseMove(object sender, MouseEventArgs e)
+        private void gondwanaGpuSurface_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (Program.puzzle != null)
+            {
+                if (!Program.puzzle._isShuffling)
+                {
+                    List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));
+                    if (sprites.Count != 0)
+                        Program.puzzle.SlidePiece(sprites[0], 0.15);
+                }
+            }
+        }
+
+        private void gondwanaGpuSurface_MouseMove(object sender, MouseEventArgs e)
         {
             if (Program.puzzle != null)
             {
                 var coords = Program.puzzle.GetGridCoordinates(e.X, e.Y);
                 lblCoord.Text = "x: " + coords.X.ToString() + "   y: " + coords.Y.ToString();
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                Program.slideSound.Play();
-                //Thread.Sleep(750);
-            }
-        }
-
-        private void cmdPause_Click(object sender, EventArgs e)
-        {
-            //    if (!Gondwana.Engine.Instance.IsPaused)
-            //        Gondwana.Engine.Instance.Pause();
-            //    else
-            //        Gondwana.Engine.Instance.Start();
         }
     }
 }

@@ -11,7 +11,13 @@ namespace Gondwana.Drawing;
 /// </summary>
 public sealed class Tilesheet : IDisposable
 {
-    private SKBitmap?[,]? _tileCache;
+    public sealed class TileFrame
+    {
+        public SKBitmap Bitmap { get; init; } = default!;
+        public SKImage Image { get; init; } = default!;
+    }
+
+    private TileFrame?[,]? _tileCache;
 
     public event EventHandler<TilesheetDisposedEventArgs> Disposed;
 
@@ -184,12 +190,20 @@ public sealed class Tilesheet : IDisposable
         if (SkBitmap == null || SkBitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
 
-        SkBitmapOriginal = SkBitmap.Copy();
-
         var targetColor = maskColor ?? SKColors.White;
 
+        SkBitmapOriginal = SkBitmap.Copy();
         SkiaHelper.ApplyAlphaMask(SkBitmap, targetColor, tolerance);
-        SkiaHelper.PremultiplyAlpha(SkBitmap);
+        BuildTileCache();
+    }
+
+    public void ApplyPremultiplyAlpha()
+    {
+        if (SkBitmap == null || SkBitmap.IsEmpty)
+            throw new ArgumentException("Invalid bitmap.");
+
+        SkBitmapOriginal = SkBitmap.Copy();
+        SkBitmap = SkiaHelper.PremultiplyAlpha(SkBitmap);
         BuildTileCache();
     }
 
@@ -218,7 +232,7 @@ public sealed class Tilesheet : IDisposable
         int xTiles = (SkBitmap.Width - InitialOffsetX + XPixelsBetweenTiles) / (_tileSize.Width + XPixelsBetweenTiles);
         int yTiles = (SkBitmap.Height - InitialOffsetY + YPixelsBetweenTiles) / (_tileSize.Height + YPixelsBetweenTiles);
 
-        _tileCache = new SKBitmap[xTiles, yTiles];
+        _tileCache = new TileFrame[xTiles, yTiles];
 
         for (int y = 0; y < yTiles; y++)
         {
@@ -228,9 +242,16 @@ public sealed class Tilesheet : IDisposable
                 if (!SkBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
                     continue;
 
-                var subset = new SKBitmap(_tileSize.Width, _tileSize.Height);
-                if (SkBitmap.ExtractSubset(subset, srcRect.ToSKRectI()))
-                    _tileCache[x, y] = subset;
+                var bmp = new SKBitmap(_tileSize.Width, _tileSize.Height);
+                if (SkBitmap.ExtractSubset(bmp, srcRect.ToSKRectI()))
+                {
+                    var img = SKImage.FromBitmap(bmp);
+                    _tileCache[x, y] = new TileFrame
+                    {
+                        Bitmap = bmp,
+                        Image = img
+                    };
+                }
             }
         }
     }
@@ -243,7 +264,8 @@ public sealed class Tilesheet : IDisposable
         {
             for (int x = 0; x < _tileCache.GetLength(0); x++)
             {
-                _tileCache[x, y]?.Dispose();
+                _tileCache[x, y]?.Bitmap.Dispose();
+                _tileCache[x, y]?.Image.Dispose();
                 _tileCache[x, y] = null;
             }
         }
@@ -251,7 +273,7 @@ public sealed class Tilesheet : IDisposable
         _tileCache = null;
     }
 
-    public SKBitmap? this[int x, int y]
+    public TileFrame? this[int x, int y]
     {
         get
         {
@@ -265,12 +287,12 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    public Dictionary<(int x, int y), SKBitmap> GetAllTiles()
+    public Dictionary<(int x, int y), TileFrame> GetAllTiles()
     {
         if (_tileCache == null)
             BuildTileCache();
 
-        var tiles = new Dictionary<(int x, int y), SKBitmap>();
+        var tiles = new Dictionary<(int x, int y), TileFrame>();
 
         int xTiles = _tileCache!.GetLength(0);
         int yTiles = _tileCache.GetLength(1);

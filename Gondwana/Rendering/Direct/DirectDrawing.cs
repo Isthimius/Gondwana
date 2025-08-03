@@ -75,11 +75,11 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     internal void ForceRefresh()
     {
-        //var matrixes = _surface.Buffer.DrawSource;
-        //if (matrixes?.Count > 0)
-        //    matrixes[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
+        var matrixes = Buffer.DrawSource;
+        if (matrixes?.Count > 0)
+            matrixes[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
-        //_dirty = true;
+        _dirty = true;
     }
 
     public int CompareTo(DirectDrawing? other) => _zOrder.CompareTo(other?._zOrder ?? 0);

@@ -27,17 +27,18 @@ namespace Slider
         private Size adjustedSize;
         private Point openSpace;
 
-        private RenderSurfaceHost surface;
         private Tilesheet tilesheet;
-        private GridPointMatrixes matrixes;
+        private GridPointMatrixes matrixes;          
 
         private SoundResource slideSound;
+        private SoundResource tadaSound;
         #endregion
 
         #region constructors / destructor
-        public Puzzle(Graphics dc, string imgFile, int columns, int rows, Size size)
+        public Puzzle(RenderSurfaceHost renderSurfaceHost, string imgFile, int columns, int rows, Size size)
         {
             tilesheet = new Tilesheet("picture", imgFile);
+            tilesheet.ApplyPremultiplyAlpha();
 
             int tileWidth = (int)((float)tilesheet.SkBitmap.Width / (float)columns);
             int tileHeight = (int)((float)tilesheet.SkBitmap.Height / (float)rows);
@@ -59,10 +60,11 @@ namespace Slider
             //surface = new VisibleSurface(size.Width, size.Height);
             //surface.Backbuffer.Erase();
 
+            renderSurfaceHost.Backbuffer.Bind(matrixes);
+
             InitializeSprites(tileWidth, tileHeight);
             slideSound = SoundResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
-            //Gondwana.Scripting.Parser.WriteToFile("bmpProp_file.gond", System.IO.FileMode.Create, tilesheet);
-            //Engine.ScriptEngineState("file.gond", true);
+            tadaSound = SoundResourceManager.Instance.LoadFromFile("tada", "assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav");
 
             delMoveStart = new SpriteMovementEventHandler(Sprites_SpriteMovementStarted);
             delMoveStop = new SpriteMovementEventHandler(Sprites_SpriteMovementStopped);

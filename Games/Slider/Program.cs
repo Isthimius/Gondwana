@@ -1,5 +1,3 @@
-using Gondwana;
-using Gondwana.Audio;
 using System;
 using System.Windows.Forms;
 
@@ -8,8 +6,6 @@ namespace Slider
     static class Program
     {
         internal static Puzzle puzzle = null;
-        internal static SoundResource slideSound;
-        internal static SoundResource tadaSound;
 
         /// <summary>
         /// The main entry point for the application.

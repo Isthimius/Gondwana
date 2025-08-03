@@ -1,4 +1,6 @@
-﻿using Gondwana.Grid;
+﻿using Gondwana.Drawing;
+using Gondwana.Grid;
+using Gondwana.Skia;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
@@ -32,6 +34,12 @@ public class GpuBackbuffer : BackbufferBase
     }
 
     public override SKCanvas Canvas => _surface.Canvas;
+    public override void DrawTileFrame(Tile tile)
+    {
+        var image = tile.CurrentFrame.SkImage;
+        if (image != null)
+            Canvas.DrawImage(image, tile.DrawLocation.ToSKRect());
+    }
     public override SKImage Snapshot() => _surface.Snapshot();
 
     public override void Dispose()

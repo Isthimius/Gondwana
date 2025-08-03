@@ -29,5 +29,8 @@ public struct Frame
     public readonly Size Size => Tilesheet.TileSize;
 
     [JsonIgnore]
-    public readonly SKBitmap? SkBitmap => Tilesheet[XTile, YTile];
+    public readonly SKBitmap? SkBitmap => Tilesheet?[XTile, YTile]?.Bitmap;
+
+    [JsonIgnore]
+    public readonly SKImage? SkImage => Tilesheet?[XTile, YTile]?.Image;
 }

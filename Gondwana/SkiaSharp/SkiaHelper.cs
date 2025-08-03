@@ -66,13 +66,16 @@ public static class SkiaHelper
         bitmap.NotifyPixelsChanged();
     }
 
-    public static void PremultiplyAlpha(SKBitmap bitmap)
+    public static SKBitmap PremultiplyAlpha(SKBitmap bitmap)
     {
         if (bitmap == null || bitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
 
-        if (bitmap.AlphaType == SKAlphaType.Premul)
-            return; // Already premultiplied
+        if (bitmap.AlphaType == SKAlphaType.Premul && bitmap.ColorType == SKColorType.Rgba8888)
+            return bitmap; // Already premultiplied, and in correct colortype
+
+        var info = new SKImageInfo(bitmap.Width, bitmap.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+        var premulBitmap = new SKBitmap(info);
 
         int width = bitmap.Width;
         int height = bitmap.Height;
@@ -83,19 +86,17 @@ public static class SkiaHelper
             {
                 var color = bitmap.GetPixel(x, y);
 
-                if (color.Alpha == 255)
-                    continue;
-
                 byte a = color.Alpha;
                 byte r = (byte)(color.Red * a / 255);
                 byte g = (byte)(color.Green * a / 255);
                 byte b = (byte)(color.Blue * a / 255);
 
-                bitmap.SetPixel(x, y, new SKColor(r, g, b, a));
+                premulBitmap.SetPixel(x, y, new SKColor(r, g, b, a));
             }
         }
 
-        bitmap.NotifyPixelsChanged();
+        premulBitmap.NotifyPixelsChanged();
+        return premulBitmap;
     }
 
     private static bool IsColorClose(SKColor a, SKColor b, byte tolerance)

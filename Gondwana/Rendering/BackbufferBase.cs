@@ -31,6 +31,7 @@ public abstract class BackbufferBase : IDisposable
     }
 
     public abstract SKCanvas Canvas { get; }
+    public abstract void DrawTileFrame(Tile tile);
     public abstract SKImage Snapshot();
 
     public SKPaint FogPaint { get; set; } = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
@@ -64,9 +65,7 @@ public abstract class BackbufferBase : IDisposable
             if (!tile.Visible) continue;
             if (!DirtyRectangle.IntersectsWith(tile.DrawLocation)) continue;
 
-            var bitmap = tile.CurrentFrame.SkBitmap;
-            if (bitmap != null)
-                Canvas.DrawBitmap(bitmap, tile.DrawLocation.ToSKRect());
+            DrawTileFrame(tile);
 
             if (tile.EnableFog)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), FogPaint);

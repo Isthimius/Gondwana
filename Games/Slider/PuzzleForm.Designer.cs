@@ -18,7 +18,7 @@ namespace Slider
                 components.Dispose();
             }
             base.Dispose(disposing);
-            picBoxDC.Dispose();
+            //picBoxDC.Dispose();
         }
 
         #region Windows Form Designer generated code
@@ -29,7 +29,6 @@ namespace Slider
         /// </summary>
         private void InitializeComponent()
         {
-            picBox = new System.Windows.Forms.PictureBox();
             openFileBox = new System.Windows.Forms.OpenFileDialog();
             btnBmpOpen = new System.Windows.Forms.Button();
             txtCol = new System.Windows.Forms.TextBox();
@@ -44,19 +43,8 @@ namespace Slider
             chkGrid = new System.Windows.Forms.CheckBox();
             lblCoord = new System.Windows.Forms.Label();
             lblInfo = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)picBox).BeginInit();
+            winFormBitmapRenderSurfaceControl1 = new Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl();
             SuspendLayout();
-            // 
-            // picBox
-            // 
-            picBox.Location = new System.Drawing.Point(190, 0);
-            picBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            picBox.Name = "picBox";
-            picBox.Size = new System.Drawing.Size(961, 822);
-            picBox.TabIndex = 0;
-            picBox.TabStop = false;
-            picBox.MouseClick += picBox_MouseClick;
-            picBox.MouseMove += picBox_MouseMove;
             // 
             // btnBmpOpen
             // 
@@ -198,11 +186,19 @@ namespace Slider
             lblInfo.TabIndex = 14;
             lblInfo.Text = "misc_disp";
             // 
+            // winFormBitmapRenderSurfaceControl1
+            // 
+            winFormBitmapRenderSurfaceControl1.Location = new System.Drawing.Point(188, -1);
+            winFormBitmapRenderSurfaceControl1.Name = "winFormBitmapRenderSurfaceControl1";
+            winFormBitmapRenderSurfaceControl1.Size = new System.Drawing.Size(963, 825);
+            winFormBitmapRenderSurfaceControl1.TabIndex = 15;
+            // 
             // PuzzleForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1150, 825);
+            Controls.Add(winFormBitmapRenderSurfaceControl1);
             Controls.Add(lblInfo);
             Controls.Add(lblCoord);
             Controls.Add(chkGrid);
@@ -216,7 +212,6 @@ namespace Slider
             Controls.Add(txtRow);
             Controls.Add(txtCol);
             Controls.Add(btnBmpOpen);
-            Controls.Add(picBox);
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Name = "PuzzleForm";
             Text = "PuzzleForm";
@@ -224,15 +219,12 @@ namespace Slider
             FormClosing += PuzzleForm_FormClosing;
             FormClosed += PuzzleForm_FormClosed;
             Load += PuzzleForm_Load;
-            ((System.ComponentModel.ISupportInitialize)picBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.PictureBox picBox;
         private System.Windows.Forms.OpenFileDialog openFileBox;
         private System.Windows.Forms.Button btnBmpOpen;
         private System.Windows.Forms.TextBox txtCol;
@@ -247,5 +239,6 @@ namespace Slider
         private System.Windows.Forms.CheckBox chkGrid;
         private System.Windows.Forms.Label lblCoord;
         private System.Windows.Forms.Label lblInfo;
+        private Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl winFormBitmapRenderSurfaceControl1;
     }
 }
