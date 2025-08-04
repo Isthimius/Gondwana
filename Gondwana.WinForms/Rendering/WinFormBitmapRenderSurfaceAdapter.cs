@@ -19,7 +19,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         _control.SizeChanged += (_, _) => SetDestinationSize(_control.Width, _control.Height);
     }
 
-    public SKColor ClearColor { get; set; } = SKColors.Black;
+    public SKColor ClearColor { get; set; } = SKColors.Purple;
 
     public override void Render(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
@@ -32,28 +32,28 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         _control.Invalidate();
     }
 
-    //private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
-    //{
-    //    if (_currentImage == null)
-    //        return;
-
-    //    var canvas = e.Surface.Canvas;
-    //    canvas.Clear(ClearColor);
-    //    canvas.DrawImage(_currentImage, _sourceRect, _destRect);
-    //}
-
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
-        var canvas = e.Surface.Canvas;
-        canvas.Clear(SKColors.DarkSlateGray); // Should always appear
+        if (_currentImage == null)
+            return;
 
-        if (_currentImage != null)
-        {
-            using var paint = new SKPaint { Color = SKColors.Red };
-            canvas.DrawImage(_currentImage, _sourceRect, _destRect);
-            canvas.DrawRect(_destRect, paint); // Outline to visualize target area
-        }
+        var canvas = e.Surface.Canvas;
+        canvas.Clear(ClearColor);
+        canvas.DrawImage(_currentImage, _sourceRect, _destRect);
     }
+
+    //private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
+    //{
+    //    var canvas = e.Surface.Canvas;
+    //    canvas.Clear(SKColors.DarkSlateGray); // Should always appear
+
+    //    if (_currentImage != null)
+    //    {
+    //        using var paint = new SKPaint { Color = SKColors.Red };
+    //        canvas.DrawImage(_currentImage, _sourceRect, _destRect);
+    //        canvas.DrawRect(_destRect, paint); // Outline to visualize target area
+    //    }
+    //}
 
     public void Dispose()
     {

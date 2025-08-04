@@ -18,7 +18,6 @@ namespace Slider
                 components.Dispose();
             }
             base.Dispose(disposing);
-            //picBoxDC.Dispose();
         }
 
         #region Windows Form Designer generated code
