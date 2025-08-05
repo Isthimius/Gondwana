@@ -38,22 +38,12 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             return;
 
         var canvas = e.Surface.Canvas;
-        canvas.Clear(ClearColor);
-        canvas.DrawImage(_currentImage, _sourceRect, _destRect);
+        //canvas.Clear(ClearColor);
+        
+        if (!_sourceRect.IsEmpty)
+            canvas.DrawImage(_currentImage, _sourceRect, _destRect);
+
     }
-
-    //private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
-    //{
-    //    var canvas = e.Surface.Canvas;
-    //    canvas.Clear(SKColors.DarkSlateGray); // Should always appear
-
-    //    if (_currentImage != null)
-    //    {
-    //        using var paint = new SKPaint { Color = SKColors.Red };
-    //        canvas.DrawImage(_currentImage, _sourceRect, _destRect);
-    //        canvas.DrawRect(_destRect, paint); // Outline to visualize target area
-    //    }
-    //}
 
     public void Dispose()
     {

@@ -78,7 +78,7 @@ public sealed class RenderSurfaceHost : IDisposable
         if (Renderer != null && Backbuffer is not null)
         {
             using var snapshot = Backbuffer.Snapshot();
-            Renderer.Render(snapshot, new SKRectI(0, 0, Backbuffer?.Width ?? 0, Backbuffer?.Height ?? 0));
+            Renderer.Render(snapshot, new SKRectI(0, 0, snapshot.Width, snapshot.Height));
         }
     }
 
