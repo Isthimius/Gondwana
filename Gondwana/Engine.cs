@@ -340,8 +340,9 @@ public sealed class Engine : IDisposable
                                 direct.ForceRefresh();
                         }
 
+                        // TODO: do we need to erase?
                         // erase the existing areas in queue
-                        backbuffer.Erase(grids.BackmostVisibleLayer.RefreshQueue.GetDirtyRectangles());
+                        //backbuffer.Erase(grids.BackmostVisibleLayer.RefreshQueue.GetDirtyRectangles());
 
                         // draw from back to front from visible layers array
                         for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
@@ -350,8 +351,9 @@ public sealed class Engine : IDisposable
                         break;
 
                     case MatrixesRefreshType.All:
+                        // TODO: do we need to erase?
                         // erase the entire backbuffer
-                        backbuffer.Erase();
+                        //backbuffer.Erase();
 
                         // force refresh of all DirectDrawing objects
                         foreach (DirectDrawing drawing in DirectDrawingManager._instances)

@@ -203,5 +203,32 @@ namespace Slider
         {
 
         }
+
+        private void winFormBitmapRenderSurfaceControl1_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void winFormBitmapRenderSurfaceControl1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (Program.puzzle != null)
+            {
+                if (!Program.puzzle._isShuffling)
+                {
+                    List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));
+                    if (sprites.Count != 0)
+                        Program.puzzle.SlidePiece(sprites[0], 0.15);
+                }
+            }
+        }
+
+        private void winFormBitmapRenderSurfaceControl1_MouseCaptureChanged(object sender, EventArgs e)
+        {
+            //if (Program.puzzle != null)
+            //{
+            //    var coords = Program.puzzle.GetGridCoordinates(e.X, e.Y);
+            //    lblCoord.Text = "x: " + coords.X.ToString() + "   y: " + coords.Y.ToString();
+            //}
+        }
     }
 }
