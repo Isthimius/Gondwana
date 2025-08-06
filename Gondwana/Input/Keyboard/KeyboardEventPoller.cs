@@ -42,7 +42,7 @@ public sealed class KeyboardEventPoller
     /// <param name="tick">Current global tick</param>
     /// <param name="keyStates">Set of currently pressed keys (as strings or codes)</param>
     /// <param name="modifiers">Optional modifier state</param>
-    public void PollForEvents(long tick)
+    internal void PollForEvents(long tick)
     {
         if (PauseAllKeyEvents || Adapter is null) return;
 

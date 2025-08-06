@@ -177,7 +177,16 @@ namespace Slider
                 Program.puzzle.Dispose();
         }
 
-        private void gondwanaGpuSurface_MouseClick(object sender, MouseEventArgs e)
+        private void winFormBitmapRenderSurfaceControl1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Program.puzzle != null)
+            {
+                var coords = Program.puzzle.GetGridCoordinates(e.X, e.Y);
+                lblCoord.Text = "x: " + coords.X.ToString() + "   y: " + coords.Y.ToString();
+            }
+        }
+
+        private void winFormBitmapRenderSurfaceControl1_MouseDown(object sender, MouseEventArgs e)
         {
             if (Program.puzzle != null)
             {
@@ -190,13 +199,9 @@ namespace Slider
             }
         }
 
-        private void gondwanaGpuSurface_MouseMove(object sender, MouseEventArgs e)
+        private void winFormBitmapRenderSurfaceControl1_Load(object sender, EventArgs e)
         {
-            if (Program.puzzle != null)
-            {
-                var coords = Program.puzzle.GetGridCoordinates(e.X, e.Y);
-                lblCoord.Text = "x: " + coords.X.ToString() + "   y: " + coords.Y.ToString();
-            }
+
         }
     }
 }

@@ -47,10 +47,10 @@ namespace Slider
             // 
             // btnBmpOpen
             // 
-            btnBmpOpen.Location = new System.Drawing.Point(14, 196);
-            btnBmpOpen.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnBmpOpen.Location = new System.Drawing.Point(20, 327);
+            btnBmpOpen.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             btnBmpOpen.Name = "btnBmpOpen";
-            btnBmpOpen.Size = new System.Drawing.Size(159, 46);
+            btnBmpOpen.Size = new System.Drawing.Size(227, 77);
             btnBmpOpen.TabIndex = 1;
             btnBmpOpen.TabStop = false;
             btnBmpOpen.Text = "Open Bitmap";
@@ -59,20 +59,20 @@ namespace Slider
             // 
             // txtCol
             // 
-            txtCol.Location = new System.Drawing.Point(79, 14);
-            txtCol.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            txtCol.Location = new System.Drawing.Point(113, 23);
+            txtCol.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             txtCol.Name = "txtCol";
-            txtCol.Size = new System.Drawing.Size(93, 23);
+            txtCol.Size = new System.Drawing.Size(131, 31);
             txtCol.TabIndex = 2;
             txtCol.Text = "3";
             txtCol.Leave += txtCol_Leave;
             // 
             // txtRow
             // 
-            txtRow.Location = new System.Drawing.Point(79, 51);
-            txtRow.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            txtRow.Location = new System.Drawing.Point(113, 85);
+            txtRow.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             txtRow.Name = "txtRow";
-            txtRow.Size = new System.Drawing.Size(93, 23);
+            txtRow.Size = new System.Drawing.Size(131, 31);
             txtRow.TabIndex = 3;
             txtRow.Text = "3";
             txtRow.Leave += txtRow_Leave;
@@ -80,30 +80,30 @@ namespace Slider
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(14, 14);
-            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Location = new System.Drawing.Point(20, 23);
+            label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(55, 15);
+            label1.Size = new System.Drawing.Size(82, 25);
             label1.TabIndex = 4;
             label1.Text = "Columns";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(14, 51);
-            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Location = new System.Drawing.Point(20, 85);
+            label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(35, 15);
+            label2.Size = new System.Drawing.Size(54, 25);
             label2.TabIndex = 5;
             label2.Text = "Rows";
             // 
             // btnShuffle
             // 
             btnShuffle.Enabled = false;
-            btnShuffle.Location = new System.Drawing.Point(14, 252);
-            btnShuffle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnShuffle.Location = new System.Drawing.Point(20, 420);
+            btnShuffle.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             btnShuffle.Name = "btnShuffle";
-            btnShuffle.Size = new System.Drawing.Size(159, 46);
+            btnShuffle.Size = new System.Drawing.Size(227, 77);
             btnShuffle.TabIndex = 6;
             btnShuffle.TabStop = false;
             btnShuffle.Text = "Shuffle";
@@ -113,30 +113,30 @@ namespace Slider
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(14, 132);
-            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Location = new System.Drawing.Point(20, 220);
+            label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(46, 15);
+            label3.Size = new System.Drawing.Size(69, 25);
             label3.TabIndex = 10;
             label3.Text = "Correct";
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(14, 95);
-            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Location = new System.Drawing.Point(20, 158);
+            label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(40, 15);
+            label4.Size = new System.Drawing.Size(60, 25);
             label4.TabIndex = 9;
             label4.Text = "Pieces";
             // 
             // txtCorrect
             // 
             txtCorrect.Enabled = false;
-            txtCorrect.Location = new System.Drawing.Point(79, 132);
-            txtCorrect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            txtCorrect.Location = new System.Drawing.Point(113, 220);
+            txtCorrect.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             txtCorrect.Name = "txtCorrect";
-            txtCorrect.Size = new System.Drawing.Size(93, 23);
+            txtCorrect.Size = new System.Drawing.Size(131, 31);
             txtCorrect.TabIndex = 8;
             txtCorrect.TabStop = false;
             txtCorrect.Text = "0";
@@ -144,10 +144,10 @@ namespace Slider
             // txtPieces
             // 
             txtPieces.Enabled = false;
-            txtPieces.Location = new System.Drawing.Point(79, 95);
-            txtPieces.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            txtPieces.Location = new System.Drawing.Point(113, 158);
+            txtPieces.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             txtPieces.Name = "txtPieces";
-            txtPieces.Size = new System.Drawing.Size(93, 23);
+            txtPieces.Size = new System.Drawing.Size(131, 31);
             txtPieces.TabIndex = 7;
             txtPieces.TabStop = false;
             txtPieces.Text = "0";
@@ -156,10 +156,10 @@ namespace Slider
             // 
             chkGrid.AutoSize = true;
             chkGrid.Enabled = false;
-            chkGrid.Location = new System.Drawing.Point(79, 162);
-            chkGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            chkGrid.Location = new System.Drawing.Point(113, 270);
+            chkGrid.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             chkGrid.Name = "chkGrid";
-            chkGrid.Size = new System.Drawing.Size(78, 19);
+            chkGrid.Size = new System.Drawing.Size(115, 29);
             chkGrid.TabIndex = 11;
             chkGrid.Text = "Grid Lines";
             chkGrid.UseVisualStyleBackColor = true;
@@ -168,35 +168,38 @@ namespace Slider
             // lblCoord
             // 
             lblCoord.AutoSize = true;
-            lblCoord.Location = new System.Drawing.Point(10, 301);
-            lblCoord.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblCoord.Location = new System.Drawing.Point(14, 502);
+            lblCoord.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             lblCoord.Name = "lblCoord";
-            lblCoord.Size = new System.Drawing.Size(69, 15);
+            lblCoord.Size = new System.Drawing.Size(105, 25);
             lblCoord.TabIndex = 12;
             lblCoord.Text = "coordinates";
             // 
             // lblInfo
             // 
             lblInfo.AutoSize = true;
-            lblInfo.Location = new System.Drawing.Point(10, 418);
-            lblInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblInfo.Location = new System.Drawing.Point(14, 697);
+            lblInfo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             lblInfo.Name = "lblInfo";
-            lblInfo.Size = new System.Drawing.Size(59, 15);
+            lblInfo.Size = new System.Drawing.Size(89, 25);
             lblInfo.TabIndex = 14;
             lblInfo.Text = "misc_disp";
             // 
             // winFormBitmapRenderSurfaceControl1
             // 
-            winFormBitmapRenderSurfaceControl1.Location = new System.Drawing.Point(188, -1);
+            winFormBitmapRenderSurfaceControl1.Location = new System.Drawing.Point(269, -2);
+            winFormBitmapRenderSurfaceControl1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             winFormBitmapRenderSurfaceControl1.Name = "winFormBitmapRenderSurfaceControl1";
-            winFormBitmapRenderSurfaceControl1.Size = new System.Drawing.Size(963, 825);
+            winFormBitmapRenderSurfaceControl1.Size = new System.Drawing.Size(1376, 1375);
             winFormBitmapRenderSurfaceControl1.TabIndex = 15;
+            winFormBitmapRenderSurfaceControl1.MouseDown += winFormBitmapRenderSurfaceControl1_MouseDown;
+            winFormBitmapRenderSurfaceControl1.MouseMove += winFormBitmapRenderSurfaceControl1_MouseMove;
             // 
             // PuzzleForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1150, 825);
+            ClientSize = new System.Drawing.Size(1643, 1375);
             Controls.Add(winFormBitmapRenderSurfaceControl1);
             Controls.Add(lblInfo);
             Controls.Add(lblCoord);
@@ -211,7 +214,7 @@ namespace Slider
             Controls.Add(txtRow);
             Controls.Add(txtCol);
             Controls.Add(btnBmpOpen);
-            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             Name = "PuzzleForm";
             Text = "PuzzleForm";
             WindowState = System.Windows.Forms.FormWindowState.Maximized;

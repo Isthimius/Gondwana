@@ -42,7 +42,6 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         
         if (!_sourceRect.IsEmpty)
             canvas.DrawImage(_currentImage, _sourceRect, _destRect);
-
     }
 
     public void Dispose()
