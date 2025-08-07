@@ -3,11 +3,11 @@ using System.Drawing;
 
 namespace Gondwana.Rendering.Direct;
 
-public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
+public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDisposable
 {
-    public event EventHandler<DirectDrawing> Disposing;
+    public event EventHandler<DirectDrawingBase> Disposing;
 
-    protected readonly BackbufferBase _buffer;
+    protected readonly RenderSurfaceHost<BitmapBackbuffer> _renderSurfaceHost;
     protected Rectangle _bounds;
     protected int _zOrder;
     internal Movement? _movement;
@@ -16,19 +16,19 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     protected internal abstract void Render();
 
-    protected DirectDrawing(BackbufferBase buffer, Rectangle bounds)
+    protected DirectDrawingBase(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, Rectangle bounds)
     {
         DirectDrawingManager.Add(this);
-        _buffer = buffer;
+        _renderSurfaceHost = renderSurfaceHost;
         _bounds = bounds;
         _zOrder = 0;
         Name = Guid.NewGuid().ToString();
         ForceRefresh();
     }
 
-    ~DirectDrawing() => Dispose(false);
+    ~DirectDrawingBase() => Dispose(false);
 
-    public BackbufferBase Buffer => _buffer;
+    public RenderSurfaceHost<BitmapBackbuffer> RenderSurfaceHost => _renderSurfaceHost;
 
     public Rectangle Bounds
     {
@@ -75,14 +75,14 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     internal void ForceRefresh()
     {
-        var matrixes = Buffer.DrawSource;
+        var matrixes = RenderSurfaceHost.DrawSource;
         if (matrixes?.Count > 0)
             matrixes[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
         _dirty = true;
     }
 
-    public int CompareTo(DirectDrawing? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
+    public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
 
     public void Dispose()
     {
@@ -109,21 +109,21 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
 
     public override int GetHashCode() => HashCode.Combine(Name);
 
-    public static bool operator ==(DirectDrawing? left, DirectDrawing? right) =>
+    public static bool operator ==(DirectDrawingBase? left, DirectDrawingBase? right) =>
         ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
 
-    public static bool operator !=(DirectDrawing? left, DirectDrawing? right) => !(left == right);
+    public static bool operator !=(DirectDrawingBase? left, DirectDrawingBase? right) => !(left == right);
 
-    public static bool operator <(DirectDrawing? left, DirectDrawing? right) =>
+    public static bool operator <(DirectDrawingBase? left, DirectDrawingBase? right) =>
         ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
 
-    public static bool operator <=(DirectDrawing? left, DirectDrawing? right) =>
+    public static bool operator <=(DirectDrawingBase? left, DirectDrawingBase? right) =>
         ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
 
-    public static bool operator >(DirectDrawing? left, DirectDrawing? right) =>
+    public static bool operator >(DirectDrawingBase? left, DirectDrawingBase? right) =>
         !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
 
-    public static bool operator >=(DirectDrawing? left, DirectDrawing? right) =>
+    public static bool operator >=(DirectDrawingBase? left, DirectDrawingBase? right) =>
         ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
 
     #endregion
@@ -131,13 +131,13 @@ public abstract class DirectDrawing : IComparable<DirectDrawing>, IDisposable
     #region Movement Inner Class
     internal class Movement
     {
-        internal DirectDrawing? parent;
+        internal DirectDrawingBase? parent;
         private readonly long startTick;
         private readonly long totalTicks;
         private readonly Rectangle startBounds;
         private readonly Rectangle destBounds;
 
-        internal Movement(DirectDrawing drawing, double totalTime, Rectangle dest)
+        internal Movement(DirectDrawingBase drawing, double totalTime, Rectangle dest)
         {
             parent = drawing;
             startTick = HighResTimer.GetCurrentTick();

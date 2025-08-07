@@ -22,7 +22,7 @@ namespace Gondwana.Rendering.Direct;
 ///    .UseShadow()
 ///    .UseOutline();
 /// </example>
-public class TextBlock : DirectDrawing
+public class TextBlock : DirectDrawingBase
 {
     public enum VerticalAlign
     {
@@ -47,8 +47,8 @@ public class TextBlock : DirectDrawing
     private SKTextAlign _hAlign = SKTextAlign.Left;
     private VerticalAlign _vAlign = VerticalAlign.Top;
 
-    public TextBlock(BackbufferBase buffer, Rectangle bounds)
-        : base(buffer, bounds)
+    public TextBlock(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, Rectangle bounds)
+        : base(renderSurfaceHost, bounds)
     {
     }
 
@@ -70,7 +70,7 @@ public class TextBlock : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = Buffer.Canvas;
+        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();
 
         using var bg = new SKPaint { Color = _backColor };

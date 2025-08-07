@@ -44,7 +44,7 @@ namespace Gondwana.Rendering.Direct;
 ///    .SetAlpha((int)(128 + 127 * Math.Sin(tick / 10.0)));
 ///    
 /// </example>
-public class DirectRectangle : DirectDrawing
+public class DirectRectangle : DirectDrawingBase
 {
     private readonly SKPaint _paint;
     private bool _isFilled;
@@ -53,10 +53,10 @@ public class DirectRectangle : DirectDrawing
     private StrokeAlign _strokeAlign = StrokeAlign.Center;
 
     public DirectRectangle(
-        BackbufferBase buffer,
+        RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost,
         Rectangle bounds,
         Color color)
-        : base(buffer, bounds)
+        : base(renderSurfaceHost, bounds)
     {
         _paint = new SKPaint
         {
@@ -120,7 +120,7 @@ public class DirectRectangle : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = Buffer.Canvas;
+        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();
 
         if (_strokeAlign != StrokeAlign.Center && !_isFilled)

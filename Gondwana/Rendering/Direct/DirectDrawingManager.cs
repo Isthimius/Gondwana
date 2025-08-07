@@ -4,13 +4,13 @@ namespace Gondwana.Rendering.Direct;
 
 public static class DirectDrawingManager
 {
-    internal static readonly List<DirectDrawing> _instances = new();
+    internal static readonly List<DirectDrawingBase> _instances = new();
 
-    public static ReadOnlyCollection<DirectDrawing> Instances => _instances.AsReadOnly();
+    public static ReadOnlyCollection<DirectDrawingBase> Instances => _instances.AsReadOnly();
 
     public static int Count => _instances.Count;
 
-    public static DirectDrawing? GetDirectDrawing(string name) =>
+    public static DirectDrawingBase? GetDirectDrawing(string name) =>
         _instances.FirstOrDefault(d => d.Name == name);
 
     internal static void RenderAll()
@@ -19,7 +19,7 @@ public static class DirectDrawingManager
 
         foreach (var drawing in _instances)
         {
-            if (!drawing.Bounds.IntersectsWith(drawing.Buffer.DirtyRectangle))
+            if (!drawing.Bounds.IntersectsWith(drawing.RenderSurfaceHost.Backbuffer.DirtyRectangle))
                 continue;
 
             if (drawing._dirty)
@@ -30,7 +30,7 @@ public static class DirectDrawingManager
         }
     }
 
-    public static void Add(DirectDrawing drawing)
+    public static void Add(DirectDrawingBase drawing)
     {
         if (!_instances.Contains(drawing))
         {

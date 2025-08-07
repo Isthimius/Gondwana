@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using Gondwana.Grid;
 using Gondwana.Drawing;
 using System.Drawing;
 using Gondwana.Skia;
@@ -8,7 +7,7 @@ namespace Gondwana.Rendering;
 
 public abstract class BackbufferBase : IDisposable
 {
-    internal static List<BackbufferBase> _allBackbuffers { get; } = new();
+    private static List<BackbufferBase> _allBackbuffers { get; } = new();
 
     internal static void _resetAllDirtyRectangles()
     {
@@ -20,10 +19,12 @@ public abstract class BackbufferBase : IDisposable
 
     protected readonly Rectangle _range;
 
+    private BackbufferBase() { _allBackbuffers.Add(this); }
+
     protected BackbufferBase(int width, int height)
-    { 
+        : this()
+    {
         _range = new Rectangle(0, 0, width, height);
-        _allBackbuffers.Add(this);
     }
 
     public abstract SKCanvas Canvas { get; }
@@ -37,22 +38,6 @@ public abstract class BackbufferBase : IDisposable
     public int Height => _range.Height;
     public Rectangle DirtyRectangle { get; set; } = Rectangle.Empty;
     public SKColor ClearColor { get; set; } = SKColors.Black;
-
-    public GridPointMatrixes? DrawSource { get; private set; } = null;
-
-    public void Bind(GridPointMatrixes drawSource)
-    {
-        if (DrawSource != null)
-            DrawSource.Disposing -= OnSourceDisposing;
-
-        DrawSource = drawSource;
-
-        if (DrawSource != null)
-        {
-            DrawSource.Disposing += OnSourceDisposing;
-            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
-        }
-    }
 
     internal void DrawTiles(IList<Tile> tiles)
     {
@@ -100,8 +85,6 @@ public abstract class BackbufferBase : IDisposable
             ? area
             : Rectangle.Union(DirtyRectangle, area);
     }
-
-    protected void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;
 
     public virtual byte[] ToByteArray(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {

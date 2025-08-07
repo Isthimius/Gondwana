@@ -62,7 +62,7 @@ namespace Slider
 
             renderSurfaceHost.RedrawDirtyRectangleOnly = false;
             renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Yellow;
-            renderSurfaceHost.Backbuffer.Bind(matrixes);
+            renderSurfaceHost.Bind(matrixes);
 
             InitializeSprites(tileWidth, tileHeight);
             slideSound = SoundResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");

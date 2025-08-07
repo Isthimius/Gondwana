@@ -6,12 +6,12 @@ using Gondwana.Skia;
 
 namespace Gondwana.Rendering.Direct;
 
-public class DirectImage : DirectDrawing
+public class DirectImage : DirectDrawingBase
 {
     private readonly Tilesheet _tilesheet;
 
-    public DirectImage(BackbufferBase buffer, Rectangle bounds, Tilesheet tilesheet)
-        : base(buffer, bounds)
+    public DirectImage(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, Rectangle bounds, Tilesheet tilesheet)
+        : base(renderSurfaceHost, bounds)
     {
         if (tilesheet == null)
         {
@@ -24,7 +24,7 @@ public class DirectImage : DirectDrawing
 
     protected internal override void Render()
     {
-        var canvas = Buffer.Canvas;
+        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var destRect = Bounds.ToSKRect();
 
         var bitmap = _tilesheet.SkBitmap;

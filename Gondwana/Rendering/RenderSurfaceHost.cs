@@ -1,6 +1,7 @@
-﻿using System.Drawing;
+﻿using Gondwana.Grid;
 using Gondwana.Skia;
 using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.Rendering;
 
@@ -17,16 +18,34 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
 
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
-        Renderer = renderSurfaceAdapter;
+        RenderSurfaceAdapter = renderSurfaceAdapter;
         CreateBackbuffer();
 
         // create new backbuffer on resize
-        Renderer.Resized += (_, _) => CreateBackbuffer();
+        RenderSurfaceAdapter.Resized += (_, _) => CreateBackbuffer();
     }
 
     public BackbufferBase? Backbuffer { get; private set; } = null;
 
-    public RenderSurfaceAdapterBase? Renderer { get; private set; } = null;
+    public RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; private set; } = null;
+
+    public GridPointMatrixes? DrawSource { get; private set; } = null;
+
+    public void Bind(GridPointMatrixes drawSource)
+    {
+        if (DrawSource != null)
+            DrawSource.Disposing -= OnSourceDisposing;
+
+        DrawSource = drawSource;
+
+        if (DrawSource != null)
+        {
+            DrawSource.Disposing += OnSourceDisposing;
+            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
+        }
+    }
+
+    private void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
@@ -75,15 +94,15 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
         Backbuffer?.Dispose();
 
         // Use Activator.CreateInstance to create T with parameters
-        Backbuffer = (T)Activator.CreateInstance(typeof(T), Renderer!.Width, Renderer.Height)!;
+        Backbuffer = (T)Activator.CreateInstance(typeof(T), RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height)!;
     }
 
     private void RenderBackbufferAll()
     {
-        if (Renderer != null && Backbuffer is not null)
+        if (RenderSurfaceAdapter != null && Backbuffer is not null)
         {
             using var snapshot = Backbuffer.Snapshot();
-            Renderer.Render(snapshot, new SKRectI(0, 0, snapshot.Width, snapshot.Height));
+            RenderSurfaceAdapter.Render(snapshot, new SKRectI(0, 0, snapshot.Width, snapshot.Height));
         }
     }
 
@@ -93,10 +112,10 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
         if (dirty.IsEmpty)
             return;
 
-        if (Renderer != null && Backbuffer is not null)
+        if (RenderSurfaceAdapter != null && Backbuffer is not null)
         {
             using var snapshot = Backbuffer.Snapshot();
-            Renderer.Render(snapshot, dirty.ToSKRectI());
+            RenderSurfaceAdapter.Render(snapshot, dirty.ToSKRectI());
         }
     }
     #endregion

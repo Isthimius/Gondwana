@@ -317,7 +317,7 @@ public sealed class Engine : IDisposable
         foreach (var surface in RenderSurfaceHost<T>._allRenderSurfaceHosts)
         {
             var backbuffer = surface.Backbuffer;
-            GridPointMatrixes grids = backbuffer.DrawSource;
+            GridPointMatrixes grids = surface.DrawSource;
 
             if (grids == null || grids.Count == 0)
             {
@@ -326,7 +326,7 @@ public sealed class Engine : IDisposable
                 backbuffer.Erase();
 
                 // force refresh of all DirectDrawing objects
-                foreach (DirectDrawing drawing in DirectDrawingManager._instances)
+                foreach (DirectDrawingBase drawing in DirectDrawingManager._instances)
                     drawing.ForceRefresh();
             }
             else
@@ -339,7 +339,7 @@ public sealed class Engine : IDisposable
 
                     case MatrixesRefreshType.Queue:
                         // erase any DirectDrawing that intersects with a refresh area
-                        foreach (DirectDrawing direct in DirectDrawingManager._instances)
+                        foreach (DirectDrawingBase direct in DirectDrawingManager._instances)
                         {
                             if (grids.BackmostVisibleLayer.RefreshQueue.AreaIntersectsRefreshArea(direct.Bounds))
                                 direct.ForceRefresh();
@@ -361,7 +361,7 @@ public sealed class Engine : IDisposable
                         //backbuffer.Erase();
 
                         // force refresh of all DirectDrawing objects
-                        foreach (DirectDrawing drawing in DirectDrawingManager._instances)
+                        foreach (DirectDrawingBase drawing in DirectDrawingManager._instances)
                             drawing.ForceRefresh();
 
                         // draw from back to front from visible layers array
@@ -372,7 +372,7 @@ public sealed class Engine : IDisposable
 
                             // find and add all Tile objects in range to queue
                             grids.VisibleGridPointMatrixList[i].RefreshQueue.AddPixelRangeToRefreshQueue(
-                                new Rectangle(0, 0, surface.Renderer!.Width, surface.Renderer.Height), false);
+                                new Rectangle(0, 0, surface.RenderSurfaceAdapter!.Width, surface.RenderSurfaceAdapter.Height), false);
 
                             // draw to backbuffer
                             surface.Backbuffer!.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
