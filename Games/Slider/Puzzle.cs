@@ -35,7 +35,7 @@ namespace Slider
         #endregion
 
         #region constructors / destructor
-        public Puzzle(RenderSurfaceHost renderSurfaceHost, string imgFile, int columns, int rows, Size size)
+        public Puzzle(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, string imgFile, int columns, int rows, Size size)
         {
             tilesheet = new Tilesheet("picture", imgFile);
             tilesheet.ApplyPremultiplyAlpha();
@@ -74,8 +74,8 @@ namespace Slider
             Sprites.SpriteMovementStarted += delMoveStart;
             Sprites.SpriteMovementStopped += delMoveStop;
 
-            Engine.Instance.InitializeWinFormsAudioFormats();
-            Engine.Instance.InitializeXInputGamepadManager();
+            //Engine.Instance.InitializeWinFormsAudioFormats();
+            //Engine.Instance.InitializeXInputGamepadManager();
         }
 
         ~Puzzle()

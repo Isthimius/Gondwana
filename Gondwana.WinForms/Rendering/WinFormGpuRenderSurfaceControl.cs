@@ -6,27 +6,20 @@ namespace Gondwana.WinForms.Rendering;
 public partial class WinFormGpuRenderSurfaceControl : UserControl
 {
     private readonly SKGLControl _glControl;
-    public RenderSurfaceHost RenderSurfaceHost { get; }
+    public RenderSurfaceHost<GpuBackbuffer> RenderSurfaceHost { get; private set; }
 
     public WinFormGpuRenderSurfaceControl()
     {
         _glControl = new SKGLControl { Dock = DockStyle.Fill };
         Controls.Add(_glControl);
 
-        var renderAdapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
-        RenderSurfaceHost = new RenderSurfaceHost(renderAdapter);
-
         this.Load += (_, _) => InitializeBackbuffer();
     }
 
     private void InitializeBackbuffer()
     {
-        // Create the Backbuffer
-        var screenBounds = Screen.FromControl(this).Bounds;
-        var buffer = new GpuBackbuffer(screenBounds.Width, screenBounds.Height);
-
-        // Bind the buffer to the surface
-        RenderSurfaceHost.Bind(buffer);
+        var renderAdapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
+        RenderSurfaceHost = new RenderSurfaceHost<GpuBackbuffer>(renderAdapter);
     }
 
     /// <summary> 

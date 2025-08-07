@@ -11,7 +11,7 @@ public partial class WinFormGpuRenderSurfaceForm : Form
         InitializeRendering();
     }
 
-    public RenderSurfaceHost? RenderSurfaceHost { get; private set; }
+    public RenderSurfaceHost<GpuBackbuffer>? RenderSurfaceHost { get; private set; }
 
     private void InitializeRendering()
     {
@@ -26,14 +26,7 @@ public partial class WinFormGpuRenderSurfaceForm : Form
         var renderAdapter = new WinFormGpuRenderSurfaceAdapter(skGlControl);
 
         // Create the surface host with the adapter
-        RenderSurfaceHost = new RenderSurfaceHost(renderAdapter);
-
-        // GPU Backbuffer requires OpenGL context, which SKGLControl has now provided
-        var screenBounds = Screen.FromControl(this).Bounds;
-        var buffer = new GpuBackbuffer(screenBounds.Width, screenBounds.Height);
-
-        // Bind buffer to surface host
-        RenderSurfaceHost.Bind(buffer);
+        RenderSurfaceHost = new RenderSurfaceHost<GpuBackbuffer>(renderAdapter);
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)

@@ -11,8 +11,8 @@ public class GpuBackbuffer : BackbufferBase
     private readonly GRBackendRenderTarget _renderTarget;
     private readonly SKSurface _surface;
     
-    public GpuBackbuffer(int width, int height, GridPointMatrixes? drawSource = null)
-        : base(width, height, drawSource)
+    public GpuBackbuffer(int width, int height)
+        : base(width, height)
     {
         _grContext = GRContext.CreateGl() ?? throw new InvalidOperationException("No active OpenGL context.");
 

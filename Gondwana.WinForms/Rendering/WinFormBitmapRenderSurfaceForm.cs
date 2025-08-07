@@ -11,7 +11,7 @@ public partial class WinFormBitmapRenderSurfaceForm : Form
         InitializeRendering();
     }
 
-    public RenderSurfaceHost? RenderSurfaceHost { get; private set; }
+    public RenderSurfaceHost<BitmapBackbuffer>? RenderSurfaceHost { get; private set; }
 
     private void InitializeRendering()
     {
@@ -26,14 +26,7 @@ public partial class WinFormBitmapRenderSurfaceForm : Form
         var renderAdapter = new WinFormBitmapRenderSurfaceAdapter(skControl);
 
         // Create the surface and hook the adapter
-        RenderSurfaceHost = new RenderSurfaceHost(renderAdapter);
-
-        // Create the Backbuffer
-        var screenBounds = Screen.FromControl(this).Bounds;
-        var buffer = new BitmapBackbuffer(screenBounds.Width, screenBounds.Height);
-
-        // Bind the buffer to the surface
-        RenderSurfaceHost.Bind(buffer);
+        RenderSurfaceHost = new RenderSurfaceHost<BitmapBackbuffer>(renderAdapter);
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)

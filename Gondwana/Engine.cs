@@ -269,7 +269,8 @@ public sealed class Engine : IDisposable
         //RaiseCollisionEvent(tick);
 
         // refresh all VisibleSurface backbuffers
-        DrawRefreshQueues();
+        DrawRefreshQueues<BitmapBackbuffer>();
+        DrawRefreshQueues<GpuBackbuffer>();
 
         // all attached VisibleSurface backbuffers drawn; clear the refresh queues
         ClearRefreshQueues();
@@ -284,8 +285,12 @@ public sealed class Engine : IDisposable
         if (BeforeEngineCycle != null)
             BeforeEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
-        // render to each RenderSurfaceHost
-        foreach (var surface in RenderSurfaceHost._allRenderSurfaceHosts)
+        // render each BitmapBackbuffer to RenderSurfaceHost adapter
+        foreach (var surface in RenderSurfaceHost<BitmapBackbuffer>._allRenderSurfaceHosts)
+            surface.RenderBackbuffer();
+
+        // render each GpuBackbuffer to RenderSurfaceHost adapter
+        foreach (var surface in RenderSurfaceHost<GpuBackbuffer>._allRenderSurfaceHosts)
             surface.RenderBackbuffer();
 
         // all RenderSurfaceHost backbuffers rendered; clear the dirty rectangles
@@ -307,9 +312,9 @@ public sealed class Engine : IDisposable
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);
     }
 
-    private void DrawRefreshQueues()
+    private void DrawRefreshQueues<T>() where T : BackbufferBase
     {
-        foreach (var surface in RenderSurfaceHost._allRenderSurfaceHosts)
+        foreach (var surface in RenderSurfaceHost<T>._allRenderSurfaceHosts)
         {
             var backbuffer = surface.Backbuffer;
             GridPointMatrixes grids = backbuffer.DrawSource;
@@ -367,10 +372,10 @@ public sealed class Engine : IDisposable
 
                             // find and add all Tile objects in range to queue
                             grids.VisibleGridPointMatrixList[i].RefreshQueue.AddPixelRangeToRefreshQueue(
-                                new Rectangle(0, 0, surface.Renderer.DestWidth, surface.Renderer.DestHeight), false);
+                                new Rectangle(0, 0, surface.Renderer!.Width, surface.Renderer.Height), false);
 
                             // draw to backbuffer
-                            surface.Backbuffer.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
+                            surface.Backbuffer!.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
                         }
 
                         break;

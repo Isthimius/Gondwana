@@ -20,13 +20,9 @@ public abstract class BackbufferBase : IDisposable
 
     protected readonly Rectangle _range;
 
-    protected BackbufferBase(int width, int height, GridPointMatrixes? drawSource = null)
+    protected BackbufferBase(int width, int height)
     { 
         _range = new Rectangle(0, 0, width, height);
-
-        if (drawSource != null)
-            Bind(drawSource);
-
         _allBackbuffers.Add(this);
     }
 

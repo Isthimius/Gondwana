@@ -10,8 +10,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
     private readonly SKBitmap _bitmap;
     private readonly SKCanvas _canvas;
 
-    public BitmapBackbuffer(int width, int height, GridPointMatrixes? drawSource = null)
-        : base(width, height, drawSource)
+    public BitmapBackbuffer(int width, int height)
+        : base(width, height)
     {
         _bitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
         _canvas = new SKCanvas(_bitmap);

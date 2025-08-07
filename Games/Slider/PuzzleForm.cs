@@ -83,7 +83,7 @@ namespace Slider
                     Gondwana.Engine.Instance.CPSCalculated += Engine_CPSCalculated;
                 }
 
-                Gondwana.Engine.Instance.InitializeWinFormsKeyboardAdapter(this);
+                //Gondwana.Engine.Instance.InitializeWinFormsKeyboardAdapter(this);
             }
         }
 

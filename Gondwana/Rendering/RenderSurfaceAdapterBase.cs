@@ -4,8 +4,10 @@ namespace Gondwana.Rendering;
 
 public abstract class RenderSurfaceAdapterBase
 {
-    public int DestWidth { get; protected set; }
-    public int DestHeight { get; protected set; }
+    public event EventHandler? Resized;
+
+    public int Width { get; protected set; }
+    public int Height { get; protected set; }
 
     protected RenderSurfaceAdapterBase(int destWidth, int destHeight)
     {
@@ -14,14 +16,15 @@ public abstract class RenderSurfaceAdapterBase
 
     protected void SetDestinationSize(int destWidth, int destHeight)
     {
-        DestWidth = destWidth;
-        DestHeight = destHeight;
+        Width = destWidth;
+        Height = destHeight;
+        Resized?.Invoke(this, EventArgs.Empty);
     }
 
     internal void Render(SKImage bufferImage, SKRectI dirtyRect)
     {
-        float scaleX = (float)DestWidth / bufferImage.Width;
-        float scaleY = (float)DestHeight / bufferImage.Height;
+        float scaleX = (float)Width / bufferImage.Width;
+        float scaleY = (float)Height / bufferImage.Height;
 
         var destRect = new SKRect(
             dirtyRect.Left * scaleX,

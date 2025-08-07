@@ -1,31 +1,27 @@
-﻿using Gondwana.Skia;
+﻿using System.Drawing;
+using Gondwana.Skia;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Rendering;
 
-public sealed class RenderSurfaceHost : IDisposable
+public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
 {
-    internal static List<RenderSurfaceHost> _allRenderSurfaceHosts { get; } = new();
+    internal static List<RenderSurfaceHost<T>> _allRenderSurfaceHosts { get; } = new();
 
-    public static IReadOnlyList<RenderSurfaceHost> AllRenderSurfaceHosts => _allRenderSurfaceHosts.AsReadOnly();
+    public static IReadOnlyList<RenderSurfaceHost<T>> AllRenderSurfaceHosts => _allRenderSurfaceHosts.AsReadOnly();
 
-    public event EventHandler<RenderSurfaceHostBindEventArgs>? RenderSurfaceHostBind;
-
-    private RenderSurfaceHost() { }
-
-    public RenderSurfaceHost(RenderSurfaceAdapterBase visibleSurfaceRenderAdapter)
+    private RenderSurfaceHost()
     {
         _allRenderSurfaceHosts.Add(this);
-        Renderer = visibleSurfaceRenderAdapter;
     }
 
-    public void Bind(BackbufferBase? buffer)
+    public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
-        var oldBuffer = Backbuffer;
-        Backbuffer = buffer;
+        Renderer = renderSurfaceAdapter;
+        CreateBackbuffer();
 
-        RenderSurfaceHostBind?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldBuffer, buffer));
+        // create new backbuffer on resize
+        Renderer.Resized += (_, _) => CreateBackbuffer();
     }
 
     public BackbufferBase? Backbuffer { get; private set; } = null;
@@ -73,6 +69,15 @@ public sealed class RenderSurfaceHost : IDisposable
     #endregion
 
     #region private methods
+    private void CreateBackbuffer()
+    {
+        // Dispose the old backbuffer if it exists
+        Backbuffer?.Dispose();
+
+        // Use Activator.CreateInstance to create T with parameters
+        Backbuffer = (T)Activator.CreateInstance(typeof(T), Renderer!.Width, Renderer.Height)!;
+    }
+
     private void RenderBackbufferAll()
     {
         if (Renderer != null && Backbuffer is not null)
