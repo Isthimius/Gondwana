@@ -1,6 +1,7 @@
 ﻿using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.WinForms.Audio;
+using Gondwana.WinForms.Input.Gamepad.SDL2;
 using Gondwana.WinForms.Input.Gamepad.XInput;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Input.Mouse;
@@ -13,6 +14,11 @@ public static class EngineExtensions
     public static void InitializeWinFormsAudioFormats(this Engine engine)
     {
         WinFormsAudioSupport.RegisterExtendedAudioFormats();
+    }
+
+    public static void InitializeSdlGamepadManager(this Engine engine)
+    {
+        Engine.Instance.GamepadManager = SdlGamepadManager.Start();
     }
 
     public static void InitializeXInputGamepadManager(this Engine engine)

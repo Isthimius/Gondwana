@@ -13,11 +13,17 @@ public sealed class XInputGamepadManager : IGamepadManager<XInputGamepadAdapter>
         Engine.Logger.LogInformation("XInputGamepadManager initialized. Starting to poll gamepads.");
     }
 
-    public static XInputGamepadManager Start() => Instance = new XInputGamepadManager();
+    public static XInputGamepadManager Start()
+    {
+        if (Instance is not null)
+            return Instance;
+
+        return Instance = new XInputGamepadManager();
+    }
 
     public static void Stop()
     {
-        Engine.Logger.LogInformation("Stopping XInputGamepadManager and removing all XInputGamepadAdapter.");
+        Engine.Logger.LogInformation("Stopping XInputGamepadManager and removing all XInputGamepadAdapter instances.");
         Instance = null;
     }
 
