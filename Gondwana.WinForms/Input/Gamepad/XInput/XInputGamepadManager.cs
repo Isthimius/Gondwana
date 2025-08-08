@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Gondwana.Input.Gamepad;
-using static Gondwana.WinForms.Input.Gamepad.XInput;
+using static Gondwana.WinForms.Input.Gamepad.XInput.XInput;
 
-namespace Gondwana.WinForms.Input.Gamepad;
+namespace Gondwana.WinForms.Input.Gamepad.XInput;
 
 public sealed class XInputGamepadManager : IGamepadManager<XInputGamepadAdapter>
 {

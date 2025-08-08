@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Gondwana.WinForms.Input.Gamepad;
+namespace Gondwana.WinForms.Input.Gamepad.XInput;
 
 internal static class XInput
 {

@@ -1,7 +1,7 @@
 ﻿using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.WinForms.Audio;
-using Gondwana.WinForms.Input.Gamepad;
+using Gondwana.WinForms.Input.Gamepad.XInput;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Input.Mouse;
 using Microsoft.Extensions.Logging;

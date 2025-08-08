@@ -16,7 +16,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     {
         _control = control;
         _control.PaintSurface += OnPaintSurface;
-        _control.SizeChanged += (_, _) => SetDestinationSize(_control.Width, _control.Height);
+        _control.Resize += (_, _) => SetDestinationSize(_control.Width, _control.Height);
     }
 
     public SKColor ClearColor { get; set; } = SKColors.Purple;
