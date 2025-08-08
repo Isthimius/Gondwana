@@ -32,9 +32,15 @@ public class WaveProviderToWaveStream : WaveStream
             if (_seekHandler == null)
                 throw new NotSupportedException("Seeking is not supported for this stream.");
 
-            position = value;
-            var time = TimeSpan.FromSeconds((double)position / waveFormat.AverageBytesPerSecond);
-            _seekHandler?.Invoke(time); // hook into synth seeking
+            // clamp
+            var clamped = Math.Max(0, Math.Min(value, Length));
+            // align to frame (BlockAlign is bytes per frame)
+            clamped -= clamped % waveFormat.BlockAlign;
+
+            position = clamped;
+
+            var seconds = (double)position / waveFormat.AverageBytesPerSecond;
+            _seekHandler(TimeSpan.FromSeconds(seconds));
         }
     }
 

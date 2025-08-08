@@ -61,13 +61,24 @@ public class SoundResource : IDisposable
     {
         ISampleProvider baseProvider = source.ToSampleProvider();
 
-        if (baseProvider.WaveFormat.Channels > 1)
-            baseProvider = new StereoToMonoSampleProvider(baseProvider);
+        // Ensure stereo for panning
+        if (baseProvider.WaveFormat.Channels == 1)
+            baseProvider = new MonoToStereoSampleProvider(baseProvider);
 
-        volumeProvider = new VolumeSampleProvider(baseProvider) { Volume = volume };
-        panningProvider = new PanningSampleProvider(volumeProvider) { Pan = pan };
+        // if more than 2 channels, downmix/select first two channels
+        if (baseProvider.WaveFormat.Channels > 2)
+        {
+            var mux = new MultiplexingSampleProvider(new[] { baseProvider }, 2);
+            mux.ConnectInputToOutput(0, 0);
+            mux.ConnectInputToOutput(1, 1);
+            baseProvider = mux;
+        }
 
-        return panningProvider;
+        // Now pan + volume in stereo
+        panningProvider = new PanningSampleProvider(baseProvider) { Pan = Math.Clamp(pan, -1f, 1f) };
+        volumeProvider = new VolumeSampleProvider(panningProvider) { Volume = Math.Clamp(volume, 0f, 1f) };
+
+        return volumeProvider;
     }
 
     /// <summary>

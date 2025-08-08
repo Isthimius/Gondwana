@@ -1,5 +1,4 @@
 ﻿using MeltySynth;
-using NAudio.Midi;
 using NAudio.Wave;
 
 namespace Gondwana.Audio.Midi;
@@ -33,15 +32,17 @@ public class SynthesizerSampleProvider : ISampleProvider
         {
             int remaining = framesRequested - framesRendered;
             int renderCount = Math.Min(remaining, _left.Length);
+            var leftSpan = _left.AsSpan(0, renderCount);
+            var rightSpan = _right.AsSpan(0, renderCount);
 
-            _synthesizer.Render(_left, _right);
+            _synthesizer.Render(leftSpan, rightSpan);
 
             bool silent = true;
             for (int i = 0; i < renderCount; i++)
             {
-                buffer[offset++] = _left[i];
-                buffer[offset++] = _right[i];
-                if (Math.Abs(_left[i]) > Tolerance || Math.Abs(_right[i]) > Tolerance)
+                buffer[offset++] = leftSpan[i];
+                buffer[offset++] = rightSpan[i];
+                if (Math.Abs(leftSpan[i]) > Tolerance || Math.Abs(rightSpan[i]) > Tolerance)
                     silent = false;
             }
 
@@ -63,22 +64,20 @@ public class SynthesizerSampleProvider : ISampleProvider
         return framesRendered * 2;
     }
 
+    private readonly float[] _seekLeft = new float[512];
+    private readonly float[] _seekRight = new float[512];
+
     public void Seek(TimeSpan time)
     {
         _synthesizer.Reset();
         _sequencer.Stop();
-
         _sequencer.Play(_midiFile, loop: false);
 
-        double seconds = time.TotalSeconds;
-        int framesToSkip = (int)(seconds * _synthesizer.SampleRate);
-        float[] tempLeft = new float[512];
-        float[] tempRight = new float[512];
-
+        int framesToSkip = (int)(time.TotalSeconds * _synthesizer.SampleRate);
         while (framesToSkip > 0)
         {
-            int chunk = Math.Min(framesToSkip, 512);
-            _synthesizer.Render(tempLeft, tempRight);
+            int chunk = Math.Min(framesToSkip, _seekLeft.Length);
+            _synthesizer.Render(_seekLeft.AsSpan(0, chunk), _seekRight.AsSpan(0, chunk));
             framesToSkip -= chunk;
         }
     }

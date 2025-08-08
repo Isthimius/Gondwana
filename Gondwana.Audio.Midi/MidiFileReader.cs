@@ -26,21 +26,23 @@ public static class MidiFileReader
         Engine.Logger.LogInformation("RegisterDefaultReaders() called");
     }
 
-    public static WaveStream CreateReader(Stream stream, bool loop = false)
+    public static WaveStream CreateReader(Stream stream)
     {
         var buffer = new MemoryStream();
         stream.CopyTo(buffer);
         buffer.Position = 0;
 
-        var synth = new Synthesizer(_soundFont.Value, 44100);
+        var synth = new Synthesizer(SoundFont, 44100);
         var midi = new MidiFile(buffer);
         var sequencer = new MidiFileSequencer(synth);
-        sequencer.Play(midi, loop: false); // ok for false; will handle manual loop control
 
-        double durationSeconds = midi.Length.TotalSeconds / 1000.0;
-        var provider = new SynthesizerSampleProvider(sequencer, synth, midi, loop);
-        Action<TimeSpan> seekHandler = ts => provider.Seek(ts);
+        // Start playback once. Do NOT enable internal looping.
+        sequencer.Play(midi, loop: false);
 
-        return new WaveProviderToWaveStream(provider.ToWaveProvider(), durationSeconds, seekHandler);
+        // Provider must NOT loop; SoundResource will handle loop restarts.
+        var provider = new SynthesizerSampleProvider(sequencer, synth, midi, loop: false);
+
+        // Duration -> bytes for WaveStream.Length; keep seek wiring.
+        return new WaveProviderToWaveStream(provider.ToWaveProvider(), midi.Length.TotalSeconds, provider.Seek);
     }
 }
