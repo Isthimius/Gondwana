@@ -2,7 +2,6 @@
 using MeltySynth;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 
 namespace Gondwana.Audio.Midi;
 
@@ -19,7 +18,7 @@ public static class MidiFileReader
 
     public static SoundFont SoundFont => _soundFont.Value;
 
-    public static void RegisterDefaultReaders()
+    internal static void RegisterDefaultReaders()
     {
         PlatformAudioFactory.Register(".mid", stream => CreateReader(stream));
         PlatformAudioFactory.Register(".midi", stream => CreateReader(stream));
