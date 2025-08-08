@@ -1,38 +1,85 @@
 ﻿using MeltySynth;
+using NAudio.Midi;
 using NAudio.Wave;
 
 namespace Gondwana.Audio.Midi;
 
 public class SynthesizerSampleProvider : ISampleProvider
 {
-    private readonly Synthesizer synthesizer;
+    private readonly MidiFileSequencer _sequencer;
+    private readonly Synthesizer _synthesizer;
+    private readonly MeltySynth.MidiFile _midiFile;
+    private readonly bool _loop;
+    private const float Tolerance = 1e-6f; // Define a small tolerance for floating-point comparison
+    private readonly float[] _left = new float[8192];
+    private readonly float[] _right = new float[8192];
 
-    public SynthesizerSampleProvider(Synthesizer synthesizer)
+    public SynthesizerSampleProvider(MidiFileSequencer sequencer, Synthesizer synth, MeltySynth.MidiFile midiFile, bool loop)
     {
-        this.synthesizer = synthesizer;
-        WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(synthesizer.SampleRate, 2);
+        _sequencer = sequencer;
+        _synthesizer = synth;
+        _midiFile = midiFile;
+        _loop = loop;
     }
 
-    public WaveFormat WaveFormat { get; }
+    public WaveFormat WaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
 
     public int Read(float[] buffer, int offset, int count)
     {
-        int samples = count / 2; // stereo: two floats per frame
+        int framesRequested = count / 2;
+        int framesRendered = 0;
 
-        // Create spans for left and right channels
-        var left = new Span<float>(buffer, offset, samples);
-        var right = new Span<float>(buffer, offset + samples, samples);
-
-        // Render into left/right
-        synthesizer.Render(left, right);
-
-        // Interleave back into buffer
-        for (int i = 0; i < samples; i++)
+        while (framesRendered < framesRequested)
         {
-            buffer[offset + (i * 2)] = left[i];
-            buffer[offset + (i * 2) + 1] = right[i];
+            int remaining = framesRequested - framesRendered;
+            int renderCount = Math.Min(remaining, _left.Length);
+
+            _synthesizer.Render(_left, _right);
+
+            bool silent = true;
+            for (int i = 0; i < renderCount; i++)
+            {
+                buffer[offset++] = _left[i];
+                buffer[offset++] = _right[i];
+                if (Math.Abs(_left[i]) > Tolerance || Math.Abs(_right[i]) > Tolerance)
+                    silent = false;
+            }
+
+            framesRendered += renderCount;
+
+            if (silent)
+            {
+                if (_loop)
+                {
+                    _sequencer.Play(_midiFile, loop: false); // manual restart
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
 
-        return count;
+        return framesRendered * 2;
+    }
+
+    public void Seek(TimeSpan time)
+    {
+        _synthesizer.Reset();
+        _sequencer.Stop();
+
+        _sequencer.Play(_midiFile, loop: false);
+
+        double seconds = time.TotalSeconds;
+        int framesToSkip = (int)(seconds * _synthesizer.SampleRate);
+        float[] tempLeft = new float[512];
+        float[] tempRight = new float[512];
+
+        while (framesToSkip > 0)
+        {
+            int chunk = Math.Min(framesToSkip, 512);
+            _synthesizer.Render(tempLeft, tempRight);
+            framesToSkip -= chunk;
+        }
     }
 }

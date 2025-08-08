@@ -27,21 +27,21 @@ public static class MidiFileReader
         Engine.Logger.LogInformation("RegisterDefaultReaders() called");
     }
 
-    public static WaveStream CreateReader(Stream stream)
+    public static WaveStream CreateReader(Stream stream, bool loop = false)
     {
-        if (_soundFont == null)
-            throw new InvalidOperationException("SoundFont not loaded.");
+        var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        buffer.Position = 0;
 
-        stream.Position = 0;
+        var synth = new Synthesizer(_soundFont.Value, 44100);
+        var midi = new MidiFile(buffer);
+        var sequencer = new MidiFileSequencer(synth);
+        sequencer.Play(midi, loop: false); // ok for false; will handle manual loop control
 
-        var synthesizer = new Synthesizer(_soundFont.Value, sampleRate: 44100);
-        var sequencer = new MidiFileSequencer(synthesizer);
-        sequencer.Play(new MidiFile(stream), loop: false);
+        double durationSeconds = midi.Length.TotalSeconds / 1000.0;
+        var provider = new SynthesizerSampleProvider(sequencer, synth, midi, loop);
+        Action<TimeSpan> seekHandler = ts => provider.Seek(ts);
 
-        var sampleProvider = new SynthesizerSampleProvider(synthesizer);
-        var waveProvider = new SampleToWaveProvider(sampleProvider);
-
-        // Convert IWaveProvider to WaveStream
-        return new WaveProviderToWaveStream(waveProvider);
+        return new WaveProviderToWaveStream(provider.ToWaveProvider(), durationSeconds, seekHandler);
     }
 }

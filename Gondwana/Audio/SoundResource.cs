@@ -239,7 +239,7 @@ public class SoundResource : IDisposable
     {
         if (e.Exception != null)
         {
-            Engine.Logger.LogError(e.Exception, "PlaybackStopped due to error for sound: {Key}\r\n{errorDesc}", Key, e.ToString());
+            Engine.Logger.LogError(e.Exception, "PlaybackStopped due to error for sound: {Key}\r\n{ErrorDescription}", Key, e.ToString());
         }
         else
         {
@@ -267,7 +267,7 @@ public class SoundResource : IDisposable
                         }
                         catch (Exception ex)
                         {
-                            Engine.Logger.LogError(ex, "PlaybackCompletedAsync threw an exception.");
+                            Engine.Logger.LogError(ex, "PlaybackCompletedAsync threw an exception for sound resource: {Key}", Key);
                         }
                     });
                 }
@@ -278,7 +278,6 @@ public class SoundResource : IDisposable
         catch (Exception ex)
         {
             Engine.Logger.LogError(ex, "Error during playback completion handling for sound resource: {Key}", Key);
-            throw;
         }
     }
 
