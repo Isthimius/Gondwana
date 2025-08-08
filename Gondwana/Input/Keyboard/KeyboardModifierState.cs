@@ -1,7 +1,7 @@
 ﻿namespace Gondwana.Input.Keyboard;
 
 [Flags]
-public enum ModifierState
+public enum KeyboardModifierState
 {
     None = 0,
     Shift = 1,

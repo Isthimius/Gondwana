@@ -10,11 +10,11 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 {
     private readonly Control _control;
     private readonly HashSet<string> _pressedKeys = new();
-    private ModifierState _mods;
+    private KeyboardModifierState _mods;
 
     public ICollection<string> PressedKeys => _pressedKeys;
 
-    public ModifierState CurrentModifiers => _mods;
+    public KeyboardModifierState CurrentKeyboardModifiers => _mods;
 
     internal WinFormsKeyboardAdapter(Control control)
     {
@@ -51,10 +51,10 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     private void RecomputeModifiers(KeyEventArgs e)
     {
-        _mods = ModifierState.None;
-        if (e.Shift) _mods |= ModifierState.Shift;
-        if (e.Control) _mods |= ModifierState.Ctrl;
-        if (e.Alt) _mods |= ModifierState.Alt;
+        _mods = KeyboardModifierState.None;
+        if (e.Shift) _mods |= KeyboardModifierState.Shift;
+        if (e.Control) _mods |= KeyboardModifierState.Ctrl;
+        if (e.Alt) _mods |= KeyboardModifierState.Alt;
     }
 
     private static string NormalizeKey(Keys keyCode) => keyCode switch

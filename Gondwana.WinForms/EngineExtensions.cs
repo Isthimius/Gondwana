@@ -1,7 +1,9 @@
 ﻿using Gondwana.Input.Keyboard;
+using Gondwana.Input.Mouse;
 using Gondwana.WinForms.Audio;
 using Gondwana.WinForms.Input.Gamepad;
 using Gondwana.WinForms.Input.Keyboard;
+using Gondwana.WinForms.Input.Mouse;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.WinForms;
@@ -29,5 +31,18 @@ public static class EngineExtensions
         }
 
         KeyboardEventPoller.Initialize(new WinFormsKeyboardAdapter(control));
+    }
+
+    public static void InitializeWinFormsMouseAdapter(this Engine engine, Control control)
+    {
+        Engine.Logger.LogInformation("Initializing WinFormsMouseAdapter...");
+
+        if (control == null)
+        {
+            Engine.Logger.LogError("WinFormsMousedAdapter initialization failed: Control cannot be null.");
+            throw new ArgumentNullException(nameof(control));
+        }
+
+        MouseEventPoller.Initialize(new WinFormsMouseAdapter(control));
     }
 }

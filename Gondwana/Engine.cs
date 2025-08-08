@@ -6,6 +6,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Grid;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
+using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Direct;
@@ -76,6 +77,7 @@ public sealed class Engine : IDisposable
         string? configFileName = null,
         bool? autoSaveConfig = null,
         IKeyboardAdapter? keyboardAdapter = null,
+        IMouseAdapter? mouseAdapter = null,
         IGamepadManager<IGamepadAdapter>? gamepadManager = null)
     {
         if (_isInitialized || _isInitializing)
@@ -94,6 +96,12 @@ public sealed class Engine : IDisposable
                 EngineState.LoadFromFile(stateFile);
             }
         }
+
+        if (keyboardAdapter != null)
+            KeyboardEventPoller.Initialize(keyboardAdapter);
+
+        if (mouseAdapter != null)
+            MouseEventPoller.Initialize(mouseAdapter);
 
         GamepadManager = gamepadManager;
 
@@ -181,6 +189,8 @@ public sealed class Engine : IDisposable
 
     public KeyboardEventPoller? KeyboardEventPoller { get; set; } = null;
 
+    public MouseEventPoller? MouseEventPoller { get; set; } = null;
+
     private IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
 
     /// <summary>
@@ -244,6 +254,9 @@ public sealed class Engine : IDisposable
 
         // check for keyboard events
         KeyboardEventPoller.Instance?.PollForEvents(tick);
+
+        // check for mouse events
+        MouseEventPoller.Instance?.PollForEvents(tick);
 
         // check for gamepad events
         GamepadManagerEventPoller.Instance?.PollForEvents(tick);

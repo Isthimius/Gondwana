@@ -11,6 +11,8 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
 
     public static IReadOnlyList<RenderSurfaceHost<T>> AllRenderSurfaceHosts => _allRenderSurfaceHosts.AsReadOnly();
 
+    public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
+
     private RenderSurfaceHost()
     {
         _allRenderSurfaceHosts.Add(this);
@@ -36,6 +38,7 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
         if (DrawSource != null)
             DrawSource.Disposing -= OnSourceDisposing;
 
+        var oldScene = DrawSource;
         DrawSource = drawSource;
 
         if (DrawSource != null)
@@ -43,6 +46,8 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
             DrawSource.Disposing += OnSourceDisposing;
             DrawSource.RefreshNeeded = MatrixesRefreshType.All;
         }
+
+        BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, DrawSource));
     }
 
     private void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;

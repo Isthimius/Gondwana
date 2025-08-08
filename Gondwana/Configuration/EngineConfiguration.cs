@@ -57,6 +57,13 @@ public partial class EngineConfiguration
     public double TimeBetweenGamepadEvents { get; set; } = 0.03;
 
     /// <summary>
+    /// Minimum time (in seconds) allowed between Mouse events.
+    /// Use this to prevent flooding the system with too many events at once (holding down a button, dragging, etc).
+    /// Default is 0.03 seconds (30 milliseconds).
+    /// </summary>
+    public double TimeBetweenMouseEvents { get; set; } = 0.03;
+
+    /// <summary>
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.
     /// </summary>
     public List<string>? StateFiles { get; set; }

@@ -5,23 +5,25 @@ namespace Gondwana.Input.Keyboard;
 /// </summary>
 public sealed class KeyboardEventPoller
 {
-    private readonly Dictionary<string, KeyEventConfiguration> _keyConfigs = new();
-
     /// <summary>
     /// Singleton instance of the <see cref="KeyboardEventPoller"/> class.
     /// </summary>
     public static KeyboardEventPoller? Instance { get; private set; }
+
+    public static void Initialize(IKeyboardAdapter adapter)
+    {
+        Instance = new KeyboardEventPoller(adapter);
+    }
+
+    public event Action<KeyDownEventArgs>? KeyDown;
+
+    private readonly Dictionary<string, KeyEventConfiguration> _keyConfigs = new();
 
     private KeyboardEventPoller() { }
 
     private KeyboardEventPoller(IKeyboardAdapter adapter)
     {
         Adapter = adapter;
-    }
-
-    public static void Initialize(IKeyboardAdapter adapter)
-    {
-        Instance = new KeyboardEventPoller(adapter);
     }
 
     /// <summary>
@@ -33,8 +35,6 @@ public sealed class KeyboardEventPoller
     /// Pauses all key events globally.
     /// </summary>
     public bool PauseAllKeyEvents { get; set; }
-
-    public event Action<KeyDownEventArgs>? KeyDown;
 
     /// <summary>
     /// Updates internal key states and raises throttled key down events.
@@ -58,7 +58,7 @@ public sealed class KeyboardEventPoller
                 config.LastKeyEvent = tick;
                 _keyConfigs[key] = config;
 
-                KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentModifiers));
+                KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentKeyboardModifiers));
             }
         }
     }

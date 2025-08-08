@@ -15,5 +15,5 @@ public interface IKeyboardAdapter
     /// <summary>
     /// Gets the current state of modifier keys, such as Shift, Ctrl, and Alt.
     /// </summary>
-    public ModifierState CurrentModifiers { get; }
+    public KeyboardModifierState CurrentKeyboardModifiers { get; }
 }
