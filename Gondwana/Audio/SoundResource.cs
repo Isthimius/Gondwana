@@ -14,8 +14,9 @@ public class SoundResource : IDisposable
 {
     private readonly IWavePlayer outputDevice;
     private readonly WaveStream waveStream;
-    private VolumeSampleProvider volumeProvider;
-    private PanningSampleProvider panningProvider;
+    private PanningSampleProvider? monoPanProvider;         // for mono sources only
+    private StereoPanSampleProvider? stereoPanProvider;     // for stereo sources only
+    private VolumeSampleProvider? volumeProvider;           // final stage
     private bool disposed;
 
     /// <summary>
@@ -52,31 +53,71 @@ public class SoundResource : IDisposable
         outputDevice.Init(BuildAudioGraph(waveStream, volume, pan));
         outputDevice.PlaybackStopped += OnPlaybackStopped;
         FilePathOrExtension = filePathOrExt;
-        Extension = NormalizeExt(filePathOrExt ?? Path.GetExtension(filePathOrExt ?? ""));
+        var ext = Path.GetExtension(filePathOrExt ?? string.Empty);
+        Extension = string.IsNullOrEmpty(ext) ? null : NormalizeExt(ext);
         OriginalBytes = rawBytes;
         TempFilePath = tempFilePath;
     }
 
     private ISampleProvider BuildAudioGraph(WaveStream source, float volume, float pan)
     {
+        _pan = Math.Clamp(pan, -1f, 1f);
         ISampleProvider baseProvider = source.ToSampleProvider();
 
-        // Ensure stereo for panning
-        if (baseProvider.WaveFormat.Channels == 1)
-            baseProvider = new MonoToStereoSampleProvider(baseProvider);
-
-        // if more than 2 channels, downmix/select first two channels
-        if (baseProvider.WaveFormat.Channels > 2)
+        int ch = baseProvider.WaveFormat.Channels;
+        if (ch < 1)
         {
-            var mux = new MultiplexingSampleProvider(new[] { baseProvider }, 2);
-            mux.ConnectInputToOutput(0, 0);
-            mux.ConnectInputToOutput(1, 1);
-            baseProvider = mux;
+            Engine.Logger.LogWarning(
+                "SoundResource {Key} has invalid channel count: {ChannelCount}", Key, ch);
+
+            // just pass through, no pan stage
+            volumeProvider = new VolumeSampleProvider(baseProvider)
+            {
+                Volume = Math.Clamp(volume, 0f, 1f)
+            };
+
+            return volumeProvider;
         }
 
-        // Now pan + volume in stereo
-        panningProvider = new PanningSampleProvider(baseProvider) { Pan = Math.Clamp(pan, -1f, 1f) };
-        volumeProvider = new VolumeSampleProvider(panningProvider) { Volume = Math.Clamp(volume, 0f, 1f) };
+        switch (ch)
+        {
+            case 1:
+                // MONO -> use PanningSampleProvider (expects mono, outputs stereo)
+                monoPanProvider = new PanningSampleProvider(baseProvider)
+                {
+                    Pan = Math.Clamp(pan, -1f, 1f)
+                };
+                stereoPanProvider = null;
+                baseProvider = monoPanProvider; // now stereo
+                break;
+
+            case 2:
+                // STEREO -> use StereoSampleProvider for balance/pan
+                stereoPanProvider = new StereoPanSampleProvider(baseProvider);
+                ApplyStereoPan(stereoPanProvider, pan); // set L/R gains from pan
+                monoPanProvider = null;
+                baseProvider = stereoPanProvider;       // stays stereo
+                break;
+
+            default:
+                // >2 CH -> pick first two channels, then treat as stereo
+                var mux = new MultiplexingSampleProvider(new[] { baseProvider }, 2);
+                mux.ConnectInputToOutput(0, 0); // channel 0 -> output L
+                mux.ConnectInputToOutput(1, 1); // channel 1 -> output R
+                baseProvider = mux;
+
+                stereoPanProvider = new StereoPanSampleProvider(baseProvider);
+                ApplyStereoPan(stereoPanProvider, pan);
+                monoPanProvider = null;
+                baseProvider = stereoPanProvider;
+                break;
+        }
+
+        // final stage: master volume
+        volumeProvider = new VolumeSampleProvider(baseProvider)
+        {
+            Volume = Math.Clamp(volume, 0f, 1f)
+        };
 
         return volumeProvider;
     }
@@ -134,7 +175,7 @@ public class SoundResource : IDisposable
     /// </summary>
     [JsonIgnore]
     public TimeSpan CurrentTime
-    { 
+    {
         get => waveStream.CurrentTime;
         set => Seek(value);
     }
@@ -164,17 +205,24 @@ public class SoundResource : IDisposable
         }
     }
 
+    private float _pan;
+
     /// <summary>
     /// Gets or sets the stereo pan position of the audio output.
     /// -1 is full left, 0 is center, and 1 is full right.
     /// </summary>
     public float Pan
     {
-        get => panningProvider?.Pan ?? 0.0f;
+        get => _pan;
         set
         {
-            if (panningProvider != null)
-                panningProvider.Pan = Math.Clamp(value, -1.0f, 1.0f);
+            _pan = Math.Clamp(value, -1f, 1f);
+
+            if (monoPanProvider != null)
+                monoPanProvider.Pan = _pan;
+
+            else if (stereoPanProvider != null)
+                ApplyStereoPan(stereoPanProvider, _pan);
         }
     }
 
@@ -292,6 +340,15 @@ public class SoundResource : IDisposable
         }
     }
 
+    private static void ApplyStereoPan(StereoPanSampleProvider s, float pan)
+    {
+        pan = Math.Clamp(pan, -1f, 1f);
+        // equal-power: map [-1..1] to [0..pi/2]
+        float angle = (pan + 1f) * 0.5f * (float)(Math.PI / 2);
+        s.LeftVolume = MathF.Cos(angle);
+        s.RightVolume = MathF.Sin(angle);
+    }
+
     public void Dispose()
     {
         Dispose(true);
@@ -306,7 +363,18 @@ public class SoundResource : IDisposable
             return;
 
         if (disposing)
+        {
+            try
+            {
+                outputDevice.PlaybackStopped -= OnPlaybackStopped;
+            }
+            catch
+            {
+                /* noop */
+            }
+
             Stop();
+        }
 
         outputDevice.Dispose();
         waveStream.Dispose();
