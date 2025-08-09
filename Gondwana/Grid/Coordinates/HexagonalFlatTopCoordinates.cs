@@ -5,17 +5,17 @@ namespace Gondwana.Grid.Coordinates;
 
 public class HexagonalFlatTopCoordinates : IGridCoordinates
 {
-    public Point GetSrcPxlAtGridPt(GridPointMatrix matrix, PointF gridCoord)
+    public Point GetSrcPxlAtGridPt(SceneLayer matrix, PointF gridCoord)
     {
         throw new NotImplementedException();
     }
 
-    public PointF GetGridPtAtPxl(GridPointMatrix matrix, Point pixelPt)
+    public PointF GetGridPtAtPxl(SceneLayer matrix, Point pixelPt)
     {
         throw new NotImplementedException();
     }
 
-    public List<GridPoint> GetGridPtListInPxlRange(GridPointMatrix matrix, Rectangle pixelRange, bool includeOverlaps)
+    public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverlaps)
     {
         throw new NotImplementedException();
     }
@@ -30,7 +30,7 @@ public class HexagonalFlatTopCoordinates : IGridCoordinates
         throw new NotImplementedException();
     }
 
-    public GridPoint GetAdjGridPt(GridPoint gridPt, CardinalDirections direction)
+    public SceneLayerPoint GetAdjGridPt(SceneLayerPoint gridPt, CardinalDirections direction)
     {
         throw new NotImplementedException();
     }

@@ -263,8 +263,8 @@ public sealed class Engine : IDisposable
         // check for gamepad events
         GamepadManagerEventPoller.Instance?.PollForEvents(tick);
 
-        // perform any timed GridPointMatrix scrolling
-        foreach (GridPointMatrix matrix in GridPointMatrix.GetAllGridPointMatrix())
+        // perform any timed SceneLayer scrolling
+        foreach (SceneLayer matrix in SceneLayer.GetAllSceneLayers())
             matrix.MoveNext(tick);
 
         // TODO: re-enable this... also, should be before or after other Tile animations? assuming before, since that worked before...
@@ -381,7 +381,7 @@ public sealed class Engine : IDisposable
 
                         for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var rq = grids.VisibleGridPointMatrixList[i].RefreshQueue;
+                            var rq = grids.VisibleSceneLayerList[i].RefreshQueue;
 
                             // If you keep a list of rectangles, union them. If not, you can
                             // compute from tiles’ DrawLocation as needed.
@@ -412,7 +412,7 @@ public sealed class Engine : IDisposable
                         // Clear per-layer queues and add full range, then draw
                         for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var layer = grids.VisibleGridPointMatrixList[i];
+                            var layer = grids.VisibleSceneLayerList[i];
                             layer.RefreshQueue.ClearRefreshQueue();
                             layer.RefreshQueue.AddPixelRangeToRefreshQueue(
                                 new System.Drawing.Rectangle(0, 0, surface.RenderSurfaceAdapter!.Width,
@@ -440,11 +440,11 @@ public sealed class Engine : IDisposable
     }
     private void ClearRefreshQueues()
     {
-        // step through all GridPointMatrixes objects
-        foreach (GridPointMatrixes grids in GridPointMatrixes.GetAllGridPointMatrixes())
+        // step through all SceneLayeres objects
+        foreach (Scene grids in Scene.GetAllSceneLayeres())
         {
             // clear each queue, mark as no refresh needed
-            foreach (GridPointMatrix matrix in grids)
+            foreach (SceneLayer matrix in grids)
                 matrix.RefreshQueue.ClearRefreshQueue();
 
             grids.RefreshNeeded = MatrixesRefreshType.None;

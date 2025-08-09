@@ -1,13 +1,13 @@
 ﻿namespace Gondwana.Grid;
 
-public delegate void GridPointMatrixAddRemoveHandler(GridPointMatrixAddRemoveEventArgs e);
+public delegate void SceneLayerAddRemoveHandler(SceneLayerAddRemoveEventArgs e);
 
-public class GridPointMatrixAddRemoveEventArgs : EventArgs
+public class SceneLayerAddRemoveEventArgs : EventArgs
 {
-    public GridPointMatrixes Layers;
-    public GridPointMatrix Layer;
+    public Scene Layers;
+    public SceneLayer Layer;
 
-    protected internal GridPointMatrixAddRemoveEventArgs(GridPointMatrixes grids, GridPointMatrix grid)
+    protected internal SceneLayerAddRemoveEventArgs(Scene grids, SceneLayer grid)
     {
         Layers = grids;
         Layer = grid;

@@ -4,13 +4,13 @@ public delegate void GridPointSizeChangedEventHandler(GridPointSizeChangedEventA
 
 public class GridPointSizeChangedEventArgs : EventArgs
 {
-    public GridPointMatrix layer;
+    public SceneLayer layer;
     public int oldWidth;
     public int oldHeight;
     public int newWidth;
     public int newHeight;
 
-    protected internal GridPointSizeChangedEventArgs(GridPointMatrix matrix, int oldW, int oldH, int newW, int newH)
+    protected internal GridPointSizeChangedEventArgs(SceneLayer matrix, int oldW, int oldH, int newW, int newH)
     {
         layer = matrix;
         oldWidth = oldW;

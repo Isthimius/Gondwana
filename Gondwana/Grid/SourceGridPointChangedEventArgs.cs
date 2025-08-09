@@ -6,11 +6,11 @@ public delegate void SourceGridPointChangedEventHandler(SourceGridPointChangedEv
 
 public class SourceGridPointChangedEventArgs : EventArgs
 {
-    public GridPointMatrix layer;
+    public SceneLayer layer;
     public PointF oldPt;
     public PointF newPt;
 
-    protected internal SourceGridPointChangedEventArgs(GridPointMatrix matrix, PointF oldP, PointF newP)
+    protected internal SourceGridPointChangedEventArgs(SceneLayer matrix, PointF oldP, PointF newP)
     {
         layer = matrix;
         oldPt = oldP;

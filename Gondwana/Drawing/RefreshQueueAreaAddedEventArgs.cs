@@ -7,10 +7,10 @@ internal delegate void RefreshQueueAreaAddedEventHandler(RefreshQueueAreaAddedEv
 
 internal class RefreshQueueAreaAddedEventArgs : EventArgs
 {
-    internal GridPointMatrix layer;
+    internal SceneLayer layer;
     internal Rectangle area;
 
-    internal RefreshQueueAreaAddedEventArgs(GridPointMatrix _layer, Rectangle _area)
+    internal RefreshQueueAreaAddedEventArgs(SceneLayer _layer, Rectangle _area)
     {
         layer = _layer;
         area = _area;

@@ -1,12 +1,12 @@
 ﻿namespace Gondwana.Grid;
 
-public delegate void GridPointMatrixesDisposingEventHandler(GridPointMatrixesDisposingEventArgs e);
+public delegate void SceneLayeresDisposingEventHandler(SceneLayeresDisposingEventArgs e);
 
-public class GridPointMatrixesDisposingEventArgs : EventArgs
+public class SceneLayeresDisposingEventArgs : EventArgs
 {
-    public GridPointMatrixes Matrixes;
+    public Scene Matrixes;
 
-    protected internal GridPointMatrixesDisposingEventArgs(GridPointMatrixes matrixLayers)
+    protected internal SceneLayeresDisposingEventArgs(Scene matrixLayers)
     {
         Matrixes = matrixLayers;
     }

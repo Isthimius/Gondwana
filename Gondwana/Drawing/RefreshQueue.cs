@@ -12,7 +12,7 @@ public class RefreshQueue : IDisposable
     private bool isDirty;               // if true, Tiles need to be found
     private List<Tile> _tiles;          // array of Tile objects to be redrawn
     internal List<Rectangle> _rects;    // array of Rectangle areas being refreshed
-    internal GridPointMatrix _layer;    // associated Matrix (parent)
+    internal SceneLayer _layer;    // associated Matrix (parent)
     #endregion
 
     #region events
@@ -20,7 +20,7 @@ public class RefreshQueue : IDisposable
     #endregion
 
     #region constructors / finalizer
-    internal RefreshQueue(GridPointMatrix layer)
+    internal RefreshQueue(SceneLayer layer)
     {
         isDirty = false;
         _tiles = new List<Tile>();
@@ -108,7 +108,7 @@ public class RefreshQueue : IDisposable
 
         foreach (Rectangle area in _rects)
         {
-            foreach (GridPoint gridPt in _layer.CoordinateSystem.GetGridPtListInPxlRange(_layer, area, true))
+            foreach (SceneLayerPoint gridPt in _layer.CoordinateSystem.GetGridPtListInPxlRange(_layer, area, true))
             {
                 if (gridPt == null)
                     throw new Exception();

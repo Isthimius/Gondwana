@@ -9,17 +9,17 @@ namespace Gondwana.Grid;
 /// 
 /// </summary>
 [DataContract(IsReference = true)]
-public class GridPointMatrixes : IEnumerable, IDisposable
+public class Scene : IEnumerable, IDisposable
 {
     #region static fields
-    internal static List<GridPointMatrixes> _allGridPointMatrixes = new List<GridPointMatrixes>();
+    internal static List<Scene> _allSceneLayeres = new List<Scene>();
     #endregion
 
     #region private / internal field declarations
     [DataMember]
-    private List<GridPointMatrix> _matrixes;    // array of GridPointMatrix objects; each element is one "layer"
+    private List<SceneLayer> _matrixes;    // array of SceneLayer objects; each element is one "layer"
     
-    internal List<GridPointMatrix> _visibleLayers = new List<GridPointMatrix>();
+    internal List<SceneLayer> _visibleLayers = new List<SceneLayer>();
     internal MatrixesRefreshType refreshNeeded = MatrixesRefreshType.All;
 
     private string _id = Guid.NewGuid().ToString();
@@ -31,9 +31,9 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     #endregion
 
     #region events
-    public event GridPointMatrixAddRemoveHandler GridPointMatrixAdded;
-    public event GridPointMatrixAddRemoveHandler GridPointMatrixRemoved;
-    public event GridPointMatrixesDisposingEventHandler Disposing;
+    public event SceneLayerAddRemoveHandler SceneLayerAdded;
+    public event SceneLayerAddRemoveHandler SceneLayerRemoved;
+    public event SceneLayeresDisposingEventHandler Disposing;
     #endregion
 
     #region delegates
@@ -41,31 +41,31 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     private VisibleChangedEventHandler visChgDel;
     private GridPointSizeChangedEventHandler gridPtSzDel;
     private RefreshQueueAreaAddedEventHandler refQueueDel;
-    private GridPointMatrixWrappingChangedEventHandler wrappingDel;
-    private GridPointMatrixDisposingEventHandler matrixDisposingDel;
+    private SceneLayerWrappingChangedEventHandler wrappingDel;
+    private SceneLayerDisposingEventHandler matrixDisposingDel;
     #endregion
 
     #region constructors / finalizer
-    public GridPointMatrixes()
+    public Scene()
     {
-        _matrixes = new List<GridPointMatrix>();
+        _matrixes = new List<SceneLayer>();
         Init();
     }
 
-    public GridPointMatrixes(GridPointMatrix matrix)
+    public Scene(SceneLayer matrix)
     {
-        _matrixes = new List<GridPointMatrix>();
+        _matrixes = new List<SceneLayer>();
         _matrixes.Add(matrix);
         Init();
     }
 
-    public GridPointMatrixes(List<GridPointMatrix> matrixes)
+    public Scene(List<SceneLayer> matrixes)
     {
         _matrixes = matrixes;
         Init();
     }
 
-    ~GridPointMatrixes()
+    ~Scene()
     {
         Dispose();
     }
@@ -98,22 +98,22 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     }
 
     [IgnoreDataMember]
-    public GridPointMatrix ForemostVisibleLayer
+    public SceneLayer ForemostVisibleLayer
     {
         get
         {
             if (_visibleLayers.Count == 0) { return null; }
-            else { return (GridPointMatrix)_visibleLayers[0]; }
+            else { return (SceneLayer)_visibleLayers[0]; }
         }
     }
 
     [IgnoreDataMember]
-    public GridPointMatrix BackmostVisibleLayer
+    public SceneLayer BackmostVisibleLayer
     {
         get
         {
             if (_visibleLayers.Count == 0) { return null; }
-            else { return (GridPointMatrix)_visibleLayers[_visibleLayers.Count - 1]; }
+            else { return (SceneLayer)_visibleLayers[_visibleLayers.Count - 1]; }
         }
     }
 
@@ -125,24 +125,24 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     }
 
     [IgnoreDataMember]
-    public ReadOnlyCollection<GridPointMatrix> GridPointMatrixList
+    public ReadOnlyCollection<SceneLayer> SceneLayerList
     {
         get { return _matrixes.AsReadOnly(); }
     }
 
     [IgnoreDataMember]
-    public List<GridPointMatrix> VisibleGridPointMatrixList
+    public List<SceneLayer> VisibleSceneLayerList
     {
         get { return _visibleLayers; }
     }
     #endregion
     
     #region public methods
-    public GridPointMatrix AddLayer(GridPointMatrix matrix)
+    public SceneLayer AddLayer(SceneLayer matrix)
     {
         _matrixes.Add(matrix);
         int newIdx = _matrixes.Count - 1;
-        OnGridPointMatrixAdded(this[newIdx]);
+        OnSceneLayerAdded(this[newIdx]);
 
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
@@ -155,8 +155,8 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     public void ClearAllLayers()
     {
         // raise "remove" event for each grid
-        foreach (GridPointMatrix grid in this)
-            OnGridPointMatrixRemoved(grid);
+        foreach (SceneLayer grid in this)
+            OnSceneLayerRemoved(grid);
 
         _matrixes.Clear();
 
@@ -168,9 +168,9 @@ public class GridPointMatrixes : IEnumerable, IDisposable
 
     public void ClearLayer(int matrix)
     {
-        GridPointMatrix grid = this[matrix];
+        SceneLayer grid = this[matrix];
         _matrixes.Remove(grid);
-        OnGridPointMatrixRemoved(grid);
+        OnSceneLayerRemoved(grid);
         grid = null;
 
         // rediscover the list of visible arrays
@@ -179,10 +179,10 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         refreshNeeded = MatrixesRefreshType.All;
     }
 
-    public void ClearLayer(GridPointMatrix matrix)
+    public void ClearLayer(SceneLayer matrix)
     {
         _matrixes.Remove(matrix);
-        OnGridPointMatrixRemoved(matrix);
+        OnSceneLayerRemoved(matrix);
 
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
@@ -190,9 +190,9 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         refreshNeeded = MatrixesRefreshType.All;
     }
 
-    public GridPointMatrix GetMatrixByID(string id)
+    public SceneLayer GetMatrixByID(string id)
     {
-        foreach (GridPointMatrix matrix in _matrixes)
+        foreach (SceneLayer matrix in _matrixes)
         {
             if (matrix.ID == id)
                 return matrix;
@@ -201,7 +201,7 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         return null;
     }
 
-    public int GetMatrixPosition(GridPointMatrix matrix)
+    public int GetMatrixPosition(SceneLayer matrix)
     {
         int ret = -1;
 
@@ -219,7 +219,7 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     #endregion
 
     #region raise events
-    protected virtual void OnGridPointMatrixAdded(GridPointMatrix grid)
+    protected virtual void OnSceneLayerAdded(SceneLayer grid)
     {
         grid._parent = this;
 
@@ -229,11 +229,11 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         grid.RefreshQueueAreaAdded += refQueueDel;
         grid.WrappingChanged += wrappingDel;
 
-        if (GridPointMatrixAdded != null)
-            GridPointMatrixAdded(new GridPointMatrixAddRemoveEventArgs(this, grid));
+        if (SceneLayerAdded != null)
+            SceneLayerAdded(new SceneLayerAddRemoveEventArgs(this, grid));
     }
 
-    protected virtual void OnGridPointMatrixRemoved(GridPointMatrix grid)
+    protected virtual void OnSceneLayerRemoved(SceneLayer grid)
     {
         grid._parent = null;
 
@@ -243,8 +243,8 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         grid.RefreshQueueAreaAdded -= refQueueDel;
         grid.WrappingChanged -= wrappingDel;
 
-        if (GridPointMatrixRemoved != null)
-            GridPointMatrixRemoved(new GridPointMatrixAddRemoveEventArgs(this, grid));
+        if (SceneLayerRemoved != null)
+            SceneLayerRemoved(new SceneLayerAddRemoveEventArgs(this, grid));
     }
     #endregion
 
@@ -265,10 +265,10 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     private void _SetVisibleLayersArray()
     {
         if (_visibleLayers == null)
-            _visibleLayers = new List<GridPointMatrix>();
+            _visibleLayers = new List<SceneLayer>();
 
         _visibleLayers.Clear();
-        foreach (GridPointMatrix grid in this)
+        foreach (SceneLayer grid in this)
         {
             if (grid.Visible == true)
                 _visibleLayers.Add(grid);
@@ -292,7 +292,7 @@ public class GridPointMatrixes : IEnumerable, IDisposable
             // refresh all other visible matrixes
             for (int i = _visibleLayers.Count - 1; i >= 0; i--)
             {
-                GridPointMatrix otherMatrix = _visibleLayers[i];
+                SceneLayer otherMatrix = _visibleLayers[i];
 
                 // refresh other matrixes; no need to do the calling one again
                 if (e.layer != otherMatrix)
@@ -302,18 +302,18 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         }
     }
 
-    private void _GridPointMatrixWrappingChanged(GridPointMatrixWrappingChangedEventArgs e)
+    private void _SceneLayerWrappingChanged(SceneLayerWrappingChangedEventArgs e)
     {
         refreshNeeded = MatrixesRefreshType.All;
     }
 
-    private void _GridPointMatrixDisposing(GridPointMatrixDisposingEventArgs e)
+    private void _SceneLayerDisposing(SceneLayerDisposingEventArgs e)
     {
         ClearLayer(e.Matrix);
     }
 
     /// <summary>
-    /// set delegates to be used to subscribe to GridPointMatrix events
+    /// set delegates to be used to subscribe to SceneLayer events
     /// </summary>
     private void SetEventDelegates()
     {
@@ -321,26 +321,26 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         visChgDel = new VisibleChangedEventHandler(_MatrixVisibleChanged);
         gridPtSzDel = new GridPointSizeChangedEventHandler(_GridPointSizeChanged);
         refQueueDel = new RefreshQueueAreaAddedEventHandler(_RefreshQueueNewArea);
-        wrappingDel = new GridPointMatrixWrappingChangedEventHandler(_GridPointMatrixWrappingChanged);
-        matrixDisposingDel = new GridPointMatrixDisposingEventHandler(_GridPointMatrixDisposing);
+        wrappingDel = new SceneLayerWrappingChangedEventHandler(_SceneLayerWrappingChanged);
+        matrixDisposingDel = new SceneLayerDisposingEventHandler(_SceneLayerDisposing);
     }
 
     private void Init()
     {
         SetEventDelegates();
 
-        foreach (GridPointMatrix matrix in _matrixes)
-            OnGridPointMatrixAdded(matrix);
+        foreach (SceneLayer matrix in _matrixes)
+            OnSceneLayerAdded(matrix);
 
         // discover the list of visible arrays
         _SetVisibleLayersArray();
 
-        _allGridPointMatrixes.Add(this);
+        _allSceneLayeres.Add(this);
     }
     #endregion
 
     #region indexers
-    public GridPointMatrix this[int i]
+    public SceneLayer this[int i]
     {
         get
         {
@@ -349,7 +349,7 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         }
     }
 
-    public GridPointMatrix this[string id]
+    public SceneLayer this[string id]
     {
         get
         {
@@ -374,13 +374,13 @@ public class GridPointMatrixes : IEnumerable, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        _allGridPointMatrixes.Remove(this);
+        _allSceneLayeres.Remove(this);
 
         if (Disposing != null)
-            Disposing(new GridPointMatrixesDisposingEventArgs(this));
+            Disposing(new SceneLayeresDisposingEventArgs(this));
 
         // unsubscribe from events
-        foreach (GridPointMatrix grid in _matrixes)
+        foreach (SceneLayer grid in _matrixes)
         {
             grid.FirstColRowChanged -= firstCRDel;
             grid.VisibleChanged -= visChgDel;
@@ -390,16 +390,16 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         }
 
         // cancel all subscriptions to this object
-        GridPointMatrixAdded = null;
-        GridPointMatrixRemoved = null;
+        SceneLayerAdded = null;
+        SceneLayerRemoved = null;
         Disposing = null;
     }
     #endregion
 
     #region static methods
-    public static GridPointMatrixes GetGridPointMatrixesByID(string id)
+    public static Scene GetSceneLayeresByID(string id)
     {
-        foreach (GridPointMatrixes matrixes in _allGridPointMatrixes)
+        foreach (Scene matrixes in _allSceneLayeres)
         {
             if (matrixes.ID == id)
                 return matrixes;
@@ -408,23 +408,23 @@ public class GridPointMatrixes : IEnumerable, IDisposable
         return null;
     }
 
-    public static List<string> GetAllGridPointMatrixesIDs()
+    public static List<string> GetAllSceneLayeresIDs()
     {
-        List<string> ret = new List<string>(_allGridPointMatrixes.Count);
-        foreach (GridPointMatrixes matrixes in _allGridPointMatrixes)
+        List<string> ret = new List<string>(_allSceneLayeres.Count);
+        foreach (Scene matrixes in _allSceneLayeres)
             ret.Add(matrixes.ID);
 
         return ret;
     }
 
-    public static ReadOnlyCollection<GridPointMatrixes> GetAllGridPointMatrixes()
+    public static ReadOnlyCollection<Scene> GetAllSceneLayeres()
     {
-        return _allGridPointMatrixes.AsReadOnly();
+        return _allSceneLayeres.AsReadOnly();
     }
 
-    public static void ClearAllGridPointMatrixes()
+    public static void ClearAllSceneLayeres()
     {
-        var tmp = new List<GridPointMatrixes>(_allGridPointMatrixes);
+        var tmp = new List<Scene>(_allSceneLayeres);
         foreach (var matrixes in tmp)
             matrixes.Dispose();
     }

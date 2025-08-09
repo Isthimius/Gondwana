@@ -4,11 +4,11 @@ public delegate void ShowGridLinesChangedEventHandler(ShowGridLinesChangedEventA
 
 public class ShowGridLinesChangedEventArgs : EventArgs
 {
-    public GridPointMatrix Matrix;
+    public SceneLayer Matrix;
     public bool oldValue;
     public bool newValue;
 
-    protected internal ShowGridLinesChangedEventArgs(GridPointMatrix matrix, bool oldVal, bool newVal)
+    protected internal ShowGridLinesChangedEventArgs(SceneLayer matrix, bool oldVal, bool newVal)
     {
         Matrix = matrix;
         oldValue = oldVal;

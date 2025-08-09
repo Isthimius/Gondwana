@@ -26,10 +26,10 @@ public class EngineState
     public Dictionary<string, Cycle> Cycles => Cycle._cycles;
 
     [JsonInclude]
-    public List<GridPointMatrix> Grids => GridPointMatrix._allGridPointMatrix;
+    public List<SceneLayer> Grids => SceneLayer._allSceneLayer;
 
     [JsonInclude]
-    public List<GridPointMatrixes> GridsDisplay => GridPointMatrixes._allGridPointMatrixes;
+    public List<Scene> GridsDisplay => Scene._allSceneLayeres;
 
     [JsonInclude]
     public List<Sprite> Sprites => Drawing.Sprites.Sprites._spriteList;
@@ -43,8 +43,8 @@ public class EngineState
         EngineResourceFile.ClearAll();
         Tilesheet.ClearAllTilesheets();
         Cycle.ClearAllAnimationCycles();
-        GridPointMatrixes.ClearAllGridPointMatrixes();
-        GridPointMatrix.ClearAllGridPointMatrix();
+        Scene.ClearAllSceneLayeres();
+        SceneLayer.ClearAllSceneLayer();
         Drawing.Sprites.Sprites.Clear();
         SoundResourceManager.Instance.Dispose();
     }

@@ -19,7 +19,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     private string id;
 
     [DataMember(Name = "ParentGrid")]
-    private GridPointMatrix parentGrid;
+    private SceneLayer parentGrid;
 
     private bool pauseMovement;
     private HorizontalAlignment horizAlign;
@@ -31,7 +31,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     #endregion
 
     #region constructors / finalizer
-    protected internal Sprite(GridPointMatrix matrix, Frame frame)
+    protected internal Sprite(SceneLayer matrix, Frame frame)
     {
         id = Guid.NewGuid().ToString();
         parentGrid = matrix;
@@ -322,7 +322,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     }
 
     [IgnoreDataMember]
-    public override GridPointMatrix ParentGrid
+    public override SceneLayer ParentGrid
     {
         get { return parentGrid; }
     }
@@ -399,7 +399,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         MoveSprite(Sprites.GridCoordinates(this, parentGrid, newDrawLocation));
     }
 
-    public void MoveSprite(GridPointMatrix newLayer)
+    public void MoveSprite(SceneLayer newLayer)
     {
         Rectangle drawLoc = DrawLocation;
 
@@ -413,7 +413,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         CreateChildSprites();
     }
 
-    public void MoveSprite(GridPointMatrix newLayer, Size newSize)
+    public void MoveSprite(SceneLayer newLayer, Size newSize)
     {
         MoveSprite(newLayer);
         RenderSize = newSize;

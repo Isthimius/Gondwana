@@ -8,7 +8,7 @@ using Gondwana.Drawing.Collisions;
 namespace Gondwana.Drawing;
 
 [DataContract(IsReference = true)]
-[KnownType(typeof(GridPoint))]
+[KnownType(typeof(SceneLayerPoint))]
 [KnownType(typeof(Sprite))]
 public abstract class Tile : IComparable<Tile>, IDisposable
 {
@@ -48,7 +48,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     public abstract bool IsPositionFixed { get; }
     public abstract Rectangle DrawLocation { get; }
     public abstract PointF GridCoordinates { get; }
-    public abstract GridPointMatrix ParentGrid { get; }
+    public abstract SceneLayer ParentGrid { get; }
     #endregion
 
     private List<Rectangle> _drawLocationRefresh = new List<Rectangle>();

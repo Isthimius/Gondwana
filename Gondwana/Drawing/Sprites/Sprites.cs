@@ -53,14 +53,14 @@ public static class Sprites
     #endregion
 
     #region public methods
-    public static Sprite CreateSprite(GridPointMatrix matrix, Frame frame)
+    public static Sprite CreateSprite(SceneLayer matrix, Frame frame)
     {
         Sprite sprite = new Sprite(matrix, frame);
         SubscribeToSpriteEvents(sprite);
         return sprite;
     }
 
-    public static Sprite CreateSprite(GridPointMatrix matrix, Frame frame, string ID)
+    public static Sprite CreateSprite(SceneLayer matrix, Frame frame, string ID)
     {
         Sprite sprite = CreateSprite(matrix, frame);
         if (sprite != null)
@@ -69,7 +69,7 @@ public static class Sprites
         return sprite;
     }
 
-    public static Sprite CloneSprite(Sprite sprite, GridPointMatrix destMatrix)
+    public static Sprite CloneSprite(Sprite sprite, SceneLayer destMatrix)
     {
         Sprite newSprite = (Sprite)sprite.Clone();
         if (newSprite.ParentGrid != destMatrix)
@@ -81,7 +81,7 @@ public static class Sprites
         return newSprite;
     }
 
-    public static Sprite CloneSprite(string ID, GridPointMatrix destMatrix)
+    public static Sprite CloneSprite(string ID, SceneLayer destMatrix)
     {
         Sprite sprite = GetSpriteByID(ID);
         if (sprite != null)
@@ -166,12 +166,12 @@ public static class Sprites
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesInRange(Rectangle range, GridPointMatrix grid)
+    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer grid)
     {
         return GetSpritesInRange(range, grid, false);
     }
 
-    public static List<Sprite> GetSpritesInRange(Rectangle range, GridPointMatrix grid, bool fullEnclosures)
+    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer grid, bool fullEnclosures)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
@@ -238,7 +238,7 @@ public static class Sprites
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPoint(Point pxlPt, GridPointMatrix grid)
+    public static List<Sprite> GetSpritesAtPoint(Point pxlPt, SceneLayer grid)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
@@ -310,9 +310,9 @@ public static class Sprites
         sprite.animator.Cycled -= animCycle;
     }
 
-    internal static Rectangle DrawLocation(Sprite sprite, GridPointMatrix grid, PointF coord, Size size)
+    internal static Rectangle DrawLocation(Sprite sprite, SceneLayer grid, PointF coord, Size size)
     {
-        // if Sprite hasn't been placed on GridPointMatrix, this is moot
+        // if Sprite hasn't been placed on SceneLayer, this is moot
         if (grid == null)
             return new Rectangle();
 
@@ -367,9 +367,9 @@ public static class Sprites
         return new Rectangle(pxlPt, size);
     }
 
-    internal static PointF GridCoordinates(Sprite sprite, GridPointMatrix grid, Rectangle drawLocation)
+    internal static PointF GridCoordinates(Sprite sprite, SceneLayer grid, Rectangle drawLocation)
     {
-        // if Sprite hasn't been placed on GridPointMatrix, this is moot
+        // if Sprite hasn't been placed on SceneLayer, this is moot
         if (grid == null)
             return new PointF();
 
@@ -450,7 +450,7 @@ public static class Sprites
             sprite.CreateChildSprites();
     }
 
-    internal static void CreateChildSprites(GridPointMatrix grid)
+    internal static void CreateChildSprites(SceneLayer grid)
     {
         foreach (Sprite sprite in _spriteList)
         {

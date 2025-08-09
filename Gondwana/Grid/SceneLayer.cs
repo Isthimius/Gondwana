@@ -13,7 +13,7 @@ namespace Gondwana.Grid;
 /// 
 /// </summary>
 [DataContract(IsReference = true)]
-public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
+public class SceneLayer : IEnumerable, ICloneable, IDisposable
 {
     #region events
     internal event RefreshQueueAreaAddedEventHandler RefreshQueueAreaAdded;
@@ -21,9 +21,9 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     public event GridPointSizeChangedEventHandler GridPointSizeChanged;
     public event VisibleChangedEventHandler VisibleChanged;
     public event SourceGridPointChangedEventHandler FirstColRowChanged;
-    public event GridPointMatrixWrappingChangedEventHandler WrappingChanged;
+    public event SceneLayerWrappingChangedEventHandler WrappingChanged;
     public event ShowGridLinesChangedEventHandler ShowGridLinesChanged;
-    public event GridPointMatrixDisposingEventHandler Disposing;
+    public event SceneLayerDisposingEventHandler Disposing;
     #endregion
 
     #region delegates
@@ -31,7 +31,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     #endregion
 
     #region static fields
-    internal static List<GridPointMatrix> _allGridPointMatrix = new List<GridPointMatrix>();
+    internal static List<SceneLayer> _allSceneLayer = new List<SceneLayer>();
     #endregion
 
     #region private / internal fields
@@ -42,22 +42,22 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     private bool _visible;              // is matrix to be rendered; useful with multiple layers
 
     [DataMember]
-    private GridPoint[][] _matrix;      // array of points; 2 dimensions (X, Y)
+    private SceneLayerPoint[][] _matrix;      // array of points; 2 dimensions (X, Y)
     private float _layerSyncModifier;   // 1 = default; <1 is slower, >1 is faster
 
     [DataMember]
-    protected internal GridPointMatrixes _parent = null;
+    protected internal Scene _parent = null;
 
     internal bool _wrapHoriz = false;
     internal bool _wrapVerti = false;
-    internal GridPointMatrixScrollBinding scrollBinding = null;
+    internal SceneLayerScrollBinding scrollBinding = null;
 
     // first pixel visible (i.e., source pixel for rendering calculations)
     private Point _gridPtZeroPxl;
     private PointF _firstGridPt = new PointF();
     
     internal RefreshQueue _refreshQueue;
-    internal GridPointMatrix.Movement _movement;
+    internal SceneLayer.Movement _movement;
     #endregion
 
     #region public fields
@@ -66,40 +66,40 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     #endregion
 
     #region matrix wrapping delegates / variables
-    private delegate GridPoint GetIndexer(int x, int y);
+    private delegate SceneLayerPoint GetIndexer(int x, int y);
     private GetIndexer FindIndexedGridPoint;
-    internal List<GridPoint> wrappedGridPts = new List<GridPoint>();
+    internal List<SceneLayerPoint> wrappedGridPts = new List<SceneLayerPoint>();
     #endregion
 
     #region constructors / finalizer
-    public GridPointMatrix(int columnCount, int rowCount) :
+    public SceneLayer(int columnCount, int rowCount) :
         this(columnCount, rowCount, 0, 0, 1) { }
 
-    public GridPointMatrix(int columnCount, int rowCount, int width, int height) :
+    public SceneLayer(int columnCount, int rowCount, int width, int height) :
         this(columnCount, rowCount, width, height, 1) { }
 
-    public GridPointMatrix(int columnCount, int rowCount, int width, int height, float layerSyncModifier)
+    public SceneLayer(int columnCount, int rowCount, int width, int height, float layerSyncModifier)
     {
-        var pt = new GridPoint[columnCount][];
+        var pt = new SceneLayerPoint[columnCount][];
 
         for (int i = 0; i < pt.Length; i++)
-            pt[i] = new GridPoint[rowCount];
+            pt[i] = new SceneLayerPoint[rowCount];
 
         InitValues(pt, width, height, layerSyncModifier, true);
     }
 
-    public GridPointMatrix(GridPoint[][] pt) :
+    public SceneLayer(SceneLayerPoint[][] pt) :
         this(pt, 0, 0, 1) { }
 
-    public GridPointMatrix(GridPoint[][] pt, int width, int height) :
+    public SceneLayer(SceneLayerPoint[][] pt, int width, int height) :
         this(pt, width, height, 1) { }
     
-    public GridPointMatrix(GridPoint[][] pt, int width, int height, float layerSyncModifier)
+    public SceneLayer(SceneLayerPoint[][] pt, int width, int height, float layerSyncModifier)
     {
         InitValues(pt, width, height, layerSyncModifier, true);
     }
 
-    ~GridPointMatrix()
+    ~SceneLayer()
     {
         Dispose();
     }
@@ -149,7 +149,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     }
 
     [IgnoreDataMember]
-    public GridPointMatrixes Parent
+    public Scene Parent
     {
         get { return _parent; }
     }
@@ -169,7 +169,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     }
 
     [DataMember]
-    public GridPointMatrixScrollBinding ScrollBinding
+    public SceneLayerScrollBinding ScrollBinding
     {
         get { return scrollBinding; }
         private set { scrollBinding = value; }
@@ -223,7 +223,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     }
 
     [IgnoreDataMember]
-    public GridPoint[][] GridPointArray
+    public SceneLayerPoint[][] GridPointArray
     {
         get { return _matrix; }
     }
@@ -353,7 +353,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
 
     protected virtual void OnFirstColRowChanged(PointF oldPt, PointF newPt)
     {
-        foreach (GridPointMatrixScrollBinding scrollBind in GridPointMatrixScrollBinding._allScrollBindings)
+        foreach (SceneLayerScrollBinding scrollBind in SceneLayerScrollBinding._allScrollBindings)
         {
             if (scrollBind.ParentGrid == this)
             {
@@ -379,8 +379,8 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     {
         if (WrappingChanged != null)
         {
-            GridPointMatrixWrappingChangedEventArgs e =
-                new GridPointMatrixWrappingChangedEventArgs(this, oldHoriz, newHoriz, oldVerti, newVerti);
+            SceneLayerWrappingChangedEventArgs e =
+                new SceneLayerWrappingChangedEventArgs(this, oldHoriz, newHoriz, oldVerti, newVerti);
             WrappingChanged(e);
         }
 
@@ -413,13 +413,13 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         _tileHeight = newHeight;
     }
 
-    public GridPoint SetGridPoint(GridPoint gridPt, int x, int y)
+    public SceneLayerPoint SetGridPoint(SceneLayerPoint gridPt, int x, int y)
     {
         this[x, y] = gridPt;
         return this[x, y];
     }
 
-    public GridPoint SetGridPoint(int x, int y, Frame frame)
+    public SceneLayerPoint SetGridPoint(int x, int y, Frame frame)
     {
         this[x, y].CurrentFrame = frame;
         return this[x, y];
@@ -445,23 +445,23 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         OnFirstColRowChanged(oldSrcPt, SourceGridPoint);
     }
 
-    public void BindScrollingToParentGrid(GridPointMatrix parent)
+    public void BindScrollingToParentGrid(SceneLayer parent)
     {
         BindScrollingToParentGrid(parent, parent.SourceGridPoint);
     }
 
-    public void BindScrollingToParentGrid(GridPointMatrix parent, PointF parentAnchor)
+    public void BindScrollingToParentGrid(SceneLayer parent, PointF parentAnchor)
     {
         BindScrollingToParentGrid(parent, parentAnchor, this.SourceGridPoint);
     }
 
-    public void BindScrollingToParentGrid(GridPointMatrix parent, PointF parentAnchor, PointF thisAnchor)
+    public void BindScrollingToParentGrid(SceneLayer parent, PointF parentAnchor, PointF thisAnchor)
     {
         // remove any previous binding
         UnbindScrolling();
 
         // create new binding instance
-        scrollBinding = new GridPointMatrixScrollBinding();
+        scrollBinding = new SceneLayerScrollBinding();
         scrollBinding.ParentGrid = parent;
         scrollBinding.ChildGrid = this;
         scrollBinding.ParentAnchorGridPoint = parentAnchor;
@@ -472,7 +472,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     {
         if (scrollBinding != null)
         {
-            GridPointMatrixScrollBinding._allScrollBindings.Remove(scrollBinding);
+            SceneLayerScrollBinding._allScrollBindings.Remove(scrollBinding);
 
             if (scrollBinding.ParentGrid != null)
                 this.scrollBinding.ParentGrid = null;
@@ -508,7 +508,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         {
             for (int Y = 0; Y <= _matrix[X].GetUpperBound(0); Y++)
             {
-                _matrix[X][Y] = new GridPoint(this);
+                _matrix[X][Y] = new SceneLayerPoint(this);
                 _matrix[X][Y].gridCoordinates = new Point(X, Y);
                 _matrix[X][Y].DoNotRedrawChanges = false;
             }
@@ -517,7 +517,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
 
     private void RefreshQueueNewTile(RefreshQueueAreaAddedEventArgs e)
     {
-        // pass the event up to any containing GridPointMatrixes
+        // pass the event up to any containing SceneLayeres
         OnRefreshQueueAreaAdded(e);
     }
 
@@ -544,7 +544,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         scrollBinding.ChildGrid.SetSourceGridPoint(childDifX, childDifY);
     }
 
-    protected void InitValues(GridPoint[][] pt, int width, int height, float layerSyncModifier, bool addToInstances)
+    protected void InitValues(SceneLayerPoint[][] pt, int width, int height, float layerSyncModifier, bool addToInstances)
     {
         _matrix = pt;
         _layerSyncModifier = layerSyncModifier;
@@ -561,12 +561,12 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         _movement = new Movement(this);
 
         if (addToInstances)
-            _allGridPointMatrix.Add(this);
+            _allSceneLayer.Add(this);
     }
     #endregion
 
     #region indexers
-    public GridPoint this[int x, int y]
+    public SceneLayerPoint this[int x, int y]
     {
         get { return FindIndexedGridPoint(x, y); }
         set
@@ -578,19 +578,19 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         }
     }
 
-    public GridPoint this[Point pt]
+    public SceneLayerPoint this[Point pt]
     {
         get { return this[pt.X, pt.Y]; }
         set { this[pt.X, pt.Y] = value; }
     }
 
-    public GridPoint this[PointF ptF]
+    public SceneLayerPoint this[PointF ptF]
     {
         get { return this[(int)ptF.X, (int)ptF.Y]; }
         set { this[(int)ptF.X, (int)ptF.Y] = value; }
     }
 
-    private GridPoint GetIndexer_NoWrap(int x, int y)
+    private SceneLayerPoint GetIndexer_NoWrap(int x, int y)
     {
         if (x > _matrix.GetUpperBound(0)
             || y > _matrix[0].GetUpperBound(0)
@@ -601,7 +601,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
             return _matrix[x][y];
     }
 
-    private GridPoint GetIndexer_Wrap(int x, int y)
+    private SceneLayerPoint GetIndexer_Wrap(int x, int y)
     {
         // if not wrapping horizontally and outside of x bound range, return null
         if ((!_wrapHoriz) && ((x > _matrix.GetUpperBound(0)) || (x < 0)))
@@ -612,7 +612,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
             return null;
 
         // check "non-wrapping" coordinates
-        GridPoint newGridPoint = GetIndexer_NoWrap(x, y);
+        SceneLayerPoint newGridPoint = GetIndexer_NoWrap(x, y);
 
         // if outside of "non-wrapping" coordinates, find the equivalent point
         if (newGridPoint == null)
@@ -622,7 +622,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
                 CoordinateSystem.FindEquivGridCoord(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
 
             // capture GridPoint if x-y coord already exists in wrappedGridPts
-            foreach (GridPoint pt in wrappedGridPts)
+            foreach (SceneLayerPoint pt in wrappedGridPts)
             {
                 if ((pt.gridCoordinates.X == x) && (pt.gridCoordinates.Y == y))
                 {
@@ -634,7 +634,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
             // if not already found, create and add to wrappedGridPts, and associate with "parent"
             if (newGridPoint == null)
             {
-                newGridPoint = new GridPoint(_matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y],
+                newGridPoint = new SceneLayerPoint(_matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y],
                     new Point(x, y));
                 wrappedGridPts.Add(newGridPoint);
             }
@@ -660,7 +660,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     #region ICloneable Members
     public object Clone()
     {
-        return new GridPointMatrix(_matrix, _tileWidth, _tileHeight, _layerSyncModifier);
+        return new SceneLayer(_matrix, _tileWidth, _tileHeight, _layerSyncModifier);
     }
     #endregion
 
@@ -669,10 +669,10 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        _allGridPointMatrix.Remove(this);
+        _allSceneLayer.Remove(this);
 
         if (Disposing != null)
-            Disposing(new GridPointMatrixDisposingEventArgs(this));
+            Disposing(new SceneLayerDisposingEventArgs(this));
 
         // remove any scroll bindings
         UnbindScrolling();
@@ -683,7 +683,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         // dispose child objects
         RefreshQueue.Dispose();
 
-        foreach (GridPoint gridPt in this)
+        foreach (SceneLayerPoint gridPt in this)
             gridPt.Dispose();
 
         // cancel all subscriptions to this object
@@ -697,9 +697,9 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
     #endregion
 
     #region static methods
-    public static GridPointMatrix GetGridPointMatrixByID(string id)
+    public static SceneLayer GetSceneLayerByID(string id)
     {
-        foreach (GridPointMatrix matrix in _allGridPointMatrix)
+        foreach (SceneLayer matrix in _allSceneLayer)
         {
             if (matrix.ID == id)
                 return matrix;
@@ -709,23 +709,23 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         return null;
     }
 
-    public static List<string> GetAllGridPointMatrixIDs()
+    public static List<string> GetAllSceneLayerIDs()
     {
-        List<string> ret = new List<string>(_allGridPointMatrix.Count);
-        foreach (GridPointMatrix matrix in _allGridPointMatrix)
+        List<string> ret = new List<string>(_allSceneLayer.Count);
+        foreach (SceneLayer matrix in _allSceneLayer)
             ret.Add(matrix.ID);
 
         return ret;
     }
 
-    public static ReadOnlyCollection<GridPointMatrix> GetAllGridPointMatrix()
+    public static ReadOnlyCollection<SceneLayer> GetAllSceneLayers()
     {
-        return _allGridPointMatrix.AsReadOnly();
+        return _allSceneLayer.AsReadOnly();
     }
 
-    public static void ClearAllGridPointMatrix()
+    public static void ClearAllSceneLayer()
     {
-        var tmp = new List<GridPointMatrix>(_allGridPointMatrix);
+        var tmp = new List<SceneLayer>(_allSceneLayer);
         foreach (var matrix in tmp)
             matrix.Dispose();
     }
@@ -733,7 +733,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
 
     internal class Movement
     {
-        internal GridPointMatrix parent;
+        internal SceneLayer parent;
 
         internal long startTick;
         internal long lastTick;
@@ -742,7 +742,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
         internal PointF destCoord;
 
         #region ctor
-        internal Movement(GridPointMatrix matrix)
+        internal Movement(SceneLayer matrix)
         {
             parent = matrix;
             IsScrolling = false;
@@ -867,7 +867,7 @@ public class GridPointMatrix : IEnumerable, ICloneable, IDisposable
 
         internal void Next(long tick)
         {
-            foreach (GridPointMatrixes matrixes in GridPointMatrixes._allGridPointMatrixes)
+            foreach (Scene matrixes in Scene._allSceneLayeres)
             {
                 if (matrixes.GetMatrixByID(parent._id) != null)
                     matrixes.refreshNeeded = MatrixesRefreshType.All;

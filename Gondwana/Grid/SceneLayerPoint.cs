@@ -6,14 +6,14 @@ using System.Runtime.Serialization;
 namespace Gondwana.Grid;
 
 /// <summary>
-/// Represents the values stored at a single location on a GridPointMatrix
+/// Represents the values stored at a single location on a SceneLayer
 /// </summary>
 [DataContract(IsReference = true)]
-public class GridPoint : Tile, IDisposable
+public class SceneLayerPoint : Tile, IDisposable
 {
     #region private / internal fields
     [DataMember]
-    internal GridPointMatrix parentGrid;
+    internal SceneLayer parentSceneLayer;
 
     [DataMember]
     internal Point gridCoordinates;         // each GridPoint knows its location in the array in ParentGrid
@@ -22,16 +22,16 @@ public class GridPoint : Tile, IDisposable
     #endregion
 
     #region constructors / finalizer
-    public GridPoint(GridPointMatrix matrix)
+    public SceneLayerPoint(SceneLayer matrix)
     {
         zOrder = 0;
         visible = true;
-        parentGrid = matrix;
+        parentSceneLayer = matrix;
     }
     
-    internal GridPoint(GridPoint gridPoint, Point gridCoord)
+    internal SceneLayerPoint(SceneLayerPoint gridPoint, Point gridCoord)
     {
-        parentGrid = gridPoint.parentGrid;
+        parentSceneLayer = gridPoint.parentSceneLayer;
         gridCoordinates = gridCoord;
         disableAddToRefreshQueue = gridPoint.disableAddToRefreshQueue;
         zOrder = gridPoint.zOrder;
@@ -44,7 +44,7 @@ public class GridPoint : Tile, IDisposable
         gridPoint.AddChild(this);
     }
 
-    ~GridPoint()
+    ~SceneLayerPoint()
     {
         Dispose();
     }
@@ -62,7 +62,7 @@ public class GridPoint : Tile, IDisposable
 
                 if (childTiles != null)
                 {
-                    foreach (GridPoint gridPt in childTiles)
+                    foreach (SceneLayerPoint gridPt in childTiles)
                         gridPt.frame = value;
                 }
             else
@@ -86,7 +86,7 @@ public class GridPoint : Tile, IDisposable
 
             if (childTiles != null)
             {
-                foreach (GridPoint gridPt in childTiles)
+                foreach (SceneLayerPoint gridPt in childTiles)
                     gridPt.DoNotRedrawChanges = value;
             }
         }
@@ -95,7 +95,7 @@ public class GridPoint : Tile, IDisposable
     [IgnoreDataMember]
     public override Rectangle DrawLocation
     {
-        get { return parentGrid.CoordinateSystem.GetPxlRangeAtGridPt(this, true); }
+        get { return parentSceneLayer.CoordinateSystem.GetPxlRangeAtGridPt(this, true); }
     }
 
     [IgnoreDataMember]
@@ -117,9 +117,9 @@ public class GridPoint : Tile, IDisposable
     }
 
     [IgnoreDataMember]
-    public override GridPointMatrix ParentGrid
+    public override SceneLayer ParentGrid
     {
-        get { return parentGrid; }
+        get { return parentSceneLayer; }
     }
 
     [DataMember]

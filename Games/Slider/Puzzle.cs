@@ -28,7 +28,7 @@ namespace Slider
         private Point openSpace;
 
         private Tilesheet tilesheet;
-        private GridPointMatrixes matrixes;          
+        private Scene matrixes;          
 
         private SoundResource slideSound;
         private SoundResource tadaSound;
@@ -52,9 +52,9 @@ namespace Slider
             numRows = rows;
             adjustedSize = new Size(adjWidth, adjHeight);
 
-            GridPointMatrix matrix = new GridPointMatrix(numColumns, numRows, tileWidth, tileHeight);
+            SceneLayer matrix = new SceneLayer(numColumns, numRows, tileWidth, tileHeight);
             matrix.CoordinateSystem = new SquareIsoCoordinates();
-            matrixes = new GridPointMatrixes(matrix);
+            matrixes = new Scene(matrix);
 
             //surface = new VisibleSurface(size.Width, size.Height, matrixes);
             //surface = new VisibleSurface(size.Width, size.Height);
@@ -240,7 +240,7 @@ namespace Slider
         private List<Sprite> FindSpritesAdjToOpenSpace()
         {
             List<Sprite> adjSprites = new List<Sprite>();
-            List<GridPoint> adjGridPts = new List<GridPoint>();
+            List<SceneLayerPoint> adjGridPts = new List<SceneLayerPoint>();
 
             adjGridPts.Add(
                 matrixes[0].CoordinateSystem.GetAdjGridPt(matrixes[0][openSpace], CardinalDirections.N));
@@ -251,7 +251,7 @@ namespace Slider
             adjGridPts.Add(
                 matrixes[0].CoordinateSystem.GetAdjGridPt(matrixes[0][openSpace], CardinalDirections.W));
 
-            foreach (GridPoint gPt in adjGridPts)
+            foreach (SceneLayerPoint gPt in adjGridPts)
             {
                 if (gPt != null)
                     adjSprites.AddRange(Sprites.GetSpritesInRange(gPt.DrawLocation));

@@ -4,13 +4,13 @@ using System.Runtime.Serialization;
 namespace Gondwana.Grid;
 
 [DataContract(IsReference = true)]
-public class GridPointMatrixScrollBinding
+public class SceneLayerScrollBinding
 {
-    internal static List<GridPointMatrixScrollBinding> _allScrollBindings =
-        new List<GridPointMatrixScrollBinding>();
+    internal static List<SceneLayerScrollBinding> _allScrollBindings =
+        new List<SceneLayerScrollBinding>();
 
     #region ctor
-    public GridPointMatrixScrollBinding()
+    public SceneLayerScrollBinding()
     {
         _allScrollBindings.Add(this);
     }
@@ -23,7 +23,7 @@ public class GridPointMatrixScrollBinding
     #endregion
 
     [IgnoreDataMember]
-    public GridPointMatrix ParentGrid;
+    public SceneLayer ParentGrid;
 
     [DataMember]
     private string ParentGridId
@@ -40,12 +40,12 @@ public class GridPointMatrixScrollBinding
             if (string.IsNullOrEmpty(value))
                 ParentGrid = null;
             else
-                ParentGrid = GridPointMatrix.GetGridPointMatrixByID(value);
+                ParentGrid = SceneLayer.GetSceneLayerByID(value);
         }
     }
 
     [IgnoreDataMember]
-    internal GridPointMatrix ChildGrid;
+    internal SceneLayer ChildGrid;
 
     [DataMember]
     private string ChildGridId
@@ -62,7 +62,7 @@ public class GridPointMatrixScrollBinding
             if (string.IsNullOrEmpty(value))
                 ChildGrid = null;
             else
-                ChildGrid = GridPointMatrix.GetGridPointMatrixByID(value);
+                ChildGrid = SceneLayer.GetSceneLayerByID(value);
         }
     }
 

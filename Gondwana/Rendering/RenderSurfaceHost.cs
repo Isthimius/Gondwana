@@ -29,9 +29,9 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
 
     public BackbufferBase? Backbuffer { get; private set; }
     public RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; private set; }
-    public GridPointMatrixes? DrawSource { get; private set; }
+    public Scene? DrawSource { get; private set; }
 
-    public void Bind(GridPointMatrixes drawSource)
+    public void Bind(Scene drawSource)
     {
         if (DrawSource != null)
             DrawSource.Disposing -= OnSourceDisposing;
@@ -48,7 +48,7 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, DrawSource));
     }
 
-    private void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;
+    private void OnSourceDisposing(SceneLayeresDisposingEventArgs e) => DrawSource = null;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = false;
 

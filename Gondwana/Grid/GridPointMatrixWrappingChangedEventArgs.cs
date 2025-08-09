@@ -1,16 +1,16 @@
 ﻿namespace Gondwana.Grid;
 
-public delegate void GridPointMatrixWrappingChangedEventHandler(GridPointMatrixWrappingChangedEventArgs e);
+public delegate void SceneLayerWrappingChangedEventHandler(SceneLayerWrappingChangedEventArgs e);
 
-public class GridPointMatrixWrappingChangedEventArgs : EventArgs
+public class SceneLayerWrappingChangedEventArgs : EventArgs
 {
-    public GridPointMatrix layer;
+    public SceneLayer layer;
     public bool oldHorizWrapping;
     public bool newHorizWrapping;
     public bool oldVertiWrapping;
     public bool newVertiWrapping;
 
-    protected internal GridPointMatrixWrappingChangedEventArgs(GridPointMatrix _layer, bool _oldHoriz, bool _newHoriz, bool _oldVerti, bool _newVerti)
+    protected internal SceneLayerWrappingChangedEventArgs(SceneLayer _layer, bool _oldHoriz, bool _newHoriz, bool _oldVerti, bool _newVerti)
     {
         layer = _layer;
         oldHorizWrapping = _oldHoriz;
