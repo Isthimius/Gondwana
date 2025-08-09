@@ -1,7 +1,5 @@
 ﻿namespace Gondwana;
 
-public delegate void CyclesPerSecondCalculatedHandler(CyclesPerSecondCalculatedEventArgs e);
-
 public class CyclesPerSecondCalculatedEventArgs : EventArgs
 {
     public long TotalGrossCycles;

@@ -1,7 +1,5 @@
 ﻿namespace Gondwana;
 
-public delegate void EngineCycleEventHandler(EngineCycleEventArgs e);
-
 public class EngineCycleEventArgs : EventArgs
 {
     public long GrossCycles;

@@ -60,13 +60,11 @@ public sealed class Engine : IDisposable
     /// </summary>
     public event EventHandler InitializationComplete;
 
-    public delegate void BackgroundTaskExecuteHandler();
-
-    public event BackgroundTaskExecuteHandler BeforeBackgroundTasksExecute;
-    public event BackgroundTaskExecuteHandler AfterBackgroundTasksExecute;
-    public event EngineCycleEventHandler BeforeEngineCycle;
-    public event EngineCycleEventHandler AfterEngineCycle;
-    public event CyclesPerSecondCalculatedHandler CPSCalculated;
+    public event EventHandler BeforeBackgroundTasksExecute;
+    public event EventHandler AfterBackgroundTasksExecute;
+    public event EventHandler<EngineCycleEventArgs> BeforeEngineCycle;
+    public event EventHandler<EngineCycleEventArgs> AfterEngineCycle;
+    public event EventHandler<CyclesPerSecondCalculatedEventArgs> CPSCalculated;
     #endregion
 
     #region constructor
@@ -249,7 +247,7 @@ public sealed class Engine : IDisposable
     private void DoBackgroundTasks(long tick)
     {
         if (BeforeBackgroundTasksExecute != null)
-            BeforeBackgroundTasksExecute();
+            BeforeBackgroundTasksExecute?.Invoke(this, EventArgs.Empty);
 
         // raise pre-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
@@ -291,14 +289,14 @@ public sealed class Engine : IDisposable
         ClearRefreshQueues();
 
         if (AfterBackgroundTasksExecute != null)
-            AfterBackgroundTasksExecute();
+            AfterBackgroundTasksExecute.Invoke(this, EventArgs.Empty);
     }
 
     private void DoForegroundTasks(long tick)
     {
         // raise event
         if (BeforeEngineCycle != null)
-            BeforeEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+            BeforeEngineCycle(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // render each BitmapBackbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHost<BitmapBackbuffer>._allRenderSurfaceHosts)
@@ -321,7 +319,7 @@ public sealed class Engine : IDisposable
 
         // raise event
         if (AfterEngineCycle != null)
-            AfterEngineCycle(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+            AfterEngineCycle(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);
@@ -467,7 +465,7 @@ public sealed class Engine : IDisposable
 
             // raise the event
             if (CPSCalculated != null)
-                CPSCalculated(new CyclesPerSecondCalculatedEventArgs(
+                CPSCalculated(this, new CyclesPerSecondCalculatedEventArgs(
                     _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.SamplingTimeForCPS));
 
             // reset values for next calculation
