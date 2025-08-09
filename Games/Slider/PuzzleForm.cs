@@ -92,7 +92,7 @@ namespace Slider
             //MidiFileReader.RegisterDefaultReaders();
         }
 
-        private void Engine_CPSCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs e)
+        private void Engine_CPSCalculated(object sender, Gondwana.CyclesPerSecondCalculatedEventArgs e)
         {
             if (lblInfo.InvokeRequired)
             {
