@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Runtime.Serialization;
 
-namespace Gondwana.Grid;
+namespace Gondwana.Scenes;
 
 [DataContract(IsReference = true)]
 public class SceneLayerScrollBinding

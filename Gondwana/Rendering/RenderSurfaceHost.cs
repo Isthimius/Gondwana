@@ -1,35 +1,38 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
-using Gondwana.Grid;
+using Gondwana.Scenes;
 using Gondwana.Skia;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
-public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
+public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
+    where TBackbuffer : BackbufferBase
 {
-    internal static List<RenderSurfaceHost<T>> _allRenderSurfaceHosts { get; } = new();
-    public static IReadOnlyList<RenderSurfaceHost<T>> AllRenderSurfaceHosts => _allRenderSurfaceHosts.AsReadOnly();
-
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
-    private RenderSurfaceHost()
-    {
-        _allRenderSurfaceHosts.Add(this);
-    }
+    private RenderSurfaceHost() : base() { }
 
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
-        RenderSurfaceAdapter = renderSurfaceAdapter;
+        _renderSurfaceAdapter = renderSurfaceAdapter;
         CreateBackbuffer();
 
         // Recreate backbuffer on adapter resize
         RenderSurfaceAdapter.Resized += (_, _) => CreateBackbuffer();
     }
 
-    public BackbufferBase? Backbuffer { get; private set; }
-    public RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; private set; }
-    public Scene? DrawSource { get; private set; }
+    private TBackbuffer _backbuffer;
+    private readonly RefreshQueue _refresh;
+    private readonly Color _clear;
+    private Scene? _scene;
+    private RenderSurfaceAdapterBase? _renderSurfaceAdapter;
+
+    public override BackbufferBase Backbuffer => _backbuffer;
+    public override RefreshQueue RefreshQueue => _refresh;
+    public override Color ClearColor => _clear;
+    public override Scene? DrawSource => _scene;
+    public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
 
     public void Bind(Scene drawSource)
     {
@@ -37,7 +40,7 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
             DrawSource.Disposing -= OnSourceDisposing;
 
         var oldScene = DrawSource;
-        DrawSource = drawSource;
+        _scene = drawSource;
 
         if (DrawSource != null)
         {
@@ -48,11 +51,11 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, DrawSource));
     }
 
-    private void OnSourceDisposing(SceneLayeresDisposingEventArgs e) => DrawSource = null;
+    private void OnSourceDisposing(SceneLayeresDisposingEventArgs e) => _scene = null;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = false;
 
-    internal void RenderBackbuffer()
+    internal override void RenderBackbuffer()
     {
         if (RedrawDirtyRectangleOnly)
             RenderBackbufferRect();
@@ -70,10 +73,12 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
     public void Dispose(bool disposing)
     {
         if (_disposed) return;
+
+        base.Dispose(disposing);
+
         if (disposing)
         {
-            Backbuffer = null;
-            _allRenderSurfaceHosts.Remove(this);
+            _backbuffer = null;
         }
         _disposed = true;
     }
@@ -84,7 +89,7 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
     private void CreateBackbuffer()
     {
         Backbuffer?.Dispose();
-        Backbuffer = (T)Activator.CreateInstance(typeof(T), RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height)!;
+        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height)!;
     }
 
     private void RenderBackbufferAll()

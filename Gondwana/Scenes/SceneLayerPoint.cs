@@ -3,7 +3,7 @@ using Gondwana.Drawing.Animation;
 using System.Drawing;
 using System.Runtime.Serialization;
 
-namespace Gondwana.Grid;
+namespace Gondwana.Scenes;
 
 /// <summary>
 /// Represents the values stored at a single location on a SceneLayer

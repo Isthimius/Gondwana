@@ -1,10 +1,7 @@
-using System.Drawing;
-using System.Reflection.Emit;
 using Gondwana.Configuration;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Grid;
+using Gondwana.Scenes;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
@@ -299,11 +296,7 @@ public sealed class Engine : IDisposable
             BeforeEngineCycle(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // render each BitmapBackbuffer to RenderSurfaceHost adapter
-        foreach (var surface in RenderSurfaceHost<BitmapBackbuffer>._allRenderSurfaceHosts)
-            surface.RenderBackbuffer();
-
-        // render each GpuBackbuffer to RenderSurfaceHost adapter
-        foreach (var surface in RenderSurfaceHost<GpuBackbuffer>._allRenderSurfaceHosts)
+        foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderBackbuffer();
 
         // all RenderSurfaceHost backbuffers rendered; clear the dirty rectangles
@@ -327,7 +320,7 @@ public sealed class Engine : IDisposable
 
     private void DrawRefreshQueues<T>() where T : BackbufferBase
     {
-        foreach (var surface in RenderSurfaceHost<T>._allRenderSurfaceHosts)
+        foreach (var surface in RenderSurfaceHostRegistry.All)
         {
             var backbuffer = surface.Backbuffer;
             if (backbuffer is null) continue;

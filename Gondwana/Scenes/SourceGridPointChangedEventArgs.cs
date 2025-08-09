@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Gondwana.Grid;
+namespace Gondwana.Scenes;
 
 public delegate void SourceGridPointChangedEventHandler(SourceGridPointChangedEventArgs e);
 

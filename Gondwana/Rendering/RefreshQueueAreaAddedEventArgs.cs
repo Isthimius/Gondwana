@@ -1,7 +1,7 @@
-﻿using Gondwana.Grid;
+﻿using Gondwana.Scenes;
 using System.Drawing;
 
-namespace Gondwana.Drawing;
+namespace Gondwana.Rendering;
 
 internal delegate void RefreshQueueAreaAddedEventHandler(RefreshQueueAreaAddedEventArgs e);
 

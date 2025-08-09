@@ -1,8 +1,8 @@
 using Gondwana;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Grid;
-using Gondwana.Grid.Coordinates;
+using Gondwana.Scenes;
+using Gondwana.Scenes.Coordinates;
 using Gondwana.Audio;
 using Gondwana.Rendering;
 using System;

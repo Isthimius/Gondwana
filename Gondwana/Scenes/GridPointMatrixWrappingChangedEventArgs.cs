@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Grid;
+﻿namespace Gondwana.Scenes;
 
 public delegate void SceneLayerWrappingChangedEventHandler(SceneLayerWrappingChangedEventArgs e);
 

@@ -1,7 +1,8 @@
 ﻿using Gondwana.Drawing;
 using System.Drawing;
 
-namespace Gondwana.Grid.Coordinates;
+using Gondwana.Scenes.Coordinates;
+using Gondwana.Scenes;
 
 public class DiagIsoDiagMatrixCoordinates : IGridCoordinates
 {

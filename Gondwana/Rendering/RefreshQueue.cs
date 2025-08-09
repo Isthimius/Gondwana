@@ -1,10 +1,10 @@
+using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Grid;
-using Gondwana.Rendering;
+using Gondwana.Scenes;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
-namespace Gondwana.Drawing;
+namespace Gondwana.Rendering;
 
 public class RefreshQueue : IDisposable
 {
@@ -117,9 +117,9 @@ public class RefreshQueue : IDisposable
             }
 
             // find all Sprite objects in range
-            foreach (Sprite sprite in Sprites.Sprites.GetSpritesInRange(area, _layer))
+            foreach (Sprite sprite in Sprites.GetSpritesInRange(area, _layer))
             {
-                if ((sprite.ParentGrid == _layer) && sprite.Visible)
+                if (sprite.ParentGrid == _layer && sprite.Visible)
                 {
                     if (sprite.childTiles != null)
                     {

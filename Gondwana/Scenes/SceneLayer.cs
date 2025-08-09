@@ -5,9 +5,9 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Gondwana.Timers;
 using System.Drawing;
-using Gondwana.Grid.Coordinates;
+using Gondwana.Rendering;
 
-namespace Gondwana.Grid;
+namespace Gondwana.Scenes;
 
 /// <summary>
 /// 
