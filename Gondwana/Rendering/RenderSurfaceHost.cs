@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
+using Gondwana.Rendering.Direct;
 using Gondwana.Scenes;
 using Gondwana.Skia;
 using SkiaSharp;
@@ -23,13 +24,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     }
 
     private TBackbuffer _backbuffer;
-    private readonly RefreshQueue _refresh;
     private readonly Color _clear;
     private Scene? _scene;
     private RenderSurfaceAdapterBase? _renderSurfaceAdapter;
 
     public override BackbufferBase Backbuffer => _backbuffer;
-    public override RefreshQueue RefreshQueue => _refresh;
     public override Color ClearColor => _clear;
     public override Scene? DrawSource => _scene;
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
@@ -55,7 +54,96 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     public bool RedrawDirtyRectangleOnly { get; set; } = false;
 
-    internal override void RenderBackbuffer()
+    internal override void DrawRefreshQueueToBackbuffer()
+    {
+        if (Backbuffer is null) return;
+
+        // Only BitmapBackbuffer has the TryEndFrame/BeginFrame/MarkDirty helpers.
+        if (Backbuffer is not BitmapBackbuffer bb)
+        {
+            // Legacy path: draw as you did before (optional)
+            return;
+        }
+
+        var grids = DrawSource;
+
+        // --- Begin background frame ---
+        bb.BeginFrame();
+        bb.ClearOpaque(SKColors.Black); // your scene clear happens here
+
+        if (grids == null || grids.Count == 0)
+        {
+            // No grid: leave as just the clear (or draw any “no scene” UI here)
+            // Force refresh of DirectDrawing objects, if that’s your policy:
+            foreach (DirectDrawingBase drawing in DirectDrawingManager._instances)
+                drawing.ForceRefresh();
+
+            // Nothing else drawn, but we still want to publish the clear
+            bb.MarkDirty();
+            DirectDrawingManager.RenderAll(); // if this draws onto the backbuffer
+            return;
+        }
+
+        switch (grids.RefreshNeeded)
+        {
+            case MatrixesRefreshType.None:
+                // Nothing to redraw in the background; don’t publish a new frame.
+                // (Host will keep showing the last front buffer.)
+                return;
+
+            case MatrixesRefreshType.Queue:
+                {
+                    // Union dirty rectangles from all visible layers into Backbuffer.DirtyRectangle
+                    System.Drawing.Rectangle dirtyUnion = System.Drawing.Rectangle.Empty;
+
+                    for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
+                    {
+                        var rq = grids.VisibleSceneLayerList[i].RefreshQueue;
+
+                        // If you keep a list of rectangles, union them. If not, you can
+                        // compute from tiles’ DrawLocation as needed.
+                        foreach (var rect in rq.GetDirtyRectangles())
+                            dirtyUnion = dirtyUnion.IsEmpty ? rect : System.Drawing.Rectangle.Union(dirtyUnion, rect);
+
+                        // Draw tiles in this layer’s queue
+                        bb.BeginFrame();
+                        bb.DrawTiles(rq.Tiles);
+                        bb.MarkDirty();
+                    }
+
+                    bb.DirtyRectangle = dirtyUnion; // engine sets it; host may use rect mode
+                    bb.MarkDirty();
+                    break;
+                }
+
+            case MatrixesRefreshType.All:
+                {
+                    // Full redraw: treat whole backbuffer as dirty
+                    Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+
+                    // Clear per-layer queues and add full range, then draw
+                    for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
+                    {
+                        var layer = grids.VisibleSceneLayerList[i];
+                        layer.RefreshQueue.ClearRefreshQueue();
+                        layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
+
+                        ((BitmapBackbuffer)Backbuffer).BeginFrame();
+                        Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
+                        ((BitmapBackbuffer)Backbuffer).MarkDirty();
+                    }
+
+                    bb.MarkDirty();
+                    break;
+                }
+
+            default:
+                // Unknown state; skip
+                break;
+        }
+    }
+
+    internal override void RenderBackbufferToAdapter()
     {
         if (RedrawDirtyRectangleOnly)
             RenderBackbufferRect();

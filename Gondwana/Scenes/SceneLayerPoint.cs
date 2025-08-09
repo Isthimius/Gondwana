@@ -1,27 +1,27 @@
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using System.Drawing;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Gondwana.Scenes;
 
 /// <summary>
 /// Represents the values stored at a single location on a SceneLayer
 /// </summary>
-[DataContract(IsReference = true)]
 public class SceneLayerPoint : Tile, IDisposable
 {
     #region private / internal fields
-    [DataMember]
+    [JsonInclude]
     internal SceneLayer parentSceneLayer;
 
-    [DataMember]
+    [JsonInclude]
     internal Point gridCoordinates;         // each GridPoint knows its location in the array in ParentGrid
 
     protected internal bool disableAddToRefreshQueue = true;
     #endregion
 
     #region constructors / finalizer
+    [JsonConstructor]
     public SceneLayerPoint(SceneLayer matrix)
     {
         zOrder = 0;
@@ -51,7 +51,7 @@ public class SceneLayerPoint : Tile, IDisposable
     #endregion
 
     #region public properties
-    [DataMember]
+    [JsonInclude]
     public virtual new Frame CurrentFrame
     {
         get { return frame; }
@@ -70,13 +70,13 @@ public class SceneLayerPoint : Tile, IDisposable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual new int ZOrder
     {
         get { return zOrder; }
     }
 
-    [DataMember]
+    [JsonInclude]
     public bool DoNotRedrawChanges
     {
         get { return disableAddToRefreshQueue; }
@@ -92,37 +92,37 @@ public class SceneLayerPoint : Tile, IDisposable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override Rectangle DrawLocation
     {
         get { return parentSceneLayer.CoordinateSystem.GetPxlRangeAtGridPt(this, true); }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override bool IsPositionFixed
     {
         get { return true; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override PointF GridCoordinates
     {
         get { return (PointF)gridCoordinates; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public Point GridCoordinatesAbs
     {
         get { return gridCoordinates;}
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override SceneLayer ParentGrid
     {
         get { return parentSceneLayer; }
     }
 
-    [DataMember]
+    [JsonInclude]
     public bool EnableAnimator
     {
         get { return (animator != null); }
