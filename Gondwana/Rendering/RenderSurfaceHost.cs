@@ -1,14 +1,14 @@
-﻿using Gondwana.Grid;
+﻿using System.Diagnostics;
+using System.Drawing;
+using Gondwana.Grid;
 using Gondwana.Skia;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Rendering;
 
 public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
 {
     internal static List<RenderSurfaceHost<T>> _allRenderSurfaceHosts { get; } = new();
-
     public static IReadOnlyList<RenderSurfaceHost<T>> AllRenderSurfaceHosts => _allRenderSurfaceHosts.AsReadOnly();
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
@@ -23,15 +23,13 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
         RenderSurfaceAdapter = renderSurfaceAdapter;
         CreateBackbuffer();
 
-        // create new backbuffer on resize
+        // Recreate backbuffer on adapter resize
         RenderSurfaceAdapter.Resized += (_, _) => CreateBackbuffer();
     }
 
-    public BackbufferBase? Backbuffer { get; private set; } = null;
-
-    public RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; private set; } = null;
-
-    public GridPointMatrixes? DrawSource { get; private set; } = null;
+    public BackbufferBase? Backbuffer { get; private set; }
+    public RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; private set; }
+    public GridPointMatrixes? DrawSource { get; private set; }
 
     public void Bind(GridPointMatrixes drawSource)
     {
@@ -52,7 +50,7 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
 
     private void OnSourceDisposing(GridPointMatrixesDisposingEventArgs e) => DrawSource = null;
 
-    public bool RedrawDirtyRectangleOnly { get; set; } = true;
+    public bool RedrawDirtyRectangleOnly { get; set; } = false;
 
     internal void RenderBackbuffer()
     {
@@ -64,64 +62,89 @@ public sealed class RenderSurfaceHost<T> : IDisposable where T : BackbufferBase
 
     #region IDisposable
     private bool _disposed;
-
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-
     public void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (_disposed) return;
+        if (disposing)
         {
-            if (disposing)
-            {
-                // managed resources
-                Backbuffer = null;
-                _allRenderSurfaceHosts.Remove(this);
-            }
-
-            _disposed = true;
+            Backbuffer = null;
+            _allRenderSurfaceHosts.Remove(this);
         }
+        _disposed = true;
     }
-
-    ~RenderSurfaceHost()
-    {
-        Dispose(false);
-    }
+    ~RenderSurfaceHost() => Dispose(false);
     #endregion
 
     #region private methods
     private void CreateBackbuffer()
     {
-        // Dispose the old backbuffer if it exists
         Backbuffer?.Dispose();
-
-        // Use Activator.CreateInstance to create T with parameters
         Backbuffer = (T)Activator.CreateInstance(typeof(T), RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height)!;
     }
 
     private void RenderBackbufferAll()
     {
-        if (RenderSurfaceAdapter != null && Backbuffer is not null)
+        if (RenderSurfaceAdapter == null || Backbuffer is null) return;
+
+        if (Backbuffer is BitmapBackbuffer bb)
         {
-            using var snapshot = Backbuffer.Snapshot();
-            RenderSurfaceAdapter.Render(snapshot, new SKRectI(0, 0, snapshot.Width, snapshot.Height));
+            // Only publish if Engine produced a frame since last swap
+            if (!bb.TryEndFrame(out var src)) return;
+
+            var img = bb.Snapshot(); // cheap wrapper over persistent _front
+            var dest = SKRect.Create(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
+            RenderSurfaceAdapter.Render(img, src, dest);
+            return;
         }
+
+        // Fallback for other backbuffer types
+        var snap = Backbuffer.Snapshot(); // NOTE: adapter stages prior image for disposal after paint
+        var srcAll = new SKRectI(0, 0, snap.Width, snap.Height);
+        var destAll = SKRect.Create(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
+        RenderSurfaceAdapter.Render(snap, srcAll, destAll);
     }
 
     private void RenderBackbufferRect()
     {
-        var dirty = Backbuffer?.DirtyRectangle ?? Rectangle.Empty;
-        if (dirty.IsEmpty)
-            return;
+        if (RenderSurfaceAdapter == null || Backbuffer is null) return;
 
-        if (RenderSurfaceAdapter != null && Backbuffer is not null)
+        var dirty = Backbuffer.DirtyRectangle;
+        if (dirty.IsEmpty)
         {
-            using var snapshot = Backbuffer.Snapshot();
-            RenderSurfaceAdapter.Render(snapshot, dirty.ToSKRectI());
+            // nothing flagged; you could fall back to full render if desired
+            return;
         }
+
+        if (Backbuffer is BitmapBackbuffer bb)
+        {
+            // Swap only if a new frame exists; then intersect with current dirty rect
+            if (!bb.TryEndFrame(out var fullSrc)) return;
+
+            var src = System.Drawing.Rectangle.Intersect(
+                new Rectangle(fullSrc.Left, fullSrc.Top, fullSrc.Width, fullSrc.Height),
+                dirty).ToSKRectI();
+
+            if (src.IsEmpty) { Backbuffer.DirtyRectangle = Rectangle.Empty; return; }
+
+            var img = bb.Snapshot();
+            var dest = dirty.ToSKRect(); // draw to the same screen region
+            RenderSurfaceAdapter.Render(img, src, dest);
+
+            Backbuffer.DirtyRectangle = Rectangle.Empty; // reset after publish
+            return;
+        }
+
+        // Fallback for other backbuffer types
+        var snap2 = Backbuffer.Snapshot();
+        var srcDirty = dirty.ToSKRectI();
+        var destDirty = dirty.ToSKRect();
+        RenderSurfaceAdapter.Render(snap2, srcDirty, destDirty);
+        Backbuffer.DirtyRectangle = Rectangle.Empty;
     }
     #endregion
 }

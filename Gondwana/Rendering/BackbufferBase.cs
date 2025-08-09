@@ -44,7 +44,8 @@ public abstract class BackbufferBase : IDisposable
         foreach (var tile in tiles)
         {
             if (!tile.Visible) continue;
-            if (!DirtyRectangle.IntersectsWith(tile.DrawLocation)) continue;
+            if (!DirtyRectangle.IsEmpty && !DirtyRectangle.IntersectsWith(tile.DrawLocation))
+                continue;
 
             DrawTileFrame(tile);
 

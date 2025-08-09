@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Reflection.Emit;
 using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Collisions;
@@ -13,6 +14,7 @@ using Gondwana.Rendering.Direct;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 using Timer = Gondwana.Timers.Timer;
 
 namespace Gondwana;
@@ -330,80 +332,112 @@ public sealed class Engine : IDisposable
         foreach (var surface in RenderSurfaceHost<T>._allRenderSurfaceHosts)
         {
             var backbuffer = surface.Backbuffer;
-            GridPointMatrixes grids = surface.DrawSource;
+            if (backbuffer is null) continue;
+
+            // Only BitmapBackbuffer has the TryEndFrame/BeginFrame/MarkDirty helpers.
+            if (backbuffer is not BitmapBackbuffer bb)
+            {
+                // Legacy path: draw as you did before (optional)
+                continue;
+            }
+
+            var grids = surface.DrawSource;
+
+            // --- Begin background frame ---
+            bb.BeginFrame();
+            bb.ClearOpaque(SKColors.Black); // your scene clear happens here
 
             if (grids == null || grids.Count == 0)
             {
-                // TODO: do we need to do this **every** time, really?
-                // since there is no grid attached, clear the entire backbuffer
-                backbuffer.Erase();
-
-                // force refresh of all DirectDrawing objects
+                // No grid: leave as just the clear (or draw any “no scene” UI here)
+                // Force refresh of DirectDrawing objects, if that’s your policy:
                 foreach (DirectDrawingBase drawing in DirectDrawingManager._instances)
                     drawing.ForceRefresh();
-            }
-            else
-            {
-                switch (grids.RefreshNeeded)
-                {
-                    case MatrixesRefreshType.None:
-                        // do nothing
-                        return;
 
-                    case MatrixesRefreshType.Queue:
-                        // erase any DirectDrawing that intersects with a refresh area
+                // Nothing else drawn, but we still want to publish the clear
+                bb.MarkDirty();
+                DirectDrawingManager.RenderAll(); // if this draws onto the backbuffer
+                continue;
+            }
+
+            switch (grids.RefreshNeeded)
+            {
+                case MatrixesRefreshType.None:
+                    // Nothing to redraw in the background; don’t publish a new frame.
+                    // (Host will keep showing the last front buffer.)
+                    continue;
+
+                case MatrixesRefreshType.Queue:
+                    {
+                        // Optionally refresh DirectDrawing overlap
                         foreach (DirectDrawingBase direct in DirectDrawingManager._instances)
                         {
                             if (grids.BackmostVisibleLayer.RefreshQueue.AreaIntersectsRefreshArea(direct.Bounds))
                                 direct.ForceRefresh();
                         }
 
-                        // TODO: do we need to erase?
-                        // erase the existing areas in queue
-                        //backbuffer.Erase(grids.BackmostVisibleLayer.RefreshQueue.GetDirtyRectangles());
+                        // Union dirty rectangles from all visible layers into Backbuffer.DirtyRectangle
+                        System.Drawing.Rectangle dirtyUnion = System.Drawing.Rectangle.Empty;
 
-                        // draw from back to front from visible layers array
                         for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
-                            surface.Backbuffer.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
+                        {
+                            var rq = grids.VisibleGridPointMatrixList[i].RefreshQueue;
 
+                            // If you keep a list of rectangles, union them. If not, you can
+                            // compute from tiles’ DrawLocation as needed.
+                            foreach (var rect in rq.GetDirtyRectangles())
+                                dirtyUnion = dirtyUnion.IsEmpty ? rect : System.Drawing.Rectangle.Union(dirtyUnion, rect);
+
+                            // Draw tiles in this layer’s queue
+                            ((BitmapBackbuffer)backbuffer).BeginFrame();
+                            backbuffer.DrawTiles(rq.Tiles);
+                            ((BitmapBackbuffer)backbuffer).MarkDirty();
+
+                        }
+
+                        backbuffer.DirtyRectangle = dirtyUnion; // engine sets it; host may use rect mode
+                        bb.MarkDirty();
                         break;
+                    }
 
-                    case MatrixesRefreshType.All:
-                        // TODO: do we need to erase?
-                        // erase the entire backbuffer
-                        //backbuffer.Erase();
+                case MatrixesRefreshType.All:
+                    {
+                        // Full redraw: treat whole backbuffer as dirty
+                        backbuffer.DirtyRectangle = new System.Drawing.Rectangle(0, 0, backbuffer.Width, backbuffer.Height);
 
-                        // force refresh of all DirectDrawing objects
+                        // Force refresh of direct drawings this cycle
                         foreach (DirectDrawingBase drawing in DirectDrawingManager._instances)
                             drawing.ForceRefresh();
 
-                        // draw from back to front from visible layers array
+                        // Clear per-layer queues and add full range, then draw
                         for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            // refreshing entire back buffer, so clear any partial queue...
-                            grids.VisibleGridPointMatrixList[i].RefreshQueue.ClearRefreshQueue();
+                            var layer = grids.VisibleGridPointMatrixList[i];
+                            layer.RefreshQueue.ClearRefreshQueue();
+                            layer.RefreshQueue.AddPixelRangeToRefreshQueue(
+                                new System.Drawing.Rectangle(0, 0, surface.RenderSurfaceAdapter!.Width,
+                                                                 surface.RenderSurfaceAdapter!.Height),
+                                false);
 
-                            // find and add all Tile objects in range to queue
-                            grids.VisibleGridPointMatrixList[i].RefreshQueue.AddPixelRangeToRefreshQueue(
-                                new Rectangle(0, 0, surface.RenderSurfaceAdapter!.Width, surface.RenderSurfaceAdapter.Height), false);
-
-                            // draw to backbuffer
-                            surface.Backbuffer!.DrawTiles(grids.VisibleGridPointMatrixList[i].RefreshQueue.Tiles);
+                            ((BitmapBackbuffer)backbuffer).BeginFrame();
+                            backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
+                            ((BitmapBackbuffer)backbuffer).MarkDirty();
                         }
 
+                        bb.MarkDirty();
                         break;
+                    }
 
-                    default:
-                        // shouldn't get here
-                        continue;
-                }
+                default:
+                    // Unknown state; skip
+                    continue;
             }
 
-            // draw all DirectDrawing objects that overlap with dirty rectangles and are "dirty"
+            // Draw any DirectDrawing elements that render onto the backbuffer
             DirectDrawingManager.RenderAll();
+            // (If DirectDrawingManager needs the backbuffer or canvas, ensure it’s using 'bb.Canvas')
         }
     }
-
     private void ClearRefreshQueues()
     {
         // step through all GridPointMatrixes objects
