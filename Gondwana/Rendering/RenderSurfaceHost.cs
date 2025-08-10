@@ -69,7 +69,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // --- Begin background frame ---
         bb.BeginFrame();
-        bb.ClearOpaque(SKColors.Black); // your scene clear happens here
+        //bb.ClearOpaque(SKColors.Black); // your scene clear happens here
 
         if (grids == null || grids.Count == 0)
         {

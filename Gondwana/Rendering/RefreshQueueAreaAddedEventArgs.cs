@@ -3,8 +3,6 @@ using System.Drawing;
 
 namespace Gondwana.Rendering;
 
-internal delegate void RefreshQueueAreaAddedEventHandler(RefreshQueueAreaAddedEventArgs e);
-
 internal class RefreshQueueAreaAddedEventArgs : EventArgs
 {
     internal SceneLayer layer;

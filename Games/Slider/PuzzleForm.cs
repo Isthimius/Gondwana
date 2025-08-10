@@ -213,6 +213,7 @@ namespace Slider
         {
             if (Program.puzzle != null)
             {
+                // TODO: also check if any sprites are moving
                 if (!Program.puzzle._isShuffling)
                 {
                     List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));

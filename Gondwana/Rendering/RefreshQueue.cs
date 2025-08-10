@@ -8,33 +8,26 @@ namespace Gondwana.Rendering;
 
 public class RefreshQueue : IDisposable
 {
-    #region private / internal field declarations
     private bool isDirty;               // if true, Tiles need to be found
     private List<Tile> _tiles;          // array of Tile objects to be redrawn
     internal List<Rectangle> _rects;    // array of Rectangle areas being refreshed
-    internal SceneLayer _layer;    // associated Matrix (parent)
-    #endregion
+    internal SceneLayer _sceneLayer;    // associated SceneLayer (parent)
 
-    #region events
-    internal event RefreshQueueAreaAddedEventHandler RefreshQueueAreaAdded;
-    #endregion
+    internal event EventHandler<RefreshQueueAreaAddedEventArgs> RefreshQueueAreaAdded;
 
-    #region constructors / finalizer
     internal RefreshQueue(SceneLayer layer)
     {
         isDirty = false;
         _tiles = new List<Tile>();
         _rects = new List<Rectangle>();
-        _layer = layer;
+        _sceneLayer = layer;
     }
 
     ~RefreshQueue()
     {
         Dispose();
     }
-    #endregion
 
-    #region properties
     public List<Tile> Tiles
     {
         get
@@ -45,9 +38,7 @@ public class RefreshQueue : IDisposable
             return _tiles;
         }
     }
-    #endregion
 
-    #region public methods
     public void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherMatrixes)
     {
         // TODO: track and present MaxSurfaceSize from VisibleSurface
@@ -57,8 +48,7 @@ public class RefreshQueue : IDisposable
         // cascade to other refresh queues if required
         if (cascadeToOtherMatrixes)
         {
-            if (RefreshQueueAreaAdded != null)
-                RefreshQueueAreaAdded(new RefreshQueueAreaAddedEventArgs(_layer, pixelRange));
+            RefreshQueueAreaAdded.Invoke(this, new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
         }
 
         // check all existing pixel ranges for an overlap with the new range
@@ -98,9 +88,7 @@ public class RefreshQueue : IDisposable
     {
         return _rects.AsReadOnly();
     }
-    #endregion
 
-    #region private methods
     private void FindTilesInRange()
     {
         // find all Tile (GridPoint and Sprite) objects in range
@@ -108,7 +96,7 @@ public class RefreshQueue : IDisposable
 
         foreach (Rectangle area in _rects)
         {
-            foreach (SceneLayerPoint gridPt in _layer.CoordinateSystem.GetGridPtListInPxlRange(_layer, area, true))
+            foreach (SceneLayerPoint gridPt in _sceneLayer.CoordinateSystem.GetGridPtListInPxlRange(_sceneLayer, area, true))
             {
                 if (gridPt == null)
                     throw new Exception();
@@ -117,9 +105,9 @@ public class RefreshQueue : IDisposable
             }
 
             // find all Sprite objects in range
-            foreach (Sprite sprite in Sprites.GetSpritesInRange(area, _layer))
+            foreach (Sprite sprite in Sprites.GetSpritesInRange(area, _sceneLayer))
             {
-                if (sprite.ParentGrid == _layer && sprite.Visible)
+                if (sprite.ParentGrid == _sceneLayer && sprite.Visible)
                 {
                     if (sprite.childTiles != null)
                     {
@@ -156,13 +144,10 @@ public class RefreshQueue : IDisposable
         isDirty = false;
         _tiles.Sort();
     }
-    #endregion
 
-    #region IDisposable Members
     public void Dispose()
     {
         RefreshQueueAreaAdded = null;
         GC.SuppressFinalize(this);
     }
-    #endregion
 }

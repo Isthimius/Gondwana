@@ -40,7 +40,7 @@ public class Scene : IEnumerable, IDisposable
     private SourceGridPointChangedEventHandler firstCRDel;
     private VisibleChangedEventHandler visChgDel;
     private GridPointSizeChangedEventHandler gridPtSzDel;
-    private RefreshQueueAreaAddedEventHandler refQueueDel;
+    private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
     private SceneLayerWrappingChangedEventHandler wrappingDel;
     private SceneLayerDisposingEventHandler matrixDisposingDel;
     #endregion
@@ -280,7 +280,7 @@ public class Scene : IEnumerable, IDisposable
         refreshNeeded = MatrixesRefreshType.All;
     }
 
-    private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
+    private void _RefreshQueueNewArea(object sender, RefreshQueueAreaAddedEventArgs e)
     {
         // set refresh to Queue if no refresh required
         if (refreshNeeded == MatrixesRefreshType.None)
@@ -320,7 +320,7 @@ public class Scene : IEnumerable, IDisposable
         firstCRDel = new SourceGridPointChangedEventHandler(_MatrixColRowChanged);
         visChgDel = new VisibleChangedEventHandler(_MatrixVisibleChanged);
         gridPtSzDel = new GridPointSizeChangedEventHandler(_GridPointSizeChanged);
-        refQueueDel = new RefreshQueueAreaAddedEventHandler(_RefreshQueueNewArea);
+        refQueueDel = new EventHandler<RefreshQueueAreaAddedEventArgs>(_RefreshQueueNewArea);
         wrappingDel = new SceneLayerWrappingChangedEventHandler(_SceneLayerWrappingChanged);
         matrixDisposingDel = new SceneLayerDisposingEventHandler(_SceneLayerDisposing);
     }

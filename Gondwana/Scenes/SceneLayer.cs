@@ -16,7 +16,7 @@ namespace Gondwana.Scenes;
 public class SceneLayer : IEnumerable, ICloneable, IDisposable
 {
     #region events
-    internal event RefreshQueueAreaAddedEventHandler RefreshQueueAreaAdded;
+    internal event EventHandler<RefreshQueueAreaAddedEventArgs> RefreshQueueAreaAdded;
     
     public event GridPointSizeChangedEventHandler GridPointSizeChanged;
     public event VisibleChangedEventHandler VisibleChanged;
@@ -27,7 +27,7 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
     #endregion
 
     #region delegates
-    private RefreshQueueAreaAddedEventHandler refQueueDel;
+    private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
     #endregion
 
     #region static fields
@@ -368,11 +368,16 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
         }
     }
 
-    internal virtual void OnRefreshQueueAreaAdded(RefreshQueueAreaAddedEventArgs e)
+    internal virtual void OnRefreshQueueAreaAdded(object? sender, RefreshQueueAreaAddedEventArgs e)
     {
         // just pass the event up
-        if (RefreshQueueAreaAdded != null)
-            RefreshQueueAreaAdded(e);
+        RefreshQueueAreaAdded?.Invoke(this, e);
+    }
+
+    private void RefreshQueueNewTile(object? sender, RefreshQueueAreaAddedEventArgs e)
+    {
+        // pass the event up to any containing SceneLayeres
+        OnRefreshQueueAreaAdded(sender, e);
     }
 
     protected virtual void OnWrappingChanged(bool oldHoriz, bool newHoriz, bool oldVerti, bool newVerti)
@@ -515,12 +520,6 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
         }
     }
 
-    private void RefreshQueueNewTile(RefreshQueueAreaAddedEventArgs e)
-    {
-        // pass the event up to any containing SceneLayeres
-        OnRefreshQueueAreaAdded(e);
-    }
-
     private void ScrollWithParent()
     {
         PointF parentSrc = scrollBinding.ParentGrid.SourceGridPoint;
@@ -555,7 +554,7 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
         // let each GridPoint in array know its position in the array
         SaveGridCoordinatesToGridPoints();
         RefreshQueue = new RefreshQueue(this);
-        refQueueDel = new RefreshQueueAreaAddedEventHandler(RefreshQueueNewTile);
+        refQueueDel = RefreshQueueNewTile;
         RefreshQueue.RefreshQueueAreaAdded += refQueueDel;
         FindIndexedGridPoint = new GetIndexer(GetIndexer_NoWrap);
         _movement = new Movement(this);

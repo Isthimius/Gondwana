@@ -93,41 +93,6 @@ public sealed class BitmapBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Unconditional swap (rarely needed now). Prefer TryEndFrame.
-    /// </summary>
-    public (SKBitmap front, SKRectI src) EndFrame()
-    {
-        _backSurface.Flush();
-        lock (_swapLock)
-        {
-            var tmp = _front; _front = _back; _back = tmp;
-
-            _backSurface.Dispose();
-            var info = _back.Info;
-            _backSurface = SKSurface.Create(info, _back.GetPixels(), info.RowBytes);
-
-            _frameDirty = false;
-            return (_front, new SKRectI(0, 0, _front.Width, _front.Height));
-        }
-    }
-
-    public void Resize(int width, int height)
-    {
-        lock (_swapLock)
-        {
-            var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
-
-            _backSurface.Dispose();
-            _front.Dispose();
-            _back.Dispose();
-
-            _front = new SKBitmap(info);
-            _back = new SKBitmap(info);
-            _backSurface = SKSurface.Create(info, _back.GetPixels(), info.RowBytes);
-        }
-    }
-
-    /// <summary>
     /// Zero-copy wrapper over the persistent _front pixels for the adapter.
     /// Disposing the SKImage wrapper does not free the underlying bitmap.
     /// </summary>
