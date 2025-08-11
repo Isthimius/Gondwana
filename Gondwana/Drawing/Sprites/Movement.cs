@@ -385,6 +385,10 @@ public class Movement : IDisposable
     #region internal methods
     internal void MoveNext(long currentTick)
     {
+        // no MovePoint to move
+        if (_movePoint == null)
+            return;
+
         // if still on the same tick, no point in proceeding
         if (_lastTick == currentTick)
             return;
@@ -394,8 +398,8 @@ public class Movement : IDisposable
             return;
 
         // accumulate TotalTimeRunning
-        _movePoint?.TotalTicksRunning += (currentTick - _lastTick);
-        //_lastTick = currentTick;
+        _movePoint.TotalTicksRunning += (currentTick - _lastTick);
+        _lastTick = currentTick;
 
         if (_movePoint.TicksUntilCompletion <= 0)
             Finish(true);
