@@ -15,8 +15,8 @@ class GondwanaTest
         TestRectangles();
 
 
-        Gondwana.Engine.Instance.AfterEngineCycle += new Gondwana.EngineCycleEventHandler(Engine_AfterEngineCycle);
-        Gondwana.Engine.Instance.CPSCalculated += new Gondwana.CyclesPerSecondCalculatedHandler(EngineCPSCalculated);
+        //Gondwana.Engine.Instance.AfterEngineCycle += new Gondwana.EngineCycleEventArgs(Engine_AfterEngineCycle);
+        //Gondwana.Engine.Instance.CPSCalculated += new Gondwana.EngineCycleEventArgs(EngineCPSCalculated);
 
         /*
         do
@@ -44,12 +44,12 @@ class GondwanaTest
         Console.Read();
     }
 
-    static void Engine_AfterEngineCycle(EngineCycleEventArgs e)
+    static void Engine_AfterEngineCycle(object sender, EngineCycleEventArgs e)
     {
         totalEngineCycles++;
     }
 
-    private static void EngineCPSCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs e)
+    private static void EngineCPSCalculated(object sender, CyclesPerSecondCalculatedEventArgs e)
     {
         totalTimesCPSCalcd++;
         Console.WriteLine("Gross Cycles: " + e.TotalGrossCycles.ToString());
