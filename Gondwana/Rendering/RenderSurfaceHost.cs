@@ -56,91 +56,73 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     internal override void DrawRefreshQueueToBackbuffer()
     {
-        if (Backbuffer is null) return;
+        if (Backbuffer is not BitmapBackbuffer bb) return;
+        var scene = DrawSource;
 
-        // Only BitmapBackbuffer has the TryEndFrame/BeginFrame/MarkDirty helpers.
-        if (Backbuffer is not BitmapBackbuffer bb)
-        {
-            // Legacy path: draw as you did before (optional)
-            return;
-        }
-
-        var grids = DrawSource;
-
-        // --- Begin background frame ---
         bb.BeginFrame();
-        //bb.ClearOpaque(SKColors.Black); // your scene clear happens here
 
-        if (grids == null || grids.Count == 0)
+        if (scene is null || (scene?.CountOfVisibleLayers ?? 0) == 0)
         {
-            // No grid: leave as just the clear (or draw any “no scene” UI here)
-            // Force refresh of DirectDrawing objects, if that’s your policy:
-            foreach (DirectDrawingBase drawing in DirectDrawingManager._instances)
-                drawing.ForceRefresh();
-
-            // Nothing else drawn, but we still want to publish the clear
-            bb.MarkDirty();
-            DirectDrawingManager.RenderAll(); // if this draws onto the backbuffer
-            return;
+            bb.ClearOpaque(ClearColor.ToSKColor());
+            // Optionally mark whole surface dirty for a visible clear:
+            Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
         }
-
-        switch (grids.RefreshNeeded)
+        else
         {
-            case MatrixesRefreshType.None:
-                // Nothing to redraw in the background; don’t publish a new frame.
-                // (Host will keep showing the last front buffer.)
-                return;
+            switch (scene!.RefreshNeeded)
+            {
+                case MatrixesRefreshType.None:
+                    // Nothing to redraw in the background; don’t publish a new frame.
+                    // (Host will keep showing the last front buffer.)
+                    return;
 
-            case MatrixesRefreshType.Queue:
-                {
-                    // Union dirty rectangles from all visible layers into Backbuffer.DirtyRectangle
-                    System.Drawing.Rectangle dirtyUnion = System.Drawing.Rectangle.Empty;
-
-                    for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
+                case MatrixesRefreshType.Queue:
                     {
-                        var rq = grids.VisibleSceneLayerList[i].RefreshQueue;
+                        // Union dirty rectangles from all visible layers into Backbuffer.DirtyRectangle
+                        System.Drawing.Rectangle dirtyUnion = System.Drawing.Rectangle.Empty;
 
-                        // If you keep a list of rectangles, union them. If not, you can
-                        // compute from tiles’ DrawLocation as needed.
-                        foreach (var rect in rq.GetDirtyRectangles())
-                            dirtyUnion = dirtyUnion.IsEmpty ? rect : System.Drawing.Rectangle.Union(dirtyUnion, rect);
+                        for (int i = scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                        {
+                            var rq = scene.VisibleSceneLayerList[i].RefreshQueue;
 
-                        // Draw tiles in this layer’s queue
-                        bb.BeginFrame();
-                        bb.DrawTiles(rq.Tiles);
-                        bb.MarkDirty();
+                            // If you keep a list of rectangles, union them. If not, you can
+                            // compute from tiles’ DrawLocation as needed.
+                            foreach (var rect in rq.GetDirtyRectangles())
+                                dirtyUnion = dirtyUnion.IsEmpty ? rect : System.Drawing.Rectangle.Union(dirtyUnion, rect);
+
+                            // Draw tiles in this layer’s queue
+                            bb.DrawTiles(rq.Tiles);
+                        }
+
+                        bb.DirtyRectangle = dirtyUnion; // engine sets it; host may use rect mode
+                        break;
                     }
 
-                    bb.DirtyRectangle = dirtyUnion; // engine sets it; host may use rect mode
-                    bb.MarkDirty();
-                    break;
-                }
-
-            case MatrixesRefreshType.All:
-                {
-                    // Full redraw: treat whole backbuffer as dirty
-                    Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
-
-                    // Clear per-layer queues and add full range, then draw
-                    for (int i = grids.CountOfVisibleLayers - 1; i >= 0; i--)
+                case MatrixesRefreshType.All:
                     {
-                        var layer = grids.VisibleSceneLayerList[i];
-                        layer.RefreshQueue.ClearRefreshQueue();
-                        layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
+                        // Full redraw: treat whole backbuffer as dirty
+                        Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
 
-                        ((BitmapBackbuffer)Backbuffer).BeginFrame();
-                        Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
-                        ((BitmapBackbuffer)Backbuffer).MarkDirty();
+                        // Clear per-layer queues and add full range, then draw
+                        for (int i = scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                        {
+                            var layer = scene.VisibleSceneLayerList[i];
+                            layer.RefreshQueue.ClearRefreshQueue();
+                            layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
+
+                            Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
+                        }
+
+                        break;
                     }
 
-                    bb.MarkDirty();
+                default:
+                    // Unknown state; skip
                     break;
-                }
-
-            default:
-                // Unknown state; skip
-                break;
+            }
         }
+
+        bb.EndFrame();
     }
 
     internal override void RenderBackbufferToAdapter()
@@ -182,61 +164,25 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void RenderBackbufferAll()
     {
-        if (RenderSurfaceAdapter == null || Backbuffer is null) return;
+        if (RenderSurfaceAdapter is null) return;
 
-        if (Backbuffer is BitmapBackbuffer bb)
-        {
-            // Only publish if Engine produced a frame since last swap
-            if (!bb.TryEndFrame(out var src)) return;
+        var img = Backbuffer.Snapshot();
+        var src = new SKRectI(0, 0, img.Width, img.Height);
+        var dst = SKRect.Create(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
 
-            var img = bb.Snapshot(); // cheap wrapper over persistent _front
-            var dest = SKRect.Create(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
-            RenderSurfaceAdapter.Render(img, src, dest);
-            return;
-        }
-
-        // Fallback for other backbuffer types
-        var snap = Backbuffer.Snapshot(); // NOTE: adapter stages prior image for disposal after paint
-        var srcAll = new SKRectI(0, 0, snap.Width, snap.Height);
-        var destAll = SKRect.Create(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
-        RenderSurfaceAdapter.Render(snap, srcAll, destAll);
+        RenderSurfaceAdapter.Render(img, src, dst);
     }
 
     private void RenderBackbufferRect()
     {
-        if (RenderSurfaceAdapter == null || Backbuffer is null) return;
+        if (RenderSurfaceAdapter is null) return;
 
         var dirty = Backbuffer.DirtyRectangle;
-        if (dirty.IsEmpty)
-        {
-            // nothing flagged; you could fall back to full render if desired
-            return;
-        }
+        if (dirty.IsEmpty) return;
 
-        if (Backbuffer is BitmapBackbuffer bb)
-        {
-            // Swap only if a new frame exists; then intersect with current dirty rect
-            if (!bb.TryEndFrame(out var fullSrc)) return;
+        var img = Backbuffer.Snapshot();
+        RenderSurfaceAdapter.Render(img, dirty.ToSKRectI(), dirty.ToSKRect());
 
-            var src = System.Drawing.Rectangle.Intersect(
-                new Rectangle(fullSrc.Left, fullSrc.Top, fullSrc.Width, fullSrc.Height),
-                dirty).ToSKRectI();
-
-            if (src.IsEmpty) { Backbuffer.DirtyRectangle = Rectangle.Empty; return; }
-
-            var img = bb.Snapshot();
-            var dest = dirty.ToSKRect(); // draw to the same screen region
-            RenderSurfaceAdapter.Render(img, src, dest);
-
-            Backbuffer.DirtyRectangle = Rectangle.Empty; // reset after publish
-            return;
-        }
-
-        // Fallback for other backbuffer types
-        var snap2 = Backbuffer.Snapshot();
-        var srcDirty = dirty.ToSKRectI();
-        var destDirty = dirty.ToSKRect();
-        RenderSurfaceAdapter.Render(snap2, srcDirty, destDirty);
         Backbuffer.DirtyRectangle = Rectangle.Empty;
     }
     #endregion

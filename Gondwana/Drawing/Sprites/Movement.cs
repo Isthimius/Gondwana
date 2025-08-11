@@ -394,7 +394,7 @@ public class Movement : IDisposable
             return;
 
         // accumulate TotalTimeRunning
-        _movePoint.TotalTicksRunning += (currentTick - _lastTick);
+        _movePoint?.TotalTicksRunning += (currentTick - _lastTick);
         //_lastTick = currentTick;
 
         if (_movePoint.TicksUntilCompletion <= 0)

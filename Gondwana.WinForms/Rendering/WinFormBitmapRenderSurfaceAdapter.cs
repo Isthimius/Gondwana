@@ -25,23 +25,24 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
 
     public override void Render(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
+        // No UI target — dispose immediately to avoid leak
         if (_control.IsDisposed || !_control.IsHandleCreated)
         {
-            bufferImage.Dispose(); // avoid leaking if host is gone
+            bufferImage.Dispose();
             return;
         }
 
         if (_control.InvokeRequired)
         {
-            // keep the exact object; it's just a wrapper over persistent pixels
-            _control.BeginInvoke(new Action(() => Render(bufferImage, bufferRect, destRect)));
+            // Hand off exactly this object; control will dispose old one later
+            _control.BeginInvoke((() => Render(bufferImage, bufferRect, destRect)));
             return;
         }
 
-        // Swap without disposing yet; paint may still be using the old image
+        // Swap into current; old one queued for disposal after paint
         var old = _currentImage;
         _currentImage = bufferImage;
-        if (!ReferenceEquals(old, _currentImage))
+        if (!ReferenceEquals(old, _currentImage) && old is not null)
             _prevToDispose = old;
 
         _sourceRect = bufferRect;
@@ -55,10 +56,9 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
-        canvas.Clear(ClearColor);
-
+        
         var img = _currentImage;
-        if (img != null && img.Handle != IntPtr.Zero)
+        if (img != null)
         {
             var srcI = SKRectI.Intersect(_sourceRect, new SKRectI(0, 0, img.Width, img.Height));
             if (!srcI.IsEmpty)
@@ -66,6 +66,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
                 var src = ToRect(srcI);
                 var dest = _destRect;
                 var bounds = SKRect.Create(e.Info.Width, e.Info.Height);
+
                 if (!bounds.Contains(dest))
                     dest = SKRect.Intersect(dest, bounds);
 
