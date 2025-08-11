@@ -280,14 +280,14 @@ public class Scene : IEnumerable, IDisposable
         refreshNeeded = MatrixesRefreshType.All;
     }
 
-    private void _RefreshQueueNewArea(object sender, RefreshQueueAreaAddedEventArgs e)
+    private void _RefreshQueueNewArea(object? sender, RefreshQueueAreaAddedEventArgs e)
     {
         // set refresh to Queue if no refresh required
         if (refreshNeeded == MatrixesRefreshType.None)
             refreshNeeded = MatrixesRefreshType.Queue;
 
         // if matrix that added Tile to queue is visible...
-        if (e.layer.Visible == true)
+        if (e.layer.Visible)
         {
             // refresh all other visible matrixes
             for (int i = _visibleLayers.Count - 1; i >= 0; i--)

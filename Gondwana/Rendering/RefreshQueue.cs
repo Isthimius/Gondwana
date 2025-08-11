@@ -98,9 +98,7 @@ public class RefreshQueue : IDisposable
         {
             foreach (SceneLayerPoint gridPt in _sceneLayer.CoordinateSystem.GetGridPtListInPxlRange(_sceneLayer, area, true))
             {
-                if (gridPt == null)
-                    throw new Exception();
-
+                if (gridPt == null) continue;
                 tempTiles.Add(gridPt);
             }
 
@@ -109,14 +107,8 @@ public class RefreshQueue : IDisposable
             {
                 if (sprite.ParentGrid == _sceneLayer && sprite.Visible)
                 {
-                    if (sprite.childTiles != null)
-                    {
-                        foreach (Sprite child in sprite.childTiles)
-                        {
-                            if (child.DrawLocation.IntersectsWith(area))
-                                tempTiles.Add(child);
-                        }
-                    }
+                    // add the sprite to the queue if it intersects with the area
+                    tempTiles.AddRange(sprite.childTiles?.Where(child => child.DrawLocation.IntersectsWith(area)) ?? Enumerable.Empty<Tile>());
 
                     if (sprite.DrawLocation.IntersectsWith(area))
                         tempTiles.Add(sprite);
