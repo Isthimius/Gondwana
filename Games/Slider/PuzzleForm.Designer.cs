@@ -192,11 +192,6 @@ namespace Slider
             winFormBitmapRenderSurfaceControl1.Name = "winFormBitmapRenderSurfaceControl1";
             winFormBitmapRenderSurfaceControl1.Size = new System.Drawing.Size(963, 825);
             winFormBitmapRenderSurfaceControl1.TabIndex = 15;
-            winFormBitmapRenderSurfaceControl1.Load += winFormBitmapRenderSurfaceControl1_Load_1;
-            winFormBitmapRenderSurfaceControl1.MouseClick += winFormBitmapRenderSurfaceControl1_MouseClick;
-            winFormBitmapRenderSurfaceControl1.MouseCaptureChanged += winFormBitmapRenderSurfaceControl1_MouseCaptureChanged;
-            winFormBitmapRenderSurfaceControl1.MouseDown += winFormBitmapRenderSurfaceControl1_MouseDown;
-            winFormBitmapRenderSurfaceControl1.MouseMove += winFormBitmapRenderSurfaceControl1_MouseMove;
             // 
             // PuzzleForm
             // 

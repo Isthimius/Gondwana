@@ -7,9 +7,16 @@ public sealed class MouseEventPoller
 {
     public static MouseEventPoller? Instance { get; private set; }
 
-    public static void Initialize(IMouseAdapter adapter)
+    public static void Initialize(IMouseAdapter adapter, MouseEventConfiguration? mouseEventConfiguration = null)
     {
-        Instance = new MouseEventPoller(adapter);
+        if (mouseEventConfiguration == null)
+        {
+            mouseEventConfiguration = new MouseEventConfiguration(
+                trackMouseMovement: true,
+                timeBetweenEvents: Engine.Instance.Configuration.TimeBetweenMouseEvents);
+        }
+
+        Instance = new MouseEventPoller(adapter, mouseEventConfiguration);
     }
 
     public event Action<MouseEventArgs>? MouseEvent;
@@ -27,9 +34,11 @@ public sealed class MouseEventPoller
     public IReadOnlyDictionary<MouseButton, MouseButtonState> ButtonStates => _buttonStates;
     public int ScrollDelta => _lastScrollDelta;
 
-    private MouseEventPoller(IMouseAdapter adapter)
+    private MouseEventPoller(IMouseAdapter adapter, MouseEventConfiguration? mouseEventConfiguration)
     {
         Adapter = adapter;
+        Configuration = mouseEventConfiguration;
+
         foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
         {
             if (button != MouseButton.None)

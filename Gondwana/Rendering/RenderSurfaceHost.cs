@@ -52,7 +52,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void OnSourceDisposing(SceneLayeresDisposingEventArgs e) => _scene = null;
 
-    public bool RedrawDirtyRectangleOnly { get; set; } = false;
+    public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
     internal override void DrawRefreshQueueToBackbuffer()
     {

@@ -18,12 +18,12 @@ public static class EngineExtensions
 
     public static void InitializeSdlGamepadManager(this Engine engine)
     {
-        Engine.Instance.GamepadManager = SdlGamepadManager.Start();
+        Engine.GamepadManager = SdlGamepadManager.Start();
     }
 
     public static void InitializeXInputGamepadManager(this Engine engine)
     {
-        Engine.Instance.GamepadManager = XInputGamepadManager.Start();
+        Engine.GamepadManager = XInputGamepadManager.Start();
     }
 
     public static void InitializeWinFormsKeyboardAdapter(this Engine engine, Control control)
@@ -39,7 +39,7 @@ public static class EngineExtensions
         KeyboardEventPoller.Initialize(new WinFormsKeyboardAdapter(control));
     }
 
-    public static void InitializeWinFormsMouseAdapter(this Engine engine, Control control)
+    public static void InitializeWinFormsMouseAdapter(this Engine engine, Control control, MouseEventConfiguration? mouseEventConfiguration = null)
     {
         Engine.Logger.LogInformation("Initializing WinFormsMouseAdapter...");
 
@@ -49,6 +49,6 @@ public static class EngineExtensions
             throw new ArgumentNullException(nameof(control));
         }
 
-        MouseEventPoller.Initialize(new WinFormsMouseAdapter(control));
+        MouseEventPoller.Initialize(new WinFormsMouseAdapter(control), mouseEventConfiguration);
     }
 }

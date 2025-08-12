@@ -184,17 +184,17 @@ public sealed class Engine : IDisposable
         set => _config = value;
     }
 
-    public KeyboardEventPoller? KeyboardEventPoller { get; set; } = null;
+    public static KeyboardEventPoller? KeyboardEventPoller => KeyboardEventPoller.Instance ?? null;
 
-    public MouseEventPoller? MouseEventPoller { get; set; } = null;
+    public static MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
 
-    private IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
+    private static IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
 
     /// <summary>
     /// Gets or sets the gamepad manager responsible for handling gamepad input.
     /// </summary>
     /// <remarks>Setting this property attaches an update callback to the engine cycle, polling attached adapters</remarks>
-    public IGamepadManager<IGamepadAdapter>? GamepadManager
+    public static IGamepadManager<IGamepadAdapter>? GamepadManager
     {
         get => _gamepadManager;
         set
@@ -204,7 +204,7 @@ public sealed class Engine : IDisposable
         }
     }
 
-    public GamepadManagerEventPoller? GamepadManagerEventPoller { get => GamepadManagerEventPoller.Instance; }
+    public static GamepadManagerEventPoller? GamepadManagerEventPoller { get => GamepadManagerEventPoller.Instance; }
     #endregion
 
     #region private methods
