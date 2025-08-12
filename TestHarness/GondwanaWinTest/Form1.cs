@@ -1,6 +1,4 @@
 using Gondwana;
-using Gondwana.Common;
-using Gondwana.Common.Drawing.Direct;
 using System;
 using System.Drawing;
 using System.IO;
@@ -53,7 +51,7 @@ namespace GondwanaWinTest
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Program.visSurf.RenderBackbuffer(false);
+            //Program.visSurf.RenderBackbuffer(false);
         }
 
         private void Form1_Deactivate(object sender, EventArgs e)
@@ -63,12 +61,12 @@ namespace GondwanaWinTest
 
         private void Form1_Activated(object sender, EventArgs e)
         {
-            Gondwana.Input.Keyboard.Keyboard.PauseAllKeyEvents = false;
+            //Gondwana.Input.Keyboard.Keyboard.PauseAllKeyEvents = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Program.visSurf.Buffer.SaveToFile(Program.path + "backbuffer.bmp");
+            //Program.visSurf.Buffer.SaveToFile(Program.path + "backbuffer.bmp");
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
@@ -99,25 +97,25 @@ namespace GondwanaWinTest
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (dragging)
-            {
-                end = new Point(e.X, e.Y);
-                Rectangle rect = new Rectangle(start, new Size(end.X - start.X, end.Y - start.Y));
+            //if (dragging)
+            //{
+            //    end = new Point(e.X, e.Y);
+            //    Rectangle rect = new Rectangle(start, new Size(end.X - start.X, end.Y - start.Y));
 
-                DirectRectangle directRect = (DirectRectangle)DirectDrawing.GetDirectDrawing("purple");
+            //    DirectRectangle directRect = (DirectRectangle)DirectDrawing.GetDirectDrawing("purple");
 
-                if (directRect == null)
-                {
-                    directRect = new DirectRectangle(Program.visSurf, rect, Color.Purple, true, 128);
-                    directRect.Name = "purple";
-                }
-                else
-                    directRect.Bounds = rect;
+            //    if (directRect == null)
+            //    {
+            //        directRect = new DirectRectangle(Program.visSurf, rect, Color.Purple, true, 128);
+            //        directRect.Name = "purple";
+            //    }
+            //    else
+            //        directRect.Bounds = rect;
 
-                //DirectImage directImg = new DirectImage(Program.visSurf, rect, Program.sprtBmp);
-                directRect.ZOrder = 2;
-                //directImg.ZOrder = 1;
-            }
+            //    //DirectImage directImg = new DirectImage(Program.visSurf, rect, Program.sprtBmp);
+            //    directRect.ZOrder = 2;
+            //    //directImg.ZOrder = 1;
+            //}
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -144,14 +142,14 @@ namespace GondwanaWinTest
         private void button7_Click(object sender, EventArgs e)
         {
             string dir = Path.GetDirectoryName(Application.ExecutablePath) + @"\";
-            Engine.State.Save(dir + "text.xml", false);
-            Engine.State.Save(dir + "binary.txt", true);
+            Engine.Instance.State.SaveToFile(dir + "text.xml", false);
+            Engine.Instance.State.SaveToFile(dir + "binary.txt", true);
 
             //var xmlState = EngineState.GetEngineState(dir + "text.xml", false);
-            var binState = EngineState.GetEngineState(dir + "binary.txt", true);
+            //var binState = EngineState.GetEngineState(dir + "binary.txt", true);
 
             //xmlState.Save(dir + "in_out_xml.xml", false);
-            binState.Save(dir + "in_out_bin.xml", true);
+            //binState.Save(dir + "in_out_bin.xml", true);
         }
     }
 }

@@ -1,17 +1,14 @@
 using Gondwana;
-using Gondwana.Common;
-using Gondwana.Common.Collisions;
-using Gondwana.Common.Drawing;
-using Gondwana.Common.Drawing.Animation;
-using Gondwana.Common.Drawing.Direct;
-using Gondwana.Common.Drawing.Sprites;
-using Gondwana.Common.Enums;
-using Gondwana.Common.EventArgs;
-using Gondwana.Common.Grid;
-using Gondwana.Coordinates;
-using Gondwana.Input.EventArgs;
+using Gondwana.Drawing.Collisions;
+using Gondwana.Drawing;
+using Gondwana.Drawing.Animation;
+using Gondwana.Rendering.Direct;
+using Gondwana.Drawing.Sprites;
+using Gondwana.Scenes;
+using Gondwana.Scenes.Coordinates;
+using Gondwana.Input;
 using Gondwana.Input.Keyboard;
-using Gondwana.Media;
+using Gondwana.Audio;
 using Gondwana.Rendering;
 using System;
 using System.Collections.Generic;
@@ -35,13 +32,13 @@ namespace GondwanaWinTest
         private static Tilesheet tilesheetMask;
         public static Tilesheet sprtBmp;
         private static Tilesheet sprtBmpMask;
-        public static GridPointMatrixes layers;
-        public static GridPointMatrix matrix;
-        public static GridPointMatrix matrix2;
+        public static Scene layers;
+        public static SceneLayer matrix;
+        public static SceneLayer matrix2;
         //public static GridPointMatrix matrix3;
-        public static VisibleSurface visSurf;
+        public static RenderSurfaceHost<BitmapBackbuffer> visSurf;
         public static Sprite sprite;
-        public static Text fpsCounter;
+        public static TextBlock fpsCounter;
         public static double fps;
         public static double cps;
 
@@ -51,23 +48,21 @@ namespace GondwanaWinTest
         [STAThread]
         static void Main()
         {
-            Engine.AfterEngineCycle += new Gondwana.Common.EventArgs.EngineCycleEventHandler(Engine_AfterEngineCycle);
-            Keyboard.KeyDown += new Gondwana.Input.Keyboard.Keyboard.KeyDownEventHandler(Keyboard_KeyDown);
-            Engine.TileCollisions += new Gondwana.Common.EventArgs.CollisionEventHandler(Tile_SpriteCollision);
-            Engine.Configuration.Settings.TargetFPS = 240;
+            //Engine.Instance.AfterEngineCycle += new Gondwana.AfterEngineCycleEventHandler(Engine_AfterEngineCycle);
+            //Keyboard.KeyDown += new Gondwana.Input.Keyboard.Keyboard.KeyDownEventHandler(Keyboard_KeyDown);
+            //Engine.Instance.TileCollisions += new Gondwana.Common.EventArgs.CollisionEventHandler(Tile_SpriteCollision);
+            Engine.Instance.Configuration.TargetFPS = 240;
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
 
-            Engine.Configuration.Settings.ResizedFrameCacheLimit = 123;
-            Engine.Configuration.StateFiles.LoadAtStartup = false;
-            Engine.Configuration.StateFiles.Add(new Gondwana.Common.Configuration.EngineStateFile() { ID = "file1", Path = @"c:\test\file10.gscr" });
-            Engine.Configuration.StateFiles.Add(new Gondwana.Common.Configuration.EngineStateFile() { ID = "file2", Path = @"c:\test\file20.gscr" });
-            Engine.Configuration.Save();
-            Engine.Configuration.Save(@"E:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaWinTest\bin\Debug\hi.config");
+            //Engine.Instance.Configuration.StateFiles.LoadAtStartup = false;
+            //Engine.Instance.Configuration.StateFiles.Add(new Gondwana.Configuration.EngineStateFile() { ID = "file1", Path = @"c:\test\file10.gscr" });
+            //Engine.Instance.Configuration.StateFiles.Add(new Gondwana.Configuration.EngineStateFile() { ID = "file2", Path = @"c:\test\file20.gscr" });
+            //Engine.Instance.Configuration.Save(@"E:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaWinTest\bin\Debug\hi.config");
 
-            Engine.State.Save(@"c:\test\file10.gscr", false);
+            //Engine.Instance.State.SaveToFile(@"c:\test\file10.gscr", false);
         }
 
         public static void TestEngine(Form1 frm)
@@ -77,23 +72,23 @@ namespace GondwanaWinTest
             //    Engine.Cycle();
             //} while (!stopEngine);
 
-            Engine.Start();
+            Engine.Instance.Start();
 
-            string msg = "ran for: " + Gondwana.Engine.TotalSecondsEngineRunning.ToString();
+            string msg = "ran for: " + Gondwana.Engine.Instance.TotalSecondsEngineRunning.ToString();
             msg += "\r\ntotal cycles: " + totalEngineCycles.ToString();
-            msg += "\r\ncps: " + Gondwana.Engine.CyclesPerSecond.ToString();
-            msg += "\r\nfps: " + Gondwana.Engine.FramesPerSecond.ToString();
-            msg += "\r\ntotal sprites: " + Gondwana.Common.Drawing.Sprites.Sprites.AllSprites.Count.ToString();
+            msg += "\r\ncps: " + Gondwana.Engine.Instance.CyclesPerSecond.ToString();
+            msg += "\r\nfps: " + Gondwana.Engine.Instance.FramesPerSecond.ToString();
+            msg += "\r\ntotal sprites: " + Gondwana.Drawing.Sprites.Sprites.AllSprites.Count.ToString();
             msg += "\r\nEnvironment.CurrentDirectory: " + Environment.CurrentDirectory;
             MessageBox.Show(msg);
 
-            visSurf.RenderBackbuffer(false);
+            //visSurf.RenderBackbuffer(false);
             stopEngine = false;
 
 
             //Parser.WriteToFile(path + "bmp.txt", System.IO.FileMode.OpenOrCreate, Bitmaps.AllTilesheets);
             //Gondwana.Scripting.Parser.WriteToFile(path + "bmp.txt", System.IO.FileMode.Append, Program.sprite.TileAnimator.CurrentCycle);
-            List<GridPointMatrix> matrixes = new List<GridPointMatrix>();
+            List<SceneLayer> matrixes = new List<SceneLayer>();
             matrixes.Add(matrix);
             matrixes.Add(matrix2);
             //matrixes.Add(matrix3);
@@ -127,10 +122,9 @@ namespace GondwanaWinTest
             //string file = path + @"\media\Raton.asx";
             //string file2 = path + @"\media\Copy of Castle4_Simon.mid";
 
-            var monkeySong = new MediaFile("monkey", file, MediaFileType.mp3);
-            monkeySong.Looping = true;
-            monkeySong.FullScreen = false;
-            monkeySong.Play(frm);
+            var monkeySong = SoundResourceManager.Instance.LoadFromFile("monkey", file);
+            monkeySong.IsLooping = true;
+            monkeySong.Play();
 
             //player.Open(file2, i.ToString());
             //player.Play(i.ToString());
@@ -167,8 +161,8 @@ namespace GondwanaWinTest
             sprtBmpMask.TileSize = new Size(50, 50);
 
 
-            tilesheet.Mask = tilesheetMask;
-            sprtBmp.Mask = sprtBmpMask;
+            //tilesheet.Mask = tilesheetMask;
+            //sprtBmp.Mask = sprtBmpMask;
 
             //tilesheet.ApplyBmpSettingsFile(@"E:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaWinTest\resources\XMLFile1.xml");
             //tilesheetMask.ApplyBmpSettingsFile(@"E:\TFS\Hidden Worlds Games\Gondwana\TestHarness\GondwanaWinTest\resources\XMLFile1.xml");
@@ -191,17 +185,17 @@ namespace GondwanaWinTest
 
         public static void LoadMatrixLayers()
         {
-            Gondwana.Common.Timers.Timers.Add("matrix_move", TimerType.PreCycle, TimerCycles.Repeating, 0.01).Tick +=
-                new Gondwana.Common.EventArgs.TimerEventHandler(Timers_Tick);
+            //Gondwana.Common.Timers.Timers.Add("matrix_move", TimerType.PreCycle, TimerCycles.Repeating, 0.01).Tick +=
+            //    new Gondwana.Common.EventArgs.TimerEventHandler(Timers_Tick);
 
-            matrix = new GridPointMatrix(8, 8, 64, 32);
+            matrix = new SceneLayer(8, 8, 64, 32);
             matrix.WrapHorizontally = false;
             matrix.WrapVertically = false;
             matrix.CoordinateSystem = new SquareIsoCoordinates();
 
-            layers = new GridPointMatrixes(matrix);
+            layers = new Scene(matrix);
 
-            matrix2 = new GridPointMatrix(12, 12, 64, 32);
+            matrix2 = new SceneLayer(12, 12, 64, 32);
             matrix2.CoordinateSystem = new SquareIsoCoordinates();
 
             matrix2.BindScrollingToParentGrid(matrix);
@@ -226,11 +220,11 @@ namespace GondwanaWinTest
 
             //matrix[5, 5].CurrentFrame = new Frame(tilesheet, 2, 7);
 
-            foreach (GridPoint gridPt in matrix)
+            foreach (SceneLayerPoint gridPt in matrix)
                 gridPt.CurrentFrame = new Frame(tilesheet, 0, 0);
 
             int i = 0;
-            foreach (GridPoint gridPt in matrix2)
+            foreach (SceneLayerPoint gridPt in matrix2)
             {
                 switch (i++ % 3)
                 {
@@ -249,31 +243,31 @@ namespace GondwanaWinTest
             }
         }
 
-        static void Timers_Tick(Gondwana.Common.EventArgs.TimerEventArgs e)
-        {
-            bool isShift = Keyboard.GetKeyDownState(Keys.ShiftKey);
-            if (isShift)
-                return;
+        //static void Timers_Tick(Gondwana.Common.EventArgs.TimerEventArgs e)
+        //{
+        //    bool isShift = Keyboard.GetKeyDownState(Keys.ShiftKey);
+        //    if (isShift)
+        //        return;
 
-            if (Keyboard.GetKeyDownState(Keys.Up))
-                sprite.SpriteMovement.AccelerationY = (-5);
-            else if (Keyboard.GetKeyDownState(Keys.Down))
-                sprite.SpriteMovement.AccelerationY = 5;
-            else
-                sprite.SpriteMovement.AccelerationY = 0;
+        //    if (Keyboard.GetKeyDownState(Keys.Up))
+        //        sprite.SpriteMovement.AccelerationY = (-5);
+        //    else if (Keyboard.GetKeyDownState(Keys.Down))
+        //        sprite.SpriteMovement.AccelerationY = 5;
+        //    else
+        //        sprite.SpriteMovement.AccelerationY = 0;
 
-            if (Keyboard.GetKeyDownState(Keys.Left))
-                sprite.SpriteMovement.AccelerationX = (-2.5);
-            else if (Keyboard.GetKeyDownState(Keys.Right))
-                sprite.SpriteMovement.AccelerationX = 2.5;
-            else
-                sprite.SpriteMovement.AccelerationX = 0;
-        }
+        //    if (Keyboard.GetKeyDownState(Keys.Left))
+        //        sprite.SpriteMovement.AccelerationX = (-2.5);
+        //    else if (Keyboard.GetKeyDownState(Keys.Right))
+        //        sprite.SpriteMovement.AccelerationX = 2.5;
+        //    else
+        //        sprite.SpriteMovement.AccelerationX = 0;
+        //}
 
         public static void LoadVisibleSurfaces(Form1 frm)
         {
-            Graphics g = frm.CreateGraphics();
-            visSurf = new VisibleSurface(g, frm.Width, frm.Height);
+            //Graphics g = frm.CreateGraphics();
+            //visSurf = new RenderSurfaceHost<BitmapBackbuffer>(** ADAPTER GOES HERE **);
             visSurf.Bind(layers);
 
             layers[0].ShowGridLines = false;
@@ -281,13 +275,13 @@ namespace GondwanaWinTest
 
             visSurf.RedrawDirtyRectangleOnly = true;
 
-            fpsCounter = new Text(visSurf, "fps:", new Font("Times New Roman", 8),
-                new Rectangle(0, 0, 200, 300), Color.White, Color.Transparent);
+            //fpsCounter = new TextBlock(visSurf, "fps:", new Font("Times New Roman", 8),
+            //    new Rectangle(0, 0, 200, 300), Color.White, Color.Transparent);
 
-            Engine.CPSCalculated += new Gondwana.Common.EventArgs.CyclesPerSecondCalculatedHandler(Engine_CPSCalculated);
+            Engine.Instance.CPSCalculated += Engine_CPSCalculatedHandler;
         }
 
-        static void Engine_CPSCalculated(Gondwana.Common.EventArgs.CyclesPerSecondCalculatedEventArgs e)
+        private static void Engine_CPSCalculatedHandler(object sender, CyclesPerSecondCalculatedEventArgs e)
         {
             fps = e.NetCPS;
             cps = e.GrossCPS;
@@ -300,19 +294,19 @@ namespace GondwanaWinTest
             seq.AddFrame(sprtBmp, 1, 0);
             seq.AddFrame(sprtBmp, 2, 0);
             seq.AddFrame(sprtBmp, 3, 0);
-            seq.SequenceCycleType = Gondwana.Common.Enums.CycleType.PingPong;
+            seq.SequenceCycleType = Gondwana.Drawing.Animation.CycleType.PingPong;
 
             Cycle cycle = new Cycle(seq, 0.03, "groovin");
 
             sprite = Sprites.CreateSprite(matrix, seq[0]);
             sprite.TileAnimator.CurrentCycle = cycle;
             sprite.RenderSize = new Size(50, 50);
-            sprite.VertAlign = Gondwana.Common.Enums.VerticalAlignment.Top;
-            sprite.HorizAlign = Gondwana.Common.Enums.HorizontalAlignment.Left;
+            sprite.VertAlign = VerticalAlignment.Top;
+            sprite.HorizAlign = Gondwana.Drawing.Sprites.HorizontalAlignment.Left;
             sprite.MoveSprite(3, 3);
             sprite.Visible = true;
             sprite.TileAnimator.StartAnimation();
-            sprite.DetectCollision = CollisionDetection.All;
+            sprite.DetectCollision = CollisionDetectionType.All;
 
             //matrix2[1, 1].EnableAnimator = true;
             //matrix2[1, 1].TileAnimator.CurrentCycle = Cycles.GetAnimationCycle("groovin");
@@ -321,34 +315,34 @@ namespace GondwanaWinTest
 
         public static void LoadSounds()
         {
-            var chickenSound = new MediaFile("chicken", path + @"\media\chicken-1.wav", MediaFileType.wav);
-            var boomSound = new MediaFile("boom", path + @"\media\explosion-01.wav", MediaFileType.wav);
+            //var chickenSound = new MediaFile("chicken", path + @"\media\chicken-1.wav", MediaFileType.wav);
+            //var boomSound = new MediaFile("boom", path + @"\media\explosion-01.wav", MediaFileType.wav);
         }
 
         public static void InitializeKeyboardEvents()
         {
-            Keyboard.StartMonitoringKey(Keys.A);
-            Keyboard.StartMonitoringKey(Keys.S);
-            Keyboard.StartMonitoringKey(Keys.X);
-            Keyboard.StartMonitoringKey(Keys.Y);
-            Keyboard.StartMonitoringKey(Keys.Escape);
-            Keyboard.StartMonitoringKey(Keys.Left);
-            Keyboard.StartMonitoringKey(Keys.Right);
-            Keyboard.StartMonitoringKey(Keys.Up);
-            Keyboard.StartMonitoringKey(Keys.Down);
-            Keyboard.StartMonitoringKey(Keys.Q);
-            Keyboard.StartMonitoringKey(Keys.Z);
-            Keyboard.StartMonitoringKey(Keys.D);
-            Keyboard.StartMonitoringKey(Keys.C);
-            Keyboard.StartMonitoringKey(Keys.V);
-            Keyboard.StartMonitoringKey(Keys.B);
-            Keyboard.StartMonitoringKey(Keys.W);
+            //Keyboard.StartMonitoringKey(Keys.A);
+            //Keyboard.StartMonitoringKey(Keys.S);
+            //Keyboard.StartMonitoringKey(Keys.X);
+            //Keyboard.StartMonitoringKey(Keys.Y);
+            //Keyboard.StartMonitoringKey(Keys.Escape);
+            //Keyboard.StartMonitoringKey(Keys.Left);
+            //Keyboard.StartMonitoringKey(Keys.Right);
+            //Keyboard.StartMonitoringKey(Keys.Up);
+            //Keyboard.StartMonitoringKey(Keys.Down);
+            //Keyboard.StartMonitoringKey(Keys.Q);
+            //Keyboard.StartMonitoringKey(Keys.Z);
+            //Keyboard.StartMonitoringKey(Keys.D);
+            //Keyboard.StartMonitoringKey(Keys.C);
+            //Keyboard.StartMonitoringKey(Keys.V);
+            //Keyboard.StartMonitoringKey(Keys.B);
+            //Keyboard.StartMonitoringKey(Keys.W);
 
-            Keyboard.SetTimeBetweenEvents(Keys.C, 0.5);
-            Keyboard.SetTimeBetweenEvents(Keys.V, 0.5);
-            Keyboard.SetTimeBetweenEvents(Keys.B, 2.5);
-            Keyboard.SetTimeBetweenEvents(Keys.W, 0.5);
-            Keyboard.SetTimeBetweenEvents(Keys.D, 0.5);
+            //Keyboard.SetTimeBetweenEvents(Keys.C, 0.5);
+            //Keyboard.SetTimeBetweenEvents(Keys.V, 0.5);
+            //Keyboard.SetTimeBetweenEvents(Keys.B, 2.5);
+            //Keyboard.SetTimeBetweenEvents(Keys.W, 0.5);
+            //Keyboard.SetTimeBetweenEvents(Keys.D, 0.5);
         }
         #endregion
 
@@ -364,7 +358,7 @@ namespace GondwanaWinTest
             msg.AppendLine(string.Format("cps (event): {0}", e.GrossCPS.ToString("F3")));
             msg.AppendLine(string.Format("net cycles: {0}", e.NetCyclesTotal.ToString()));
             msg.AppendLine(string.Format("gross cycles: {0}", e.GrossCyclesTotal.ToString()));
-            msg.AppendLine(string.Format("seconds running: {0}", Gondwana.Engine.TotalSecondsEngineRunning.ToString()));
+            msg.AppendLine(string.Format("seconds running: {0}", Gondwana.Engine.Instance.TotalSecondsEngineRunning.ToString()));
             msg.AppendLine(string.Format("sprites: {0}", Sprites.AllSprites.Count.ToString()));
             msg.AppendLine(string.Format("x1: {0}", matrix.SourceGridPoint.X.ToString("F3")));
             msg.AppendLine(string.Format("x2: {0}", matrix2.SourceGridPoint.X.ToString("F3")));
@@ -372,7 +366,7 @@ namespace GondwanaWinTest
             msg.AppendLine(string.Format("y2: {0}", matrix2.SourceGridPoint.Y.ToString("F3")));
             msg.AppendLine(string.Format("sprite x: {0}", sprite.GridCoordinates.X.ToString("F3")));
             msg.AppendLine(string.Format("sprite y: {0}", sprite.GridCoordinates.Y.ToString("F3")));
-            msg.AppendLine(string.Format("DirectDrawings: {0}", DirectDrawing.Count.ToString()));
+            //msg.AppendLine(string.Format("DirectDrawings: {0}", DirectDrawing.Count.ToString()));
             msg.AppendLine(string.Format("GridPt Zero Pxl: {0}", matrix.GridPointZeroPixel.ToString()));
             msg.AppendLine(string.Format("Sprite source pxl: {0}", sprite.DrawLocation.Location.ToString()));
             msg.AppendLine(string.Format("X velocity: {0}", sprite.SpriteMovement.VelocityX.ToString("F3")));
@@ -380,96 +374,96 @@ namespace GondwanaWinTest
             msg.AppendLine(string.Format("X acceleration: {0}", sprite.SpriteMovement.AccelerationX.ToString("F3")));
             msg.AppendLine(string.Format("Y acceleration: {0}", sprite.SpriteMovement.AccelerationY.ToString("F3")));
 
-            fpsCounter.TextDisplay = msg.ToString();
+            //fpsCounter.TextDisplay = msg.ToString();
         }
 
         static void Keyboard_KeyDown(KeyDownEventArgs e)
         {
-            switch (e.KeyConfig.Key)
-            {
-                case Keys.Up:
-                    if (e.IsShift)
-                        //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X, matrix.SourceGridPoint.Y - (float).1));
-                        matrix.VelocityY = -1;
-                    //else
-                    //    //sprite.MoveSprite(sprite.GridCoordinates.X, sprite.GridCoordinates.Y - .1);
-                    //    sprite.SpriteMovement.VelocityY = -1;
-                    break;
-                case Keys.Down:
-                    if (e.IsShift)
-                        //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X, matrix.SourceGridPoint.Y + (float).1));
-                        matrix.VelocityY = 1;
-                    //else
-                    //    //sprite.MoveSprite(sprite.GridCoordinates.X, sprite.GridCoordinates.Y + .1);
-                    //    sprite.SpriteMovement.VelocityY = 1;
-                    break;
-                case Keys.Left:
-                    if (e.IsShift)
-                        //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X - (float).1, matrix.SourceGridPoint.Y));
-                        matrix.VelocityX = -1;
-                    //else
-                    //    //sprite.MoveSprite(sprite.GridCoordinates.X - 0.1, sprite.GridCoordinates.Y);
-                    //    sprite.SpriteMovement.VelocityX = -1;
-                    break;
-                case Keys.Right:
-                    if (e.IsShift)
-                        //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X + (float).1, matrix.SourceGridPoint.Y));
-                        matrix.VelocityX = 1;
-                    //else
-                    //    //sprite.MoveSprite(sprite.GridCoordinates.X + 0.1, sprite.GridCoordinates.Y);
-                    //    sprite.SpriteMovement.VelocityX = 1;
-                    break;
-                case Keys.A:
-                    matrix.Visible = true;
-                    break;
-                case Keys.S:
-                    matrix.Visible = false;
-                    break;
-                case Keys.X:
-                    Sprites.PauseAllAnimation(true);
-                    break;
-                case Keys.Y:
-                    Sprites.PauseAllAnimation(false);
-                    break;
-                case Keys.Escape:
-                    stopEngine = true;
-                    break;
-                case Keys.Q:
-                    sprite.TileAnimator.StopAnimation();
-                    break;
-                case Keys.Z:
-                    sprite.TileAnimator.StartAnimation();
-                    break;
-                case Keys.D:
-                    sprite.Dispose();
-                    sprite = null;
-                    DirectDrawing.Clear();
-                    MediaFile.GetMediaFile("boom").Play();;
-                    break;
-                case Keys.C:
-                    //Sprite cloned = (Sprite)sprite.Clone();
-                    //cloned.TileAnimator.StartAnimation("groovin");
-                    MediaFile.GetMediaFile("chicken").Play();
-                    break;
-                case Keys.V:
-                    //MediaFile.FullScreen = !MediaFile.FullScreen;
-                    break;
-                case Keys.B:
-                    //DirectDrawing.ClearAll();
-                    Text text = new Text(visSurf, "BEWARE THE HORNY CHICKENS",
-                        new Font("Times New Roman", 24), new Rectangle(200, 200, 700, 100),
-                        Color.Orange, Color.Transparent, TextFormatFlags.WordBreak | TextFormatFlags.HorizontalCenter);
-                    break;
-                case Keys.W:
-                    matrix.WrapHorizontally = !matrix.WrapHorizontally;
-                    //matrix3.WrapHorizontally = !matrix3.WrapHorizontally;
-                    break;
-                default:
-                    break;
-            }
+            //switch (e.KeyConfig.Key)
+            //{
+            //    case Keys.Up:
+            //        if (e.IsShift)
+            //            //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X, matrix.SourceGridPoint.Y - (float).1));
+            //            matrix.VelocityY = -1;
+            //        //else
+            //        //    //sprite.MoveSprite(sprite.GridCoordinates.X, sprite.GridCoordinates.Y - .1);
+            //        //    sprite.SpriteMovement.VelocityY = -1;
+            //        break;
+            //    case Keys.Down:
+            //        if (e.IsShift)
+            //            //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X, matrix.SourceGridPoint.Y + (float).1));
+            //            matrix.VelocityY = 1;
+            //        //else
+            //        //    //sprite.MoveSprite(sprite.GridCoordinates.X, sprite.GridCoordinates.Y + .1);
+            //        //    sprite.SpriteMovement.VelocityY = 1;
+            //        break;
+            //    case Keys.Left:
+            //        if (e.IsShift)
+            //            //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X - (float).1, matrix.SourceGridPoint.Y));
+            //            matrix.VelocityX = -1;
+            //        //else
+            //        //    //sprite.MoveSprite(sprite.GridCoordinates.X - 0.1, sprite.GridCoordinates.Y);
+            //        //    sprite.SpriteMovement.VelocityX = -1;
+            //        break;
+            //    case Keys.Right:
+            //        if (e.IsShift)
+            //            //matrix.SetSourceGridPoint(new PointF(matrix.SourceGridPoint.X + (float).1, matrix.SourceGridPoint.Y));
+            //            matrix.VelocityX = 1;
+            //        //else
+            //        //    //sprite.MoveSprite(sprite.GridCoordinates.X + 0.1, sprite.GridCoordinates.Y);
+            //        //    sprite.SpriteMovement.VelocityX = 1;
+            //        break;
+            //    case Keys.A:
+            //        matrix.Visible = true;
+            //        break;
+            //    case Keys.S:
+            //        matrix.Visible = false;
+            //        break;
+            //    case Keys.X:
+            //        Sprites.PauseAllAnimation(true);
+            //        break;
+            //    case Keys.Y:
+            //        Sprites.PauseAllAnimation(false);
+            //        break;
+            //    case Keys.Escape:
+            //        stopEngine = true;
+            //        break;
+            //    case Keys.Q:
+            //        sprite.TileAnimator.StopAnimation();
+            //        break;
+            //    case Keys.Z:
+            //        sprite.TileAnimator.StartAnimation();
+            //        break;
+            //    case Keys.D:
+            //        sprite.Dispose();
+            //        sprite = null;
+            //        DirectDrawing.Clear();
+            //        MediaFile.GetMediaFile("boom").Play();;
+            //        break;
+            //    case Keys.C:
+            //        //Sprite cloned = (Sprite)sprite.Clone();
+            //        //cloned.TileAnimator.StartAnimation("groovin");
+            //        MediaFile.GetMediaFile("chicken").Play();
+            //        break;
+            //    case Keys.V:
+            //        //MediaFile.FullScreen = !MediaFile.FullScreen;
+            //        break;
+            //    case Keys.B:
+            //        //DirectDrawing.ClearAll();
+            //        Text text = new Text(visSurf, "BEWARE THE HORNY CHICKENS",
+            //            new Font("Times New Roman", 24), new Rectangle(200, 200, 700, 100),
+            //            Color.Orange, Color.Transparent, TextFormatFlags.WordBreak | TextFormatFlags.HorizontalCenter);
+            //        break;
+            //    case Keys.W:
+            //        matrix.WrapHorizontally = !matrix.WrapHorizontally;
+            //        //matrix3.WrapHorizontally = !matrix3.WrapHorizontally;
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
 
-        static void Tile_SpriteCollision(Gondwana.Common.EventArgs.CollisionEventArgs e)
+        static void Tile_SpriteCollision(CollisionEventArgs e)
         {
             foreach (Collision collision in e.Collisions)
             {
