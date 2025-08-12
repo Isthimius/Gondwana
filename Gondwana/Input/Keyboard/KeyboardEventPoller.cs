@@ -51,11 +51,11 @@ public sealed class KeyboardEventPoller
             var key = kvp.Key;
             var config = kvp.Value;
             
-            if (config.Paused || !Adapter.PressedKeys.Contains(key)) continue;
+            if (config.IsPaused || !Adapter.PressedKeys.Contains(key)) continue;
 
             if (config.ReadyForNextEvent(tick))
             {
-                config.LastKeyEvent = tick;
+                config._lastEventTick = tick;
                 _keyConfigs[key] = config;
 
                 KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentKeyboardModifiers));
@@ -63,12 +63,12 @@ public sealed class KeyboardEventPoller
         }
     }
 
-    public void StartMonitoringKey(string key, double timeBetweenEvents = -1)
+    public void StartMonitoringKey(string key, double timeBetweenEvents = -1, bool isPaused = false)
     {
         if (timeBetweenEvents < 0)
             timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenKeyboardEvents;
 
-        _keyConfigs[key] = new KeyEventConfiguration(key, timeBetweenEvents, false);
+        _keyConfigs[key] = new KeyEventConfiguration(key, timeBetweenEvents, isPaused);
     }
 
     public void StopMonitoringKey(string key) => _keyConfigs.Remove(key);

@@ -1,26 +1,14 @@
-using Gondwana.Timers;
+using Gondwana.Input;
 
 namespace Gondwana.Input.Mouse;
 
-public struct MouseEventConfiguration
+public class MouseEventConfiguration : InputEventConfigurationBase
 {
-    internal long _lastMouseEvent;
-    private long _ticksBetweenEvents;
-
-    public MouseEventConfiguration(bool trackMouseMovement, double timeBetweenEvents)
-    {
-        _lastMouseEvent = 0;
-        TrackMouseMovement = trackMouseMovement;
-        _ticksBetweenEvents = (long)(timeBetweenEvents * HighResTimer.TicksPerSecond);
-    }
-
     public bool TrackMouseMovement { get; set; }
 
-    public double TimeBetweenEvents
+    public MouseEventConfiguration(bool trackMouseMovement, double secondsBetweenEvents = 0, bool isPaused = false)
+        : base(secondsBetweenEvents, isPaused)
     {
-        get => (double)_ticksBetweenEvents / HighResTimer.TicksPerSecond;
-        set => _ticksBetweenEvents = (long)(value * HighResTimer.TicksPerSecond);
+        TrackMouseMovement = trackMouseMovement;
     }
-
-    public bool ReadyForNextEvent(long tick) => tick - _lastMouseEvent >= _ticksBetweenEvents;
 }

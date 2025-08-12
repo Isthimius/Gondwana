@@ -59,11 +59,11 @@ public sealed class GamepadManagerEventPoller
                 var button = kvp.Key;
                 var config = kvp.Value;
 
-                if (config.Paused || !adapter.PressedButtons.Contains(button)) continue;
+                if (config.IsPaused || !adapter.PressedButtons.Contains(button)) continue;
 
                 if (config.ReadyForNextEvent(tick))
                 {
-                    config.LastEventTick = tick;
+                    config._lastEventTick = tick;
                     configs[button] = config;
 
                     ButtonDown?.Invoke(new GamepadButtonDownEventArgs(config, adapter));
@@ -72,7 +72,7 @@ public sealed class GamepadManagerEventPoller
         }
     }
 
-    public void StartMonitoringButton(string gamepadId, string button, double timeBetweenEvents = -1)
+    public void StartMonitoringButton(string gamepadId, string button, double timeBetweenEvents = -1, bool isPaused = false)
     {
         if (timeBetweenEvents < 0)
             timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenGamepadEvents;
@@ -83,7 +83,7 @@ public sealed class GamepadManagerEventPoller
             _configsByGamepadId[gamepadId] = configMap;
         }
 
-        configMap[button] = new GamepadButtonEventConfiguration(button, timeBetweenEvents, false);
+        configMap[button] = new GamepadButtonEventConfiguration(button, timeBetweenEvents, isPaused);
     }
 
     public void StopMonitoringButton(string gamepadId, string button)

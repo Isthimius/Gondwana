@@ -1,27 +1,12 @@
-﻿using Gondwana.Timers;
+﻿namespace Gondwana.Input.Gamepad;
 
-namespace Gondwana.Input.Gamepad;
-
-public struct GamepadButtonEventConfiguration
+public class GamepadButtonEventConfiguration : InputEventConfigurationBase
 {
-    public string Button;
-    public bool Paused;
-    internal long LastEventTick;
-    private long _ticksBetweenEvents;
+    public string Button { get; private set; }
 
-    public GamepadButtonEventConfiguration(string button, double timeBetweenEvents, bool paused)
+    public GamepadButtonEventConfiguration(string button, double secondsBetweenEvents = 0, bool isPaused = false)
+        : base(secondsBetweenEvents, isPaused)
     {
         Button = button;
-        Paused = paused;
-        LastEventTick = 0;
-        _ticksBetweenEvents = (long)(timeBetweenEvents * HighResTimer.TicksPerSecond);
     }
-
-    public double TimeBetweenEvents
-    {
-        get => (double)_ticksBetweenEvents / HighResTimer.TicksPerSecond;
-        set => _ticksBetweenEvents = (long)(value * HighResTimer.TicksPerSecond);
-    }
-
-    public bool ReadyForNextEvent(long tick) => tick - LastEventTick >= _ticksBetweenEvents;
 }

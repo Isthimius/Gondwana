@@ -13,7 +13,7 @@ public sealed class MouseEventPoller
         {
             mouseEventConfiguration = new MouseEventConfiguration(
                 trackMouseMovement: true,
-                timeBetweenEvents: Engine.Instance.Configuration.TimeBetweenMouseEvents);
+                secondsBetweenEvents: Engine.Instance.Configuration.TimeBetweenMouseEvents);
         }
 
         Instance = new MouseEventPoller(adapter, mouseEventConfiguration);
@@ -26,7 +26,7 @@ public sealed class MouseEventPoller
     private int _lastScrollDelta = 0;
 
     public IMouseAdapter? Adapter { get; private set; }
-    public MouseEventConfiguration? Configuration { get; private set; } = null;
+    public MouseEventConfiguration? Configuration { get; private set; }
 
     public Point CurrentPosition => Adapter?.CurrentPosition ?? default;
     public KeyboardModifierState CurrentKeyboardModifiers => Adapter?.CurrentKeyboardModifiers ?? KeyboardModifierState.None;
@@ -50,13 +50,13 @@ public sealed class MouseEventPoller
     {
         if (Adapter is null) return;
 
-        if (Configuration?.ReadyForNextEvent(tick) ?? false)
+        if ((!Configuration?.IsPaused ?? false) && (Configuration?.ReadyForNextEvent(tick) ?? false))
         {
             var currentPos = Adapter.CurrentPosition;
             var pressed = Adapter.PressedButtons;
             
             if (_buttonStates.Values.Any(s => s.JustPressed || s.JustReleased) ||
-                                        (Configuration.Value.TrackMouseMovement && (_lastPosition != currentPos)))
+                                        (Configuration.TrackMouseMovement && (_lastPosition != currentPos)))
             {
                 foreach (var kvp in _buttonStates)
                 {
@@ -73,19 +73,19 @@ public sealed class MouseEventPoller
                     _buttonStates[button] = state;
                 }
 
-                MouseEvent?.Invoke(new MouseEventArgs((MouseEventConfiguration)Configuration, CurrentKeyboardModifiers, ButtonStates, _lastPosition, currentPos, _lastScrollDelta));
+                MouseEvent?.Invoke(new MouseEventArgs(Configuration, CurrentKeyboardModifiers, ButtonStates, _lastPosition, currentPos, _lastScrollDelta));
 
                 _lastPosition = currentPos;
             }
         }
     }
 
-    public void StartMonitoringMouse(bool trackMouseMovement = true, double timeBetweenEvents = -1)
+    public void StartMonitoringMouse(bool trackMouseMovement = true, double timeBetweenEvents = -1, bool isPaused = false)
     {
         if (timeBetweenEvents < 0)
             timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenMouseEvents;
 
-        Configuration = new MouseEventConfiguration(trackMouseMovement, timeBetweenEvents);
+        Configuration = new MouseEventConfiguration(trackMouseMovement, timeBetweenEvents, isPaused);
     }
 
     public void StopMonitoringMouse() => Configuration = null;

@@ -1,27 +1,14 @@
-using Gondwana.Timers;
+using Gondwana.Input;
 
 namespace Gondwana.Input.Keyboard;
 
-public struct KeyEventConfiguration
+public class KeyEventConfiguration : InputEventConfigurationBase
 {
-    public string Key; // Could be "A", "Enter", "ArrowUp", etc.
-    public bool Paused;
-    internal long LastKeyEvent;
-    private long _ticksBetweenEvents;
+    public string Key { get; private set; } // Could be "A", "Enter", "ArrowUp", etc.
 
-    public KeyEventConfiguration(string key, double timeBetweenEvents = 0, bool paused = false)
+    public KeyEventConfiguration(string key, double secondsBetweenEvents = 0, bool isPaused = false)
+        : base(secondsBetweenEvents, isPaused)
     {
         Key = key;
-        Paused = paused;
-        LastKeyEvent = 0;
-        _ticksBetweenEvents = (long)(timeBetweenEvents * HighResTimer.TicksPerSecond);
     }
-
-    public double TimeBetweenEvents
-    {
-        get => (double)_ticksBetweenEvents / HighResTimer.TicksPerSecond;
-        set => _ticksBetweenEvents = (long)(value * HighResTimer.TicksPerSecond);
-    }
-
-    public bool ReadyForNextEvent(long tick) => tick - LastKeyEvent >= _ticksBetweenEvents;
 }
