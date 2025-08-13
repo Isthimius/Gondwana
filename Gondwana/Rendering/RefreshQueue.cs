@@ -73,16 +73,16 @@ public class RefreshQueue : IDisposable
         _rects.Clear();
     }
 
-    public bool AreaIntersectsRefreshArea(Rectangle area)
-    {
-        foreach (Rectangle rect in _rects)
-        {
-            if (area.IntersectsWith(rect))
-                return true;
-        }
+    //public bool AreaIntersectsRefreshArea(Rectangle area)
+    //{
+    //    foreach (Rectangle rect in _rects)
+    //    {
+    //        if (area.IntersectsWith(rect))
+    //            return true;
+    //    }
 
-        return false;
-    }
+    //    return false;
+    //}
 
     public ReadOnlyCollection<Rectangle> GetDirtyRectangles()
     {

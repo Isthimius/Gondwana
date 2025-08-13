@@ -61,7 +61,7 @@ namespace Slider
             //surface.Backbuffer.Erase();
 
             renderSurfaceHost.RedrawDirtyRectangleOnly = true;
-            renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Yellow;
+            renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Black;
             renderSurfaceHost.Bind(matrixes);
 
             InitializeSprites(tileWidth, tileHeight);
