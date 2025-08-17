@@ -37,7 +37,19 @@ public abstract class BackbufferBase : IDisposable
     public int Width => _range.Width;
     public int Height => _range.Height;
     public Rectangle DirtyRectangle { get; set; } = Rectangle.Empty;
-    public SKColor ClearColor { get; set; } = SKColors.Black;
+    
+    private SKColor _clearColor = SKColors.Black;
+    protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };
+
+    public SKColor ClearColor 
+    {
+        get => _clearColor;
+        set
+        {
+            _clearColor = value;
+            _fillPaint.Color = value;
+        }
+    }
 
     internal void DrawTiles(IList<Tile> tiles)
     {
@@ -96,6 +108,7 @@ public abstract class BackbufferBase : IDisposable
 
     public virtual void Dispose()
     {
+        _fillPaint.Dispose();
         FogPaint.Dispose();
         GridPaint.Dispose();
 

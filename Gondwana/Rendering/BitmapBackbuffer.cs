@@ -1,5 +1,6 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Skia;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
@@ -25,7 +26,6 @@ public sealed class BitmapBackbuffer : BackbufferBase
         c.Save();
         c.ResetMatrix();
         c.ClipRect(new SKRect(0, 0, Width, Height));
-        //DirtyRectangle = System.Drawing.Rectangle.Empty;
     }
 
     public void EndFrame() => _surface.Flush();
@@ -36,11 +36,16 @@ public sealed class BitmapBackbuffer : BackbufferBase
     public override void DrawTileFrame(Tile tile)
     {
         var bmp = tile.CurrentFrame.SkBitmap;
-        if (bmp is null) return;
-
-        // Draw once (removed accidental double draw)
         var dst = tile.DrawLocation.ToSKRect();
-        Canvas.DrawBitmap(bmp, dst);
+
+        if (bmp is null)
+        {
+            Engine.Logger.LogInformation(dst.ToString());
+            Canvas.DrawRect(dst, _fillPaint);
+        }
+        else
+            Canvas.DrawBitmap(bmp, dst);
+
         AddToDirtyRectangle(tile.DrawLocation);
     }
 
