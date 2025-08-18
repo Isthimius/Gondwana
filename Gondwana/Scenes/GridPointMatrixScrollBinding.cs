@@ -25,46 +25,8 @@ public class SceneLayerScrollBinding
     [IgnoreDataMember]
     public SceneLayer ParentGrid;
 
-    [DataMember]
-    private string ParentGridId
-    {
-        get
-        {
-            if (ParentGrid == null)
-                return string.Empty;
-            else
-                return ParentGrid.ID;
-        }
-        set
-        {
-            if (string.IsNullOrEmpty(value))
-                ParentGrid = null;
-            else
-                ParentGrid = SceneLayer.GetSceneLayerByID(value);
-        }
-    }
-
     [IgnoreDataMember]
     internal SceneLayer ChildGrid;
-
-    [DataMember]
-    private string ChildGridId
-    {
-        get
-        {
-            if (ChildGrid == null)
-                return string.Empty;
-            else
-                return ChildGrid.ID;
-        }
-        set
-        {
-            if (string.IsNullOrEmpty(value))
-                ChildGrid = null;
-            else
-                ChildGrid = SceneLayer.GetSceneLayerByID(value);
-        }
-    }
 
     [DataMember]
     public PointF ParentAnchorGridPoint;

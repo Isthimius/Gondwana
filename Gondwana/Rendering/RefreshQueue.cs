@@ -6,9 +6,9 @@ using System.Drawing;
 
 namespace Gondwana.Rendering;
 
-public class RefreshQueue : IDisposable
+internal class RefreshQueue : IDisposable
 {
-    private bool isDirty;               // if true, Tiles need to be found
+    private bool _isDirty;               // if true, Tiles need to be found
     private List<Tile> _tiles;          // array of Tile objects to be redrawn
     internal List<Rectangle> _rects;    // array of Rectangle areas being refreshed
     internal SceneLayer _sceneLayer;    // associated SceneLayer (parent)
@@ -17,7 +17,7 @@ public class RefreshQueue : IDisposable
 
     internal RefreshQueue(SceneLayer layer)
     {
-        isDirty = false;
+        _isDirty = false;
         _tiles = new List<Tile>();
         _rects = new List<Rectangle>();
         _sceneLayer = layer;
@@ -28,18 +28,18 @@ public class RefreshQueue : IDisposable
         Dispose();
     }
 
-    public List<Tile> Tiles
+    internal List<Tile> Tiles
     {
         get
         {
-            if (isDirty)
+            if (_isDirty)
                 FindTilesInRange();
 
             return _tiles;
         }
     }
 
-    public void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherMatrixes)
+    internal void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherMatrixes)
     {
         // TODO: track and present MaxSurfaceSize from VisibleSurface
         // limit refresh range to screen resolution
@@ -60,7 +60,7 @@ public class RefreshQueue : IDisposable
         }
 
         // if we make it this far, this includes a new area to refresh
-        isDirty = true;
+        _isDirty = true;
         _rects.Add(pixelRange);
     }
 
@@ -73,18 +73,7 @@ public class RefreshQueue : IDisposable
         _rects.Clear();
     }
 
-    //public bool AreaIntersectsRefreshArea(Rectangle area)
-    //{
-    //    foreach (Rectangle rect in _rects)
-    //    {
-    //        if (area.IntersectsWith(rect))
-    //            return true;
-    //    }
-
-    //    return false;
-    //}
-
-    public ReadOnlyCollection<Rectangle> GetDirtyRectangles()
+    internal ReadOnlyCollection<Rectangle> GetDirtyRectangles()
     {
         return _rects.AsReadOnly();
     }
@@ -133,7 +122,7 @@ public class RefreshQueue : IDisposable
             }
         }
 
-        isDirty = false;
+        _isDirty = false;
         _tiles.Sort();
     }
 

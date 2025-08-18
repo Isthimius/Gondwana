@@ -221,7 +221,7 @@ public class Scene : IEnumerable, IDisposable
     #region raise events
     protected virtual void OnSceneLayerAdded(SceneLayer grid)
     {
-        grid._parent = this;
+        grid.Parent = this;
 
         grid.FirstColRowChanged += firstCRDel;
         grid.VisibleChanged += visChgDel;
@@ -235,7 +235,7 @@ public class Scene : IEnumerable, IDisposable
 
     protected virtual void OnSceneLayerRemoved(SceneLayer grid)
     {
-        grid._parent = null;
+        grid.Parent = null;
 
         grid.FirstColRowChanged -= firstCRDel;
         grid.VisibleChanged -= visChgDel;

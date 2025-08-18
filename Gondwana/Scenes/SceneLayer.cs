@@ -13,7 +13,7 @@ namespace Gondwana.Scenes;
 /// 
 /// </summary>
 [DataContract(IsReference = true)]
-public class SceneLayer : IEnumerable, ICloneable, IDisposable
+public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 {
     #region events
     internal event EventHandler<RefreshQueueAreaAddedEventArgs> RefreshQueueAreaAdded;
@@ -45,9 +45,6 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
     private SceneLayerPoint[][] _matrix;      // array of points; 2 dimensions (X, Y)
     private float _layerSyncModifier;   // 1 = default; <1 is slower, >1 is faster
 
-    [DataMember]
-    protected internal Scene _parent = null;
-
     internal bool _wrapHoriz = false;
     internal bool _wrapVerti = false;
     internal SceneLayerScrollBinding scrollBinding = null;
@@ -56,7 +53,6 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
     private Point _gridPtZeroPxl;
     private PointF _firstGridPt = new PointF();
     
-    internal RefreshQueue _refreshQueue;
     internal SceneLayer.Movement _movement;
     #endregion
 
@@ -148,18 +144,11 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
         protected internal set { _id = value; }
     }
 
-    [IgnoreDataMember]
-    public Scene Parent
-    {
-        get { return _parent; }
-    }
+    [DataMember]
+    public Scene? Parent { get; internal set; }
 
     [IgnoreDataMember]
-    public RefreshQueue RefreshQueue
-    {
-        get { return _refreshQueue; }
-        protected internal set { _refreshQueue = value; }
-    }
+    internal RefreshQueue RefreshQueue { get; set; }
 
     [DataMember]
     public float LayerSyncModifier
@@ -644,7 +633,7 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
     #endregion
 
     #region IEnumerable Members
-    public IEnumerator GetEnumerator()
+    IEnumerator<SceneLayerPoint> IEnumerable<SceneLayerPoint>.GetEnumerator()
     {
         for (int x = 0; x <= _matrix.GetUpperBound(0); x++)
         {
@@ -653,13 +642,6 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
                 yield return _matrix[x][y];
             }
         }
-    }
-    #endregion
-
-    #region ICloneable Members
-    public object Clone()
-    {
-        return new SceneLayer(_matrix, _tileWidth, _tileHeight, _layerSyncModifier);
     }
     #endregion
 
@@ -696,27 +678,6 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
     #endregion
 
     #region static methods
-    public static SceneLayer GetSceneLayerByID(string id)
-    {
-        foreach (SceneLayer matrix in _allSceneLayer)
-        {
-            if (matrix.ID == id)
-                return matrix;
-        }
-
-        // if made it this far, Guid was not found
-        return null;
-    }
-
-    public static List<string> GetAllSceneLayerIDs()
-    {
-        List<string> ret = new List<string>(_allSceneLayer.Count);
-        foreach (SceneLayer matrix in _allSceneLayer)
-            ret.Add(matrix.ID);
-
-        return ret;
-    }
-
     public static ReadOnlyCollection<SceneLayer> GetAllSceneLayers()
     {
         return _allSceneLayer.AsReadOnly();
@@ -727,6 +688,11 @@ public class SceneLayer : IEnumerable, ICloneable, IDisposable
         var tmp = new List<SceneLayer>(_allSceneLayer);
         foreach (var matrix in tmp)
             matrix.Dispose();
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        throw new NotImplementedException();
     }
     #endregion
 
