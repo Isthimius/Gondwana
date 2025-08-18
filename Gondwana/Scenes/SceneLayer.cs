@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using Gondwana.Timers;
 using System.Drawing;
 using Gondwana.Rendering;
+using Gondwana.Scenes.Coordinates;
 
 namespace Gondwana.Scenes;
 

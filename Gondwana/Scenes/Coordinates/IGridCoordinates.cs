@@ -1,8 +1,7 @@
 ﻿using Gondwana.Drawing;
-using Gondwana.Scenes;
 using System.Drawing;
 
-using Gondwana.Scenes.Coordinates;
+namespace Gondwana.Scenes.Coordinates;
 
 public interface IGridCoordinates
 {

@@ -1,8 +1,7 @@
 ﻿using Gondwana.Drawing;
 using System.Drawing;
 
-using Gondwana.Scenes.Coordinates;
-using Gondwana.Scenes;
+namespace Gondwana.Scenes.Coordinates;
 
 public class SquareIsoCoordinates : IGridCoordinates
 {
