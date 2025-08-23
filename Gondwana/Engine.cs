@@ -243,8 +243,7 @@ public sealed class Engine : IDisposable
 
     private void DoBackgroundTasks(long tick)
     {
-        if (BeforeBackgroundTasksExecute != null)
-            BeforeBackgroundTasksExecute?.Invoke(this, EventArgs.Empty);
+        BeforeBackgroundTasksExecute?.Invoke(this, EventArgs.Empty);
 
         // raise pre-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PreCycle, tick);
@@ -285,22 +284,20 @@ public sealed class Engine : IDisposable
         // all attached VisibleSurface backbuffers drawn; clear the refresh queues
         ClearRefreshQueues();
 
-        if (AfterBackgroundTasksExecute != null)
-            AfterBackgroundTasksExecute.Invoke(this, EventArgs.Empty);
+        AfterBackgroundTasksExecute?.Invoke(this, EventArgs.Empty);
     }
 
     private void DoForegroundTasks(long tick)
     {
         // raise event
-        if (BeforeEngineCycle != null)
-            BeforeEngineCycle(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+        BeforeEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // render each BitmapBackbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderBackbufferToAdapter();
 
         // all RenderSurfaceHost backbuffers rendered; clear the dirty rectangles
-        BackbufferBase._resetAllDirtyRectangles();
+        //BackbufferBase._resetAllDirtyRectangles();
 
         // poll state of gamepad(s)
         GamepadManager?.Update();
@@ -311,8 +308,7 @@ public sealed class Engine : IDisposable
         _netCycles++;
 
         // raise event
-        if (AfterEngineCycle != null)
-            AfterEngineCycle(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+        AfterEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);

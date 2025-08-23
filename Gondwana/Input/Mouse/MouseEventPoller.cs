@@ -1,4 +1,5 @@
 ﻿using Gondwana.Input.Keyboard;
+using Microsoft.Extensions.Logging;
 using System.Drawing;
 
 namespace Gondwana.Input.Mouse;
@@ -49,34 +50,48 @@ public sealed class MouseEventPoller
     internal void PollForEvents(long tick)
     {
         if (Adapter is null) return;
+        if ((Configuration?.IsPaused ?? true) || !(Configuration?.ReadyForNextEvent(tick) ?? false)) return;
 
-        if ((!Configuration?.IsPaused ?? false) && (Configuration?.ReadyForNextEvent(tick) ?? false))
+        var currentPos = Adapter.CurrentPosition;
+        var pressed = Adapter.PressedButtons;
+        var scrollDelta = Adapter.ScrollDelta;
+
+        bool anyButtonChange = false;
+
+        // update per-button state every cycle
+        foreach (var kvp in _buttonStates.ToList())
         {
-            var currentPos = Adapter.CurrentPosition;
-            var pressed = Adapter.PressedButtons;
-            
-            if (_buttonStates.Values.Any(s => s.JustPressed || s.JustReleased) ||
-                                        (Configuration.TrackMouseMovement && (_lastPosition != currentPos)))
-            {
-                foreach (var kvp in _buttonStates)
-                {
-                    var button = kvp.Key;
-                    var state = kvp.Value;
+            var button = kvp.Key;
+            var state = kvp.Value;
 
-                    bool isCurrentlyDown = pressed.Contains(button);
+            bool isCurrentlyDown = pressed.Contains(button);
+            bool justPressed = isCurrentlyDown && !state.IsDown;
+            bool justReleased = !isCurrentlyDown && state.IsDown;
 
-                    state.JustPressed = isCurrentlyDown && !state.IsDown;
-                    state.JustReleased = !isCurrentlyDown && state.IsDown;
-                    state.IsDown = isCurrentlyDown;
-                    _lastScrollDelta = Adapter.ScrollDelta;
+            state.JustPressed = justPressed;
+            state.JustReleased = justReleased;
+            state.IsDown = isCurrentlyDown;
 
-                    _buttonStates[button] = state;
-                }
+            anyButtonChange |= justPressed || justReleased;
+            _buttonStates[button] = state;
+        }
 
-                MouseEvent?.Invoke(new MouseEventArgs(Configuration, CurrentKeyboardModifiers, ButtonStates, _lastPosition, currentPos, _lastScrollDelta));
+        // now decide whether to emit an event
+        bool moved = (Configuration?.TrackMouseMovement ?? false) && _lastPosition != currentPos;
+        bool scrolled = _lastScrollDelta != scrollDelta;
 
-                _lastPosition = currentPos;
-            }
+        if (anyButtonChange || moved || scrolled)
+        {
+            MouseEvent?.Invoke(new MouseEventArgs(
+                Configuration!,
+                CurrentKeyboardModifiers,
+                ButtonStates,
+                _lastPosition,
+                currentPos,
+                scrollDelta));
+
+            _lastPosition = currentPos;
+            _lastScrollDelta = scrollDelta;
         }
     }
 

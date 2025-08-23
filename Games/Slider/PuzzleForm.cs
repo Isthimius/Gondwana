@@ -11,6 +11,8 @@ using Gondwana.WinForms;
 using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
 using Gondwana;
+using System.Linq;
+using Gondwana.Input.Mouse;
 
 namespace Slider
 {
@@ -45,9 +47,7 @@ namespace Slider
 
         void Sprites_SpriteMovementStopped(SpriteMovementEventArgs e)
         {
-#if DEBUG
-            Console.WriteLine(string.Format("{3}   end move '{0}' at {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
-#endif
+            Engine.Logger.LogDebug(string.Format("{3}   stop move '{0}' at {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
 
             //if (!Program.puzzle._isShuffling)
             //Program.slideSound.Stop();
@@ -80,7 +80,8 @@ namespace Slider
                     this.chkGrid.Enabled = true;
                     this.btnShuffle.Enabled = true;
                     Gondwana.Engine.Instance.PostInitialization += Instance_PostInitialization;
-                    
+
+                    Gondwana.Engine.Instance.Configuration.TargetFPS = 120;
                     Gondwana.Engine.Instance.Start();
 
                     Gondwana.Engine.Instance.CPSCalculated += Engine_CPSCalculated;
@@ -103,6 +104,17 @@ namespace Slider
                 lblCoord.BeginInvoke((Action)(() => lblCoord.Text = $"x: {coords.X}   y: {coords.Y}"));
             else
                 lblCoord.Text = $"x: {coords.X}   y: {coords.Y}";
+
+            if (e.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
+            {
+                // TODO: also check if any sprites are moving
+                if (!Program.puzzle._isShuffling)
+                {
+                    List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
+                    if (sprites.Count != 0)
+                        Program.puzzle.SlidePiece(sprites[0], 0.15);
+                }
+            }
         }
 
         private void Instance_PostInitialization(object sender, EventArgs e)

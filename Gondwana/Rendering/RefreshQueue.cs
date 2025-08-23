@@ -1,6 +1,7 @@
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
@@ -8,7 +9,7 @@ namespace Gondwana.Rendering;
 
 internal class RefreshQueue : IDisposable
 {
-    private bool _isDirty;               // if true, Tiles need to be found
+    private bool _isDirty;              // if true, Tiles need to be found
     private List<Tile> _tiles;          // array of Tile objects to be redrawn
     internal List<Rectangle> _rects;    // array of Rectangle areas being refreshed
     internal SceneLayer _sceneLayer;    // associated SceneLayer (parent)
@@ -41,6 +42,8 @@ internal class RefreshQueue : IDisposable
 
     internal void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherMatrixes)
     {
+        Engine.Logger.LogTrace($"Adding pixel range {pixelRange} to refresh queue for scene layer {_sceneLayer.ID}.");
+
         // TODO: track and present MaxSurfaceSize from VisibleSurface
         // limit refresh range to screen resolution
         //pixelRange.Intersect(VisibleSurface._allVisibleSurfaces.MaxSurfaceSize);

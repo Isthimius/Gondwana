@@ -2,6 +2,7 @@
 using Gondwana.Drawing;
 using System.Drawing;
 using Gondwana.Skia;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering;
 
@@ -36,7 +37,17 @@ public abstract class BackbufferBase : IDisposable
 
     public int Width => _range.Width;
     public int Height => _range.Height;
-    public Rectangle DirtyRectangle { get; set; } = Rectangle.Empty;
+
+    private Rectangle _dirtyRectangle = Rectangle.Empty;
+    public Rectangle DirtyRectangle
+    {
+        get => _dirtyRectangle;
+        set
+        {
+            _dirtyRectangle = value;
+            Engine.Logger.LogTrace("Backbuffer DirtyRectangle set to: " + _dirtyRectangle);
+        }
+    }
     
     private SKColor _clearColor = SKColors.Black;
     protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };
@@ -51,52 +62,44 @@ public abstract class BackbufferBase : IDisposable
         }
     }
 
+    /// <summary>
+    /// Runs as part of DoBackgroundTasks
+    /// </summary>
     internal void DrawTiles(IList<Tile> tiles)
     {
+        if (tiles?.Count != 3)
+            Engine.Logger.LogInformation("Drawing single tile: {Tile}", tiles[0]);
+
         foreach (var tile in tiles)
         {
-            if (!tile.Visible) continue;
-            if (!DirtyRectangle.IsEmpty && !DirtyRectangle.IntersectsWith(tile.DrawLocation))
+            if (!tile.Visible)
                 continue;
+
+            //if (!DirtyRectangle.IsEmpty && !DirtyRectangle.IntersectsWith(tile.DrawLocation))
+            //    continue;
 
             DrawTileFrame(tile);
 
             if (tile.EnableFog)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), FogPaint);
 
-            if (tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
+            if (!tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), GridPaint);
         }
     }
 
-    public void Erase() => Erase(_range);
-
-    public void Erase(Rectangle pxlRange)
-    {
-        var intersect = Rectangle.Intersect(pxlRange, _range);
-        if (intersect.IsEmpty) return;
-
-        Canvas.Save();
-        Canvas.ClipRect(intersect.ToSKRect());
-        Canvas.Clear(ClearColor);
-        Canvas.Restore();
-
-        AddToDirtyRectangle(intersect);
-    }
-
-    public void Erase(IList<Rectangle> areas)
-    {
-        foreach (var rect in areas)
-            Erase(rect);
-    }
-
     protected void AddToDirtyRectangle(Rectangle area)
     {
+        //Engine.Logger.LogTrace($"DirtyRectangle: {DirtyRectangle}");
+        //Engine.Logger.LogTrace($"Adding to DirtyRectangle: {area}");
+
         if (area.IsEmpty) return;
 
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
+
+        Engine.Logger.LogTrace("New DirtyRectangle: " + DirtyRectangle);
     }
 
     public virtual byte[] ToByteArray(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)

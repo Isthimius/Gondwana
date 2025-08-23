@@ -33,6 +33,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
     public void ClearOpaque(SKColor color) =>
         Canvas.Clear(new SKColor(color.Red, color.Green, color.Blue, 255));
 
+    /// <summary>
+    /// Runs as part of DoBackgroundTasks
+    /// </summary>
     public override void DrawTileFrame(Tile tile)
     {
         var bmp = tile.CurrentFrame.SkBitmap;
@@ -40,11 +43,14 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
         if (bmp is null)
         {
-            Engine.Logger.LogInformation(dst.ToString());
+            //Engine.Logger.LogTrace("drawing blank at " + dst.ToString());
             Canvas.DrawRect(dst, _fillPaint);
         }
         else
+        {
+            //Engine.Logger.LogTrace("drawing image at " + dst.ToString());
             Canvas.DrawBitmap(bmp, dst);
+        }
 
         AddToDirtyRectangle(tile.DrawLocation);
     }

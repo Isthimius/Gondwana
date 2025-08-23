@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Gondwana.WinForms;
+using Gondwana.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Slider
 {
@@ -37,6 +39,8 @@ namespace Slider
         #region constructors / destructor
         public Puzzle(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, string imgFile, int columns, int rows, Size size)
         {
+            EngineLogger.SetLogLevel(LogLevel.Trace);
+
             tilesheet = new Tilesheet("picture", imgFile);
             tilesheet.ApplyPremultiplyAlpha();
 
@@ -59,7 +63,7 @@ namespace Slider
             //surface = new VisibleSurface(size.Width, size.Height, matrixes);
             //surface = new VisibleSurface(size.Width, size.Height);
             //surface.Backbuffer.Erase();
-
+            Engine.Instance.Configuration.TargetFPS = 120;
             renderSurfaceHost.RedrawDirtyRectangleOnly = true;
             renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Black;
             renderSurfaceHost.Bind(matrixes);

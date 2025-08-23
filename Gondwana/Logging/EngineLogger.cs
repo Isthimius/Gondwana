@@ -6,10 +6,10 @@ namespace Gondwana.Logging;
 public static class EngineLogger
 {
     private static ILoggerFactory _loggerFactory = LoggerFactory.Create(static builder =>
-    {
-        builder.AddDebug();
-        builder.AddConsole(); // only visible in Console apps
-    });
+        {
+            builder.AddDebug()
+                   .AddConsole(); // only visible in Console apps
+        });
 
     private static readonly ConcurrentDictionary<Type, ILogger> _loggerCache = new();
 
@@ -23,4 +23,16 @@ public static class EngineLogger
 
     public static ILogger<T> GetLogger<T>() =>
         (ILogger<T>)_loggerCache.GetOrAdd(typeof(T), _ => _loggerFactory.CreateLogger<T>());
+
+    public static void SetLogLevel(LogLevel level)
+    {
+        _loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddDebug()
+                       .AddConsole()
+                       .SetMinimumLevel(level);
+            });
+
+        _loggerCache.Clear(); // refresh cached loggers so new filter applies
+    }
 }
