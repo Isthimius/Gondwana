@@ -6,17 +6,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering;
 
+/// <summary>
+/// Represents a base class for managing a graphical backbuffer, and is the in-memory surface where
+/// rendering operations are performed before being presented to the display.
+/// </summary>
+/// <remarks>This abstract class serves as the foundation for backbuffer implementations, offering methods and 
+/// properties to facilitate rendering operations, manage graphical state, and interact with graphical  elements such as
+/// tiles. Derived classes must implement the <see cref="Canvas"/>, <see cref="DrawTileFrame(Tile)"/>, and <see
+/// cref="Snapshot"/> members to define specific rendering behavior.</remarks>
 public abstract class BackbufferBase : IDisposable
 {
     private static List<BackbufferBase> _allBackbuffers { get; } = new();
-
-    internal static void _resetAllDirtyRectangles()
-    {
-        foreach (var backbuffer in _allBackbuffers)
-        {
-            backbuffer.DirtyRectangle = Rectangle.Empty;
-        }
-    }
 
     protected readonly Rectangle _range;
 
@@ -38,16 +38,7 @@ public abstract class BackbufferBase : IDisposable
     public int Width => _range.Width;
     public int Height => _range.Height;
 
-    private Rectangle _dirtyRectangle = Rectangle.Empty;
-    public Rectangle DirtyRectangle
-    {
-        get => _dirtyRectangle;
-        set
-        {
-            _dirtyRectangle = value;
-            Engine.Logger.LogTrace("Backbuffer DirtyRectangle set to: " + _dirtyRectangle);
-        }
-    }
+    public Rectangle DirtyRectangle { get; set; }
     
     private SKColor _clearColor = SKColors.Black;
     protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };
@@ -75,9 +66,6 @@ public abstract class BackbufferBase : IDisposable
             if (!tile.Visible)
                 continue;
 
-            //if (!DirtyRectangle.IsEmpty && !DirtyRectangle.IntersectsWith(tile.DrawLocation))
-            //    continue;
-
             DrawTileFrame(tile);
 
             if (tile.EnableFog)
@@ -90,16 +78,11 @@ public abstract class BackbufferBase : IDisposable
 
     protected void AddToDirtyRectangle(Rectangle area)
     {
-        //Engine.Logger.LogTrace($"DirtyRectangle: {DirtyRectangle}");
-        //Engine.Logger.LogTrace($"Adding to DirtyRectangle: {area}");
-
         if (area.IsEmpty) return;
 
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
-
-        Engine.Logger.LogTrace("New DirtyRectangle: " + DirtyRectangle);
     }
 
     public virtual byte[] ToByteArray(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)

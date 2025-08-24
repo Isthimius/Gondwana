@@ -21,7 +21,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         CreateBackbuffer();
 
         // Recreate backbuffer on adapter resize
-        RenderSurfaceAdapter.Resized += (_, _) => CreateBackbuffer();
+        RenderSurfaceAdapter!.Resized += (_, _) => CreateBackbuffer();
     }
 
     private TBackbuffer _backbuffer;
@@ -79,23 +79,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 case MatrixesRefreshType.Queue:
                     {
-                        // Union dirty rectangles from all visible layers into Backbuffer.DirtyRectangle
-                        System.Drawing.Rectangle dirtyUnion = System.Drawing.Rectangle.Empty;
-
                         for (int i = scene.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var rq = scene.VisibleSceneLayerList[i].RefreshQueue;
-
-                            // If you keep a list of rectangles, union them. If not, you can
-                            // compute from tiles’ DrawLocation as needed.
-                            foreach (var rect in rq.GetDirtyRectangles())
-                                dirtyUnion = dirtyUnion.IsEmpty ? rect : System.Drawing.Rectangle.Union(dirtyUnion, rect);
+                            var layer = scene.VisibleSceneLayerList[i];
 
                             // Draw tiles in this layer’s queue
-                            bb.DrawTiles(rq.Tiles);
+                            bb.DrawTiles(layer.RefreshQueue.Tiles);
                         }
 
-                        bb.DirtyRectangle = dirtyUnion; // engine sets it; host may use rect mode
                         break;
                     }
 
@@ -108,7 +99,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         for (int i = scene.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
                             var layer = scene.VisibleSceneLayerList[i];
-                            layer.RefreshQueue.ClearRefreshQueue();
                             layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
 
                             Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
@@ -128,10 +118,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     internal override void RenderBackbufferToAdapter()
     {
+        if (RenderSurfaceAdapter is null) return;
+
         if (RedrawDirtyRectangleOnly)
             RenderBackbufferRect();
         else
             RenderBackbufferAll();
+
+        Backbuffer.DirtyRectangle = Rectangle.Empty;
     }
 
     #region IDisposable
@@ -167,8 +161,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         Engine.Logger.LogTrace("RenderBackbufferAll called.");
 
-        if (RenderSurfaceAdapter is null) return;
-
         var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
@@ -179,9 +171,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private void RenderBackbufferRect()
     {
         //Engine.Logger.LogTrace("RenderBackbufferRect called.");
-
-        if (RenderSurfaceAdapter is null) return;
-
         var dirty = Backbuffer.DirtyRectangle;
         if (dirty.IsEmpty) return;
 
@@ -189,8 +178,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         var img = Backbuffer.Snapshot();
         RenderSurfaceAdapter.Render(img, dirty.ToSKRectI(), dirty.ToSKRect());
-
-        Backbuffer.DirtyRectangle = Rectangle.Empty;
     }
     #endregion
 }

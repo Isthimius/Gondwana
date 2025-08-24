@@ -277,7 +277,7 @@ public sealed class Engine : IDisposable
         // check for Tile collisions
         //RaiseCollisionEvent(tick);
 
-        // refresh all VisibleSurface backbuffers
+        // refresh all RenderSurfaceHost backbuffers
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.DrawRefreshQueueToBackbuffer();
 
@@ -295,9 +295,6 @@ public sealed class Engine : IDisposable
         // render each BitmapBackbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderBackbufferToAdapter();
-
-        // all RenderSurfaceHost backbuffers rendered; clear the dirty rectangles
-        //BackbufferBase._resetAllDirtyRectangles();
 
         // poll state of gamepad(s)
         GamepadManager?.Update();

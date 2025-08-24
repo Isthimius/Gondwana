@@ -2,19 +2,25 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
-using System.Collections.ObjectModel;
 using System.Drawing;
 
 namespace Gondwana.Rendering;
 
+/// <summary>
+/// Represents a queue for managing refresh operations within a SceneLayer.
+/// </summary>
+/// <remarks>The <see cref="RefreshQueue"/> tracks areas and tiles that need to be refreshed within a scene layer.
+/// It provides functionality to add pixel ranges to the refresh queue, clear the queue, and retrieve the tiles that are
+/// affected by the refresh operations. This class also raises events when new areas are added to the queue to communicate
+/// the needed refresh range to other <see cref="SceneLayer"/>s in the <see cref="Scene"/>.</remarks>
 internal class RefreshQueue : IDisposable
 {
-    private bool _isDirty;              // if true, Tiles need to be found
+    private bool _isDirty;              // if true, Tiles need to be found; internal optimaization
     private List<Tile> _tiles;          // array of Tile objects to be redrawn
-    internal List<Rectangle> _rects;    // array of Rectangle areas being refreshed
-    internal SceneLayer _sceneLayer;    // associated SceneLayer (parent)
+    private List<Rectangle> _rects;     // array of Rectangle areas being refreshed
+    private SceneLayer _sceneLayer;     // associated SceneLayer (parent)
 
-    internal event EventHandler<RefreshQueueAreaAddedEventArgs> RefreshQueueAreaAdded;
+    internal event EventHandler<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
 
     internal RefreshQueue(SceneLayer layer)
     {
@@ -42,17 +48,9 @@ internal class RefreshQueue : IDisposable
 
     internal void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherMatrixes)
     {
-        Engine.Logger.LogTrace($"Adding pixel range {pixelRange} to refresh queue for scene layer {_sceneLayer.ID}.");
-
-        // TODO: track and present MaxSurfaceSize from VisibleSurface
-        // limit refresh range to screen resolution
-        //pixelRange.Intersect(VisibleSurface._allVisibleSurfaces.MaxSurfaceSize);
-
         // cascade to other refresh queues if required
         if (cascadeToOtherMatrixes)
-        {
-            RefreshQueueAreaAdded.Invoke(this, new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
-        }
+            RefreshQueueAreaAdded?.Invoke(this, new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
 
         // check all existing pixel ranges for an overlap with the new range
         for (int i = 0; i < _rects.Count; i++)
@@ -74,11 +72,6 @@ internal class RefreshQueue : IDisposable
 
         _tiles.Clear();
         _rects.Clear();
-    }
-
-    internal ReadOnlyCollection<Rectangle> GetDirtyRectangles()
-    {
-        return _rects.AsReadOnly();
     }
 
     private void FindTilesInRange()
