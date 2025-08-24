@@ -82,8 +82,11 @@ public sealed class Engine : IDisposable
 
         _isInitializing = true;
 
-        PreInitialization?.Invoke(this, EventArgs.Empty);
-
+        if (UiDispatcher == null)
+            PreInitialization?.Invoke(this, EventArgs.Empty);
+        else
+            UiDispatcher!.Post(() => PreInitialization?.Invoke(this, EventArgs.Empty));
+        
         Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig).EngineConfig;
 
         if (Configuration.StateFiles?.Any() ?? false)
@@ -102,20 +105,28 @@ public sealed class Engine : IDisposable
 
         GamepadManager = gamepadManager;
 
-        PostInitialization?.Invoke(this, EventArgs.Empty);
+        if (UiDispatcher == null)
+            PostInitialization?.Invoke(this, EventArgs.Empty);
+        else
+            UiDispatcher!.Post(() => PostInitialization?.Invoke(this, EventArgs.Empty));
 
         _isInitializing = false;
         _isInitialized = true;
 
-        InitializationComplete?.Invoke(this, EventArgs.Empty);
+        if (UiDispatcher == null)
+            InitializationComplete?.Invoke(this, EventArgs.Empty);
+        else
+            UiDispatcher!.Post(() => InitializationComplete?.Invoke(this, EventArgs.Empty));
     }
     #endregion
 
     #region public methods
-    public void Start()
+    public void Start(SynchronizationContext uiContext)
     {
         if (IsRunning)
             return;
+
+        UiDispatcher = new UiDispatcher(uiContext);
 
         if (!IsInitialized)
         {
@@ -147,6 +158,8 @@ public sealed class Engine : IDisposable
     #endregion
 
     #region public properties
+    public IUiDispatcher? UiDispatcher { get; private set; }
+
     public bool IsInitialized => _isInitialized;
 
     public bool IsInitializing => _isInitializing;
@@ -290,7 +303,7 @@ public sealed class Engine : IDisposable
     private void DoForegroundTasks(long tick)
     {
         // raise event
-        BeforeEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+        UiDispatcher!.Post(() => BeforeEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS)));
 
         // render each BitmapBackbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
@@ -305,7 +318,7 @@ public sealed class Engine : IDisposable
         _netCycles++;
 
         // raise event
-        AfterEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+        UiDispatcher!.Post(() => AfterEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS)));
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);
@@ -339,9 +352,8 @@ public sealed class Engine : IDisposable
             _netFPS = (double)(_netCyclesThisMeasure * HighResTimer.TicksPerSecond) / (double)(tick - _lastCPSSamplingTick);
 
             // raise the event
-            if (CPSCalculated != null)
-                CPSCalculated(this, new CyclesPerSecondCalculatedEventArgs(
-                    _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.SamplingTimeForCPS));
+            UiDispatcher!.Post(() => CPSCalculated?.Invoke(this, new CyclesPerSecondCalculatedEventArgs(
+                    _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.SamplingTimeForCPS)));
 
             // reset values for next calculation
             _lastCPSSamplingTick = tick;

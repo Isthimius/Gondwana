@@ -32,13 +32,6 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             return;
         }
 
-        if (_control.InvokeRequired)
-        {
-            // Hand off exactly this object; control will dispose old one later
-            _control.BeginInvoke((() => Render(bufferImage, bufferRect, destRect)));
-            return;
-        }
-
         // Swap into current; old one queued for disposal after paint
         var old = _currentImage;
         _currentImage = bufferImage;

@@ -3,7 +3,6 @@ using System.Drawing;
 using Gondwana.Rendering.Direct;
 using Gondwana.Scenes;
 using Gondwana.Skia;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
@@ -159,25 +158,23 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void RenderBackbufferAll()
     {
-        Engine.Logger.LogTrace("RenderBackbufferAll called.");
-
         var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
-        var dst = SKRect.Create(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
+        var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
 
-        RenderSurfaceAdapter.Render(img, src, dst);
+        // Post to UI thread
+        Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter.Render(img, src, dst));
     }
 
     private void RenderBackbufferRect()
     {
-        //Engine.Logger.LogTrace("RenderBackbufferRect called.");
         var dirty = Backbuffer.DirtyRectangle;
         if (dirty.IsEmpty) return;
 
-        Engine.Logger.LogTrace($"Rendering {dirty}.");
-
         var img = Backbuffer.Snapshot();
-        RenderSurfaceAdapter.Render(img, dirty.ToSKRectI(), dirty.ToSKRect());
+
+        // Post to UI thread
+        Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter!.Render(img, dirty.ToSKRectI(), dirty.ToSKRect()));
     }
     #endregion
 }

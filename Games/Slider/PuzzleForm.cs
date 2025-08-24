@@ -82,7 +82,7 @@ namespace Slider
                     Gondwana.Engine.Instance.PostInitialization += Instance_PostInitialization;
 
                     Gondwana.Engine.Instance.Configuration.TargetFPS = 120;
-                    Gondwana.Engine.Instance.Start();
+                    Gondwana.Engine.Instance.Start(SynchronizationContext.Current!);
 
                     Gondwana.Engine.Instance.CPSCalculated += Engine_CPSCalculated;
                 }
@@ -124,19 +124,8 @@ namespace Slider
 
         private void Engine_CPSCalculated(object sender, Gondwana.CyclesPerSecondCalculatedEventArgs e)
         {
-            if (lblInfo.InvokeRequired)
-            {
-                lblInfo.BeginInvoke(new Action(() =>
-                {
-                    lblInfo.Text = string.Format("FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
-                        e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SamplingTime.ToString("N2"));
-                }));
-            }
-            else
-            {
-                lblInfo.Text = string.Format("FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
-                    e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SamplingTime.ToString("N2"));
-            }
+            lblInfo.Text = string.Format("FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
+                e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SamplingTime.ToString("N2"));
         }
 
         void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)

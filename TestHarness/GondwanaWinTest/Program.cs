@@ -1,22 +1,23 @@
-using Gondwana;
-using Gondwana.Drawing.Collisions;
-using Gondwana.Drawing;
-using Gondwana.Drawing.Animation;
-using Gondwana.Rendering.Direct;
-using Gondwana.Drawing.Sprites;
-using Gondwana.Scenes;
-using Gondwana.Scenes.Coordinates;
-using Gondwana.Input;
-using Gondwana.Input.Keyboard;
-using Gondwana.Audio;
-using Gondwana.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using Gondwana;
+using Gondwana.Audio;
+using Gondwana.Drawing;
+using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Collisions;
+using Gondwana.Drawing.Sprites;
+using Gondwana.Input;
+using Gondwana.Input.Keyboard;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Direct;
+using Gondwana.Scenes;
+using Gondwana.Scenes.Coordinates;
 
 namespace GondwanaWinTest
 {
@@ -72,7 +73,7 @@ namespace GondwanaWinTest
             //    Engine.Cycle();
             //} while (!stopEngine);
 
-            Engine.Instance.Start();
+            Engine.Instance.Start(SynchronizationContext.Current!);
 
             string msg = "ran for: " + Gondwana.Engine.Instance.TotalSecondsEngineRunning.ToString();
             msg += "\r\ntotal cycles: " + totalEngineCycles.ToString();

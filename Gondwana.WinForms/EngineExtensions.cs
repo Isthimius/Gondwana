@@ -7,7 +7,7 @@ using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Input.Mouse;
 using Microsoft.Extensions.Logging;
 
-namespace Gondwana;
+namespace Gondwana.WinForms;
 
 public static class EngineExtensions
 {
