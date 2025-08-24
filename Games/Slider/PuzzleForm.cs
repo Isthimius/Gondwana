@@ -100,11 +100,9 @@ namespace Slider
             var coords = Program.puzzle.GetGridCoordinates(e.CurrentPosition.X, e.CurrentPosition.Y);
 
             if (lblCoord.IsDisposed || !lblCoord.IsHandleCreated) return;
-            if (lblCoord.InvokeRequired)
-                lblCoord.BeginInvoke((Action)(() => lblCoord.Text = $"x: {coords.X}   y: {coords.Y}"));
-            else
-                lblCoord.Text = $"x: {coords.X}   y: {coords.Y}";
-
+            
+            lblCoord.BeginInvoke((Action)(() => lblCoord.Text = $"x: {coords.X}   y: {coords.Y}"));
+            
             if (e.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
             {
                 // TODO: also check if any sprites are moving

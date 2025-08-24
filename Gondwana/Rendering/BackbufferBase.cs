@@ -58,9 +58,6 @@ public abstract class BackbufferBase : IDisposable
     /// </summary>
     internal void DrawTiles(IList<Tile> tiles)
     {
-        if (tiles?.Count != 3)
-            Engine.Logger.LogInformation("Drawing single tile: {Tile}", tiles[0]);
-
         foreach (var tile in tiles)
         {
             if (!tile.Visible)
