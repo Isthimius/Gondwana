@@ -16,6 +16,8 @@ public abstract class RenderSurfaceAdapterBase
 
     protected void SetDestinationSize(int destWidth, int destHeight)
     {
+        if (destWidth == Width && destHeight == Height) return;
+
         Width = destWidth;
         Height = destHeight;
         Resized?.Invoke(this, EventArgs.Empty);

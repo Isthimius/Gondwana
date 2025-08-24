@@ -13,13 +13,7 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
         _skControl = new SKControl { Dock = DockStyle.Fill };
         Controls.Add(_skControl);
 
-        // Forward mouse events
-        _skControl.MouseDown += (s, e) => OnMouseDown(e);
-        _skControl.MouseUp += (s, e) => OnMouseUp(e);
-        _skControl.MouseMove += (s, e) => OnMouseMove(e);
-        _skControl.MouseClick += (s, e) => OnMouseClick(e);
-        _skControl.MouseEnter += (s, e) => OnMouseEnter(e);
-        _skControl.MouseLeave += (s, e) => OnMouseLeave(e);
+        // Forward resize events from the SKControl
         _skControl.Resize += (s, e) => OnResize(e);
 
         // Create the render adapter for the SKControl
