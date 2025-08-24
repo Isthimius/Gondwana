@@ -73,7 +73,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             {
                 case MatrixesRefreshType.None:
                     // Nothing to redraw in the background; don’t publish a new frame.
-                    // (Host will keep showing the last front buffer.)
+                    // (i.e., UI will keep showing the last front buffer.)
                     return;
 
                 case MatrixesRefreshType.Queue:
