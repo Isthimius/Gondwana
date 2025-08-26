@@ -15,7 +15,7 @@ public class SceneLayerPoint : Tile, IDisposable
     internal SceneLayer parentSceneLayer;
 
     [JsonInclude]
-    internal Point gridCoordinates;         // each GridPoint knows its location in the array in ParentGrid
+    internal Point gridCoordinates;         // each GridPoint knows its location in the array in parentSceneLayer
 
     protected internal bool disableAddToRefreshQueue = true;
     #endregion
