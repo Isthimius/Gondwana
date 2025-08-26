@@ -9,18 +9,37 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     private readonly SKControl _control;
 
     private SKImage? _currentImage;
-    private SKImage? _prevToDispose;   // dispose AFTER paint finishes
+    private readonly Queue<SKImage> _toDispose = new();
     private SKRectI _sourceRect;
     private SKRect _destRect;
 
-    public SKColor ClearColor { get; set; } = SKColors.Purple;
+    public SKColor ClearColor { get; set; } = SKColors.Black;
 
     public WinFormBitmapRenderSurfaceAdapter(SKControl control)
-        : base(control.Width, control.Height)
+        : base(control.ClientSize.Width, control.ClientSize.Height)
     {
-        _control = control;
+        _control = control ?? throw new ArgumentNullException(nameof(control));
+
         _control.PaintSurface += OnPaintSurface;
-        _control.Resize += (_, _) => SetDestinationSize(_control.Width, _control.Height);
+        _control.HandleCreated += OnHandleCreated;
+        _control.SizeChanged += OnSizeChanged;
+        _control.ClientSizeChanged += OnSizeChanged;
+        _control.Layout += OnSizeChanged;
+
+        // If the handle already exists, schedule one initial sync
+        if (_control.IsHandleCreated)
+            _control.BeginInvoke((Action)RefreshDestinationSize);
+    }
+
+    private void OnHandleCreated(object? s, EventArgs e) => RefreshDestinationSize();
+    private void OnSizeChanged(object? s, EventArgs e) => RefreshDestinationSize();
+
+    public void RefreshDestinationSize()
+    {
+        if (_control.IsDisposed || !_control.IsHandleCreated) return;
+
+        var sz = _control.ClientSize;                     // ← ClientSize, not Width/Height
+        SetDestinationSize(sz.Width, sz.Height);          // ← base will invoke Resized
     }
 
     public override void Render(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
@@ -36,7 +55,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         var old = _currentImage;
         _currentImage = bufferImage;
         if (!ReferenceEquals(old, _currentImage) && old is not null)
-            _prevToDispose = old;
+            _toDispose.Enqueue(old);
 
         _sourceRect = bufferRect;
         _destRect = destRect;
@@ -68,16 +87,25 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         }
 
         // safe to free the previously drawn wrapper now
-        _prevToDispose?.Dispose();
-        _prevToDispose = null;
+        while (_toDispose.Count > 0)
+            _toDispose.Dequeue().Dispose();
     }
 
     public void Dispose()
     {
-        if (!_control.IsDisposed) _control.PaintSurface -= OnPaintSurface;
-        _prevToDispose?.Dispose();
+        if (!_control.IsDisposed)
+        {
+            _control.PaintSurface -= OnPaintSurface;
+            _control.HandleCreated -= OnHandleCreated;
+            _control.SizeChanged -= OnSizeChanged;
+            _control.ClientSizeChanged -= OnSizeChanged;
+            _control.Layout -= OnSizeChanged;
+        }
+
+        while (_toDispose.Count > 0)
+            _toDispose.Dequeue().Dispose();
+
         _currentImage?.Dispose();
-        _prevToDispose = null;
         _currentImage = null;
     }
 }

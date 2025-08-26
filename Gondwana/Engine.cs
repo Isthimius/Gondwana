@@ -7,11 +7,9 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
-using Gondwana.Rendering.Direct;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
-using SkiaSharp;
 using Timer = Gondwana.Timers.Timer;
 
 namespace Gondwana;
@@ -303,7 +301,7 @@ public sealed class Engine : IDisposable
     private void DoForegroundTasks(long tick)
     {
         // raise event
-        UiDispatcher!.Post(() => BeforeEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS)));
+        BeforeEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // render each BitmapBackbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
@@ -318,7 +316,7 @@ public sealed class Engine : IDisposable
         _netCycles++;
 
         // raise event
-        UiDispatcher!.Post(() => AfterEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS)));
+        AfterEngineCycle?.Invoke(this, new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);

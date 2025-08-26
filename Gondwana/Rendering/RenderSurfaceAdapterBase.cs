@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
@@ -16,6 +17,8 @@ public abstract class RenderSurfaceAdapterBase
 
     protected void SetDestinationSize(int destWidth, int destHeight)
     {
+        Engine.Logger.LogTrace("Setting destination size of RenderSurfaceAdapterBase to {Width}x{Height}", destWidth, destHeight);
+
         if (destWidth == Width && destHeight == Height) return;
 
         Width = destWidth;

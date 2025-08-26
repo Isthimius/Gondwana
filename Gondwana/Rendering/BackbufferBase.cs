@@ -31,6 +31,8 @@ public abstract class BackbufferBase : IDisposable
     public abstract SKCanvas Canvas { get; }
     public abstract void DrawTileFrame(Tile tile);
     public abstract SKImage Snapshot();
+    public abstract void BeginFrame();
+    public abstract void EndFrame();
 
     public SKPaint FogPaint { get; set; } = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
     public SKPaint GridPaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };

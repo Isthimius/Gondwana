@@ -19,7 +19,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
     public override SKCanvas Canvas => _surface.Canvas;
 
-    public void BeginFrame()
+    public override void BeginFrame()
     {
         var c = Canvas;
         c.RestoreToCount(1);
@@ -28,7 +28,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
         c.ClipRect(new SKRect(0, 0, Width, Height));
     }
 
-    public void EndFrame() => _surface.Flush();
+    public override void EndFrame() => _surface.Flush();
 
     public void ClearOpaque(SKColor color) =>
         Canvas.Clear(new SKColor(color.Red, color.Green, color.Blue, 255));

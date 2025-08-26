@@ -39,8 +39,6 @@ namespace Slider
         #region constructors / destructor
         public Puzzle(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, string imgFile, int columns, int rows, Size size)
         {
-            EngineLogger.SetLogLevel(LogLevel.Trace);
-
             tilesheet = new Tilesheet("picture", imgFile);
             tilesheet.ApplyPremultiplyAlpha();
 

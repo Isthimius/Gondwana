@@ -1,18 +1,19 @@
-using Gondwana.Drawing.Sprites;
-using Gondwana.Audio;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Gondwana;
+using Gondwana.Audio;
 using Gondwana.Audio.Midi;
+using Gondwana.Drawing.Sprites;
+using Gondwana.Input.Mouse;
+using Gondwana.Logging;
 using Gondwana.WinForms;
 using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
-using Gondwana;
-using System.Linq;
-using Gondwana.Input.Mouse;
 
 namespace Slider
 {
@@ -31,12 +32,15 @@ namespace Slider
 
         public PuzzleForm()
         {
+            EngineLogger.SetLogLevel(LogLevel.Trace);
             InitializeComponent();
             //picBoxDC = picBox.CreateGraphics();
             //Program.slideSound = new MediaFile("slide", AssetDir + "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav", MediaFileType.wav);
             //Program.tadaSound = new MediaFile("tada", AssetDir + "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav", MediaFileType.wav);
             Sprites.SpriteMovementStarted += Sprites_SpriteMovementStarted;
             Sprites.SpriteMovementStopped += Sprites_SpriteMovementStopped;
+
+            winFormBitmapRenderSurfaceControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         }
 
         void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)

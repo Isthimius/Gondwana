@@ -33,6 +33,18 @@ public class GpuBackbuffer : BackbufferBase
     }
 
     public override SKCanvas Canvas => _surface.Canvas;
+
+    public override void BeginFrame()
+    {
+        Canvas.RestoreToCount(1);
+    }
+
+    public override void EndFrame()
+    {
+        _surface.Flush();
+        _grContext.Submit(true);
+    }
+
     public override void DrawTileFrame(Tile tile)
     {
         var image = tile.CurrentFrame.SkImage;

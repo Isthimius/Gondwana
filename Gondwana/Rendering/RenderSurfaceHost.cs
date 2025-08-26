@@ -4,6 +4,7 @@ using Gondwana.Rendering.Direct;
 using Gondwana.Scenes;
 using Gondwana.Skia;
 using SkiaSharp;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering;
 
@@ -16,11 +17,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
-        _renderSurfaceAdapter = renderSurfaceAdapter;
-        CreateBackbuffer();
+        _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
 
         // Recreate backbuffer on adapter resize
         RenderSurfaceAdapter!.Resized += (_, _) => CreateBackbuffer();
+
+        CreateBackbuffer();
     }
 
     private TBackbuffer _backbuffer;
@@ -56,34 +58,28 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     internal override void DrawRefreshQueueToBackbuffer()
     {
-        if (Backbuffer is not BitmapBackbuffer bb) return;
-        var scene = DrawSource;
-
-        bb.BeginFrame();
-
-        if (scene is null || (scene?.CountOfVisibleLayers ?? 0) == 0)
+        if (DrawSource is null || (DrawSource?.CountOfVisibleLayers ?? 0) == 0)
         {
-            bb.ClearOpaque(ClearColor.ToSKColor());
             // Optionally mark whole surface dirty for a visible clear:
             Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
         }
         else
         {
-            switch (scene!.RefreshNeeded)
+            switch (DrawSource!.RefreshNeeded)
             {
                 case MatrixesRefreshType.None:
                     // Nothing to redraw in the background; don’t publish a new frame.
                     // (i.e., UI will keep showing the last front buffer.)
-                    return;
+                    break;
 
                 case MatrixesRefreshType.Queue:
                     {
-                        for (int i = scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                        for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var layer = scene.VisibleSceneLayerList[i];
+                            var layer = DrawSource.VisibleSceneLayerList[i];
 
                             // Draw tiles in this layer’s queue
-                            bb.DrawTiles(layer.RefreshQueue.Tiles);
+                            Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
                         }
 
                         break;
@@ -95,9 +91,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
 
                         // Clear per-layer queues and add full range, then draw
-                        for (int i = scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                        for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var layer = scene.VisibleSceneLayerList[i];
+                            var layer = DrawSource.VisibleSceneLayerList[i];
                             layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
 
                             Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
@@ -111,13 +107,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     break;
             }
         }
-
-        bb.EndFrame();
     }
 
     internal override void RenderBackbufferToAdapter()
     {
         if (RenderSurfaceAdapter is null) return;
+
+        Backbuffer.EndFrame();
 
         if (RedrawDirtyRectangleOnly)
             RenderBackbufferRect();
@@ -125,6 +121,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             RenderBackbufferAll();
 
         Backbuffer.DirtyRectangle = Rectangle.Empty;
+
+        Backbuffer.BeginFrame();
     }
 
     #region IDisposable
@@ -152,8 +150,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     #region private methods
     private void CreateBackbuffer()
     {
+        Engine.Logger.LogTrace("Creating backbuffer for RenderSurfaceHost");
+
+        var w = RenderSurfaceAdapter!.Width;
+        var h = RenderSurfaceAdapter!.Height;
+        if (w <= 0 || h <= 0) return;
+
         Backbuffer?.Dispose();
-        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height)!;
+        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
+        Backbuffer!.BeginFrame();
+
+        Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
     }
 
     private void RenderBackbufferAll()
