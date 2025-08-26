@@ -1,6 +1,5 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Skia;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
@@ -60,6 +59,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
     public override void Dispose()
     {
         base.Dispose();
+        EndFrame();
         _surface.Dispose();
         _buffer.Dispose();
     }

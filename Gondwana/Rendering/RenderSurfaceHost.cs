@@ -20,9 +20,34 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
 
         // Recreate backbuffer on adapter resize
-        RenderSurfaceAdapter!.Resized += (_, _) => CreateBackbuffer();
+        RenderSurfaceAdapter!.Resized += (_, _) => OnRenderSurfaceAdapterResized();
 
         CreateBackbuffer();
+    }
+
+    /// <summary>
+    /// Creates and initializes the backbuffer for the render surface. This method is called automatically
+    /// during RenderSurfaceHost construction, and on <see cref="RenderSurfaceAdapter"/>.Resized, if
+    /// <see cref="EngineConfiguration.RecreateBackbufferOnResize"/> is true;
+    /// if it not true, this method can be called manually as needed.
+    /// </summary>
+    /// <remarks>This method disposes of any existing backbuffer before creating a new one with the current
+    /// dimensions of the render surface. The backbuffer is initialized and prepared for rendering by calling its  <see
+    /// cref="BeginFrame"/> method. If the render surface dimensions are invalid (width or height less than or equal to
+    /// zero), the method exits without creating a backbuffer.</remarks>
+    public void CreateBackbuffer()
+    {
+        Engine.Logger.LogTrace("Creating backbuffer for RenderSurfaceHost");
+
+        var w = RenderSurfaceAdapter!.Width;
+        var h = RenderSurfaceAdapter!.Height;
+        if (w <= 0 || h <= 0) return;
+
+        Backbuffer?.Dispose();
+        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
+        Backbuffer!.BeginFrame();
+
+        Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
     }
 
     private TBackbuffer _backbuffer;
@@ -148,19 +173,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     #endregion
 
     #region private methods
-    private void CreateBackbuffer()
+    private void OnRenderSurfaceAdapterResized()
     {
-        Engine.Logger.LogTrace("Creating backbuffer for RenderSurfaceHost");
-
-        var w = RenderSurfaceAdapter!.Width;
-        var h = RenderSurfaceAdapter!.Height;
-        if (w <= 0 || h <= 0) return;
-
-        Backbuffer?.Dispose();
-        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
-        Backbuffer!.BeginFrame();
-
-        Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
+        if (Engine.Instance.Configuration.RecreateBackbufferOnResize)
+            CreateBackbuffer();
     }
 
     private void RenderBackbufferAll()
