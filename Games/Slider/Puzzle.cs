@@ -73,8 +73,8 @@ namespace Slider
             delMoveStart = new SpriteMovementEventHandler(Sprites_SpriteMovementStarted);
             delMoveStop = new SpriteMovementEventHandler(Sprites_SpriteMovementStopped);
 
-            Sprites.SpriteMovementStarted += delMoveStart;
-            Sprites.SpriteMovementStopped += delMoveStop;
+            SpriteManager.SpriteMovementStarted += delMoveStart;
+            SpriteManager.SpriteMovementStopped += delMoveStop;
 
             //Engine.Instance.InitializeWinFormsAudioFormats();
             //Engine.Instance.InitializeXInputGamepadManager();
@@ -120,7 +120,7 @@ namespace Slider
 
         public int TotalPieces
         {
-            get { return Sprites.AllSprites.Count; }
+            get { return SpriteManager.AllSprites.Count; }
         }
 
         public int TotalPiecesCorrect
@@ -129,7 +129,7 @@ namespace Slider
             {
                 int totalCorrect = 0;
 
-                foreach (Sprite sprite in Sprites.AllSprites)
+                foreach (Sprite sprite in SpriteManager.AllSprites)
                 {
                     Point spriteLoc = new Point((int)sprite.GridCoordinates.X, (int)sprite.GridCoordinates.Y);
 
@@ -211,13 +211,13 @@ namespace Slider
         #region private methods
         private void InitializeSprites(int tileWidth, int tileHeight)
         {
-            Sprites.Clear();
+            SpriteManager.Clear();
 
             for (int x = 0; x < numColumns; x++)
 			{
                 for (int y = 0; y < numRows; y++)
                 {
-                    Sprite sprite = Sprites.CreateSprite(matrixes[0], new Frame(tilesheet, x, y),
+                    Sprite sprite = SpriteManager.CreateSprite(matrixes[0], new Frame(tilesheet, x, y),
                         x.ToString() + "-" + y.ToString());
                     sprite.MoveSprite((float)x, (float)y);
                     sprite.Visible = true;
@@ -227,7 +227,7 @@ namespace Slider
             // remove the bottom-right tile; this will be the space for sliding
             int maxX = numColumns - 1;
             int maxY = numRows - 1;
-            Sprites.GetSpriteByID(maxX.ToString() + "-" + maxY.ToString()).Dispose();
+            SpriteManager.GetSpriteByID(maxX.ToString() + "-" + maxY.ToString()).Dispose();
             openSpace = new Point(maxX, maxY);
         }
 
@@ -256,7 +256,7 @@ namespace Slider
             foreach (SceneLayerPoint gPt in adjGridPts)
             {
                 if (gPt != null)
-                    adjSprites.AddRange(Sprites.GetSpritesInRange(gPt.DrawLocation));
+                    adjSprites.AddRange(SpriteManager.GetSpritesInRange(gPt.DrawLocation));
             }
 
             return adjSprites;
@@ -286,9 +286,9 @@ namespace Slider
             GC.SuppressFinalize(this);
             tilesheet.Dispose();
             matrixes.Dispose();
-            Sprites.Clear();
-            Sprites.SpriteMovementStarted -= delMoveStart;
-            Sprites.SpriteMovementStopped -= delMoveStop;
+            SpriteManager.Clear();
+            SpriteManager.SpriteMovementStarted -= delMoveStart;
+            SpriteManager.SpriteMovementStopped -= delMoveStop;
         }
         #endregion
     }

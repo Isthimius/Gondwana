@@ -32,7 +32,7 @@ public class EngineState
     public List<Scene> GridsDisplay => Scene._allSceneLayeres;
 
     [JsonInclude]
-    public List<Sprite> Sprites => Drawing.Sprites.Sprites._spriteList;
+    public List<Sprite> Sprites => Drawing.Sprites.SpriteManager._spriteList;
 
     [JsonInclude]
     public Dictionary<string, SoundResource> SoundResources => SoundResourceManager.Instance.GetAll();
@@ -45,7 +45,7 @@ public class EngineState
         Cycle.ClearAllAnimationCycles();
         Scene.ClearAllSceneLayeres();
         SceneLayer.ClearAllSceneLayer();
-        Drawing.Sprites.Sprites.Clear();
+        Drawing.Sprites.SpriteManager.Clear();
         SoundResourceManager.Instance.Dispose();
     }
 

@@ -338,7 +338,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
 
         // create new child Sprites for all Sprite instances on this grid
-        Sprites.CreateChildSprites(this);
+        SpriteManager.CreateChildSprites(this);
     }
 
     protected virtual void OnFirstColRowChanged(PointF oldPt, PointF newPt)
@@ -386,7 +386,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             FindIndexedGridPoint = new GetIndexer(GetIndexer_NoWrap);
 
         // create new child Sprites for all Sprite instances on this grid
-        Sprites.CreateChildSprites(this);
+        SpriteManager.CreateChildSprites(this);
     }
 
     protected virtual void OnShowGridLinesChanged(bool oldVal, bool newVal)

@@ -45,7 +45,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         nudgeY = 0;
         CurrentFrame = frame;
 
-        if ((Sprites.SizeNewSpritesToParentGrid) && (parentGrid != null))
+        if ((SpriteManager.SizeNewSpritesToParentGrid) && (parentGrid != null))
             renderSize = new Size(parentGrid.GridPointWidth, parentGrid.GridPointHeight);
         else
             renderSize = CurrentFrame.Tilesheet.TileSize;
@@ -55,7 +55,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (parentGrid != null)
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
-        Sprites._spriteList.Add(this);
+        SpriteManager._spriteList.Add(this);
         CreateChildSprites();
     }
 
@@ -67,7 +67,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         id = Guid.NewGuid().ToString();
         animator = new Animator(this);
         movement = new Movement(this);
-        Sprites._spriteList.Add(this);
+        SpriteManager._spriteList.Add(this);
 
         parentGrid = sprite.parentGrid;
         frame = sprite.frame;
@@ -85,7 +85,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (parentGrid != null)
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
-        Sprites.SubscribeToSpriteEvents(this);
+        SpriteManager.SubscribeToSpriteEvents(this);
 
         CreateChildSprites();
     }
@@ -138,8 +138,8 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (parentGrid != null)
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
-        Sprites._spriteList.Add(this);
-        Sprites.SubscribeToSpriteEvents(this);
+        SpriteManager._spriteList.Add(this);
+        SpriteManager.SubscribeToSpriteEvents(this);
 
         CreateChildSprites();
     }
@@ -306,7 +306,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     [IgnoreDataMember]
     public override Rectangle DrawLocation
     {
-        get { return Sprites.DrawLocation(this, parentGrid, gridCoordinates, renderSize); }
+        get { return SpriteManager.DrawLocation(this, parentGrid, gridCoordinates, renderSize); }
     }
 
     [IgnoreDataMember]
@@ -396,7 +396,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     public void MoveSprite(Rectangle newDrawLocation)
     {
         RenderSize = new Size(newDrawLocation.Size.Width, newDrawLocation.Size.Height);
-        MoveSprite(Sprites.GridCoordinates(this, parentGrid, newDrawLocation));
+        MoveSprite(SpriteManager.GridCoordinates(this, parentGrid, newDrawLocation));
     }
 
     public void MoveSprite(SceneLayer newLayer)
@@ -530,7 +530,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         // remove all references from static Sprites to this Sprite
         if (!IsChildTile)
         {
-            Sprites.UnsubscribeFromSpriteEvents(this);
+            SpriteManager.UnsubscribeFromSpriteEvents(this);
             movement.Dispose();
         }
         else
@@ -546,8 +546,8 @@ public class Sprite : Tile, IDisposable, ICloneable
             parentGrid.RefreshQueue.Tiles.Remove(this);
         }
 
-        if (Sprites._spriteList.IndexOf(this) != -1)
-            Sprites._spriteList.Remove(this);
+        if (SpriteManager._spriteList.IndexOf(this) != -1)
+            SpriteManager._spriteList.Remove(this);
 
         // clear the events
         SpriteMoved = null;

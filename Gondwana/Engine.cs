@@ -282,7 +282,7 @@ public sealed class Engine : IDisposable
         CycleAnimations(tick);
 
         // advance Sprite Movement paths
-        Sprites.MoveSprites(tick);
+        SpriteManager.MoveSprites(tick);
 
         // TODO: this has moved to CollisionManager
         // check for Tile collisions

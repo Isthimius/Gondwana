@@ -88,7 +88,7 @@ internal class RefreshQueue : IDisposable
             }
 
             // find all Sprite objects in range
-            foreach (Sprite sprite in Sprites.GetSpritesInRange(area, _sceneLayer))
+            foreach (Sprite sprite in SpriteManager.GetSpritesInRange(area, _sceneLayer))
             {
                 if (sprite.ParentGrid == _sceneLayer && sprite.Visible)
                 {

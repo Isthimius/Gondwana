@@ -37,8 +37,8 @@ namespace Slider
             //picBoxDC = picBox.CreateGraphics();
             //Program.slideSound = new MediaFile("slide", AssetDir + "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav", MediaFileType.wav);
             //Program.tadaSound = new MediaFile("tada", AssetDir + "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav", MediaFileType.wav);
-            Sprites.SpriteMovementStarted += Sprites_SpriteMovementStarted;
-            Sprites.SpriteMovementStopped += Sprites_SpriteMovementStopped;
+            SpriteManager.SpriteMovementStarted += Sprites_SpriteMovementStarted;
+            SpriteManager.SpriteMovementStopped += Sprites_SpriteMovementStopped;
 
             winFormBitmapRenderSurfaceControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         }
@@ -112,7 +112,7 @@ namespace Slider
                 // TODO: also check if any sprites are moving
                 if (!Program.puzzle._isShuffling)
                 {
-                    List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
+                    List<Sprite> sprites = SpriteManager.GetSpritesAtPoint(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
                     if (sprites.Count != 0)
                         Program.puzzle.SlidePiece(sprites[0], 0.15);
                 }

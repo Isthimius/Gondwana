@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace Gondwana.Drawing.Sprites;
 
-public static class Sprites
+public static class SpriteManager
 {
     #region private / internal fields
     internal static List<Sprite> _spriteList = new List<Sprite>();
@@ -33,7 +33,7 @@ public static class Sprites
     private static AnimatorEventHandler animCycle;
     #endregion
 
-    static Sprites()
+    static SpriteManager()
     {
         SetEventDelegates();
     }
