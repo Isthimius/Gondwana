@@ -65,7 +65,7 @@ namespace Gondwana.Drawing.Sprites
 
         public Rectangle DestDrawLocation
         {
-            get { return SpriteManager.DrawLocation(parent, parent.ParentGrid, DestCoord, DestSize); }
+            get { return parent.DrawLocation; }
         }
     }
 }

@@ -1,8 +1,9 @@
 using Gondwana.Drawing.Animation;
-using Gondwana.Scenes;
-using System.Runtime.Serialization;
-using System.Drawing;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
+using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -79,34 +80,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         ZOrder = sprite.zOrder;
         visible = sprite.visible;
         gridCoordinates = sprite.gridCoordinates;
-        AdjustCollisionArea = sprite.AdjustCollisionArea;
-
-        parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-    }
-
-    /// <summary>
-    /// private constructor used when generating "child" Sprite objects.  Adds the new Sprite
-    /// to the argument Sprite's childTiles List.  Does not add "child" Sprite to Engine-level
-    /// Sprite List.  Does not register "child" Sprite events with static Sprites class.
-    /// </summary>
-    /// <param name="sprite"></param>
-    /// <param name="gridCoord"></param>
-    private Sprite(Sprite sprite, PointF gridCoord)
-    {
-        id = Guid.NewGuid().ToString();
-        parentGrid = sprite.parentGrid;
-        //animator = new Animator(this);
-        //movement = new Movement(this);
-        frame = sprite.frame;
-        collisionDetection = sprite.collisionDetection;
-        horizAlign = sprite.horizAlign;
-        vertAlign = sprite.vertAlign;
-        nudgeX = sprite.nudgeX;
-        nudgeY = sprite.nudgeY;
-        renderSize = sprite.renderSize;
-        zOrder = sprite.zOrder;
-        visible = sprite.visible;
-        gridCoordinates = gridCoord;
         AdjustCollisionArea = sprite.AdjustCollisionArea;
 
         parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
@@ -258,7 +231,62 @@ public class Sprite : Tile, IDisposable, ICloneable
     [IgnoreDataMember]
     public override Rectangle DrawLocation
     {
-        get { return SpriteManager.DrawLocation(this, parentGrid, gridCoordinates, renderSize); }
+        get
+        {
+            // if Sprite hasn't been placed on SceneLayer, this is moot
+            if (parentGrid == null)
+                return new Rectangle();
+
+            // get the "top left" of the Sprite gridCoordinates value
+            Point pxlPt = parentGrid.CoordinateSystem.GetSrcPxlAtGridPt(parentGrid, gridCoordinates);
+
+            // adjust X coord
+            switch (this.HorizAlign)
+            {
+                case HorizontalAlignment.Left:
+                    // no adjustment necessary
+                    break;
+                case HorizontalAlignment.Center:
+                    // shift right by half the difference between Tile Width values
+                    // if Sprite Width > GridPt Width, Sprite will shift left
+                    pxlPt.X += (parentGrid.GridPointWidth - renderSize.Width) / 2;
+                    break;
+                case HorizontalAlignment.Right:
+                    // shift right by the entire difference between Tile Width values
+                    // if Sprite Width > GridPt Width, Sprite will shift left
+                    pxlPt.X += (parentGrid.GridPointWidth - renderSize.Width);
+                    break;
+                default:
+                    // shouldn't get here...
+                    break;
+            }
+
+            // adjust Y coord
+            switch (this.VertAlign)
+            {
+                case VerticalAlignment.Top:
+                    // no adjustment necessary
+                    break;
+                case VerticalAlignment.Middle:
+                    // shift down by half the difference between Tile Height values
+                    // if Sprite Height > GridPt Height, Sprite will shift up
+                    pxlPt.Y += (parentGrid.GridPointHeight - renderSize.Height) / 2;
+                    break;
+                case VerticalAlignment.Bottom:
+                    // shift down by the entire difference between Tile Height values
+                    // if Sprite Height > GridPt Height, Sprite will shift up
+                    pxlPt.Y += (parentGrid.GridPointHeight - renderSize.Height);
+                    break;
+                default:
+                    // shouldn't get here...
+                    break;
+            }
+
+            pxlPt.X += this.NudgeX;
+            pxlPt.Y += this.NudgeY;
+
+            return new Rectangle(pxlPt, renderSize);
+        }
     }
 
     [IgnoreDataMember]

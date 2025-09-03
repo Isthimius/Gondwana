@@ -448,8 +448,7 @@ public class Movement : IDisposable
     #region private methods
     private void CalcNextLocation()
     {
-        Rectangle origLoc = SpriteManager.DrawLocation(_parent, _parent.ParentGrid,
-            _movePoint.origCoord, _movePoint.origSize);
+        Rectangle origLoc = _parent.DrawLocation;
         Rectangle destLoc = _movePoint.DestDrawLocation;
 
         // calculate the percentage complete, based on time running vs total time originally

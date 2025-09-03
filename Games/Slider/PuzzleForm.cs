@@ -100,12 +100,12 @@ namespace Slider
             }
         }
 
-        private void Instance_PostInitialization(object sender, EventArgs e)
+        private void Instance_PostInitialization()
         {
             //MidiFileReader.RegisterDefaultReaders();
         }
 
-        private void Engine_CPSCalculated(object sender, Gondwana.CyclesPerSecondCalculatedEventArgs e)
+        private void Engine_CPSCalculated(CyclesPerSecondCalculatedEventArgs e)
         {
             lblInfo.Text = string.Format("FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
                 e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SamplingTime.ToString("N2"));
@@ -178,60 +178,5 @@ namespace Slider
             if (Program.puzzle != null)
                 Program.puzzle.Dispose();
         }
-
-        //private void winFormBitmapRenderSurfaceControl1_MouseMove(object sender, MouseEventArgs e)
-        //{
-        //    if (Program.puzzle != null)
-        //    {
-        //        var coords = Program.puzzle.GetGridCoordinates(e.X, e.Y);
-        //        lblCoord.Text = "x: " + coords.X.ToString() + "   y: " + coords.Y.ToString();
-        //    }
-        //}
-
-        //private void winFormBitmapRenderSurfaceControl1_MouseDown(object sender, MouseEventArgs e)
-        //{
-        //    if (Program.puzzle != null)
-        //    {
-        //        if (!Program.puzzle._isShuffling)
-        //        {
-        //            List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));
-        //            if (sprites.Count != 0)
-        //                Program.puzzle.SlidePiece(sprites[0], 0.15);
-        //        }
-        //    }
-        //}
-
-        //private void winFormBitmapRenderSurfaceControl1_Load(object sender, EventArgs e)
-        //{
-
-        //}
-
-        //private void winFormBitmapRenderSurfaceControl1_Load_1(object sender, EventArgs e)
-        //{
-
-        //}
-
-        //private void winFormBitmapRenderSurfaceControl1_MouseClick(object sender, MouseEventArgs e)
-        //{
-        //    if (Program.puzzle != null)
-        //    {
-        //        // TODO: also check if any sprites are moving
-        //        if (!Program.puzzle._isShuffling)
-        //        {
-        //            List<Sprite> sprites = Sprites.GetSpritesAtPoint(new Point(e.X, e.Y));
-        //            if (sprites.Count != 0)
-        //                Program.puzzle.SlidePiece(sprites[0], 0.15);
-        //        }
-        //    }
-        //}
-
-        //private void winFormBitmapRenderSurfaceControl1_MouseCaptureChanged(object sender, EventArgs e)
-        //{
-        //    //if (Program.puzzle != null)
-        //    //{
-        //    //    var coords = Program.puzzle.GetGridCoordinates(e.X, e.Y);
-        //    //    lblCoord.Text = "x: " + coords.X.ToString() + "   y: " + coords.Y.ToString();
-        //    //}
-        //}
     }
 }

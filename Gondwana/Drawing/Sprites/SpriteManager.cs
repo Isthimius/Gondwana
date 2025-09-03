@@ -180,63 +180,7 @@ public static class SpriteManager
     #endregion
 
     #region internal methods
-    internal static Rectangle DrawLocation(Sprite sprite, SceneLayer grid, PointF coord, Size size)
-    {
-        // if Sprite hasn't been placed on SceneLayer, this is moot
-        if (grid == null)
-            return new Rectangle();
-
-        // get the "top left" of the Sprite gridCoordinates value
-        Point pxlPt = grid.CoordinateSystem.GetSrcPxlAtGridPt(grid, coord);
-
-        // adjust X coord
-        switch (sprite.HorizAlign)
-        {
-            case HorizontalAlignment.Left:
-                // no adjustment necessary
-                break;
-            case HorizontalAlignment.Center:
-                // shift right by half the difference between Tile Width values
-                // if Sprite Width > GridPt Width, Sprite will shift left
-                pxlPt.X += (grid.GridPointWidth - size.Width) / 2;
-                break;
-            case HorizontalAlignment.Right:
-                // shift right by the entire difference between Tile Width values
-                // if Sprite Width > GridPt Width, Sprite will shift left
-                pxlPt.X += (grid.GridPointWidth - size.Width);
-                break;
-            default:
-                // shouldn't get here...
-                break;
-        }
-
-        // adjust Y coord
-        switch (sprite.VertAlign)
-        {
-            case VerticalAlignment.Top:
-                // no adjustment necessary
-                break;
-            case VerticalAlignment.Middle:
-                // shift down by half the difference between Tile Height values
-                // if Sprite Height > GridPt Height, Sprite will shift up
-                pxlPt.Y += (grid.GridPointHeight - size.Height) / 2;
-                break;
-            case VerticalAlignment.Bottom:
-                // shift down by the entire difference between Tile Height values
-                // if Sprite Height > GridPt Height, Sprite will shift up
-                pxlPt.Y += (grid.GridPointHeight - size.Height);
-                break;
-            default:
-                // shouldn't get here...
-                break;
-        }
-
-        pxlPt.X += sprite.NudgeX;
-        pxlPt.Y += sprite.NudgeY;
-
-        return new Rectangle(pxlPt, size);
-    }
-
+    // TODO: how is this used differently from Sprite.GridCoordinates?
     internal static PointF GridCoordinates(Sprite sprite, SceneLayer grid, Rectangle drawLocation)
     {
         // if Sprite hasn't been placed on SceneLayer, this is moot
