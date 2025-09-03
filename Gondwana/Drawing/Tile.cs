@@ -26,13 +26,11 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     #endregion
 
     #region fields
-    private Tile parentTile;
     protected internal int zOrder;
     protected internal bool visible;
 
     protected internal Frame frame;
     protected internal bool enableFog = false;
-    protected internal List<Tile> childTiles;
     protected internal Animator animator;
     protected bool pauseAnimation;
     protected CollisionDetectionType collisionDetection = CollisionDetectionType.None;
@@ -79,15 +77,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             zOrder = value;
-
-            if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.ZOrder = value;
-            }
+            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
     }
 
@@ -98,15 +88,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             visible = value;
-
-            if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.Visible = value;
-            }
+            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
     }
 
@@ -118,15 +100,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         {
             // animation doesn't change Sprite size, so only add to refresh queue after
             frame = value;
-
-            if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.CurrentFrame = value;
-            }
+            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
     }
 
@@ -137,20 +111,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     [IgnoreDataMember]
-    public virtual bool PauseAnimation
-    {
-        get { return pauseAnimation; }
-        set
-        {
-            pauseAnimation = value;
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.PauseAnimation = value;
-            }
-        }
-    }
+    public virtual bool PauseAnimation { get; set; }
 
     [DataMember]
     public virtual CollisionDetectionType DetectCollision
@@ -172,12 +133,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             }
 
             collisionDetection = value;
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.DetectCollision = value;
-            }
         }
     }
 
@@ -202,28 +157,8 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             enableFog = value;
-
-            if (ParentGrid != null)
-                ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.EnableFog = value;
-            }
+            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
-    }
-
-    [IgnoreDataMember]
-    public Tile ParentTile
-    {
-        get { return parentTile; }
-    }
-
-    [IgnoreDataMember]
-    public bool IsChildTile
-    {
-        get { return parentTile != null; }
     }
 
     /// <summary>
@@ -237,20 +172,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     [DataMember]
-    public virtual CollisionDetectionAdjustment AdjustCollisionArea
-    {
-        get { return adjustCollisionArea; }
-        set
-        {
-            adjustCollisionArea = value;
-
-            if (childTiles != null)
-            {
-                foreach (Tile tile in childTiles)
-                    tile.AdjustCollisionArea = value;
-            }
-        }
-    }
+    public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; }
 
     /// <summary>
     /// if position is fixed, use top of primary (i.e., non-overlapping) area;
@@ -264,31 +186,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             return tile.DrawLocation.Bottom - 1;
         else
             return tile.DrawLocation.Top + tile.OverlappingPixels;
-    }
-
-    protected internal void AddChild(Tile child)
-    {
-        if (childTiles == null)
-            childTiles = new List<Tile>();
-
-        if (childTiles.IndexOf(child) == -1)
-        {
-            child.parentTile = this;
-            childTiles.Add(child);
-        }
-    }
-
-    protected internal void DisposeChildTiles()
-    {
-        // call Dispose() on all child Tiles
-        if (childTiles != null)
-        {
-            Tile[] tiles = new Tile[childTiles.Count];
-            childTiles.CopyTo(tiles);
-
-            foreach (Tile tile in tiles)
-                tile.Dispose();
-        }
     }
 
     #region IComparable<Tile> Members
@@ -316,9 +213,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     #region IDisposable Members
     public virtual void Dispose()
     {
-        // call Dispose() on all child Tiles
-        DisposeChildTiles();
-
         // remove Tile from any Engine-level List<> objects
         if (TileCollisions.IndexOf(this) != -1)
             TileCollisions.Remove(this);

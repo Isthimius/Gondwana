@@ -30,7 +30,7 @@ public sealed class DirectDrawingManager
         }
     }
 
-    internal void Add(DirectDrawingBase drawing)
+    internal static void Add(DirectDrawingBase drawing)
     {
         if (!_instances.Value.Contains(drawing))
         {

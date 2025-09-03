@@ -39,9 +39,6 @@ public class SceneLayerPoint : Tile, IDisposable
         frame = gridPoint.frame;
         enableFog = gridPoint.enableFog;
         Tag = gridPoint.Tag;
-
-        // associate new GridPoint (child, this) with existing GridPoint (parent)
-        gridPoint.AddChild(this);
     }
 
     ~SceneLayerPoint()
@@ -57,14 +54,8 @@ public class SceneLayerPoint : Tile, IDisposable
         get { return frame; }
         set
         {
-            if (disableAddToRefreshQueue == false)
+            if (!disableAddToRefreshQueue)
                 base.frame = value;
-
-                if (childTiles != null)
-                {
-                    foreach (SceneLayerPoint gridPt in childTiles)
-                        gridPt.frame = value;
-                }
             else
                 base.CurrentFrame = value;
         }
@@ -77,20 +68,7 @@ public class SceneLayerPoint : Tile, IDisposable
     }
 
     [JsonInclude]
-    public bool DoNotRedrawChanges
-    {
-        get { return disableAddToRefreshQueue; }
-        set
-        {
-            disableAddToRefreshQueue = value;
-
-            if (childTiles != null)
-            {
-                foreach (SceneLayerPoint gridPt in childTiles)
-                    gridPt.DoNotRedrawChanges = value;
-            }
-        }
-    }
+    public bool DoNotRedrawChanges { get; set; }
 
     [JsonIgnore]
     public override Rectangle DrawLocation

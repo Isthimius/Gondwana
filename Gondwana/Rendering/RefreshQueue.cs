@@ -92,9 +92,6 @@ internal class RefreshQueue : IDisposable
             {
                 if (sprite.ParentGrid == _sceneLayer && sprite.Visible)
                 {
-                    // add the sprite to the queue if it intersects with the area
-                    tempTiles.AddRange(sprite.childTiles?.Where(child => child.DrawLocation.IntersectsWith(area)) ?? Enumerable.Empty<Tile>());
-
                     if (sprite.DrawLocation.IntersectsWith(area))
                         tempTiles.Add(sprite);
                 }

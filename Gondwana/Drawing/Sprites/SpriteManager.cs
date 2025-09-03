@@ -82,7 +82,7 @@ public static class SpriteManager
             Remove(sprite);
     }
 
-    public static Sprite GetSpriteByID(string ID)
+    public static Sprite? GetSpriteByID(string ID)
     {
         foreach (Sprite sprite in _spriteList)
         {
@@ -104,24 +104,6 @@ public static class SpriteManager
 
         foreach (Sprite sprite in _spriteList)
         {
-            // check if any childTiles in range; if so, return ParentTile
-            if (sprite.childTiles != null)
-            {
-                foreach (Sprite child in sprite.childTiles)
-                {
-                    if (fullEnclosures)
-                    {
-                        if (range.Contains(child.DrawLocation))
-                            retSprites.Add(sprite);
-                    }
-                    else
-                    {
-                        if (child.DrawLocation.IntersectsWith(range))
-                            retSprites.Add(sprite);
-                    }
-                }
-            }
-
             // check if sprite in range
             if (fullEnclosures)
             {
@@ -151,24 +133,6 @@ public static class SpriteManager
         {
             if (sprite.ParentGrid == grid)
             {
-                // check if any childTiles in range; if so, return ParentTile
-                if (sprite.childTiles != null)
-                {
-                    foreach (Sprite child in sprite.childTiles)
-                    {
-                        if (fullEnclosures)
-                        {
-                            if (range.Contains(child.DrawLocation))
-                                retSprites.Add(sprite);
-                        }
-                        else
-                        {
-                            if (child.DrawLocation.IntersectsWith(range))
-                                retSprites.Add(sprite);
-                        }
-                    }
-                }
-
                 // check if sprite in range
                 if (fullEnclosures)
                 {
@@ -192,16 +156,6 @@ public static class SpriteManager
 
         foreach (Sprite sprite in _spriteList)
         {
-            // check if any childTiles at Point; if so, return ParentTile
-            if (sprite.childTiles != null)
-            {
-                foreach (Sprite child in sprite.childTiles)
-                {
-                    if (child.DrawLocation.Contains(pxlPt))
-                        retSprites.Add(sprite);
-                }
-            }
-
             // check if sprite at Point
             if (sprite.DrawLocation.Contains(pxlPt))
                 retSprites.Add(sprite);
@@ -216,16 +170,6 @@ public static class SpriteManager
 
         foreach (Sprite sprite in _spriteList)
         {
-            // check if any childTiles at Point; if so, return ParentTile
-            if (sprite.childTiles != null)
-            {
-                foreach (Sprite child in sprite.childTiles)
-                {
-                    if ((sprite.ParentGrid == grid) && (child.DrawLocation.Contains(pxlPt)))
-                        retSprites.Add(sprite);
-                }
-            }
-
             // check if sprite at Point
             if ((sprite.ParentGrid == grid) && (sprite.DrawLocation.Contains(pxlPt)))
                 retSprites.Add(sprite);
@@ -367,21 +311,6 @@ public static class SpriteManager
                 sprite.movement.AdjustPositionByVelocity(tick);
 
             sprite.movement._lastTick = tick;
-        }
-    }
-
-    internal static void CreateChildSprites()
-    {
-        foreach (Sprite sprite in _spriteList)
-            sprite.CreateChildSprites();
-    }
-
-    internal static void CreateChildSprites(SceneLayer grid)
-    {
-        foreach (Sprite sprite in _spriteList)
-        {
-            if (sprite.ParentGrid == grid)
-                sprite.CreateChildSprites();
         }
     }
     #endregion
