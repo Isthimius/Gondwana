@@ -85,8 +85,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (parentGrid != null)
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
-        SpriteManager.SubscribeToSpriteEvents(this);
-
         CreateChildSprites();
     }
 
@@ -139,7 +137,6 @@ public class Sprite : Tile, IDisposable, ICloneable
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
         SpriteManager._spriteList.Add(this);
-        SpriteManager.SubscribeToSpriteEvents(this);
 
         CreateChildSprites();
     }
@@ -530,7 +527,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         // remove all references from static Sprites to this Sprite
         if (!IsChildTile)
         {
-            SpriteManager.UnsubscribeFromSpriteEvents(this);
             movement.Dispose();
         }
         else

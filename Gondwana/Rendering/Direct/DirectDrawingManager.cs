@@ -30,7 +30,7 @@ public static class DirectDrawingManager
         }
     }
 
-    public static void Add(DirectDrawingBase drawing)
+    internal static void Add(DirectDrawingBase drawing)
     {
         if (!_instances.Contains(drawing))
         {

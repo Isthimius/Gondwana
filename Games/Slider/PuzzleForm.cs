@@ -37,27 +37,8 @@ namespace Slider
             //picBoxDC = picBox.CreateGraphics();
             //Program.slideSound = new MediaFile("slide", AssetDir + "75143__willc2-45220__slide-cup-16b-44k-0-747s.wav", MediaFileType.wav);
             //Program.tadaSound = new MediaFile("tada", AssetDir + "177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav", MediaFileType.wav);
-            SpriteManager.SpriteMovementStarted += Sprites_SpriteMovementStarted;
-            SpriteManager.SpriteMovementStopped += Sprites_SpriteMovementStopped;
 
             winFormBitmapRenderSurfaceControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        }
-
-        void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)
-        {
-            Gondwana.Engine.Logger.LogDebug(string.Format("{3}   start move '{0}' from {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
-            //Program.slideSound.Play();
-        }
-
-        void Sprites_SpriteMovementStopped(SpriteMovementEventArgs e)
-        {
-            Engine.Logger.LogDebug(string.Format("{3}   stop move '{0}' at {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
-
-            //if (!Program.puzzle._isShuffling)
-            //Program.slideSound.Stop();
-
-            //if (Program.puzzle.TotalPieces == Program.puzzle.TotalPiecesCorrect)
-            //    Program.tadaSound.Play();
         }
 
         private void btnBmpOpen_Click(object sender, EventArgs e)
@@ -112,7 +93,7 @@ namespace Slider
                 // TODO: also check if any sprites are moving
                 if (!Program.puzzle._isShuffling)
                 {
-                    List<Sprite> sprites = SpriteManager.GetSpritesAtPoint(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
+                    List<Sprite> sprites = SpriteManager.GetSpritesAtPixel(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
                     if (sprites.Count != 0)
                         Program.puzzle.SlidePiece(sprites[0], 0.15);
                 }

@@ -10,7 +10,7 @@ namespace Gondwana.Rendering;
 /// <remarks>This abstract class serves as the foundation for implementing render surface hosts. It provides 
 /// properties for accessing the backbuffer, the source scene to be drawn, the clear color used for rendering, and the
 /// associated render surface adapter. Derived classes must implement the abstract members to define specific rendering
-/// behavior.  The class also manages lifecycle operations, including registration with the render surface host 
+/// behavior. The class also manages lifecycle operations, including registration with the render surface host 
 /// registry and cleanup during disposal.</remarks>
 public abstract class RenderSurfaceHostBase : IDisposable
 {

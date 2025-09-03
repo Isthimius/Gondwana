@@ -7,38 +7,12 @@ namespace Gondwana.Drawing.Sprites;
 
 public static class SpriteManager
 {
-    #region private / internal fields
     internal static List<Sprite> _spriteList = new List<Sprite>();
-    #endregion
-
-    #region events
-    public static event SpriteMovedEventHandler SpriteNewGridPoint;
-    public static event SpriteDisposingEventHandler SpriteDisposing;
-    public static event SpriteMovementEventHandler SpriteMovementStarted;
-    public static event SpriteMovePointFinishedHandler SpriteMovePointFinished;
-    public static event SpriteMovementEventHandler SpriteMovementStopped;
-    public static event AnimatorEventHandler SpriteAnimationStarted;
-    public static event AnimatorEventHandler SpriteAnimationStopped;
-    public static event AnimatorEventHandler SpriteAnimatorCycled;
-    #endregion
-
-    #region delegates
-    private static SpriteMovedEventHandler newCoordinates;
-    private static SpriteDisposingEventHandler disposing;
-    private static SpriteMovementEventHandler moveStart;
-    private static SpriteMovePointFinishedHandler moveFinish;
-    private static SpriteMovementEventHandler moveStop;
-    private static AnimatorEventHandler animStart;
-    private static AnimatorEventHandler animStop;
-    private static AnimatorEventHandler animCycle;
-    #endregion
 
     static SpriteManager()
     {
-        SetEventDelegates();
     }
 
-    #region properties
     public static ReadOnlyCollection<Sprite> AllSprites
     {
         get { return _spriteList.AsReadOnly(); }
@@ -50,13 +24,11 @@ public static class SpriteManager
         get { return _sizeNewSpriteToParentGrid; }
         set { _sizeNewSpriteToParentGrid = value; }
     }
-    #endregion
 
     #region public methods
     public static Sprite CreateSprite(SceneLayer matrix, Frame frame)
     {
         Sprite sprite = new Sprite(matrix, frame);
-        SubscribeToSpriteEvents(sprite);
         return sprite;
     }
 
@@ -214,7 +186,7 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPoint(Point pxlPt)
+    public static List<Sprite> GetSpritesAtPixel(Point pxlPt)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
@@ -238,7 +210,7 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPoint(Point pxlPt, SceneLayer grid)
+    public static List<Sprite> GetSpritesAtPixel(Point pxlPt, SceneLayer grid)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
@@ -261,55 +233,9 @@ public static class SpriteManager
 
         return retSprites;
     }
-
-    public static void DisposeAllNonVisibleSprites()
-    {
-        List<Sprite> tempSprites = new List<Sprite>(_spriteList);
-        foreach (Sprite sprite in tempSprites)
-        {
-            if (!sprite.visible)
-                sprite.Dispose();
-        }
-    }
-
-    public static void PauseAllAnimation(bool pause)
-    {
-        foreach (Sprite sprite in _spriteList)
-            sprite.PauseAnimation = pause;
-    }
-
-    public static void PauseAllMovement(bool pause)
-    {
-        foreach (Sprite sprite in _spriteList)
-            sprite.PauseMovement = pause;
-    }
     #endregion
 
     #region internal methods
-    internal static void SubscribeToSpriteEvents(Sprite sprite)
-    {
-        sprite.SpriteMoved += newCoordinates;
-        sprite.Disposing += disposing;
-        sprite.movement.Started += moveStart;
-        sprite.movement.MovePointFinished += moveFinish;
-        sprite.movement.Stopped += moveStop;
-        sprite.animator.Started += animStart;
-        sprite.animator.Stopped += animStop;
-        sprite.animator.Cycled += animCycle;
-    }
-
-    internal static void UnsubscribeFromSpriteEvents(Sprite sprite)
-    {
-        sprite.SpriteMoved -= newCoordinates;
-        sprite.Disposing -= disposing;
-        sprite.movement.Started -= moveStart;
-        sprite.movement.MovePointFinished -= moveFinish;
-        sprite.movement.Stopped -= moveStop;
-        sprite.animator.Started -= animStart;
-        sprite.animator.Stopped -= animStop;
-        sprite.animator.Cycled -= animCycle;
-    }
-
     internal static Rectangle DrawLocation(Sprite sprite, SceneLayer grid, PointF coord, Size size)
     {
         // if Sprite hasn't been placed on SceneLayer, this is moot
@@ -457,91 +383,6 @@ public static class SpriteManager
             if (sprite.ParentGrid == grid)
                 sprite.CreateChildSprites();
         }
-    }
-    #endregion
-
-    #region private methods
-    private static void sprite_NewGridPoint(SpriteMovedEventArgs e)
-    {
-        // pass the event up...
-        if (SpriteNewGridPoint != null)
-            SpriteNewGridPoint(e);
-    }
-
-    private static void sprite_Disposing(SpriteDisposingEventArgs e)
-    {
-        // pass the event up...
-        if (SpriteDisposing != null)
-            SpriteDisposing(e);
-    }
-
-    private static void movement_Started(SpriteMovementEventArgs e)
-    {
-#if DEBUG
-        Console.WriteLine("SpriteMovementStarted");
-#endif
-
-        // pass the event up...
-        if (SpriteMovementStarted != null)
-            SpriteMovementStarted(e);
-    }
-
-    private static void movement_MovePointFinished(SpriteMovePointFinishedEventArgs e)
-    {
-#if DEBUG
-        Console.WriteLine("SpriteMovePointFinished");
-#endif
-
-        // pass the event up...
-        if (SpriteMovePointFinished != null)
-            SpriteMovePointFinished(e);
-    }
-
-    private static void movement_Stopped(SpriteMovementEventArgs e)
-    {
-#if DEBUG
-        Console.WriteLine("SpriteMovementStopped");
-#endif
-
-        // pass the event up...
-        if (SpriteMovementStopped != null)
-            SpriteMovementStopped(e);
-    }
-
-    private static void animator_Started(AnimatorEventArgs e)
-    {
-        // pass the event up...
-        if (SpriteAnimationStarted != null)
-            SpriteAnimationStarted(e);
-    }
-
-    private static void animator_Stopped(AnimatorEventArgs e)
-    {
-        // pass the event up...
-        if (SpriteAnimationStopped != null)
-            SpriteAnimationStopped(e);
-    }
-
-    private static void animator_Cycled(AnimatorEventArgs e)
-    {
-        // pass the event up...
-        if (SpriteAnimatorCycled != null)
-            SpriteAnimatorCycled(e);
-    }
-
-    /// <summary>
-    /// set delegates to be used to subscribe to Sprite events
-    /// </summary>
-    private static void SetEventDelegates()
-    {
-        newCoordinates = new SpriteMovedEventHandler(sprite_NewGridPoint);
-        disposing = new SpriteDisposingEventHandler(sprite_Disposing);
-        moveStart = new SpriteMovementEventHandler(movement_Started);
-        moveFinish = new SpriteMovePointFinishedHandler(movement_MovePointFinished);
-        moveStop = new SpriteMovementEventHandler(movement_Stopped);
-        animStart = new AnimatorEventHandler(animator_Started);
-        animStop = new AnimatorEventHandler(animator_Stopped);
-        animCycle = new AnimatorEventHandler(animator_Cycled);
     }
     #endregion
 }

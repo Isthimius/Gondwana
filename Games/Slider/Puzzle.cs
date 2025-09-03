@@ -73,9 +73,6 @@ namespace Slider
             delMoveStart = new SpriteMovementEventHandler(Sprites_SpriteMovementStarted);
             delMoveStop = new SpriteMovementEventHandler(Sprites_SpriteMovementStopped);
 
-            SpriteManager.SpriteMovementStarted += delMoveStart;
-            SpriteManager.SpriteMovementStopped += delMoveStop;
-
             //Engine.Instance.InitializeWinFormsAudioFormats();
             //Engine.Instance.InitializeXInputGamepadManager();
         }
@@ -287,8 +284,6 @@ namespace Slider
             tilesheet.Dispose();
             matrixes.Dispose();
             SpriteManager.Clear();
-            SpriteManager.SpriteMovementStarted -= delMoveStart;
-            SpriteManager.SpriteMovementStopped -= delMoveStop;
         }
         #endregion
     }
