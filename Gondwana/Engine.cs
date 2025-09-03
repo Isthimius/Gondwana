@@ -210,12 +210,12 @@ public sealed class Engine : IDisposable
         get => _gamepadManager;
         set
         {
-            GamepadManagerEventPoller.Initialize(value?.ConnectedAdapters);
+            GamepadEventPoller.Initialize(value?.ConnectedAdapters);
             _gamepadManager = value;
         }
     }
 
-    public static GamepadManagerEventPoller? GamepadManagerEventPoller { get => GamepadManagerEventPoller.Instance; }
+    public static GamepadEventPoller? GamepadManagerEventPoller { get => GamepadEventPoller.Instance; }
     #endregion
 
     #region private methods
@@ -266,7 +266,7 @@ public sealed class Engine : IDisposable
         MouseEventPoller.Instance?.PollForEvents(tick);
 
         // check for gamepad events
-        GamepadManagerEventPoller.Instance?.PollForEvents(tick);
+        GamepadEventPoller.Instance?.PollForEvents(tick);
 
         // perform any timed SceneLayer scrolling
         foreach (SceneLayer matrix in SceneLayer.GetAllSceneLayers())

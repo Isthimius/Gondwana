@@ -1,17 +1,17 @@
 ﻿namespace Gondwana.Input.Gamepad;
 
-public sealed class GamepadManagerEventPoller
+public sealed class GamepadEventPoller
 {
     private readonly Dictionary<string, Dictionary<string, GamepadButtonEventConfiguration>> _configsByGamepadId = new();
     
     /// <summary>
-    /// Gets the singleton instance of the <see cref="GamepadManagerEventPoller"/> class.
+    /// Gets the singleton instance of the <see cref="GamepadEventPoller"/> class.
     /// </summary>
-    public static GamepadManagerEventPoller? Instance { get; private set; } = new();
+    public static GamepadEventPoller? Instance { get; private set; } = new();
 
-    private GamepadManagerEventPoller() { }
+    private GamepadEventPoller() { }
 
-    private GamepadManagerEventPoller(IEnumerable<IGamepadAdapter>? adapters)
+    private GamepadEventPoller(IEnumerable<IGamepadAdapter>? adapters)
     {
         _configsByGamepadId.Clear();
 
@@ -27,7 +27,7 @@ public sealed class GamepadManagerEventPoller
 
     public static void Initialize(IEnumerable<IGamepadAdapter>? adapters)
     {
-        Instance = new GamepadManagerEventPoller(adapters);
+        Instance = new GamepadEventPoller(adapters);
     }
 
     public IEnumerable<IGamepadAdapter>? Adapters { get; private set; }
