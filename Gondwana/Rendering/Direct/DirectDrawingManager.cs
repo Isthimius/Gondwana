@@ -2,22 +2,22 @@ using System.Collections.ObjectModel;
 
 namespace Gondwana.Rendering.Direct;
 
-public static class DirectDrawingManager
+public sealed class DirectDrawingManager
 {
-    internal static readonly List<DirectDrawingBase> _instances = new();
+    internal static readonly Lazy<List<DirectDrawingBase>> _instances = new(() => new List<DirectDrawingBase>());
 
-    public static ReadOnlyCollection<DirectDrawingBase> Instances => _instances.AsReadOnly();
+    public ReadOnlyCollection<DirectDrawingBase> Instances => _instances.Value.AsReadOnly();
 
-    public static int Count => _instances.Count;
+    public int Count => _instances.Value.Count;
 
-    public static DirectDrawingBase? GetDirectDrawing(string name) =>
-        _instances.FirstOrDefault(d => d.Name == name);
+    public DirectDrawingBase? GetDirectDrawing(string name) =>
+        _instances.Value.FirstOrDefault(d => d.Name == name);
 
-    internal static void RenderAll()
+    internal void RenderAll()
     {
-        _instances.Sort();
+        _instances.Value.Sort();
 
-        foreach (var drawing in _instances)
+        foreach (var drawing in _instances.Value)
         {
             if (!drawing.Bounds.IntersectsWith(drawing.RenderSurfaceHost.Backbuffer.DirtyRectangle))
                 continue;
@@ -30,20 +30,20 @@ public static class DirectDrawingManager
         }
     }
 
-    internal static void Add(DirectDrawingBase drawing)
+    internal void Add(DirectDrawingBase drawing)
     {
-        if (!_instances.Contains(drawing))
+        if (!_instances.Value.Contains(drawing))
         {
-            _instances.Add(drawing);
-            drawing.Disposing += (sender, directDrawing) => _instances.Remove(directDrawing);
+            _instances.Value.Add(drawing);
+            drawing.Disposing += (sender, directDrawing) => _instances.Value.Remove(directDrawing);
         }
     }
 
-    public static void ClearAll()
+    public void ClearAll()
     {
-        foreach (var drawing in _instances)
+        foreach (var drawing in _instances.Value)
             drawing.Dispose();
     }
 
-    public static void Clear(string name) => GetDirectDrawing(name)?.Dispose();
+    public void Clear(string name) => GetDirectDrawing(name)?.Dispose();
 }
