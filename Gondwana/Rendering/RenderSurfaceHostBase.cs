@@ -23,7 +23,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public abstract RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; }
 
     /// <summary>
-    /// Runs as part of DoBackgroundTasks. Takes content of RefreshQueue
+    /// Runs as part of DoBackgroundTasks(). Takes content of RefreshQueue
     /// - which is a queue of tiles that need to be redrawn -
     /// and draws them to the backbuffer. This, in turn, updates the
     /// Backbuffer.DirtyRectangle.
@@ -31,7 +31,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     internal abstract void DrawRefreshQueueToBackbuffer();
 
     /// <summary>
-    /// Runs as part of DoForegroundTasks. This renders the DirtyRectangle
+    /// Runs as part of DoForegroundTasks(). This renders the DirtyRectangle
     /// area of the backbuffer to the adapter.
     /// </summary>
     internal abstract void RenderBackbufferToAdapter();
