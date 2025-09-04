@@ -164,10 +164,6 @@ public sealed class Engine : IDisposable
 
     public bool IsRunning { get; private set; }
 
-    public int BufferWidth { get; set; } = 0;
-
-    public int BufferHeight { get; set; } = 0;
-
     public double TotalSecondsEngineRunning
     {
         get { return (double)(HighResTimer.GetCurrentTick() - _startTick) / (double)HighResTimer.TicksPerSecond; }
