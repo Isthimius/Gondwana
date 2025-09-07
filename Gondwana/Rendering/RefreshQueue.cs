@@ -88,13 +88,10 @@ internal class RefreshQueue : IDisposable
             }
 
             // find all Sprite objects in range
-            foreach (Sprite sprite in Sprites.GetSpritesInRange(area, _sceneLayer))
+            foreach (Sprite sprite in SpriteManager.GetSpritesInRange(area, _sceneLayer))
             {
                 if (sprite.ParentGrid == _sceneLayer && sprite.Visible)
                 {
-                    // add the sprite to the queue if it intersects with the area
-                    tempTiles.AddRange(sprite.childTiles?.Where(child => child.DrawLocation.IntersectsWith(area)) ?? Enumerable.Empty<Tile>());
-
                     if (sprite.DrawLocation.IntersectsWith(area))
                         tempTiles.Add(sprite);
                 }

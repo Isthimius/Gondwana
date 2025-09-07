@@ -65,6 +65,8 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     #region matrix wrapping delegates / variables
     private delegate SceneLayerPoint GetIndexer(int x, int y);
     private GetIndexer FindIndexedGridPoint;
+
+    // TODO: remove this; wrapping should be handled via rendering, not by creating new GridPoints
     internal List<SceneLayerPoint> wrappedGridPts = new List<SceneLayerPoint>();
     #endregion
 
@@ -336,9 +338,6 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             VisibleChangedEventArgs e = new VisibleChangedEventArgs(this, oldValue, newValue);
             VisibleChanged(e);
         }
-
-        // create new child Sprites for all Sprite instances on this grid
-        Sprites.CreateChildSprites(this);
     }
 
     protected virtual void OnFirstColRowChanged(PointF oldPt, PointF newPt)
@@ -384,9 +383,6 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             FindIndexedGridPoint = new GetIndexer(GetIndexer_Wrap);
         else
             FindIndexedGridPoint = new GetIndexer(GetIndexer_NoWrap);
-
-        // create new child Sprites for all Sprite instances on this grid
-        Sprites.CreateChildSprites(this);
     }
 
     protected virtual void OnShowGridLinesChanged(bool oldVal, bool newVal)
@@ -625,6 +621,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             {
                 newGridPoint = new SceneLayerPoint(_matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y],
                     new Point(x, y));
+
                 wrappedGridPts.Add(newGridPoint);
             }
         }

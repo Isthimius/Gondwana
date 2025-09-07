@@ -1,8 +1,9 @@
 using Gondwana.Drawing.Animation;
-using Gondwana.Scenes;
-using System.Runtime.Serialization;
-using System.Drawing;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
+using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -45,7 +46,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         nudgeY = 0;
         CurrentFrame = frame;
 
-        if ((Sprites.SizeNewSpritesToParentGrid) && (parentGrid != null))
+        if ((SpriteManager.SizeNewSpritesToParentGrid) && (parentGrid != null))
             renderSize = new Size(parentGrid.GridPointWidth, parentGrid.GridPointHeight);
         else
             renderSize = CurrentFrame.Tilesheet.TileSize;
@@ -55,8 +56,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (parentGrid != null)
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
-        Sprites._spriteList.Add(this);
-        CreateChildSprites();
+        SpriteManager._spriteList.Add(this);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         id = Guid.NewGuid().ToString();
         animator = new Animator(this);
         movement = new Movement(this);
-        Sprites._spriteList.Add(this);
+        SpriteManager._spriteList.Add(this);
 
         parentGrid = sprite.parentGrid;
         frame = sprite.frame;
@@ -82,51 +82,14 @@ public class Sprite : Tile, IDisposable, ICloneable
         gridCoordinates = sprite.gridCoordinates;
         AdjustCollisionArea = sprite.AdjustCollisionArea;
 
-        if (parentGrid != null)
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-
-        Sprites.SubscribeToSpriteEvents(this);
-
-        CreateChildSprites();
-    }
-
-    /// <summary>
-    /// private constructor used when generating "child" Sprite objects.  Adds the new Sprite
-    /// to the argument Sprite's childTiles List.  Does not add "child" Sprite to Engine-level
-    /// Sprite List.  Does not register "child" Sprite events with static Sprites class.
-    /// </summary>
-    /// <param name="sprite"></param>
-    /// <param name="gridCoord"></param>
-    private Sprite(Sprite sprite, PointF gridCoord)
-    {
-        id = Guid.NewGuid().ToString();
-        parentGrid = sprite.parentGrid;
-        //animator = new Animator(this);
-        //movement = new Movement(this);
-        frame = sprite.frame;
-        collisionDetection = sprite.collisionDetection;
-        horizAlign = sprite.horizAlign;
-        vertAlign = sprite.vertAlign;
-        nudgeX = sprite.nudgeX;
-        nudgeY = sprite.nudgeY;
-        renderSize = sprite.renderSize;
-        zOrder = sprite.zOrder;
-        visible = sprite.visible;
-        gridCoordinates = gridCoord;
-        AdjustCollisionArea = sprite.AdjustCollisionArea;
-
-        if (parentGrid != null)
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-
-        // add new Sprite to passed-in sprite's childTiles list
-        sprite.AddChild(this);
+        parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
     }
 
     ~Sprite()
     {
         Dispose();
     }
-    
+
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
     {
@@ -138,10 +101,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (parentGrid != null)
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
-        Sprites._spriteList.Add(this);
-        Sprites.SubscribeToSpriteEvents(this);
-
-        CreateChildSprites();
+        SpriteManager._spriteList.Add(this);
     }
     #endregion
 
@@ -184,13 +144,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         get { return horizAlign; }
         set
         {
-            // make same change in child sprites
-            if (childTiles != null)
-            {
-                foreach (Sprite sprite in childTiles)
-                    sprite.HorizAlign = value;
-            }
-
             // add to refresh queue before and after property change
             if (parentGrid != null)
             {
@@ -209,13 +162,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         get { return vertAlign; }
         set
         {
-            // make same change in child sprites
-            if (childTiles != null)
-            {
-                foreach (Sprite sprite in childTiles)
-                    sprite.VertAlign = value;
-            }
-
             // add to refresh queue before and after property change
             if (parentGrid != null)
             {
@@ -234,13 +180,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         get { return nudgeX; }
         set
         {
-            // make same change in child sprites
-            if (childTiles != null)
-            {
-                foreach (Sprite sprite in childTiles)
-                    sprite.NudgeX = value;
-            }
-
             // add to refresh queue before and after property change
             if (parentGrid != null)
             {
@@ -259,13 +198,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         get { return nudgeY; }
         set
         {
-            // make same change in child sprites
-            if (childTiles != null)
-            {
-                foreach (Sprite sprite in childTiles)
-                    sprite.NudgeY = value;
-            }
-
             // add to refresh queue before and after property change
             if (parentGrid != null)
             {
@@ -284,13 +216,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         get { return renderSize; }
         set
         {
-            // make same change in child sprites
-            if (childTiles != null)
-            {
-                foreach (Sprite sprite in childTiles)
-                    sprite.RenderSize = value;
-            }
-
             // add to refresh queue before and after property change
             if (parentGrid != null)
             {
@@ -306,7 +231,62 @@ public class Sprite : Tile, IDisposable, ICloneable
     [IgnoreDataMember]
     public override Rectangle DrawLocation
     {
-        get { return Sprites.DrawLocation(this, parentGrid, gridCoordinates, renderSize); }
+        get
+        {
+            // if Sprite hasn't been placed on SceneLayer, this is moot
+            if (parentGrid == null)
+                return new Rectangle();
+
+            // get the "top left" of the Sprite gridCoordinates value
+            Point pxlPt = parentGrid.CoordinateSystem.GetSrcPxlAtGridPt(parentGrid, gridCoordinates);
+
+            // adjust X coord
+            switch (this.HorizAlign)
+            {
+                case HorizontalAlignment.Left:
+                    // no adjustment necessary
+                    break;
+                case HorizontalAlignment.Center:
+                    // shift right by half the difference between Tile Width values
+                    // if Sprite Width > GridPt Width, Sprite will shift left
+                    pxlPt.X += (parentGrid.GridPointWidth - renderSize.Width) / 2;
+                    break;
+                case HorizontalAlignment.Right:
+                    // shift right by the entire difference between Tile Width values
+                    // if Sprite Width > GridPt Width, Sprite will shift left
+                    pxlPt.X += (parentGrid.GridPointWidth - renderSize.Width);
+                    break;
+                default:
+                    // shouldn't get here...
+                    break;
+            }
+
+            // adjust Y coord
+            switch (this.VertAlign)
+            {
+                case VerticalAlignment.Top:
+                    // no adjustment necessary
+                    break;
+                case VerticalAlignment.Middle:
+                    // shift down by half the difference between Tile Height values
+                    // if Sprite Height > GridPt Height, Sprite will shift up
+                    pxlPt.Y += (parentGrid.GridPointHeight - renderSize.Height) / 2;
+                    break;
+                case VerticalAlignment.Bottom:
+                    // shift down by the entire difference between Tile Height values
+                    // if Sprite Height > GridPt Height, Sprite will shift up
+                    pxlPt.Y += (parentGrid.GridPointHeight - renderSize.Height);
+                    break;
+                default:
+                    // shouldn't get here...
+                    break;
+            }
+
+            pxlPt.X += this.NudgeX;
+            pxlPt.Y += this.NudgeY;
+
+            return new Rectangle(pxlPt, renderSize);
+        }
     }
 
     [IgnoreDataMember]
@@ -360,18 +340,6 @@ public class Sprite : Tile, IDisposable, ICloneable
 
     public void MoveSprite(PointF newGridCoordinates)
     {
-        // make same change in child sprites
-        if (childTiles != null)
-        {
-            // find the net change in coordinates
-            float adjX = newGridCoordinates.X - gridCoordinates.X;
-            float adjY = newGridCoordinates.Y - gridCoordinates.Y;
-
-            // apply net change to all child Sprites
-            foreach (Sprite sprite in childTiles)
-                sprite.MoveSprite(sprite.GridCoordinates.X + adjX, sprite.GridCoordinates.Y + adjY);
-        }
-
         // capture the Sprite coordinates before the move
         PointF oldCoord = gridCoordinates;
 
@@ -389,14 +357,15 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (SpriteMoved != null)
             SpriteMoved(new SpriteMovedEventArgs(this, oldCoord, newGridCoordinates));
 
-        if ((parentGrid.WrapHorizontally || parentGrid.WrapVertically) && !IsChildTile)
+        // TODO: how to handle this now that Parent / ghost children removed?
+        if ((parentGrid.WrapHorizontally || parentGrid.WrapVertically))
             WrapSpriteLocation();
     }
 
     public void MoveSprite(Rectangle newDrawLocation)
     {
         RenderSize = new Size(newDrawLocation.Size.Width, newDrawLocation.Size.Height);
-        MoveSprite(Sprites.GridCoordinates(this, parentGrid, newDrawLocation));
+        MoveSprite(SpriteManager.GridCoordinates(this, parentGrid, newDrawLocation));
     }
 
     public void MoveSprite(SceneLayer newLayer)
@@ -408,80 +377,12 @@ public class Sprite : Tile, IDisposable, ICloneable
 
         parentGrid = newLayer;
         MoveSprite(drawLoc);
-
-        // create new child Sprites on new grid
-        CreateChildSprites();
     }
 
     public void MoveSprite(SceneLayer newLayer, Size newSize)
     {
         MoveSprite(newLayer);
         RenderSize = newSize;
-    }
-    #endregion
-
-    #region internal methods
-    protected internal void CreateChildSprites()
-    {
-        int xMin;
-        int xMax;
-        int yMin;
-        int yMax;
-
-        // remove previous child tiles
-        DisposeChildTiles();
-
-        // find number of times a sprite might be repeated within a single VisibleSurface
-        //int horizRepeats = (int)((float)VisibleSurfaces.MaxSurfaceSize.Width /
-        //    (float)(parentGrid.GridPointWidth * parentGrid.GridColumnCount)) + 1;
-
-        //int vertiRepeats = (int)((float)VisibleSurfaces.MaxSurfaceSize.Height /
-        //    (float)(parentGrid.GridPointHeight * parentGrid.GridRowCount)) + 1;
-
-        int horizRepeats = 3; // hardcoded for now, can be adjusted later
-        int vertiRepeats = 3; // hardcoded for now, can be adjusted later
-
-        // find the range in which to create child Sprites
-        if (parentGrid.WrapHorizontally)
-        {
-            xMin = horizRepeats * -1;
-            xMax = horizRepeats;
-        }
-        else
-        {
-            xMin = 0;
-            xMax = 0;
-        }
-
-        if (parentGrid.WrapVertically)
-        {
-            yMin = vertiRepeats * -1;
-            yMax = vertiRepeats;
-        }
-        else
-        {
-            yMin = 0;
-            yMax = 0;
-        }
-
-        // step through range and create child Sprites
-        for (int y = yMin; y <= yMax; y++)
-        {
-            for (int x = xMin; x <= xMax; x++)
-            {
-                // 0, 0 is the "parent" Sprite's coordinate; no child necessary here
-                if ((x != 0) || (y != 0))
-                {
-                    // get the coordinates of the child Sprite
-                    PointF gridCoord = new PointF(
-                        this.gridCoordinates.X + (float)(x * parentGrid.GridColumnCount),
-                        this.gridCoordinates.Y + (float)(y * parentGrid.GridRowCount));
-
-                    // create a new Sprite and add to childTiles list
-                    this.AddChild(new Sprite(this, gridCoord));
-                }
-            }
-        }
     }
     #endregion
 
@@ -527,15 +428,6 @@ public class Sprite : Tile, IDisposable, ICloneable
 
         base.Dispose();
 
-        // remove all references from static Sprites to this Sprite
-        if (!IsChildTile)
-        {
-            Sprites.UnsubscribeFromSpriteEvents(this);
-            movement.Dispose();
-        }
-        else
-            ParentTile.childTiles.Remove(this);
-
         if (parentGrid != null)
         {
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
@@ -546,8 +438,8 @@ public class Sprite : Tile, IDisposable, ICloneable
             parentGrid.RefreshQueue.Tiles.Remove(this);
         }
 
-        if (Sprites._spriteList.IndexOf(this) != -1)
-            Sprites._spriteList.Remove(this);
+        if (SpriteManager._spriteList.IndexOf(this) != -1)
+            SpriteManager._spriteList.Remove(this);
 
         // clear the events
         SpriteMoved = null;

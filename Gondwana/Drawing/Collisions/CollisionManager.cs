@@ -25,7 +25,7 @@ internal class CollisionManager
 
             // add *all* Sprites if they are not already in list;
             // GridPoints don't move, so there's no need to do the same for them
-            foreach (Tile tile in Gondwana.Drawing.Sprites.Sprites.AllSprites)
+            foreach (Tile tile in Gondwana.Drawing.Sprites.SpriteManager.AllSprites)
             {
                 if (allSpritesAndCollisionTiles.IndexOf(tile) == -1)
                     allSpritesAndCollisionTiles.Add(tile);

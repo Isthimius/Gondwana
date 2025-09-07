@@ -225,7 +225,7 @@ public class Movement : IDisposable
 
     public void AddMovePoint(double totalTime, Rectangle destLoc)
     {
-        PointF destCoord = Sprites.GridCoordinates(_parent, _parent.ParentGrid, destLoc);
+        PointF destCoord = SpriteManager.GridCoordinates(_parent, _parent.ParentGrid, destLoc);
         Size destSize = new Size(destLoc.Width, destLoc.Height);
         AddMovePoint(totalTime, destCoord, destSize);
     }
@@ -448,8 +448,7 @@ public class Movement : IDisposable
     #region private methods
     private void CalcNextLocation()
     {
-        Rectangle origLoc = Sprites.DrawLocation(_parent, _parent.ParentGrid,
-            _movePoint.origCoord, _movePoint.origSize);
+        Rectangle origLoc = _parent.DrawLocation;
         Rectangle destLoc = _movePoint.DestDrawLocation;
 
         // calculate the percentage complete, based on time running vs total time originally

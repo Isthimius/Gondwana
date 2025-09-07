@@ -117,7 +117,7 @@ public class Cycle : ICloneable, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        foreach (Sprite sprite in Sprites.Sprites._spriteList)
+        foreach (Sprite sprite in Sprites.SpriteManager._spriteList)
         {
             if (sprite.TileAnimator.CurrentCycle == this)
                 sprite.TileAnimator.CurrentCycle = null;

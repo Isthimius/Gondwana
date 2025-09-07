@@ -27,7 +27,7 @@ internal static class XInput
     }
 
     [Flags]
-    public enum XInputButtons : ushort
+    internal enum XInputButtons : ushort
     {
         A = 0x1000,
         B = 0x2000,

@@ -30,7 +30,7 @@ namespace Gondwana.Drawing.Sprites
             parent = sprite;
             TotalTicks = (long)(totalTime * (double)HighResTimer.TicksPerSecond);
             TotalTicksRunning = 0;
-            DestCoord = Sprites.GridCoordinates(sprite, sprite.ParentGrid, destLoc);
+            DestCoord = SpriteManager.GridCoordinates(sprite, sprite.ParentGrid, destLoc);
             DestSize = new Size(destLoc.Width, destLoc.Height);
         }
 
@@ -65,7 +65,7 @@ namespace Gondwana.Drawing.Sprites
 
         public Rectangle DestDrawLocation
         {
-            get { return Sprites.DrawLocation(parent, parent.ParentGrid, DestCoord, DestSize); }
+            get { return parent.DrawLocation; }
         }
     }
 }

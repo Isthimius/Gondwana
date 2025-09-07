@@ -10,7 +10,7 @@ namespace Gondwana.Rendering;
 /// <remarks>This abstract class serves as the foundation for implementing render surface hosts. It provides 
 /// properties for accessing the backbuffer, the source scene to be drawn, the clear color used for rendering, and the
 /// associated render surface adapter. Derived classes must implement the abstract members to define specific rendering
-/// behavior.  The class also manages lifecycle operations, including registration with the render surface host 
+/// behavior. The class also manages lifecycle operations, including registration with the render surface host 
 /// registry and cleanup during disposal.</remarks>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
@@ -23,7 +23,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public abstract RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; }
 
     /// <summary>
-    /// Runs as part of DoBackgroundTasks. Takes content of RefreshQueue
+    /// Runs as part of DoBackgroundTasks(). Takes content of RefreshQueue
     /// - which is a queue of tiles that need to be redrawn -
     /// and draws them to the backbuffer. This, in turn, updates the
     /// Backbuffer.DirtyRectangle.
@@ -31,7 +31,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     internal abstract void DrawRefreshQueueToBackbuffer();
 
     /// <summary>
-    /// Runs as part of DoForegroundTasks. This renders the DirtyRectangle
+    /// Runs as part of DoForegroundTasks(). This renders the DirtyRectangle
     /// area of the backbuffer to the adapter.
     /// </summary>
     internal abstract void RenderBackbufferToAdapter();
