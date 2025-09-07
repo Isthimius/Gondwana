@@ -45,13 +45,13 @@ namespace Slider
 
         void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)
         {
-            Gondwana.Engine.Logger.LogDebug(string.Format("{3}   start move '{0}' from {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
+            //Gondwana.Engine.Logger.LogDebug(string.Format("{3}   start move '{0}' from {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
             //Program.slideSound.Play();
         }
 
         void Sprites_SpriteMovementStopped(SpriteMovementEventArgs e)
         {
-            Engine.Logger.LogDebug(string.Format("{3}   stop move '{0}' at {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
+            //Engine.Logger.LogDebug(string.Format("{3}   stop move '{0}' at {1}:{2}", e.sprite.ID, e.sprite.GridCoordinates.X, e.sprite.GridCoordinates.Y, Environment.TickCount));
 
             //if (!Program.puzzle._isShuffling)
             //Program.slideSound.Stop();

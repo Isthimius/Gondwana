@@ -1,36 +1,78 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Skia;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
 public sealed class BitmapBackbuffer : BackbufferBase
 {
-    private SKBitmap _buffer;
-    private SKSurface _surface;
+    private readonly object _gate = new();       // guards _buffer/_surface/_disposed
+    private SKBitmap? _buffer;
+    private SKSurface? _surface;
+    private bool _disposed;
+
+    // resize request (written by UI thread, read by render thread)
+    private int _reqW, _reqH;           // 0 means "no request"
+    private int _resizeFlag;            // 0 = none, 1 = pending
 
     public BitmapBackbuffer(int width, int height) : base(width, height)
     {
-        var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
-        _buffer = new SKBitmap(info);
-        _surface = SKSurface.Create(info, _buffer.GetPixels(), _buffer.Info.RowBytes);
+        CreateSurface(width, height);
     }
 
-    public override SKCanvas Canvas => _surface.Canvas;
+    public override void RequestResize(int width, int height)
+    {
+        Engine.Logger.LogTrace("in RequestResize()      width: " + width.ToString() + " height: " + height.ToString());
+
+        Volatile.Write(ref _reqW, width);
+        Volatile.Write(ref _reqH, height);
+        Interlocked.Exchange(ref _resizeFlag, 1); // coalesce requests
+    }
+
+    public override SKCanvas Canvas
+    {
+        get { lock (_gate) return _surface!.Canvas; }
+    }
 
     public override void BeginFrame()
     {
-        var c = Canvas;
-        c.RestoreToCount(1);
-        c.Save();
-        c.ResetMatrix();
-        c.ClipRect(new SKRect(0, 0, Width, Height));
+        if (Interlocked.Exchange(ref _resizeFlag, 0) == 1)
+        {
+            var w = Volatile.Read(ref _reqW);
+            var h = Volatile.Read(ref _reqH);
+
+            if (w > 0 && h > 0)
+            {
+                lock (_gate)
+                {
+                    if (_disposed) return;
+                    DisposeSurface_NoLock();
+                    CreateSurface(w, h);
+                    UpdateSize(w, h); // tell base about new logical size
+                }
+            }
+        }
+
+        lock (_gate)
+        {
+            if (_disposed) return;
+            var c = _surface!.Canvas;
+            c.RestoreToCount(1);
+            c.Save();
+            c.ResetMatrix();
+            c.ClipRect(new SKRect(0, 0, Width, Height));
+        }
     }
 
-    public override void EndFrame() => _surface.Flush();
-
-    public void ClearOpaque(SKColor color) =>
-        Canvas.Clear(new SKColor(color.Red, color.Green, color.Blue, 255));
+    public override void EndFrame()
+    {
+        lock (_gate)
+        {
+            if (_disposed || _surface is null) return;
+            _surface.Flush();
+        }
+    }
 
     /// <summary>
     /// Runs as part of DoBackgroundTasks
@@ -41,26 +83,45 @@ public sealed class BitmapBackbuffer : BackbufferBase
         var dst = tile.DrawLocation.ToSKRect();
 
         if (bmp is null)
-        {
-            //Engine.Logger.LogTrace("drawing blank at " + dst.ToString());
             Canvas.DrawRect(dst, _fillPaint);
-        }
         else
-        {
-            //Engine.Logger.LogTrace("drawing image at " + dst.ToString());
             Canvas.DrawBitmap(bmp, dst);
-        }
 
         AddToDirtyRectangle(tile.DrawLocation);
     }
 
-    public override SKImage Snapshot() => SKImage.FromBitmap(_buffer);
+    // Producer copies out an immutable image for the adapter/UI thread
+    public override SKImage Snapshot()
+    {
+        lock (_gate)
+        {
+            if (_disposed || _surface is null) throw new ObjectDisposedException(nameof(BitmapBackbuffer));
+            return _surface.Snapshot(); // immutable; safe to use on UI thread
+        }
+    }
+
+    private void CreateSurface(int width, int height)
+    {
+        var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
+        _buffer = new SKBitmap(info);
+        _surface = SKSurface.Create(info, _buffer.GetPixels(), _buffer.Info.RowBytes);
+    }
+
+    private void DisposeSurface_NoLock()
+    {
+        _surface?.Dispose(); _surface = null;
+        _buffer?.Dispose(); _buffer = null;
+    }
 
     public override void Dispose()
     {
-        base.Dispose();
-        EndFrame();
-        _surface.Dispose();
-        _buffer.Dispose();
+        lock (_gate)
+        {
+            if (_disposed) return;
+
+            _disposed = true;
+            base.Dispose();
+            DisposeSurface_NoLock();
+        }
     }
 }

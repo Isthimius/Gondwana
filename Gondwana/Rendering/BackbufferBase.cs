@@ -1,8 +1,7 @@
-﻿using SkiaSharp;
+﻿using System.Drawing;
 using Gondwana.Drawing;
-using System.Drawing;
 using Gondwana.Skia;
-using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
@@ -16,16 +15,16 @@ namespace Gondwana.Rendering;
 /// cref="Snapshot"/> members to define specific rendering behavior.</remarks>
 public abstract class BackbufferBase : IDisposable
 {
-    private static List<BackbufferBase> _allBackbuffers { get; } = new();
+    private int _width;
+    private int _height;
 
-    protected readonly Rectangle _range;
-
-    private BackbufferBase() { _allBackbuffers.Add(this); }
+    private BackbufferBase() { }
 
     protected BackbufferBase(int width, int height)
         : this()
     {
-        _range = new Rectangle(0, 0, width, height);
+        _width = width;
+        _height = height;
     }
 
     public abstract SKCanvas Canvas { get; }
@@ -37,8 +36,21 @@ public abstract class BackbufferBase : IDisposable
     public SKPaint FogPaint { get; set; } = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
     public SKPaint GridPaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
 
-    public int Width => _range.Width;
-    public int Height => _range.Height;
+    public int Width => Volatile.Read(ref _width);
+    public int Height => Volatile.Read(ref _height);
+
+    public virtual void RequestResize(int width, int height) { /* no-op by default */ }
+
+    // Let subclasses (render thread only) update the logical size.
+    public event Action<int, int>? SizeChanged;
+
+    protected void UpdateSize(int width, int height)
+    {
+        Volatile.Write(ref _width, width);
+        Volatile.Write(ref _height, height);
+
+        SizeChanged?.Invoke(width, height);
+    }
 
     public Rectangle DirtyRectangle { get; set; }
     
@@ -96,7 +108,5 @@ public abstract class BackbufferBase : IDisposable
         _fillPaint.Dispose();
         FogPaint.Dispose();
         GridPaint.Dispose();
-
-        _allBackbuffers.Remove(this);
     }
 }

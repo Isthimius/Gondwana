@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
+using System.Security.Cryptography;
 using Gondwana.Rendering.Direct;
 using Gondwana.Scenes;
 using Gondwana.Skia;
-using SkiaSharp;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
@@ -25,32 +26,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         CreateBackbuffer();
     }
 
-    /// <summary>
-    /// Creates and initializes the backbuffer for the render surface. This method is called automatically
-    /// during RenderSurfaceHost construction, and on <see cref="RenderSurfaceAdapter"/>.Resized, if
-    /// <see cref="EngineConfiguration.RecreateBackbufferOnResize"/> is true;
-    /// if it not true, this method can be called manually as needed.
-    /// </summary>
-    /// <remarks>This method disposes of any existing backbuffer before creating a new one with the current
-    /// dimensions of the render surface. The backbuffer is initialized and prepared for rendering by calling its  <see
-    /// cref="BeginFrame"/> method. If the render surface dimensions are invalid (width or height less than or equal to
-    /// zero), the method exits without creating a backbuffer.</remarks>
-    public void CreateBackbuffer()
-    {
-        Engine.Logger.LogTrace("Creating backbuffer for RenderSurfaceHost");
-
-        var w = RenderSurfaceAdapter!.Width;
-        var h = RenderSurfaceAdapter!.Height;
-        if (w <= 0 || h <= 0) return;
-
-        Backbuffer?.Dispose();
-        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
-        Backbuffer!.BeginFrame();
-
-        Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
-    }
-
-    private TBackbuffer _backbuffer;
+    private TBackbuffer? _backbuffer;
     private readonly Color _clear;
     private Scene? _scene;
     private RenderSurfaceAdapterBase? _renderSurfaceAdapter;
@@ -145,8 +121,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         else
             RenderBackbufferAll();
 
-        Backbuffer.DirtyRectangle = Rectangle.Empty;
-
         Backbuffer.BeginFrame();
     }
 
@@ -157,6 +131,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
     public void Dispose(bool disposing)
     {
         if (_disposed) return;
@@ -167,16 +142,46 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             _backbuffer = null;
         }
+
         _disposed = true;
     }
+
     ~RenderSurfaceHost() => Dispose(false);
     #endregion
 
     #region private methods
     private void OnRenderSurfaceAdapterResized()
     {
-        if (Engine.Instance.Configuration.RecreateBackbufferOnResize)
-            CreateBackbuffer();
+        if (!Engine.Instance.Configuration.RecreateBackbufferOnResize)
+            return;
+
+        //Engine.Logger.LogTrace("in OnRenderSurfaceAdapterResized()");
+
+        var w = RenderSurfaceAdapter!.Width;
+        var h = RenderSurfaceAdapter!.Height;
+
+        if (DrawSource != null)
+            DrawSource.RefreshNeeded = MatrixesRefreshType.All; // full redraw next frame
+
+        _backbuffer?.RequestResize(w, h);                 // UI thread → request only
+    }
+
+    private void CreateBackbuffer()
+    {
+        Engine.Logger.LogTrace("Creating backbuffer for RenderSurfaceHost");
+
+        var w = RenderSurfaceAdapter!.Width;
+        var h = RenderSurfaceAdapter!.Height;
+        if (w <= 0 || h <= 0) return;
+
+        Backbuffer?.Dispose();
+        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
+        Backbuffer!.BeginFrame();
+
+        if (DrawSource != null)
+            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
+
+        Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
     }
 
     private void RenderBackbufferAll()
@@ -184,6 +189,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
+
+        Engine.Logger.LogTrace("Rendering full backbuffer to adapter: src {Src} dst {Dst}", src, dst);
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter.Render(img, src, dst));
@@ -195,6 +202,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (dirty.IsEmpty) return;
 
         var img = Backbuffer.Snapshot();
+
+        Engine.Logger.LogTrace("Rendering rect backbuffer to adapter: src {Src} dst {Dst}", dirty.ToSKRectI(), dirty.ToSKRectI());
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter!.Render(img, dirty.ToSKRectI(), dirty.ToSKRect()));
