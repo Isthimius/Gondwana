@@ -190,8 +190,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
 
-        Engine.Logger.LogTrace("Rendering full backbuffer to adapter: src {Src} dst {Dst}", src, dst);
-
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter.Render(img, src, dst));
     }
@@ -202,8 +200,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (dirty.IsEmpty) return;
 
         var img = Backbuffer.Snapshot();
-
-        Engine.Logger.LogTrace("Rendering rect backbuffer to adapter: src {Src} dst {Dst}", dirty.ToSKRectI(), dirty.ToSKRectI());
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter!.Render(img, dirty.ToSKRectI(), dirty.ToSKRect()));

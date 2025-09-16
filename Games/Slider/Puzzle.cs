@@ -61,17 +61,19 @@ namespace Slider
             //surface = new VisibleSurface(size.Width, size.Height, matrixes);
             //surface = new VisibleSurface(size.Width, size.Height);
             //surface.Backbuffer.Erase();
+            
             Engine.Instance.Configuration.TargetFPS = 120;
+
             renderSurfaceHost.RedrawDirtyRectangleOnly = true;
             renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Black;
             renderSurfaceHost.Bind(matrixes);
 
+            delMoveStart = new SpriteMovementEventHandler(Sprites_SpriteMovementStarted);
+            delMoveStop = new SpriteMovementEventHandler(Sprites_SpriteMovementStopped);
+
             InitializeSprites(tileWidth, tileHeight);
             slideSound = SoundResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
             tadaSound = SoundResourceManager.Instance.LoadFromFile("tada", "assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav");
-
-            delMoveStart = new SpriteMovementEventHandler(Sprites_SpriteMovementStarted);
-            delMoveStop = new SpriteMovementEventHandler(Sprites_SpriteMovementStopped);
 
             //Engine.Instance.InitializeWinFormsAudioFormats();
             //Engine.Instance.InitializeXInputGamepadManager();
@@ -218,6 +220,9 @@ namespace Slider
                         x.ToString() + "-" + y.ToString());
                     sprite.MoveSprite((float)x, (float)y);
                     sprite.Visible = true;
+
+                    sprite.SpriteMovement.Started += delMoveStart;
+                    sprite.SpriteMovement.Stopped += delMoveStop;
                 }
 			}
 

@@ -1,6 +1,4 @@
-﻿using Gondwana.Audio.Midi;
-
-namespace Gondwana;
+﻿namespace Gondwana.Audio.Midi;
 
 public static class EngineExtensions
 {

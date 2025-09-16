@@ -1,4 +1,5 @@
 using Gondwana.Timers;
+using Microsoft.Extensions.Logging;
 using System.Drawing;
 
 namespace Gondwana.Drawing.Sprites;
@@ -309,6 +310,8 @@ public class Movement : IDisposable
 
     public void Finish(bool startNextMovePoint)
     {
+        Engine.Logger.LogTrace("Movement.Finish() called for Sprite '{ID}' {movePtDest}", _parent.ID, _movePoint.DestCoord);
+
         // don't do anything if there is not a current movePoint
         if (_movePoint == null)
             return;
@@ -451,6 +454,8 @@ public class Movement : IDisposable
         Rectangle origLoc = _parent.DrawLocation;
         Rectangle destLoc = _movePoint.DestDrawLocation;
 
+        Engine.Logger.LogTrace("Movement.CalcNextLocation() called for Sprite '{ID}' from OrigLoc '{OrigLoc}' to DestLoc '{DestLoc}'", _parent.ID, origLoc, destLoc);
+
         // calculate the percentage complete, based on time running vs total time originally
         double percentComplete = (double)_movePoint.TotalTicksRunning / (double)_movePoint.TotalTicks;
 
@@ -460,6 +465,8 @@ public class Movement : IDisposable
         nextDrawLoc.Y += (int)((double)(destLoc.Y - origLoc.Y) * percentComplete);
         nextDrawLoc.Width += (int)((double)(destLoc.Width - _movePoint.origSize.Width) * percentComplete);
         nextDrawLoc.Height += (int)((double)(destLoc.Height - _movePoint.origSize.Height) * percentComplete);
+
+        Engine.Logger.LogTrace("Movement.CalcNextLocation() calculated next DrawLocation '{NextDrawLoc}' for Sprite '{ID}'", nextDrawLoc, _parent.ID);
 
         // move the sprite to the new DrawLocation
         _parent.MoveSprite(nextDrawLoc);

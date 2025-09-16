@@ -79,7 +79,7 @@ namespace GondwanaWinTest
             msg += "\r\ntotal cycles: " + totalEngineCycles.ToString();
             msg += "\r\ncps: " + Gondwana.Engine.Instance.CyclesPerSecond.ToString();
             msg += "\r\nfps: " + Gondwana.Engine.Instance.FramesPerSecond.ToString();
-            msg += "\r\ntotal sprites: " + Gondwana.Drawing.Sprites.Sprites.AllSprites.Count.ToString();
+            //msg += "\r\ntotal sprites: " + Gondwana.Drawing.Sprites.Sprites.AllSprites.Count.ToString();
             msg += "\r\nEnvironment.CurrentDirectory: " + Environment.CurrentDirectory;
             MessageBox.Show(msg);
 
@@ -279,7 +279,7 @@ namespace GondwanaWinTest
             //fpsCounter = new TextBlock(visSurf, "fps:", new Font("Times New Roman", 8),
             //    new Rectangle(0, 0, 200, 300), Color.White, Color.Transparent);
 
-            Engine.Instance.CPSCalculated += Engine_CPSCalculatedHandler;
+            //Engine.Instance.CPSCalculated += Engine_CPSCalculatedHandler;
         }
 
         private static void Engine_CPSCalculatedHandler(object sender, CyclesPerSecondCalculatedEventArgs e)
@@ -299,7 +299,7 @@ namespace GondwanaWinTest
 
             Cycle cycle = new Cycle(seq, 0.03, "groovin");
 
-            sprite = Sprites.CreateSprite(matrix, seq[0]);
+            sprite = SpriteManager.CreateSprite(matrix, seq[0]);
             sprite.TileAnimator.CurrentCycle = cycle;
             sprite.RenderSize = new Size(50, 50);
             sprite.VertAlign = VerticalAlignment.Top;
@@ -360,7 +360,7 @@ namespace GondwanaWinTest
             msg.AppendLine(string.Format("net cycles: {0}", e.NetCyclesTotal.ToString()));
             msg.AppendLine(string.Format("gross cycles: {0}", e.GrossCyclesTotal.ToString()));
             msg.AppendLine(string.Format("seconds running: {0}", Gondwana.Engine.Instance.TotalSecondsEngineRunning.ToString()));
-            msg.AppendLine(string.Format("sprites: {0}", Sprites.AllSprites.Count.ToString()));
+            msg.AppendLine(string.Format("sprites: {0}", SpriteManager.AllSprites.Count.ToString()));
             msg.AppendLine(string.Format("x1: {0}", matrix.SourceGridPoint.X.ToString("F3")));
             msg.AppendLine(string.Format("x2: {0}", matrix2.SourceGridPoint.X.ToString("F3")));
             msg.AppendLine(string.Format("y1: {0}", matrix.SourceGridPoint.Y.ToString("F3")));

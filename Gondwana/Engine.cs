@@ -187,8 +187,8 @@ public sealed class Engine : IDisposable
 
     public EngineConfiguration Configuration
     {
-        get => _config ??= new EngineConfiguration();
-        set => _config = value;
+        get => Volatile.Read(ref _config!);
+        private set => Volatile.Write(ref _config, value);
     }
 
     public static KeyboardEventPoller? KeyboardEventPoller => KeyboardEventPoller.Instance ?? null;
