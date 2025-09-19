@@ -451,13 +451,16 @@ public class Movement : IDisposable
     #region private methods
     private void CalcNextLocation()
     {
-        Rectangle origLoc = _parent.DrawLocation;
+        Rectangle origLoc = SpriteManager.GetDrawLocation(_parent, _parent.ParentGrid,
+            _movePoint.origCoord, _movePoint.origSize);
         Rectangle destLoc = _movePoint.DestDrawLocation;
 
         Engine.Logger.LogTrace("Movement.CalcNextLocation() called for Sprite '{ID}' from OrigLoc '{OrigLoc}' to DestLoc '{DestLoc}'", _parent.ID, origLoc, destLoc);
 
         // calculate the percentage complete, based on time running vs total time originally
         double percentComplete = (double)_movePoint.TotalTicksRunning / (double)_movePoint.TotalTicks;
+
+        Engine.Logger.LogTrace("Movement.CalcNextLocation() calculated percent complete '{PercentComplete}' for Sprite '{ID}'", percentComplete, _parent.ID);
 
         // calculate the new DrawLocation
         Rectangle nextDrawLoc = origLoc;
