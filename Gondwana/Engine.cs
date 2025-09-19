@@ -327,7 +327,7 @@ public sealed class Engine : IDisposable
             foreach (SceneLayer matrix in grids)
                 matrix.RefreshQueue.ClearRefreshQueue();
 
-            grids.RefreshNeeded = MatrixesRefreshType.None;
+            grids.RefreshNeeded = SceneRefreshType.None;
         }
     }
 

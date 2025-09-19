@@ -387,7 +387,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
     protected virtual void OnShowGridLinesChanged(bool oldVal, bool newVal)
     {
-        this.Parent.RefreshNeeded = MatrixesRefreshType.All;
+        this.Parent.RefreshNeeded = SceneRefreshType.All;
 
         if (ShowGridLinesChanged != null)
             ShowGridLinesChanged(new ShowGridLinesChangedEventArgs(this, oldVal, newVal));
@@ -833,7 +833,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             foreach (Scene matrixes in Scene._allSceneLayeres)
             {
                 if (matrixes.GetMatrixByID(parent._id) != null)
-                    matrixes.refreshNeeded = MatrixesRefreshType.All;
+                    matrixes.refreshNeeded = SceneRefreshType.All;
             }
 
             if (VelocityX != 0 || VelocityY != 0)

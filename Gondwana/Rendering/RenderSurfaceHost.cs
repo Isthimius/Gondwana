@@ -47,7 +47,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (DrawSource != null)
         {
             DrawSource.Disposing += OnSourceDisposing;
-            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
+            DrawSource.RefreshNeeded = SceneRefreshType.All;
         }
 
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, DrawSource));
@@ -68,12 +68,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             switch (DrawSource!.RefreshNeeded)
             {
-                case MatrixesRefreshType.None:
+                case SceneRefreshType.None:
                     // Nothing to redraw in the background; don’t publish a new frame.
                     // (i.e., UI will keep showing the last front buffer.)
                     break;
 
-                case MatrixesRefreshType.Queue:
+                case SceneRefreshType.Queue:
                     {
                         for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
@@ -86,7 +86,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         break;
                     }
 
-                case MatrixesRefreshType.All:
+                case SceneRefreshType.All:
                     {
                         // Full redraw: treat whole backbuffer as dirty
                         Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
@@ -161,7 +161,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var h = RenderSurfaceAdapter!.Height;
 
         if (DrawSource != null)
-            DrawSource.RefreshNeeded = MatrixesRefreshType.All; // full redraw next frame
+            DrawSource.RefreshNeeded = SceneRefreshType.All; // full redraw next frame
 
         _backbuffer?.RequestResize(w, h);                 // UI thread → request only
     }
@@ -179,7 +179,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Backbuffer!.BeginFrame();
 
         if (DrawSource != null)
-            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
+            DrawSource.RefreshNeeded = SceneRefreshType.All;
 
         Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
     }
