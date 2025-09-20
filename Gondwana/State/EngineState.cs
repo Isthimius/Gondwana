@@ -7,34 +7,34 @@ using Gondwana.Resource;
 using Microsoft.Extensions.Logging;
 using System.IO.Compression;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.State;
 
 public class EngineState
 {
-    [JsonInclude]
+    [JsonProperty]
     public Dictionary<string, string> ValueBag { get; set; } = new();
 
-    [JsonInclude]
+    [JsonProperty]
     public IEnumerable<EngineResourceFile> ResourceFiles => EngineResourceFile.AllResourceFiles;
 
-    [JsonInclude]
+    [JsonProperty]
     public Dictionary<string, Tilesheet> Tilesheets => Tilesheet._tilesheets;
 
-    [JsonInclude]
+    [JsonProperty]
     public Dictionary<string, Cycle> Cycles => Cycle._cycles;
 
-    [JsonInclude]
+    [JsonProperty]
     public List<SceneLayer> Grids => SceneLayer._allSceneLayer;
 
-    [JsonInclude]
+    [JsonProperty]
     public List<Scene> GridsDisplay => Scene._allSceneLayeres;
 
-    [JsonInclude]
+    [JsonProperty]
     public List<Sprite> Sprites => Drawing.Sprites.SpriteManager._spriteList;
 
-    [JsonInclude]
+    [JsonProperty]
     public Dictionary<string, SoundResource> SoundResources => SoundResourceManager.Instance.GetAll();
 
     internal void Clear()
@@ -51,12 +51,7 @@ public class EngineState
 
     public void SaveToFile(string path, bool compress = false)
     {
-        var json = JsonSerializer.Serialize(this, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            IncludeFields = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        });
+        var json = JsonConvert.SerializeObject(this, Formatting.Indented);
 
         if (compress)
         {
@@ -87,7 +82,7 @@ public class EngineState
             json = File.ReadAllText(path);
         }
 
-        var result = JsonSerializer.Deserialize<EngineState>(json) ?? new EngineState();
+        var result = JsonConvert.DeserializeObject<EngineState>(json) ?? new EngineState();
         var engineState = new EngineState();
         engineState.ValueBag = result.ValueBag ?? new();
 

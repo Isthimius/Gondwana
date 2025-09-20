@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Gondwana.Resource;
 
@@ -7,13 +7,13 @@ namespace Gondwana.Resource;
 /// </summary>
 public sealed class EngineResourceFileIdentifier
 {
-    [JsonInclude]
+    [JsonProperty]
     public EngineResourceFile ResourceFile { get; private set; } = null!;
 
-    [JsonInclude]
+    [JsonProperty]
     public EngineResourceFileTypes ResourceType { get; private set; }
 
-    [JsonInclude]
+    [JsonProperty]
     public string ResourceName { get; private set; } = null!;
 
     [JsonIgnore]

@@ -1,5 +1,5 @@
 using System.Drawing;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Gondwana.Resource;
 using Gondwana.Skia;
 using SkiaSharp;
@@ -69,7 +69,7 @@ public sealed class Tilesheet : IDisposable
     [JsonIgnore]
     public SKBitmap? SkBitmapOriginal { get; private set; } = null;
 
-    [JsonInclude]
+    [JsonProperty]
     private string _name = string.Empty;
 
     [JsonIgnore]
@@ -84,7 +84,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private Size _tileSize;
 
     [JsonIgnore]
@@ -99,7 +99,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _overlapTopSpace;
 
     [JsonIgnore]
@@ -114,7 +114,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _initialOffsetX;
 
     [JsonIgnore]
@@ -128,7 +128,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _initialOffsetY;
 
     [JsonIgnore]
@@ -142,7 +142,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _xPixelsBetweenTiles;
 
     [JsonIgnore]
@@ -156,7 +156,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _yPixelsBetweenTiles;
 
     [JsonIgnore]
@@ -170,13 +170,13 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     public Dictionary<string, string> ValueBag = new();
 
-    [JsonInclude]
+    [JsonProperty]
     public EngineResourceFileIdentifier? ResourceIdentifier { get; private set; }
 
-    [JsonInclude]
+    [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
     [JsonIgnore]

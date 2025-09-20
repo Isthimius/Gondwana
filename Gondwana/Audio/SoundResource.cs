@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 using static Gondwana.Audio.PlatformAudioFactory;
 

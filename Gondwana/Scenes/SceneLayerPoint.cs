@@ -1,7 +1,7 @@
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using System.Drawing;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
 
@@ -11,11 +11,11 @@ namespace Gondwana.Scenes;
 public class SceneLayerPoint : Tile, IDisposable
 {
     #region private / internal fields
-    [JsonInclude]
+    [JsonProperty]
     internal SceneLayer parentSceneLayer;
 
-    [JsonInclude]
-    internal Point gridCoordinates;         // each GridPoint knows its location in the array in parentSceneLayer
+    [JsonProperty]
+    internal Point gridCoordinates;         // each SceneLayerPoint knows its location in the array in parentSceneLayer
 
     protected internal bool disableAddToRefreshQueue = true;
     #endregion
@@ -48,7 +48,7 @@ public class SceneLayerPoint : Tile, IDisposable
     #endregion
 
     #region public properties
-    [JsonInclude]
+    [JsonProperty]
     public virtual new Frame CurrentFrame
     {
         get { return frame; }
@@ -67,7 +67,7 @@ public class SceneLayerPoint : Tile, IDisposable
         get { return zOrder; }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     public bool DoNotRedrawChanges { get; set; }
 
     [JsonIgnore]
@@ -100,7 +100,7 @@ public class SceneLayerPoint : Tile, IDisposable
         get { return parentSceneLayer; }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     public bool EnableAnimator
     {
         get { return (animator != null); }
