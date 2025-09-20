@@ -91,6 +91,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         // Full redraw: treat whole backbuffer as dirty
                         Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
 
+                        Engine.Logger.LogTrace("*** Full redraw of all layers for DirtyRectangle: {DirtyRectangle} ***", Backbuffer.DirtyRectangle.ToString());
+
                         // Clear per-layer queues and add full range, then draw
                         for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
@@ -120,6 +122,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             RenderBackbufferRect();
         else
             RenderBackbufferAll();
+
+        Backbuffer.DirtyRectangle = Rectangle.Empty; // reset
 
         Backbuffer.BeginFrame();
     }
@@ -161,15 +165,16 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var h = RenderSurfaceAdapter!.Height;
 
         if (DrawSource != null)
+        {
             DrawSource.RefreshNeeded = SceneRefreshType.All; // full redraw next frame
+            Engine.Logger.LogTrace("*** .RefreshNeeded = SceneRefreshType.All ***");
+        }
 
         _backbuffer?.RequestResize(w, h);                 // UI thread → request only
     }
 
     private void CreateBackbuffer()
     {
-        Engine.Logger.LogTrace("Creating backbuffer for RenderSurfaceHost");
-
         var w = RenderSurfaceAdapter!.Width;
         var h = RenderSurfaceAdapter!.Height;
         if (w <= 0 || h <= 0) return;
@@ -180,8 +185,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         if (DrawSource != null)
             DrawSource.RefreshNeeded = SceneRefreshType.All;
-
-        Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
     }
 
     private void RenderBackbufferAll()
@@ -189,6 +192,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
+
+        Engine.Logger.LogTrace("*** in RenderBackbufferAll()      src: {Src} dst: {Dst} ***", src.ToString(), dst.ToString());
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter.Render(img, src, dst));

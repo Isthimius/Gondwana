@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Skia;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
@@ -49,15 +50,17 @@ public abstract class BackbufferBase : IDisposable
         Volatile.Write(ref _width, width);
         Volatile.Write(ref _height, height);
 
+        Engine.Logger.LogTrace("*** in BackbufferBase.UpdateSize() width: " + width.ToString() + " height: " + height.ToString());
+
         SizeChanged?.Invoke(width, height);
     }
 
     public Rectangle DirtyRectangle { get; set; }
-    
+
     private SKColor _clearColor = SKColors.Black;
     protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };
 
-    public SKColor ClearColor 
+    public SKColor ClearColor
     {
         get => _clearColor;
         set
@@ -72,6 +75,8 @@ public abstract class BackbufferBase : IDisposable
     /// </summary>
     internal void DrawTiles(IList<Tile> tiles)
     {
+        Engine.Logger.LogTrace("in BackbufferBase.DrawTiles() count: " + tiles.Count.ToString());
+
         foreach (var tile in tiles)
         {
             if (!tile.Visible)

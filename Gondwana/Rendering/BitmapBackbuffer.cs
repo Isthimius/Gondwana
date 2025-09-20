@@ -1,4 +1,5 @@
-﻿using Gondwana.Drawing;
+﻿using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Skia;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
@@ -88,6 +89,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
             Canvas.DrawBitmap(bmp, dst);
 
         AddToDirtyRectangle(tile.DrawLocation);
+
+        //Engine.Logger.LogTrace("in DrawTileFrame()      dst: " + dst.ToString());
     }
 
     // Producer copies out an immutable image for the adapter/UI thread
@@ -105,6 +108,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
         var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
         _buffer = new SKBitmap(info);
         _surface = SKSurface.Create(info, _buffer.GetPixels(), _buffer.Info.RowBytes);
+
+        Engine.Logger.LogTrace("in CreateSurface()      width: " + width.ToString() + " height: " + height.ToString());
     }
 
     private void DisposeSurface_NoLock()

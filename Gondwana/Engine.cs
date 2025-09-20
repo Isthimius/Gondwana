@@ -362,10 +362,12 @@ public sealed class Engine : IDisposable
         {
             if (disposing)
             {
+                // managed cleanup...
                 Timer.ClearAll();
                 State.Clear();
             }
 
+            // unmanaged cleanup...
             IsDisposed = true;
         }
     }
