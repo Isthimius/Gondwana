@@ -299,7 +299,7 @@ public sealed class Engine : IDisposable
         // raise event
         BeforeEngineCycle?.Invoke(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
-        // render each BitmapBackbuffer to RenderSurfaceHost adapter
+        // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderBackbufferToAdapter();
 
