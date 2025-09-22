@@ -178,8 +178,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     /// if position is fixed, use top of primary (i.e., non-overlapping) area;
     /// otherwise, use bottom of location for comparison
     /// </summary>
-    /// <param name="tile">the Tile that is being checked to find value for comparison</param>
-    /// <returns></returns>
     private float GetTileLocForCompare(Tile tile)
     {
         if (!tile.IsPositionFixed)
