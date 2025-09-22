@@ -156,9 +156,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     #region private methods
     private void OnRenderSurfaceAdapterResized()
     {
-        if (!Engine.Instance.Configuration.RecreateBackbufferOnResize)
-            return;
-
         //Engine.Logger.LogTrace("in OnRenderSurfaceAdapterResized()");
 
         var w = RenderSurfaceAdapter!.Width;
@@ -183,8 +180,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
         Backbuffer!.BeginFrame();
 
-        if (DrawSource != null)
-            DrawSource.RefreshNeeded = SceneRefreshType.All;
+        Backbuffer!.SizeChanged += (w, h) =>
+        {
+            if (DrawSource != null)
+                DrawSource.RefreshNeeded = SceneRefreshType.All; // full redraw at the new size
+        };
     }
 
     private void RenderBackbufferAll()

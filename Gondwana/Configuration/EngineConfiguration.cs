@@ -63,11 +63,6 @@ public partial class EngineConfiguration
     public double TimeBetweenMouseEvents { get; set; } = 0.03;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Backbuffer should be recreated when the RenderSurfaceAdapterBase is resized.
-    /// </summary>
-    public bool RecreateBackbufferOnResize { get; set; } = true;
-
-    /// <summary>
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.
     /// </summary>
     public List<string>? StateFiles { get; set; }

@@ -4,7 +4,6 @@
     "SamplingTimeForCPS": 1.5,
     "TimeBetweenKeyboardEvents": 0.03,
     "TimeBetweenGamepadEvents": 0.03,
-    "TimeBetweenMouseEvents": 0.03,
-    "RecreateBackbufferOnResize": true
+    "TimeBetweenMouseEvents": 0.03
   }
 }
