@@ -88,12 +88,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 case SceneRefreshType.All:
                     {
-                        // Full redraw: treat whole backbuffer as dirty
+                        // full redraw: treat whole backbuffer as dirty
                         Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
 
                         Engine.Logger.LogTrace("*** Full redraw of all layers for DirtyRectangle: {DirtyRectangle} ***", Backbuffer.DirtyRectangle.ToString());
 
-                        // Clear per-layer queues and add full range, then draw
+                        // clear the backbuffer so no stale pixels survive this pass
+                        Backbuffer.Canvas.Clear(Backbuffer.ClearColor);   // Canvas + ClearColor are on BackbufferBase
+
+                        // clear per-layer queues and add full range, then draw
                         for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
                             var layer = DrawSource.VisibleSceneLayerList[i];
@@ -106,7 +109,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     }
 
                 default:
-                    // Unknown state; skip
+                    // unknown state; skip
+                    Engine.Logger.LogWarning("Unknown Scene.RefreshNeeded state: " + DrawSource.RefreshNeeded.ToString());
                     break;
             }
         }

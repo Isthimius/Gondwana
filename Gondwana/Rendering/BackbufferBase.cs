@@ -42,7 +42,7 @@ public abstract class BackbufferBase : IDisposable
 
     public virtual void RequestResize(int width, int height) { /* no-op by default */ }
 
-    // Let subclasses (render thread only) update the logical size.
+    // let subclasses (render thread only) update the logical size.
     public event Action<int, int>? SizeChanged;
 
     protected void UpdateSize(int width, int height)

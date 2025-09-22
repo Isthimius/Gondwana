@@ -12,7 +12,6 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     private SKImage? _currentImage;
     private readonly Queue<SKImage> _toDispose = new();
     private SKRectI _sourceRect;
-    private SKRect _destRect;
 
     public SKColor ClearColor { get; set; } = SKColors.Black;
 
@@ -23,9 +22,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
 
         _control.PaintSurface += OnPaintSurface;
         _control.HandleCreated += OnHandleCreated;
-        _control.SizeChanged += OnSizeChanged;
         _control.ClientSizeChanged += OnSizeChanged;
-        _control.Layout += OnSizeChanged;
 
         // If the handle already exists, schedule one initial sync
         if (_control.IsHandleCreated)
@@ -59,7 +56,6 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             _toDispose.Enqueue(old);
 
         _sourceRect = bufferRect;
-        _destRect = destRect;
 
         _control.Invalidate();
     }
@@ -69,25 +65,39 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
-        
         var img = _currentImage;
-        if (img != null)
+        if (img == null) return;
+
+        // clamp source to the image
+        var srcI = SKRectI.Intersect(_sourceRect, new SKRectI(0, 0, img.Width, img.Height));
+        if (srcI.IsEmpty) return;
+
+        // recompute destination against current control size
+        var cw = e.Info.Width;
+        var ch = e.Info.Height;
+
+        // 1:1 full-frame mapping (stretch); if you prefer aspect-preserving, adjust here
+        SKRect dest;
+        if (srcI.Left == 0 && srcI.Top == 0 && srcI.Width == img.Width && srcI.Height == img.Height)
         {
-            var srcI = SKRectI.Intersect(_sourceRect, new SKRectI(0, 0, img.Width, img.Height));
-            if (!srcI.IsEmpty)
-            {
-                var src = ToRect(srcI);
-                var dest = _destRect;
-                var bounds = SKRect.Create(e.Info.Width, e.Info.Height);
-
-                if (!bounds.Contains(dest))
-                    dest = SKRect.Intersect(dest, bounds);
-
-                canvas.DrawImage(img, src, dest);
-            }
+            // full-frame path
+            dest = SKRect.Create(0, 0, cw, ch);
+        }
+        else
+        {
+            // dirty-rect path: scale the sub-rect proportionally to the current control size
+            float scaleX = (float)cw / img.Width;
+            float scaleY = (float)ch / img.Height;
+            dest = SKRect.Create(
+                srcI.Left * scaleX,
+                srcI.Top * scaleY,
+                srcI.Width * scaleX,
+                srcI.Height * scaleY
+            );
         }
 
-        // safe to free the previously drawn wrapper now
+        canvas.DrawImage(img, new SKRect(srcI.Left, srcI.Top, srcI.Right, srcI.Bottom), dest);
+
         while (_toDispose.Count > 0)
             _toDispose.Dequeue().Dispose();
     }
@@ -98,9 +108,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         {
             _control.PaintSurface -= OnPaintSurface;
             _control.HandleCreated -= OnHandleCreated;
-            _control.SizeChanged -= OnSizeChanged;
             _control.ClientSizeChanged -= OnSizeChanged;
-            _control.Layout -= OnSizeChanged;
         }
 
         while (_toDispose.Count > 0)
