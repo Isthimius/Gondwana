@@ -60,43 +60,36 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         _control.Invalidate();
     }
 
-    private static SKRect ToRect(SKRectI r) => new SKRect(r.Left, r.Top, r.Right, r.Bottom);
-
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
+
         var img = _currentImage;
         if (img == null) return;
 
-        // clamp source to the image
+        // Clamp source to the image
         var srcI = SKRectI.Intersect(_sourceRect, new SKRectI(0, 0, img.Width, img.Height));
         if (srcI.IsEmpty) return;
 
-        // recompute destination against current control size
-        var cw = e.Info.Width;
-        var ch = e.Info.Height;
+        // ---- 1:1, no scaling. Only clip to the control’s current bounds. ----
+        // Destination we want (top-left anchored, 1:1 pixels):
+        var destI = new SKRectI(srcI.Left, srcI.Top, srcI.Right, srcI.Bottom);
 
-        // 1:1 full-frame mapping (stretch); if you prefer aspect-preserving, adjust here
-        SKRect dest;
-        if (srcI.Left == 0 && srcI.Top == 0 && srcI.Width == img.Width && srcI.Height == img.Height)
-        {
-            // full-frame path
-            dest = SKRect.Create(0, 0, cw, ch);
-        }
-        else
-        {
-            // dirty-rect path: scale the sub-rect proportionally to the current control size
-            float scaleX = (float)cw / img.Width;
-            float scaleY = (float)ch / img.Height;
-            dest = SKRect.Create(
-                srcI.Left * scaleX,
-                srcI.Top * scaleY,
-                srcI.Width * scaleX,
-                srcI.Height * scaleY
-            );
-        }
+        // Clip to current control bounds so we don't draw outside:
+        var boundsI = new SKRectI(0, 0, e.Info.Width, e.Info.Height);
+        var clippedDestI = SKRectI.Intersect(destI, boundsI);
 
-        canvas.DrawImage(img, new SKRect(srcI.Left, srcI.Top, srcI.Right, srcI.Bottom), dest);
+        if (clippedDestI.IsEmpty) return;
+
+        // If we clipped the dest, clip the source by the same offset/size
+        var dx = clippedDestI.Left - destI.Left;
+        var dy = clippedDestI.Top - destI.Top;
+        var clippedSrcI = new SKRectI(srcI.Left + dx, srcI.Top + dy,
+                                      srcI.Left + dx + clippedDestI.Width,
+                                      srcI.Top + dy + clippedDestI.Height);
+
+        // Draw with integer rects (no subpixel, no filtering jitter)
+        canvas.DrawImage(img, clippedSrcI, clippedDestI);
 
         while (_toDispose.Count > 0)
             _toDispose.Dequeue().Dispose();
