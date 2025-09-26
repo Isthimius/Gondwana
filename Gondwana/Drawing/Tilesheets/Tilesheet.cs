@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Gondwana.Resource;
 using Gondwana.Skia;
 using SkiaSharp;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Drawing.Tilesheets;
 
@@ -30,17 +31,18 @@ public sealed class Tilesheet : IDisposable
     private Tilesheet() { }
 
     public Tilesheet(string name, SKBitmap bitmap)
+        : this()
     {
         _name = name;
         SkBitmap = bitmap;
-        _tilesheets[_name] = this;
+        TilesheetRegistry.Instance.Register(this);
     }
 
     public Tilesheet(string name, Stream stream)
-        : this(name, SKBitmap.Decode(stream)) { }
+        : this(name, SKBitmap.Decode(stream) ?? throw new ArgumentException("Invalid image stream.")) { }
 
     public Tilesheet(string name, string file)
-        : this(name, SKBitmap.Decode(file))
+        : this(name, SKBitmap.Decode(file) ?? throw new ArgumentException($"Invalid image file: {file}"))
     {
         ImageFilePath = file;
     }
@@ -50,8 +52,7 @@ public sealed class Tilesheet : IDisposable
         ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, entryName);
         _name = entryName;
         SkBitmap = SKBitmap.Decode(ResourceIdentifier.Data);
-        ClearTilesheet(_name);  // clear previous instance if exists
-        _tilesheets[_name] = this;
+        TilesheetRegistry.Instance.Register(this);
     }
 
     public Tilesheet(Tilesheet baseSheet, string name, string file)
@@ -63,10 +64,12 @@ public sealed class Tilesheet : IDisposable
         _tileSize = baseSheet._tileSize;
         _overlapTopSpace = baseSheet._overlapTopSpace;
         ValueBag = new(baseSheet.ValueBag);
+        
         _name = name;
         SkBitmap = SKBitmap.Decode(file);
         ImageFilePath = file;
-        _tilesheets[_name] = this;
+
+        TilesheetRegistry.Instance.Register(this);
     }
 
     [JsonIgnore]
@@ -84,9 +87,12 @@ public sealed class Tilesheet : IDisposable
         get => _name;
         set
         {
-            _tilesheets.Remove(_name);
+            if (_name == value)
+                return;
+
+            var old = _name;
             _name = value;
-            _tilesheets[_name] = this;
+            TilesheetRegistry.Instance.OnTilesheetRenamed(old, _name, this);
         }
     }
 
@@ -100,7 +106,6 @@ public sealed class Tilesheet : IDisposable
         set
         {
             _tileSize = value;
-            RecalcMaxOverlapRatio();
             BuildTileCache();
         }
     }
@@ -115,7 +120,6 @@ public sealed class Tilesheet : IDisposable
         set
         {
             _overlapTopSpace = value;
-            RecalcMaxOverlapRatio();
             BuildTileCache();
         }
     }
@@ -260,7 +264,8 @@ public sealed class Tilesheet : IDisposable
 
     private void ClearCache()
     {
-        if (_tileCache == null) return;
+        if (_tileCache == null)
+            return;
 
         for (int y = 0; y < _tileCache.GetLength(1); y++)
         {
@@ -277,13 +282,29 @@ public sealed class Tilesheet : IDisposable
 
     public SKImage? GetImage(int x, int y)
     {
-        if (_tileCache == null) BuildTileCache();
+        if (_tileCache == null)
+            BuildTileCache();
+
+        if (_tileCache == null)
+            return null;
+
+        if ((uint)x >= (uint)_tileCache.GetLength(0) || (uint)y >= (uint)_tileCache.GetLength(1))
+            return null;
+
         return _tileCache?[x, y]?.Image;
     }
 
     public SKBitmap? GetBitmap(int x, int y)
     {
-        if (_tileCache == null) BuildTileCache();
+        if (_tileCache == null)
+            BuildTileCache();
+
+        if (_tileCache == null)
+            return null;
+
+        if ((uint)x >= (uint)_tileCache.GetLength(0) || (uint)y >= (uint)_tileCache.GetLength(1))
+            return null;
+
         return _tileCache?[x, y]?.Bitmap;
     }
 
@@ -337,42 +358,41 @@ public sealed class Tilesheet : IDisposable
         return tiles;
     }
 
+    private bool _disposed;
+
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
-        _tilesheets.Remove(_name);
-        RecalcMaxOverlapRatio();
-        ClearCache();
+        if (_disposed) return;
+        _disposed = true;
+
+        // --- unregister from registry ---
+        TilesheetRegistry.Instance.Remove(_name, this, dispose: false);
+
+        // --- clean up tile cache ---
+        if (_tileCache != null)
+        {
+            for (int x = 0; x < _tileCache.GetLength(0); x++)
+            {
+                for (int y = 0; y < _tileCache.GetLength(1); y++)
+                {
+                    _tileCache[x, y]?.Bitmap?.Dispose();
+                    _tileCache[x, y]?.Image?.Dispose();
+                }
+            }
+            _tileCache = null;
+        }
+
+        // dispose the main bitmaps
         SkBitmap?.Dispose();
         SkBitmapOriginal?.Dispose();
-        Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
+
+        try
+        {
+            Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
+        }
+        catch(Exception ex)
+        {
+            Engine.Logger.LogError(ex, "Error during Tilesheet Disposed event handling.");
+        }
     }
-
-    #region static
-    internal readonly static Dictionary<string, Tilesheet> _tilesheets = new();
-
-    public static int Count => _tilesheets.Count;
-    public static List<Tilesheet> GetAllTilesheets() => _tilesheets.Values.ToList();
-    public static List<string> GetTilesheetKeys() => _tilesheets.Keys.ToList();
-    public static Tilesheet? GetTilesheet(string name) => _tilesheets.TryGetValue(name, out var ts) ? ts : null;
-
-    public static void ClearTilesheet(string name)
-    {
-        if (_tilesheets.TryGetValue(name, out var ts))
-            ts.Dispose();
-    }
-
-    public static void ClearAllTilesheets()
-    {
-        foreach (var ts in _tilesheets.Values.ToList())
-            ts.Dispose();
-    }
-
-    public static float MaxOverlappingTopSpaceRatio { get; private set; }
-
-    private static void RecalcMaxOverlapRatio()
-    {
-        MaxOverlappingTopSpaceRatio = _tilesheets.Values.Count == 0 ? 0 : _tilesheets.Values.Max(ts => ts.OverlapTopSpaceToPrimaryRatio);
-    }
-    #endregion
 }

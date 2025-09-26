@@ -20,7 +20,7 @@ public class EngineState
     public IEnumerable<EngineResourceFile> ResourceFiles => EngineResourceFile.AllResourceFiles;
 
     [JsonProperty]
-    public Dictionary<string, Tilesheet> Tilesheets => Tilesheet._tilesheets;
+    public IDictionary<string, Tilesheet> Tilesheets => TilesheetRegistry.Instance.GetAll().ToDictionary();
 
     [JsonProperty]
     public Dictionary<string, Cycle> Cycles => Cycle._cycles;
@@ -41,7 +41,7 @@ public class EngineState
     {
         ValueBag.Clear();
         EngineResourceFile.ClearAll();
-        Tilesheet.ClearAllTilesheets();
+        TilesheetRegistry.Instance.Clear();
         Cycle.ClearAllAnimationCycles();
         Scene.ClearAllSceneLayeres();
         SceneLayer.ClearAllSceneLayer();
