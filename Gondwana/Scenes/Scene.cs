@@ -20,7 +20,7 @@ public class Scene : IEnumerable, IDisposable
     private List<SceneLayer> _matrixes;    // array of SceneLayer objects; each element is one "layer"
     
     internal List<SceneLayer> _visibleLayers = new List<SceneLayer>();
-    internal MatrixesRefreshType refreshNeeded = MatrixesRefreshType.All;
+    internal SceneRefreshType refreshNeeded = SceneRefreshType.All;
 
     private string _id = Guid.NewGuid().ToString();
     #endregion
@@ -118,7 +118,7 @@ public class Scene : IEnumerable, IDisposable
     }
 
     [IgnoreDataMember]
-    public MatrixesRefreshType RefreshNeeded
+    public SceneRefreshType RefreshNeeded
     {
         get { return refreshNeeded; }
         set { refreshNeeded = value; }
@@ -147,7 +147,7 @@ public class Scene : IEnumerable, IDisposable
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
 
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
 
         return this[newIdx];
     }
@@ -163,7 +163,7 @@ public class Scene : IEnumerable, IDisposable
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
 
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
     }
 
     public void ClearLayer(int matrix)
@@ -176,7 +176,7 @@ public class Scene : IEnumerable, IDisposable
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
 
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
     }
 
     public void ClearLayer(SceneLayer matrix)
@@ -187,7 +187,7 @@ public class Scene : IEnumerable, IDisposable
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
 
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
     }
 
     public SceneLayer GetMatrixByID(string id)
@@ -252,13 +252,13 @@ public class Scene : IEnumerable, IDisposable
     private void _MatrixColRowChanged(SourceGridPointChangedEventArgs e)
     {
         // shifting at least one Layer, so redraw entire Backbuffer
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
     }
 
     private void _MatrixVisibleChanged(VisibleChangedEventArgs e)
     {
         // redraw entire Backbuffer
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
         _SetVisibleLayersArray();
     }
 
@@ -277,14 +277,14 @@ public class Scene : IEnumerable, IDisposable
 
     private void _GridPointSizeChanged(GridPointSizeChangedEventArgs e)
     {
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
     }
 
     private void _RefreshQueueNewArea(object? sender, RefreshQueueAreaAddedEventArgs e)
     {
         // set refresh to Queue if no refresh required
-        if (refreshNeeded == MatrixesRefreshType.None)
-            refreshNeeded = MatrixesRefreshType.Queue;
+        if (refreshNeeded == SceneRefreshType.None)
+            refreshNeeded = SceneRefreshType.Queue;
 
         // if matrix that added Tile to queue is visible...
         if (e.layer.Visible)
@@ -304,7 +304,7 @@ public class Scene : IEnumerable, IDisposable
 
     private void _SceneLayerWrappingChanged(SceneLayerWrappingChangedEventArgs e)
     {
-        refreshNeeded = MatrixesRefreshType.All;
+        refreshNeeded = SceneRefreshType.All;
     }
 
     private void _SceneLayerDisposing(SceneLayerDisposingEventArgs e)

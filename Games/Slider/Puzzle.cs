@@ -61,8 +61,8 @@ namespace Slider
             //surface = new VisibleSurface(size.Width, size.Height, matrixes);
             //surface = new VisibleSurface(size.Width, size.Height);
             //surface.Backbuffer.Erase();
-            
-            Engine.Instance.Configuration.TargetFPS = 120;
+
+            Engine.Instance.InitializationComplete += OnEngineInitializationComplete;
 
             renderSurfaceHost.RedrawDirtyRectangleOnly = true;
             renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Black;
@@ -77,6 +77,11 @@ namespace Slider
 
             //Engine.Instance.InitializeWinFormsAudioFormats();
             //Engine.Instance.InitializeXInputGamepadManager();
+        }
+
+        private void OnEngineInitializationComplete()
+        {
+            Engine.Instance.Configuration.TargetFPS = 120;
         }
 
         ~Puzzle()

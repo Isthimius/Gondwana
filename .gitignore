@@ -417,3 +417,5 @@ FodyWeavers.xsd
 *.msp
 /.vs/VSWorkspaceState.json
 /.vs/Gondwana/v17/.suo
+/Gondwana/doxygen/docbook
+/Gondwana/doxygen

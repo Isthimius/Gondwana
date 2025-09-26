@@ -1,5 +1,5 @@
 using System.Drawing;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Gondwana.Resource;
 using Gondwana.Skia;
 using SkiaSharp;
@@ -11,13 +11,19 @@ namespace Gondwana.Drawing;
 /// </summary>
 public sealed class Tilesheet : IDisposable
 {
-    public sealed class TileFrame
+    private readonly struct TilesheetSlice
     {
-        public SKBitmap Bitmap { get; init; } = default!;
-        public SKImage Image { get; init; } = default!;
+        public readonly SKBitmap Bitmap;
+        public readonly SKImage Image;
+
+        public TilesheetSlice(SKBitmap bmp, SKImage img)
+        {
+            Bitmap = bmp;
+            Image = img;
+        }
     }
 
-    private TileFrame?[,]? _tileCache;
+    private TilesheetSlice?[,]? _tileCache;
 
     public event EventHandler<TilesheetDisposedEventArgs> Disposed;
 
@@ -69,7 +75,7 @@ public sealed class Tilesheet : IDisposable
     [JsonIgnore]
     public SKBitmap? SkBitmapOriginal { get; private set; } = null;
 
-    [JsonInclude]
+    [JsonProperty]
     private string _name = string.Empty;
 
     [JsonIgnore]
@@ -84,7 +90,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private Size _tileSize;
 
     [JsonIgnore]
@@ -99,7 +105,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _overlapTopSpace;
 
     [JsonIgnore]
@@ -114,7 +120,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _initialOffsetX;
 
     [JsonIgnore]
@@ -128,7 +134,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _initialOffsetY;
 
     [JsonIgnore]
@@ -142,7 +148,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _xPixelsBetweenTiles;
 
     [JsonIgnore]
@@ -156,7 +162,7 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     private int _yPixelsBetweenTiles;
 
     [JsonIgnore]
@@ -170,13 +176,13 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonInclude]
+    [JsonProperty]
     public Dictionary<string, string> ValueBag = new();
 
-    [JsonInclude]
+    [JsonProperty]
     public EngineResourceFileIdentifier? ResourceIdentifier { get; private set; }
 
-    [JsonInclude]
+    [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
     [JsonIgnore]
@@ -232,7 +238,7 @@ public sealed class Tilesheet : IDisposable
         int xTiles = (SkBitmap.Width - InitialOffsetX + XPixelsBetweenTiles) / (_tileSize.Width + XPixelsBetweenTiles);
         int yTiles = (SkBitmap.Height - InitialOffsetY + YPixelsBetweenTiles) / (_tileSize.Height + YPixelsBetweenTiles);
 
-        _tileCache = new TileFrame[xTiles, yTiles];
+        _tileCache = new TilesheetSlice?[xTiles, yTiles];
 
         for (int y = 0; y < yTiles; y++)
         {
@@ -246,11 +252,7 @@ public sealed class Tilesheet : IDisposable
                 if (SkBitmap.ExtractSubset(bmp, srcRect.ToSKRectI()))
                 {
                     var img = SKImage.FromBitmap(bmp);
-                    _tileCache[x, y] = new TileFrame
-                    {
-                        Bitmap = bmp,
-                        Image = img
-                    };
+                    _tileCache[x, y] = new TilesheetSlice(bmp, img);
                 }
             }
         }
@@ -273,37 +275,62 @@ public sealed class Tilesheet : IDisposable
         _tileCache = null;
     }
 
-    public TileFrame? this[int x, int y]
+    public SKImage? GetImage(int x, int y)
     {
-        get
-        {
-            if (_tileCache == null)
-                BuildTileCache();
-
-            if (x < 0 || y < 0 || x >= _tileCache!.GetLength(0) || y >= _tileCache.GetLength(1))
-                return null;
-
-            return _tileCache?[x, y];
-        }
+        if (_tileCache == null) BuildTileCache();
+        return _tileCache?[x, y]?.Image;
     }
 
-    public Dictionary<(int x, int y), TileFrame> GetAllTiles()
+    public SKBitmap? GetBitmap(int x, int y)
+    {
+        if (_tileCache == null) BuildTileCache();
+        return _tileCache?[x, y]?.Bitmap;
+    }
+
+    public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
         if (_tileCache == null)
             BuildTileCache();
 
-        var tiles = new Dictionary<(int x, int y), TileFrame>();
+        var tiles = new Dictionary<(int x, int y), SKBitmap>();
+        if (_tileCache == null)
+            return tiles;
 
-        int xTiles = _tileCache!.GetLength(0);
+        int xTiles = _tileCache.GetLength(0);
         int yTiles = _tileCache.GetLength(1);
 
         for (int y = 0; y < yTiles; y++)
         {
             for (int x = 0; x < xTiles; x++)
             {
-                var bmp = _tileCache[x, y];
-                if (bmp != null)
-                    tiles[(x, y)] = bmp;
+                var slice = _tileCache[x, y];
+                if (slice.HasValue)
+                    tiles[(x, y)] = slice.Value.Bitmap;
+            }
+        }
+
+        return tiles;
+    }
+
+    public Dictionary<(int x, int y), SKImage> GetAllImages()
+    {
+        if (_tileCache == null)
+            BuildTileCache();
+
+        var tiles = new Dictionary<(int x, int y), SKImage>();
+        if (_tileCache == null)
+            return tiles;
+
+        int xTiles = _tileCache.GetLength(0);
+        int yTiles = _tileCache.GetLength(1);
+
+        for (int y = 0; y < yTiles; y++)
+        {
+            for (int x = 0; x < xTiles; x++)
+            {
+                var slice = _tileCache[x, y];
+                if (slice.HasValue)
+                    tiles[(x, y)] = slice.Value.Image;
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Configuration;
 
@@ -62,7 +61,7 @@ public partial class EngineConfigurationFile : IDisposable
 
     public void Save(string jsonPath)
     {
-        var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonConvert.SerializeObject(this, Formatting.Indented);
         File.WriteAllText(jsonPath, json);
         FileName = jsonPath;
     }

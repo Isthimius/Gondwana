@@ -231,62 +231,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     [IgnoreDataMember]
     public override Rectangle DrawLocation
     {
-        get
-        {
-            // if Sprite hasn't been placed on SceneLayer, this is moot
-            if (parentGrid == null)
-                return new Rectangle();
-
-            // get the "top left" of the Sprite gridCoordinates value
-            Point pxlPt = parentGrid.CoordinateSystem.GetSrcPxlAtGridPt(parentGrid, gridCoordinates);
-
-            // adjust X coord
-            switch (this.HorizAlign)
-            {
-                case HorizontalAlignment.Left:
-                    // no adjustment necessary
-                    break;
-                case HorizontalAlignment.Center:
-                    // shift right by half the difference between Tile Width values
-                    // if Sprite Width > GridPt Width, Sprite will shift left
-                    pxlPt.X += (parentGrid.GridPointWidth - renderSize.Width) / 2;
-                    break;
-                case HorizontalAlignment.Right:
-                    // shift right by the entire difference between Tile Width values
-                    // if Sprite Width > GridPt Width, Sprite will shift left
-                    pxlPt.X += (parentGrid.GridPointWidth - renderSize.Width);
-                    break;
-                default:
-                    // shouldn't get here...
-                    break;
-            }
-
-            // adjust Y coord
-            switch (this.VertAlign)
-            {
-                case VerticalAlignment.Top:
-                    // no adjustment necessary
-                    break;
-                case VerticalAlignment.Middle:
-                    // shift down by half the difference between Tile Height values
-                    // if Sprite Height > GridPt Height, Sprite will shift up
-                    pxlPt.Y += (parentGrid.GridPointHeight - renderSize.Height) / 2;
-                    break;
-                case VerticalAlignment.Bottom:
-                    // shift down by the entire difference between Tile Height values
-                    // if Sprite Height > GridPt Height, Sprite will shift up
-                    pxlPt.Y += (parentGrid.GridPointHeight - renderSize.Height);
-                    break;
-                default:
-                    // shouldn't get here...
-                    break;
-            }
-
-            pxlPt.X += this.NudgeX;
-            pxlPt.Y += this.NudgeY;
-
-            return new Rectangle(pxlPt, renderSize);
-        }
+        get { return SpriteManager.GetDrawLocation(this, parentGrid, gridCoordinates, renderSize); }
     }
 
     [IgnoreDataMember]

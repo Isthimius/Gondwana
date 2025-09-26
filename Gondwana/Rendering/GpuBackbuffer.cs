@@ -32,26 +32,26 @@ public class GpuBackbuffer : BackbufferBase
         ) ?? throw new InvalidOperationException("Could not create GPU surface.");
     }
 
-    public override SKCanvas Canvas => _surface.Canvas;
+    protected internal override SKCanvas Canvas => _surface.Canvas;
 
-    public override void BeginFrame()
+    protected internal override void BeginFrame()
     {
         Canvas.RestoreToCount(1);
     }
 
-    public override void EndFrame()
+    protected internal override void EndFrame()
     {
         _surface.Flush();
         _grContext.Submit(true);
     }
 
-    public override void DrawTileFrame(Tile tile)
+    protected internal override void DrawTileFrame(Tile tile)
     {
         var image = tile.CurrentFrame.SkImage;
         if (image != null)
             Canvas.DrawImage(image, tile.DrawLocation.ToSKRect());
     }
-    public override SKImage Snapshot() => _surface.Snapshot();
+    protected internal override SKImage Snapshot() => _surface.Snapshot();
 
     public override void Dispose()
     {

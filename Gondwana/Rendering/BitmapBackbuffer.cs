@@ -21,7 +21,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
         CreateSurface(width, height);
     }
 
-    public override void RequestResize(int width, int height)
+    protected internal override void RequestResize(int width, int height)
     {
         Engine.Logger.LogTrace("in RequestResize()      width: " + width.ToString() + " height: " + height.ToString());
 
@@ -30,13 +30,14 @@ public sealed class BitmapBackbuffer : BackbufferBase
         Interlocked.Exchange(ref _resizeFlag, 1); // coalesce requests
     }
 
-    public override SKCanvas Canvas
+    protected internal override SKCanvas Canvas
     {
         get { lock (_gate) return _surface!.Canvas; }
     }
 
-    public override void BeginFrame()
+    protected internal override void BeginFrame()
     {
+        // if a resize was requested, do it now (render thread only)...
         if (Interlocked.Exchange(ref _resizeFlag, 0) == 1)
         {
             var w = Volatile.Read(ref _reqW);
@@ -54,6 +55,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
             }
         }
 
+        /// prepare for drawing...
         lock (_gate)
         {
             if (_disposed) return;
@@ -65,7 +67,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
         }
     }
 
-    public override void EndFrame()
+    protected internal override void EndFrame()
     {
         lock (_gate)
         {
@@ -75,9 +77,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Runs as part of DoBackgroundTasks
+    /// Runs as part of DoBackgroundTasks()
     /// </summary>
-    public override void DrawTileFrame(Tile tile)
+    protected internal override void DrawTileFrame(Tile tile)
     {
         var bmp = tile.CurrentFrame.SkBitmap;
         var dst = tile.DrawLocation.ToSKRect();
@@ -91,7 +93,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
     }
 
     // Producer copies out an immutable image for the adapter/UI thread
-    public override SKImage Snapshot()
+    protected internal override SKImage Snapshot()
     {
         lock (_gate)
         {

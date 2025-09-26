@@ -1,4 +1,5 @@
 ﻿using Gondwana.Rendering;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
@@ -11,7 +12,6 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     private SKImage? _currentImage;
     private readonly Queue<SKImage> _toDispose = new();
     private SKRectI _sourceRect;
-    private SKRect _destRect;
 
     public SKColor ClearColor { get; set; } = SKColors.Black;
 
@@ -22,9 +22,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
 
         _control.PaintSurface += OnPaintSurface;
         _control.HandleCreated += OnHandleCreated;
-        _control.SizeChanged += OnSizeChanged;
         _control.ClientSizeChanged += OnSizeChanged;
-        _control.Layout += OnSizeChanged;
 
         // If the handle already exists, schedule one initial sync
         if (_control.IsHandleCreated)
@@ -58,35 +56,41 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             _toDispose.Enqueue(old);
 
         _sourceRect = bufferRect;
-        _destRect = destRect;
 
         _control.Invalidate();
     }
 
-    private static SKRect ToRect(SKRectI r) => new SKRect(r.Left, r.Top, r.Right, r.Bottom);
-
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
-        
+
         var img = _currentImage;
-        if (img != null)
-        {
-            var srcI = SKRectI.Intersect(_sourceRect, new SKRectI(0, 0, img.Width, img.Height));
-            if (!srcI.IsEmpty)
-            {
-                var src = ToRect(srcI);
-                var dest = _destRect;
-                var bounds = SKRect.Create(e.Info.Width, e.Info.Height);
+        if (img == null) return;
 
-                if (!bounds.Contains(dest))
-                    dest = SKRect.Intersect(dest, bounds);
+        // Clamp source to the image
+        var srcI = SKRectI.Intersect(_sourceRect, new SKRectI(0, 0, img.Width, img.Height));
+        if (srcI.IsEmpty) return;
 
-                canvas.DrawImage(img, src, dest);
-            }
-        }
+        // ---- 1:1, no scaling. Only clip to the control’s current bounds. ----
+        // Destination we want (top-left anchored, 1:1 pixels):
+        var destI = new SKRectI(srcI.Left, srcI.Top, srcI.Right, srcI.Bottom);
 
-        // safe to free the previously drawn wrapper now
+        // Clip to current control bounds so we don't draw outside:
+        var boundsI = new SKRectI(0, 0, e.Info.Width, e.Info.Height);
+        var clippedDestI = SKRectI.Intersect(destI, boundsI);
+
+        if (clippedDestI.IsEmpty) return;
+
+        // If we clipped the dest, clip the source by the same offset/size
+        var dx = clippedDestI.Left - destI.Left;
+        var dy = clippedDestI.Top - destI.Top;
+        var clippedSrcI = new SKRectI(srcI.Left + dx, srcI.Top + dy,
+                                      srcI.Left + dx + clippedDestI.Width,
+                                      srcI.Top + dy + clippedDestI.Height);
+
+        // Draw with integer rects (no subpixel, no filtering jitter)
+        canvas.DrawImage(img, clippedSrcI, clippedDestI);
+
         while (_toDispose.Count > 0)
             _toDispose.Dequeue().Dispose();
     }
@@ -97,9 +101,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         {
             _control.PaintSurface -= OnPaintSurface;
             _control.HandleCreated -= OnHandleCreated;
-            _control.SizeChanged -= OnSizeChanged;
             _control.ClientSizeChanged -= OnSizeChanged;
-            _control.Layout -= OnSizeChanged;
         }
 
         while (_toDispose.Count > 0)

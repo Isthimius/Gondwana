@@ -15,11 +15,28 @@ namespace Gondwana.Rendering;
 public abstract class RenderSurfaceHostBase : IDisposable
 {
     protected RenderSurfaceHostBase() => RenderSurfaceHostRegistry.Register(this);
+
     ~RenderSurfaceHostBase() => Dispose(false);
 
+    /// <summary>
+    /// Gets the in-memory <see cref="BackbufferBase"/> associated with the current rendering context.
+    /// </summary>
     public abstract BackbufferBase Backbuffer { get; }
+
+    /// <summary>
+    /// Gets the source <see cref="Scene"/> used for rendering operations.
+    /// </summary>
     public abstract Scene? DrawSource { get; }
+
+    /// <summary>
+    /// Gets the color used when filling area of the backbuffer that is not covered by any tiles.
+    /// </summary>
     public abstract Color ClearColor { get; }
+
+    /// <summary>
+    /// Gets the platform-specific <see cref="RenderSurfaceAdapterBase"> responsible
+    /// for rendering the image from the <see cref="Backbuffer"/>.
+    /// </summary>
     public abstract RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; }
 
     /// <summary>
@@ -36,6 +53,14 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// </summary>
     internal abstract void RenderBackbufferToAdapter();
 
-    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-    protected virtual void Dispose(bool disposing) { RenderSurfaceHostRegistry.Unregister(this); }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        RenderSurfaceHostRegistry.Unregister(this);
+    }
 }

@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Gondwana.Rendering;
+﻿using Newtonsoft.Json;
 using Gondwana.State;
 using Gondwana.Timers;
 
@@ -62,11 +61,6 @@ public partial class EngineConfiguration
     /// Default is 0.03 seconds (30 milliseconds).
     /// </summary>
     public double TimeBetweenMouseEvents { get; set; } = 0.03;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the Backbuffer should be recreated when the RenderSurfaceAdapterBase is resized.
-    /// </summary>
-    public bool RecreateBackbufferOnResize { get; set; } = true;
 
     /// <summary>
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.

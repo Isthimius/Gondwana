@@ -27,22 +27,36 @@ public abstract class BackbufferBase : IDisposable
         _height = height;
     }
 
-    public abstract SKCanvas Canvas { get; }
-    public abstract void DrawTileFrame(Tile tile);
-    public abstract SKImage Snapshot();
-    public abstract void BeginFrame();
-    public abstract void EndFrame();
+    protected internal abstract SKCanvas Canvas { get; }
+    protected internal abstract SKImage Snapshot();
 
+    protected internal abstract void BeginFrame();
+    protected internal abstract void DrawTileFrame(Tile tile);
+    protected internal abstract void EndFrame();
+
+    /// <summary>
+    /// Gets or sets the paint object used to render fog effects.
+    /// </summary>
     public SKPaint FogPaint { get; set; } = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
-    public SKPaint GridPaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
 
+    /// <summary>
+    /// Gets or sets the paint settings used to render grid lines.
+    /// </summary>
+    public SKPaint GridLinePaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
+
+    /// <summary>
+    /// Gets the current Backbuffer width in a thread-safe manner.
+    /// </summary>
     public int Width => Volatile.Read(ref _width);
+
+    /// <summary>
+    /// Gets the current Backbuffer height in a thread-safe manner.
+    /// </summary>
     public int Height => Volatile.Read(ref _height);
 
-    public virtual void RequestResize(int width, int height) { /* no-op by default */ }
+    protected internal virtual void RequestResize(int width, int height) { /* no-op by default */ }
 
-    // Let subclasses (render thread only) update the logical size.
-    public event Action<int, int>? SizeChanged;
+    protected internal event Action<int, int>? SizeChanged;
 
     protected void UpdateSize(int width, int height)
     {
@@ -52,12 +66,15 @@ public abstract class BackbufferBase : IDisposable
         SizeChanged?.Invoke(width, height);
     }
 
-    public Rectangle DirtyRectangle { get; set; }
-    
+    protected internal Rectangle DirtyRectangle { get; set; }
+
     private SKColor _clearColor = SKColors.Black;
     protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };
 
-    public SKColor ClearColor 
+    /// <summary>
+    /// Gets or sets the color used to clear the drawing surface.
+    /// </summary>
+    public SKColor ClearColor
     {
         get => _clearColor;
         set
@@ -68,7 +85,7 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
-    /// Runs as part of DoBackgroundTasks
+    /// Runs as part of DoBackgroundTasks()
     /// </summary>
     internal void DrawTiles(IList<Tile> tiles)
     {
@@ -83,10 +100,13 @@ public abstract class BackbufferBase : IDisposable
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), FogPaint);
 
             if (!tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), GridPaint);
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), GridLinePaint);
         }
     }
 
+    /// <summary>
+    /// Runs as part of DoBackgroundTasks()
+    /// </summary>
     protected void AddToDirtyRectangle(Rectangle area)
     {
         if (area.IsEmpty) return;
@@ -96,6 +116,16 @@ public abstract class BackbufferBase : IDisposable
             : Rectangle.Union(DirtyRectangle, area);
     }
 
+    /// <summary>
+    /// Converts the current image to a byte array in the specified format and quality.
+    /// </summary>
+    /// <remarks>This method creates a snapshot of the current image and encodes it into the specified format.
+    /// The resulting byte array can be used for saving the image to a file, transmitting it over a network, or other
+    /// purposes requiring a binary representation of the image.</remarks>
+    /// <param name="format">The format to encode the image in. The default is <see cref="SKEncodedImageFormat.Png"/>.</param>
+    /// <param name="quality">The quality of the encoded image, ranging from 0 (lowest quality) to 100 (highest quality). This parameter is
+    /// ignored for formats that do not support quality settings. The default is 100.</param>
+    /// <returns>A byte array containing the encoded image data.</returns>
     public virtual byte[] ToByteArray(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {
         using var image = Snapshot();
@@ -107,6 +137,6 @@ public abstract class BackbufferBase : IDisposable
     {
         _fillPaint.Dispose();
         FogPaint.Dispose();
-        GridPaint.Dispose();
+        GridLinePaint.Dispose();
     }
 }

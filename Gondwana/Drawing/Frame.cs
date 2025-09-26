@@ -1,6 +1,6 @@
 using SkiaSharp;
 using System.Drawing;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Drawing;
 
@@ -9,13 +9,13 @@ namespace Gondwana.Drawing;
 /// </summary>
 public struct Frame
 {
-    [JsonInclude]
+    [JsonProperty]
     public readonly Tilesheet Tilesheet;
 
-    [JsonInclude]
+    [JsonProperty]
     public readonly int XTile;
 
-    [JsonInclude]
+    [JsonProperty]
     public readonly int YTile;
 
     public Frame(Tilesheet tilesheet, int xTile, int yTile)
@@ -29,8 +29,8 @@ public struct Frame
     public readonly Size Size => Tilesheet.TileSize;
 
     [JsonIgnore]
-    public readonly SKBitmap? SkBitmap => Tilesheet?[XTile, YTile]?.Bitmap;
+    public readonly SKBitmap? SkBitmap => Tilesheet?.GetBitmap(XTile, YTile);
 
     [JsonIgnore]
-    public readonly SKImage? SkImage => Tilesheet?[XTile, YTile]?.Image;
+    public readonly SKImage? SkImage => Tilesheet?.GetImage(XTile, YTile);
 }

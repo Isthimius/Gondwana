@@ -23,7 +23,20 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // Recreate backbuffer on adapter resize
         RenderSurfaceAdapter!.Resized += (_, _) => OnRenderSurfaceAdapterResized();
 
-        CreateBackbuffer();
+        var w = RenderSurfaceAdapter!.Width;
+        var h = RenderSurfaceAdapter!.Height;
+
+        if (w > 0 || h > 0)
+        {
+            _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
+            Backbuffer!.BeginFrame();
+
+            Backbuffer!.SizeChanged += (w, h) =>
+            {
+                if (DrawSource != null)
+                    DrawSource.RefreshNeeded = SceneRefreshType.All; // full redraw at the new size
+            };
+        }
     }
 
     private TBackbuffer? _backbuffer;
@@ -47,7 +60,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (DrawSource != null)
         {
             DrawSource.Disposing += OnSourceDisposing;
-            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
+            DrawSource.RefreshNeeded = SceneRefreshType.All;
         }
 
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, DrawSource));
@@ -57,6 +70,19 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
+    /// <summary>
+    /// Renders the refresh queue of visible layers to the backbuffer based on the current scene's refresh state.
+    /// Called as part of DoBackgroundTasks().
+    /// </summary>
+    /// <remarks>This method processes the visible layers of the scene and updates the backbuffer according to
+    /// the  refresh requirements specified by the scene's <see cref="SceneRefreshType"/>. It handles three main 
+    /// refresh scenarios: <list type="bullet"> <item> <description><see cref="SceneRefreshType.None"/>: No updates are
+    /// made to the backbuffer, and the last rendered frame remains visible.</description> </item> <item>
+    /// <description><see cref="SceneRefreshType.Queue"/>: Only the tiles in the refresh queue of each visible layer
+    /// are redrawn.</description> </item> <item> <description><see cref="SceneRefreshType.All"/>: The entire backbuffer
+    /// is cleared and fully redrawn, including all visible layers.</description> </item> </list> If no visible layers
+    /// are present or the <see cref="DrawSource"/> is null, the entire backbuffer is  marked as dirty to ensure a
+    /// visible clear.</remarks>
     internal override void DrawRefreshQueueToBackbuffer()
     {
         if (DrawSource is null || (DrawSource?.CountOfVisibleLayers ?? 0) == 0)
@@ -68,12 +94,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             switch (DrawSource!.RefreshNeeded)
             {
-                case MatrixesRefreshType.None:
+                case SceneRefreshType.None:
                     // Nothing to redraw in the background; don’t publish a new frame.
                     // (i.e., UI will keep showing the last front buffer.)
                     break;
 
-                case MatrixesRefreshType.Queue:
+                case SceneRefreshType.Queue:
                     {
                         for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
@@ -86,12 +112,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         break;
                     }
 
-                case MatrixesRefreshType.All:
+                case SceneRefreshType.All:
                     {
-                        // Full redraw: treat whole backbuffer as dirty
+                        // full redraw: treat whole backbuffer as dirty
                         Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
 
-                        // Clear per-layer queues and add full range, then draw
+                        Engine.Logger.LogTrace("*** Full redraw of all layers for DirtyRectangle: {DirtyRectangle} ***", Backbuffer.DirtyRectangle.ToString());
+
+                        // clear the backbuffer so no stale pixels survive this pass
+                        Backbuffer.Canvas.Clear(Backbuffer.ClearColor);   // Canvas + ClearColor are on BackbufferBase
+
+                        // clear per-layer queues and add full range, then draw
                         for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
                             var layer = DrawSource.VisibleSceneLayerList[i];
@@ -104,12 +135,21 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     }
 
                 default:
-                    // Unknown state; skip
+                    // unknown state; skip
+                    Engine.Logger.LogWarning("Unknown Scene.RefreshNeeded state: " + DrawSource.RefreshNeeded.ToString());
                     break;
             }
         }
     }
 
+    /// <summary>
+    /// Renders the contents of the backbuffer to the associated UI adapter.
+    /// Called as part of DoForegroundTasks().
+    /// </summary>
+    /// <remarks>This method finalizes the current frame on the backbuffer and renders its contents  to the
+    /// adapter. If <see cref="RedrawDirtyRectangleOnly"/> is <see langword="true"/>, only the dirty rectangle is
+    /// redrawn; otherwise, the entire backbuffer is rendered. After rendering, the dirty rectangle is reset, and the
+    /// backbuffer is prepared for the next frame.</remarks>
     internal override void RenderBackbufferToAdapter()
     {
         if (RenderSurfaceAdapter is null) return;
@@ -120,6 +160,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             RenderBackbufferRect();
         else
             RenderBackbufferAll();
+
+        Backbuffer.DirtyRectangle = Rectangle.Empty; // reset
 
         Backbuffer.BeginFrame();
     }
@@ -152,36 +194,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     #region private methods
     private void OnRenderSurfaceAdapterResized()
     {
-        if (!Engine.Instance.Configuration.RecreateBackbufferOnResize)
-            return;
-
         //Engine.Logger.LogTrace("in OnRenderSurfaceAdapterResized()");
 
         var w = RenderSurfaceAdapter!.Width;
         var h = RenderSurfaceAdapter!.Height;
 
         if (DrawSource != null)
-            DrawSource.RefreshNeeded = MatrixesRefreshType.All; // full redraw next frame
+        {
+            DrawSource.RefreshNeeded = SceneRefreshType.All; // full redraw next frame
+            Engine.Logger.LogTrace("*** .RefreshNeeded = SceneRefreshType.All ***");
+        }
 
         _backbuffer?.RequestResize(w, h);                 // UI thread → request only
-    }
-
-    private void CreateBackbuffer()
-    {
-        Engine.Logger.LogTrace("Creating backbuffer for RenderSurfaceHost");
-
-        var w = RenderSurfaceAdapter!.Width;
-        var h = RenderSurfaceAdapter!.Height;
-        if (w <= 0 || h <= 0) return;
-
-        Backbuffer?.Dispose();
-        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
-        Backbuffer!.BeginFrame();
-
-        if (DrawSource != null)
-            DrawSource.RefreshNeeded = MatrixesRefreshType.All;
-
-        Engine.Logger.LogTrace("Created backbuffer with size {Width}x{Height}", w, h);
     }
 
     private void RenderBackbufferAll()
@@ -189,6 +213,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
+
+        Engine.Logger.LogTrace("*** in RenderBackbufferAll()      src: {Src} dst: {Dst} ***", src.ToString(), dst.ToString());
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter.Render(img, src, dst));

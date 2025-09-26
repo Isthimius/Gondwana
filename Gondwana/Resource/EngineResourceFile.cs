@@ -1,6 +1,6 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Resource;
 
@@ -70,19 +70,19 @@ public sealed class EngineResourceFile : IDisposable
     /// <summary>
     /// Gets the file path associated with the current instance.
     /// </summary>
-    [JsonInclude]
+    [JsonProperty]
     public string FilePath { get; private set; } = string.Empty;
 
     /// <summary>
     /// Gets the password associated with the current instance.
     /// </summary>
-    [JsonInclude]
+    [JsonProperty]
     public string? Password { get; private set; } = null;
 
     /// <summary>
     /// Gets a value indicating whether encryption is enabled for the current operation.
     /// </summary>
-    [JsonInclude]
+    [JsonProperty]
     public bool UseEncryption { get; private set; } = false;
 
     private void EnsureLoaded()
