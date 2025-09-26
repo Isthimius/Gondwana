@@ -32,7 +32,7 @@ public class GpuBackbuffer : BackbufferBase
         ) ?? throw new InvalidOperationException("Could not create GPU surface.");
     }
 
-    protected internal override SKCanvas Canvas => _surface.Canvas;
+    public override SKCanvas Canvas => _surface.Canvas;
 
     protected internal override void BeginFrame()
     {

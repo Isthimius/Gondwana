@@ -27,7 +27,7 @@ public abstract class BackbufferBase : IDisposable
         _height = height;
     }
 
-    protected internal abstract SKCanvas Canvas { get; }
+    public abstract SKCanvas Canvas { get; }
     protected internal abstract SKImage Snapshot();
 
     protected internal abstract void BeginFrame();

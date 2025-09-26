@@ -30,7 +30,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
         Interlocked.Exchange(ref _resizeFlag, 1); // coalesce requests
     }
 
-    protected internal override SKCanvas Canvas
+    public override SKCanvas Canvas
     {
         get { lock (_gate) return _surface!.Canvas; }
     }
