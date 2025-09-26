@@ -9,6 +9,69 @@ namespace Gondwana.Rendering.Direct;
 /// Draws video frames provided by IVideoPlayer onto the backbuffer.
 /// Audio is handled by the IVideoPlayer implementation (e.g., VLC system output on desktop).
 /// </summary>
+/// <example>
+///
+/// *** Basic Playback (fixed size in a HUD corner):
+/// var clip = new DirectVideo(surface, new Rectangle(64, 64, 640, 360),
+///                            playerFactory: () => videoPlayerFactory.Create(),
+///                            source: new Uri("file:///C:/media/intro.mp4"))
+/// {
+///     ZOrder = 100,                     // above tiles/UI as needed
+///     Stretch = StretchMode.Uniform,    // preserve aspect, fit inside box
+///     Loop = false
+/// };
+///
+/// *** Full-bleed Cutscene (cover viewport, crop overflow):
+/// var cutscene = new DirectVideo(surface, viewportBounds,
+///                                () => videoPlayerFactory.Create(),
+///                                new Uri("file:///C:/media/cutscene.mkv"))
+/// {
+///     ZOrder = 1000,
+///     Stretch = StretchMode.UniformToFill, // cover the whole bounds
+///     Opacity = 1.0f,
+///     Loop = false
+/// };
+///
+/// *** Faded Picture-in-Picture (overlay, semi-transparent):
+/// var pip = new DirectVideo(surface, new Rectangle(20, 20, 320, 180),
+///                           () => videoPlayerFactory.Create(),
+///                           new Uri("file:///C:/media/camfeed.webm"))
+/// {
+///     ZOrder = 500,
+///     Stretch = StretchMode.Fill,  // ignore AR, fill the box
+///     Opacity = 0.75f,
+///     Loop = true
+/// };
+///
+/// *** Playback Control (pause/seek/rate) during your update tick:
+/// // Pause on a modal
+/// if (ui.ShowingModal) pip.Pause();
+///
+/// // Resume when modal closes
+/// if (!ui.ShowingModal && !pipIsPlaying) pip.Play();
+///
+/// // Jump to 10s (for scrubbing thumbnails or replays)
+/// pip.Seek(TimeSpan.FromSeconds(10));
+///
+/// // Slow-mo or fast-forward
+/// pip.PlaybackRate = 0.5; // half-speed
+/// // pip.PlaybackRate = 1.25; // 25% faster
+///
+/// *** Swap Source (re-use the same player instance path):
+/// var trailer = new DirectVideo(surface, new Rectangle(80, 80, 960, 540),
+///                               myExistingIVideoPlayerInstance,
+///                               new Uri("file:///C:/media/trailer.mp4"))
+/// {
+///     Stretch = StretchMode.Uniform,
+///     Opacity = 1.0f
+/// };
+///
+/// *** Animated Slide-in (using your engine’s movement/scrolling):
+/// // Start off-screen, then slide into position over 0.4s
+/// cutscene.ScrollToSourceGridPoint(0.4, new Rectangle(0, 0, viewportBounds.Width, viewportBounds.Height));
+///
+/// </example>
+
 public sealed class DirectVideo : DirectDrawingBase
 {
     private readonly IVideoPlayer _player;
