@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing;
+﻿namespace Gondwana.Drawing.Tilesheets;
 
 public class TilesheetDisposedEventArgs : EventArgs
 {

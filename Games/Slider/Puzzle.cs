@@ -11,6 +11,7 @@ using System.Drawing;
 using Gondwana.WinForms;
 using Gondwana.Logging;
 using Microsoft.Extensions.Logging;
+using Gondwana.Drawing.Tilesheets;
 
 namespace Slider
 {

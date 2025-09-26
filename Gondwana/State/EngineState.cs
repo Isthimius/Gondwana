@@ -1,5 +1,4 @@
 ﻿using Gondwana.Audio;
-using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System.IO.Compression;
 using System.Text.Json;
 using Newtonsoft.Json;
+using Gondwana.Drawing.Tilesheets;
 
 namespace Gondwana.State;
 

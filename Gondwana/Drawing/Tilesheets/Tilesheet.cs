@@ -4,7 +4,7 @@ using Gondwana.Resource;
 using Gondwana.Skia;
 using SkiaSharp;
 
-namespace Gondwana.Drawing;
+namespace Gondwana.Drawing.Tilesheets;
 
 /// <summary>
 /// Represents a tilesheet image and metadata for rendering tiles.
@@ -223,8 +223,8 @@ public sealed class Tilesheet : IDisposable
 
     private Rectangle GetTileBounds(int xTile, int yTile)
     {
-        int x = (xTile * (_tileSize.Width + XPixelsBetweenTiles)) + InitialOffsetX;
-        int y = (yTile * (_tileSize.Height + YPixelsBetweenTiles)) + InitialOffsetY;
+        int x = xTile * (_tileSize.Width + XPixelsBetweenTiles) + InitialOffsetX;
+        int y = yTile * (_tileSize.Height + YPixelsBetweenTiles) + InitialOffsetY;
         return new Rectangle(new Point(x, y), _tileSize);
     }
 

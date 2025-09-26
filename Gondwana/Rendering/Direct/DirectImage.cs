@@ -1,8 +1,8 @@
-using Gondwana.Drawing;
 using System.Drawing;
 using SkiaSharp;
 using Microsoft.Extensions.Logging;
 using Gondwana.Skia;
+using Gondwana.Drawing.Tilesheets;
 
 namespace Gondwana.Rendering.Direct;
 
