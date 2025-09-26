@@ -11,7 +11,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     protected Rectangle _bounds;
     protected int _zOrder;
     internal Movement? _movement;
-    internal bool _dirty = true;
+    protected internal bool _dirty = true;
     private bool _disposed = false;
 
     protected internal abstract void Render();
@@ -73,7 +73,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
             _movement = null;
     }
 
-    internal void ForceRefresh()
+    protected internal void ForceRefresh()
     {
         var matrixes = RenderSurfaceHost.DrawSource;
         if (matrixes?.Count > 0)
