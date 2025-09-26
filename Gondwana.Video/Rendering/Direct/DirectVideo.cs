@@ -1,7 +1,10 @@
 ﻿using Gondwana.Video;              // IVideoPlayer
 using SkiaSharp;
 using System.Drawing;
-using System.Runtime.InteropServices;
+
+#if BROWSER || NO_UNSAFE
+    using System.Runtime.InteropServices;
+#endif
 
 namespace Gondwana.Rendering.Direct;
 
@@ -128,11 +131,10 @@ public sealed class DirectVideo : DirectDrawingBase
     /// Use this when you have a factory that abstracts platform differences.
     /// e.g., desktop/mobile -> VLC impl, web -> HTML5/WebCodecs impl.
     /// </summary>
-    public DirectVideo(
-        RenderSurfaceHost<BitmapBackbuffer> surface,
-        Rectangle bounds,
-        Func<IVideoPlayer> playerFactory,
-        Uri source)
+    public DirectVideo(RenderSurfaceHost<BitmapBackbuffer> surface,
+                       Rectangle bounds,
+                       Func<IVideoPlayer> playerFactory,
+                       Uri source)
         : base(surface, bounds)
     {
         if (playerFactory is null) throw new ArgumentNullException(nameof(playerFactory));
@@ -148,7 +150,6 @@ public sealed class DirectVideo : DirectDrawingBase
         _player.Ended += (_, __) => { /* engine could fire a scene event here if needed */ };
     }
 
-    // Change the access modifier of the Render method to match the base class definition.
     protected override void Render()
     {
         SKBitmap? bmp;
