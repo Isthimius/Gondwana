@@ -71,7 +71,6 @@ namespace Gondwana.Rendering.Direct;
 /// cutscene.ScrollToSourceGridPoint(0.4, new Rectangle(0, 0, viewportBounds.Width, viewportBounds.Height));
 ///
 /// </example>
-
 public sealed class DirectVideo : DirectDrawingBase
 {
     private readonly IVideoPlayer _player;
