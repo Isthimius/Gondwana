@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Drawing.Tilesheets;
 
@@ -18,7 +18,8 @@ public sealed class TilesheetRegistry
     public static TilesheetRegistry Instance => _instance.Value;
 
     // Private ctor ensures no one else can new this up
-    private TilesheetRegistry() { }
+    private TilesheetRegistry()
+    { }
 
     internal void Register(Tilesheet sheet, bool disposeReplaced = true)
     {

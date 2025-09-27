@@ -1,5 +1,3 @@
-using Gondwana.Input;
-
 namespace Gondwana.Input.Keyboard;
 
 public class KeyEventConfiguration : InputEventConfigurationBase

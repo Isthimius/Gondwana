@@ -1,12 +1,12 @@
 using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Scenes;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
@@ -22,6 +22,7 @@ public sealed class Engine : IDisposable
     public static ILogger<Engine> Logger => EngineLogger.GetLogger<Engine>();
 
     #region private fields
+
     private long _startTick;
     private long _lastCPSSamplingTick;
     private long _lastTick = HighResTimer.GetCurrentTick();
@@ -34,9 +35,11 @@ public sealed class Engine : IDisposable
     private double _netFPS = 0;
 
     private bool _hasBackgroundRun = false;
-    #endregion
+
+    #endregion private fields
 
     #region events
+
     /// <summary>
     /// Runs when Initialize() is called, prior to internal initialization.
     /// This event will only be raised the first time Initialize() is called.
@@ -56,14 +59,21 @@ public sealed class Engine : IDisposable
     public event Action InitializationComplete;
 
     public event Action BeforeBackgroundTasksExecute;
+
     public event Action AfterBackgroundTasksExecute;
+
     public event Action<EngineCycleEventArgs> BeforeEngineCycle;
+
     public event Action<EngineCycleEventArgs> AfterEngineCycle;
+
     public event Action<CyclesPerSecondCalculatedEventArgs> CPSCalculated;
-    #endregion
+
+    #endregion events
 
     #region constructor
-    private Engine() { }
+
+    private Engine()
+    { }
 
     private bool _isInitialized = false;
     private bool _isInitializing = false;
@@ -84,7 +94,7 @@ public sealed class Engine : IDisposable
             PreInitialization?.Invoke();
         else
             UiDispatcher!.Post(() => PreInitialization?.Invoke());
-        
+
         Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig).EngineConfig;
 
         if (Configuration.StateFiles?.Any() ?? false)
@@ -116,9 +126,11 @@ public sealed class Engine : IDisposable
         else
             UiDispatcher!.Post(() => InitializationComplete?.Invoke());
     }
-    #endregion
+
+    #endregion constructor
 
     #region public methods
+
     public void Start(SynchronizationContext uiContext)
     {
         if (IsRunning)
@@ -153,9 +165,11 @@ public sealed class Engine : IDisposable
     {
         IsRunning = false;
     }
-    #endregion
+
+    #endregion public methods
 
     #region public properties
+
     public IUiDispatcher? UiDispatcher { get; private set; }
 
     public bool IsInitialized => _isInitialized;
@@ -212,9 +226,11 @@ public sealed class Engine : IDisposable
     }
 
     public static GamepadEventPoller? GamepadManagerEventPoller { get => GamepadEventPoller.Instance; }
-    #endregion
+
+    #endregion public properties
 
     #region private methods
+
     private void Cycle()
     {
         long tick = HighResTimer.GetCurrentTick();
@@ -383,5 +399,6 @@ public sealed class Engine : IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: false);
     }
-    #endregion
+
+    #endregion private methods
 }

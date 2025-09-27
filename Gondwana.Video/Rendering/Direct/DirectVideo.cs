@@ -1,6 +1,6 @@
-﻿using Gondwana.Video;              // IVideoPlayer
+﻿using System.Drawing;
+using Gondwana.Video;              // IVideoPlayer
 using SkiaSharp;
-using System.Drawing;
 
 #if BROWSER || NO_UNSAFE
     using System.Runtime.InteropServices;
@@ -86,6 +86,7 @@ public sealed class DirectVideo : DirectDrawingBase
     public StretchMode Stretch { get; set; } = StretchMode.Fill;
 
     private float _opacity = 1f;              // 0..1
+
     public float Opacity
     {
         get => _opacity;
@@ -93,6 +94,7 @@ public sealed class DirectVideo : DirectDrawingBase
     }
 
     private double _playbackRate = 1.0;
+
     public double PlaybackRate
     {
         get => _playbackRate;
@@ -275,8 +277,11 @@ public sealed class DirectVideo : DirectDrawingBase
     // --- control surface (thin passthrough to player) ---
 
     public void Play() => _player.Play();
+
     public void Pause() => _player.Pause();
+
     public void Stop() => _player.Stop();
+
     public void Seek(TimeSpan position) => _player.Seek(position);
 
     // --- cleanup ---

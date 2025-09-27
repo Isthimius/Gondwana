@@ -1,6 +1,6 @@
+using System.Drawing;
 using Gondwana.Skia;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Rendering.Direct;
 
@@ -12,37 +12,37 @@ namespace Gondwana.Rendering.Direct;
 /// is designed to be used with a RenderSurfaceHost and can be rendered onto a canvas.</remarks>
 ///
 /// <example>
-/// 
+///
 /// *** Basic Outlined Rectangle:
 /// var box = new DirectRectangle(surface, new Rectangle(50, 50, 120, 80), Color.DarkGreen)
 ///    .SetFilled(false)
 ///    .SetStrokeWidth(2);
-/// 
+///
 /// *** Semi-Transparent Filled Rectangle:
 /// var highlight = new DirectRectangle(surface, new Rectangle(200, 50, 100, 100), Color.Yellow)
 ///    .SetFilled(true)
 ///    .SetAlpha(128); // 50% transparent
-///    
+///
 /// *** Rounded Rectangle with Dashed Border:
 /// var panel = new DirectRectangle(surface, new Rectangle(50, 160, 180, 80), Color.CornflowerBlue)
 ///    .SetFilled(false)
 ///    .SetCornerRadius(12f)
 ///    .SetDashPattern(8, 4); // dash 8px, gap 4px
-///    
+///
 /// *** Highlighted Outline with Outside Stroke and Blend Mode:
 /// var glowBox = new DirectRectangle(surface, new Rectangle(250, 160, 120, 80), Color.Red)
 ///    .SetFilled(false)
 ///    .SetStrokeWidth(6)
 ///    .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
 ///    .SetBlendMode(SKBlendMode.Screen); // additive/lighten effect
-///    
+///
 /// *** Animated Pulse (per-frame logic example):
 /// float pulse = 1.0f + (float)Math.Sin(tick / 10.0) * 0.5f;
-/// 
+///
 /// glowBox
 ///    .SetStrokeWidth(3f + pulse)
 ///    .SetAlpha((int)(128 + 127 * Math.Sin(tick / 10.0)));
-///    
+///
 /// </example>
 public class DirectRectangle : DirectDrawingBase
 {

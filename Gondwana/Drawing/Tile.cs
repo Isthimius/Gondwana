@@ -1,8 +1,6 @@
 using System.Drawing;
-using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
-using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 
@@ -12,6 +10,7 @@ namespace Gondwana.Drawing;
 public abstract class Tile : IComparable<Tile>, IDisposable
 {
     #region static members
+
     public static List<Tile> TileCollisions { get; private set; }
     public static List<Tile> TilesAnimating { get; private set; }
     public static List<Tile> TilesMoving { get; private set; }
@@ -22,9 +21,11 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         TilesAnimating = new List<Tile>();
         TilesMoving = new List<Tile>();
     }
-    #endregion
+
+    #endregion static members
 
     #region fields
+
     protected internal int zOrder;
     protected internal bool visible;
 
@@ -34,19 +35,24 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     protected bool pauseAnimation;
     protected CollisionDetectionType collisionDetection = CollisionDetectionType.None;
     protected CollisionDetectionAdjustment adjustCollisionArea = new CollisionDetectionAdjustment();
-    #endregion
+
+    #endregion fields
 
     #region public fields
+
     [JsonIgnore]
     public object Tag;
-    #endregion
+
+    #endregion public fields
 
     #region abstract properties
+
     public abstract bool IsPositionFixed { get; }
     public abstract Rectangle DrawLocation { get; }
     public abstract PointF GridCoordinates { get; }
     public abstract SceneLayer ParentGrid { get; }
-    #endregion
+
+    #endregion abstract properties
 
     private List<Rectangle> _drawLocationRefresh = new List<Rectangle>();
 
@@ -186,6 +192,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     #region IComparable<Tile> Members
+
     public int CompareTo(Tile? tile)
     {
         if (tile is null)
@@ -205,9 +212,11 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         return (thisLoc, zOrder, GridCoordinates.X)
              .CompareTo((tileLoc, tile.zOrder, tile.GridCoordinates.X));
     }
-    #endregion
+
+    #endregion IComparable<Tile> Members
 
     #region IDisposable Members
+
     public virtual void Dispose()
     {
         // remove Tile from any Engine-level List<> objects
@@ -224,5 +233,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         if (animator != null)
             animator.Dispose();
     }
-    #endregion
+
+    #endregion IDisposable Members
 }

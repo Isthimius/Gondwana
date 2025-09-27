@@ -9,7 +9,7 @@ namespace Gondwana.Rendering;
 /// Represents a base class for managing a graphical backbuffer, and is the in-memory surface where
 /// rendering operations are performed before being presented to the display.
 /// </summary>
-/// <remarks>This abstract class serves as the foundation for backbuffer implementations, offering methods and 
+/// <remarks>This abstract class serves as the foundation for backbuffer implementations, offering methods and
 /// properties to facilitate rendering operations, manage graphical state, and interact with graphical  elements such as
 /// tiles. Derived classes must implement the <see cref="Canvas"/>, <see cref="DrawTileFrame(Tile)"/>, and <see
 /// cref="Snapshot"/> members to define specific rendering behavior.</remarks>
@@ -18,7 +18,8 @@ public abstract class BackbufferBase : IDisposable
     private int _width;
     private int _height;
 
-    private BackbufferBase() { }
+    private BackbufferBase()
+    { }
 
     protected BackbufferBase(int width, int height)
         : this()
@@ -28,10 +29,13 @@ public abstract class BackbufferBase : IDisposable
     }
 
     public abstract SKCanvas Canvas { get; }
+
     protected internal abstract SKImage Snapshot();
 
     protected internal abstract void BeginFrame();
+
     protected internal abstract void DrawTileFrame(Tile tile);
+
     protected internal abstract void EndFrame();
 
     /// <summary>
@@ -54,7 +58,8 @@ public abstract class BackbufferBase : IDisposable
     /// </summary>
     public int Height => Volatile.Read(ref _height);
 
-    protected internal virtual void RequestResize(int width, int height) { /* no-op by default */ }
+    protected internal virtual void RequestResize(int width, int height)
+    { /* no-op by default */ }
 
     protected internal event Action<int, int>? SizeChanged;
 

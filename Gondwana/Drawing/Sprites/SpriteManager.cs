@@ -1,7 +1,6 @@
-using Gondwana.Drawing.Animation;
-using Gondwana.Scenes;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -19,6 +18,7 @@ public static class SpriteManager
     }
 
     private static bool _sizeNewSpriteToParentGrid = true;
+
     public static bool SizeNewSpritesToParentGrid
     {
         get { return _sizeNewSpriteToParentGrid; }
@@ -26,6 +26,7 @@ public static class SpriteManager
     }
 
     #region public methods
+
     public static Sprite CreateSprite(SceneLayer matrix, Frame frame)
     {
         Sprite sprite = new Sprite(matrix, frame);
@@ -177,9 +178,11 @@ public static class SpriteManager
 
         return retSprites;
     }
-    #endregion
+
+    #endregion public methods
 
     #region internal methods
+
     internal static Rectangle GetDrawLocation(Sprite sprite, SceneLayer grid, PointF coord, Size size)
     {
         // if Sprite hasn't been placed on SceneLayer, this is moot
@@ -195,16 +198,19 @@ public static class SpriteManager
             case HorizontalAlignment.Left:
                 // no adjustment necessary
                 break;
+
             case HorizontalAlignment.Center:
                 // shift right by half the difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift left
                 pxlPt.X += (grid.GridPointWidth - size.Width) / 2;
                 break;
+
             case HorizontalAlignment.Right:
                 // shift right by the entire difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift left
                 pxlPt.X += (grid.GridPointWidth - size.Width);
                 break;
+
             default:
                 // shouldn't get here...
                 break;
@@ -216,16 +222,19 @@ public static class SpriteManager
             case VerticalAlignment.Top:
                 // no adjustment necessary
                 break;
+
             case VerticalAlignment.Middle:
                 // shift down by half the difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift up
                 pxlPt.Y += (grid.GridPointHeight - size.Height) / 2;
                 break;
+
             case VerticalAlignment.Bottom:
                 // shift down by the entire difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift up
                 pxlPt.Y += (grid.GridPointHeight - size.Height);
                 break;
+
             default:
                 // shouldn't get here...
                 break;
@@ -254,16 +263,19 @@ public static class SpriteManager
             case HorizontalAlignment.Left:
                 // no adjustment necessary
                 break;
+
             case HorizontalAlignment.Center:
                 // shift left by half the difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift right
                 drawLocation.X -= (grid.GridPointWidth - drawLocation.Width) / 2;
                 break;
+
             case HorizontalAlignment.Right:
                 // shift left by the entire difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift right
                 drawLocation.X -= (grid.GridPointWidth - drawLocation.Width);
                 break;
+
             default:
                 // shouldn't get here...
                 break;
@@ -275,16 +287,19 @@ public static class SpriteManager
             case VerticalAlignment.Top:
                 // no adjustment necessary
                 break;
+
             case VerticalAlignment.Middle:
                 // shift up by half the difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift down
                 drawLocation.Y -= (grid.GridPointHeight - drawLocation.Height) / 2;
                 break;
+
             case VerticalAlignment.Bottom:
                 // shift up by the entire difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift down
                 drawLocation.Y -= (grid.GridPointHeight - drawLocation.Height);
                 break;
+
             default:
                 // shouldn't get here...
                 break;
@@ -314,5 +329,6 @@ public static class SpriteManager
             sprite.movement._lastTick = tick;
         }
     }
-    #endregion
+
+    #endregion internal methods
 }

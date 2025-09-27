@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Slider
 {
-    static class Program
+    internal static class Program
     {
         internal static Puzzle puzzle = null;
 
@@ -11,7 +11,7 @@ namespace Slider
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

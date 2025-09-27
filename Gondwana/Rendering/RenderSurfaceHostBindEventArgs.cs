@@ -7,7 +7,9 @@ public class RenderSurfaceHostBindEventArgs : EventArgs
     public Scene? OldScene { get; }
     public Scene? NewScene { get; }
 
-    private RenderSurfaceHostBindEventArgs() : this(null, null) { }
+    private RenderSurfaceHostBindEventArgs() : this(null, null)
+    {
+    }
 
     public RenderSurfaceHostBindEventArgs(Scene? oldScene, Scene? newScene)
     {

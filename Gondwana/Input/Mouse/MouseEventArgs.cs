@@ -1,5 +1,5 @@
-﻿using Gondwana.Input.Keyboard;
-using System.Drawing;
+﻿using System.Drawing;
+using Gondwana.Input.Keyboard;
 
 namespace Gondwana.Input.Mouse;
 
@@ -17,7 +17,7 @@ public sealed class MouseEventArgs : EventArgs
     public bool IsAlt => CurrentKeyboardModifiers.HasFlag(KeyboardModifierState.Alt);
 
     public MouseEventArgs(MouseEventConfiguration mouseEventConfiguration,
-                          KeyboardModifierState currentKeyboardModifiers, 
+                          KeyboardModifierState currentKeyboardModifiers,
                           IReadOnlyDictionary<MouseButton, MouseButtonState> buttonStates,
                           Point previousPosition,
                           Point currentPosition,

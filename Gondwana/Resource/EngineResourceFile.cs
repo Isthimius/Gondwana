@@ -40,7 +40,8 @@ public sealed class EngineResourceFile : IDisposable
     private bool _isLoaded = false;
 
     [JsonConstructor]
-    private EngineResourceFile() { _allResourceFiles.Add(this); }
+    private EngineResourceFile()
+    { _allResourceFiles.Add(this); }
 
     /// <summary>
     /// Loads an existing resource file from the specified path or creates a new one if the file does not exist.

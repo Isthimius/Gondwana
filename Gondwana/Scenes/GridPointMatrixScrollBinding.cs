@@ -11,6 +11,7 @@ public class SceneLayerScrollBinding
         new List<SceneLayerScrollBinding>();
 
     #region ctor
+
     public SceneLayerScrollBinding()
     {
         _allScrollBindings.Add(this);
@@ -21,7 +22,8 @@ public class SceneLayerScrollBinding
     {
         _allScrollBindings.Add(this);
     }
-    #endregion
+
+    #endregion ctor
 
     [JsonIgnore]
     public SceneLayer ParentGrid;

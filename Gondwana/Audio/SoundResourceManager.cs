@@ -15,7 +15,8 @@ public sealed class SoundResourceManager : IDisposable
     /// </summary>
     public event EventHandler<(string Key, SoundResource Resource)>? SoundDisposed;
 
-    private SoundResourceManager() { }
+    private SoundResourceManager()
+    { }
 
     /// <summary>
     /// Singleton instance of the SoundResourceManager.

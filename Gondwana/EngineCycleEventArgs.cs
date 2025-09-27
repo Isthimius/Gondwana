@@ -9,7 +9,8 @@ public class EngineCycleEventArgs : EventArgs
     public double GrossCPS;
     public double NetFPS;
 
-    private EngineCycleEventArgs() { }
+    private EngineCycleEventArgs()
+    { }
 
     public EngineCycleEventArgs(long grossCycles, long grossCyclesTotal, long netCycles, long netCyclesTotal, double grossCPS, double netFPS)
     {

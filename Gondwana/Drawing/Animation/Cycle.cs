@@ -13,6 +13,7 @@ namespace Gondwana.Drawing.Animation;
 public class Cycle : ICloneable, IDisposable
 {
     #region fields
+
     [JsonProperty]
     public FrameSequence Sequence;
 
@@ -20,9 +21,11 @@ public class Cycle : ICloneable, IDisposable
     public readonly string CycleKey;
 
     internal long _throttle = 0;
+
     #endregion fields
 
     #region constructors / destructor
+
     public Cycle(FrameSequence sequence, double throttleTime, string cycleKey)
     {
         Sequence = sequence;
@@ -57,9 +60,11 @@ public class Cycle : ICloneable, IDisposable
         else
             Cycle._cycles.Add(CycleKey, this);
     }
-    #endregion
+
+    #endregion constructors / destructor
 
     #region public properties
+
     private double _throttleTime;
 
     [JsonProperty]
@@ -104,16 +109,20 @@ public class Cycle : ICloneable, IDisposable
 
     [JsonProperty]
     public Cycle NextCycle { get; set; }
+
     #endregion public properties
 
     #region ICloneable Members
+
     public object Clone()
     {
         return new Cycle(this);
     }
+
     #endregion ICloneable Members
 
     #region IDisposable Members
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
@@ -126,9 +135,11 @@ public class Cycle : ICloneable, IDisposable
 
         Cycle._cycles.Remove(CycleKey);
     }
+
     #endregion IDisposable Members
 
     #region static members
+
     internal static Dictionary<string, Cycle> _cycles = new Dictionary<string, Cycle>();
 
     public static int Count
@@ -166,5 +177,6 @@ public class Cycle : ICloneable, IDisposable
         foreach (Cycle cyc in tempCycles)
             cyc.Dispose();
     }
-    #endregion
+
+    #endregion static members
 }

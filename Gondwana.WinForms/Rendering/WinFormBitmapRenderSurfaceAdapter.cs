@@ -1,5 +1,4 @@
 ﻿using Gondwana.Rendering;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
@@ -30,6 +29,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     }
 
     private void OnHandleCreated(object? s, EventArgs e) => RefreshDestinationSize();
+
     private void OnSizeChanged(object? s, EventArgs e) => RefreshDestinationSize();
 
     public void RefreshDestinationSize()

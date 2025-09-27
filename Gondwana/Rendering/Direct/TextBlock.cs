@@ -1,6 +1,6 @@
+using System.Drawing;
 using Gondwana.Skia;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Rendering.Direct;
 
@@ -52,10 +52,17 @@ public class TextBlock : DirectDrawingBase
     {
     }
 
-    public TextBlock SetText(string text) { _text = text; return this; }
-    public TextBlock SetFont(SKTypeface typeface, float size, float? minSize = null) { _typeface = typeface; _fontSize = size; _minFontSize = minSize; return this; }
-    public TextBlock SetColors(SKColor fg, SKColor bg) { _foreColor = fg; _backColor = bg; return this; }
+    public TextBlock SetText(string text)
+    { _text = text; return this; }
+
+    public TextBlock SetFont(SKTypeface typeface, float size, float? minSize = null)
+    { _typeface = typeface; _fontSize = size; _minFontSize = minSize; return this; }
+
+    public TextBlock SetColors(SKColor fg, SKColor bg)
+    { _foreColor = fg; _backColor = bg; return this; }
+
     public TextBlock SetColors(Color fg, Color bg) => SetColors(fg.ToSKColor(), bg.ToSKColor());
+
     public TextBlock SetAlignment(SKTextAlign h, VerticalAlign v)
     {
         _hAlign = h;
@@ -63,10 +70,17 @@ public class TextBlock : DirectDrawingBase
         return this;
     }
 
-    public TextBlock UseShadow(bool enable = true) { _useShadow = enable; return this; }
-    public TextBlock UseOutline(bool enable = true) { _useOutline = enable; return this; }
-    public TextBlock EnableWrapping(bool enable = true) { _wrapText = enable; return this; }
-    public TextBlock SetMaxLines(int? maxLines) { _maxLines = maxLines; return this; }
+    public TextBlock UseShadow(bool enable = true)
+    { _useShadow = enable; return this; }
+
+    public TextBlock UseOutline(bool enable = true)
+    { _useOutline = enable; return this; }
+
+    public TextBlock EnableWrapping(bool enable = true)
+    { _wrapText = enable; return this; }
+
+    public TextBlock SetMaxLines(int? maxLines)
+    { _maxLines = maxLines; return this; }
 
     protected internal override void Render()
     {

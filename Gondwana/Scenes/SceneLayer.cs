@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Gondwana.Scenes.Coordinates;
 using Gondwana.Timers;
@@ -12,31 +11,43 @@ using Newtonsoft.Json;
 namespace Gondwana.Scenes;
 
 /// <summary>
-/// 
+///
 /// </summary>
 [JsonObject(IsReference = true)]
 public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 {
     #region events
+
     internal event EventHandler<RefreshQueueAreaAddedEventArgs> RefreshQueueAreaAdded;
-    
+
     public event GridPointSizeChangedEventHandler GridPointSizeChanged;
+
     public event VisibleChangedEventHandler VisibleChanged;
+
     public event SourceGridPointChangedEventHandler FirstColRowChanged;
+
     public event SceneLayerWrappingChangedEventHandler WrappingChanged;
+
     public event ShowGridLinesChangedEventHandler ShowGridLinesChanged;
+
     public event SceneLayerDisposingEventHandler Disposing;
-    #endregion
+
+    #endregion events
 
     #region delegates
+
     private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
-    #endregion
+
+    #endregion delegates
 
     #region static fields
+
     internal static List<SceneLayer> _allSceneLayer = new List<SceneLayer>();
-    #endregion
+
+    #endregion static fields
 
     #region private / internal fields
+
     private string _id = Guid.NewGuid().ToString();
 
     private int _tileWidth;             // rendered width
@@ -45,6 +56,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
     [JsonProperty]
     private SceneLayerPoint[][] _matrix;      // array of points; 2 dimensions (X, Y)
+
     private float _layerSyncModifier;   // 1 = default; <1 is slower, >1 is faster
 
     internal bool _wrapHoriz = false;
@@ -53,30 +65,40 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
     // first pixel visible (i.e., source pixel for rendering calculations)
     private Point _gridPtZeroPxl;
+
     private PointF _firstGridPt = new PointF();
-    
+
     internal SceneLayer.Movement _movement;
-    #endregion
+
+    #endregion private / internal fields
 
     #region public fields
+
     [JsonIgnore]
     public object Tag;
-    #endregion
+
+    #endregion public fields
 
     #region matrix wrapping delegates / variables
+
     private delegate SceneLayerPoint GetIndexer(int x, int y);
+
     private GetIndexer FindIndexedGridPoint;
 
     // TODO: remove this; wrapping should be handled via rendering, not by creating new GridPoints
     internal List<SceneLayerPoint> wrappedGridPts = new List<SceneLayerPoint>();
-    #endregion
+
+    #endregion matrix wrapping delegates / variables
 
     #region constructors / finalizer
+
     public SceneLayer(int columnCount, int rowCount) :
-        this(columnCount, rowCount, 0, 0, 1) { }
+        this(columnCount, rowCount, 0, 0, 1)
+    { }
 
     public SceneLayer(int columnCount, int rowCount, int width, int height) :
-        this(columnCount, rowCount, width, height, 1) { }
+        this(columnCount, rowCount, width, height, 1)
+    { }
 
     public SceneLayer(int columnCount, int rowCount, int width, int height, float layerSyncModifier)
     {
@@ -89,11 +111,13 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     }
 
     public SceneLayer(SceneLayerPoint[][] pt) :
-        this(pt, 0, 0, 1) { }
+        this(pt, 0, 0, 1)
+    { }
 
     public SceneLayer(SceneLayerPoint[][] pt, int width, int height) :
-        this(pt, width, height, 1) { }
-    
+        this(pt, width, height, 1)
+    { }
+
     public SceneLayer(SceneLayerPoint[][] pt, int width, int height, float layerSyncModifier)
     {
         InitValues(pt, width, height, layerSyncModifier, true);
@@ -109,9 +133,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     {
         InitValues(_matrix, _tileWidth, _tileHeight, _layerSyncModifier, true);
     }
-    #endregion
+
+    #endregion constructors / finalizer
 
     #region properties
+
     [JsonIgnore]
     public IGridCoordinates CoordinateSystem { get; set; }
 
@@ -319,9 +345,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         get { return _movement.AccelerationY; }
         set { _movement.AccelerationY = value; }
     }
-    #endregion
+
+    #endregion properties
 
     #region raise events
+
     protected virtual void OnGridPointSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight)
     {
         if (GridPointSizeChanged != null)
@@ -393,9 +421,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         if (ShowGridLinesChanged != null)
             ShowGridLinesChanged(new ShowGridLinesChangedEventArgs(this, oldVal, newVal));
     }
-    #endregion
+
+    #endregion raise events
 
     #region public methods
+
     public void SetGridPointSize(int newWidth, int newHeight)
     {
         // capture before and after values and raise event here
@@ -490,9 +520,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
         _movement.lastTick = tick;
     }
-    #endregion
+
+    #endregion public methods
 
     #region private / internal methods
+
     private void SaveGridCoordinatesToGridPoints()
     {
         // let each GridPoint in array know its position in the array
@@ -525,7 +557,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         // apply the parent offset with modifier to the child
         float childDifX = scrollBinding.ChildAnchorGridPoint.X + parentDifX;
         float childDifY = scrollBinding.ChildAnchorGridPoint.Y + parentDifY;
-        
+
         //scrollBinding.ChildGrid._gridPtZeroPxl = new Point((int)childDifX, (int)childDifY);
         scrollBinding.ChildGrid.SetSourceGridPoint(childDifX, childDifY);
     }
@@ -549,9 +581,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         if (addToInstances)
             _allSceneLayer.Add(this);
     }
-    #endregion
+
+    #endregion private / internal methods
 
     #region indexers
+
     public SceneLayerPoint this[int x, int y]
     {
         get { return FindIndexedGridPoint(x, y); }
@@ -629,9 +663,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
         return newGridPoint;
     }
-    #endregion
+
+    #endregion indexers
 
     #region IEnumerable Members
+
     IEnumerator<SceneLayerPoint> IEnumerable<SceneLayerPoint>.GetEnumerator()
     {
         for (int x = 0; x <= _matrix.GetUpperBound(0); x++)
@@ -642,9 +678,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             }
         }
     }
-    #endregion
+
+    #endregion IEnumerable Members
 
     #region IDisposable Members
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
@@ -674,9 +712,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         WrappingChanged = null;
         Disposing = null;
     }
-    #endregion
+
+    #endregion IDisposable Members
 
     #region static methods
+
     public static ReadOnlyCollection<SceneLayer> GetAllSceneLayers()
     {
         return _allSceneLayer.AsReadOnly();
@@ -693,7 +733,8 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     {
         throw new NotImplementedException();
     }
-    #endregion
+
+    #endregion static methods
 
     internal class Movement
     {
@@ -706,15 +747,19 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         internal PointF destCoord;
 
         #region ctor
+
         internal Movement(SceneLayer matrix)
         {
             parent = matrix;
             IsScrolling = false;
         }
-        #endregion
+
+        #endregion ctor
 
         #region properties
+
         private float _velocityX;
+
         internal float VelocityX
         {
             get { return _velocityX; }
@@ -730,6 +775,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
 
         private float _velocityY;
+
         internal float VelocityY
         {
             get { return _velocityY; }
@@ -747,6 +793,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         internal bool IsScrolling { get; set; }
 
         private float _accelerationX;
+
         internal float AccelerationX
         {
             get { return _accelerationX; }
@@ -759,6 +806,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
 
         private float _accelerationY;
+
         internal float AccelerationY
         {
             get { return _accelerationY; }
@@ -771,6 +819,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
 
         private float _terminalVelocityXMin = float.MinValue;
+
         public float TerminalVelocityXMin
         {
             get { return _terminalVelocityXMin; }
@@ -782,6 +831,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
 
         private float _terminalVelocityXMax = float.MaxValue;
+
         public float TerminalVelocityXMax
         {
             get { return _terminalVelocityXMax; }
@@ -793,6 +843,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
 
         private float _terminalVelocityYMin = float.MinValue;
+
         public float TerminalVelocityYMin
         {
             get { return _terminalVelocityYMin; }
@@ -804,6 +855,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
 
         private float _terminalVelocityYMax = float.MaxValue;
+
         public float TerminalVelocityYMax
         {
             get { return _terminalVelocityYMax; }
@@ -813,9 +865,11 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
                 LimitVelocityYByTerminal();
             }
         }
-        #endregion
+
+        #endregion properties
 
         #region methods
+
         internal void Start(double totalTime, PointF dest)
         {
             Stop();
@@ -918,6 +972,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             if (_velocityY > TerminalVelocityYMax)
                 _velocityY = TerminalVelocityYMax;
         }
-        #endregion
+
+        #endregion methods
     }
 }

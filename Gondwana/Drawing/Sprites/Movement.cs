@@ -1,24 +1,30 @@
-using Gondwana.Timers;
-using Microsoft.Extensions.Logging;
 using System.Drawing;
+using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Sprites;
 
 public class Movement : IDisposable
 {
     #region events
+
     public event SpriteMovementEventHandler Started;
+
     public event SpriteMovePointFinishedHandler MovePointFinished;
+
     public event SpriteMovementEventHandler Stopped;
-    #endregion
+
+    #endregion events
 
     #region private / internal fields
+
     private Sprite _parent;
     internal long _lastTick;
     internal MovePoint _movePoint;
-    #endregion
+
+    #endregion private / internal fields
 
     #region constructors / finalizer
+
     protected internal Movement(Sprite sprite)
     {
         _parent = sprite;
@@ -33,9 +39,11 @@ public class Movement : IDisposable
     {
         Dispose();
     }
-    #endregion
+
+    #endregion constructors / finalizer
 
     #region public properties
+
     public Sprite Parent
     {
         get { return _parent; }
@@ -55,7 +63,7 @@ public class Movement : IDisposable
     /// <summary>
     /// Returns total number of seconds left in current list of MovePoint objects for the
     /// parent Sprite.  If there are no MovePoint objects, will return 0.  If the list of
-    /// MovePoint objects is recursive, will return -1.  Note that non 0 values in 
+    /// MovePoint objects is recursive, will return -1.  Note that non 0 values in
     /// VelocityX or VelocityY will not affect this property.
     /// <para>For <see cref="Sprite"/> instances moving with Velocity instead of a MovePoint, this value will be 0</para>
     /// </summary>
@@ -97,6 +105,7 @@ public class Movement : IDisposable
     }
 
     private double _velocityX;          // tiles per second
+
     public double VelocityX
     {
         get { return _velocityX; }
@@ -116,6 +125,7 @@ public class Movement : IDisposable
     }
 
     private double _velocityY;          // tiles per second
+
     public double VelocityY
     {
         get { return _velocityY; }
@@ -135,6 +145,7 @@ public class Movement : IDisposable
     }
 
     private double _accelerationX;
+
     public double AccelerationX
     {
         get { return _accelerationX; }
@@ -152,6 +163,7 @@ public class Movement : IDisposable
     }
 
     private double _accelerationY;
+
     public double AccelerationY
     {
         get { return _accelerationY; }
@@ -169,6 +181,7 @@ public class Movement : IDisposable
     }
 
     private double _terminalVelocityXMin = double.MinValue;
+
     public double TerminalVelocityXMin
     {
         get { return _terminalVelocityXMin; }
@@ -180,6 +193,7 @@ public class Movement : IDisposable
     }
 
     private double _terminalVelocityXMax = double.MaxValue;
+
     public double TerminalVelocityXMax
     {
         get { return _terminalVelocityXMax; }
@@ -191,6 +205,7 @@ public class Movement : IDisposable
     }
 
     private double _terminalVelocityYMin = double.MinValue;
+
     public double TerminalVelocityYMin
     {
         get { return _terminalVelocityYMin; }
@@ -202,6 +217,7 @@ public class Movement : IDisposable
     }
 
     private double _terminalVelocityYMax = double.MaxValue;
+
     public double TerminalVelocityYMax
     {
         get { return _terminalVelocityYMax; }
@@ -211,9 +227,11 @@ public class Movement : IDisposable
             LimitVelocityYByTerminal();
         }
     }
-    #endregion
+
+    #endregion public properties
 
     #region public methods
+
     public void AddMovePoint(double totalTime, PointF destCoord)
     {
         AddMovePoint(totalTime, destCoord, _parent.RenderSize);
@@ -381,9 +399,11 @@ public class Movement : IDisposable
         LimitVelocityXByTerminal();
         LimitVelocityYByTerminal();
     }
-    #endregion
+
+    #endregion public methods
 
     #region internal methods
+
     internal void MoveNext(long currentTick)
     {
         // no MovePoint to move
@@ -444,9 +464,11 @@ public class Movement : IDisposable
         // move the sprite to the new DrawLocation
         _parent.MoveSprite(nextLoc);
     }
-    #endregion
+
+    #endregion internal methods
 
     #region private methods
+
     private void CalcNextLocation()
     {
         Rectangle origLoc = SpriteManager.GetDrawLocation(_parent, _parent.ParentGrid,
@@ -484,9 +506,11 @@ public class Movement : IDisposable
         if (_velocityY > TerminalVelocityYMax)
             _velocityY = TerminalVelocityYMax;
     }
-    #endregion
+
+    #endregion private methods
 
     #region IDisposable Members
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
@@ -494,5 +518,6 @@ public class Movement : IDisposable
         MovePointFinished = null;
         Stopped = null;
     }
-    #endregion
+
+    #endregion IDisposable Members
 }

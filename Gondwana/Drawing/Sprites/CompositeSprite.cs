@@ -11,7 +11,9 @@ public class CompositeSprite
     private List<Sprite> _children = new List<Sprite>();
 
     #region ctor
-    public CompositeSprite() { }
+
+    public CompositeSprite()
+    { }
 
     public CompositeSprite(List<Sprite> sprites)
     {
@@ -19,7 +21,9 @@ public class CompositeSprite
             Add(sprite);
     }
 
-    public CompositeSprite(params Sprite[] sprites) : this(sprites.ToList<Sprite>()) { }
+    public CompositeSprite(params Sprite[] sprites) : this(sprites.ToList<Sprite>())
+    {
+    }
 
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
@@ -27,9 +31,11 @@ public class CompositeSprite
         foreach (var sprite in _children)
             sprite.Disposing += sprite_Disposing;
     }
-    #endregion
+
+    #endregion ctor
 
     #region methods
+
     public void Add(Sprite sprite)
     {
         if (_children.Contains(sprite))
@@ -69,9 +75,11 @@ public class CompositeSprite
 
         return Range;
     }
-    #endregion
+
+    #endregion methods
 
     #region properties
+
     [JsonIgnore]
     public ReadOnlyCollection<Sprite> Children
     {
@@ -108,5 +116,6 @@ public class CompositeSprite
             return new Rectangle(minX, minY, (maxX - minX), (maxY - minY));
         }
     }
-    #endregion
+
+    #endregion properties
 }

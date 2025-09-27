@@ -6,7 +6,7 @@ namespace Gondwana.WinForms.Rendering;
 public partial class WinFormBitmapRenderSurfaceControl : UserControl
 {
     private readonly SKControl _skControl;
-    
+
     public WinFormBitmapRenderSurfaceAdapter RenderSurfaceAdapter { get; }
 
     public RenderSurfaceHost<BitmapBackbuffer> RenderSurfaceHost { get; }
@@ -46,7 +46,7 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
             BeginInvoke((Action)RenderSurfaceAdapter.RefreshDestinationSize);
     }
 
-    /// <summary> 
+    /// <summary>
     /// Clean up any resources being used.
     /// </summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>

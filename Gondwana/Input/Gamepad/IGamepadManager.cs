@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-
 namespace Gondwana.Input.Gamepad;
 
-/// <summary>  
+/// <summary>
 /// Interface to track a collection of <see cref="IGamepadAdapter"> gamepad adapters."/>
-/// </summary>  
+/// </summary>
 public interface IGamepadManager<out T> where T : IGamepadAdapter
 {
-    /// <summary>  
+    /// <summary>
     /// Gets the list of currently connected gamepad adapters.
-    /// </summary>  
+    /// </summary>
     IReadOnlyCollection<T> ConnectedAdapters { get; }
 
-    /// <summary>  
+    /// <summary>
     /// Updates the <see cref="ConnectedAdapters"> of all connected gamepads.
     /// This will be called every frame to ensure the gamepad state is up-to-date.
     /// </summary>

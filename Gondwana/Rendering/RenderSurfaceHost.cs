@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Drawing;
-using System.Security.Cryptography;
-using Gondwana.Rendering.Direct;
+﻿using System.Drawing;
 using Gondwana.Scenes;
 using Gondwana.Skia;
 using Microsoft.Extensions.Logging;
@@ -14,7 +11,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 {
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
-    private RenderSurfaceHost() : base() { }
+    private RenderSurfaceHost() : base()
+    {
+    }
 
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
@@ -75,7 +74,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// Called as part of DoBackgroundTasks().
     /// </summary>
     /// <remarks>This method processes the visible layers of the scene and updates the backbuffer according to
-    /// the  refresh requirements specified by the scene's <see cref="SceneRefreshType"/>. It handles three main 
+    /// the  refresh requirements specified by the scene's <see cref="SceneRefreshType"/>. It handles three main
     /// refresh scenarios: <list type="bullet"> <item> <description><see cref="SceneRefreshType.None"/>: No updates are
     /// made to the backbuffer, and the last rendered frame remains visible.</description> </item> <item>
     /// <description><see cref="SceneRefreshType.Queue"/>: Only the tiles in the refresh queue of each visible layer
@@ -167,7 +166,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     }
 
     #region IDisposable
+
     private bool _disposed;
+
     public void Dispose()
     {
         Dispose(true);
@@ -189,9 +190,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     }
 
     ~RenderSurfaceHost() => Dispose(false);
-    #endregion
+
+    #endregion IDisposable
 
     #region private methods
+
     private void OnRenderSurfaceAdapterResized()
     {
         //Engine.Logger.LogTrace("in OnRenderSurfaceAdapterResized()");
@@ -230,5 +233,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter!.Render(img, dirty.ToSKRectI(), dirty.ToSKRect()));
     }
-    #endregion
+
+    #endregion private methods
 }

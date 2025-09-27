@@ -10,6 +10,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
 
     // keep delegates alive; initialize with null-forgiving default
     private MediaPlayer.LibVLCVideoLockCb _lockCb = default!;
+
     private MediaPlayer.LibVLCVideoUnlockCb _unlockCb = default!;
     private MediaPlayer.LibVLCVideoDisplayCb _displayCb = default!;
 
@@ -27,10 +28,15 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     public bool HasAudio { get; private set; } = true;
 
     public event EventHandler? Started;
+
     public event EventHandler? Paused;
+
     public event EventHandler? Stopped;
+
     public event EventHandler? Ended;
+
     public event EventHandler<VideoStateChangedEventArgs>? StateChanged;
+
     public event EventHandler<VideoFrameReadyEventArgs>? FrameReady;
 
     private static bool _vlcCoreInitialized = false;
@@ -139,9 +145,13 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     }
 
     public void Play() => _player.Play();
+
     public void Pause() => _player.Pause();
+
     public void Stop() => _player.Stop();
+
     public void Seek(TimeSpan position) => _player.Time = (long)position.TotalMilliseconds;
+
     public void SetRate(double rate) => _player.SetRate((float)rate);
 
     // ---------- buffer plumbing ----------

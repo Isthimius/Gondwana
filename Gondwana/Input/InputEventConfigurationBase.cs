@@ -7,7 +7,8 @@ public abstract class InputEventConfigurationBase
     protected internal long _lastEventTick;
     private long _ticksBetweenEvents;
 
-    private InputEventConfigurationBase() { }
+    private InputEventConfigurationBase()
+    { }
 
     protected InputEventConfigurationBase(double secondsBetweenEvents, bool isPaused)
     {

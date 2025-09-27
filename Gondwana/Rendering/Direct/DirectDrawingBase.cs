@@ -1,5 +1,5 @@
-using Gondwana.Timers;
 using System.Drawing;
+using Gondwana.Timers;
 
 namespace Gondwana.Rendering.Direct;
 
@@ -126,9 +126,10 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     public static bool operator >=(DirectDrawingBase? left, DirectDrawingBase? right) =>
         ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
 
-    #endregion
+    #endregion Equality & Operators
 
     #region Movement Inner Class
+
     internal class Movement
     {
         internal DirectDrawingBase? parent;
@@ -170,5 +171,6 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
         internal void Reset() => parent = null;
     }
-    #endregion
+
+    #endregion Movement Inner Class
 }

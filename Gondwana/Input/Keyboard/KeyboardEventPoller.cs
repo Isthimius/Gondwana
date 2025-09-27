@@ -19,7 +19,8 @@ public sealed class KeyboardEventPoller
 
     private readonly Dictionary<string, KeyEventConfiguration> _keyConfigs = new();
 
-    private KeyboardEventPoller() { }
+    private KeyboardEventPoller()
+    { }
 
     private KeyboardEventPoller(IKeyboardAdapter adapter)
     {
@@ -50,7 +51,7 @@ public sealed class KeyboardEventPoller
         {
             var key = kvp.Key;
             var config = kvp.Value;
-            
+
             if (config.IsPaused || !Adapter.PressedKeys.Contains(key)) continue;
 
             if (config.ReadyForNextEvent(tick))

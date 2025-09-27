@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace Gondwana.Drawing.Collisions;
 
@@ -43,10 +38,12 @@ internal class CollisionManager
                         // cycle through all Tile objects marked for collisions, and all Sprite objects
                         secondaryList = allSpritesAndCollisionTiles;
                         break;
+
                     case CollisionDetectionType.OthersWithColDetect:
                         // only cycle through other Tile objects with detection turned on
                         secondaryList = Tile.TileCollisions;
                         break;
+
                     default:
                         // shouldn't ever get here
                         secondaryList = new List<Tile>();

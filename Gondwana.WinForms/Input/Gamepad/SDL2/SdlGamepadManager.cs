@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Gondwana.Input.Gamepad;
+﻿using Gondwana.Input.Gamepad;
+using Microsoft.Extensions.Logging;
 using static SDL2.SDL;
 
 namespace Gondwana.WinForms.Input.Gamepad.SDL2;

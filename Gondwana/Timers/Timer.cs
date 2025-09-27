@@ -184,5 +184,6 @@ public sealed class Timer : IDisposable
         foreach (var key in expired)
             _timers.TryRemove(key, out _);
     }
-    #endregion
+
+    #endregion static members
 }

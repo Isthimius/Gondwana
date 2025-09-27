@@ -5,18 +5,25 @@ namespace Gondwana.Drawing.Animation;
 public class Animator : IDisposable
 {
     #region events
+
     public event AnimatorEventHandler Started;
+
     public event AnimatorEventHandler Stopped;
+
     public event AnimatorEventHandler Cycled;
+
     #endregion events
 
     #region private/internal fields
+
     private Tile parent;
     private bool cycling = false;
     private long LastTick = HighResTimer.GetCurrentTick();
+
     #endregion private/internal fields
 
     #region constructors / finalizer
+
     protected internal Animator(Tile tile)
     {
         parent = tile;
@@ -26,9 +33,11 @@ public class Animator : IDisposable
     {
         Dispose();
     }
+
     #endregion constructors / finalizer
 
     #region properties
+
     public Tile Parent
     {
         get { return parent; }
@@ -50,9 +59,11 @@ public class Animator : IDisposable
             }
         }
     }
+
     #endregion properties
 
     #region public methods
+
     public Cycle SetCurrentCycle(string cycleKey)
     {
         CurrentCycle = Cycle.GetAnimationCycle(cycleKey);
@@ -130,9 +141,11 @@ public class Animator : IDisposable
                 StopAnimation();
         }
     }
-    #endregion
+
+    #endregion public methods
 
     #region IDisposable Members
+
     public void Dispose()
     {
         Started = null;
@@ -140,5 +153,6 @@ public class Animator : IDisposable
         Cycled = null;
         GC.SuppressFinalize(this);
     }
-    #endregion
+
+    #endregion IDisposable Members
 }

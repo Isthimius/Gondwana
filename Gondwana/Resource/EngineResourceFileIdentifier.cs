@@ -22,7 +22,8 @@ public sealed class EngineResourceFileIdentifier
     [JsonIgnore]
     public Stream? Data => ResourceFile?[ResourceType, ResourceName];
 
-    public EngineResourceFileIdentifier() { }
+    public EngineResourceFileIdentifier()
+    { }
 
     public EngineResourceFileIdentifier(EngineResourceFile resFile, EngineResourceFileTypes resType, string entry)
     {

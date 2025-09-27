@@ -1,23 +1,21 @@
-using Gondwana;
-using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
-using Gondwana.Scenes;
-using Gondwana.Scenes.Coordinates;
-using Gondwana.Audio;
-using Gondwana.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Gondwana.WinForms;
-using Gondwana.Logging;
-using Microsoft.Extensions.Logging;
+using Gondwana;
+using Gondwana.Audio;
+using Gondwana.Drawing;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Rendering;
+using Gondwana.Scenes;
+using Gondwana.Scenes.Coordinates;
 
 namespace Slider
 {
     public class Puzzle : IDisposable
     {
         #region private / internal fields
+
         internal bool _spriteMoving = false;
         internal bool _isShuffling = false;
 
@@ -31,13 +29,15 @@ namespace Slider
         private Point openSpace;
 
         private Tilesheet tilesheet;
-        private Scene matrixes;          
+        private Scene matrixes;
 
         private SoundResource slideSound;
         private SoundResource tadaSound;
-        #endregion
+
+        #endregion private / internal fields
 
         #region constructors / destructor
+
         public Puzzle(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, string imgFile, int columns, int rows, Size size)
         {
             tilesheet = new Tilesheet("picture", imgFile);
@@ -89,9 +89,11 @@ namespace Slider
         {
             Dispose();
         }
-        #endregion
+
+        #endregion constructors / destructor
 
         #region public properties
+
         public int Columns
         {
             get { return numColumns; }
@@ -145,9 +147,11 @@ namespace Slider
                 return totalCorrect;
             }
         }
-        #endregion
+
+        #endregion public properties
 
         #region public methods
+
         public bool SlidePiece(Sprite sprite, double slideTime)
         {
             if (FindSpritesAdjToOpenSpace().IndexOf(sprite) == -1)
@@ -211,15 +215,17 @@ namespace Slider
         {
             return matrixes[0].CoordinateSystem.GetGridPtAtPxl(matrixes[0], new Point(pxlX, pxlY));
         }
-        #endregion
+
+        #endregion public methods
 
         #region private methods
+
         private void InitializeSprites(int tileWidth, int tileHeight)
         {
             SpriteManager.Clear();
 
             for (int x = 0; x < numColumns; x++)
-			{
+            {
                 for (int y = 0; y < numRows; y++)
                 {
                     Sprite sprite = SpriteManager.CreateSprite(matrixes[0], new Frame(tilesheet, x, y),
@@ -230,7 +236,7 @@ namespace Slider
                     sprite.SpriteMovement.Started += delMoveStart;
                     sprite.SpriteMovement.Stopped += delMoveStop;
                 }
-			}
+            }
 
             // remove the bottom-right tile; this will be the space for sliding
             int maxX = numColumns - 1;
@@ -269,9 +275,11 @@ namespace Slider
 
             return adjSprites;
         }
-        #endregion
+
+        #endregion private methods
 
         #region event handlers
+
         private void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)
         {
             _spriteMoving = true;
@@ -286,9 +294,11 @@ namespace Slider
             if (_isShuffling)
                 ShuffleNext();
         }
-        #endregion
+
+        #endregion event handlers
 
         #region IDisposable Members
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);
@@ -296,6 +306,7 @@ namespace Slider
             matrixes.Dispose();
             SpriteManager.Clear();
         }
-        #endregion
+
+        #endregion IDisposable Members
     }
 }

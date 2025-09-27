@@ -1,5 +1,5 @@
-﻿using Gondwana.Timers;
-using System.Drawing;
+﻿using System.Drawing;
+using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Sprites
 {

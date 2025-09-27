@@ -3,13 +3,14 @@
 public sealed class GamepadEventPoller
 {
     private readonly Dictionary<string, Dictionary<string, GamepadButtonEventConfiguration>> _configsByGamepadId = new();
-    
+
     /// <summary>
     /// Gets the singleton instance of the <see cref="GamepadEventPoller"/> class.
     /// </summary>
     public static GamepadEventPoller? Instance { get; private set; } = new();
 
-    private GamepadEventPoller() { }
+    private GamepadEventPoller()
+    { }
 
     private GamepadEventPoller(IEnumerable<IGamepadAdapter>? adapters)
     {

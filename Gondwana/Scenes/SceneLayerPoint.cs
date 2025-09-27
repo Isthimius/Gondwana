@@ -1,6 +1,6 @@
+using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
-using System.Drawing;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -12,6 +12,7 @@ namespace Gondwana.Scenes;
 public class SceneLayerPoint : Tile, IDisposable
 {
     #region private / internal fields
+
     [JsonProperty]
     internal SceneLayer parentSceneLayer;
 
@@ -19,9 +20,11 @@ public class SceneLayerPoint : Tile, IDisposable
     internal Point gridCoordinates;         // each SceneLayerPoint knows its location in the array in parentSceneLayer
 
     protected internal bool disableAddToRefreshQueue = true;
-    #endregion
+
+    #endregion private / internal fields
 
     #region constructors / finalizer
+
     [JsonConstructor]
     public SceneLayerPoint(SceneLayer matrix)
     {
@@ -29,7 +32,7 @@ public class SceneLayerPoint : Tile, IDisposable
         visible = true;
         parentSceneLayer = matrix;
     }
-    
+
     internal SceneLayerPoint(SceneLayerPoint gridPoint, Point gridCoord)
     {
         parentSceneLayer = gridPoint.parentSceneLayer;
@@ -46,9 +49,11 @@ public class SceneLayerPoint : Tile, IDisposable
     {
         Dispose();
     }
-    #endregion
+
+    #endregion constructors / finalizer
 
     #region public properties
+
     [JsonProperty]
     public virtual new Frame CurrentFrame
     {
@@ -92,7 +97,7 @@ public class SceneLayerPoint : Tile, IDisposable
     [JsonIgnore]
     public Point GridCoordinatesAbs
     {
-        get { return gridCoordinates;}
+        get { return gridCoordinates; }
     }
 
     [JsonIgnore]
@@ -114,18 +119,21 @@ public class SceneLayerPoint : Tile, IDisposable
             }
             else
                 if (animator != null)
-                {
-                    animator.Dispose();
-                    animator = null;
-                }
+            {
+                animator.Dispose();
+                animator = null;
+            }
         }
     }
-    #endregion
+
+    #endregion public properties
 
     #region IDisposable Members
+
     public new void Dispose()
     {
         base.Dispose();
     }
-    #endregion
+
+    #endregion IDisposable Members
 }

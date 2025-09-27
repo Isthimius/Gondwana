@@ -13,7 +13,7 @@ public sealed class XInputGamepadAdapter : IGamepadAdapter
     public IReadOnlyCollection<string> PressedButtons => _pressedButtons;
 
     public GamepadStickState? LeftStick { get; private set; }
-    
+
     public GamepadStickState? RightStick { get; private set; }
 
     public float LeftTrigger { get; private set; }

@@ -1,6 +1,6 @@
-using Gondwana.Drawing.Tilesheets;
 using System.Collections;
 using System.Runtime.Serialization;
+using Gondwana.Drawing.Tilesheets;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Animation;
@@ -11,6 +11,7 @@ namespace Gondwana.Drawing.Animation;
 public struct FrameSequence : IEnumerable<Frame>
 {
     #region fields
+
     [JsonProperty]
     public CycleType SequenceCycleType;
 
@@ -20,9 +21,11 @@ public struct FrameSequence : IEnumerable<Frame>
     private int currentFrameIdx;
     private int curFrameIncrement;
     private bool cycleFinished;
+
     #endregion fields
 
     #region constructors / finalizer
+
     public FrameSequence(Frame frame)
     {
         frameList = new List<Frame>();
@@ -49,9 +52,11 @@ public struct FrameSequence : IEnumerable<Frame>
         curFrameIncrement = 1;
         cycleFinished = true;
     }
+
     #endregion constructors / finalizer
 
     #region properties
+
     [JsonIgnore]
     public bool CycleFinished
     {
@@ -93,9 +98,11 @@ public struct FrameSequence : IEnumerable<Frame>
     {
         get { return frameList.AsReadOnly(); }
     }
+
     #endregion properties
 
     #region public methods
+
     public Frame AddFrame(Tilesheet bmp, int xTile, int yTile)
     {
         return AddFrame(new Frame(bmp, xTile, yTile));
@@ -121,9 +128,11 @@ public struct FrameSequence : IEnumerable<Frame>
         currentFrameIdx = 0;
         curFrameIncrement = 1;
     }
+
     #endregion public methods
 
     #region internal methods
+
     internal void StopCycle()
     {
         cycleFinished = true;
@@ -170,9 +179,11 @@ public struct FrameSequence : IEnumerable<Frame>
 
         return frameList[currentFrameIdx];
     }
-    #endregion
+
+    #endregion internal methods
 
     #region private methods
+
     private void SetDefaults()
     {
         frameList = new List<Frame>();
@@ -181,16 +192,20 @@ public struct FrameSequence : IEnumerable<Frame>
         curFrameIncrement = 1;
         cycleFinished = true;
     }
-    #endregion
+
+    #endregion private methods
 
     #region indexers
+
     public Frame this[int frameIdx]
     {
         get { return frameList[frameIdx]; }
     }
+
     #endregion indexers
 
     #region IEnumerable Members
+
     public IEnumerator GetEnumerator()
     {
         for (int i = 0; i < frameList.Count; i++)
@@ -201,5 +216,6 @@ public struct FrameSequence : IEnumerable<Frame>
     {
         return frameList.GetEnumerator();
     }
+
     #endregion IEnumerable Members
 }

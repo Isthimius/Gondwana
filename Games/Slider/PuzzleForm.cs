@@ -6,13 +6,9 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Gondwana;
-using Gondwana.Audio;
-using Gondwana.Audio.Midi;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.WinForms;
-using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
 
 namespace Slider
@@ -85,9 +81,9 @@ namespace Slider
             var coords = Program.puzzle.GetGridCoordinates(e.CurrentPosition.X, e.CurrentPosition.Y);
 
             if (lblCoord.IsDisposed || !lblCoord.IsHandleCreated) return;
-            
+
             lblCoord.BeginInvoke((Action)(() => lblCoord.Text = $"x: {coords.X}   y: {coords.Y}"));
-            
+
             if (e.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
             {
                 // TODO: also check if any sprites are moving
@@ -111,7 +107,7 @@ namespace Slider
                 e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SamplingTime.ToString("N2"));
         }
 
-        void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
+        private void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
         {
             txtPieces.Text = Program.puzzle.TotalPieces.ToString();
             txtCorrect.Text = Program.puzzle.TotalPiecesCorrect.ToString();

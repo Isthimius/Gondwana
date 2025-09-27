@@ -1,5 +1,5 @@
-﻿using Gondwana.Drawing;
-using System.Drawing;
+﻿using System.Drawing;
+using Gondwana.Drawing;
 
 namespace Gondwana.Scenes.Coordinates;
 
@@ -15,6 +15,7 @@ public class DiagIsoSquareMatrixCoordinates : IGridCoordinates
         throw new NotImplementedException();
 
         #region old VB6 code
+
         /*
 'special calculation for FindGridCoordWithPixel when
 'g_renderMode is DIAGONAL_ISOMETRIC_SQUARE_MAP
@@ -35,16 +36,16 @@ With g_layers
     ptGrid.X = Int((XPixel / .Layer(Layer).TileWidthFinal) + _
             (.Layer(Layer).FirstX / 2)) * 2
     ptGrid.Y = Int((YPixel / .Layer(Layer).TileHeightFinal) + .Layer(Layer).FirstY)
-    
+
     ptReturn.X = ptGrid.X
     ptReturn.Y = ptGrid.Y
-    
+
     'step 2: find even-numbered column source pixel coordinates ("major" source)
     ptPixelMajor.X = (CSng(ptGrid.X) - .Layer(Layer).FirstX) * _
             (.Layer(Layer).TileWidthFinal / 2)
     ptPixelMajor.Y = (CSng(ptGrid.Y) - .Layer(Layer).FirstY) * _
             .Layer(Layer).TileHeightFinal
-    
+
     'step 3: find "minor" section source (quadrant within "major" section - see enum)
     '   i.e., we are dividing the "major" section into 4 "minor" sections
     If ((XPixel - ptPixelMajor.X) < (CSng(.Layer(Layer).TileWidthFinal) / 2)) Then    'left section
@@ -67,12 +68,12 @@ With g_layers
             ptPixelMinor.Y = ptPixelMajor.Y + (CSng(.Layer(Layer).TileHeightFinal) / 2)
         End If
     End If
-    
+
     'step 4: determine which side of slope within minor section pixel is on
     '   where m=(y-b)/x  (you do remember your algebra, don't you?)
     '   m is slope, y is height, x is width, and b is y-intercept
     sngIsoSlope = CSng(.Layer(Layer).TileHeightFinal) / CSng(.Layer(Layer).TileWidthFinal)
-    
+
     '0.001 is included to avoid divide-by-0 errors
     Select Case lngMinorSection
         Case MINOR_SECTION.UPPER_LEFT
@@ -82,19 +83,19 @@ With g_layers
                 ptReturn.X = ptReturn.X - 1
                 ptReturn.Y = ptReturn.Y - 1
             End If
-            
+
         Case MINOR_SECTION.LOWER_LEFT
             If ((YPixel - ptPixelMinor.Y) / _
                     (XPixel - ptPixelMinor.X + 0.001)) > sngIsoSlope _
                     Then ptReturn.X = ptReturn.X - 1
-            
+
         Case MINOR_SECTION.UPPER_RIGHT
             If ((YPixel - ptPixelMinor.Y) / _
                     (XPixel - ptPixelMinor.X + 0.001)) < sngIsoSlope Then
                 ptReturn.X = ptReturn.X + 1
                 ptReturn.Y = ptReturn.Y - 1
             End If
-            
+
         Case MINOR_SECTION.LOWER_RIGHT
             sngIsoSlope = -1 * sngIsoSlope
             If (((YPixel - ptPixelMinor.Y) - (CSng(.Layer(Layer).TileHeightFinal) / 2)) / _
@@ -106,7 +107,8 @@ End With
 FindCoordOnDiagIsoSquareMap = ptReturn
 End Function
         */
-        #endregion
+
+        #endregion old VB6 code
     }
 
     public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverlaps)

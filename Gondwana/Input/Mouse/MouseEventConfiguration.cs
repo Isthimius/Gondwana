@@ -1,5 +1,3 @@
-using Gondwana.Input;
-
 namespace Gondwana.Input.Mouse;
 
 public class MouseEventConfiguration : InputEventConfigurationBase

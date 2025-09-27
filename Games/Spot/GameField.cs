@@ -1,8 +1,6 @@
-﻿
-namespace Spot
+﻿namespace Spot
 {
     public class GameField
     {
-
     }
 }

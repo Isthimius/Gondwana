@@ -1,9 +1,9 @@
 using System.Drawing;
-using Newtonsoft.Json;
 using Gondwana.Resource;
 using Gondwana.Skia;
-using SkiaSharp;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Gondwana.Drawing.Tilesheets;
 
@@ -29,7 +29,8 @@ public sealed class Tilesheet : IDisposable
 
     public event EventHandler<TilesheetDisposedEventArgs> Disposed;
 
-    private Tilesheet() { }
+    private Tilesheet()
+    { }
 
     public Tilesheet(string name, SKBitmap bitmap)
         : this()
@@ -65,7 +66,7 @@ public sealed class Tilesheet : IDisposable
         _tileSize = baseSheet._tileSize;
         _overlapTopSpace = baseSheet._overlapTopSpace;
         ValueBag = new(baseSheet.ValueBag);
-        
+
         _name = name;
         SkBitmap = SKBitmap.Decode(file);
         ImageFilePath = file;
@@ -192,7 +193,7 @@ public sealed class Tilesheet : IDisposable
 
     [JsonIgnore]
     public int PrimaryHeight => _tileSize.Height - _overlapTopSpace;
-    
+
     [JsonIgnore]
     public float OverlapTopSpaceToPrimaryRatio => (float)_overlapTopSpace / PrimaryHeight;
 
@@ -391,7 +392,7 @@ public sealed class Tilesheet : IDisposable
         {
             Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Engine.Logger.LogError(ex, "Error during Tilesheet Disposed event handling.");
         }

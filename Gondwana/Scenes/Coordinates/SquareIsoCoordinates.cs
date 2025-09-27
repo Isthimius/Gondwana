@@ -1,6 +1,5 @@
-﻿using Gondwana.Drawing;
-using Gondwana.Drawing.Tilesheets;
-using System.Drawing;
+﻿using System.Drawing;
+using Gondwana.Drawing;
 
 namespace Gondwana.Scenes.Coordinates;
 
@@ -33,7 +32,7 @@ public class SquareIsoCoordinates : IGridCoordinates
         // find upper-left and bottom-right X and Y grid coordinates
         PointF ptUL = GetGridPtAtPxl(matrix, new Point(pixelRange.Left, pixelRange.Top));
         PointF ptBR = GetGridPtAtPxl(matrix, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
-        
+
         // loop through all coordinates and add to return value
         for (int y = (int)Math.Floor(ptUL.Y); y <= (int)ptBR.Y; y++)
         {
@@ -44,7 +43,7 @@ public class SquareIsoCoordinates : IGridCoordinates
                     retVal.Add(gPt);
             }
         }
-        
+
         // check for overlaps if required
         //if (includeOverlaps)
         //{
@@ -67,7 +66,7 @@ public class SquareIsoCoordinates : IGridCoordinates
         //        }
         //    }
         //}
-        
+
         return retVal;
     }
 
@@ -80,7 +79,6 @@ public class SquareIsoCoordinates : IGridCoordinates
 
         retVal.Width = tile.ParentGrid.GridPointWidth;
         retVal.Height = tile.ParentGrid.GridPointHeight;
-        
 
         if (inclOverlaps)
         {
@@ -119,20 +117,28 @@ public class SquareIsoCoordinates : IGridCoordinates
         {
             case CardinalDirections.N:
                 return matrix[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y - 1];
+
             case CardinalDirections.NE:
                 return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
+
             case CardinalDirections.E:
                 return matrix[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y];
+
             case CardinalDirections.SE:
                 return matrix[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y + 1];
+
             case CardinalDirections.S:
                 return matrix[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y + 1];
+
             case CardinalDirections.SW:
                 return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y + 1];
+
             case CardinalDirections.W:
                 return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y];
+
             case CardinalDirections.NW:
                 return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
+
             default:
                 return null;
         }

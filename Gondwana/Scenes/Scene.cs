@@ -7,46 +7,59 @@ using Newtonsoft.Json;
 namespace Gondwana.Scenes;
 
 /// <summary>
-/// 
+///
 /// </summary>
 [JsonObject(IsReference = true)]
 public class Scene : IEnumerable, IDisposable
 {
     #region static fields
+
     internal static List<Scene> _allSceneLayeres = new List<Scene>();
-    #endregion
+
+    #endregion static fields
 
     #region private / internal field declarations
+
     [JsonProperty]
     private List<SceneLayer> _matrixes;    // array of SceneLayer objects; each element is one "layer"
-    
+
     internal List<SceneLayer> _visibleLayers = new List<SceneLayer>();
     internal SceneRefreshType refreshNeeded = SceneRefreshType.All;
 
     private string _id = Guid.NewGuid().ToString();
-    #endregion
+
+    #endregion private / internal field declarations
 
     #region public fields
+
     [JsonIgnore]
     public object Tag;
-    #endregion
+
+    #endregion public fields
 
     #region events
+
     public event SceneLayerAddRemoveHandler SceneLayerAdded;
+
     public event SceneLayerAddRemoveHandler SceneLayerRemoved;
+
     public event SceneLayeresDisposingEventHandler Disposing;
-    #endregion
+
+    #endregion events
 
     #region delegates
+
     private SourceGridPointChangedEventHandler firstCRDel;
     private VisibleChangedEventHandler visChgDel;
     private GridPointSizeChangedEventHandler gridPtSzDel;
     private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
     private SceneLayerWrappingChangedEventHandler wrappingDel;
     private SceneLayerDisposingEventHandler matrixDisposingDel;
-    #endregion
+
+    #endregion delegates
 
     #region constructors / finalizer
+
     public Scene()
     {
         _matrixes = new List<SceneLayer>();
@@ -76,9 +89,11 @@ public class Scene : IEnumerable, IDisposable
     {
         Init();
     }
-    #endregion
+
+    #endregion constructors / finalizer
 
     #region properties
+
     [JsonProperty]
     public string ID
     {
@@ -136,9 +151,11 @@ public class Scene : IEnumerable, IDisposable
     {
         get { return _visibleLayers; }
     }
-    #endregion
-    
+
+    #endregion properties
+
     #region public methods
+
     public SceneLayer AddLayer(SceneLayer matrix)
     {
         _matrixes.Add(matrix);
@@ -217,9 +234,11 @@ public class Scene : IEnumerable, IDisposable
 
         return ret;
     }
-    #endregion
+
+    #endregion public methods
 
     #region raise events
+
     protected virtual void OnSceneLayerAdded(SceneLayer grid)
     {
         grid.Parent = this;
@@ -247,9 +266,11 @@ public class Scene : IEnumerable, IDisposable
         if (SceneLayerRemoved != null)
             SceneLayerRemoved(new SceneLayerAddRemoveEventArgs(this, grid));
     }
-    #endregion
+
+    #endregion raise events
 
     #region private methods
+
     private void _MatrixColRowChanged(SourceGridPointChangedEventArgs e)
     {
         // shifting at least one Layer, so redraw entire Backbuffer
@@ -338,9 +359,11 @@ public class Scene : IEnumerable, IDisposable
 
         _allSceneLayeres.Add(this);
     }
-    #endregion
+
+    #endregion private methods
 
     #region indexers
+
     public SceneLayer this[int i]
     {
         get
@@ -358,9 +381,11 @@ public class Scene : IEnumerable, IDisposable
             catch { throw; }
         }
     }
-    #endregion
+
+    #endregion indexers
 
     #region enumerable code
+
     public IEnumerator GetEnumerator()
     {
         for (int i = 0; i < _matrixes.Count; i++)
@@ -368,9 +393,11 @@ public class Scene : IEnumerable, IDisposable
             yield return _matrixes[i];
         }
     }
-    #endregion
+
+    #endregion enumerable code
 
     #region IDisposable Members
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
@@ -395,9 +422,11 @@ public class Scene : IEnumerable, IDisposable
         SceneLayerRemoved = null;
         Disposing = null;
     }
-    #endregion
+
+    #endregion IDisposable Members
 
     #region static methods
+
     public static Scene GetSceneLayeresByID(string id)
     {
         foreach (Scene matrixes in _allSceneLayeres)
@@ -429,5 +458,6 @@ public class Scene : IEnumerable, IDisposable
         foreach (var matrixes in tmp)
             matrixes.Dispose();
     }
-    #endregion
+
+    #endregion static methods
 }

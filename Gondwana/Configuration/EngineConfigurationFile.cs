@@ -9,7 +9,8 @@ public partial class EngineConfigurationFile : IDisposable
     private const string _defaultConfigFileName = "gondwana.json";
     private string _fileName = _defaultConfigFileName;
 
-    private EngineConfigurationFile() { }
+    private EngineConfigurationFile()
+    { }
 
     public static EngineConfigurationFile CreateNew(string? configFileName = null, bool? autoSave = null)
     {

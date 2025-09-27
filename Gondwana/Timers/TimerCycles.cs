@@ -1,4 +1,5 @@
 ﻿namespace Gondwana.Timers
 {
-    public enum TimerCycles { Once, Repeating }
+    public enum TimerCycles
+    { Once, Repeating }
 }

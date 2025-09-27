@@ -9,7 +9,7 @@ public class GpuBackbuffer : BackbufferBase
     private readonly GRContext _grContext;
     private readonly GRBackendRenderTarget _renderTarget;
     private readonly SKSurface _surface;
-    
+
     public GpuBackbuffer(int width, int height)
         : base(width, height)
     {
@@ -51,6 +51,7 @@ public class GpuBackbuffer : BackbufferBase
         if (image != null)
             Canvas.DrawImage(image, tile.DrawLocation.ToSKRect());
     }
+
     protected internal override SKImage Snapshot() => _surface.Snapshot();
 
     public override void Dispose()

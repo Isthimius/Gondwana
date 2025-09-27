@@ -1,8 +1,7 @@
+using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
-using Microsoft.Extensions.Logging;
-using System.Drawing;
 
 namespace Gondwana.Rendering;
 

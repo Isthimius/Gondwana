@@ -14,6 +14,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
     // resize request (written by UI thread, read by render thread)
     private int _reqW, _reqH;           // 0 means "no request"
+
     private int _resizeFlag;            // 0 = none, 1 = pending
 
     public BitmapBackbuffer(int width, int height) : base(width, height)

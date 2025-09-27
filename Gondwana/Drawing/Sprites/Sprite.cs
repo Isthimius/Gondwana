@@ -1,8 +1,6 @@
 using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
-using Gondwana.Drawing.Sprites;
-using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 
@@ -12,11 +10,15 @@ namespace Gondwana.Drawing.Sprites;
 public class Sprite : Tile, IDisposable, ICloneable
 {
     #region events
+
     public event SpriteMovedEventHandler SpriteMoved;
+
     public event SpriteDisposingEventHandler Disposing;
-    #endregion
+
+    #endregion events
 
     #region private / internal fields
+
     protected internal Movement movement;
     private string id;
 
@@ -30,9 +32,11 @@ public class Sprite : Tile, IDisposable, ICloneable
     private int nudgeY;
     private Size renderSize;
     private PointF gridCoordinates;
-    #endregion
+
+    #endregion private / internal fields
 
     #region constructors / finalizer
+
     protected internal Sprite(SceneLayer matrix, Frame frame)
     {
         id = Guid.NewGuid().ToString();
@@ -104,9 +108,11 @@ public class Sprite : Tile, IDisposable, ICloneable
 
         SpriteManager._spriteList.Add(this);
     }
-    #endregion
+
+    #endregion constructors / finalizer
 
     #region ICloneable Members
+
     /// <summary>
     /// does not copy the value of the Tag property
     /// </summary>
@@ -116,9 +122,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         Sprite newSprite = new Sprite(this);
         return newSprite;
     }
-    #endregion
+
+    #endregion ICloneable Members
 
     #region public properties
+
     [JsonProperty]
     public string ID
     {
@@ -271,9 +279,11 @@ public class Sprite : Tile, IDisposable, ICloneable
                 base.ZOrder = value;
         }
     }
-    #endregion
+
+    #endregion public properties
 
     #region public methods
+
     public void MoveSprite(float X, float Y)
     {
         MoveSprite(new PointF(X, Y));
@@ -330,9 +340,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         MoveSprite(newLayer);
         RenderSize = newSize;
     }
-    #endregion
+
+    #endregion public methods
 
     #region private methods
+
     private void WrapSpriteLocation()
     {
         // find the "wrapped" equivalent point of gridCoordinates
@@ -362,9 +374,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         if (wrapped)
             MoveSprite(moveTo);
     }
-    #endregion
+
+    #endregion private methods
 
     #region IDisposable Members
+
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
@@ -391,5 +405,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         SpriteMoved = null;
         Disposing = null;
     }
-    #endregion
+
+    #endregion IDisposable Members
 }

@@ -37,7 +37,8 @@ public class SoundResource : IDisposable
     /// </summary>
     public event EventHandler Disposed;
 
-    private SoundResource() { }
+    private SoundResource()
+    { }
 
     internal SoundResource(
         string key,
@@ -221,7 +222,6 @@ public class SoundResource : IDisposable
 
             if (monoPanProvider != null)
                 monoPanProvider.Pan = _pan;
-
             else if (stereoPanProvider != null)
                 ApplyStereoPan(stereoPanProvider, _pan);
         }
