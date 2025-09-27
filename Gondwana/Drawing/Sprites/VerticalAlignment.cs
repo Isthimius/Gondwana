@@ -1,16 +1,13 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Gondwana.Drawing.Sprites;
 
-[DataContract]
+[JsonConverter(typeof(StringEnumConverter))]
 public enum VerticalAlignment
 {
-    [EnumMember]
     Top,
-
-    [EnumMember]
     Middle,
-    
-    [EnumMember]
     Bottom
 }

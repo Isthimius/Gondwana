@@ -1,14 +1,15 @@
-using Gondwana.Rendering;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using Gondwana.Rendering;
+using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
 
 /// <summary>
 /// 
 /// </summary>
-[DataContract(IsReference = true)]
+[JsonObject(IsReference = true)]
 public class Scene : IEnumerable, IDisposable
 {
     #region static fields
@@ -16,7 +17,7 @@ public class Scene : IEnumerable, IDisposable
     #endregion
 
     #region private / internal field declarations
-    [DataMember]
+    [JsonProperty]
     private List<SceneLayer> _matrixes;    // array of SceneLayer objects; each element is one "layer"
     
     internal List<SceneLayer> _visibleLayers = new List<SceneLayer>();
@@ -26,7 +27,7 @@ public class Scene : IEnumerable, IDisposable
     #endregion
 
     #region public fields
-    [IgnoreDataMember]
+    [JsonIgnore]
     public object Tag;
     #endregion
 
@@ -78,26 +79,26 @@ public class Scene : IEnumerable, IDisposable
     #endregion
 
     #region properties
-    [DataMember]
+    [JsonProperty]
     public string ID
     {
         get { return _id; }
         protected internal set { _id = value; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public int Count
     {
         get { return _matrixes.Count; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public int CountOfVisibleLayers
     {
         get { return _visibleLayers.Count; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public SceneLayer ForemostVisibleLayer
     {
         get
@@ -107,7 +108,7 @@ public class Scene : IEnumerable, IDisposable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public SceneLayer BackmostVisibleLayer
     {
         get
@@ -117,20 +118,20 @@ public class Scene : IEnumerable, IDisposable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public SceneRefreshType RefreshNeeded
     {
         get { return refreshNeeded; }
         set { refreshNeeded = value; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public ReadOnlyCollection<SceneLayer> SceneLayerList
     {
         get { return _matrixes.AsReadOnly(); }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public List<SceneLayer> VisibleSceneLayerList
     {
         get { return _visibleLayers; }

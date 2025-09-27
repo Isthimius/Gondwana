@@ -7,6 +7,7 @@ namespace Gondwana.Configuration;
 /// <summary>
 /// Settings used by the engine when cycling
 /// </summary>
+[JsonObject(IsReference = true)]
 public partial class EngineConfiguration
 {
     private int _targetFPS = 60;

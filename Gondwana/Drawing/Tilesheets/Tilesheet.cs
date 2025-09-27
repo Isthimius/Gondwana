@@ -10,6 +10,7 @@ namespace Gondwana.Drawing.Tilesheets;
 /// <summary>
 /// Represents a tilesheet image and metadata for rendering tiles.
 /// </summary>
+[JsonObject(IsReference = true)]
 public sealed class Tilesheet : IDisposable
 {
     private readonly struct TilesheetSlice

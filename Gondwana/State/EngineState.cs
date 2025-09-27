@@ -11,8 +11,17 @@ using Gondwana.Drawing.Tilesheets;
 
 namespace Gondwana.State;
 
+[JsonObject(IsReference = true)]
 public class EngineState
 {
+    public static JsonSerializerSettings JsonSerializerSettings { get; set; }
+        = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            Formatting = Formatting.Indented,
+            PreserveReferencesHandling = PreserveReferencesHandling.All
+        };
+
     [JsonProperty]
     public Dictionary<string, string> ValueBag { get; set; } = new();
 
@@ -51,7 +60,7 @@ public class EngineState
 
     public void SaveToFile(string path, bool compress = false)
     {
-        var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+        var json = JsonConvert.SerializeObject(this, JsonSerializerSettings);
 
         if (compress)
         {
@@ -82,7 +91,7 @@ public class EngineState
             json = File.ReadAllText(path);
         }
 
-        var result = JsonConvert.DeserializeObject<EngineState>(json) ?? new EngineState();
+        var result = JsonConvert.DeserializeObject<EngineState>(json, JsonSerializerSettings) ?? new EngineState();
         var engineState = new EngineState();
         engineState.ValueBag = result.ValueBag ?? new();
 

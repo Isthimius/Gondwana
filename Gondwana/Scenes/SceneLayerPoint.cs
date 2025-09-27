@@ -8,6 +8,7 @@ namespace Gondwana.Scenes;
 /// <summary>
 /// Represents the values stored at a single location on a SceneLayer
 /// </summary>
+[JsonObject(IsReference = true)]
 public class SceneLayerPoint : Tile, IDisposable
 {
     #region private / internal fields

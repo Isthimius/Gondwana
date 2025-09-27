@@ -10,6 +10,7 @@ namespace Gondwana.Audio;
 /// <summary>
 /// Represents a sound resource that can be played, paused, resumed, and disposed.
 /// </summary>
+[JsonObject(IsReference = true)]
 public class SoundResource : IDisposable
 {
     private readonly IWavePlayer outputDevice;

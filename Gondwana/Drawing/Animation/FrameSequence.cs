@@ -1,20 +1,20 @@
 using Gondwana.Drawing.Tilesheets;
 using System.Collections;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Animation;
 
 /// <summary>
 ///
 /// </summary>
-[DataContract]
 public struct FrameSequence : IEnumerable<Frame>
 {
     #region fields
-    [DataMember]
+    [JsonProperty]
     public CycleType SequenceCycleType;
 
-    [DataMember]
+    [JsonProperty]
     private List<Frame> frameList;
 
     private int currentFrameIdx;
@@ -52,13 +52,13 @@ public struct FrameSequence : IEnumerable<Frame>
     #endregion constructors / finalizer
 
     #region properties
-    [IgnoreDataMember]
+    [JsonIgnore]
     public bool CycleFinished
     {
         get { return cycleFinished; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public int FrameCount
     {
         get
@@ -70,7 +70,7 @@ public struct FrameSequence : IEnumerable<Frame>
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public Frame CurrentFrame
     {
         get
@@ -82,13 +82,13 @@ public struct FrameSequence : IEnumerable<Frame>
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public int CurrentFrameIdx
     {
         get { return currentFrameIdx; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public IList<Frame> FrameList
     {
         get { return frameList.AsReadOnly(); }

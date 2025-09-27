@@ -1,13 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Sprites;
 
-[DataContract]
 public class CompositeSprite
 {
-    [DataMember]
+    [JsonProperty]
     private List<Sprite> _children = new List<Sprite>();
 
     #region ctor
@@ -72,13 +72,13 @@ public class CompositeSprite
     #endregion
 
     #region properties
-    [IgnoreDataMember]
+    [JsonIgnore]
     public ReadOnlyCollection<Sprite> Children
     {
         get { return _children.AsReadOnly(); }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public Rectangle Range
     {
         get

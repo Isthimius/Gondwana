@@ -1,19 +1,14 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Gondwana.Drawing.Collisions;
 
-[DataContract]
+[JsonConverter(typeof(StringEnumConverter))]
 public struct CollisionDetectionAdjustment
 {
-    [DataMember]
     public int Top;
-
-    [DataMember]
     public int Bottom;
-
-    [DataMember]
     public int Left;
-
-    [DataMember]
     public int Right;
 }

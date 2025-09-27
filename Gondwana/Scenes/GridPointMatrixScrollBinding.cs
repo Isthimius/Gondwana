@@ -1,9 +1,10 @@
 ﻿using System.Drawing;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
 
-[DataContract(IsReference = true)]
+[JsonObject(IsReference = true)]
 public class SceneLayerScrollBinding
 {
     internal static List<SceneLayerScrollBinding> _allScrollBindings =
@@ -22,15 +23,15 @@ public class SceneLayerScrollBinding
     }
     #endregion
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public SceneLayer ParentGrid;
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     internal SceneLayer ChildGrid;
 
-    [DataMember]
+    [JsonProperty]
     public PointF ParentAnchorGridPoint;
 
-    [DataMember]
+    [JsonProperty]
     public PointF ChildAnchorGridPoint;
 }

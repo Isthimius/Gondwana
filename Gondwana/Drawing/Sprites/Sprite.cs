@@ -1,13 +1,14 @@
+using System.Drawing;
+using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
-using System.Drawing;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Sprites;
 
-[DataContract(IsReference = true)]
+[JsonObject(IsReference = true)]
 public class Sprite : Tile, IDisposable, ICloneable
 {
     #region events
@@ -118,27 +119,27 @@ public class Sprite : Tile, IDisposable, ICloneable
     #endregion
 
     #region public properties
-    [DataMember]
+    [JsonProperty]
     public string ID
     {
         get { return id; }
         set { id = value; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public Movement SpriteMovement
     {
         get { return movement; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public bool PauseMovement
     {
         get { return pauseMovement; }
         set { pauseMovement = value; }
     }
 
-    [DataMember]
+    [JsonProperty]
     public HorizontalAlignment HorizAlign
     {
         get { return horizAlign; }
@@ -156,7 +157,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public VerticalAlignment VertAlign
     {
         get { return vertAlign; }
@@ -174,7 +175,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public int NudgeX
     {
         get { return nudgeX; }
@@ -192,7 +193,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public int NudgeY
     {
         get { return nudgeY; }
@@ -210,7 +211,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public Size RenderSize
     {
         get { return renderSize; }
@@ -228,37 +229,37 @@ public class Sprite : Tile, IDisposable, ICloneable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override Rectangle DrawLocation
     {
         get { return SpriteManager.GetDrawLocation(this, parentGrid, gridCoordinates, renderSize); }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override bool IsPositionFixed
     {
         get { return false; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override PointF GridCoordinates
     {
         get { return gridCoordinates; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public override SceneLayer ParentGrid
     {
         get { return parentGrid; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual new int OverlappingPixels
     {
         get { return 0; }
     }
 
-    [DataMember]
+    [JsonProperty]
     public virtual new int ZOrder
     {
         get { return zOrder; }

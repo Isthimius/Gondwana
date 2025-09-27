@@ -1,15 +1,14 @@
+using System.Drawing;
+using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
-using System.Runtime.Serialization;
-using System.Drawing;
-using Gondwana.Drawing.Collisions;
+using Newtonsoft.Json;
 
 namespace Gondwana.Drawing;
 
-[DataContract(IsReference = true)]
-[KnownType(typeof(SceneLayerPoint))]
-[KnownType(typeof(Sprite))]
+[JsonObject(IsReference = true)]
 public abstract class Tile : IComparable<Tile>, IDisposable
 {
     #region static members
@@ -38,7 +37,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     #endregion
 
     #region public fields
-    [IgnoreDataMember]
+    [JsonIgnore]
     public object Tag;
     #endregion
 
@@ -51,14 +50,14 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     private List<Rectangle> _drawLocationRefresh = new List<Rectangle>();
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual List<Rectangle> DrawLocationRefresh
     {
         get { return _drawLocationRefresh; }
         internal set { _drawLocationRefresh = value; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual int OverlappingPixels
     {
         get
@@ -70,7 +69,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public virtual int ZOrder
     {
         get { return zOrder; }
@@ -81,7 +80,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public virtual bool Visible
     {
         get { return visible; }
@@ -92,7 +91,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public virtual Frame CurrentFrame
     {
         get { return frame; }
@@ -104,16 +103,16 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual Animator TileAnimator
     {
         get { return animator; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual bool PauseAnimation { get; set; }
 
-    [DataMember]
+    [JsonProperty]
     public virtual CollisionDetectionType DetectCollision
     {
         get { return collisionDetection; }
@@ -136,7 +135,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual Rectangle CollisionArea
     {
         get
@@ -150,7 +149,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public virtual bool EnableFog
     {
         get { return enableFog; }
@@ -165,13 +164,13 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     /// This property is used to determine polygonal area when drawing grid lines or fog.
     /// Override this property in a derived class to define custom areas for these effects.
     /// </summary>
-    [IgnoreDataMember]
+    [JsonIgnore]
     public virtual Point[] OutlinePoints
     {
         get { return ParentGrid.CoordinateSystem.GetPolygonPts(this, false); }
     }
 
-    [DataMember]
+    [JsonProperty]
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; }
 
     /// <summary>

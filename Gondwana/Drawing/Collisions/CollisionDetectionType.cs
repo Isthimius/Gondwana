@@ -1,17 +1,14 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace Gondwana.Drawing.Collisions
 {
-    [DataContract]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum CollisionDetectionType
     {
-        [EnumMember]
         None,
-
-        [EnumMember]
         All,
-
-        [EnumMember]
         OthersWithColDetect
     }
 }

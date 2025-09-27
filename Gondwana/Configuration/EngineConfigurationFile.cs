@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 
 namespace Gondwana.Configuration;
 
+[JsonObject(IsReference = true)]
 public partial class EngineConfigurationFile : IDisposable
 {
     private const string _defaultConfigFileName = "gondwana.json";

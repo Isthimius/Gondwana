@@ -11,6 +11,7 @@ namespace Gondwana.Resource;
 /// resource files used by the engine. It supports encryption, resource retrieval by type and name, and saving resources
 /// to a zip file. Instances of this class are tracked globally and can be accessed via the <see
 /// cref="AllResourceFiles"/> property.</remarks>
+[JsonObject(IsReference = true)]
 public sealed class EngineResourceFile : IDisposable
 {
     private static List<EngineResourceFile> _allResourceFiles = new();

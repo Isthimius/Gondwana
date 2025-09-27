@@ -1,16 +1,13 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Gondwana.Drawing.Sprites;
 
-[DataContract]
+[JsonConverter(typeof(StringEnumConverter))]
 public enum HorizontalAlignment
 {
-    [EnumMember]
     Left,
-
-    [EnumMember]
     Center,
-    
-    [EnumMember]
     Right
 }

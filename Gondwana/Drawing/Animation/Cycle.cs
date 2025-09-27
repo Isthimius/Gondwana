@@ -1,6 +1,7 @@
-using Gondwana.Drawing.Sprites;
 using System.Runtime.Serialization;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Timers;
+using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Animation;
 
@@ -8,14 +9,14 @@ namespace Gondwana.Drawing.Animation;
 /// References a FrameSequence object, along with a particular
 /// Throttle value for animating through Frame objects
 /// </summary>
-[DataContract(IsReference = true)]
+[JsonObject(IsReference = true)]
 public class Cycle : ICloneable, IDisposable
 {
     #region fields
-    [DataMember]
+    [JsonProperty]
     public FrameSequence Sequence;
 
-    [DataMember]
+    [JsonProperty]
     public readonly string CycleKey;
 
     internal long _throttle = 0;
@@ -61,7 +62,7 @@ public class Cycle : ICloneable, IDisposable
     #region public properties
     private double _throttleTime;
 
-    [DataMember]
+    [JsonProperty]
     public double ThrottleTime
     {
         get { return _throttleTime; }
@@ -75,7 +76,7 @@ public class Cycle : ICloneable, IDisposable
     /// <summary>
     /// Returns the total time in seconds for the Cycle
     /// </summary>
-    [IgnoreDataMember]
+    [JsonIgnore]
     public double TotalCycleTime
     {
         get
@@ -101,7 +102,7 @@ public class Cycle : ICloneable, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public Cycle NextCycle { get; set; }
     #endregion public properties
 

@@ -1,19 +1,20 @@
-using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
-using Gondwana.Timers;
 using System.Drawing;
+using System.Runtime.Serialization;
+using Gondwana.Drawing;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Gondwana.Scenes.Coordinates;
+using Gondwana.Timers;
+using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
 
 /// <summary>
 /// 
 /// </summary>
-[DataContract(IsReference = true)]
+[JsonObject(IsReference = true)]
 public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 {
     #region events
@@ -42,7 +43,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     private int _tileHeight;            // rendered height
     private bool _visible;              // is matrix to be rendered; useful with multiple layers
 
-    [DataMember]
+    [JsonProperty]
     private SceneLayerPoint[][] _matrix;      // array of points; 2 dimensions (X, Y)
     private float _layerSyncModifier;   // 1 = default; <1 is slower, >1 is faster
 
@@ -58,7 +59,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     #endregion
 
     #region public fields
-    [IgnoreDataMember]
+    [JsonIgnore]
     public object Tag;
     #endregion
 
@@ -111,7 +112,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     #endregion
 
     #region properties
-    [IgnoreDataMember]
+    [JsonIgnore]
     public IGridCoordinates CoordinateSystem { get; set; }
 
     [DataMember(Name = "CoordinateSystem")]
@@ -140,34 +141,34 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public string ID
     {
         get { return _id; }
         protected internal set { _id = value; }
     }
 
-    [DataMember]
+    [JsonProperty]
     public Scene? Parent { get; internal set; }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     internal RefreshQueue RefreshQueue { get; set; }
 
-    [DataMember]
+    [JsonProperty]
     public float LayerSyncModifier
     {
         get { return _layerSyncModifier; }
         set { _layerSyncModifier = value; }
     }
 
-    [DataMember]
+    [JsonProperty]
     public SceneLayerScrollBinding ScrollBinding
     {
         get { return scrollBinding; }
         private set { scrollBinding = value; }
     }
 
-    [DataMember]
+    [JsonProperty]
     public int GridPointHeight
     {
         get { return _tileHeight; }
@@ -180,7 +181,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public int GridPointWidth
     {
         get { return _tileWidth; }
@@ -193,7 +194,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public bool Visible
     {
         get { return _visible; }
@@ -207,32 +208,32 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public PointF SourceGridPoint
     {
         get { return _firstGridPt; }
         set { this.SetSourceGridPoint(value); }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public SceneLayerPoint[][] GridPointArray
     {
         get { return _matrix; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public int GridColumnCount
     {
         get { return _matrix.GetUpperBound(0) + 1; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public int GridRowCount
     {
         get { return _matrix[0].GetUpperBound(0) + 1; }
     }
 
-    [DataMember]
+    [JsonProperty]
     public bool WrapHorizontally
     {
         get { return _wrapHoriz; }
@@ -248,7 +249,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     public bool WrapVertically
     {
         get { return _wrapVerti; }
@@ -264,10 +265,10 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    [DataMember]
+    [JsonProperty]
     private bool showGridLines;
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public bool ShowGridLines
     {
         get { return showGridLines; }
@@ -279,40 +280,40 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public Point GridPointZeroPixel
     {
         get { return _gridPtZeroPxl; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public bool IsScrolling
     {
         get { return _movement.IsScrolling; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public float VelocityX
     {
         get { return _movement.VelocityX; }
         set { _movement.VelocityX = value; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public float VelocityY
     {
         get { return _movement.VelocityY; }
         set { _movement.VelocityY = value; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public float AccelerationX
     {
         get { return _movement.AccelerationX; }
         set { _movement.AccelerationX = value; }
     }
 
-    [IgnoreDataMember]
+    [JsonIgnore]
     public float AccelerationY
     {
         get { return _movement.AccelerationY; }
