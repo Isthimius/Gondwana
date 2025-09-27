@@ -12,6 +12,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
