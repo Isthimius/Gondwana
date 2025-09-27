@@ -46,27 +46,27 @@ public class SquareIsoCoordinates : IGridCoordinates
         }
         
         // check for overlaps if required
-        if (includeOverlaps)
-        {
-            if (Tilesheet.MaxOverlappingTopSpaceRatio > 0)
-            {
-                foreach (SceneLayerPoint grPt in GetGridPtListInPxlRange(matrix,
-                    new Rectangle(pixelRange.Left, pixelRange.Bottom,
-                    pixelRange.Width,
-                    (int)Math.Ceiling(Tilesheet.MaxOverlappingTopSpaceRatio * matrix.GridPointHeight)),
-                    false))
-                {
-                    if (grPt != null)
-                    {
-                        if (GetPxlRangeAtGridPt(grPt, true).IntersectsWith(pixelRange))
-                        {
-                            if (retVal.IndexOf(grPt) == -1)
-                                retVal.Add(grPt);
-                        }
-                    }
-                }
-            }
-        }
+        //if (includeOverlaps)
+        //{
+        //    if (Tilesheet.MaxOverlappingTopSpaceRatio > 0)
+        //    {
+        //        foreach (SceneLayerPoint grPt in GetGridPtListInPxlRange(matrix,
+        //            new Rectangle(pixelRange.Left, pixelRange.Bottom,
+        //            pixelRange.Width,
+        //            (int)Math.Ceiling(Tilesheet.MaxOverlappingTopSpaceRatio * matrix.GridPointHeight)),
+        //            false))
+        //        {
+        //            if (grPt != null)
+        //            {
+        //                if (GetPxlRangeAtGridPt(grPt, true).IntersectsWith(pixelRange))
+        //                {
+        //                    if (retVal.IndexOf(grPt) == -1)
+        //                        retVal.Add(grPt);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
         
         return retVal;
     }
