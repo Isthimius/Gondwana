@@ -360,41 +360,56 @@ public sealed class Tilesheet : IDisposable
         return tiles;
     }
 
+    // --- IDisposable pattern ---
     private bool _disposed;
 
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
         if (_disposed) return;
         _disposed = true;
 
-        // --- unregister from registry ---
-        TilesheetRegistry.Instance.Remove(_name, this, dispose: false);
-
-        // --- clean up tile cache ---
-        if (_tileCache != null)
+        if (disposing)
         {
-            for (int x = 0; x < _tileCache.GetLength(0); x++)
+            // unregister from registry
+            TilesheetRegistry.Instance.Remove(_name, this, dispose: false);
+
+            // clean up tile cache
+            if (_tileCache != null)
             {
-                for (int y = 0; y < _tileCache.GetLength(1); y++)
+                for (int x = 0; x < _tileCache.GetLength(0); x++)
                 {
-                    _tileCache[x, y]?.Bitmap?.Dispose();
-                    _tileCache[x, y]?.Image?.Dispose();
+                    for (int y = 0; y < _tileCache.GetLength(1); y++)
+                    {
+                        _tileCache[x, y]?.Bitmap?.Dispose();
+                        _tileCache[x, y]?.Image?.Dispose();
+                    }
                 }
+                _tileCache = null;
             }
-            _tileCache = null;
+
+            // dispose the main bitmaps
+            SkBitmap?.Dispose();
+            SkBitmapOriginal?.Dispose();
+
+            try
+            {
+                Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
+            }
+            catch (Exception ex)
+            {
+                Engine.Logger.LogError(ex, "Error during Tilesheet Disposed event handling.");
+            }
+
+            // break delegate references
+            Disposed = null;
         }
 
-        // dispose the main bitmaps
-        SkBitmap?.Dispose();
-        SkBitmapOriginal?.Dispose();
-
-        try
-        {
-            Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
-        }
-        catch (Exception ex)
-        {
-            Engine.Logger.LogError(ex, "Error during Tilesheet Disposed event handling.");
-        }
+        // no unmanaged resources to free
     }
 }
