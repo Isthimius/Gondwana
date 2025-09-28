@@ -354,8 +354,8 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     {
         if (GridPointSizeChanged != null)
         {
-            GridPointSizeChangedEventArgs e;
-            e = new GridPointSizeChangedEventArgs(this, oldWidth, oldHeight, newWidth, newHeight);
+            SceneLayerPointSizeChangedEventArgs e;
+            e = new SceneLayerPointSizeChangedEventArgs(this, oldWidth, oldHeight, newWidth, newHeight);
             GridPointSizeChanged(e);
         }
     }

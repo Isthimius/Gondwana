@@ -297,7 +297,7 @@ public class Scene : IEnumerable, IDisposable
         }
     }
 
-    private void _GridPointSizeChanged(GridPointSizeChangedEventArgs e)
+    private void _GridPointSizeChanged(SceneLayerPointSizeChangedEventArgs e)
     {
         refreshNeeded = SceneRefreshType.All;
     }

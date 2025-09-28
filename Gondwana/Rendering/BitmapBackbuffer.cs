@@ -24,8 +24,6 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
     protected internal override void RequestResize(int width, int height)
     {
-        Engine.Logger.LogTrace("in RequestResize()      width: " + width.ToString() + " height: " + height.ToString());
-
         Volatile.Write(ref _reqW, width);
         Volatile.Write(ref _reqH, height);
         Interlocked.Exchange(ref _resizeFlag, 1); // coalesce requests

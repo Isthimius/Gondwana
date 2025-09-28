@@ -1,8 +1,8 @@
 ﻿namespace Gondwana.Scenes;
 
-public delegate void GridPointSizeChangedEventHandler(GridPointSizeChangedEventArgs e);
+public delegate void GridPointSizeChangedEventHandler(SceneLayerPointSizeChangedEventArgs e);
 
-public class GridPointSizeChangedEventArgs : EventArgs
+public class SceneLayerPointSizeChangedEventArgs : EventArgs
 {
     public SceneLayer layer;
     public int oldWidth;
@@ -10,7 +10,7 @@ public class GridPointSizeChangedEventArgs : EventArgs
     public int newWidth;
     public int newHeight;
 
-    protected internal GridPointSizeChangedEventArgs(SceneLayer matrix, int oldW, int oldH, int newW, int newH)
+    protected internal SceneLayerPointSizeChangedEventArgs(SceneLayer matrix, int oldW, int oldH, int newW, int newH)
     {
         layer = matrix;
         oldWidth = oldW;
