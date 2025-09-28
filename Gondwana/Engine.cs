@@ -7,7 +7,6 @@ using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.State;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
 using Timer = Gondwana.Timers.Timer;

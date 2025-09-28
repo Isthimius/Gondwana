@@ -9,7 +9,7 @@ using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Gondwana.State;
+namespace Gondwana;
 
 [JsonObject(IsReference = true)]
 public class EngineState
@@ -41,7 +41,7 @@ public class EngineState
     public List<Scene> GridsDisplay => Scene._allSceneLayeres;
 
     [JsonProperty]
-    public List<Sprite> Sprites => Drawing.Sprites.SpriteManager._spriteList;
+    public List<Sprite> Sprites => SpriteManager._spriteList;
 
     [JsonProperty]
     public Dictionary<string, SoundResource> SoundResources => SoundResourceManager.Instance.GetAll();
@@ -54,7 +54,7 @@ public class EngineState
         Cycle.ClearAllAnimationCycles();
         Scene.ClearAllSceneLayeres();
         SceneLayer.ClearAllSceneLayer();
-        Drawing.Sprites.SpriteManager.Clear();
+        SpriteManager.Clear();
         SoundResourceManager.Instance.Dispose();
     }
 
