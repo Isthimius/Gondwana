@@ -9,15 +9,15 @@ public interface IGridCoordinates
 
     PointF GetGridPtAtPxl(SceneLayer matrix, Point pixelPt);
 
-    List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverlaps);
+    List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang);
 
-    Rectangle GetPxlRangeAtGridPt(Tile tile, bool inclOverlaps);
+    Rectangle GetPxlRangeAtGridPt(Tile tile, bool includeOverhang);
 
-    Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool inclOverlaps);
+    Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool includeOverhang);
 
     SceneLayerPoint GetAdjGridPt(SceneLayerPoint gridPt, CardinalDirections direction);
 
-    Point[] GetPolygonPts(Tile tile, bool inclOverlaps);
+    Point[] GetPolygonPts(Tile tile, bool includeOverhang);
 
     PointF FindEquivGridCoord(PointF valColRow, int xUpperBound, int yUpperBound);
 }

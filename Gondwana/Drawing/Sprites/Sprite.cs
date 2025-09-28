@@ -262,7 +262,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     }
 
     [JsonIgnore]
-    public virtual new int OverlappingPixels
+    public virtual new int OverhangPixels
     {
         get { return 0; }
     }
@@ -392,7 +392,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         {
             parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
-            // just added Sprite and overlapping Tile objects to queue,
+            // just added Sprite and overhanging Tile objects to queue,
             // remove the actual Sprite from the queue since it will
             // no longer be available
             parentGrid.RefreshQueue.Tiles.Remove(this);

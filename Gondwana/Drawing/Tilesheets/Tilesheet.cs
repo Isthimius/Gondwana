@@ -64,7 +64,7 @@ public sealed class Tilesheet : IDisposable
         XPixelsBetweenTiles = baseSheet.XPixelsBetweenTiles;
         YPixelsBetweenTiles = baseSheet.YPixelsBetweenTiles;
         _tileSize = baseSheet._tileSize;
-        _overlapTopSpace = baseSheet._overlapTopSpace;
+        OverhangPixels = baseSheet.OverhangPixels;
         ValueBag = new(baseSheet.ValueBag);
 
         _name = name;
@@ -113,18 +113,7 @@ public sealed class Tilesheet : IDisposable
     }
 
     [JsonProperty]
-    private int _overlapTopSpace;
-
-    [JsonIgnore]
-    public int OverlappingTopSpace
-    {
-        get => _overlapTopSpace;
-        set
-        {
-            _overlapTopSpace = value;
-            BuildTileCache();
-        }
-    }
+    public int OverhangPixels { get; set; } = 0;
 
     [JsonProperty]
     private int _initialOffsetX;
@@ -192,10 +181,7 @@ public sealed class Tilesheet : IDisposable
     public string ImageFilePath { get; private set; } = string.Empty;
 
     [JsonIgnore]
-    public int PrimaryHeight => _tileSize.Height - _overlapTopSpace;
-
-    [JsonIgnore]
-    public float OverlapTopSpaceToPrimaryRatio => (float)_overlapTopSpace / PrimaryHeight;
+    public int PrimaryHeight => _tileSize.Height - OverhangPixels;
 
     public void ApplyMask(SKColor? maskColor = null, byte tolerance = 0)
     {

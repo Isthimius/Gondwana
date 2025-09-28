@@ -12,7 +12,7 @@ namespace Gondwana.Rendering;
 /// It provides functionality to add pixel ranges to the refresh queue, clear the queue, and retrieve the tiles that are
 /// affected by the refresh operations. This class also raises events when new areas are added to the queue to communicate
 /// the needed refresh range to other <see cref="SceneLayer"/>s in the <see cref="Scene"/>.</remarks>
-internal class RefreshQueue : IDisposable
+internal sealed class RefreshQueue : IDisposable
 {
     private bool _isDirty;              // if true, Tiles need to be found; internal optimaization
     private List<Tile> _tiles;          // array of Tile objects to be redrawn
@@ -64,7 +64,7 @@ internal class RefreshQueue : IDisposable
         _rects.Add(pixelRange);
     }
 
-    public void ClearRefreshQueue()
+    internal void ClearRefreshQueue()
     {
         foreach (Tile tile in _tiles)
             tile.DrawLocationRefresh.Clear();

@@ -111,17 +111,17 @@ End Function
         #endregion old VB6 code
     }
 
-    public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverlaps)
+    public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
     {
         throw new NotImplementedException();
     }
 
-    public Rectangle GetPxlRangeAtGridPt(Tile tile, bool inclOverlaps)
+    public Rectangle GetPxlRangeAtGridPt(Tile tile, bool includeOverhang)
     {
         throw new NotImplementedException();
     }
 
-    public Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool inclOverlaps)
+    public Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool includeOverhang)
     {
         throw new NotImplementedException();
     }
@@ -131,7 +131,7 @@ End Function
         throw new NotImplementedException();
     }
 
-    public Point[] GetPolygonPts(Tile tile, bool inclOverlaps)
+    public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         throw new NotImplementedException();
     }

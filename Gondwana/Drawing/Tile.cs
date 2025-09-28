@@ -64,16 +64,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     [JsonIgnore]
-    public virtual int OverlappingPixels
-    {
-        get
-        {
-            if (frame.Tilesheet == null)
-                return 0;
-
-            return (int)(frame.Tilesheet.OverlapTopSpaceToPrimaryRatio * ParentGrid.GridPointHeight);
-        }
-    }
+    public virtual int OverhangPixels => frame.Tilesheet?.OverhangPixels ?? 0;
 
     [JsonProperty]
     public virtual int ZOrder
@@ -180,7 +171,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; }
 
     /// <summary>
-    /// if position is fixed, use top of primary (i.e., non-overlapping) area;
+    /// if position is fixed, use top of primary (i.e., non-overhanging) area;
     /// otherwise, use bottom of location for comparison
     /// </summary>
     private float GetTileLocForCompare(Tile tile)
@@ -188,7 +179,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         if (!tile.IsPositionFixed)
             return tile.DrawLocation.Bottom - 1;
         else
-            return tile.DrawLocation.Top + tile.OverlappingPixels;
+            return tile.DrawLocation.Top + tile.OverhangPixels;
     }
 
     #region IComparable<Tile> Members

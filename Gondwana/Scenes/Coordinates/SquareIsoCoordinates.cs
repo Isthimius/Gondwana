@@ -25,7 +25,8 @@ public class SquareIsoCoordinates : IGridCoordinates
         return retPt;
     }
 
-    public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverlaps)
+    // TODO: OverhangPixels not considered yet
+    public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
     {
         List<SceneLayerPoint> retVal = new List<SceneLayerPoint>();
 
@@ -44,33 +45,29 @@ public class SquareIsoCoordinates : IGridCoordinates
             }
         }
 
-        // check for overlaps if required
-        //if (includeOverlaps)
-        //{
-        //    if (Tilesheet.MaxOverlappingTopSpaceRatio > 0)
-        //    {
-        //        foreach (SceneLayerPoint grPt in GetGridPtListInPxlRange(matrix,
-        //            new Rectangle(pixelRange.Left, pixelRange.Bottom,
-        //            pixelRange.Width,
-        //            (int)Math.Ceiling(Tilesheet.MaxOverlappingTopSpaceRatio * matrix.GridPointHeight)),
-        //            false))
-        //        {
-        //            if (grPt != null)
-        //            {
-        //                if (GetPxlRangeAtGridPt(grPt, true).IntersectsWith(pixelRange))
-        //                {
-        //                    if (retVal.IndexOf(grPt) == -1)
-        //                        retVal.Add(grPt);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+        // check for overhangs if required
+        if (includeOverhang)
+        {
+            foreach (SceneLayerPoint grPt in GetGridPtListInPxlRange(matrix,
+                new Rectangle(pixelRange.Left, pixelRange.Bottom,
+                pixelRange.Width, pixelRange.Height),
+                false))
+            {
+                if (grPt != null)
+                {
+                    if (GetPxlRangeAtGridPt(grPt, true).IntersectsWith(pixelRange))
+                    {
+                        if (retVal.IndexOf(grPt) == -1)
+                            retVal.Add(grPt);
+                    }
+                }
+            }
+        }
 
         return retVal;
     }
 
-    public Rectangle GetPxlRangeAtGridPt(Tile tile, bool inclOverlaps)
+    public Rectangle GetPxlRangeAtGridPt(Tile tile, bool includeOverhang)
     {
         Rectangle retVal = new Rectangle();
 
@@ -80,30 +77,30 @@ public class SquareIsoCoordinates : IGridCoordinates
         retVal.Width = tile.ParentGrid.GridPointWidth;
         retVal.Height = tile.ParentGrid.GridPointHeight;
 
-        if (inclOverlaps)
+        if (includeOverhang)
         {
-            // if the Bmp has overlapping pixels at the top (defined in Tilesheet),
+            // if the Bmp has overhanging pixels at the top (defined in Tilesheet),
             // move the rectangle up (subtract from Y) and increase Height
-            if (tile.CurrentFrame.Tilesheet != null && tile.CurrentFrame.Tilesheet.OverlappingTopSpace != 0)
+            if (tile.CurrentFrame.Tilesheet != null && tile.CurrentFrame.Tilesheet.OverhangPixels != 0)
             {
-                retVal.Y -= tile.OverlappingPixels;
-                retVal.Height += tile.OverlappingPixels;
+                retVal.Y -= tile.OverhangPixels;
+                retVal.Height += tile.OverhangPixels;
             }
         }
 
         return retVal;
     }
 
-    public Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool inclOverlaps)
+    public Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle retVal = new Rectangle();
 
         foreach (Tile tile in tileList)
         {
             if (retVal.IsEmpty)
-                retVal = GetPxlRangeAtGridPt(tile, inclOverlaps);
+                retVal = GetPxlRangeAtGridPt(tile, includeOverhang);
             else
-                retVal = Rectangle.Union(retVal, GetPxlRangeAtGridPt(tile, inclOverlaps));
+                retVal = Rectangle.Union(retVal, GetPxlRangeAtGridPt(tile, includeOverhang));
         }
 
         return retVal;
@@ -144,7 +141,7 @@ public class SquareIsoCoordinates : IGridCoordinates
         }
     }
 
-    public Point[] GetPolygonPts(Tile tile, bool inclOverlaps)
+    public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         Point[] ret = new Point[4];
         Rectangle outline = GetPxlRangeAtGridPt(tile, false);
