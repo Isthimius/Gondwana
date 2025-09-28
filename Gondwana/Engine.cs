@@ -15,10 +15,36 @@ namespace Gondwana;
 
 public sealed class Engine : IDisposable
 {
+    #region static members
+
     private static readonly Lazy<Engine> _instance = new(() => new Engine());
     public static Engine Instance => _instance.Value;
 
     public static ILogger<Engine> Logger => EngineLogger.GetLogger<Engine>();
+
+    public static KeyboardEventPoller? KeyboardEventPoller => KeyboardEventPoller.Instance ?? null;
+
+    public static MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
+
+    private static IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
+
+    /// <summary>
+    /// Gets or sets the gamepad manager responsible for handling gamepad input.
+    /// </summary>
+    /// <remarks>Setting this property attaches an update callback to the engine cycle, polling attached adapters</remarks>
+    public static IGamepadManager<IGamepadAdapter>? GamepadManager
+    {
+        get => _gamepadManager;
+        set
+        {
+            GamepadEventPoller.Initialize(value?.ConnectedAdapters);
+            _gamepadManager = value;
+        }
+    }
+
+    public static GamepadEventPoller? GamepadEventPoller => GamepadEventPoller.Instance;
+
+    #endregion
 
     #region private fields
 
@@ -182,15 +208,9 @@ public sealed class Engine : IDisposable
         get { return (double)(HighResTimer.GetCurrentTick() - _startTick) / (double)HighResTimer.TicksPerSecond; }
     }
 
-    public double CyclesPerSecond
-    {
-        get { return _grossCPS; }
-    }
+    public double CyclesPerSecond => _grossCPS;
 
-    public double FramesPerSecond
-    {
-        get { return _netFPS; }
-    }
+    public double FramesPerSecond => _netFPS;
 
     public bool IsDisposed { get; private set; } = false;
 
@@ -203,28 +223,6 @@ public sealed class Engine : IDisposable
         get => Volatile.Read(ref _config!);
         private set => Volatile.Write(ref _config, value);
     }
-
-    public static KeyboardEventPoller? KeyboardEventPoller => KeyboardEventPoller.Instance ?? null;
-
-    public static MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
-
-    private static IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
-
-    /// <summary>
-    /// Gets or sets the gamepad manager responsible for handling gamepad input.
-    /// </summary>
-    /// <remarks>Setting this property attaches an update callback to the engine cycle, polling attached adapters</remarks>
-    public static IGamepadManager<IGamepadAdapter>? GamepadManager
-    {
-        get => _gamepadManager;
-        set
-        {
-            GamepadEventPoller.Initialize(value?.ConnectedAdapters);
-            _gamepadManager = value;
-        }
-    }
-
-    public static GamepadEventPoller? GamepadManagerEventPoller { get => GamepadEventPoller.Instance; }
 
     #endregion public properties
 
@@ -290,7 +288,8 @@ public sealed class Engine : IDisposable
         //    drawing.MoveNext(tick);
 
         // cycle Animator frames
-        CycleAnimations(tick);
+        for (int i = 0; i < Tile.TilesAnimating.Count; i++)
+            Tile.TilesAnimating[i].TileAnimator.CycleAnimation(tick);
 
         // advance Sprite Movement paths
         SpriteManager.MoveSprites(tick);
@@ -344,12 +343,6 @@ public sealed class Engine : IDisposable
 
             grids.RefreshNeeded = SceneRefreshType.None;
         }
-    }
-
-    private void CycleAnimations(long tick)
-    {
-        for (int i = 0; i < Tile.TilesAnimating.Count; i++)
-            Tile.TilesAnimating[i].TileAnimator.CycleAnimation(tick);
     }
 
     private void CalculateCPS(long tick)
