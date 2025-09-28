@@ -452,7 +452,7 @@ public class Scene : IEnumerable, IDisposable
         return _allSceneLayeres.AsReadOnly();
     }
 
-    public static void ClearAllSceneLayeres()
+    public static void ClearAllSceneLayers()
     {
         var tmp = new List<Scene>(_allSceneLayeres);
         foreach (var matrixes in tmp)

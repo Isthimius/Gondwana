@@ -52,7 +52,7 @@ public class EngineState
         EngineResourceFile.ClearAll();
         TilesheetRegistry.Instance.Clear();
         Cycle.ClearAllAnimationCycles();
-        Scene.ClearAllSceneLayeres();
+        Scene.ClearAllSceneLayers();
         SceneLayer.ClearAllSceneLayer();
         SpriteManager.Clear();
         SoundResourceManager.Instance.Dispose();
