@@ -26,7 +26,7 @@ public class EngineState
     public Dictionary<string, string> ValueBag { get; set; } = new();
 
     [JsonProperty]
-    public IEnumerable<AssetsFile> ResourceFiles => AssetsFile.AllAssetsFiles;
+    public IEnumerable<AssetsFile> AssetsFiles => AssetsFile.AllAssetsFiles;
 
     [JsonProperty]
     public IDictionary<string, Tilesheet> Tilesheets => TilesheetRegistry.Instance.GetAll().ToDictionary();
@@ -97,7 +97,7 @@ public class EngineState
 
         // TODO: step through and load all the things...!!!
         // TODO: load audio files not in Resource file
-        LoadResourceFiles(result.ResourceFiles);
+        LoadResourceFiles(result.AssetsFiles);
         //
         //
         //
