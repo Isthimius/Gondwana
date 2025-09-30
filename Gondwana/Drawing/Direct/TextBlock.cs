@@ -1,8 +1,9 @@
 using System.Drawing;
+using Gondwana.Rendering;
 using Gondwana.Skia;
 using SkiaSharp;
 
-namespace Gondwana.Rendering.Direct;
+namespace Gondwana.Drawing.Direct;
 
 /// <summary>
 /// Represents a block of text that can be drawn on a visible surface with various styling options.

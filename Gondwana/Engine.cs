@@ -1,12 +1,12 @@
 using Gondwana.Configuration;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
-using Gondwana.Rendering.Direct;
 using Gondwana.Scenes;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;

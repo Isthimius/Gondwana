@@ -1,8 +1,9 @@
 using System.Drawing;
+using Gondwana.Rendering;
 using Gondwana.Skia;
 using SkiaSharp;
 
-namespace Gondwana.Rendering.Direct;
+namespace Gondwana.Drawing.Direct;
 
 /// <summary>
 /// Represents a drawable rectangle with customizable properties such as color, stroke width, corner radius, etc.

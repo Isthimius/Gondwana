@@ -1,7 +1,8 @@
 using System.Drawing;
+using Gondwana.Rendering;
 using Gondwana.Timers;
 
-namespace Gondwana.Rendering.Direct;
+namespace Gondwana.Drawing.Direct;
 
 public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDisposable
 {

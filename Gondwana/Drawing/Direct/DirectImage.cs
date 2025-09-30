@@ -1,9 +1,10 @@
 using System.Drawing;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Rendering;
 using Gondwana.Skia;
 using Microsoft.Extensions.Logging;
 
-namespace Gondwana.Rendering.Direct;
+namespace Gondwana.Drawing.Direct;
 
 public class DirectImage : DirectDrawingBase
 {

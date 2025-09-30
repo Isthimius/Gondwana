@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 
-namespace Gondwana.Rendering.Direct;
+namespace Gondwana.Drawing.Direct;
 
 internal sealed class DirectDrawingManager
 {
@@ -25,7 +25,7 @@ internal sealed class DirectDrawingManager
 
     public DirectDrawingBase? GetDirectDrawing(string name)
     {
-        return name is null ? null : (_directDrawings.TryGetValue(name, out DirectDrawingBase? d) ? d : null);
+        return name is null ? null : _directDrawings.TryGetValue(name, out DirectDrawingBase? d) ? d : null;
     }
 
     /// <summary>
