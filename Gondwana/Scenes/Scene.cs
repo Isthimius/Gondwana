@@ -447,7 +447,7 @@ public class Scene : IEnumerable, IDisposable
         return ret;
     }
 
-    public static ReadOnlyCollection<Scene> GetAllSceneLayeres()
+    public static ReadOnlyCollection<Scene> GetAllScenes()
     {
         return _allSceneLayeres.AsReadOnly();
     }
