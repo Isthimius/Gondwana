@@ -6,6 +6,7 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Direct;
 using Gondwana.Scenes;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
@@ -313,6 +314,11 @@ public sealed class Engine : IDisposable
         // raise event
         BeforeEngineCycle?.Invoke(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
+        // render all DirectDrawing objects;
+        // this will add to the DirtyRects of any Backbuffers,
+        // to be picked up next DoBackgroundTasks()
+        DirectDrawingManager.Instance.RenderAll();
+
         // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderBackbufferToAdapter();
@@ -335,13 +341,13 @@ public sealed class Engine : IDisposable
     private void ClearRefreshQueues()
     {
         // step through all SceneLayeres objects
-        foreach (Scene grids in Scene.GetAllSceneLayeres())
+        foreach (var scene in Scene.GetAllScenes())
         {
             // clear each queue, mark as no refresh needed
-            foreach (SceneLayer matrix in grids)
-                matrix.RefreshQueue.ClearRefreshQueue();
+            foreach (SceneLayer sceneLayer in scene)
+                sceneLayer.RefreshQueue.ClearRefreshQueue();
 
-            grids.RefreshNeeded = SceneRefreshType.None;
+            scene.RefreshNeeded = SceneRefreshType.None;
         }
     }
 

@@ -18,7 +18,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
     protected DirectDrawingBase(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, Rectangle bounds)
     {
-        DirectDrawingManager.Add(this);
+        DirectDrawingManager.Instance.Add(this);
         _renderSurfaceHost = renderSurfaceHost;
         _bounds = bounds;
         _zOrder = 0;
@@ -75,9 +75,9 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
     protected internal void ForceRefresh()
     {
-        var matrixes = RenderSurfaceHost.DrawSource;
-        if (matrixes?.Count > 0)
-            matrixes[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
+        var scene = RenderSurfaceHost.DrawSource;
+        if (scene?.Count > 0)
+            scene[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
         _dirty = true;
     }
@@ -97,6 +97,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
         if (disposing)
         {
+            ForceRefresh();
             Disposing?.Invoke(this, this);
         }
 
