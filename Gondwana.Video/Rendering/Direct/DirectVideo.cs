@@ -118,7 +118,7 @@ public sealed class DirectVideo : DirectDrawingBase
     /// Use this when you already have an IVideoPlayer instance (e.g., resolved via DI).
     /// </summary>
     public DirectVideo(
-        RenderSurfaceHost<BitmapBackbuffer> surface,
+        RenderSurfaceHostBase surface,
         Rectangle bounds,
         IVideoPlayer player,
         Uri source)

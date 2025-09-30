@@ -48,7 +48,7 @@ public class TextBlock : DirectDrawingBase
     private SKTextAlign _hAlign = SKTextAlign.Left;
     private VerticalAlign _vAlign = VerticalAlign.Top;
 
-    public TextBlock(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, Rectangle bounds)
+    public TextBlock(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
         : base(renderSurfaceHost, bounds)
     {
     }

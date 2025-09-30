@@ -10,7 +10,7 @@ public class DirectImage : DirectDrawingBase
 {
     private readonly Tilesheet _tilesheet;
 
-    public DirectImage(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, Rectangle bounds, Tilesheet tilesheet)
+    public DirectImage(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds, Tilesheet tilesheet)
         : base(renderSurfaceHost, bounds)
     {
         if (tilesheet == null)

@@ -8,7 +8,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 {
     public event EventHandler<DirectDrawingBase> Disposing;
 
-    protected readonly RenderSurfaceHost<BitmapBackbuffer> _renderSurfaceHost;
+    protected readonly RenderSurfaceHostBase _renderSurfaceHost;
     protected Rectangle _bounds;
     protected int _zOrder;
     internal Movement? _movement;
@@ -17,7 +17,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
     protected internal abstract void Render();
 
-    protected DirectDrawingBase(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, Rectangle bounds)
+    protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
     {
         DirectDrawingManager.Instance.Add(this);
         _renderSurfaceHost = renderSurfaceHost;
@@ -29,7 +29,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
     ~DirectDrawingBase() => Dispose(false);
 
-    public RenderSurfaceHost<BitmapBackbuffer> RenderSurfaceHost => _renderSurfaceHost;
+    public RenderSurfaceHostBase RenderSurfaceHost => _renderSurfaceHost;
 
     public Rectangle Bounds
     {

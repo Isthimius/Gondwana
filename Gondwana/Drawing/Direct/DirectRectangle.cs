@@ -54,7 +54,7 @@ public class DirectRectangle : DirectDrawingBase
     private StrokeAlign _strokeAlign = StrokeAlign.Center;
 
     public DirectRectangle(
-        RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost,
+        RenderSurfaceHostBase renderSurfaceHost,
         Rectangle bounds,
         Color color)
         : base(renderSurfaceHost, bounds)
