@@ -1,5 +1,5 @@
 using System.Drawing;
-using Gondwana.Resource;
+using Gondwana.Assets;
 using Gondwana.Skia;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -49,11 +49,11 @@ public sealed class Tilesheet : IDisposable
         ImageFilePath = file;
     }
 
-    public Tilesheet(EngineResourceFile resFile, string entryName)
+    public Tilesheet(AssetsFile resFile, string entryName)
     {
-        ResourceIdentifier = new EngineResourceFileIdentifier(resFile, EngineResourceFileTypes.Image, entryName);
+        AssetIdentifier = new AssetsFileIdentifier(resFile, AssetTypes.Image, entryName);
         _name = entryName;
-        SkBitmap = SKBitmap.Decode(ResourceIdentifier.Data);
+        SkBitmap = SKBitmap.Decode(AssetIdentifier.Data);
         TilesheetRegistry.Instance.Register(this);
     }
 
@@ -175,7 +175,7 @@ public sealed class Tilesheet : IDisposable
     public Dictionary<string, string> ValueBag = new();
 
     [JsonProperty]
-    public EngineResourceFileIdentifier? ResourceIdentifier { get; private set; }
+    public AssetsFileIdentifier? AssetIdentifier { get; private set; }
 
     [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;

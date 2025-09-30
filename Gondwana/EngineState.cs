@@ -4,7 +4,7 @@ using Gondwana.Audio;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Resource;
+using Gondwana.Assets;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -26,7 +26,7 @@ public class EngineState
     public Dictionary<string, string> ValueBag { get; set; } = new();
 
     [JsonProperty]
-    public IEnumerable<EngineResourceFile> ResourceFiles => EngineResourceFile.AllResourceFiles;
+    public IEnumerable<AssetsFile> ResourceFiles => AssetsFile.AllAssetsFiles;
 
     [JsonProperty]
     public IDictionary<string, Tilesheet> Tilesheets => TilesheetRegistry.Instance.GetAll().ToDictionary();
@@ -44,18 +44,18 @@ public class EngineState
     public List<Sprite> Sprites => SpriteManager._spriteList;
 
     [JsonProperty]
-    public Dictionary<string, SoundResource> SoundResources => SoundResourceManager.Instance.GetAll();
+    public Dictionary<string, AudioResource> SoundResources => AudioResourceManager.Instance.GetAll();
 
     internal void Clear()
     {
         ValueBag.Clear();
-        EngineResourceFile.ClearAll();
+        AssetsFile.ClearAll();
         TilesheetRegistry.Instance.Clear();
         Cycle.ClearAllAnimationCycles();
         Scene.ClearAllSceneLayers();
         SceneLayer.ClearAllSceneLayer();
         SpriteManager.Clear();
-        SoundResourceManager.Instance.Dispose();
+        AudioResourceManager.Instance.Dispose();
     }
 
     public void SaveToFile(string path, bool compress = false)
@@ -106,7 +106,7 @@ public class EngineState
         return engineState;
     }
 
-    private static void LoadResourceFiles(IEnumerable<EngineResourceFile> resourceFiles)
+    private static void LoadResourceFiles(IEnumerable<AssetsFile> resourceFiles)
     {
         // Replace raw deserialized resource files with proper loaded instances
         if (resourceFiles.Any())
@@ -115,7 +115,7 @@ public class EngineState
             {
                 try
                 {
-                    EngineResourceFile.LoadOrCreate(raw.FilePath, raw.Password, raw.UseEncryption);
+                    AssetsFile.LoadOrCreate(raw.FilePath, raw.Password, raw.UseEncryption);
                 }
                 catch (Exception ex)
                 {

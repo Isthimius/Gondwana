@@ -1,29 +1,29 @@
 ﻿using System.Collections.Concurrent;
-using Gondwana.Resource;
+using Gondwana.Assets;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Audio;
 
-public sealed class SoundResourceManager : IDisposable
+public sealed class AudioResourceManager : IDisposable
 {
-    private static readonly Lazy<SoundResourceManager> _instance = new(() => new SoundResourceManager());
-    private readonly ConcurrentDictionary<string, (SoundResource soundResource, string? tempPath)> _soundResources = new();
+    private static readonly Lazy<AudioResourceManager> _instance = new(() => new AudioResourceManager());
+    private readonly ConcurrentDictionary<string, (AudioResource soundResource, string? tempPath)> _soundResources = new();
     private bool _disposed = false;
 
     /// <summary>
     /// Event that is raised when a sound resource is disposed.
     /// </summary>
-    public event EventHandler<(string Key, SoundResource Resource)>? SoundDisposed;
+    public event EventHandler<(string Key, AudioResource Resource)>? SoundDisposed;
 
-    private SoundResourceManager()
+    private AudioResourceManager()
     { }
 
     /// <summary>
-    /// Singleton instance of the SoundResourceManager.
+    /// Singleton instance of the AudioResourceManager.
     /// </summary>
-    public static SoundResourceManager Instance => _instance.Value;
+    public static AudioResourceManager Instance => _instance.Value;
 
-    public SoundResource LoadFromFile(string key, string filePath, float volume = 1.0f, float pan = 0.0f)
+    public AudioResource LoadFromFile(string key, string filePath, float volume = 1.0f, float pan = 0.0f)
     {
         if (_soundResources.TryGetValue(key, out var existing))
         {
@@ -34,7 +34,7 @@ public sealed class SoundResourceManager : IDisposable
         return LoadFromBytes(key, bytes, filePath, volume, pan);
     }
 
-    public SoundResource LoadFromStream(string key, Stream input, string fileExt, float volume = 1.0f, float pan = 0.0f)
+    public AudioResource LoadFromStream(string key, Stream input, string fileExt, float volume = 1.0f, float pan = 0.0f)
     {
         if (_soundResources.TryGetValue(key, out var existing))
         {
@@ -48,25 +48,25 @@ public sealed class SoundResourceManager : IDisposable
         return LoadFromBytes(key, bytes, fileExt, volume, pan);
     }
 
-    public List<SoundResource> LoadFromEngineResourceFile(EngineResourceFile resourceFile, float defaultVolume = 1.0f, float defaultPan = 0.0f)
+    public List<AudioResource> LoadFromEngineResourceFile(AssetsFile resourceFile, float defaultVolume = 1.0f, float defaultPan = 0.0f)
     {
-        List<SoundResource> loadedSounds = new();
+        List<AudioResource> loadedSounds = new();
 
         foreach (var entry in resourceFile.GetAllEntries())
         {
-            if (entry.ResourceType != EngineResourceFileTypes.Audio)
+            if (entry.AssetType != AssetTypes.Audio)
                 continue;
 
-            if (_soundResources.ContainsKey(entry.ResourceName))
+            if (_soundResources.ContainsKey(entry.AssetName))
             {
-                Engine.Logger.LogDebug("SoundResource '{Key}' already loaded. Skipping.", entry.ResourceName);
+                Engine.Logger.LogDebug("AudioResource '{Key}' already loaded. Skipping.", entry.AssetName);
                 continue;
             }
 
-            var stream = resourceFile.Get(entry.ResourceType, entry.ResourceName);
+            var stream = resourceFile.Get(entry.AssetType, entry.AssetName);
             if (stream == null)
             {
-                Engine.Logger.LogWarning("Failed to retrieve stream for audio resource: {Key}", entry.ResourceName);
+                Engine.Logger.LogWarning("Failed to retrieve stream for audio resource: {Key}", entry.AssetName);
                 continue;
             }
 
@@ -75,12 +75,12 @@ public sealed class SoundResourceManager : IDisposable
                 using var ms = new MemoryStream();
                 stream.CopyTo(ms);
                 var bytes = ms.ToArray();
-                Engine.Logger.LogInformation("Loaded sound: {Key}", entry.ResourceName);
-                loadedSounds.Add(LoadFromBytes(entry.ResourceName, bytes, entry.ResourceName, defaultVolume, defaultPan));
+                Engine.Logger.LogInformation("Loaded sound: {Key}", entry.AssetName);
+                loadedSounds.Add(LoadFromBytes(entry.AssetName, bytes, entry.AssetName, defaultVolume, defaultPan));
             }
             catch (Exception ex)
             {
-                Engine.Logger.LogError(ex, "Error loading sound from resource file for key: {Key}", entry.ResourceName);
+                Engine.Logger.LogError(ex, "Error loading sound from asset file for key: {Key}", entry.AssetName);
                 throw;
             }
         }
@@ -88,11 +88,11 @@ public sealed class SoundResourceManager : IDisposable
         return loadedSounds;
     }
 
-    public SoundResource? Clone(string key, string? newKey = null, float? volume = null, float? pan = null)
+    public AudioResource? Clone(string key, string? newKey = null, float? volume = null, float? pan = null)
     {
         if (!_soundResources.TryGetValue(key, out var original))
         {
-            Engine.Logger.LogWarning("Attempted to clone non-existent SoundResource with key: {Key}", key);
+            Engine.Logger.LogWarning("Attempted to clone non-existent AudioResource with key: {Key}", key);
             return null;
         }
 
@@ -100,19 +100,19 @@ public sealed class SoundResourceManager : IDisposable
 
         if (_soundResources.ContainsKey(newKey))
         {
-            Engine.Logger.LogWarning("SoundResource with key '{Key}' already exists. Cannot clone.", newKey);
+            Engine.Logger.LogWarning("AudioResource with key '{Key}' already exists. Cannot clone.", newKey);
             return null;
         }
 
         if (original.soundResource.OriginalBytes == null)
         {
-            Engine.Logger.LogWarning("Cannot clone SoundResource '{Key}' – missing original bytes.", key);
+            Engine.Logger.LogWarning("Cannot clone AudioResource '{Key}' – missing original bytes.", key);
             return null;
         }
 
         if (string.IsNullOrEmpty(original.soundResource.Extension))
         {
-            Engine.Logger.LogWarning("Cannot clone SoundResource '{Key}' – missing original extension.", key);
+            Engine.Logger.LogWarning("Cannot clone AudioResource '{Key}' – missing original extension.", key);
             return null;
         }
 
@@ -125,7 +125,7 @@ public sealed class SoundResourceManager : IDisposable
         );
     }
 
-    private SoundResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
+    private AudioResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
     {
         string ext = Path.GetExtension(fileHint);
         var (readerFactory, requiresFile) = PlatformAudioFactory.GetReaderFactory(ext);
@@ -146,7 +146,7 @@ public sealed class SoundResourceManager : IDisposable
 
         var reader = readerFactory(streamForReader);
 
-        var sound = new SoundResource(
+        var sound = new AudioResource(
             key,
             reader,
             volume,
@@ -161,7 +161,7 @@ public sealed class SoundResourceManager : IDisposable
         return sound;
     }
 
-    private void RegisterLoadedSound(string key, SoundResource sound)
+    private void RegisterLoadedSound(string key, AudioResource sound)
     {
         sound.Disposed += (_, _) =>
         {
@@ -173,7 +173,7 @@ public sealed class SoundResourceManager : IDisposable
     /// <summary>
     /// Unloads a sound resource by its key, disposing of it and removing it from the manager.
     /// </summary>
-    /// <param name="key">Unique identifier for SoundResource.</param>
+    /// <param name="key">Unique identifier for AudioResource.</param>
     public void Unload(string key)
     {
         if (_soundResources.TryRemove(key, out var resource))
@@ -191,7 +191,7 @@ public sealed class SoundResourceManager : IDisposable
         _soundResources.Clear();
     }
 
-    public bool TryGet(string key, out SoundResource? resource)
+    public bool TryGet(string key, out AudioResource? resource)
     {
         if (_soundResources.TryGetValue(key, out var entry))
         {
@@ -203,13 +203,13 @@ public sealed class SoundResourceManager : IDisposable
         return false;
     }
 
-    public SoundResource? Get(string key) => _soundResources.TryGetValue(key, out var entry) ? entry.soundResource : null;
+    public AudioResource? Get(string key) => _soundResources.TryGetValue(key, out var entry) ? entry.soundResource : null;
 
     public bool Contains(string key) => _soundResources.ContainsKey(key);
 
     public IEnumerable<string> GetAllKeys() => _soundResources.Keys;
 
-    public Dictionary<string, SoundResource> GetAll() =>
+    public Dictionary<string, AudioResource> GetAll() =>
     _soundResources.ToDictionary(
         kvp => kvp.Key,
         kvp => kvp.Value.soundResource

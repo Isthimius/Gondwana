@@ -8,10 +8,10 @@ using static Gondwana.Audio.PlatformAudioFactory;
 namespace Gondwana.Audio;
 
 /// <summary>
-/// Represents a sound resource that can be played, paused, resumed, and disposed.
+/// Represents a audio resource that can be played, paused, resumed, and disposed.
 /// </summary>
 [JsonObject(IsReference = true)]
-public class SoundResource : IDisposable
+public class AudioResource : IDisposable
 {
     private readonly IWavePlayer outputDevice;
     private readonly WaveStream waveStream;
@@ -22,27 +22,27 @@ public class SoundResource : IDisposable
 
     /// <summary>
     /// Event that is raised when playback completes.
-    /// Will not be raised if the sound is looping.
+    /// Will not be raised if the audio is looping.
     /// </summary>
     public event EventHandler PlaybackCompleted;
 
     /// <summary>
     /// Asynchronous callback that is invoked when playback completes.
-    /// Will not be invoked if the sound is looping.
+    /// Will not be invoked if the audio is looping.
     /// </summary>
     public Func<Task>? PlaybackCompletedAsync;
 
     /// <summary>
-    /// Event that is raised when the sound resource is disposed.
+    /// Event that is raised when the audio resource is disposed.
     /// </summary>
     public event EventHandler Disposed;
 
-    private SoundResource()
+    private AudioResource()
     { }
 
-    internal SoundResource(
+    internal AudioResource(
         string key,
-        WaveStream soundStream,
+        WaveStream audioStream,
         float volume = 1.0f,
         float pan = 0.0f,
         string? filePathOrExt = null,
@@ -50,7 +50,7 @@ public class SoundResource : IDisposable
         string? tempFilePath = null)
     {
         Key = key;
-        waveStream = soundStream;
+        waveStream = audioStream;
         outputDevice = new WaveOutEvent();
         outputDevice.Init(BuildAudioGraph(waveStream, volume, pan));
         outputDevice.PlaybackStopped += OnPlaybackStopped;
@@ -70,7 +70,7 @@ public class SoundResource : IDisposable
         if (ch < 1)
         {
             Engine.Logger.LogWarning(
-                "SoundResource {Key} has invalid channel count: {ChannelCount}", Key, ch);
+                "AudioResource {Key} has invalid channel count: {ChannelCount}", Key, ch);
 
             // just pass through, no pan stage
             volumeProvider = new VolumeSampleProvider(baseProvider)
@@ -125,7 +125,7 @@ public class SoundResource : IDisposable
     }
 
     /// <summary>
-    /// Gets the unique key associated with this sound resource.
+    /// Gets the unique key associated with this audio resource.
     /// </summary>
     public string Key { get; private set; }
 
@@ -299,7 +299,7 @@ public class SoundResource : IDisposable
     {
         if (e.Exception != null)
         {
-            Engine.Logger.LogError(e.Exception, "PlaybackStopped due to error for sound: {Key}\r\n{ErrorDescription}", Key, e.ToString());
+            Engine.Logger.LogError(e.Exception, "PlaybackStopped due to error for audio: {Key}\r\n{ErrorDescription}", Key, e.ToString());
         }
         else
         {
@@ -327,7 +327,7 @@ public class SoundResource : IDisposable
                         }
                         catch (Exception ex)
                         {
-                            Engine.Logger.LogError(ex, "PlaybackCompletedAsync threw an exception for sound resource: {Key}", Key);
+                            Engine.Logger.LogError(ex, "PlaybackCompletedAsync threw an exception for audio resource: {Key}", Key);
                         }
                     });
                 }
@@ -337,7 +337,7 @@ public class SoundResource : IDisposable
         }
         catch (Exception ex)
         {
-            Engine.Logger.LogError(ex, "Error during playback completion handling for sound resource: {Key}", Key);
+            Engine.Logger.LogError(ex, "Error during playback completion handling for audio resource: {Key}", Key);
         }
     }
 
@@ -356,7 +356,7 @@ public class SoundResource : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    ~SoundResource() => Dispose(false);
+    ~AudioResource() => Dispose(false);
 
     protected virtual void Dispose(bool disposing)
     {
@@ -388,7 +388,7 @@ public class SoundResource : IDisposable
             }
             catch (Exception ex)
             {
-                Engine.Logger.LogError(ex, "Failed to delete temporary file {TempFilePath} for sound resource {Key}", TempFilePath, Key);
+                Engine.Logger.LogError(ex, "Failed to delete temporary file {TempFilePath} for audio resource {Key}", TempFilePath, Key);
             }
         }
 

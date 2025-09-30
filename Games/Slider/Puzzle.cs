@@ -31,8 +31,8 @@ namespace Slider
         private Tilesheet tilesheet;
         private Scene matrixes;
 
-        private SoundResource slideSound;
-        private SoundResource tadaSound;
+        private AudioResource slideSound;
+        private AudioResource tadaSound;
 
         #endregion private / internal fields
 
@@ -73,8 +73,8 @@ namespace Slider
             delMoveStop = new SpriteMovementEventHandler(Sprites_SpriteMovementStopped);
 
             InitializeSprites(tileWidth, tileHeight);
-            slideSound = SoundResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
-            tadaSound = SoundResourceManager.Instance.LoadFromFile("tada", "assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav");
+            slideSound = AudioResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
+            tadaSound = AudioResourceManager.Instance.LoadFromFile("tada", "assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav");
 
             //Engine.Instance.InitializeWinFormsAudioFormats();
             //Engine.Instance.InitializeXInputGamepadManager();

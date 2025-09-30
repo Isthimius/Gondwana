@@ -1,6 +1,6 @@
-﻿namespace Gondwana.Resource;
+﻿namespace Gondwana.Assets;
 
-public enum EngineResourceFileTypes
+public enum AssetTypes
 {
     /// <summary>
     /// Represents an image file type
@@ -8,7 +8,7 @@ public enum EngineResourceFileTypes
     Image = 0,
 
     /// <summary>
-    /// Represents the audio media type for <see cref="Gondwana.Audio.SoundResourceManager"/>
+    /// Represents the audio media type for <see cref="Gondwana.Audio.AudioResourceManager"/>
     /// </summary>
     Audio = 1,
 
