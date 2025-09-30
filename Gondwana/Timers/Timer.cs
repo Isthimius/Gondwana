@@ -17,7 +17,7 @@ public sealed class Timer : IDisposable
     /// <summary>
     /// Occurs when the timer interval has elapsed.
     /// </summary>
-    /// <remarks>This event is raised each time the timer completes its interval.  Subscribers can handle this
+    /// <remarks>This event is raised each time the timer completes its interval. Subscribers can handle this
     /// event to execute custom logic at regular intervals. Ensure the timer is started and enabled for the event to be
     /// raised.</remarks>
     public event TimerEventHandler? Tick;
