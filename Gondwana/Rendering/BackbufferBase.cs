@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Scenes;
 using Gondwana.Skia;
 using SkiaSharp;
 
@@ -107,6 +108,14 @@ public abstract class BackbufferBase : IDisposable
             if (!tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), GridLinePaint);
         }
+    }
+
+    /// <summary>
+    /// Runs as part of DoForegroundTasks()
+    /// </summary>
+    internal void DrawGridLines()
+    {
+        
     }
 
     /// <summary>

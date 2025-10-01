@@ -96,8 +96,6 @@ public sealed class Engine : IDisposable
 
     #endregion events
 
-    #region constructor
-
     private Engine()
     { }
 
@@ -153,10 +151,6 @@ public sealed class Engine : IDisposable
             UiDispatcher!.Post(() => InitializationComplete?.Invoke());
     }
 
-    #endregion constructor
-
-    #region public methods
-
     public void Start(SynchronizationContext uiContext)
     {
         if (IsRunning)
@@ -191,8 +185,6 @@ public sealed class Engine : IDisposable
     {
         IsRunning = false;
     }
-
-    #endregion public methods
 
     #region public properties
 

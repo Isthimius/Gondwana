@@ -11,12 +11,12 @@ using Gondwana.Audio;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
+using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
-using Gondwana.Rendering.Direct;
 using Gondwana.Scenes;
 using Gondwana.Scenes.Coordinates;
 
@@ -124,7 +124,7 @@ namespace GondwanaWinTest
             //string file = path + @"\media\Raton.asx";
             //string file2 = path + @"\media\Copy of Castle4_Simon.mid";
 
-            var monkeySong = SoundResourceManager.Instance.LoadFromFile("monkey", file);
+            var monkeySong = AudioResourceManager.Instance.LoadFromFile("monkey", file);
             monkeySong.IsLooping = true;
             monkeySong.Play();
 
