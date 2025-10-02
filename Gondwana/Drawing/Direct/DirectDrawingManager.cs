@@ -57,8 +57,6 @@ internal sealed class DirectDrawingManager
                 drawing.Render();
                 drawing._dirty = false;
             }
-
-            drawing.ForceRefresh();
         }
     }
 
@@ -81,7 +79,7 @@ internal sealed class DirectDrawingManager
     /// Adds a drawing by its Name. If a drawing with the same Name already exists,
     /// it is disposed and replaced by the new one. Automatically removes on Dispose.
     /// </summary>
-    internal void Add(DirectDrawingBase drawing)
+    internal void AddOrReplace(DirectDrawingBase drawing)
     {
         if (drawing is null) throw new ArgumentNullException(nameof(drawing));
         var name = drawing.Name ?? throw new ArgumentException("Drawing must have a Name.", nameof(drawing));

@@ -22,7 +22,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
     {
-        DirectDrawingManager.Instance.Add(this);
+        DirectDrawingManager.Instance.AddOrReplace(this);
         _renderSurfaceHost = renderSurfaceHost;
         _bounds = bounds;
         _zOrder = 0;
@@ -73,10 +73,19 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
     internal void MoveNext(long tick)
     {
-        if (_movement?.MoveNext(tick) == true)
-            _movement = null;
+        if (_movement != null)
+        {
+            _dirty = true;
+
+            if (_movement?.MoveNext(tick) == true)
+                _movement = null;
+        }
     }
 
+    /// <summary>
+    /// Marke the current DirectDrawing as dirty, forcing a redraw on the next RenderAll().
+    /// Also adds overlapping area on the <see cref="RenderSurfaceHost.DrawSource"> to the RefreshQueue.
+    /// </summary>
     protected internal void ForceRefresh()
     {
         var scene = RenderSurfaceHost.DrawSource;
@@ -91,7 +100,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     /// Called from <see cref="DirectDrawingManager.UpdateAll(long)"/>.
     /// </summary>
     /// <param name="tick">Current engine tick from <see cref="HighResTimer"/>.</param>
-    protected internal virtual void Update(long tick) 
+    protected internal virtual void Update(long tick)
     {
         MoveNext(tick);
     }

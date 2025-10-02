@@ -91,7 +91,7 @@ namespace Gondwana.Drawing.Direct.Particles;
 /// </example>
 public sealed class ParticleEmitter
 {
-    /// <summary>World-space position where particles originate.</summary>
+    /// <summary>RenderHost / adapter pixel position where particles originate.</summary>
     public PointF Position { get; set; }
 
     /// <summary>Particles per second to spawn (fractional allowed).</summary>

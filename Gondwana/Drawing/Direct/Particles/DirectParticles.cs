@@ -1,8 +1,9 @@
-﻿using System.Buffers;
-using System.Drawing;
-using Gondwana.Rendering;
+﻿using Gondwana.Rendering;
 using Gondwana.Timers;
 using SkiaSharp;
+using System.Buffers;
+using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace Gondwana.Drawing.Direct.Particles;
 
@@ -66,37 +67,120 @@ namespace Gondwana.Drawing.Direct.Particles;
 /// particles.Emitters.Add(sparks);
 /// particles.Emitters.Add(smoke);
 ///
-/// // Add to the drawing manager
-/// directDrawingManager.AddOrReplace(particles);
 /// </code>
 /// </example>
 public sealed partial class DirectParticles : DirectDrawingBase
 {
-    /// <summary>
-    /// Collection of particle emitters this system updates and renders.
-    /// Add multiple emitters (e.g., sparks + smoke) to layer effects.
-    /// </summary>
-    public readonly List<ParticleEmitter> Emitters = new();
-    public float GlobalEmitScale { get; set; } = 1f; // master volume knob
-
     private readonly Particle[] _particles;
     private readonly Random _rng = new();
     private readonly SKPaint _paint = new() { IsAntialias = true };
     private int _alive;
 
+    // If you want textured particles, supply a tilesheet frame and draw bitmap quads instead of circles.
+    private readonly SKBitmap? _particleSprite;
+
+    /// <summary>
+    /// Collection of particle emitters this system updates and renders.
+    /// Add multiple emitters (e.g., sparks + smoke) to layer effects.
+    /// </summary>
+    public readonly List<ParticleEmitter> Emitters = new();
+
+    /// <summary>
+    /// Global multiplier applied to all emitter <c>EmitRate</c> values
+    /// in this particle system. Acts like a master volume knob for
+    /// particle density.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A value of <c>1.0</c> leaves emit rates unchanged.  
+    /// Values greater than 1 increase overall particle output,
+    /// while values between 0 and 1 reduce it.  
+    /// </para>
+    /// <para>
+    /// Setting this to <c>0</c> effectively pauses emission without
+    /// disabling or removing individual emitters.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// The following demonstrates how to smoothly fade out an effect
+    /// by reducing <see cref="GlobalEmitScale"/> over time:
+    ///
+    /// <code>
+    /// // Particle system created and auto-registered by base class
+    /// var particles = new DirectParticles(renderHost, viewportBounds);
+    ///
+    /// // Start at full intensity
+    /// particles.GlobalEmitScale = 1.0f;
+    ///
+    /// // Later, during update (e.g., shutting down effect):
+    /// particles.GlobalEmitScale = MathF.Max(0f,
+    ///     particles.GlobalEmitScale - 0.5f * deltaTime); // fade out in ~2s
+    /// </code>
+    /// </example>
+    public float GlobalEmitScale { get; set; } = 1f;
+
+    /// <summary>
+    /// Global tint color multiplied against every particle’s own color
+    /// during rendering.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Useful for quickly recoloring or fading an entire particle system
+    /// without touching individual emitters.  
+    /// </para>
+    /// <para>
+    /// Defaults to <see cref="SKColors.White"/>, which leaves particles
+    /// unchanged. Setting alpha here provides an additional global fade,
+    /// stacked with per-particle fading.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// The following demonstrates how to apply a global tint:
+    ///
+    /// <code>
+    /// var particles = new DirectParticles(renderHost, viewportBounds);
+    ///
+    /// // Render all particles with a blue tint
+    /// particles.GlobalColorTint = new SKColor(128, 160, 255, 255);
+    ///
+    /// // Fade entire system to transparent over time
+    /// particles.GlobalColorTint = particles.GlobalColorTint.WithAlpha(
+    ///     (byte)MathF.Max(0, particles.GlobalColorTint.Alpha - 200 * deltaTime));
+    /// </code>
+    /// </example>
+    public SKColor GlobalColorTint { get; set; } = SKColors.White;
+
     // Emit controls
     public float GravityY { get; set; } = 400f; // px/s^2
 
-    // If you want textured particles, supply a tilesheet frame and draw bitmap quads instead of circles.
-    private readonly SKBitmap? _sprite;
-
-    public DirectParticles(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? sprite = null)
+    public DirectParticles(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
         : base(host, bounds)
     {
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);
-        _sprite = sprite;
+        _particleSprite = particleSprite;
         ZOrder = 10; // draw above backgrounds by default
     }
+
+    /// <summary>
+    /// Immediately spawns a fixed number of particles from the given emitter.
+    /// Useful for explosions, impacts, or click/tap feedback.
+    /// </summary>
+    /// <param name="emitter">Configured emitter providing ranges and color.</param>
+    /// <param name="count">Number of particles to spawn instantly.</param>
+    /// <example>
+    /// <code>
+    /// // Explosion at point P
+    /// var boom = new ParticleEmitter {
+    ///     Position = P, EmitRate = 0,
+    ///     LifeRange = (0.3f, 0.7f),
+    ///     VelocityRangeX = (-600f, 600f),
+    ///     VelocityRangeY = (-600f, 600f),
+    ///     SizeRange = (3f, 6f), Color = SKColors.OrangeRed
+    /// };
+    /// particles.Burst(boom, 150);
+    /// </code>
+    /// </example>
+    public void Burst(ParticleEmitter emitter, int count) => EmitFrom(emitter, count);
 
     protected override void Dispose(bool disposing)
     {
@@ -109,7 +193,6 @@ public sealed partial class DirectParticles : DirectDrawingBase
         }
         base.Dispose(disposing);
     }
-
 
     private long? _lastTick; // null until first update
 
@@ -202,7 +285,7 @@ public sealed partial class DirectParticles : DirectDrawingBase
         // OPTIONAL: additive blending for glowy effects
         _paint.BlendMode = SKBlendMode.Plus;
 
-        if (_sprite is null)
+        if (_particleSprite is null)
         {
             // Cheap circles
             for (int i = 0; i < _alive; i++)
@@ -210,7 +293,7 @@ public sealed partial class DirectParticles : DirectDrawingBase
                 ref var p = ref _particles[i];
                 float t = 1f - (p.Life / p.MaxLife);                // 0..1
                 byte a = (byte)(255 * (1f - t));                   // fade out
-                _paint.Color = p.Color.WithAlpha(a);
+                _paint.Color = ApplyGlobalTint(p.Color, a);
                 float size = p.Size * (1f + 0.5f * t);              // slight growth
                 canvas.DrawCircle(p.X, p.Y, size, _paint);
             }
@@ -224,13 +307,13 @@ public sealed partial class DirectParticles : DirectDrawingBase
                 ref var p = ref _particles[i];
                 float t = 1f - (p.Life / p.MaxLife);
                 byte a = (byte)(255 * (1f - t));
-                _paint.Color = p.Color.WithAlpha(a);
+                _paint.Color = ApplyGlobalTint(p.Color, a);
 
                 float s = p.Size;
                 var dst = new SKRect(p.X - s * half, p.Y - s * half, p.X + s * half, p.Y + s * half);
                 canvas.Save();
                 canvas.RotateDegrees(p.Rotation, p.X, p.Y);
-                canvas.DrawBitmap(_sprite, dst, _paint);
+                canvas.DrawBitmap(_particleSprite, dst, _paint);
                 canvas.Restore();
             }
         }
@@ -266,24 +349,19 @@ public sealed partial class DirectParticles : DirectDrawingBase
 
     private float NextRange(float min, float max) => (float)(_rng.NextDouble() * (max - min) + min);
 
-    /// <summary>
-    /// Immediately spawns a fixed number of particles from the given emitter.
-    /// Useful for explosions, impacts, or click/tap feedback.
-    /// </summary>
-    /// <param name="emitter">Configured emitter providing ranges and color.</param>
-    /// <param name="count">Number of particles to spawn instantly.</param>
-    /// <example>
-    /// <code>
-    /// // Explosion at point P
-    /// var boom = new ParticleEmitter {
-    ///     Position = P, EmitRate = 0,
-    ///     LifeRange = (0.3f, 0.7f),
-    ///     VelocityRangeX = (-600f, 600f),
-    ///     VelocityRangeY = (-600f, 600f),
-    ///     SizeRange = (3f, 6f), Color = SKColors.OrangeRed
-    /// };
-    /// particles.Burst(boom, 150);
-    /// </code>
-    /// </example>
-    public void Burst(ParticleEmitter emitter, int count) => EmitFrom(emitter, count);
+    // Fast, branch-free tint (multiplies RGB by global tint;
+    // alpha = lifeAlpha * globalAlpha). Assumes particle base alpha = 255.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private SKColor ApplyGlobalTint(SKColor c, byte lifeAlpha)
+    {
+        // Cache globals locally (JIT can keep these in regs)
+        var gt = GlobalColorTint;
+
+        int r = (c.Red * gt.Red) / 255;
+        int g = (c.Green * gt.Green) / 255;
+        int b = (c.Blue * gt.Blue) / 255;
+        int a = (lifeAlpha * gt.Alpha) / 255;
+
+        return new SKColor((byte)r, (byte)g, (byte)b, (byte)a);
+    }
 }
