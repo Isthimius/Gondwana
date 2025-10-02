@@ -21,14 +21,14 @@ namespace Gondwana.Drawing.Direct.Particles;
 ///     <description>
 ///     <see cref="OnSpawn"/> — called once for each newly created particle,
 ///     giving you a <c>ref</c> to the particle for last-mile initialization
-///     (e.g., randomizing rotation, adjusting color, assigning metadata).
+///     (e.g., randomizing rotation, adjusting color, assigning metadata, etc.).
 ///     </description>
 ///   </item>
 ///   <item>
 ///     <description>
 ///     <see cref="OnUpdate"/> — called every update tick with the emitter and
 ///     elapsed time (seconds). This can be used to animate emitter motion
-///     (e.g., moving with a torch, oscillating with a sine wave).
+///     (e.g., moving with a torch, oscillating with a sine wave, etc.).
 ///     </description>
 ///   </item>
 /// </list>
