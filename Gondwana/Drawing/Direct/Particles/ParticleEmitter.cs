@@ -15,7 +15,7 @@ namespace Gondwana.Drawing.Direct.Particles;
 /// <code>
 /// // Example: Fire pit with glowing sparks + rising smoke
 ///
-/// var particles = new DirectParticle(renderHost,
+/// var particles = new DirectParticles(renderHost,
 ///     new Rectangle(0, 0, viewportW, viewportH));
 ///
 /// // Configure base behavior
