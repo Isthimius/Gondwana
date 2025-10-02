@@ -109,4 +109,4 @@ Contributions are welcome!
 
 ## 📜 License
 
-MIT License — see [LICENSE](LICENSE) for details.  
+GPLv2 License — see [LICENSE](LICENSE) for details.  
