@@ -6,6 +6,42 @@ namespace Gondwana.Drawing.Direct.Particles;
 /// <summary>
 /// Configures how particles are spawned over time at a given location.
 /// </summary>
+/// 
+/// <remarks>
+/// <para>
+/// A <see cref="ParticleEmitter"/> defines how particles are spawned over time
+/// at a specific position. Each emitter manages its own emission rate, lifetime
+/// ranges, velocity ranges, size ranges, and base color.
+/// </para>
+///
+/// <para>
+/// You can also attach two optional hooks:
+/// <list type="bullet">
+///   <item>
+///     <description>
+///     <see cref="OnSpawn"/> — called once for each newly created particle,
+///     giving you a <c>ref</c> to the particle for last-mile initialization
+///     (e.g., randomizing rotation, adjusting color, assigning metadata).
+///     </description>
+///   </item>
+///   <item>
+///     <description>
+///     <see cref="OnUpdate"/> — called every update tick with the emitter and
+///     elapsed time (seconds). This can be used to animate emitter motion
+///     (e.g., moving with a torch, oscillating with a sine wave).
+///     </description>
+///   </item>
+/// </list>
+/// </para>
+///
+/// <para>
+/// Emitters are usually created in pairs or groups and added to a
+/// <see cref="DirectParticles"/> system to combine effects. For example,
+/// one emitter can generate fast-fading sparks while another generates
+/// slow-rising smoke.
+/// </para>
+/// </remarks>
+/// 
 /// <example>
 /// <para>
 /// The following demonstrates how to configure multiple emitters
