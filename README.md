@@ -33,10 +33,21 @@ Gondwana/
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- .NET 8 SDK  
-- SkiaSharp  
-- (Optional) LibVLCSharp, NAudio  
+## 📦 Prerequisites
+
+The Gondwana Core library depends on the following NuGet packages:
+
+- **Microsoft.Extensions.Configuration** (9.0.8)  
+- **Microsoft.Extensions.Configuration.Binder** (9.0.8)  
+- **Microsoft.Extensions.Configuration.Json** (9.0.8)  
+- **Microsoft.Extensions.Logging.Console** (9.0.8)  
+- **Microsoft.Extensions.Logging.Debug** (9.0.8)  
+- **NAudio** (2.2.1) — audio playback and mixing  
+- **Newtonsoft.Json** (13.0.3) — JSON serialization  
+- **SharpZipLib** (1.4.2) — archive and compression support  
+- **SkiaSharp** (3.119.0) — 2D rendering backend  
+- **SkiaSharp.HarfBuzz** (3.119.0) — advanced text shaping/rendering
+
 
 ### Build & Run
 ```bash
