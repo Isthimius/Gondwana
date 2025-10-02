@@ -15,6 +15,9 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     protected internal bool _dirty = true;
     private bool _disposed = false;
 
+    /// <summary>
+    /// Render the drawable to the current backbuffer.
+    /// </summary>
     protected internal abstract void Render();
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
@@ -81,6 +84,16 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
             scene[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
         _dirty = true;
+    }
+
+    /// <summary>
+    /// Per-frame update hook. Default: advance scrolling only.
+    /// Called from <see cref="DirectDrawingManager.UpdateAll(long)"/>.
+    /// </summary>
+    /// <param name="tick">Current engine tick from <see cref="HighResTimer"/>.</param>
+    protected internal virtual void Update(long tick) 
+    {
+        MoveNext(tick);
     }
 
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);

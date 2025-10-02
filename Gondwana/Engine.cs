@@ -274,12 +274,6 @@ public sealed class Engine : IDisposable
         foreach (SceneLayer matrix in SceneLayer.GetAllSceneLayers())
             matrix.MoveNext(tick);
 
-        // TODO: re-enable this... also, should be before or after other Tile animations? assuming before, since that worked before...
-
-        // perform any timed DirectDrawing scrolling
-        //foreach (DirectDrawing drawing in DirectDrawingManager._instances)
-        //    drawing.MoveNext(tick);
-
         // cycle Animator frames
         for (int i = 0; i < Tile.TilesAnimating.Count; i++)
             Tile.TilesAnimating[i].TileAnimator.CycleAnimation(tick);
@@ -306,7 +300,10 @@ public sealed class Engine : IDisposable
         // raise event
         BeforeEngineCycle?.Invoke(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
 
-        // render all DirectDrawing objects;
+        // update the DirectDrawing instances' states
+        DirectDrawingManager.Instance.UpdateAll(tick);
+
+        // render all DirectDrawing instances;
         // this will add to the DirtyRects of any Backbuffers,
         // to be picked up next DoBackgroundTasks()
         DirectDrawingManager.Instance.RenderAll();

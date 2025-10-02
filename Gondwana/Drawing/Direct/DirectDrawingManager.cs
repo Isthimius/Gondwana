@@ -29,16 +29,25 @@ internal sealed class DirectDrawingManager
     }
 
     /// <summary>
-    /// Renders all drawings in a stable, deterministic order.
-    /// If DirectDrawingBase implements IComparable&lt;DirectDrawingBase&gt;, use that;
-    /// otherwise, fall back to Name ordering.
+    /// Updates all registered drawables using the current engine tick.
+    /// </summary>
+    /// <param name="tick">Current tick from <see cref="HighResTimer"/>.</param>
+    internal void UpdateAll(long tick)
+    {
+        // Snapshot to avoid races while iterating (consistent with RenderAll).
+        var snapshot = _directDrawings.Values.ToArray();
+
+        foreach (var drawing in snapshot)
+            drawing.Update(tick);
+    }
+
+    /// <summary>
+    /// Renders all registered drawables in Z-order.
     /// </summary>
     internal void RenderAll()
     {
         // Snapshot to avoid races while iterating.
         var snapshot = _directDrawings.Values.ToArray();
-
-        // Order: prefer IComparable<T>, else by Name.
         Array.Sort(snapshot, _defaultComparer);
 
         foreach (var drawing in snapshot)
