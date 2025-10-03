@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Scenes;
+﻿namespace Gondwana.Scenes.EventArgs;
 
 public delegate void GridPointSizeChangedEventHandler(SceneLayerPointSizeChangedEventArgs e);
 

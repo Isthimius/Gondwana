@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using Gondwana.Drawing;
 using Gondwana.Rendering;
 using Gondwana.Scenes.Coordinates;
+using Gondwana.Scenes.EventArgs;
 using Gondwana.Timers;
 using Newtonsoft.Json;
 

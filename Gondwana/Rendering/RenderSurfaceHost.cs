@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Gondwana.Scenes;
+using Gondwana.Scenes.EventArgs;
 using Gondwana.Skia;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;

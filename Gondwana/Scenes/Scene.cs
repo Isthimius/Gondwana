@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Gondwana.Rendering;
+using Gondwana.Scenes.EventArgs;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
