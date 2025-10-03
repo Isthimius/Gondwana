@@ -1,9 +1,10 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using Gondwana.Rendering;
 
 namespace Gondwana.Drawing.Direct;
 
-internal sealed class DirectDrawingManager
+public sealed class DirectDrawingManager
 {
     // ---- Singleton ----
     private static readonly Lazy<DirectDrawingManager> _instance =
@@ -26,6 +27,20 @@ internal sealed class DirectDrawingManager
     public DirectDrawingBase? GetDirectDrawing(string name)
     {
         return name is null ? null : _directDrawings.TryGetValue(name, out DirectDrawingBase? d) ? d : null;
+    }
+
+    public void ClearAll()
+    {
+        var toDispose = _directDrawings.Values.ToArray();
+        foreach (var d in toDispose)
+            d.Dispose(); // removal happens via event handler
+    }
+
+    public void Clear(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return;
+        if (_directDrawings.TryGetValue(name, out var d))
+            d.Dispose();
     }
 
     /// <summary>
@@ -52,6 +67,10 @@ internal sealed class DirectDrawingManager
 
         foreach (var drawing in snapshot)
         {
+            // if the drawing's RenderSurfaceHost's Backbuffer's DirtyRectangle intersects with the drawing's Bounds, mark as dirty
+            if (drawing.RenderSurfaceHost?.Backbuffer?.DirtyRectangle.IntersectsWith(drawing.Bounds) ?? false)
+                drawing._dirty = true;
+
             if (drawing._dirty)
             {
                 drawing.Draw();
@@ -59,21 +78,6 @@ internal sealed class DirectDrawingManager
             }
         }
     }
-
-    private static readonly IComparer<DirectDrawingBase> _defaultComparer =
-        Comparer<DirectDrawingBase>.Create((a, b) =>
-        {
-            if (a == null && b == null) return 0;
-            if (a == null) return -1;
-            if (b == null) return 1;
-
-            // First compare ZOrder
-            int z = a.ZOrder.CompareTo(b.ZOrder);
-            if (z != 0) return z;
-
-            // If ZOrder equal, fall back to Name
-            return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
-        });
 
     /// <summary>
     /// Adds a drawing by its Name. If a drawing with the same Name already exists,
@@ -107,23 +111,24 @@ internal sealed class DirectDrawingManager
             });
     }
 
+    private static readonly IComparer<DirectDrawingBase> _defaultComparer =
+    Comparer<DirectDrawingBase>.Create((a, b) =>
+    {
+        if (a == null && b == null) return 0;
+        if (a == null) return -1;
+        if (b == null) return 1;
+
+        // First compare ZOrder
+        int z = a.ZOrder.CompareTo(b.ZOrder);
+        if (z != 0) return z;
+
+        // If ZOrder equal, fall back to Name
+        return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
+    });
+
     private void OnDrawingDisposing(object? sender, DirectDrawingBase drawing)
     {
         _directDrawings.TryRemove(drawing.Name, out _);
         drawing.Disposing -= OnDrawingDisposing; // hygiene
-    }
-
-    public void ClearAll()
-    {
-        var toDispose = _directDrawings.Values.ToArray();
-        foreach (var d in toDispose)
-            d.Dispose(); // removal happens via event handler
-    }
-
-    public void Clear(string name)
-    {
-        if (string.IsNullOrEmpty(name)) return;
-        if (_directDrawings.TryGetValue(name, out var d))
-            d.Dispose();
     }
 }
