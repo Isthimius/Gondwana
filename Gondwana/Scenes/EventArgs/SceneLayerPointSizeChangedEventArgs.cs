@@ -2,7 +2,7 @@
 
 public delegate void GridPointSizeChangedEventHandler(SceneLayerPointSizeChangedEventArgs e);
 
-public class SceneLayerPointSizeChangedEventArgs : EventArgs
+public class SceneLayerPointSizeChangedEventArgs : System.EventArgs
 {
     public SceneLayer layer;
     public int oldWidth;

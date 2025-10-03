@@ -4,7 +4,7 @@ namespace Gondwana.Scenes.EventArgs;
 
 public delegate void SourceGridPointChangedEventHandler(SourceGridPointChangedEventArgs e);
 
-public class SourceGridPointChangedEventArgs : EventArgs
+public class SourceGridPointChangedEventArgs : System.EventArgs
 {
     public SceneLayer layer;
     public PointF oldPt;

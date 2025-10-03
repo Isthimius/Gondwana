@@ -2,7 +2,7 @@
 
 public delegate void SceneLayerAddRemoveHandler(SceneLayerAddRemoveEventArgs e);
 
-public class SceneLayerAddRemoveEventArgs : EventArgs
+public class SceneLayerAddRemoveEventArgs : System.EventArgs
 {
     public Scene Layers;
     public SceneLayer Layer;

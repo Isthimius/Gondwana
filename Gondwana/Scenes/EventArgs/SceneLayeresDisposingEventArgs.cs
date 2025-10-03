@@ -2,7 +2,7 @@
 
 public delegate void SceneLayeresDisposingEventHandler(SceneLayeresDisposingEventArgs e);
 
-public class SceneLayeresDisposingEventArgs : EventArgs
+public class SceneLayeresDisposingEventArgs : System.EventArgs
 {
     public Scene Matrixes;
 

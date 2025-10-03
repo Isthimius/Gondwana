@@ -2,7 +2,7 @@
 
 public delegate void VisibleChangedEventHandler(VisibleChangedEventArgs e);
 
-public class VisibleChangedEventArgs : EventArgs
+public class VisibleChangedEventArgs : System.EventArgs
 {
     public SceneLayer Matrix;
     public bool oldVisibleValue;

@@ -2,7 +2,7 @@
 
 public delegate void SceneLayerWrappingChangedEventHandler(SceneLayerWrappingChangedEventArgs e);
 
-public class SceneLayerWrappingChangedEventArgs : EventArgs
+public class SceneLayerWrappingChangedEventArgs : System.EventArgs
 {
     public SceneLayer layer;
     public bool oldHorizWrapping;

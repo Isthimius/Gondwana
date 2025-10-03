@@ -2,7 +2,7 @@
 
 public delegate void ShowGridLinesChangedEventHandler(ShowGridLinesChangedEventArgs e);
 
-public class ShowGridLinesChangedEventArgs : EventArgs
+public class ShowGridLinesChangedEventArgs : System.EventArgs
 {
     public SceneLayer Matrix;
     public bool oldValue;
