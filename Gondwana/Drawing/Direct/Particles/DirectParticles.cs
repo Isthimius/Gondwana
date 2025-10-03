@@ -278,7 +278,7 @@ public sealed partial class DirectParticles : DirectDrawingBase
     /// particles.Invalidate();       // mark dirty so the manager re-renders
     /// </code>
     /// </example>
-    protected internal override void Render()
+    protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
 

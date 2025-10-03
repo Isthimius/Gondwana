@@ -153,7 +153,7 @@ public sealed class DirectVideo : DirectDrawingBase
         _player.Ended += (_, __) => { /* engine could fire a scene event here if needed */ };
     }
 
-    protected override void Render()
+    protected override void Draw()
     {
         SKBitmap? bmp;
         lock (_frameLock) bmp = _frame;

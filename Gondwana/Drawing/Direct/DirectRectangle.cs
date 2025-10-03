@@ -119,7 +119,7 @@ public class DirectRectangle : DirectDrawingBase
         return this;
     }
 
-    protected internal override void Render()
+    protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();

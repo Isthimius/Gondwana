@@ -83,7 +83,7 @@ public class TextBlock : DirectDrawingBase
     public TextBlock SetMaxLines(int? maxLines)
     { _maxLines = maxLines; return this; }
 
-    protected internal override void Render()
+    protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();

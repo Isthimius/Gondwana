@@ -22,7 +22,7 @@ public class DirectImage : DirectDrawingBase
         _tilesheet = tilesheet;
     }
 
-    protected internal override void Render()
+    protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var destRect = Bounds.ToSKRect();

@@ -18,7 +18,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     /// <summary>
     /// Render the drawable to the current backbuffer.
     /// </summary>
-    protected internal abstract void Render();
+    protected internal abstract void Draw();
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
     {

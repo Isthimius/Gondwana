@@ -42,9 +42,9 @@ internal sealed class DirectDrawingManager
     }
 
     /// <summary>
-    /// Renders all registered drawables in Z-order.
+    /// Draws all registered drawables in Z-order to their associated Backbuffer.
     /// </summary>
-    internal void RenderAll()
+    internal void DrawAll()
     {
         // Snapshot to avoid races while iterating.
         var snapshot = _directDrawings.Values.ToArray();
@@ -54,7 +54,7 @@ internal sealed class DirectDrawingManager
         {
             if (drawing._dirty)
             {
-                drawing.Render();
+                drawing.Draw();
                 drawing._dirty = false;
             }
         }
