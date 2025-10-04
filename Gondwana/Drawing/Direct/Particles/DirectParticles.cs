@@ -248,7 +248,7 @@ public sealed partial class DirectParticles : DirectDrawingBase
         }
         _alive = write;
 
-        _dirty = true;
+        ForceRefresh();
     }
 
     /// <summary>

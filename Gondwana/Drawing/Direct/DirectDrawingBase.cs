@@ -22,11 +22,12 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
     {
-        DirectDrawingManager.Instance.AddOrReplace(this);
         _renderSurfaceHost = renderSurfaceHost;
         _bounds = bounds;
         _zOrder = 0;
         Name = Guid.NewGuid().ToString();
+
+        DirectDrawingManager.Instance.AddOrReplace(this);
         ForceRefresh();
     }
 

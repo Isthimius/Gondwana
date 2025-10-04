@@ -33,19 +33,22 @@
             // 
             // winFormBitmapRenderSurfaceControl1
             // 
-            winFormBitmapRenderSurfaceControl1.Location = new Point(48, 24);
+            winFormBitmapRenderSurfaceControl1.Location = new Point(11, 14);
+            winFormBitmapRenderSurfaceControl1.Margin = new Padding(2);
             winFormBitmapRenderSurfaceControl1.Name = "winFormBitmapRenderSurfaceControl1";
-            winFormBitmapRenderSurfaceControl1.Size = new Size(740, 395);
+            winFormBitmapRenderSurfaceControl1.Size = new Size(541, 237);
             winFormBitmapRenderSurfaceControl1.TabIndex = 0;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(560, 270);
             Controls.Add(winFormBitmapRenderSurfaceControl1);
+            Margin = new Padding(2);
             Name = "Form1";
             Text = "Form1";
+            FormClosing += Form1_FormClosing;
             ResumeLayout(false);
         }
 

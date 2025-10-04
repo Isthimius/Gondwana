@@ -151,6 +151,27 @@ public sealed class Engine : IDisposable
             UiDispatcher!.Post(() => InitializationComplete?.Invoke());
     }
 
+    /// <summary>
+    /// Starts the operation using the current <see cref="SynchronizationContext"/>.
+    /// Must be called from the UI thread.
+    /// </summary>
+    /// <remarks>This method requires a non-null <see cref="SynchronizationContext"/> to be present.  If no
+    /// <see cref="SynchronizationContext"/> is available, an exception is thrown.</remarks>
+    /// <exception cref="InvalidOperationException">Thrown if the current <see cref="SynchronizationContext"/> is <c>null</c>.</exception>
+    public void Start()
+    {
+        if (SynchronizationContext.Current == null)
+            throw new InvalidOperationException("SynchronizationContext cannot be null.");
+
+        Start(SynchronizationContext.Current);
+    }
+
+    /// <summary>
+    /// Starts the main processing loop, initializing the instance if necessary.
+    /// </summary>
+    /// <remarks>This method ensures that the instance is initialized before starting the processing loop.  If
+    /// the instance is already running, the method returns immediately without performing any action.</remarks>
+    /// <param name="uiContext">The <see cref="SynchronizationContext"/> used to synchronize UI-related operations.</param>
     public void Start(SynchronizationContext uiContext)
     {
         if (IsRunning)
