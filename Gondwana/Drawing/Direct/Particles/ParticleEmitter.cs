@@ -36,7 +36,7 @@ namespace Gondwana.Drawing.Direct.Particles;
 ///
 /// <para>
 /// Emitters are usually created in pairs or groups and added to a
-/// <see cref="DirectParticles"/> system to combine effects. For example,
+/// <see cref="ParticleSurface"/> system to combine effects. For example,
 /// one emitter can generate fast-fading sparks while another generates
 /// slow-rising smoke.
 /// </para>

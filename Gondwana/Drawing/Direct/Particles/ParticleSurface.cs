@@ -69,7 +69,7 @@ namespace Gondwana.Drawing.Direct.Particles;
 ///
 /// </code>
 /// </example>
-public sealed partial class DirectParticles : DirectDrawingBase
+public sealed partial class ParticleSurface : DirectDrawingBase
 {
     private readonly Particle[] _particles;
     private readonly Random _rng = new();
@@ -153,7 +153,7 @@ public sealed partial class DirectParticles : DirectDrawingBase
     // Emit controls
     public float GravityY { get; set; } = 400f; // px/s^2
 
-    public DirectParticles(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
+    public ParticleSurface(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
         : base(host, bounds)
     {
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);

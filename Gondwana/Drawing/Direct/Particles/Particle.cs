@@ -9,7 +9,7 @@ namespace Gondwana.Drawing.Direct.Particles
     /// A particle is a lightweight struct that holds its position, velocity,
     /// life span, size, color, and rotation. Particles are typically short-lived
     /// objects that are spawned and updated each frame by one or more
-    /// <see cref="ParticleEmitter"/>s inside a <see cref="DirectParticles"/> system.
+    /// <see cref="ParticleEmitter"/>s inside a <see cref="ParticleSurface"/> system.
     /// </remarks>
     public struct Particle
     {

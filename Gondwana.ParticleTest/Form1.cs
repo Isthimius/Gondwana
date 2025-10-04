@@ -30,20 +30,10 @@ public partial class Form1 : Form
 
         renderSurface.Bind(scene);
 
-        var sparks = new ParticleEmitter
-        {
-            Position = new PointF(adapter.Width / 2, adapter.Height),
-            EmitRate = 400,
-            LifeRange = (0.5f, 2.0f),
-            VelocityRangeX = (-150f, 150f),
-            VelocityRangeY = (-300f, -200f),
-            SizeRange = (0.1f, 3f),
-            Color = SKColors.BlueViolet
-        };
-
         Engine.Instance.Start();
-        var particles = new DirectParticles(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height));
-        particles.Emitters.Add(sparks);
+
+        var particles = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height));
+        particles.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         particles.Emitters.Add(GetRain(adapter.Width));
         particles.Emitters.Add(GetSnow(adapter.Width));
     }
@@ -51,6 +41,21 @@ public partial class Form1 : Form
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
         Engine.Instance.Stop();
+    }
+
+    private ParticleEmitter GetSparks(float width, float height)
+    {
+        var sparks = new ParticleEmitter
+        {
+            Position = new PointF(width / 2, height),
+            EmitRate = 400,
+            LifeRange = (0.5f, 2.0f),
+            VelocityRangeX = (-150f, 150f),
+            VelocityRangeY = (-300f, -200f),
+            SizeRange = (0.1f, 3f),
+            Color = SKColors.BlueViolet
+        };
+        return sparks;
     }
 
     private ParticleEmitter GetRain(float w)
