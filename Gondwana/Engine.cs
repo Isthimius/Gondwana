@@ -312,7 +312,7 @@ public sealed class Engine : IDisposable
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderBackbufferToAdapter();
 
-        // poll state of gamepad(s)
+        // update state of gamepad(s)
         GamepadManager?.Update();
 
         // save time of this last tick; increment CPS counter
@@ -321,7 +321,13 @@ public sealed class Engine : IDisposable
         _netCycles++;
 
         // raise event
-        AfterEngineCycle?.Invoke(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+        AfterEngineCycle?.Invoke(new EngineCycleEventArgs(
+            _grossCyclesThisMeasure,
+            _grossCycles,
+            _netCyclesThisMeasure,
+            _netCycles,
+            _grossCPS,
+            _netFPS));
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);
