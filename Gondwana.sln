@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Audio.Midi", "Gond
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video", "Gondwana.Video\Gondwana.Video.csproj", "{8DD90A45-56EC-605B-636B-C5238328283F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.ParticleTest", "Gondwana.ParticleTest\Gondwana.ParticleTest.csproj", "{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,18 @@ Global
 		{8DD90A45-56EC-605B-636B-C5238328283F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8DD90A45-56EC-605B-636B-C5238328283F}.Release|x86.ActiveCfg = Release|Any CPU
 		{8DD90A45-56EC-605B-636B-C5238328283F}.Release|x86.Build.0 = Release|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Debug|x86.Build.0 = Debug|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Release|x86.ActiveCfg = Release|Any CPU
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +173,7 @@ Global
 		{F53C1412-F849-4FF4-AF05-5F94DE3632F7} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA} = {5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}
 		{31F413D6-DF15-4F4A-8CB1-187A0A8DC170} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
+		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
