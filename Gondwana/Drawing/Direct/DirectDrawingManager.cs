@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -68,8 +69,11 @@ public sealed class DirectDrawingManager
         foreach (var drawing in snapshot)
         {
             // if the drawing's RenderSurfaceHost's Backbuffer's DirtyRectangle intersects with the drawing's Bounds, mark as dirty
-            if (drawing.RenderSurfaceHost?.Backbuffer?.DirtyRectangle.IntersectsWith(drawing.Bounds) ?? false)
+            if ((drawing.RenderSurfaceHost?.Backbuffer?.DirtyRectangle.IntersectsWith(drawing.Bounds) ?? false) ||
+                drawing.RenderSurfaceHost?.DrawSource?.RefreshNeeded == SceneRefreshType.All)
+            {
                 drawing._dirty = true;
+            }
 
             if (drawing._dirty)
             {
