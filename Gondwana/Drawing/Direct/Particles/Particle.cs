@@ -20,8 +20,15 @@ namespace Gondwana.Drawing.Direct.Particles
 
         /// <summary>
         /// The velocity vector (VX, VY) applied to the particle each update step.
+        /// (px/s)
         /// </summary>
         public float VX, VY;
+
+        /// <summary>
+        /// The acceleration vector (AX, AY) applied to the particle each update step.
+        /// (px/s²) Optional, can be zero.
+        /// </summary>
+        public float AX, AY; // Acceleration components (optional)
 
         /// <summary>
         /// The remaining lifetime of the particle, in seconds.

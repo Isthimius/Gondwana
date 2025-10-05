@@ -114,6 +114,28 @@ public sealed class ParticleEmitter
     /// </summary>
     public SKColor Color { get; set; } = new SKColor(200, 200, 255, 255);
 
+    /// <summary>
+    /// Gets or sets the horizontal jitter value for spawning particles, which represents a random offset applied along the X-axis.
+    /// </summary>
+    public float JitterX { get; set; } = 0f;
+
+    /// <summary>
+    /// Gets or sets the vertical jitter value for spawning particles, which represents a random offset applied along the Y-axis.
+    /// </summary>
+    public float JitterY { get; set; } = 0f;
+
+    /// <summary>
+    /// Gets or sets the horizontal component of the gravity vector in pixels per second squared (px/s²).
+    /// Negative values pull left, positive values pull right. If null, the emitter uses the global gravity setting from the <see cref="ParticleSurface">.
+    /// </summary>
+    public float? GravityX { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the vertical component of the gravity vector in pixels per second squared (px/s²).
+    /// Negative values pull up, positive values pull down. If null, the emitter uses the global gravity setting from the <see cref="ParticleSurface">.
+    /// </summary>
+    public float? GravityY { get; set; } = null;
+
     /// <summary>Optional per-particle customization hook (e.g., perlin drift, hue jitter).</summary>
     public ParticleSpawnHandler? OnSpawn { get; set; }
 

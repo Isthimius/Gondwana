@@ -150,7 +150,14 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     /// </example>
     public SKColor GlobalColorTint { get; set; } = SKColors.White;
 
-    // Emit controls
+    /// <summary>
+    /// Gets or sets the horizontal component of gravity, measured in pixels per second squared.
+    /// </summary>
+    public float GravityX { get; set; } = 0f;   // px/s^2
+
+    /// <summary>
+    /// Gets or sets the gravitational acceleration along the Y-axis, measured in pixels per second squared.
+    /// </summary>
     public float GravityY { get; set; } = 400f; // px/s^2
 
     public ParticleSurface(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
@@ -237,9 +244,14 @@ public sealed partial class ParticleSurface : DirectDrawingBase
         {
             ref var p = ref _particles[i];
 
-            p.VY += GravityY * dt;
+            // Integrate acceleration (including gravity)
+            p.VX += p.AX * dt;
+            p.VY += p.AY * dt;
+
+            // Integrate velocity
             p.X += p.VX * dt;
             p.Y += p.VY * dt;
+
             p.Rotation += p.AngularVel * dt;
             p.Life -= dt;
 
@@ -326,12 +338,16 @@ public sealed partial class ParticleSurface : DirectDrawingBase
             ref var p = ref _particles[_alive++];
 
             // Position
-            p.X = em.Position.X + NextRange(-0.0f, 0.0f); // jitter here if desired
-            p.Y = em.Position.Y + NextRange(-0.0f, 0.0f);
+            p.X = em.Position.X + NextRange(-em.JitterX, em.JitterX);
+            p.Y = em.Position.Y + NextRange(-em.JitterY, em.JitterY);
 
             // Velocity
             p.VX = NextRange(em.VelocityRangeX.Min, em.VelocityRangeX.Max);
             p.VY = NextRange(em.VelocityRangeY.Min, em.VelocityRangeY.Max);
+
+            // Acceleration (emitter override or surface default)
+            p.AX = em.GravityX ?? this.GravityX;
+            p.AY = em.GravityY ?? this.GravityY;
 
             // Life/Size
             p.MaxLife = p.Life = NextRange(em.LifeRange.Min, em.LifeRange.Max);

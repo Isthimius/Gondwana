@@ -100,6 +100,7 @@ public partial class Form1 : Form
             VelocityRangeX = (-20f, 20f),    // slight horizontal drift
             VelocityRangeY = (50f, 100f),    // falling slowly
             SizeRange = (2f, 5f),            // fluffy flakes
+            GravityY = 50f,
             Color = SKColors.White,
             OnSpawn = (ref Particle p) =>
             {
