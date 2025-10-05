@@ -62,6 +62,22 @@ namespace Gondwana.Drawing.Direct.Particles
         /// The angular velocity of the particle, in degrees per second.
         /// </summary>
         public float AngularVel;
+
+        /// <summary>
+        /// The sprite to render for this particle (if any).
+        /// Null means render as a primitive (e.g., circle).
+        /// </summary>
+        public SKBitmap? ParticleSprite;
+
+        /// <summary>
+        /// Per-particle tint. If <see langword="null"/>, use the system GlobalColorTint at render time.
+        /// </summary>
+        public SKColor? Tint;
+
+        /// <summary>
+        /// Per-particle speed cap (px/s). MaxVelocity <= 0 means no cap.
+        /// </summary>
+        public float MaxVelocity;
     }
 
     /// <summary>

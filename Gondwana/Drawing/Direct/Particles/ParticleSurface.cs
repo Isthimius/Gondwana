@@ -160,6 +160,17 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     /// </summary>
     public float GravityY { get; set; } = 400f; // px/s^2
 
+    /// <summary>
+    /// Gets or sets the horizontal culling margin, in pixels, beyond the bounds of the viewport to keep elements
+    /// active.
+    /// </summary>
+    public float CullingMarginX { get; set; } = 32f;
+
+    /// <summary>
+    /// Gets or sets the vertical culling margin, in pixels, beyond the bounds of the viewport to keep elements active.
+    /// </summary>
+    public float CullingMarginY { get; set; } = 32f;
+
     public ParticleSurface(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
         : base(host, bounds)
     {
@@ -244,18 +255,41 @@ public sealed partial class ParticleSurface : DirectDrawingBase
         {
             ref var p = ref _particles[i];
 
-            // Integrate acceleration (including gravity)
+            // integrate acceleration (including gravity)
             p.VX += p.AX * dt;
             p.VY += p.AY * dt;
 
-            // Integrate velocity
+            // clamp max velocity
+            if (p.MaxVelocity > 0f)
+            {
+                // thank you, Pythagoras
+                float vx = p.VX, vy = p.VY;
+                float velocity2 = (vx * vx) + (vy * vy);
+                float max2 = p.MaxVelocity * p.MaxVelocity;
+
+                if (velocity2 > max2)
+                {
+                    float inv = p.MaxVelocity / MathF.Sqrt(velocity2);
+                    p.VX = vx * inv;
+                    p.VY = vy * inv;
+                }
+            }
+
+            // integrate velocity
             p.X += p.VX * dt;
             p.Y += p.VY * dt;
 
+            // to every season...
             p.Rotation += p.AngularVel * dt;
             p.Life -= dt;
 
-            if (p.Life > 0 && Bounds.Contains((int)p.X, (int)p.Y))
+            // cull if out of bounds (with margin)
+            bool isInView = p.X >= Bounds.Left - CullingMarginX
+                         && p.X <= Bounds.Right + CullingMarginX
+                         && p.Y >= Bounds.Top - CullingMarginY
+                         && p.Y <= Bounds.Bottom + CullingMarginY;
+
+            if (p.Life > 0 && isInView)
                 _particles[write++] = p;
         }
         _alive = write;
@@ -294,38 +328,39 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
 
-        // OPTIONAL: additive blending for glowy effects
+        // e.g., default blend; you may switch per-emitter later if you add BlendMode there
         _paint.BlendMode = SKBlendMode.Plus;
 
-        if (_particleSprite is null)
+        for (int i = 0; i < _alive; i++)
         {
-            // Cheap circles
-            for (int i = 0; i < _alive; i++)
+            ref var p = ref _particles[i];
+
+            // life-based fade
+            float t = 1f - (p.Life / p.MaxLife);
+            byte a = (byte)(255 * (1f - t));
+
+            // choose tint: emitter override if set, otherwise current global
+            var tint = p.Tint ?? GlobalColorTint;
+
+            // apply global tint
+            _paint.Color = ApplyTint(p.Color, a, tint);
+
+            if (p.ParticleSprite is null)
             {
-                ref var p = ref _particles[i];
-                float t = 1f - (p.Life / p.MaxLife);                // 0..1
-                byte a = (byte)(255 * (1f - t));                   // fade out
-                _paint.Color = ApplyGlobalTint(p.Color, a);
-                float size = p.Size * (1f + 0.5f * t);              // slight growth
+                // circle primitive
+                float size = p.Size * (1f + 0.5f * t);
                 canvas.DrawCircle(p.X, p.Y, size, _paint);
             }
-        }
-        else
-        {
-            // Sprite quads
-            var half = 0.5f;
-            for (int i = 0; i < _alive; i++)
+            else
             {
-                ref var p = ref _particles[i];
-                float t = 1f - (p.Life / p.MaxLife);
-                byte a = (byte)(255 * (1f - t));
-                _paint.Color = ApplyGlobalTint(p.Color, a);
-
+                // textured quad
                 float s = p.Size;
-                var dst = new SKRect(p.X - s * half, p.Y - s * half, p.X + s * half, p.Y + s * half);
+                var dst = new SKRect(p.X - s * 0.5f, p.Y - s * 0.5f,
+                                     p.X + s * 0.5f, p.Y + s * 0.5f);
+
                 canvas.Save();
                 canvas.RotateDegrees(p.Rotation, p.X, p.Y);
-                canvas.DrawBitmap(_particleSprite, dst, _paint);
+                canvas.DrawBitmap(p.ParticleSprite, dst, _paint);
                 canvas.Restore();
             }
         }
@@ -358,6 +393,15 @@ public sealed partial class ParticleSurface : DirectDrawingBase
             p.Rotation = NextRange(0f, 360f);
             p.AngularVel = NextRange(-180f, 180f);
 
+            // choose sprite once; no emitter lookups in hot loop
+            p.ParticleSprite = em.ParticleSprite ?? this._particleSprite;
+
+            // tint override
+            p.Tint = em.Tint;                          // null means "use global at render"
+
+            // max speed clamp
+            p.MaxVelocity = em.MaxVelocity ?? 0f;      // 0 = no clamp
+
             // User hook for last-mile per-particle tweaks
             em.OnSpawn?.Invoke(ref p);
         }
@@ -365,18 +409,15 @@ public sealed partial class ParticleSurface : DirectDrawingBase
 
     private float NextRange(float min, float max) => (float)(_rng.NextDouble() * (max - min) + min);
 
-    // Fast, branch-free tint (multiplies RGB by global tint;
+    // Fast, branch-free tint (multiplies RGB by tint;
     // alpha = lifeAlpha * globalAlpha). Assumes particle base alpha = 255.
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private SKColor ApplyGlobalTint(SKColor c, byte lifeAlpha)
+    private SKColor ApplyTint(SKColor c, byte lifeAlpha, SKColor tint)
     {
-        // Cache globals locally (JIT can keep these in regs)
-        var gt = GlobalColorTint;
-
-        int r = (c.Red * gt.Red) / 255;
-        int g = (c.Green * gt.Green) / 255;
-        int b = (c.Blue * gt.Blue) / 255;
-        int a = (lifeAlpha * gt.Alpha) / 255;
+        int r = (c.Red * tint.Red) / 255;
+        int g = (c.Green * tint.Green) / 255;
+        int b = (c.Blue * tint.Blue) / 255;
+        int a = (lifeAlpha * tint.Alpha) / 255;
 
         return new SKColor((byte)r, (byte)g, (byte)b, (byte)a);
     }

@@ -136,6 +136,24 @@ public sealed class ParticleEmitter
     /// </summary>
     public float? GravityY { get; set; } = null;
 
+    /// <summary>
+    /// Optional sprite used for particles spawned by this emitter.
+    /// If null, the particle surface’s default sprite is used (or a circle if none).
+    /// </summary>
+    public SKBitmap? ParticleSprite { get; set; }
+
+    /// <summary>
+    /// Optional per-emitter tint. If set, it overrides the particle system's
+    /// <c>GlobalColorTint</c> for particles spawned by this emitter.
+    /// </summary>
+    public SKColor? Tint { get; set; }
+
+    /// <summary>
+    /// Optional per-emitter maximum speed in px/s. If set, particle velocity
+    /// will be clamped to this magnitude after acceleration is applied each update.
+    /// </summary>
+    public float? MaxVelocity { get; set; }
+
     /// <summary>Optional per-particle customization hook (e.g., perlin drift, hue jitter).</summary>
     public ParticleSpawnHandler? OnSpawn { get; set; }
 

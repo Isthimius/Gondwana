@@ -95,6 +95,7 @@ public partial class Form1 : Form
         {
             // we’ll override X/Y per-particle in OnSpawn
             Position = new PointF(0f, 0f),
+
             EmitRate = 200f,                 // density
             LifeRange = (5.0f, 10.0f),       // long enough to fall through view
             VelocityRangeX = (-20f, 20f),    // slight horizontal drift
@@ -102,11 +103,13 @@ public partial class Form1 : Form
             SizeRange = (2f, 5f),            // fluffy flakes
             GravityY = 50f,
             Color = SKColors.White,
+            
             OnSpawn = (ref Particle p) =>
             {
                 // spawn anywhere across the top edge
                 p.X = (float)(rng.NextDouble() * w);
-                p.Y = -1f; // just above the top so they fall in
+                p.Y = -8f; // just above the top so they fall in
+
                 // optional: tiny horizontal gust
                 p.VX += (float)(rng.NextDouble() * 40f - 20f);
             }
