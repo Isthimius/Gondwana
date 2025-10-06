@@ -47,12 +47,15 @@ namespace Gondwana.Drawing.Direct;
 /// </example>
 public class DirectRectangle : DirectDrawingBase
 {
-    private readonly SKPaint _paint;
+    private SKPaint _fillPaint;          // cached fill
+    private SKPaint _strokePaint;        // cached stroke
+    private SKColor? _borderColor;       // optional distinct border color
+
     private bool _isFilled;
     private float _cornerRadius;
     private float[]? _dashPattern;
     private StrokeAlign _strokeAlign = StrokeAlign.Center;
-    private SKColor? _borderColor;
+    private bool _needsRebuildPaints = true; // mark when properties change
 
     public DirectRectangle(
         RenderSurfaceHostBase renderSurfaceHost,
@@ -60,39 +63,58 @@ public class DirectRectangle : DirectDrawingBase
         Color color)
         : base(renderSurfaceHost, bounds)
     {
-        _paint = new SKPaint
-        {
-            Color = color.ToSKColor(),
-            IsStroke = true,
-            StrokeWidth = 1,
-            IsAntialias = true,
-            BlendMode = SKBlendMode.SrcOver
-        };
+        // initialize with defaults; actual paints built lazily
+        _fillPaint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill };
+        _strokePaint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1 };
+        SetColor(color);                 // sets base color and marks rebuild
+        SetBlendMode(SKBlendMode.SrcOver);
+        SetFilled(false);
     }
 
+    /// <summary>Sets the base color (used for fill and/or outline if no border color is specified).</summary>
     public DirectRectangle SetColor(Color color)
     {
-        _paint.Color = color.ToSKColor();
+        // store as stroke/ fill base via rebuild
+        var sk = color.ToSKColor();
+        // Set on one paint; rebuild will propagate
+        _fillPaint.Color = sk;
+        _strokePaint.Color = sk;
+        _needsRebuildPaints = true;
         return this;
     }
 
+    /// <summary>Sets a distinct border color (stroke). If not set, stroke uses the base color.</summary>
+    public DirectRectangle SetBorderColor(Color color)
+    {
+        _borderColor = color.ToSKColor();
+        _needsRebuildPaints = true;
+        return this;
+    }
+
+    /// <summary>Sets the alpha channel (0–255) for the base color. Border keeps its own alpha if set.</summary>
     public DirectRectangle SetAlpha(int alpha)
     {
-        var c = _paint.Color;
-        _paint.Color = new SKColor(c.Red, c.Green, c.Blue, (byte)alpha);
+        var c = _fillPaint.Color;
+        var withA = new SKColor(c.Red, c.Green, c.Blue, (byte)alpha);
+        _fillPaint.Color = withA;
+        // Only change stroke when it’s not using a distinct border color
+        if (_borderColor is null)
+            _strokePaint.Color = withA;
+        _needsRebuildPaints = true;
         return this;
     }
 
     public DirectRectangle SetFilled(bool isFilled)
     {
         _isFilled = isFilled;
-        _paint.IsStroke = !isFilled;
+        _needsRebuildPaints = true;
         return this;
     }
 
     public DirectRectangle SetStrokeWidth(float width)
     {
-        _paint.StrokeWidth = width;
+        _strokePaint.StrokeWidth = width;
+        _needsRebuildPaints = true;
         return this;
     }
 
@@ -105,12 +127,16 @@ public class DirectRectangle : DirectDrawingBase
     public DirectRectangle SetDashPattern(params float[] dashes)
     {
         _dashPattern = dashes;
+        // path effect is applied on draw; no rebuild needed
         return this;
     }
 
     public DirectRectangle SetBlendMode(SKBlendMode mode)
     {
-        _paint.BlendMode = mode;
+        // apply to both paints
+        _fillPaint.BlendMode = mode;
+        _strokePaint.BlendMode = mode;
+        // no rebuild needed
         return this;
     }
 
@@ -120,64 +146,64 @@ public class DirectRectangle : DirectDrawingBase
         return this;
     }
 
-    /// <summary>
-    /// Sets a distinct border color, allowing fill and outline colors to differ.
-    /// </summary>
-    public DirectRectangle SetBorderColor(Color color)
-    {
-        _borderColor = color.ToSKColor();
-        return this;
-    }
-
     protected internal override void Draw()
     {
+        if (_needsRebuildPaints) RebuildPaints();
+
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();
 
-        // Handle stroke alignment
-        if (_strokeAlign != StrokeAlign.Center && !_isFilled)
+        // Adjust rect based on stroke align (only matters for visible stroke)
+        bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
+        if (willDrawStroke && _strokeAlign != StrokeAlign.Center)
         {
-            float offset = _paint.StrokeWidth / 2f;
-            if (_strokeAlign == StrokeAlign.Inside)
-                rect.Inflate(-offset, -offset);
-            else if (_strokeAlign == StrokeAlign.Outside)
-                rect.Inflate(offset, offset);
+            float offset = _strokePaint.StrokeWidth / 2f;
+            if (_strokeAlign == StrokeAlign.Inside) rect.Inflate(-offset, -offset);
+            else if (_strokeAlign == StrokeAlign.Outside) rect.Inflate(offset, offset);
         }
 
-        _paint.PathEffect = _dashPattern is { Length: > 0 }
+        // Path effect applies only to stroke
+        _strokePaint.PathEffect = _dashPattern is { Length: > 0 }
             ? SKPathEffect.CreateDash(_dashPattern, 0)
             : null;
 
-        // --- Draw fill ---
-        if (_isFilled)
+        if (_cornerRadius > 0)
         {
-            using var fillPaint = new SKPaint
-            {
-                Color = _paint.Color, // base color
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true,
-                BlendMode = _paint.BlendMode
-            };
+            var rr = new SKRoundRect(rect, _cornerRadius);
+            if (_isFilled) canvas.DrawRoundRect(rr, _fillPaint);
+            if (willDrawStroke) canvas.DrawRoundRect(rr, _strokePaint);
+        }
+        else
+        {
+            if (_isFilled) canvas.DrawRect(rect, _fillPaint);
+            if (willDrawStroke) canvas.DrawRect(rect, _strokePaint);
+        }
+    }
 
-            if (_cornerRadius > 0)
-                canvas.DrawRoundRect(rect, _cornerRadius, _cornerRadius, fillPaint);
-            else
-                canvas.DrawRect(rect, fillPaint);
+    /// <summary>
+    /// Rebuilds cached paints when properties affecting color/alpha/stroke need syncing.
+    /// </summary>
+    private void RebuildPaints()
+    {
+        // Ensure styles/AA set
+        _fillPaint.IsAntialias = true;
+        _fillPaint.Style = SKPaintStyle.Fill;
+
+        _strokePaint.IsAntialias = true;
+        _strokePaint.Style = SKPaintStyle.Stroke;
+
+        // If border color set, use it for stroke; else match fill/base color
+        if (_borderColor.HasValue)
+        {
+            var sc = _strokePaint.Color; // preserve alpha if you want; otherwise:
+            _strokePaint.Color = _borderColor.Value;
+        }
+        else
+        {
+            _strokePaint.Color = _fillPaint.Color; // same as fill if no explicit border
         }
 
-        // --- Draw border (always stroke) ---
-        if (_borderColor.HasValue || !_isFilled)
-        {
-            var borderPaint = _paint.Clone();
-            borderPaint.IsStroke = true;
-            borderPaint.Style = SKPaintStyle.Stroke;
-            borderPaint.Color = _borderColor ?? _paint.Color;
-
-            if (_cornerRadius > 0)
-                canvas.DrawRoundRect(rect, _cornerRadius, _cornerRadius, borderPaint);
-            else
-                canvas.DrawRect(rect, borderPaint);
-        }
+        _needsRebuildPaints = false;
     }
 
     public enum StrokeAlign
