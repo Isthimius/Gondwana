@@ -8,44 +8,39 @@ using System.Runtime.CompilerServices;
 namespace Gondwana.Drawing.Direct;
 
 /// <summary>
-/// Represents a drawable rectangle with customizable properties such as color, stroke width, corner radius, etc.
+/// A retained-mode, configurable rectangle overlay that supports fill and/or border,
+/// independent border color, stroke width and alignment, rounded corners, dash patterns,
+/// blend modes, and optional color pulsing — all rendered via the bound RenderSurfaceHost.
 /// </summary>
-/// <remarks>The <see cref="DirectRectangle"/> class provides methods to configure various visual aspects of a
-/// rectangle, including its fill state, stroke width, corner radius, dash pattern, blend mode, and stroke alignment. It
-/// is designed to be used with a RenderSurfaceHost and can be rendered onto a canvas.</remarks>
-///
+/// <remarks>
+/// <para>
+/// Designed for UI and 2D overlay work, <c>DirectRectangle</c> caches its fill/stroke paints
+/// and rebuilds them only when properties change (reducing GC/native churn). It respects
+/// stroke alignment (inside/center/outside), optional dash patterns, and can animate fill
+/// or border colors over time via <c>PulseFill</c>/<c>PulseBorder</c>.
+/// </para>
+/// <para>
+/// Typical usage is to construct, configure via the fluent setters, and rely on the engine
+/// to call <c>Update</c>/<c>Draw</c> when dirty. Setters mark paints dirty so the next frame
+/// re-renders with the new appearance.
+/// </para>
+/// </remarks>
 /// <example>
+/// // Filled panel with a distinct border and rounded corners
+/// var panel = new DirectRectangle(surface, new Rectangle(80, 80, 220, 120), Color.SteelBlue)
+///     .SetFilled(true)
+///     .SetBorderColor(Color.Navy)
+///     .SetStrokeWidth(4f)
+///     .SetCornerRadius(12f)
+///     .SetDashPattern(8f, 4f); // dashed outline
 ///
-/// *** Basic Outlined Rectangle:
-/// var box = new DirectRectangle(surface, new Rectangle(50, 50, 120, 80), Color.DarkGreen)
-///    .SetFilled(false)
-///    .SetStrokeWidth(2);
+/// // Soft glow using blend mode
+/// var glow = new DirectRectangle(surface, new Rectangle(320, 90, 180, 100), Color.FromArgb(64, 255, 200, 0))
+///     .SetFilled(true)
+///     .SetBlendMode(SKBlendMode.Screen);
 ///
-/// *** Semi-Transparent Filled Rectangle:
-/// var highlight = new DirectRectangle(surface, new Rectangle(200, 50, 100, 100), Color.Yellow)
-///    .SetFilled(true)
-///    .SetAlpha(128); // 50% transparent
-///
-/// *** Rounded Rectangle with Dashed Border:
-/// var panel = new DirectRectangle(surface, new Rectangle(50, 160, 180, 80), Color.CornflowerBlue)
-///    .SetFilled(false)
-///    .SetCornerRadius(12f)
-///    .SetDashPattern(8, 4); // dash 8px, gap 4px
-///
-/// *** Highlighted Outline with Outside Stroke and Blend Mode:
-/// var glowBox = new DirectRectangle(surface, new Rectangle(250, 160, 120, 80), Color.Red)
-///    .SetFilled(false)
-///    .SetStrokeWidth(6)
-///    .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
-///    .SetBlendMode(SKBlendMode.Screen); // additive/lighten effect
-///
-/// *** Animated Pulse (per-frame logic example):
-/// float pulse = 1.0f + (float)Math.Sin(tick / 10.0) * 0.5f;
-///
-/// glowBox
-///    .SetStrokeWidth(3f + pulse)
-///    .SetAlpha((int)(128 + 127 * Math.Sin(tick / 10.0)));
-///
+/// // Pulsing alert border
+/// glow.PulseBorder(Color.FromArgb(255, 255, 64, 64), Color.FromArgb(80, 255, 0, 0), 1.2f);
 /// </example>
 public class DirectRectangle : DirectDrawingBase
 {

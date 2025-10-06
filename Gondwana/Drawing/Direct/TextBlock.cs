@@ -6,22 +6,33 @@ using SkiaSharp;
 namespace Gondwana.Drawing.Direct;
 
 /// <summary>
-/// Represents a block of text that can be drawn on a visible surface with various styling options.
+/// A retained-mode text drawable with wrapping, multi-line (\\n) support, horizontal/vertical
+/// alignment, padding, optional shadow/outline effects, and auto-shrink to fit.
 /// </summary>
-/// <remarks>The <see cref="TextBlock"/> class provides methods to configure text properties such as font, color,
-/// alignment, and additional effects like shadow and outline. It supports text wrapping and vertical alignment within a
-/// specified rectangular area.
+/// <remarks>
+/// <para>
+/// <c>TextBlock</c> caches a line layout derived from the current text, font, bounds, and
+/// wrapping settings, and only rebuilds when any of those change. Newlines (<c>\\n</c>) are
+/// respected as hard breaks; long lines wrap to the available width when wrapping is enabled.
+/// </para>
+/// <para>
+/// Horizontal alignment (left/center/right) and vertical alignment (top/center/bottom) are
+/// applied per frame. Optional background fill, shadow, and outline can be enabled for
+/// readability. When a minimum font size is specified, the control will step down from the
+/// requested size until the text fits within the height or the minimum is reached.
+/// </para>
 /// </remarks>
 /// <example>
-/// var block = new TextBlock(surface, new Rectangle(0, 0, 400, 200))
-///    .SetText("Gondwana welcomes you to the new frontier of text rendering!")
-///    .SetFont(typeface, 24f, minSize: 14f)
-///    .SetColors(Color.White, Color.Navy)
-///    .SetAlignment(SKTextAlign.Center, SKParagraphAlignment.Center)
-///    .EnableWrapping()
-///    .SetMaxLines(4)
-///    .UseShadow()
-///    .UseOutline();
+/// // Centered, wrapped headline with shadow and outline
+/// var headline = new TextBlock(surface, new Rectangle(0, 0, 640, 140))
+///     .SetText("Gondwana welcomes you\\n— render boldly.")
+///     .SetFont(SKTypeface.Default, 28f, minSize: 16f)
+///     .SetColors(SKColors.White, SKColors.Transparent)
+///     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+///     .EnableWrapping(true)
+///     .SetMaxLines(3)
+///     .UseShadow(true)
+///     .UseOutline(true);
 /// </example>
 public class TextBlock : DirectDrawingBase
 {
