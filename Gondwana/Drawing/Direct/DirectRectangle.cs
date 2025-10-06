@@ -261,6 +261,8 @@ public class DirectRectangle : DirectDrawingBase
     public DirectRectangle StopPulses()
     {
         _pulseFillEnabled = _pulseBorderEnabled = false;
+        RebuildPaints();   // restore fill/border to SetColor/SetBorderColor values
+        _dirty = true;
         return this;
     }
 
@@ -289,12 +291,11 @@ public class DirectRectangle : DirectDrawingBase
         {
             float t = PulseT(_timeSec, _pulseBorderPeriodSec, _pulseBorderWave);
             var c = LerpColor(_pulseBorderFrom, _pulseBorderTo, t);
-            var target = _borderColor.HasValue ? _borderColor.Value : _strokePaint.Color;
-            if (target != c)
+
+            if (_strokePaint.Color != c)
             {
-                _borderColor = c;            // keep distinct border color
-                _strokePaint.Color = c;      // keep stroke in sync
-                changed = true;
+                _strokePaint.Color = c;   // paint-only override
+                _dirty = true;
             }
         }
 
