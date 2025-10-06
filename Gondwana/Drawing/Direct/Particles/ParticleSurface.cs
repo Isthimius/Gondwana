@@ -85,7 +85,10 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     /// </summary>
     public readonly List<ParticleEmitter> Emitters = new();
 
-    public int TotalParticles => _particles.Length;
+    /// <summary>
+    /// Gets the current number of active (alive) particles being simulated.
+    /// </summary>
+    public int ActiveParticleCount => _alive;
 
     /// <summary>
     /// Global multiplier applied to all emitter <c>EmitRate</c> values

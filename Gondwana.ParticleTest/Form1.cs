@@ -40,7 +40,7 @@ public partial class Form1 : Form
         {
             var sb = new StringBuilder()
                 .Append("Oh no!!! The wizard doth spray purple slime!")
-                .AppendLine($" There are {_particleSurface?.TotalParticles} particles!!!")
+                .AppendLine($" There are {_particleSurface?.ActiveParticleCount} active particles!!!")
                 .AppendLine(cps.ToString());
 
             _textBlock?.SetText(sb.ToString());
