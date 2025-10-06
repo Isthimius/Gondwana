@@ -10,6 +10,7 @@ namespace Gondwana.ParticleTest;
 
 public partial class Form1 : Form
 {
+    private ParticleSurface? _particleSurface;
     private TextBlock? _textBlock;
 
     public Form1()
@@ -37,8 +38,9 @@ public partial class Form1 : Form
 
         Engine.Instance.CPSCalculated += (cps) =>
         {
-            var sb = new StringBuilder()    
-                .AppendLine("Oh no!!! The wizard doth spray purple slime!")
+            var sb = new StringBuilder()
+                .Append("Oh no!!! The wizard doth spray purple slime!")
+                .AppendLine($" There are {_particleSurface?.TotalParticles} particles!!!")
                 .AppendLine(cps.ToString());
 
             _textBlock?.SetText(sb.ToString());
@@ -46,11 +48,11 @@ public partial class Form1 : Form
 
         Engine.Instance.Start();
 
-        var particles = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height));
-        particles.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
-        particles.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
-        particles.Emitters.Add(GetRain(adapter.Width));
-        particles.Emitters.Add(GetSnow(adapter.Width));
+        _particleSurface = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height), 10000);
+        _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetRain(adapter.Width));
+        _particleSurface.Emitters.Add(GetSnow(adapter.Width));
 
         var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
             .SetAlpha(128)
@@ -191,7 +193,7 @@ public partial class Form1 : Form
             SizeRange = (2f, 5f),            // fluffy flakes
             GravityY = 50f,
             Color = SKColors.White,
-            
+
             OnSpawn = (ref Particle p) =>
             {
                 // spawn anywhere across the top edge

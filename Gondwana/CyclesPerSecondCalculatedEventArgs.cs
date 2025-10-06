@@ -24,9 +24,9 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
         var cpsValue = new StringBuilder()
             .AppendLine($"Total gross cycles: {TotalGrossCycles:N0}")
             .AppendLine($"Total net cycles: {TotalNetCycles:N0}")
-            .AppendLine($"Sampling time: {SamplingTime:0.00}s")
-            .AppendLine($"Gross CPS: {GrossCPS:0.00}")
-            .AppendLine($"Net CPS: {NetCPS:0.00}");
+            .AppendLine($"Sampling time: {SamplingTime:N2}s")
+            .AppendLine($"Gross CPS: {GrossCPS:N2}")
+            .AppendLine($"Net CPS (FPS): {NetCPS:N2}");
 
         return cpsValue.ToString();
     }

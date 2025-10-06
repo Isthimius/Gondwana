@@ -85,6 +85,8 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     /// </summary>
     public readonly List<ParticleEmitter> Emitters = new();
 
+    public int TotalParticles => _particles.Length;
+
     /// <summary>
     /// Global multiplier applied to all emitter <c>EmitRate</c> values
     /// in this particle system. Acts like a master volume knob for
