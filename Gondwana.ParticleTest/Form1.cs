@@ -1,7 +1,9 @@
+﻿using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Scenes;
 using Gondwana.Scenes.Coordinates;
 using SkiaSharp;
+using static Gondwana.Drawing.Direct.TextBlock;
 
 namespace Gondwana.ParticleTest;
 
@@ -24,7 +26,7 @@ public partial class Form1 : Form
         var renderSurface = winFormBitmapRenderSurfaceControl1.RenderSurfaceHost;
         var adapter = renderSurface.RenderSurfaceAdapter;
 
-        var sceneLayer = new SceneLayer(1, 1, adapter.Width, adapter.Height);
+        var sceneLayer = new SceneLayer(1, 1, adapter!.Width, adapter.Height);
         sceneLayer.CoordinateSystem = new SquareIsoCoordinates();
         var scene = new Scene(sceneLayer);
 
@@ -33,9 +35,30 @@ public partial class Form1 : Form
         Engine.Instance.Start();
 
         var particles = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height));
-        particles.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
-        particles.Emitters.Add(GetRain(adapter.Width));
-        particles.Emitters.Add(GetSnow(adapter.Width));
+        //particles.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        particles.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
+        //particles.Emitters.Add(GetRain(adapter.Width));
+        //particles.Emitters.Add(GetSnow(adapter.Width));
+
+        var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
+            .SetAlpha(128)
+            .SetCornerRadius(12f)
+            .SetBorderColor(Color.White)
+            .SetFilled(true)
+            .SetStrokeWidth(3)
+            .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
+            .SetBlendMode(SKBlendMode.Screen)
+            .ZOrder = 1;
+
+        var textBlock = new TextBlock(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160))
+            .SetText("Oh no!!! The wizard doth spray purple slime!")
+            .SetFont(SKTypeface.FromFamilyName("Papyrus"), 24f, minSize: 14f)
+            .SetColors(Color.White, Color.Transparent)
+            .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)
+            .EnableWrapping()
+            .SetMaxLines(4)
+            .UseShadow()
+            .UseOutline();
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -55,7 +78,60 @@ public partial class Form1 : Form
             SizeRange = (0.1f, 3f),
             Color = SKColors.BlueViolet
         };
+
         return sparks;
+    }
+
+    private ParticleEmitter GetColorfulSparks(float width, float height)
+    {
+        var rng = new Random();
+        var sparks = new ParticleEmitter
+        {
+            Position = new PointF(width / 2, height),
+            EmitRate = 400,
+            LifeRange = (0.5f, 5.0f),
+            VelocityRangeX = (-150f, 150f),
+            VelocityRangeY = (-800f, -600f),
+            SizeRange = (0.1f, 3f),
+            Color = SKColors.White,
+            //GravityY = 100f,
+
+            OnSpawn = (ref Particle p) =>
+            {
+                // pick a vivid random hue around the violet–blue–cyan range
+                float hue = (float)(rng.NextDouble() * 60f + 220f); // 220–280 range
+                float sat = (float)(rng.NextDouble() * 0.3f + 0.7f); // 0.7–1.0
+                float val = (float)(rng.NextDouble() * 0.4f + 0.6f); // 0.6–1.0
+
+                // convert HSV → RGB
+                p.Color = HsvToColor(hue, sat, val);
+            }
+        };
+
+        return sparks;
+    }
+
+    // helper for hue variation
+    private static SKColor HsvToColor(float h, float s, float v)
+    {
+        h %= 360f;
+        float c = v * s;
+        float x = c * (1 - Math.Abs((h / 60f) % 2 - 1));
+        float m = v - c;
+
+        float r = 0, g = 0, b = 0;
+        if (h < 60) (r, g, b) = (c, x, 0);
+        else if (h < 120) (r, g, b) = (x, c, 0);
+        else if (h < 180) (r, g, b) = (0, c, x);
+        else if (h < 240) (r, g, b) = (0, x, c);
+        else if (h < 300) (r, g, b) = (x, 0, c);
+        else (r, g, b) = (c, 0, x);
+
+        return new SKColor(
+            (byte)((r + m) * 255),
+            (byte)((g + m) * 255),
+            (byte)((b + m) * 255),
+            255);
     }
 
     private ParticleEmitter GetRain(float w)
@@ -64,7 +140,7 @@ public partial class Form1 : Form
 
         var rain = new ParticleEmitter
         {
-            // we�ll override X/Y per-particle in OnSpawn
+            // we’ll override X/Y per-particle in OnSpawn
             Position = new PointF(0f, 0f),
 
             EmitRate = 800f,                 // density
@@ -93,7 +169,7 @@ public partial class Form1 : Form
         var rng = new Random();
         var snow = new ParticleEmitter
         {
-            // we�ll override X/Y per-particle in OnSpawn
+            // we’ll override X/Y per-particle in OnSpawn
             Position = new PointF(0f, 0f),
 
             EmitRate = 200f,                 // density

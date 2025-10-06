@@ -152,11 +152,13 @@ public sealed partial class ParticleSurface : DirectDrawingBase
 
     /// <summary>
     /// Gets or sets the horizontal component of gravity, measured in pixels per second squared.
+    /// Default is 0 (no horizontal gravity).
     /// </summary>
     public float GravityX { get; set; } = 0f;   // px/s^2
 
     /// <summary>
     /// Gets or sets the gravitational acceleration along the Y-axis, measured in pixels per second squared.
+    /// Default is 400 (downward).
     /// </summary>
     public float GravityY { get; set; } = 400f; // px/s^2
 
@@ -176,7 +178,6 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     {
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);
         _particleSprite = particleSprite;
-        ZOrder = 10; // draw above backgrounds by default
     }
 
     /// <summary>

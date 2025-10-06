@@ -33,19 +33,17 @@
             // 
             // winFormBitmapRenderSurfaceControl1
             // 
-            winFormBitmapRenderSurfaceControl1.Location = new Point(11, 14);
-            winFormBitmapRenderSurfaceControl1.Margin = new Padding(2);
+            winFormBitmapRenderSurfaceControl1.Location = new Point(16, 23);
             winFormBitmapRenderSurfaceControl1.Name = "winFormBitmapRenderSurfaceControl1";
-            winFormBitmapRenderSurfaceControl1.Size = new Size(541, 237);
+            winFormBitmapRenderSurfaceControl1.Size = new Size(2118, 925);
             winFormBitmapRenderSurfaceControl1.TabIndex = 0;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(560, 270);
+            ClientSize = new Size(2146, 960);
             Controls.Add(winFormBitmapRenderSurfaceControl1);
-            Margin = new Padding(2);
             Name = "Form1";
             Text = "Form1";
             FormClosing += Form1_FormClosing;

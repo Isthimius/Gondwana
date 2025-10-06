@@ -52,6 +52,7 @@ public class DirectRectangle : DirectDrawingBase
     private float _cornerRadius;
     private float[]? _dashPattern;
     private StrokeAlign _strokeAlign = StrokeAlign.Center;
+    private SKColor? _borderColor;
 
     public DirectRectangle(
         RenderSurfaceHostBase renderSurfaceHost,
@@ -119,11 +120,21 @@ public class DirectRectangle : DirectDrawingBase
         return this;
     }
 
+    /// <summary>
+    /// Sets a distinct border color, allowing fill and outline colors to differ.
+    /// </summary>
+    public DirectRectangle SetBorderColor(Color color)
+    {
+        _borderColor = color.ToSKColor();
+        return this;
+    }
+
     protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();
 
+        // Handle stroke alignment
         if (_strokeAlign != StrokeAlign.Center && !_isFilled)
         {
             float offset = _paint.StrokeWidth / 2f;
@@ -137,14 +148,35 @@ public class DirectRectangle : DirectDrawingBase
             ? SKPathEffect.CreateDash(_dashPattern, 0)
             : null;
 
-        if (_cornerRadius > 0)
+        // --- Draw fill ---
+        if (_isFilled)
         {
-            var roundRect = new SKRoundRect(rect, _cornerRadius);
-            canvas.DrawRoundRect(roundRect, _paint);
+            using var fillPaint = new SKPaint
+            {
+                Color = _paint.Color, // base color
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true,
+                BlendMode = _paint.BlendMode
+            };
+
+            if (_cornerRadius > 0)
+                canvas.DrawRoundRect(rect, _cornerRadius, _cornerRadius, fillPaint);
+            else
+                canvas.DrawRect(rect, fillPaint);
         }
-        else
+
+        // --- Draw border (always stroke) ---
+        if (_borderColor.HasValue || !_isFilled)
         {
-            canvas.DrawRect(rect, _paint);
+            var borderPaint = _paint.Clone();
+            borderPaint.IsStroke = true;
+            borderPaint.Style = SKPaintStyle.Stroke;
+            borderPaint.Color = _borderColor ?? _paint.Color;
+
+            if (_cornerRadius > 0)
+                canvas.DrawRoundRect(rect, _cornerRadius, _cornerRadius, borderPaint);
+            else
+                canvas.DrawRect(rect, borderPaint);
         }
     }
 

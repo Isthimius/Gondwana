@@ -116,19 +116,19 @@ public sealed class DirectDrawingManager
     }
 
     private static readonly IComparer<DirectDrawingBase> _defaultComparer =
-    Comparer<DirectDrawingBase>.Create((a, b) =>
-    {
-        if (a == null && b == null) return 0;
-        if (a == null) return -1;
-        if (b == null) return 1;
+        Comparer<DirectDrawingBase>.Create((a, b) =>
+        {
+            if (a == null && b == null) return 0;
+            if (a == null) return -1;
+            if (b == null) return 1;
 
-        // First compare ZOrder
-        int z = a.ZOrder.CompareTo(b.ZOrder);
-        if (z != 0) return z;
+            // First compare ZOrder
+            int z = a.ZOrder.CompareTo(b.ZOrder);
+            if (z != 0) return z;
 
-        // If ZOrder equal, fall back to Name
-        return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
-    });
+            // If ZOrder equal, fall back to Name
+            return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
+        });
 
     private void OnDrawingDisposing(object? sender, DirectDrawingBase drawing)
     {
