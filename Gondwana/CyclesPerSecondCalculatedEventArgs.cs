@@ -1,4 +1,6 @@
-﻿namespace Gondwana;
+﻿using System.Text;
+
+namespace Gondwana;
 
 public class CyclesPerSecondCalculatedEventArgs : EventArgs
 {
@@ -15,5 +17,17 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
         GrossCPS = grossCPS;
         NetCPS = netCPS;
         SamplingTime = samplingTime;
+    }
+
+    public override string ToString()
+    {
+        var cpsValue = new StringBuilder()
+            .AppendLine($"Total gross cycles: {TotalGrossCycles:N0}")
+            .AppendLine($"Total net cycles: {TotalNetCycles:N0}")
+            .AppendLine($"Sampling time: {SamplingTime:0.00}s")
+            .AppendLine($"Gross CPS: {GrossCPS:0.00}")
+            .AppendLine($"Net CPS: {NetCPS:0.00}");
+
+        return cpsValue.ToString();
     }
 }

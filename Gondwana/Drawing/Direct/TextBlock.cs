@@ -33,6 +33,10 @@ public class TextBlock : DirectDrawingBase
     }
 
     private string _text = string.Empty;
+    private List<string> _lines = new();
+    private float _lineHeight;
+    private bool _layoutDirty = true;
+
     private SKColor _foreColor = SKColors.White;
     private SKColor _backColor = SKColors.Transparent;
 
@@ -53,8 +57,17 @@ public class TextBlock : DirectDrawingBase
     {
     }
 
+    public float LineSpacingMultiplier { get; set; } = 1.0f;
+    public float HorizontalPadding { get; set; } = 0f;
+    public float VerticalPadding { get; set; } = 0f;
+
     public TextBlock SetText(string text)
-    { _text = text; return this; }
+    {
+        _text = text ?? string.Empty;
+        _layoutDirty = true;
+        _dirty = true; // if your base uses this to request redraw
+        return this;
+    }
 
     public TextBlock SetFont(SKTypeface typeface, float size, float? minSize = null)
     { _typeface = typeface; _fontSize = size; _minFontSize = minSize; return this; }
@@ -88,61 +101,84 @@ public class TextBlock : DirectDrawingBase
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
         var rect = Bounds.ToSKRect();
 
-        using var bg = new SKPaint { Color = _backColor };
-        canvas.DrawRect(rect, bg);
-
-        if (_typeface == null)
-            _typeface = SKTypeface.Default;
-
-        float fontSize = _fontSize;
-        var lines = BreakLinesToFit(_text, rect.Width, fontSize, out float lineHeight, out int totalLines);
-
-        // Auto-shrink font if needed
-        while (_minFontSize.HasValue && lineHeight * totalLines > rect.Height && fontSize > _minFontSize)
+        // Background
+        if (_backColor.Alpha != 0)
         {
-            fontSize -= 1f;
-            lines = BreakLinesToFit(_text, rect.Width, fontSize, out lineHeight, out totalLines);
+            using var bg = new SKPaint { Color = _backColor };
+            canvas.DrawRect(rect, bg);
         }
 
-        // Vertical alignment
-        float totalHeight = lineHeight * totalLines;
-        float yOffset = _vAlign switch
-        {
-            VerticalAlign.Center => rect.MidY - totalHeight / 2,
-            VerticalAlign.Bottom => rect.Bottom - totalHeight,
-            _ => rect.Top
-        };
+        // Ensure typeface
+        _typeface ??= SKTypeface.Default;
 
+        // Build a paint we can reuse for layout + draw
         using var paint = new SKPaint
         {
             Typeface = _typeface,
-            TextSize = fontSize,
+            TextSize = _fontSize,
             Color = _foreColor,
             IsAntialias = true,
             IsStroke = false,
             TextAlign = _hAlign
         };
 
-        float y = yOffset;
-        int linesDrawn = 0;
+        // Auto-shrink: reflow until it fits height (if min size provided)
+        float fontSize = _fontSize;
+        float innerW = Math.Max(0, rect.Width - HorizontalPadding * 2f);
+        float innerH = Math.Max(0, rect.Height - VerticalPadding * 2f);
 
-        foreach (var line in lines)
+        while (true)
         {
-            if (_maxLines.HasValue && linesDrawn >= _maxLines.Value)
-                break;
+            paint.TextSize = fontSize;
+            if (_layoutDirty) RebuildLayout(paint, innerW);
 
+            int drawableLines = _maxLines.HasValue ? Math.Min(_lines.Count, _maxLines.Value) : _lines.Count;
+            float totalH = drawableLines * _lineHeight;
+
+            if (_minFontSize.HasValue && totalH > innerH && fontSize > _minFontSize.Value)
+            {
+                fontSize -= 1f;                 // step down and retry
+                _layoutDirty = true;
+                continue;
+            }
+            break;
+        }
+
+        // Vertical start (remember: Skia draws at baseline, so apply ascent shift)
+        var fm = paint.FontMetrics;
+        float baselineShift = -fm.Ascent;
+
+        int linesToDraw = _maxLines.HasValue ? Math.Min(_lines.Count, _maxLines.Value) : _lines.Count;
+        float contentH = linesToDraw * _lineHeight;
+
+        float yStart = _vAlign switch
+        {
+            VerticalAlign.Center => rect.Top + VerticalPadding + (innerH - contentH) * 0.5f,
+            VerticalAlign.Bottom => rect.Bottom - VerticalPadding - contentH,
+            _ => rect.Top + VerticalPadding
+        };
+
+        // Horizontal anchor per line
+        float xAnchorLeft = rect.Left + HorizontalPadding;
+        float xAnchorCenter = rect.MidX;
+        float xAnchorRight = rect.Right - HorizontalPadding;
+
+        float y = yStart;
+        for (int i = 0; i < linesToDraw; i++)
+        {
+            var line = _lines[i];
             float x = _hAlign switch
             {
-                SKTextAlign.Center => rect.MidX,
-                SKTextAlign.Right => rect.Right,
-                _ => rect.Left
+                SKTextAlign.Center => xAnchorCenter,
+                SKTextAlign.Right => xAnchorRight,
+                _ => xAnchorLeft
             };
 
             if (_useShadow)
             {
                 using var shadow = paint.Clone();
                 shadow.Color = SKColors.Black.WithAlpha(100);
-                canvas.DrawText(line, x + 2, y + 2, shadow);
+                canvas.DrawText(line, x + 2, y + baselineShift + 2, shadow);
             }
 
             if (_useOutline)
@@ -151,56 +187,61 @@ public class TextBlock : DirectDrawingBase
                 outline.IsStroke = true;
                 outline.StrokeWidth = 1.5f;
                 outline.Color = SKColors.Black;
-                canvas.DrawText(line, x, y, outline);
+                canvas.DrawText(line, x, y + baselineShift, outline);
             }
 
-            canvas.DrawText(line, x, y, paint);
-            y += lineHeight;
-            linesDrawn++;
+            canvas.DrawText(line, x, y + baselineShift, paint);
+            y += _lineHeight;
+            if (y > rect.Bottom) break; // safety clip
         }
     }
 
-    private List<string> BreakLinesToFit(string text, float maxWidth, float fontSize, out float lineHeight, out int totalLines)
+    private void RebuildLayout(SKPaint paint, float maxWidth)
     {
-        using var paint = new SKPaint
-        {
-            Typeface = _typeface,
-            TextSize = fontSize,
-            IsAntialias = true
-        };
+        _lines.Clear();
 
-        lineHeight = paint.FontMetrics.Descent - paint.FontMetrics.Ascent + paint.FontMetrics.Leading;
+        var fm = paint.FontMetrics;
+        _lineHeight = ((fm.Descent - fm.Ascent) + fm.Leading) * LineSpacingMultiplier;
 
-        if (!_wrapText)
+        var paragraphs = _text.Replace("\r\n", "\n").Split('\n');
+
+        foreach (var para in paragraphs)
         {
-            totalLines = 1;
-            return new List<string> { text };
+            if (string.IsNullOrEmpty(para))
+            {
+                _lines.Add(string.Empty);
+                continue;
+            }
+
+            // NEW: if wrapping is disabled, keep the paragraph as a single line
+            if (!_wrapText)
+            {
+                _lines.Add(para);
+                continue;
+            }
+
+            // word wrap
+            var words = para.Split(' ');
+            var current = string.Empty;
+
+            foreach (var word in words)
+            {
+                string candidate = string.IsNullOrEmpty(current) ? word : current + " " + word;
+                float w = paint.MeasureText(candidate);
+
+                if (w <= maxWidth || string.IsNullOrEmpty(current))
+                    current = candidate;
+                else
+                {
+                    _lines.Add(current);
+                    current = word;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(current))
+                _lines.Add(current);
         }
 
-        var words = text.Split(' ');
-        var lines = new List<string>();
-        var currentLine = "";
-
-        foreach (var word in words)
-        {
-            var testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
-            float width = paint.MeasureText(testLine);
-
-            if (width <= maxWidth)
-            {
-                currentLine = testLine;
-            }
-            else
-            {
-                lines.Add(currentLine);
-                currentLine = word;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(currentLine))
-            lines.Add(currentLine);
-
-        totalLines = lines.Count;
-        return lines;
+        _layoutDirty = false;
     }
 }

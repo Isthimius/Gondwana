@@ -3,12 +3,15 @@ using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Scenes;
 using Gondwana.Scenes.Coordinates;
 using SkiaSharp;
+using System.Text;
 using static Gondwana.Drawing.Direct.TextBlock;
 
 namespace Gondwana.ParticleTest;
 
 public partial class Form1 : Form
 {
+    private TextBlock? _textBlock;
+
     public Form1()
     {
         InitializeComponent();
@@ -32,10 +35,19 @@ public partial class Form1 : Form
 
         renderSurface.Bind(scene);
 
+        Engine.Instance.CPSCalculated += (cps) =>
+        {
+            var sb = new StringBuilder()    
+                .AppendLine("Oh no!!! The wizard doth spray purple slime!")
+                .AppendLine(cps.ToString());
+
+            _textBlock?.SetText(sb.ToString());
+        };
+
         Engine.Instance.Start();
 
         var particles = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height));
-        //particles.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        particles.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         particles.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
         particles.Emitters.Add(GetRain(adapter.Width));
         particles.Emitters.Add(GetSnow(adapter.Width));
@@ -51,13 +63,12 @@ public partial class Form1 : Form
             .PulseFill(Color.Blue, Color.Purple, 1.25f)
             .ZOrder = 1;
 
-        var textBlock = new TextBlock(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160))
-            .SetText("Oh no!!! The wizard doth spray purple slime!")
-            .SetFont(SKTypeface.FromFamilyName("Papyrus"), 24f, minSize: 14f)
+        _textBlock = new TextBlock(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160))
+            .SetFont(SKTypeface.FromFamilyName("Papyrus"), 14f, minSize: 14f)
             .SetColors(Color.White, Color.Transparent)
             .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)
             .EnableWrapping()
-            .SetMaxLines(4)
+            .SetMaxLines(6)
             .UseShadow()
             .UseOutline();
     }
