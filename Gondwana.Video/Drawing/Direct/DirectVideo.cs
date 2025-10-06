@@ -1,13 +1,13 @@
 ﻿using System.Drawing;
-using Gondwana.Drawing.Direct;
-using Gondwana.Video;              // IVideoPlayer
+using Gondwana.Rendering;
+using Gondwana.Video;
 using SkiaSharp;
 
 #if BROWSER || NO_UNSAFE
     using System.Runtime.InteropServices;
 #endif
 
-namespace Gondwana.Rendering.Direct;
+namespace Gondwana.Drawing.Direct;
 
 /// <summary>
 /// Draws video frames provided by IVideoPlayer onto the backbuffer.

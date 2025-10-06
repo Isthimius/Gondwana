@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Rendering.Direct;
+﻿namespace Gondwana.Drawing.Direct;
 
 public enum StretchMode
 {
