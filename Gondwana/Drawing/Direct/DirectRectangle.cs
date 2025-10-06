@@ -303,35 +303,45 @@ public class DirectRectangle : DirectDrawingBase
 
     protected internal override void Draw()
     {
+        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+
         if (_needsRebuildPaints) RebuildPaints();
 
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
-        var rect = Bounds.ToSKRect();
+        // Separate rectangles for fill and stroke
+        var fillRect = Bounds.ToSKRect();
+        var strokeRect = fillRect;
 
-        // Adjust rect based on stroke align (only matters for visible stroke)
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
+
+        // Apply stroke alignment only to the stroke rect
         if (willDrawStroke && _strokeAlign != StrokeAlign.Center)
         {
-            float offset = _strokePaint.StrokeWidth / 2f;
-            if (_strokeAlign == StrokeAlign.Inside) rect.Inflate(-offset, -offset);
-            else if (_strokeAlign == StrokeAlign.Outside) rect.Inflate(offset, offset);
+            float w = _strokePaint.StrokeWidth;
+            if (_strokeAlign == StrokeAlign.Inside) strokeRect.Inflate(-w, -w);
+            if (_strokeAlign == StrokeAlign.Outside) strokeRect.Inflate(w, w);
         }
 
-        // Path effect applies only to stroke
+        // Path effect only for stroke
         _strokePaint.PathEffect = _dashPattern is { Length: > 0 }
             ? SKPathEffect.CreateDash(_dashPattern, 0)
             : null;
 
-        if (_cornerRadius > 0)
+        // Draw fill first (unmodified fillRect)
+        if (_isFilled)
         {
-            var rr = new SKRoundRect(rect, _cornerRadius);
-            if (_isFilled) canvas.DrawRoundRect(rr, _fillPaint);
-            if (willDrawStroke) canvas.DrawRoundRect(rr, _strokePaint);
+            if (_cornerRadius > 0)
+                canvas.DrawRoundRect(fillRect, _cornerRadius, _cornerRadius, _fillPaint);
+            else
+                canvas.DrawRect(fillRect, _fillPaint);
         }
-        else
+
+        // Then draw stroke on its own aligned rect
+        if (willDrawStroke)
         {
-            if (_isFilled) canvas.DrawRect(rect, _fillPaint);
-            if (willDrawStroke) canvas.DrawRect(rect, _strokePaint);
+            if (_cornerRadius > 0)
+                canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
+            else
+                canvas.DrawRect(strokeRect, _strokePaint);
         }
     }
 
