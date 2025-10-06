@@ -1,7 +1,8 @@
-using System.Drawing;
-using Gondwana.Rendering;
+﻿using Gondwana.Rendering;
 using Gondwana.Skia;
 using SkiaSharp;
+using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -57,6 +58,23 @@ public class DirectRectangle : DirectDrawingBase
     private StrokeAlign _strokeAlign = StrokeAlign.Center;
     private bool _needsRebuildPaints = true; // mark when properties change
 
+    // --- Pulse settings ---
+    private bool _pulseFillEnabled;
+    private SKColor _pulseFillFrom, _pulseFillTo;
+    private float _pulseFillPeriodSec = 1f;
+
+    private bool _pulseBorderEnabled;
+    private SKColor _pulseBorderFrom, _pulseBorderTo;
+    private float _pulseBorderPeriodSec = 1f;
+
+    private enum PulseWave { Sine, Triangle }
+    private PulseWave _pulseFillWave = PulseWave.Sine;
+    private PulseWave _pulseBorderWave = PulseWave.Sine;
+
+    // --- Time keeping for Update(tick) ---
+    private long? _lastTick;
+    private float _timeSec; // accumulated seconds
+
     public DirectRectangle(
         RenderSurfaceHostBase renderSurfaceHost,
         Rectangle bounds,
@@ -91,13 +109,13 @@ public class DirectRectangle : DirectDrawingBase
         return this;
     }
 
-    /// <summary>Sets the alpha channel (0�255) for the base color. Border keeps its own alpha if set.</summary>
+    /// <summary>Sets the alpha channel (0–255) for the base color. Border keeps its own alpha if set.</summary>
     public DirectRectangle SetAlpha(int alpha)
     {
         var c = _fillPaint.Color;
         var withA = new SKColor(c.Red, c.Green, c.Blue, (byte)alpha);
         _fillPaint.Color = withA;
-        // Only change stroke when it�s not using a distinct border color
+        // Only change stroke when it’s not using a distinct border color
         if (_borderColor is null)
             _strokePaint.Color = withA;
         _needsRebuildPaints = true;
@@ -124,13 +142,56 @@ public class DirectRectangle : DirectDrawingBase
         return this;
     }
 
-    public DirectRectangle SetDashPattern(params float[] dashes)
+    /// <summary>
+    /// Sets a simple repeating dash pattern using dash and gap lengths, in pixels.
+    /// </summary>
+    /// <param name="dashLength">Length of each visible dash, in pixels.</param>
+    /// <param name="gapLength">Length of the transparent gap between dashes, in pixels.</param>
+    /// <returns>This rectangle for fluent chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// This is a shorthand for <see cref="SetDashPattern(float[])"/> that
+    /// produces a repeating [dash, gap] pattern (e.g., <c>(8, 4)</c> for 8 px dash, 4 px gap).
+    /// </para>
+    /// <para>
+    /// To remove the dash pattern, call <see cref="ClearDashPattern"/>.
+    /// </para>
+    /// </remarks>
+    public DirectRectangle SetDashPattern(float dashLength, float gapLength)
     {
-        _dashPattern = dashes;
+        _dashPattern = new[] { dashLength, gapLength };
         // path effect is applied on draw; no rebuild needed
         return this;
     }
 
+    /// <summary>
+    /// Removes any existing dash pattern, reverting to a solid stroke.
+    /// </summary>
+    public DirectRectangle ClearDashPattern()
+    {
+        _dashPattern = null;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the blend mode used when rendering this rectangle onto the canvas.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Blend modes determine how the rectangle’s pixels combine with the existing
+    /// pixels on the render surface. For example:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><term><see cref="SKBlendMode.SrcOver"/></term> – Default; draws over existing content with transparency.</item>
+    ///   <item><term><see cref="SKBlendMode.Screen"/></term> – Brightens overlapping areas; useful for glow effects.</item>
+    ///   <item><term><see cref="SKBlendMode.Multiply"/></term> – Darkens overlapping colors; good for shading overlays.</item>
+    ///   <item><term><see cref="SKBlendMode.Plus"/></term> – Additive blending; great for light or energy effects.</item>
+    /// </list>
+    /// <para>
+    /// This mode applies to both the fill and stroke paints. Changing it affects how
+    /// the rectangle visually interacts with whatever was previously drawn.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetBlendMode(SKBlendMode mode)
     {
         // apply to both paints
@@ -140,10 +201,105 @@ public class DirectRectangle : DirectDrawingBase
         return this;
     }
 
+    /// <summary>
+    /// Sets how the rectangle’s stroke is positioned relative to its bounds.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Determines whether the stroke (outline) is drawn inside, outside, or centered
+    /// on the rectangle’s boundary:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>
+    ///     <term><see cref="StrokeAlign.Inside"/></term>
+    ///     <description>Draws the stroke entirely inside the rectangle’s bounds.</description>
+    ///   </item>
+    ///   <item>
+    ///     <term><see cref="StrokeAlign.Outside"/></term>
+    ///     <description>Draws the stroke entirely outside the rectangle’s bounds, increasing its visual size.</description>
+    ///   </item>
+    ///   <item>
+    ///     <term><see cref="StrokeAlign.Center"/></term>
+    ///     <description>Centers the stroke on the boundary line (default Skia behavior).</description>
+    ///   </item>
+    /// </list>
+    /// <para>
+    /// This only affects visible strokes (outlined or bordered rectangles). Filled rectangles
+    /// are not impacted by stroke alignment.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetStrokeAlign(StrokeAlign align)
     {
         _strokeAlign = align;
         return this;
+    }
+
+    /// <summary>Animate the fill color between <paramref name="from"/> and <paramref name="to"/> over <paramref name="periodSec"/> seconds.</summary>
+    public DirectRectangle PulseFill(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
+    {
+        _pulseFillEnabled = enabled;
+        _pulseFillFrom = from.ToSKColor();
+        _pulseFillTo = to.ToSKColor();
+        _pulseFillPeriodSec = MathF.Max(0.0001f, periodSec);
+        _pulseFillWave = triangle ? PulseWave.Triangle : PulseWave.Sine;
+        return this;
+    }
+
+    /// <summary>Animate the border color between <paramref name="from"/> and <paramref name="to"/> over <paramref name="periodSec"/> seconds.</summary>
+    public DirectRectangle PulseBorder(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
+    {
+        _pulseBorderEnabled = enabled;
+        _pulseBorderFrom = from.ToSKColor();
+        _pulseBorderTo = to.ToSKColor();
+        _pulseBorderPeriodSec = MathF.Max(0.0001f, periodSec);
+        _pulseBorderWave = triangle ? PulseWave.Triangle : PulseWave.Sine;
+        return this;
+    }
+
+    /// <summary>Disable all color pulsing.</summary>
+    public DirectRectangle StopPulses()
+    {
+        _pulseFillEnabled = _pulseBorderEnabled = false;
+        return this;
+    }
+
+    protected internal override void Update(long tick)
+    {
+        if (_lastTick is { } last)
+        {
+            // ticks are engine dependent; if your tick is milliseconds, use 1000f. Adjust if needed.
+            float dt = (tick - last) / 1000f;
+            if (dt > 0f && dt < 1f) _timeSec += dt; // clamp outliers
+        }
+        _lastTick = tick;
+
+        bool changed = false;
+
+        if (_pulseFillEnabled)
+        {
+            float t = PulseT(_timeSec, _pulseFillPeriodSec, _pulseFillWave);
+            var c = LerpColor(_pulseFillFrom, _pulseFillTo, t);
+            if (_fillPaint.Color != c) { _fillPaint.Color = c; changed = true; }
+        }
+
+        if (_pulseBorderEnabled)
+        {
+            float t = PulseT(_timeSec, _pulseBorderPeriodSec, _pulseBorderWave);
+            var c = LerpColor(_pulseBorderFrom, _pulseBorderTo, t);
+            var target = _borderColor.HasValue ? _borderColor.Value : _strokePaint.Color;
+            if (target != c)
+            {
+                _borderColor = c;            // keep distinct border color
+                _strokePaint.Color = c;      // keep stroke in sync
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            _needsRebuildPaints = false; // we already set paints directly
+            _dirty = true;               // request redraw
+        }
     }
 
     protected internal override void Draw()
@@ -211,5 +367,31 @@ public class DirectRectangle : DirectDrawingBase
         Inside,
         Outside,
         Center
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static float PulseT(float timeSec, float periodSec, PulseWave wave)
+    {
+        float phase = (timeSec / periodSec) % 1f;
+        if (wave == PulseWave.Sine)
+        {
+            // (sin(2πx)+1)/2 in [0..1]
+            return 0.5f * (1f + MathF.Sin(phase * MathF.PI * 2f));
+        }
+        else // Triangle: ramp up 0..1 then down 1..0
+        {
+            return phase < 0.5f ? (phase * 2f) : (1f - ((phase - 0.5f) * 2f));
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static SKColor LerpColor(SKColor a, SKColor b, float t01)
+    {
+        t01 = Math.Clamp(t01, 0f, 1f);
+        byte r = (byte)(a.Red + (b.Red - a.Red) * t01);
+        byte g = (byte)(a.Green + (b.Green - a.Green) * t01);
+        byte bch = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
+        byte aA = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
+        return new SKColor(r, g, bch, aA);
     }
 }
