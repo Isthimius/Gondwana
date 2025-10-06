@@ -338,10 +338,17 @@ public class DirectRectangle : DirectDrawingBase
         // Then draw stroke on its own aligned rect
         if (willDrawStroke)
         {
+            // --- force outline to normal compositing so it stays visible ---
+            var prevBlend = _strokePaint.BlendMode;
+            _strokePaint.BlendMode = SKBlendMode.SrcOver;   // <- key line
+
             if (_cornerRadius > 0)
                 canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
             else
                 canvas.DrawRect(strokeRect, _strokePaint);
+
+            _strokePaint.BlendMode = prevBlend;             // restore for future draws
+                                                            // ----------------------------------------------------------------------
         }
     }
 
