@@ -37,8 +37,8 @@ public partial class Form1 : Form
         var particles = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height));
         //particles.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         particles.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
-        //particles.Emitters.Add(GetRain(adapter.Width));
-        //particles.Emitters.Add(GetSnow(adapter.Width));
+        particles.Emitters.Add(GetRain(adapter.Width));
+        particles.Emitters.Add(GetSnow(adapter.Width));
 
         var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
             .SetAlpha(128)
@@ -48,6 +48,7 @@ public partial class Form1 : Form
             .SetStrokeWidth(3)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
             .SetBlendMode(SKBlendMode.Screen)
+            .PulseFill(Color.Blue, Color.Purple, 1.25f)
             .ZOrder = 1;
 
         var textBlock = new TextBlock(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160))

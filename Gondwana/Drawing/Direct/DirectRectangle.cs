@@ -1,5 +1,6 @@
 ﻿using Gondwana.Rendering;
 using Gondwana.Skia;
+using Gondwana.Timers;
 using SkiaSharp;
 using System.Drawing;
 using System.Runtime.CompilerServices;
@@ -267,8 +268,10 @@ public class DirectRectangle : DirectDrawingBase
     {
         if (_lastTick is { } last)
         {
-            // ticks are engine dependent; if your tick is milliseconds, use 1000f. Adjust if needed.
-            float dt = (tick - last) / 1000f;
+            long deltaTicks = tick - last;
+            if (deltaTicks < 0) deltaTicks = 0; // guard against clock reset
+            float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
+
             if (dt > 0f && dt < 1f) _timeSec += dt; // clamp outliers
         }
         _lastTick = tick;
