@@ -120,4 +120,4 @@ Contributions are welcome!
 
 ## 📜 License
 
-GPLv2 License — see [LICENSE](LICENSE) for details.  
+MIT License — see [LICENSE](LICENSE) for details.  
