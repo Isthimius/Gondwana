@@ -313,12 +313,41 @@ public class DirectRectangle : DirectDrawingBase
 
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
 
-        // Apply stroke alignment only to the stroke rect
-        if (willDrawStroke && _strokeAlign != StrokeAlign.Center)
+        // Then draw stroke on its own aligned rect
+        if (willDrawStroke)
         {
-            float w = _strokePaint.StrokeWidth;
-            if (_strokeAlign == StrokeAlign.Inside) strokeRect.Inflate(-w, -w);
-            if (_strokeAlign == StrokeAlign.Outside) strokeRect.Inflate(w, w);
+            var prevBlend = _strokePaint.BlendMode;
+            var prevColor = _strokePaint.Color;
+            var prevAA = _strokePaint.IsAntialias;
+            var prevW = _strokePaint.StrokeWidth;
+
+            // Pass 1: solid core, no AA (pure white)
+            _strokePaint.IsAntialias = false;
+            _strokePaint.BlendMode = SKBlendMode.Src;
+            _strokePaint.Color = SKColors.White;
+            _strokePaint.StrokeWidth = MathF.Max(1f, prevW - 1f);
+
+            if (_cornerRadius > 0)
+                canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
+            else
+                canvas.DrawRect(strokeRect, _strokePaint);
+
+            // Pass 2: thin AA skin to smooth edge
+            _strokePaint.IsAntialias = true;
+            _strokePaint.BlendMode = SKBlendMode.SrcOver;   // normal composite
+            _strokePaint.Color = SKColors.White;        // keep white
+            _strokePaint.StrokeWidth = prevW;
+
+            if (_cornerRadius > 0)
+                canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
+            else
+                canvas.DrawRect(strokeRect, _strokePaint);
+
+            // restore
+            _strokePaint.IsAntialias = prevAA;
+            _strokePaint.BlendMode = prevBlend;
+            _strokePaint.Color = prevColor;
+            _strokePaint.StrokeWidth = prevW;
         }
 
         // Path effect only for stroke
@@ -338,17 +367,21 @@ public class DirectRectangle : DirectDrawingBase
         // Then draw stroke on its own aligned rect
         if (willDrawStroke)
         {
-            // --- force outline to normal compositing so it stays visible ---
+            // --- FORCE a pure, opaque, non-blended outline for this draw only ---
             var prevBlend = _strokePaint.BlendMode;
-            _strokePaint.BlendMode = SKBlendMode.SrcOver;   // <- key line
+            var prevColor = _strokePaint.Color;
+
+            _strokePaint.BlendMode = SKBlendMode.Src;               // replace dst with src (no mixing)
+            _strokePaint.Color = prevColor.WithAlpha(255);          // ensure fully opaque
 
             if (_cornerRadius > 0)
                 canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
             else
                 canvas.DrawRect(strokeRect, _strokePaint);
 
-            _strokePaint.BlendMode = prevBlend;             // restore for future draws
-                                                            // ----------------------------------------------------------------------
+            // restore for future draws
+            _strokePaint.BlendMode = prevBlend;
+            _strokePaint.Color = prevColor;
         }
     }
 
