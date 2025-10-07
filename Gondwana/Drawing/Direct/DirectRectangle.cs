@@ -2,6 +2,7 @@
 using Gondwana.Skia;
 using Gondwana.Timers;
 using SkiaSharp;
+using System;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 
@@ -311,13 +312,29 @@ public class DirectRectangle : DirectDrawingBase
         var strokeRect = fillRect;
 
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
+        float half = _strokePaint.StrokeWidth * 0.5f;
 
         // 1) APPLY STROKE ALIGNMENT (use HALF the width; path is centered)
         if (willDrawStroke && _strokeAlign != StrokeAlign.Center)
         {
-            float half = _strokePaint.StrokeWidth * 0.5f;
             if (_strokeAlign == StrokeAlign.Inside) strokeRect.Inflate(-half, -half);
             else if (_strokeAlign == StrokeAlign.Outside) strokeRect.Inflate(half, half);
+        }
+
+        // 1.5) corner radius for the stroke path, adjusted to keep the inner/outer arcs aligned to the fill
+        float strokeCornerRadius;
+        switch (_strokeAlign)
+        {
+            case StrokeAlign.Outside:
+                strokeCornerRadius = MathF.Max(0f, _cornerRadius - half);
+                break;
+            case StrokeAlign.Inside:
+                strokeCornerRadius = _cornerRadius + half;
+                break;
+            case StrokeAlign.Center:
+            default:
+                strokeCornerRadius = _cornerRadius;
+                break;
         }
 
         // 2) Dash for stroke only
@@ -329,7 +346,7 @@ public class DirectRectangle : DirectDrawingBase
         if (_isFilled)
         {
             if (_cornerRadius > 0)
-                canvas.DrawRoundRect(fillRect, _cornerRadius, _cornerRadius, _fillPaint);
+                canvas.DrawRoundRect(fillRect, strokeCornerRadius, strokeCornerRadius, _fillPaint);
             else
                 canvas.DrawRect(fillRect, _fillPaint);
         }
@@ -359,6 +376,8 @@ public class DirectRectangle : DirectDrawingBase
             _strokePaint.IsAntialias = prevAA;
             _strokePaint.BlendMode = prevBlend;
             _strokePaint.Color = prevColor;
+            //_strokePaint.StrokeJoin = SKStrokeJoin.Round;
+            //_strokePaint.StrokeCap = SKStrokeCap.Round;
         }
     }
 

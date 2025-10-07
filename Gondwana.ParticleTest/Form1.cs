@@ -57,13 +57,13 @@ public partial class Form1 : Form
         var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
             .SetAlpha(128)
             .SetCornerRadius(6f)
-            .SetBorderColor(Color.Green)
+            .SetBorderColor(Color.White)
             .SetFilled(true)
             .SetStrokeWidth(6f)
-            .SetStrokeAlign(DirectRectangle.StrokeAlign.Inside)
-            .PulseBorder(Color.Lime, Color.Red, 2.0f)
+            .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
+            //.PulseBorder(Color.Lime, Color.Red, 2.0f)
             .SetBlendMode(SKBlendMode.Screen)
-            .PulseFill(Color.Blue, Color.Purple, 1.25f)
+            //.PulseFill(Color.Blue, Color.Purple, 1.25f)
             .ZOrder = 1;
 
         _textBlock = new TextBlock(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160))
