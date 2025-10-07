@@ -369,21 +369,35 @@ public sealed class Engine : IDisposable
 
     private void CalculateCPS(long tick)
     {
-        // check if CPS Sampling time has passed
-        if (tick - _lastCPSSamplingTick >= Configuration.SamplingTimeForCPSTicks)
-        {
-            _grossCPS = (double)(_grossCyclesThisMeasure * HighResTimer.TicksPerSecond) / (double)(tick - _lastCPSSamplingTick);
-            _netFPS = (double)(_netCyclesThisMeasure * HighResTimer.TicksPerSecond) / (double)(tick - _lastCPSSamplingTick);
+        // Has the sampling interval elapsed?
+        long elapsedTicks = tick - _lastCPSSamplingTick;
+        if (elapsedTicks < Configuration.SamplingTimeForCPSTicks) return;
 
-            // raise the event
-            UiDispatcher!.Post(() => CPSCalculated?.Invoke(new CyclesPerSecondCalculatedEventArgs(
-                    _grossCyclesThisMeasure, _netCyclesThisMeasure, _grossCPS, _netFPS, Configuration.SamplingTimeForCPS)));
+        // SNAPSHOT the counters BEFORE resetting or posting
+        long grossCycles = _grossCyclesThisMeasure;
+        long netCycles = _netCyclesThisMeasure;
 
-            // reset values for next calculation
-            _lastCPSSamplingTick = tick;
-            _grossCyclesThisMeasure = 0;
-            _netCyclesThisMeasure = 0;
-        }
+        // Compute using the snapshot
+        double elapsedSec = elapsedTicks / (double)HighResTimer.TicksPerSecond;
+        double grossCps = grossCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
+        double netCps = netCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
+
+        // Build immutable args NOW (so lambda doesn’t read changing fields later)
+        var args = new CyclesPerSecondCalculatedEventArgs(
+            grossCycles,
+            netCycles,
+            grossCps,
+            netCps,
+            elapsedSec
+        );
+
+        // Post the snapshot
+        UiDispatcher!.Post(() => CPSCalculated?.Invoke(args));
+
+        // Reset for next window
+        _lastCPSSamplingTick = tick;
+        _grossCyclesThisMeasure = 0;
+        _netCyclesThisMeasure = 0;
     }
 
     private void Dispose(bool disposing)

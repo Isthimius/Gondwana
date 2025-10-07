@@ -104,7 +104,7 @@ namespace Slider
         private void Engine_CPSCalculated(CyclesPerSecondCalculatedEventArgs e)
         {
             lblInfo.Text = string.Format("FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
-                e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SamplingTime.ToString("N2"));
+                e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SampleTime.ToString("N2"));
         }
 
         private void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
