@@ -376,8 +376,8 @@ public class DirectRectangle : DirectDrawingBase
             _strokePaint.IsAntialias = prevAA;
             _strokePaint.BlendMode = prevBlend;
             _strokePaint.Color = prevColor;
-            //_strokePaint.StrokeJoin = SKStrokeJoin.Round;
-            //_strokePaint.StrokeCap = SKStrokeCap.Round;
+            _strokePaint.StrokeJoin = SKStrokeJoin.Round;
+            _strokePaint.StrokeCap = SKStrokeCap.Round;
         }
     }
 
