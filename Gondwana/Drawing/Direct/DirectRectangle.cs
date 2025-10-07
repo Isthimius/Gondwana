@@ -307,36 +307,30 @@ public class DirectRectangle : DirectDrawingBase
 
         if (_needsRebuildPaints) RebuildPaints();
 
-        // Separate rectangles for fill and stroke
         var fillRect = Bounds.ToSKRect();
         var strokeRect = fillRect;
 
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
 
+        // Apply stroke alignment offset BEFORE drawing anything
         // Then draw stroke on its own aligned rect
         if (willDrawStroke)
         {
             var prevBlend = _strokePaint.BlendMode;
             var prevColor = _strokePaint.Color;
             var prevAA = _strokePaint.IsAntialias;
-            var prevW = _strokePaint.StrokeWidth;
 
-            // Pass 1: solid core, no AA (pure white)
+            // Pure, opaque stroke compositing
             _strokePaint.IsAntialias = false;
             _strokePaint.BlendMode = SKBlendMode.Src;
-            _strokePaint.Color = SKColors.White;
-            _strokePaint.StrokeWidth = MathF.Max(1f, prevW - 1f);
 
-            if (_cornerRadius > 0)
-                canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
-            else
-                canvas.DrawRect(strokeRect, _strokePaint);
+            // IMPORTANT: if PulseBorder is active, keep the color set by Update();
+            // otherwise use the configured border color (or previous color if none).
+            SKColor strokeColor = _pulseBorderEnabled
+                ? _strokePaint.Color                    // Update() drives this each frame
+                : (_borderColor ?? prevColor);          // static border
 
-            // Pass 2: thin AA skin to smooth edge
-            _strokePaint.IsAntialias = true;
-            _strokePaint.BlendMode = SKBlendMode.SrcOver;   // normal composite
-            _strokePaint.Color = SKColors.White;        // keep white
-            _strokePaint.StrokeWidth = prevW;
+            _strokePaint.Color = strokeColor.WithAlpha(255);
 
             if (_cornerRadius > 0)
                 canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
@@ -347,15 +341,14 @@ public class DirectRectangle : DirectDrawingBase
             _strokePaint.IsAntialias = prevAA;
             _strokePaint.BlendMode = prevBlend;
             _strokePaint.Color = prevColor;
-            _strokePaint.StrokeWidth = prevW;
         }
 
-        // Path effect only for stroke
+        // Dash support
         _strokePaint.PathEffect = _dashPattern is { Length: > 0 }
             ? SKPathEffect.CreateDash(_dashPattern, 0)
             : null;
 
-        // Draw fill first (unmodified fillRect)
+        // --- Draw fill ---
         if (_isFilled)
         {
             if (_cornerRadius > 0)
@@ -364,22 +357,29 @@ public class DirectRectangle : DirectDrawingBase
                 canvas.DrawRect(fillRect, _fillPaint);
         }
 
-        // Then draw stroke on its own aligned rect
+        // --- Draw stroke ---
         if (willDrawStroke)
         {
-            // --- FORCE a pure, opaque, non-blended outline for this draw only ---
             var prevBlend = _strokePaint.BlendMode;
             var prevColor = _strokePaint.Color;
+            var prevAA = _strokePaint.IsAntialias;
 
-            _strokePaint.BlendMode = SKBlendMode.Src;               // replace dst with src (no mixing)
-            _strokePaint.Color = prevColor.WithAlpha(255);          // ensure fully opaque
+            _strokePaint.IsAntialias = false;
+            _strokePaint.BlendMode = SKBlendMode.Src;
+
+            // If pulsing, keep whatever Update() set.
+            // If not pulsing, use base border color.
+            var strokeColor = _pulseBorderEnabled ? _strokePaint.Color
+                                                  : (_borderColor ?? prevColor);
+
+            _strokePaint.Color = strokeColor.WithAlpha(255);
 
             if (_cornerRadius > 0)
                 canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
             else
                 canvas.DrawRect(strokeRect, _strokePaint);
 
-            // restore for future draws
+            _strokePaint.IsAntialias = prevAA;
             _strokePaint.BlendMode = prevBlend;
             _strokePaint.Color = prevColor;
         }
@@ -397,18 +397,22 @@ public class DirectRectangle : DirectDrawingBase
         _strokePaint.IsAntialias = true;
         _strokePaint.Style = SKPaintStyle.Stroke;
 
-        // If border color set, use it for stroke; else match fill/base color
-        if (_borderColor.HasValue)
+        // Only rebuild stroke color if not pulsing border
+        if (!_pulseBorderEnabled)
         {
-            var sc = _strokePaint.Color; // preserve alpha if you want; otherwise:
-            _strokePaint.Color = _borderColor.Value;
-        }
-        else
-        {
-            _strokePaint.Color = _fillPaint.Color; // same as fill if no explicit border
-        }
+            // If border color set, use it for stroke; else match fill/base color
+            if (_borderColor.HasValue)
+            {
+                var sc = _strokePaint.Color; // preserve alpha if you want; otherwise:
+                _strokePaint.Color = _borderColor.Value;
+            }
+            else
+            {
+                _strokePaint.Color = _fillPaint.Color; // same as fill if no explicit border
+            }
 
-        _needsRebuildPaints = false;
+            _needsRebuildPaints = false;
+        }
     }
 
     public enum StrokeAlign
