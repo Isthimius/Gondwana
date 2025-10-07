@@ -44,9 +44,9 @@ namespace Gondwana.Drawing.Direct;
 /// </example>
 public class DirectRectangle : DirectDrawingBase
 {
-    private SKPaint _fillPaint;          // cached fill
-    private SKPaint _strokePaint;        // cached stroke
-    private SKColor? _borderColor;       // optional distinct border color
+    private readonly SKPaint _fillPaint;        // cached fill
+    private readonly SKPaint _strokePaint;      // cached stroke
+    private SKColor? _borderColor;              // optional distinct border color
 
     private bool _isFilled;
     private float _cornerRadius;
@@ -312,43 +312,20 @@ public class DirectRectangle : DirectDrawingBase
 
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
 
-        // Apply stroke alignment offset BEFORE drawing anything
-        // Then draw stroke on its own aligned rect
-        if (willDrawStroke)
+        // 1) APPLY STROKE ALIGNMENT (use HALF the width; path is centered)
+        if (willDrawStroke && _strokeAlign != StrokeAlign.Center)
         {
-            var prevBlend = _strokePaint.BlendMode;
-            var prevColor = _strokePaint.Color;
-            var prevAA = _strokePaint.IsAntialias;
-
-            // Pure, opaque stroke compositing
-            _strokePaint.IsAntialias = false;
-            _strokePaint.BlendMode = SKBlendMode.Src;
-
-            // IMPORTANT: if PulseBorder is active, keep the color set by Update();
-            // otherwise use the configured border color (or previous color if none).
-            SKColor strokeColor = _pulseBorderEnabled
-                ? _strokePaint.Color                    // Update() drives this each frame
-                : (_borderColor ?? prevColor);          // static border
-
-            _strokePaint.Color = strokeColor.WithAlpha(255);
-
-            if (_cornerRadius > 0)
-                canvas.DrawRoundRect(strokeRect, _cornerRadius, _cornerRadius, _strokePaint);
-            else
-                canvas.DrawRect(strokeRect, _strokePaint);
-
-            // restore
-            _strokePaint.IsAntialias = prevAA;
-            _strokePaint.BlendMode = prevBlend;
-            _strokePaint.Color = prevColor;
+            float half = _strokePaint.StrokeWidth * 0.5f;
+            if (_strokeAlign == StrokeAlign.Inside) strokeRect.Inflate(-half, -half);
+            else if (_strokeAlign == StrokeAlign.Outside) strokeRect.Inflate(half, half);
         }
 
-        // Dash support
+        // 2) Dash for stroke only
         _strokePaint.PathEffect = _dashPattern is { Length: > 0 }
             ? SKPathEffect.CreateDash(_dashPattern, 0)
             : null;
 
-        // --- Draw fill ---
+        // 3) Draw fill (unmodified rect)
         if (_isFilled)
         {
             if (_cornerRadius > 0)
@@ -357,7 +334,7 @@ public class DirectRectangle : DirectDrawingBase
                 canvas.DrawRect(fillRect, _fillPaint);
         }
 
-        // --- Draw stroke ---
+        // 4) Draw stroke on its aligned rect (pure/opaque so it stays white)
         if (willDrawStroke)
         {
             var prevBlend = _strokePaint.BlendMode;
@@ -367,8 +344,8 @@ public class DirectRectangle : DirectDrawingBase
             _strokePaint.IsAntialias = false;
             _strokePaint.BlendMode = SKBlendMode.Src;
 
-            // If pulsing, keep whatever Update() set.
-            // If not pulsing, use base border color.
+            // If pulsing, keep color from Update();
+            // else use base border color (or previous).
             var strokeColor = _pulseBorderEnabled ? _strokePaint.Color
                                                   : (_borderColor ?? prevColor);
 
