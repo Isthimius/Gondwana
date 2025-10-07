@@ -71,6 +71,7 @@ public partial class Form1 : Form
             .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)
             .EnableWrapping()
             .SetMaxLines(6)
+            .PulseColor(Color.Red, Color.White, 1.75f)
             .UseShadow()
             .UseOutline();
     }

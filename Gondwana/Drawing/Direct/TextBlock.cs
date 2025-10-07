@@ -1,6 +1,8 @@
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using Gondwana.Rendering;
 using Gondwana.Skia;
+using Gondwana.Timers;
 using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct;
@@ -63,6 +65,20 @@ public class TextBlock : DirectDrawingBase
     private SKTextAlign _hAlign = SKTextAlign.Left;
     private VerticalAlign _vAlign = VerticalAlign.Top;
 
+    // --- Pulse (text color) ---
+    private bool _pulseTextEnabled;
+    private SKColor _pulseFrom, _pulseTo;
+    private float _pulsePeriodSec = 1f;
+    private enum PulseWave { Sine, Triangle }
+    private PulseWave _pulseWave = PulseWave.Sine;
+
+    // timing
+    private long? _lastTick;
+    private float _timeSec;
+
+    // current resolved color used for drawing (defaults to _foreColor)
+    private SKColor _resolvedForeColor;
+
     public TextBlock(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
         : base(renderSurfaceHost, bounds)
     {
@@ -107,6 +123,65 @@ public class TextBlock : DirectDrawingBase
     public TextBlock SetMaxLines(int? maxLines)
     { _maxLines = maxLines; return this; }
 
+    /// <summary>
+    /// Animates the text color between <paramref name="from"/> and <paramref name="to"/> over <paramref name="periodSec"/> seconds.
+    /// </summary>
+    public TextBlock PulseColor(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
+    {
+        _pulseTextEnabled = enabled;
+        _pulseFrom = from.ToSKColor();
+        _pulseTo = to.ToSKColor();
+        _pulsePeriodSec = MathF.Max(0.0001f, periodSec);
+        _pulseWave = triangle ? PulseWave.Triangle : PulseWave.Sine;
+
+        // start from base time; force a redraw
+        _resolvedForeColor = _foreColor;
+        _dirty = true;
+        return this;
+    }
+
+    /// <summary>Stops text color pulsing and restores the base text color.</summary>
+    public TextBlock StopColorPulse()
+    {
+        _pulseTextEnabled = false;
+        _resolvedForeColor = _foreColor; // restore base
+        _dirty = true;
+        return this;
+    }
+
+    protected internal override void Update(long tick)
+    {
+        // time accumulation (same timer model as your particles)
+        if (_lastTick is { } last)
+        {
+            long deltaTicks = tick - last;
+            if (deltaTicks < 0) deltaTicks = 0;
+            float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
+            if (dt > 0f && dt < 1f) _timeSec += dt;
+        }
+        _lastTick = tick;
+
+        if (_pulseTextEnabled)
+        {
+            float t = PulseT(_timeSec, _pulsePeriodSec, _pulseWave);
+            var c = LerpColor(_pulseFrom, _pulseTo, t);
+            if (c != _resolvedForeColor)
+            {
+                _resolvedForeColor = c;
+                _dirty = true; // request redraw
+            }
+        }
+        else
+        {
+            // keep resolved color at base if not pulsing
+            if (_resolvedForeColor != _foreColor)
+            {
+                _resolvedForeColor = _foreColor;
+                _dirty = true;
+            }
+        }
+    }
+
     protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
@@ -125,9 +200,9 @@ public class TextBlock : DirectDrawingBase
         // Build a paint we can reuse for layout + draw
         using var paint = new SKPaint
         {
-            Typeface = _typeface,
+            Typeface = _typeface ?? SKTypeface.Default,
             TextSize = _fontSize,
-            Color = _foreColor,
+            Color = _resolvedForeColor,   // <<< use resolved color
             IsAntialias = true,
             IsStroke = false,
             TextAlign = _hAlign
@@ -254,5 +329,25 @@ public class TextBlock : DirectDrawingBase
         }
 
         _layoutDirty = false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static float PulseT(float timeSec, float periodSec, PulseWave wave)
+    {
+        float phase = (timeSec / periodSec) % 1f;
+        return wave == PulseWave.Sine
+            ? 0.5f * (1f + MathF.Sin(phase * MathF.PI * 2f))             // [0..1]
+            : (phase < 0.5f ? phase * 2f : 1f - (phase - 0.5f) * 2f);    // triangle
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static SKColor LerpColor(SKColor a, SKColor b, float t01)
+    {
+        t01 = Math.Clamp(t01, 0f, 1f);
+        byte r = (byte)(a.Red + (b.Red - a.Red) * t01);
+        byte g = (byte)(a.Green + (b.Green - a.Green) * t01);
+        byte bl = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
+        byte al = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
+        return new SKColor(r, g, bl, al);
     }
 }
