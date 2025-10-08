@@ -111,14 +111,6 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
-    /// Runs as part of DoForegroundTasks()
-    /// </summary>
-    internal void DrawGridLines()
-    {
-        
-    }
-
-    /// <summary>
     /// Runs as part of DoBackgroundTasks()
     /// </summary>
     protected void AddToDirtyRectangle(Rectangle area)
