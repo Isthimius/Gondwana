@@ -50,9 +50,9 @@ public partial class Form1 : Form
         Engine.Instance.Configuration.TargetFPS = 120;
 
         _particleSurface = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height), 10000);
-        //_particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
-        //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
-        //_particleSurface.Emitters.Add(GetRain(adapter.Width));
+        _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetRain(adapter.Width));
         _particleSurface.Emitters.Add(GetSnow(adapter.Width));
 
         var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
@@ -62,9 +62,9 @@ public partial class Form1 : Form
             .SetFilled(true)
             .SetStrokeWidth(6f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
-            //.PulseBorder(Color.Lime, Color.Red, 2.0f)
+            .PulseBorder(Color.Lime, Color.Red, 2.0f)
             .SetBlendMode(SKBlendMode.Screen)
-            //.PulseFill(Color.Blue, Color.Purple, 1.25f)
+            .PulseFill(Color.Blue, Color.Purple, 1.25f)
             .ZOrder = 1;
 
         _textBlock = new TextBlock(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160))
@@ -73,7 +73,7 @@ public partial class Form1 : Form
             .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)
             .EnableWrapping()
             .SetMaxLines(6)
-            //.PulseColor(Color.Red, Color.White, 1.75f)
+            .PulseColor(Color.Red, Color.White, 1.75f)
             .UseShadow()
             .SetShadow(6, 6, 200, 3.0f)
             .UseOutline();
