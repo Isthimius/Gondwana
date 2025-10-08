@@ -57,10 +57,14 @@ public class TextBlock : DirectDrawingBase
     private float? _minFontSize = null;
     private SKTypeface? _typeface = null;
 
-    private bool _useShadow = false;
     private bool _useOutline = false;
     private bool _wrapText = true;
     private int? _maxLines = null;
+
+    private bool _useShadow = false;
+    private float _shadowDx = 2f, _shadowDy = 2f;
+    private byte _shadowAlpha = 128;
+    private float _shadowBlurSigma = 1.5f; // 0 = no blur
 
     private SKTextAlign _hAlign = SKTextAlign.Left;
     private VerticalAlign _vAlign = VerticalAlign.Top;
@@ -82,6 +86,7 @@ public class TextBlock : DirectDrawingBase
     public TextBlock(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
         : base(renderSurfaceHost, bounds)
     {
+        _resolvedForeColor = _foreColor;
     }
 
     public float LineSpacingMultiplier { get; set; } = 1.0f;
@@ -92,15 +97,28 @@ public class TextBlock : DirectDrawingBase
     {
         _text = text ?? string.Empty;
         _layoutDirty = true;
-        _dirty = true; // if your base uses this to request redraw
+        _dirty = true;
         return this;
     }
 
     public TextBlock SetFont(SKTypeface typeface, float size, float? minSize = null)
-    { _typeface = typeface; _fontSize = size; _minFontSize = minSize; return this; }
+    {
+        _typeface = typeface;
+        _fontSize = size;
+        _minFontSize = minSize;
+        _layoutDirty = true;
+        _dirty = true;
+        return this;
+    }
 
     public TextBlock SetColors(SKColor fg, SKColor bg)
-    { _foreColor = fg; _backColor = bg; return this; }
+    {
+        _foreColor = fg;
+        _backColor = bg;
+        _resolvedForeColor = fg; // keep resolved in sync
+        _dirty = true;
+        return this;
+    }
 
     public TextBlock SetColors(Color fg, Color bg) => SetColors(fg.ToSKColor(), bg.ToSKColor());
 
@@ -108,20 +126,71 @@ public class TextBlock : DirectDrawingBase
     {
         _hAlign = h;
         _vAlign = v;
+        _dirty = true;
         return this;
     }
 
     public TextBlock UseShadow(bool enable = true)
-    { _useShadow = enable; return this; }
+    {
+        _useShadow = enable;
+        _dirty = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the drop shadow effect for text rendering.
+    /// </summary>
+    /// <param name="dx">
+    /// Horizontal offset in pixels for the shadow. Positive values move the shadow right, negative left.
+    /// </param>
+    /// <param name="dy">
+    /// Vertical offset in pixels for the shadow. Positive values move the shadow down, negative up.
+    /// </param>
+    /// <param name="alpha">
+    /// Opacity of the shadow (0–255). Higher values make the shadow darker and more opaque.
+    /// </param>
+    /// <param name="blurSigma">
+    /// Blur radius in pixels for the shadow’s softness. Set to 0 for a hard shadow. Typical range: 1.0–3.0.
+    /// </param>
+    /// <remarks>
+    /// <para>
+    /// Call this after <see cref="UseShadow(bool)"/> to fine-tune the offset, opacity, and blur strength
+    /// of the text shadow. This method sets the internal paint values and marks the text block as dirty
+    /// so it will be redrawn on the next render pass.
+    /// </para>
+    /// </remarks>
+    /// <returns>The current <see cref="TextBlock"/> instance for method chaining.</returns>
+    public TextBlock SetShadow(float dx, float dy, byte alpha = 128, float blurSigma = 1.5f)
+    {
+        _shadowDx = dx;
+        _shadowDy = dy;
+        _shadowAlpha = alpha;
+        _shadowBlurSigma = MathF.Max(0f, blurSigma);
+        _dirty = true;
+        return this;
+    }
 
     public TextBlock UseOutline(bool enable = true)
-    { _useOutline = enable; return this; }
+    {
+        _useOutline = enable;
+        _dirty = true;
+        return this;
+    }
 
     public TextBlock EnableWrapping(bool enable = true)
-    { _wrapText = enable; return this; }
+    {
+        _wrapText = enable;
+        _layoutDirty = true;
+        _dirty = true;
+        return this;
+    }
 
     public TextBlock SetMaxLines(int? maxLines)
-    { _maxLines = maxLines; return this; }
+    {
+        _maxLines = maxLines;
+        _dirty = true;
+        return this;
+    }
 
     /// <summary>
     /// Animates the text color between <paramref name="from"/> and <paramref name="to"/> over <paramref name="periodSec"/> seconds.
@@ -263,8 +332,12 @@ public class TextBlock : DirectDrawingBase
             if (_useShadow)
             {
                 using var shadow = paint.Clone();
-                shadow.Color = SKColors.Black.WithAlpha(100);
-                canvas.DrawText(line, x + 2, y + baselineShift + 2, shadow);
+                shadow.IsStroke = false;
+                shadow.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, _shadowBlurSigma);
+                shadow.Color = new SKColor(0, 0, 0, _shadowAlpha);
+
+                // manually offset
+                canvas.DrawText(line, x + _shadowDx, y + baselineShift + _shadowDy, shadow);
             }
 
             if (_useOutline)
