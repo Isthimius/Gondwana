@@ -29,11 +29,6 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public abstract Scene? DrawSource { get; }
 
     /// <summary>
-    /// Gets the color used when filling area of the backbuffer that is not covered by any tiles.
-    /// </summary>
-    public abstract Color ClearColor { get; }
-
-    /// <summary>
     /// Gets the platform-specific <see cref="RenderSurfaceAdapterBase"> responsible
     /// for rendering the image from the <see cref="Backbuffer"/>.
     /// </summary>

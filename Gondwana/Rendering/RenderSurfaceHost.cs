@@ -45,7 +45,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private RenderSurfaceAdapterBase? _renderSurfaceAdapter;
 
     public override BackbufferBase Backbuffer => _backbuffer;
-    public override Color ClearColor => _clear;
     public override Scene? DrawSource => _scene;
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
 
