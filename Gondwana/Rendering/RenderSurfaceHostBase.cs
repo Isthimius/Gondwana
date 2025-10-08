@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Gondwana.Scenes;
+﻿using Gondwana.Scenes;
 
 namespace Gondwana.Rendering;
 
