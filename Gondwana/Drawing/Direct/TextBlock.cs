@@ -372,7 +372,7 @@ public class TextBlock : DirectDrawingBase
                 continue;
             }
 
-            // NEW: if wrapping is disabled, keep the paragraph as a single line
+            // if wrapping is disabled, keep the paragraph as a single line
             if (!_wrapText)
             {
                 _lines.Add(para);
