@@ -77,7 +77,9 @@ public sealed class DirectDrawingManager
 
             if (drawing._dirty)
             {
-                drawing.Draw();
+                if (drawing.IsVisible)
+                    drawing.Draw();
+
                 drawing._dirty = false;
             }
         }
@@ -133,6 +135,6 @@ public sealed class DirectDrawingManager
     private void OnDrawingDisposing(object? sender, DirectDrawingBase drawing)
     {
         _directDrawings.TryRemove(drawing.Name, out _);
-        drawing.Disposing -= OnDrawingDisposing; // hygiene
+        drawing.Disposing -= OnDrawingDisposing;
     }
 }

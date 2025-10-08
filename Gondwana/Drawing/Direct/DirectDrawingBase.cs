@@ -11,6 +11,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     protected readonly RenderSurfaceHostBase _renderSurfaceHost;
     protected Rectangle _bounds;
     protected int _zOrder;
+    protected bool _isVisible;
     internal Movement? _movement;
     protected internal bool _dirty = true;
     private bool _disposed = false;
@@ -25,6 +26,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
         _renderSurfaceHost = renderSurfaceHost;
         _bounds = bounds;
         _zOrder = 0;
+        _isVisible = true;
         Name = Guid.NewGuid().ToString();
 
         DirectDrawingManager.Instance.AddOrReplace(this);
@@ -51,8 +53,24 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
         get => _zOrder;
         set
         {
-            _zOrder = value;
-            ForceRefresh();
+            if (_zOrder != value)
+            {
+                _zOrder = value;
+                ForceRefresh();
+            }
+        }
+    }
+
+    public bool IsVisible
+    {
+        get => _isVisible;
+        set
+        {
+            if (_isVisible != value)
+            {
+                _isVisible = value;
+                ForceRefresh();
+            }
         }
     }
 
