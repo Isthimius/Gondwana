@@ -261,12 +261,6 @@ public class Sprite : Tile, IDisposable, ICloneable
         get { return parentGrid; }
     }
 
-    [JsonIgnore]
-    public virtual new int OverhangPixels
-    {
-        get { return 0; }
-    }
-
     [JsonProperty]
     public virtual new int ZOrder
     {
