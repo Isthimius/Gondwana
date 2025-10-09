@@ -90,11 +90,6 @@ public partial class Form1 : Form
                  //.FadeOut(10f);
     }
 
-    private void _particleSurface_FadeToCompleted(object? sender, DirectDrawingBase e)
-    {
-        throw new NotImplementedException();
-    }
-
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
         Engine.Instance.Stop();
