@@ -1,12 +1,14 @@
-using System.Drawing;
 using Gondwana.Rendering;
 using Gondwana.Timers;
+using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.Drawing.Direct;
 
 public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDisposable
 {
     public event EventHandler<DirectDrawingBase> Disposing;
+    public event EventHandler<DirectDrawingBase>? FadeToCompleted;
 
     protected readonly RenderSurfaceHostBase _renderSurfaceHost;
     protected Rectangle _bounds;
@@ -15,6 +17,14 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     internal Movement? _movement;
     protected internal bool _dirty = true;
     private bool _disposed = false;
+    protected long? _lastTick;
+
+    // Fade/opacity state
+    private float _opacity = 1f;                 // 0..1
+    private float _fadeFrom, _fadeTo;
+    private float _fadeDurationSec, _fadeElapsedSec;
+    private bool _isFading;
+    public bool HideWhenFullyTransparent { get; set; } = true;
 
     /// <summary>
     /// Render the drawable to the current backbuffer.
@@ -36,6 +46,8 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     ~DirectDrawingBase() => Dispose(false);
 
     public RenderSurfaceHostBase RenderSurfaceHost => _renderSurfaceHost;
+
+    public string Name { get; set; }
 
     public Rectangle Bounds
     {
@@ -74,7 +86,72 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
         }
     }
 
-    public string Name { get; set; }
+    /// <summary>Gets/sets the current opacity (0..1). Setting marks dirty.</summary>
+    public float Opacity
+    {
+        get => _opacity;
+        set
+        {
+            var clamped = Math.Clamp(value, 0f, 1f);
+            if (Math.Abs(clamped - _opacity) < 0.0001f)
+                return;
+
+            _opacity = clamped;
+
+            if (HideWhenFullyTransparent && _opacity <= 0f)
+                IsVisible = false;
+            else if
+                (_opacity > 0f) IsVisible = true;
+
+            ForceRefresh();
+        }
+    }
+
+    /// <summary>Instantly jump to the given opacity (0..1).</summary>
+    public DirectDrawingBase SetOpacity(float opacity)
+    {
+        Opacity = opacity;
+        return this;
+    }
+
+    /// <summary>Fade to target opacity over duration (seconds). Returns this for chaining.</summary>
+    public DirectDrawingBase FadeTo(float targetOpacity, float durationSec)
+    {
+        _fadeFrom = _opacity;
+        _fadeTo = Math.Clamp(targetOpacity, 0f, 1f);
+        _fadeDurationSec = Math.Max(0.0001f, durationSec);
+        _fadeElapsedSec = 0f;
+        _isFading = true;
+
+        if (_fadeTo > 0f)
+            IsVisible = true; // ensure we draw during fade-in
+
+        ForceRefresh();
+
+        return this;
+    }
+
+    /// <summary>Convenience: fade in from 0 to 1 over duration.</summary>
+    public DirectDrawingBase FadeIn(float durationSec)
+    {
+        if (_opacity <= 0f)
+            Opacity = 0f;
+
+        return FadeTo(1f, durationSec);
+    }
+
+    /// <summary>Convenience: fade out from current to 0 over duration.</summary>
+    public DirectDrawingBase FadeOut(float durationSec)
+    {
+        return FadeTo(0f, durationSec);
+    }
+
+    /// <summary>Cancel any active fade (keeps current opacity).</summary>
+    public DirectDrawingBase CancelFade()
+    {
+        _isFading = false;
+        return this;
+    }
 
     public bool IsScrolling => _movement != null;
 
@@ -94,7 +171,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     {
         if (_movement != null)
         {
-            _dirty = true;
+            ForceRefresh();
 
             if (_movement?.MoveNext(tick) == true)
                 _movement = null;
@@ -108,6 +185,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     protected internal void ForceRefresh()
     {
         var scene = RenderSurfaceHost.DrawSource;
+
         if (scene?.Count > 0)
             scene[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
@@ -122,6 +200,60 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     protected internal virtual void Update(long tick)
     {
         MoveNext(tick);
+
+        // Initialize clock on first frame to avoid huge dt
+        if (!_lastTick.HasValue)
+        {
+            _lastTick = tick;
+            return;
+        }
+
+        // Advance fade tween
+        if (_isFading)
+        {
+            long deltaTicks = tick - _lastTick.Value;
+            if (deltaTicks < 0) deltaTicks = 0;
+            float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
+
+            _fadeElapsedSec += dt;
+            float timeElapsed = Math.Clamp(_fadeElapsedSec / _fadeDurationSec, 0f, 1f);
+            // linear; swap in easing if you like
+            _opacity = _fadeFrom + (_fadeTo - _fadeFrom) * timeElapsed;
+
+            if (HideWhenFullyTransparent)
+                IsVisible = _opacity > 0f; // hides when hit zero
+
+            _dirty = true;
+
+            if (timeElapsed >= 1f)
+            {
+                _isFading = false;
+                FadeToCompleted?.Invoke(this, this);
+            }
+        }
+
+        _lastTick = tick;
+    }
+
+    protected internal virtual void Render()
+    {
+        if (!IsVisible)
+            return;
+
+        // Fast path if fully opaque
+        if (_opacity >= 0.999f)
+        {
+            Draw();
+            return;
+        }
+
+        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+
+        // SaveLayer with alpha
+        using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
+        canvas.SaveLayer(layerPaint);
+        Draw();
+        canvas.Restore();
     }
 
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);

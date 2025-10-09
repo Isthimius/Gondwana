@@ -231,7 +231,6 @@ public sealed class DirectVideo : DirectDrawingBase
         CopyFrameToBitmap(e.Pixels, e.Stride, local, _srcW, _srcH);
 
         // Mark dirty so the direct-draw manager repaints our area.
-        _dirty = true;
         ForceRefresh();
     }
 

@@ -69,7 +69,7 @@ public class DirectRectangle : DirectDrawingBase
     private PulseWave _pulseBorderWave = PulseWave.Sine;
 
     // --- Time keeping for Update(tick) ---
-    private long? _lastTick;
+    private long? _pulseLastTick;
     private float _timeSec; // accumulated seconds
 
     public DirectRectangle(
@@ -258,13 +258,15 @@ public class DirectRectangle : DirectDrawingBase
     {
         _pulseFillEnabled = _pulseBorderEnabled = false;
         RebuildPaints();   // restore fill/border to SetColor/SetBorderColor values
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
     protected internal override void Update(long tick)
     {
-        if (_lastTick is { } last)
+        base.Update(tick);
+
+        if (_pulseLastTick is { } last)
         {
             long deltaTicks = tick - last;
             if (deltaTicks < 0) deltaTicks = 0; // guard against clock reset
@@ -272,7 +274,7 @@ public class DirectRectangle : DirectDrawingBase
 
             if (dt > 0f && dt < 1f) _timeSec += dt; // clamp outliers
         }
-        _lastTick = tick;
+        _pulseLastTick = tick;
 
         bool changed = false;
 
@@ -291,14 +293,14 @@ public class DirectRectangle : DirectDrawingBase
             if (_strokePaint.Color != c)
             {
                 _strokePaint.Color = c;   // paint-only override
-                _dirty = true;
+                ForceRefresh();
             }
         }
 
         if (changed)
         {
-            _needsRebuildPaints = false; // we already set paints directly
-            _dirty = true;               // request redraw
+            _needsRebuildPaints = false;    // we already set paints directly
+            ForceRefresh();                 // request redraw
         }
     }
 

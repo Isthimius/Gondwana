@@ -40,7 +40,7 @@ public partial class Form1 : Form
         {
             var sb = new StringBuilder()
                 .Append("Oh no!!! The wizard doth spray purple slime!")
-                .AppendLine($" There are {_particleSurface?.ActiveParticleCount} active particles!!!")
+                .AppendLine($" There are {_particleSurface?.ActiveParticleCount ?? 0} active particles!!!")
                 .AppendLine(cps.ToString());
 
             _textBlock?.SetText(sb.ToString());
@@ -55,6 +55,9 @@ public partial class Form1 : Form
         _particleSurface.Emitters.Add(GetRain(adapter.Width));
         _particleSurface.Emitters.Add(GetSnow(adapter.Width));
 
+        _particleSurface.FadeOut(30f);
+        _particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
+
         var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
             .SetAlpha(128)
             .SetCornerRadius(6f)
@@ -64,8 +67,9 @@ public partial class Form1 : Form
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
             .PulseBorder(Color.Lime, Color.Red, 2.0f)
             .SetBlendMode(SKBlendMode.Screen)
-            .PulseFill(Color.Blue, Color.Purple, 1.25f)
-            .ZOrder = 1;
+            .PulseFill(Color.Blue, Color.Purple, 1.25f);
+
+        glowBox.ZOrder = 1;
 
         _textBlock = new TextBlock(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160))
             .SetFont(SKTypeface.FromFamilyName("Papyrus"), 14f, minSize: 14f)
@@ -79,6 +83,16 @@ public partial class Form1 : Form
             .UseOutline();
 
         _textBlock.ZOrder = 10;
+
+        var composite = new DirectComposite(renderSurface);
+        composite.Add(glowBox)
+                 .Add(_textBlock);
+                 //.FadeOut(10f);
+    }
+
+    private void _particleSurface_FadeToCompleted(object? sender, DirectDrawingBase e)
+    {
+        throw new NotImplementedException();
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)

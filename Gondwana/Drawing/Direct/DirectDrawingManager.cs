@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using Gondwana.Rendering;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Direct;
@@ -60,7 +59,7 @@ public sealed class DirectDrawingManager
     /// <summary>
     /// Draws all registered drawables in Z-order to their associated Backbuffer.
     /// </summary>
-    internal void DrawAll()
+    internal void RenderAll()
     {
         // Snapshot to avoid races while iterating.
         var snapshot = _directDrawings.Values.ToArray();
@@ -78,7 +77,7 @@ public sealed class DirectDrawingManager
             if (drawing._dirty)
             {
                 if (drawing.IsVisible)
-                    drawing.Draw();
+                    drawing.Render();
 
                 drawing._dirty = false;
             }

@@ -75,6 +75,7 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     private readonly Random _rng = new();
     private readonly SKPaint _paint = new() { IsAntialias = true };
     private int _alive;
+    private long? _particlesLastTick;
 
     // If you want textured particles, supply a tilesheet frame and draw bitmap quads instead of circles.
     private readonly SKBitmap? _particleSprite;
@@ -213,12 +214,10 @@ public sealed partial class ParticleSurface : DirectDrawingBase
             ArrayPool<Particle>.Shared.Return(_particles, clearArray: true);
             _paint.Dispose();
             _alive = 0;
-            _lastTick = null;
+            _particlesLastTick = null;
         }
         base.Dispose(disposing);
     }
-
-    private long? _lastTick; // null until first update
 
     /// <summary>
     /// Tick-driven update override. Computes delta internally and advances simulation.
@@ -226,9 +225,11 @@ public sealed partial class ParticleSurface : DirectDrawingBase
     /// <param name="tick">Current tick from <see cref="HighResTimer"/>.</param>
     protected internal override void Update(long tick)
     {
+        base.Update(tick);
+
         // Compute dt from ticks (seconds)
         float dt;
-        if (_lastTick is { } last)
+        if (_particlesLastTick is { } last)
         {
             long deltaTicks = tick - last;
             if (deltaTicks < 0) deltaTicks = 0; // guard against clock reset
@@ -238,7 +239,7 @@ public sealed partial class ParticleSurface : DirectDrawingBase
         {
             dt = 0f; // first frame
         }
-        _lastTick = tick;
+        _particlesLastTick = tick;
 
         // (A) per-emitter motion
         for (int i = 0; i < Emitters.Count; i++)

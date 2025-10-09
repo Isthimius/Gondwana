@@ -1,7 +1,5 @@
-using Gondwana.Drawing.Tilesheets;
 using Gondwana.Rendering;
 using Gondwana.Skia;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 
@@ -65,7 +63,7 @@ public sealed class DirectImage : DirectDrawingBase
     {
         _bitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
         _image = null;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -74,7 +72,7 @@ public sealed class DirectImage : DirectDrawingBase
     {
         _image = image ?? throw new ArgumentNullException(nameof(image));
         _bitmap = null;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -82,7 +80,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage SetSourceRect(SKRect? srcPixels)
     {
         _src = srcPixels;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -90,7 +88,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage SetScaleMode(ScaleMode mode)
     {
         _scale = mode;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -98,7 +96,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage SetTint(SKColor color)
     {
         _tint = color;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -106,7 +104,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage ClearTint()
     {
         _tint = null;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -114,7 +112,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage SetOpacity(byte alpha)
     {
         _opacity = alpha;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -122,7 +120,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage SetBlendMode(SKBlendMode mode)
     {
         _paint.BlendMode = mode;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -130,7 +128,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage SetFilterQuality(SKFilterQuality q)
     {
         _paint.FilterQuality = q;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -138,7 +136,7 @@ public sealed class DirectImage : DirectDrawingBase
     public DirectImage SetRotation(float degrees)
     {
         _rotationDeg = degrees;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -150,7 +148,7 @@ public sealed class DirectImage : DirectDrawingBase
     {
         _anchorX = Math.Clamp(ax, 0f, 1f);
         _anchorY = Math.Clamp(ay, 0f, 1f);
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 

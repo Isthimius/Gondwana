@@ -77,7 +77,7 @@ public class TextBlock : DirectDrawingBase
     private PulseWave _pulseWave = PulseWave.Sine;
 
     // timing
-    private long? _lastTick;
+    private long? _pulseLastTick;
     private float _timeSec;
 
     // current resolved color used for drawing (defaults to _foreColor)
@@ -97,7 +97,7 @@ public class TextBlock : DirectDrawingBase
     {
         _text = text ?? string.Empty;
         _layoutDirty = true;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -107,7 +107,7 @@ public class TextBlock : DirectDrawingBase
         _fontSize = size;
         _minFontSize = minSize;
         _layoutDirty = true;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -116,7 +116,7 @@ public class TextBlock : DirectDrawingBase
         _foreColor = fg;
         _backColor = bg;
         _resolvedForeColor = fg; // keep resolved in sync
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -126,14 +126,14 @@ public class TextBlock : DirectDrawingBase
     {
         _hAlign = h;
         _vAlign = v;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
     public TextBlock UseShadow(bool enable = true)
     {
         _useShadow = enable;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -166,14 +166,14 @@ public class TextBlock : DirectDrawingBase
         _shadowDy = dy;
         _shadowAlpha = alpha;
         _shadowBlurSigma = MathF.Max(0f, blurSigma);
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
     public TextBlock UseOutline(bool enable = true)
     {
         _useOutline = enable;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -181,14 +181,14 @@ public class TextBlock : DirectDrawingBase
     {
         _wrapText = enable;
         _layoutDirty = true;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
     public TextBlock SetMaxLines(int? maxLines)
     {
         _maxLines = maxLines;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -205,7 +205,7 @@ public class TextBlock : DirectDrawingBase
 
         // start from base time; force a redraw
         _resolvedForeColor = _foreColor;
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
@@ -214,21 +214,23 @@ public class TextBlock : DirectDrawingBase
     {
         _pulseTextEnabled = false;
         _resolvedForeColor = _foreColor; // restore base
-        _dirty = true;
+        ForceRefresh();
         return this;
     }
 
     protected internal override void Update(long tick)
     {
+        base.Update(tick);
+
         // time accumulation (same timer model as your particles)
-        if (_lastTick is { } last)
+        if (_pulseLastTick is { } last)
         {
             long deltaTicks = tick - last;
             if (deltaTicks < 0) deltaTicks = 0;
             float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
             if (dt > 0f && dt < 1f) _timeSec += dt;
         }
-        _lastTick = tick;
+        _pulseLastTick = tick;
 
         if (_pulseTextEnabled)
         {
@@ -237,7 +239,7 @@ public class TextBlock : DirectDrawingBase
             if (c != _resolvedForeColor)
             {
                 _resolvedForeColor = c;
-                _dirty = true; // request redraw
+                ForceRefresh();
             }
         }
         else
@@ -246,7 +248,7 @@ public class TextBlock : DirectDrawingBase
             if (_resolvedForeColor != _foreColor)
             {
                 _resolvedForeColor = _foreColor;
-                _dirty = true;
+                ForceRefresh();
             }
         }
     }
