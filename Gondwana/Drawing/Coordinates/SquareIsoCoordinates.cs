@@ -1,7 +1,8 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Scenes;
 
-namespace Gondwana.Scenes.Coordinates;
+namespace Gondwana.Drawing.Coordinates;
 
 public class SquareIsoCoordinates : IGridCoordinates
 {
@@ -81,10 +82,10 @@ public class SquareIsoCoordinates : IGridCoordinates
         {
             // if the Bmp has overhanging pixels at the top (defined in Tilesheet),
             // move the rectangle up (subtract from Y) and increase Height
-            if (tile.CurrentFrame.Tilesheet != null && tile.CurrentFrame.Tilesheet.OverhangPixels != 0)
+            if (tile.CurrentFrame.Tilesheet != null && tile.CurrentFrame.Tilesheet.OverhangPixels != Overhang.None)
             {
-                retVal.Y -= tile.OverhangPixels;
-                retVal.Height += tile.OverhangPixels;
+                retVal.Y -= tile.OverhangPixels.Top;
+                retVal.Height += tile.OverhangPixels.Top;
             }
         }
 

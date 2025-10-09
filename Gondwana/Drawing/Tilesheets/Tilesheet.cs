@@ -113,7 +113,7 @@ public sealed class Tilesheet : IDisposable
     }
 
     [JsonProperty]
-    public int OverhangPixels { get; set; } = 0;
+    public Overhang OverhangPixels { get; set; } = Overhang.None;
 
     [JsonProperty]
     private int _initialOffsetX;
@@ -181,7 +181,7 @@ public sealed class Tilesheet : IDisposable
     public string ImageFilePath { get; private set; } = string.Empty;
 
     [JsonIgnore]
-    public int PrimaryHeight => _tileSize.Height - OverhangPixels;
+    public int PrimaryHeight => _tileSize.Height - OverhangPixels.Top - OverhangPixels.Bottom;
 
     public void ApplyMask(SKColor? maskColor = null, byte tolerance = 0)
     {

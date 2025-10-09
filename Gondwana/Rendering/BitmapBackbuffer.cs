@@ -1,6 +1,5 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Skia;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;

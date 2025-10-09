@@ -1,7 +1,8 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Scenes;
 
-namespace Gondwana.Scenes.Coordinates;
+namespace Gondwana.Drawing.Coordinates;
 
 public class HexagonalPointedTopCoordinates : IGridCoordinates
 {

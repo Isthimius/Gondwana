@@ -4,6 +4,7 @@ using System.Drawing;
 using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Rendering;

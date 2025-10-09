@@ -1,9 +1,10 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Scenes;
 
-namespace Gondwana.Scenes.Coordinates;
+namespace Gondwana.Drawing.Coordinates;
 
-public class HexagonalFlatTopCoordinates : IGridCoordinates
+public class DiagIsoDiagMatrixCoordinates : IGridCoordinates
 {
     public Point GetSrcPxlAtGridPt(SceneLayer matrix, PointF gridCoord)
     {

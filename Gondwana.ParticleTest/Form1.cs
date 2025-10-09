@@ -47,7 +47,7 @@ public partial class Form1 : Form
         };
 
         Engine.Instance.Start();
-        Engine.Instance.Configuration.TargetFPS = 120;
+        Engine.Instance.Configuration.TargetFPS = 60;
 
         _particleSurface = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height), 10000);
         _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
@@ -55,8 +55,8 @@ public partial class Form1 : Form
         _particleSurface.Emitters.Add(GetRain(adapter.Width));
         _particleSurface.Emitters.Add(GetSnow(adapter.Width));
 
-        _particleSurface.FadeOut(30f);
-        _particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
+        //_particleSurface.FadeOut(30f);
+        //_particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
 
         var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
             .SetAlpha(128)

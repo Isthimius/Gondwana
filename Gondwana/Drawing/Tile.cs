@@ -64,7 +64,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     [JsonIgnore]
-    public virtual int OverhangPixels => frame.Tilesheet?.OverhangPixels ?? 0;
+    public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
 
     [JsonProperty]
     public virtual int ZOrder
@@ -179,7 +179,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         if (!tile.IsPositionFixed)
             return tile.DrawLocation.Bottom - 1;
         else
-            return tile.DrawLocation.Top + tile.OverhangPixels;
+            return tile.DrawLocation.Top + tile.OverhangPixels.Top;
     }
 
     #region IComparable<Tile> Members
