@@ -190,7 +190,7 @@ public static class SpriteManager
             return new Rectangle();
 
         // get the "top left" of the Sprite gridCoordinates value
-        Point pxlPt = grid.CoordinateSystem.GetSrcPxlAtGridPt(grid, coord);
+        Point pxlPt = grid.CoordinateSystem.GetSrcPixelAtLayerPoint(grid, coord);
 
         // adjust X coord
         switch (sprite.HorizAlign)
@@ -306,7 +306,7 @@ public static class SpriteManager
         }
 
         // find and return the grid coordinates after the Sprite adjustments have been considered
-        return grid.CoordinateSystem.GetGridPtAtPxl(grid, drawLocation.Location);
+        return grid.CoordinateSystem.GetLayerPointAtPixel(grid, drawLocation.Location);
     }
 
     public static void MoveSprites(long tick)

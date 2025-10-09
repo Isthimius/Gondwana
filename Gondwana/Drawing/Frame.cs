@@ -27,11 +27,19 @@ public struct Frame
     }
 
     [JsonIgnore]
-    public readonly Size Size => Tilesheet.TileSize;
-
-    [JsonIgnore]
     public readonly SKBitmap? SkBitmap => Tilesheet?.GetBitmap(XTile, YTile);
 
     [JsonIgnore]
     public readonly SKImage? SkImage => Tilesheet?.GetImage(XTile, YTile);
+
+    [JsonIgnore]
+    public Size BaseTileSize => Tilesheet?.TileSize ?? Size.Empty;
+
+    [JsonIgnore]
+    public Overhang OverhangPixels => Tilesheet?.OverhangPixels ?? Overhang.None;
+
+    [JsonIgnore]
+    public Size TileSizeWithOverhang =>
+        new Size(BaseTileSize.Width + OverhangPixels.Left + OverhangPixels.Right,
+                 BaseTileSize.Height + OverhangPixels.Top + OverhangPixels.Bottom);
 }

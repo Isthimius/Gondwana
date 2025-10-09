@@ -4,14 +4,14 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
 
-public class DiagIsoSquareMatrixCoordinates : IGridCoordinates
+public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPxlAtGridPt(SceneLayer matrix, PointF gridCoord)
+    public Point GetSrcPixelAtLayerPoint(SceneLayer matrix, PointF gridCoord)
     {
         throw new NotImplementedException();
     }
 
-    public PointF GetGridPtAtPxl(SceneLayer matrix, Point pixelPt)
+    public PointF GetLayerPointAtPixel(SceneLayer matrix, Point pixelPt)
     {
         throw new NotImplementedException();
 
@@ -112,22 +112,22 @@ End Function
         #endregion old VB6 code
     }
 
-    public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
     {
         throw new NotImplementedException();
     }
 
-    public Rectangle GetPxlRangeAtGridPt(Tile tile, bool includeOverhang)
+    public Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang)
     {
         throw new NotImplementedException();
     }
 
-    public Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool includeOverhang)
+    public Rectangle GetPixelRangeAtLayerPointList(List<Tile> tileList, bool includeOverhang)
     {
         throw new NotImplementedException();
     }
 
-    public SceneLayerPoint GetAdjGridPt(SceneLayerPoint gridPt, CardinalDirections direction)
+    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gridPt, CardinalDirections direction)
     {
         throw new NotImplementedException();
     }
@@ -137,7 +137,7 @@ End Function
         throw new NotImplementedException();
     }
 
-    public PointF FindEquivGridCoord(PointF valColRow, int xUpperBound, int yUpperBound)
+    public PointF FindEquivalentLayerPoint(PointF valColRow, int xUpperBound, int yUpperBound)
     {
         throw new NotImplementedException();
     }

@@ -180,9 +180,6 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
-    [JsonIgnore]
-    public int PrimaryHeight => _tileSize.Height - OverhangPixels.Top - OverhangPixels.Bottom;
-
     public void ApplyMask(SKColor? maskColor = null, byte tolerance = 0)
     {
         if (SkBitmap == null || SkBitmap.IsEmpty)

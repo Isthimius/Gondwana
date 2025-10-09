@@ -79,7 +79,7 @@ public class SceneLayerPoint : Tile, IDisposable
     [JsonIgnore]
     public override Rectangle DrawLocation
     {
-        get { return parentSceneLayer.CoordinateSystem.GetPxlRangeAtGridPt(this, true); }
+        get { return parentSceneLayer.CoordinateSystem.GetPixelRangeAtLayerPoint(this, true); }
     }
 
     [JsonIgnore]

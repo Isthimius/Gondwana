@@ -140,7 +140,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     #region properties
 
     [JsonIgnore]
-    public IGridCoordinates CoordinateSystem { get; set; }
+    public ISceneLayerCoordinates CoordinateSystem { get; set; }
 
     [DataMember(Name = "CoordinateSystem")]
     private string CoordinateSystemType
@@ -163,7 +163,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             {
                 var values = value.Split(';');
                 var handle = Activator.CreateInstance(values[0], values[1]);
-                CoordinateSystem = (IGridCoordinates)handle.Unwrap();
+                CoordinateSystem = (ISceneLayerCoordinates)handle.Unwrap();
             }
         }
     }
@@ -462,7 +462,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
         // update the first pixel position; the final SourceGridPoint might be slightly
         // different to srcGridPt due to rounding if srcGridPoint is not a whole number
-        _gridPtZeroPxl = CoordinateSystem.GetSrcPxlAtGridPt(this, new PointF(0, 0));
+        _gridPtZeroPxl = CoordinateSystem.GetSrcPixelAtLayerPoint(this, new PointF(0, 0));
 
         // capture the before and after values and raise event
         OnFirstColRowChanged(oldSrcPt, SourceGridPoint);
@@ -593,7 +593,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         set
         {
             PointF actualGridPoint =
-                CoordinateSystem.FindEquivGridCoord(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
+                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
 
             _matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y] = value;
         }
@@ -640,7 +640,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         {
             // find the coordinated of the GridPoint being "wrapped"
             PointF actualGridPoint =
-                CoordinateSystem.FindEquivGridCoord(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
+                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
 
             // capture GridPoint if x-y coord already exists in wrappedGridPts
             foreach (SceneLayerPoint pt in wrappedGridPts)

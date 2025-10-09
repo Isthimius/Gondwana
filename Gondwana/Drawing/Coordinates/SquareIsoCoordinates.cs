@@ -4,9 +4,9 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
 
-public class SquareIsoCoordinates : IGridCoordinates
+public class SquareIsoCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPxlAtGridPt(SceneLayer matrix, PointF gridCoord)
+    public Point GetSrcPixelAtLayerPoint(SceneLayer matrix, PointF gridCoord)
     {
         Point retVal = new Point();
 
@@ -16,7 +16,7 @@ public class SquareIsoCoordinates : IGridCoordinates
         return retVal;
     }
 
-    public PointF GetGridPtAtPxl(SceneLayer matrix, Point pixelPt)
+    public PointF GetLayerPointAtPixel(SceneLayer matrix, Point pixelPt)
     {
         PointF retPt = new PointF();
 
@@ -26,88 +26,67 @@ public class SquareIsoCoordinates : IGridCoordinates
         return retPt;
     }
 
-    // TODO: OverhangPixels not considered yet
-    public List<SceneLayerPoint> GetGridPtListInPxlRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
+    // Updated to properly consider overhang in all directions
+    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
     {
-        List<SceneLayerPoint> retVal = new List<SceneLayerPoint>();
+        var retVal = new List<SceneLayerPoint>();
 
-        // find upper-left and bottom-right X and Y grid coordinates
-        PointF ptUL = GetGridPtAtPxl(matrix, new Point(pixelRange.Left, pixelRange.Top));
-        PointF ptBR = GetGridPtAtPxl(matrix, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
+        // 1) Find coarse grid bounds via inverse transform (unchanged)
+        PointF ptUL = GetLayerPointAtPixel(matrix, new Point(pixelRange.Left, pixelRange.Top));
+        PointF ptBR = GetLayerPointAtPixel(matrix, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
 
-        // loop through all coordinates and add to return value
-        for (int y = (int)Math.Floor(ptUL.Y); y <= (int)ptBR.Y; y++)
+        int minY = (int)Math.Floor(ptUL.Y) - 1;
+        int maxY = (int)Math.Ceiling(ptBR.Y) + 1;
+        int minX = (int)Math.Floor(ptUL.X) - 1;
+        int maxX = (int)Math.Ceiling(ptBR.X) + 1;
+
+        // 2) Scan candidate grid cells and include if their overhang-aware rect intersects
+        for (int y = minY; y <= maxY; y++)
         {
-            for (int x = (int)Math.Floor(ptUL.X); x <= (int)ptBR.X; x++)
+            for (int x = minX; x <= maxX; x++)
             {
                 var gPt = matrix[x, y];
-                if (gPt != null)
+                if (gPt == null) continue;
+
+                // Overhang-aware pixel rect
+                var rect = GetPixelRangeAtLayerPoint(gPt, includeOverhang);
+                if (rect.IntersectsWith(pixelRange))
                     retVal.Add(gPt);
             }
         }
 
-        // check for overhangs if required
-        if (includeOverhang)
-        {
-            foreach (SceneLayerPoint grPt in GetGridPtListInPxlRange(matrix,
-                new Rectangle(pixelRange.Left, pixelRange.Bottom,
-                pixelRange.Width, pixelRange.Height),
-                false))
-            {
-                if (grPt != null)
-                {
-                    if (GetPxlRangeAtGridPt(grPt, true).IntersectsWith(pixelRange))
-                    {
-                        if (retVal.IndexOf(grPt) == -1)
-                            retVal.Add(grPt);
-                    }
-                }
-            }
-        }
-
         return retVal;
     }
 
-    public Rectangle GetPxlRangeAtGridPt(Tile tile, bool includeOverhang)
+    public Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang)
     {
-        Rectangle retVal = new Rectangle();
-
-        retVal.X = (int)(tile.ParentGrid.GridPointWidth * tile.GridCoordinates.X) + tile.ParentGrid.GridPointZeroPixel.X;
-        retVal.Y = (int)(tile.ParentGrid.GridPointHeight * tile.GridCoordinates.Y) + tile.ParentGrid.GridPointZeroPixel.Y;
-
-        retVal.Width = tile.ParentGrid.GridPointWidth;
-        retVal.Height = tile.ParentGrid.GridPointHeight;
-
-        if (includeOverhang)
+        // Base rect (unchanged)
+        var baseRect = new Rectangle
         {
-            // if the Bmp has overhanging pixels at the top (defined in Tilesheet),
-            // move the rectangle up (subtract from Y) and increase Height
-            if (tile.CurrentFrame.Tilesheet != null && tile.CurrentFrame.Tilesheet.OverhangPixels != Overhang.None)
-            {
-                retVal.Y -= tile.OverhangPixels.Top;
-                retVal.Height += tile.OverhangPixels.Top;
-            }
-        }
+            X = (int)(tile.ParentGrid.GridPointWidth * tile.GridCoordinates.X) + tile.ParentGrid.GridPointZeroPixel.X,
+            Y = (int)(tile.ParentGrid.GridPointHeight * tile.GridCoordinates.Y) + tile.ParentGrid.GridPointZeroPixel.Y,
+            Width = tile.ParentGrid.GridPointWidth,
+            Height = tile.ParentGrid.GridPointHeight
+        };
 
-        return retVal;
+        // Apply full overhang (Left/Top/Right/Bottom)
+        return TileBounds.ApplyOverhang(baseRect, tile.OverhangPixels, includeOverhang);
     }
 
-    public Rectangle GetPxlRangeAtGridPtList(List<Tile> tileList, bool includeOverhang)
+    public Rectangle GetPixelRangeAtLayerPointList(List<Tile> tileList, bool includeOverhang)
     {
-        Rectangle retVal = new Rectangle();
+        Rectangle retVal = Rectangle.Empty;
 
         foreach (Tile tile in tileList)
         {
-            if (retVal.IsEmpty)
-                retVal = GetPxlRangeAtGridPt(tile, includeOverhang);
-            else
-                retVal = Rectangle.Union(retVal, GetPxlRangeAtGridPt(tile, includeOverhang));
+            var rect = GetPixelRangeAtLayerPoint(tile, includeOverhang);
+            retVal = retVal.IsEmpty ? rect : Rectangle.Union(retVal, rect);
         }
 
         return retVal;
     }
 
-    public SceneLayerPoint GetAdjGridPt(SceneLayerPoint gridPt, CardinalDirections direction)
+    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gridPt, CardinalDirections direction)
     {
         SceneLayer matrix = gridPt.ParentGrid;
 
@@ -144,18 +123,18 @@ public class SquareIsoCoordinates : IGridCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        Point[] ret = new Point[4];
-        Rectangle outline = GetPxlRangeAtGridPt(tile, false);
-
-        ret[0] = new Point(outline.Location.X, outline.Location.Y);
-        ret[1] = new Point(outline.Location.X + outline.Width, outline.Location.Y);
-        ret[2] = new Point(outline.Location.X + outline.Width, outline.Location.Y + outline.Height);
-        ret[3] = new Point(outline.Location.X, outline.Location.Y + outline.Height);
-
-        return ret;
+        // Square polygon using the overhang-aware rect
+        var r = GetPixelRangeAtLayerPoint(tile, includeOverhang);
+        return new[]
+        {
+                new Point(r.Left,  r.Top),
+                new Point(r.Right, r.Top),
+                new Point(r.Right, r.Bottom),
+                new Point(r.Left,  r.Bottom)
+            };
     }
 
-    public PointF FindEquivGridCoord(PointF valColRow, int xUpperBound, int yUpperBound)
+    public PointF FindEquivalentLayerPoint(PointF valColRow, int xUpperBound, int yUpperBound)
     {
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);

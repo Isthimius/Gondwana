@@ -9,7 +9,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.Scenes.Coordinates;
+using Gondwana.Drawing.Coordinates;
 
 namespace Slider
 {
@@ -214,7 +214,7 @@ namespace Slider
 
         public PointF GetGridCoordinates(int pxlX, int pxlY)
         {
-            return matrixes[0].CoordinateSystem.GetGridPtAtPxl(matrixes[0], new Point(pxlX, pxlY));
+            return matrixes[0].CoordinateSystem.GetLayerPointAtPixel(matrixes[0], new Point(pxlX, pxlY));
         }
 
         #endregion public methods
@@ -260,13 +260,13 @@ namespace Slider
             List<SceneLayerPoint> adjGridPts = new List<SceneLayerPoint>();
 
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjGridPt(matrixes[0][openSpace], CardinalDirections.N));
+                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.N));
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjGridPt(matrixes[0][openSpace], CardinalDirections.S));
+                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.S));
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjGridPt(matrixes[0][openSpace], CardinalDirections.E));
+                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.E));
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjGridPt(matrixes[0][openSpace], CardinalDirections.W));
+                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.W));
 
             foreach (SceneLayerPoint gPt in adjGridPts)
             {

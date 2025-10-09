@@ -1,7 +1,7 @@
 ﻿using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Scenes;
-using Gondwana.Scenes.Coordinates;
+using Gondwana.Drawing.Coordinates;
 using SkiaSharp;
 using System.Text;
 using static Gondwana.Drawing.Direct.TextBlock;

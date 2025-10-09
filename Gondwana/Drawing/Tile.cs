@@ -177,7 +177,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     private float GetTileLocForCompare(Tile tile)
     {
         if (!tile.IsPositionFixed)
-            return tile.DrawLocation.Bottom - 1;
+            return tile.DrawLocation.Bottom - tile.OverhangPixels.Bottom - 1;
         else
             return tile.DrawLocation.Top + tile.OverhangPixels.Top;
     }
