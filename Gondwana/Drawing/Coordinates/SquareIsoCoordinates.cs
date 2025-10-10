@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using Gondwana.Drawing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;

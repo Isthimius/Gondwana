@@ -1,144 +1,134 @@
 ﻿using System.Drawing;
-using Gondwana.Drawing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
 
+/// <summary>
+/// Diagonal-Isometric (Square Matrix) – classic diamond layout
+/// Pixel anchor = TOP vertex of the diamond (screen-space isometric)
+/// </summary>
 public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPixelAtLayerPoint(SceneLayer matrix, PointF gridCoord)
+    public Point GetSrcPixelAtLayerPoint(SceneLayer layer, PointF gp)
     {
-        throw new NotImplementedException();
+        int W = layer.GridPointWidth;
+        int H = layer.GridPointHeight;
+
+        float dx = gp.X - layer.SourceGridPoint.X;
+        float dy = gp.Y - layer.SourceGridPoint.Y;
+
+        float px = layer.GridPointZeroPixel.X + (dx - dy) * (W / 2f);
+        float py = layer.GridPointZeroPixel.Y + (dx + dy) * (H / 2f);
+        return new Point((int)Math.Floor(px), (int)Math.Floor(py)); // top vertex
     }
 
-    public PointF GetLayerPointAtPixel(SceneLayer matrix, Point pixelPt)
+    public PointF GetLayerPointAtPixel(SceneLayer layer, Point pixelPt)
     {
-        throw new NotImplementedException();
+        int W = layer.GridPointWidth;
+        int H = layer.GridPointHeight;
 
-        #region old VB6 code
+        float a = (pixelPt.X - layer.GridPointZeroPixel.X) / (W / 2f); // = dx - dy
+        float b = (pixelPt.Y - layer.GridPointZeroPixel.Y) / (H / 2f); // = dx + dy
 
-        /*
-'special calculation for FindGridCoordWithPixel when
-'g_renderMode is DIAGONAL_ISOMETRIC_SQUARE_MAP
-Private Function FindCoordOnDiagIsoSquareMap(ByVal Layer As Long, _
-                                         ByVal XPixel As Single, _
-                                         ByVal YPixel As Single) As GridPoint_Long
+        float dx = (a + b) / 2f;
+        float dy = (b - a) / 2f;
 
-Dim ptReturn As GridPoint_Long
-Dim ptGrid As GridPoint_Long
-Dim ptPixelMajor As PixelLocation
-Dim ptPixelMinor As PixelLocation
-Dim lngMinorSection As MINOR_SECTION
-Dim sngIsoSlope As Single
-
-With g_layers
-    'step 1: find closest even-numbered column
-    ptGrid.Layer = Layer
-    ptGrid.X = Int((XPixel / .Layer(Layer).TileWidthFinal) + _
-            (.Layer(Layer).FirstX / 2)) * 2
-    ptGrid.Y = Int((YPixel / .Layer(Layer).TileHeightFinal) + .Layer(Layer).FirstY)
-
-    ptReturn.X = ptGrid.X
-    ptReturn.Y = ptGrid.Y
-
-    'step 2: find even-numbered column source pixel coordinates ("major" source)
-    ptPixelMajor.X = (CSng(ptGrid.X) - .Layer(Layer).FirstX) * _
-            (.Layer(Layer).TileWidthFinal / 2)
-    ptPixelMajor.Y = (CSng(ptGrid.Y) - .Layer(Layer).FirstY) * _
-            .Layer(Layer).TileHeightFinal
-
-    'step 3: find "minor" section source (quadrant within "major" section - see enum)
-    '   i.e., we are dividing the "major" section into 4 "minor" sections
-    If ((XPixel - ptPixelMajor.X) < (CSng(.Layer(Layer).TileWidthFinal) / 2)) Then    'left section
-        If ((YPixel - ptPixelMajor.Y) < (CSng(.Layer(Layer).TileHeightFinal) / 2)) Then   'top section
-            lngMinorSection = UPPER_LEFT
-            ptPixelMinor = ptPixelMajor
-        Else
-            lngMinorSection = LOWER_LEFT
-            ptPixelMinor.X = ptPixelMajor.X
-            ptPixelMinor.Y = ptPixelMajor.Y + (CSng(.Layer(Layer).TileHeightFinal) / 2)
-        End If
-    Else        'right section
-        If ((YPixel - ptPixelMajor.Y) < (CSng(.Layer(Layer).TileHeightFinal) / 2)) Then   'top section
-            lngMinorSection = UPPER_RIGHT
-            ptPixelMinor.X = ptPixelMajor.X + (CSng(.Layer(Layer).TileWidthFinal) / 2)
-            ptPixelMinor.Y = ptPixelMajor.Y
-        Else
-            lngMinorSection = LOWER_RIGHT
-            ptPixelMinor.X = ptPixelMajor.X + (CSng(.Layer(Layer).TileWidthFinal) / 2)
-            ptPixelMinor.Y = ptPixelMajor.Y + (CSng(.Layer(Layer).TileHeightFinal) / 2)
-        End If
-    End If
-
-    'step 4: determine which side of slope within minor section pixel is on
-    '   where m=(y-b)/x  (you do remember your algebra, don't you?)
-    '   m is slope, y is height, x is width, and b is y-intercept
-    sngIsoSlope = CSng(.Layer(Layer).TileHeightFinal) / CSng(.Layer(Layer).TileWidthFinal)
-
-    '0.001 is included to avoid divide-by-0 errors
-    Select Case lngMinorSection
-        Case MINOR_SECTION.UPPER_LEFT
-            sngIsoSlope = -1 * sngIsoSlope
-            If (((YPixel - ptPixelMinor.Y) - (CSng(.Layer(Layer).TileHeightFinal) / 2)) / _
-                    (XPixel - ptPixelMinor.X + 0.001)) < sngIsoSlope Then
-                ptReturn.X = ptReturn.X - 1
-                ptReturn.Y = ptReturn.Y - 1
-            End If
-
-        Case MINOR_SECTION.LOWER_LEFT
-            If ((YPixel - ptPixelMinor.Y) / _
-                    (XPixel - ptPixelMinor.X + 0.001)) > sngIsoSlope _
-                    Then ptReturn.X = ptReturn.X - 1
-
-        Case MINOR_SECTION.UPPER_RIGHT
-            If ((YPixel - ptPixelMinor.Y) / _
-                    (XPixel - ptPixelMinor.X + 0.001)) < sngIsoSlope Then
-                ptReturn.X = ptReturn.X + 1
-                ptReturn.Y = ptReturn.Y - 1
-            End If
-
-        Case MINOR_SECTION.LOWER_RIGHT
-            sngIsoSlope = -1 * sngIsoSlope
-            If (((YPixel - ptPixelMinor.Y) - (CSng(.Layer(Layer).TileHeightFinal) / 2)) / _
-                    (XPixel - ptPixelMinor.X + 0.001)) > sngIsoSlope _
-                    Then ptReturn.X = ptReturn.X + 1
-    End Select
-End With
-
-FindCoordOnDiagIsoSquareMap = ptReturn
-End Function
-        */
-
-        #endregion old VB6 code
+        return new PointF(layer.SourceGridPoint.X + dx, layer.SourceGridPoint.Y + dy);
     }
 
-    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
     {
-        throw new NotImplementedException();
+        var result = new List<SceneLayerPoint>();
+
+        // Convert AABB corners to coarse grid bounds
+        var ul = GetLayerPointAtPixel(layer, new Point(pixelRange.Left, pixelRange.Top));
+        var ur = GetLayerPointAtPixel(layer, new Point(pixelRange.Right, pixelRange.Top));
+        var ll = GetLayerPointAtPixel(layer, new Point(pixelRange.Left, pixelRange.Bottom));
+        var lr = GetLayerPointAtPixel(layer, new Point(pixelRange.Right, pixelRange.Bottom));
+
+        int minX = (int)Math.Floor(new[] { ul.X, ur.X, ll.X, lr.X }.Min()) - 1;
+        int maxX = (int)Math.Ceiling(new[] { ul.X, ur.X, ll.X, lr.X }.Max()) + 1;
+        int minY = (int)Math.Floor(new[] { ul.Y, ur.Y, ll.Y, lr.Y }.Min()) - 1;
+        int maxY = (int)Math.Ceiling(new[] { ul.Y, ur.Y, ll.Y, lr.Y }.Max()) + 1;
+
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                var gp = layer[x, y];
+                if (gp == null) continue;
+
+                var r = GetPixelRangeAtLayerPoint(gp, includeOverhang);
+                if (r.IntersectsWith(pixelRange))
+                    result.Add(gp);
+            }
+        }
+
+        return result;
     }
 
     public Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang)
     {
-        throw new NotImplementedException();
+        // Bounding box of the diamond anchored at top vertex
+        var top = GetSrcPixelAtLayerPoint(tile.ParentGrid, tile.GridCoordinates);
+        int W = tile.ParentGrid.GridPointWidth;
+        int H = tile.ParentGrid.GridPointHeight;
+
+        var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
+        return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
 
     public Rectangle GetPixelRangeAtLayerPointList(List<Tile> tileList, bool includeOverhang)
     {
-        throw new NotImplementedException();
+        Rectangle ret = Rectangle.Empty;
+        foreach (var t in tileList)
+        {
+            var r = GetPixelRangeAtLayerPoint(t, includeOverhang);
+            ret = ret.IsEmpty ? r : Rectangle.Union(ret, r);
+        }
+        return ret;
     }
 
-    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gridPt, CardinalDirections direction)
+    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gp, CardinalDirections dir)
     {
-        throw new NotImplementedException();
+        var m = gp.ParentGrid; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
+        return dir switch
+        {
+            CardinalDirections.N => m[x, y - 1],
+            CardinalDirections.S => m[x, y + 1],
+            CardinalDirections.E => m[x + 1, y],
+            CardinalDirections.W => m[x - 1, y],
+            CardinalDirections.NE => m[x + 1, y - 1],
+            CardinalDirections.NW => m[x - 1, y - 1],
+            CardinalDirections.SE => m[x + 1, y + 1],
+            CardinalDirections.SW => m[x - 1, y + 1],
+            _ => null
+        };
     }
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        throw new NotImplementedException();
+        var top = GetSrcPixelAtLayerPoint(tile.ParentGrid, tile.GridCoordinates);
+        int W = tile.ParentGrid.GridPointWidth;
+        int H = tile.ParentGrid.GridPointHeight;
+        var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
+
+        // Diamond vertices (top, right, bottom, left)
+        return new[]
+        {
+            new Point(top.X, top.Y - oh.Top),
+            new Point(top.X + W/2 + oh.Right, top.Y + H/2),
+            new Point(top.X, top.Y + H + oh.Bottom),
+            new Point(top.X - W/2 - oh.Left, top.Y + H/2)
+        };
     }
 
     public PointF FindEquivalentLayerPoint(PointF valColRow, int xUpperBound, int yUpperBound)
     {
-        throw new NotImplementedException();
+        float modX = valColRow.X % (xUpperBound + 1);
+        float modY = valColRow.Y % (yUpperBound + 1);
+        if (modX < 0) modX += xUpperBound + 1;
+        if (modY < 0) modY += yUpperBound + 1;
+        return new PointF(modX, modY);
     }
 }
