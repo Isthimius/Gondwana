@@ -1,9 +1,9 @@
 using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Rendering;
+using Gondwana.Scenes;
 
-namespace Gondwana.Scenes;
+namespace Gondwana.Rendering;
 
 /// <summary>
 /// Represents a queue for managing refresh operations within a SceneLayer.
