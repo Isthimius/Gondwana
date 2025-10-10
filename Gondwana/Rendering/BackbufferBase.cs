@@ -104,8 +104,11 @@ public abstract class BackbufferBase : IDisposable
 
             if (tile.EnableFog)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), FogPaint);
+        }
 
-            if (!tile.ParentGrid.ShowGridLines && tile.IsPositionFixed)
+        foreach (var tile in tiles)
+        {
+            if (tile.ParentGrid.ShowGridLines && tile.Visible)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), GridLinePaint);
         }
     }
