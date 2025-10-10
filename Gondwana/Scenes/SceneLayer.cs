@@ -140,7 +140,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     #region properties
 
     [JsonIgnore]
-    public ISceneLayerCoordinates CoordinateSystem { get; set; }
+    public ISceneLayerCoordinates CoordinateSystem { get; set; } = new SquareIsoCoordinates();
 
     [DataMember(Name = "CoordinateSystem")]
     private string CoordinateSystemType
