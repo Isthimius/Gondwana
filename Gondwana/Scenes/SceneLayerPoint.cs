@@ -73,9 +73,6 @@ public class SceneLayerPoint : Tile, IDisposable
         get { return zOrder; }
     }
 
-    [JsonProperty]
-    public bool DoNotRedrawChanges { get; set; }
-
     [JsonIgnore]
     public override Rectangle DrawLocation
     {

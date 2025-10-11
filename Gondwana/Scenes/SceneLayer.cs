@@ -535,7 +535,6 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             {
                 _matrix[X][Y] = new SceneLayerPoint(this);
                 _matrix[X][Y].gridCoordinates = new Point(X, Y);
-                _matrix[X][Y].DoNotRedrawChanges = false;
             }
         }
     }
