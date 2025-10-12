@@ -21,11 +21,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
 
-    public event Action<SceneLayerTileSizeChangedEventArgs>? GridPointSizeChanged;
+    public event Action<SceneLayerTileSizeChangedEventArgs>? SceneLayerTileSizeChanged;
 
     public event Action<SceneLayerVisibleChangedEventArgs>? VisibleChanged;
 
-    public event Action<SourceGridPointChangedEventArgs>? FirstColRowChanged;
+    public event Action<SourceSceneLayerTileChangedEventArgs>? FirstColRowChanged;
 
     public event Action<SceneLayerWrappingChangedEventArgs>? WrappingChanged;
 
@@ -353,11 +353,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     protected virtual void OnGridPointSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight)
     {
-        if (GridPointSizeChanged != null)
+        if (SceneLayerTileSizeChanged != null)
         {
             SceneLayerTileSizeChangedEventArgs e;
             e = new SceneLayerTileSizeChangedEventArgs(this, oldWidth, oldHeight, newWidth, newHeight);
-            GridPointSizeChanged(e);
+            SceneLayerTileSizeChanged(e);
         }
     }
 
@@ -382,7 +382,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         if (FirstColRowChanged != null)
         {
-            SourceGridPointChangedEventArgs e = new SourceGridPointChangedEventArgs(this, oldPt, newPt);
+            SourceSceneLayerTileChangedEventArgs e = new SourceSceneLayerTileChangedEventArgs(this, oldPt, newPt);
             FirstColRowChanged(e);
         }
     }
@@ -705,7 +705,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             gridPt.Dispose();
 
         // cancel all subscriptions to this object
-        GridPointSizeChanged = null;
+        SceneLayerTileSizeChanged = null;
         VisibleChanged = null;
         FirstColRowChanged = null;
         RefreshQueueAreaAdded = null;

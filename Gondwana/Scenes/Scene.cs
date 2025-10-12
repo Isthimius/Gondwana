@@ -73,7 +73,7 @@ public class Scene : IEnumerable, IDisposable
             OnSceneLayerAdded(sceneLayer);
 
         // discover the list of visible arrays
-        _SetVisibleLayersArray();
+        _SetVisibleSceneLayersArray();
 
         _allScenes.Add(this);
     }
@@ -134,7 +134,7 @@ public class Scene : IEnumerable, IDisposable
         OnSceneLayerAdded(this[newIdx]);
 
         // rediscover the list of visible arrays
-        _SetVisibleLayersArray();
+        _SetVisibleSceneLayersArray();
 
         refreshNeeded = SceneRefreshType.All;
 
@@ -143,14 +143,14 @@ public class Scene : IEnumerable, IDisposable
 
     public void RemoveAllLayers()
     {
-        // raise "remove" event for each grid
-        foreach (SceneLayer grid in this)
-            OnSceneLayerRemoved(grid);
+        // raise "remove" event for each SceneLayer
+        foreach (SceneLayer sceneLayer in this)
+            OnSceneLayerRemoved(sceneLayer);
 
         _sceneLayers.Clear();
 
         // rediscover the list of visible arrays
-        _SetVisibleLayersArray();
+        _SetVisibleSceneLayersArray();
 
         refreshNeeded = SceneRefreshType.All;
     }
@@ -160,13 +160,13 @@ public class Scene : IEnumerable, IDisposable
         _sceneLayers.Remove(sceneLayer);
         OnSceneLayerRemoved(sceneLayer);
 
-        // rediscover the list of visible arrays
-        _SetVisibleLayersArray();
+        // rediscover the list of visible scene layers
+        _SetVisibleSceneLayersArray();
 
         refreshNeeded = SceneRefreshType.All;
     }
 
-    public SceneLayer GetSceneLayerByID(string id)
+    public SceneLayer? GetSceneLayerByID(string id)
     {
         foreach (var sceneLayer in _sceneLayers)
         {
@@ -186,9 +186,9 @@ public class Scene : IEnumerable, IDisposable
         sceneLayer.Parent = this;
 
         sceneLayer.SceneLayerDisposing += sceneLayerDisposing;
-        sceneLayer.FirstColRowChanged += firstCRDel;
+        sceneLayer.FirstColRowChanged += firstColRowDel;
         sceneLayer.VisibleChanged += visChgDel;
-        sceneLayer.GridPointSizeChanged += sceneLayerTileSizeDel;
+        sceneLayer.SceneLayerTileSizeChanged += sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded += refQueueDel;
         sceneLayer.WrappingChanged += wrappingDel;
 
@@ -201,9 +201,9 @@ public class Scene : IEnumerable, IDisposable
         sceneLayer.Parent = null;
 
         sceneLayer.SceneLayerDisposing -= sceneLayerDisposing;
-        sceneLayer.FirstColRowChanged -= firstCRDel;
+        sceneLayer.FirstColRowChanged -= firstColRowDel;
         sceneLayer.VisibleChanged -= visChgDel;
-        sceneLayer.GridPointSizeChanged -= sceneLayerTileSizeDel;
+        sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
         sceneLayer.WrappingChanged -= wrappingDel;
 
@@ -222,7 +222,7 @@ public class Scene : IEnumerable, IDisposable
     #region handle SceneLayer events
 
     private Action<SceneLayer> sceneLayerDisposing;
-    private Action<SourceGridPointChangedEventArgs> firstCRDel;
+    private Action<SourceSceneLayerTileChangedEventArgs> firstColRowDel;
     private Action<SceneLayerVisibleChangedEventArgs> visChgDel;
     private Action<SceneLayerTileSizeChangedEventArgs> sceneLayerTileSizeDel;
     private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;
@@ -231,40 +231,40 @@ public class Scene : IEnumerable, IDisposable
     private void SetSceneLayerEventDelegates()
     {
         sceneLayerDisposing = (sceneLayer) => RemoveLayer(sceneLayer);
-        firstCRDel = (eventArgs) => _SceneLayerFirstColRowChanged(eventArgs);
-        visChgDel = (eventArgs) => _SceneLayerVisibleChanged(eventArgs);
-        sceneLayerTileSizeDel = (eventArgs) => _GridPointSizeChanged(eventArgs);
+        firstColRowDel = (eventArgs) => _SceneLayerFirstColRowChanged();
+        visChgDel = (eventArgs) => _SceneLayerVisibleChanged();
+        sceneLayerTileSizeDel = (eventArgs) => _SceneLayerTileSizeChanged();
         refQueueDel = (eventArgs) => _RefreshQueueNewArea(eventArgs);
-        wrappingDel = (eventArgs) => _SceneLayerWrappingChanged(eventArgs);
+        wrappingDel = (eventArgs) => _SceneLayerWrappingChanged();
     }
 
-    private void _SceneLayerFirstColRowChanged(SourceGridPointChangedEventArgs e)
+    private void _SceneLayerFirstColRowChanged()
     {
         // shifting at least one Layer, so redraw entire Backbuffer
         refreshNeeded = SceneRefreshType.All;
     }
 
-    private void _SceneLayerVisibleChanged(SceneLayerVisibleChangedEventArgs e)
+    private void _SceneLayerVisibleChanged()
     {
         // redraw entire Backbuffer
         refreshNeeded = SceneRefreshType.All;
-        _SetVisibleLayersArray();
+        _SetVisibleSceneLayersArray();
     }
 
-    private void _SetVisibleLayersArray()
+    private void _SetVisibleSceneLayersArray()
     {
         if (_visibleLayers == null)
             _visibleLayers = new List<SceneLayer>();
 
         _visibleLayers.Clear();
-        foreach (SceneLayer grid in this)
+        foreach (SceneLayer sceneLayer in this)
         {
-            if (grid.Visible == true)
-                _visibleLayers.Add(grid);
+            if (sceneLayer.Visible)
+                _visibleLayers.Add(sceneLayer);
         }
     }
 
-    private void _GridPointSizeChanged(SceneLayerTileSizeChangedEventArgs e)
+    private void _SceneLayerTileSizeChanged()
     {
         refreshNeeded = SceneRefreshType.All;
     }
@@ -275,7 +275,7 @@ public class Scene : IEnumerable, IDisposable
         if (refreshNeeded == SceneRefreshType.None)
             refreshNeeded = SceneRefreshType.Queue;
 
-        // if matrix that added Tile to queue is visible...
+        // if SceneLayer that added Tile to queue is visible...
         if (e.layer.Visible)
         {
             // refresh all other visible SceneLayers
@@ -291,7 +291,7 @@ public class Scene : IEnumerable, IDisposable
         }
     }
 
-    private void _SceneLayerWrappingChanged(SceneLayerWrappingChangedEventArgs e)
+    private void _SceneLayerWrappingChanged()
     {
         refreshNeeded = SceneRefreshType.All;
     }
@@ -300,9 +300,9 @@ public class Scene : IEnumerable, IDisposable
 
     #region indexers
 
-    public SceneLayer this[int i] => _sceneLayers[i];
+    public SceneLayer this[int i] => (i >= 0 && i < _sceneLayers.Count) ? _sceneLayers[i] : null;
 
-    public SceneLayer this[string id] => GetSceneLayerByID(id);
+    public SceneLayer? this[string id] => GetSceneLayerByID(id);
 
     #endregion indexers
 
@@ -327,13 +327,13 @@ public class Scene : IEnumerable, IDisposable
         OnSceneDisposing();
 
         // unsubscribe from events
-        foreach (SceneLayer grid in _sceneLayers)
+        foreach (var sceneLayer in _sceneLayers)
         {
-            grid.FirstColRowChanged -= firstCRDel;
-            grid.VisibleChanged -= visChgDel;
-            grid.GridPointSizeChanged -= sceneLayerTileSizeDel;
-            grid.RefreshQueueAreaAdded -= refQueueDel;
-            grid.WrappingChanged -= wrappingDel;
+            sceneLayer.FirstColRowChanged -= firstColRowDel;
+            sceneLayer.VisibleChanged -= visChgDel;
+            sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
+            sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
+            sceneLayer.WrappingChanged -= wrappingDel;
         }
 
         _allScenes.Remove(this);
@@ -348,7 +348,7 @@ public class Scene : IEnumerable, IDisposable
 
     #region static
 
-    internal static List<Scene> _allScenes = new List<Scene>();
+    internal readonly static List<Scene> _allScenes = new List<Scene>();
 
     public static Scene? GetSceneByID(string id) => _allScenes.Find(s => s.ID == id);
 
