@@ -722,10 +722,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         return _allSceneLayer.AsReadOnly();
     }
 
-    public IEnumerator GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
+    public IEnumerator GetEnumerator() => ((IEnumerable<SceneLayerTile>)this).GetEnumerator();
 
     #endregion static methods
 
