@@ -11,20 +11,20 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
 {
     public Point GetSrcPixelAtLayerPoint(SceneLayer layer, PointF gp)
     {
-        int W = layer.GridPointWidth; int H = layer.GridPointHeight;
+        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
         int col = (int)Math.Round(gp.X); int row = (int)Math.Round(gp.Y);
 
-        int x = layer.GridPointZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2);
-        int y = layer.GridPointZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f));
+        int x = layer.SceneLayerTileZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2);
+        int y = layer.SceneLayerTileZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f));
         return new Point(x, y);
     }
 
     public PointF GetLayerPointAtPixel(SceneLayer layer, Point pixelPt)
     {
-        int W = layer.GridPointWidth; int H = layer.GridPointHeight;
-        float fy = (pixelPt.Y - layer.GridPointZeroPixel.Y) / (H * 0.75f);
+        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
+        float fy = (pixelPt.Y - layer.SceneLayerTileZeroPixel.Y) / (H * 0.75f);
         int approxRow = (int)Math.Round(fy);
-        int baseX = layer.GridPointZeroPixel.X + ((approxRow & 1) == 0 ? 0 : W / 2);
+        int baseX = layer.SceneLayerTileZeroPixel.X + ((approxRow & 1) == 0 ? 0 : W / 2);
         float fx = (pixelPt.X - baseX) / (float)W;
         int approxCol = (int)Math.Round(fx);
 
@@ -33,8 +33,8 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         {
             var poly = HexPolygonPointedTop(layer, cand.X, cand.Y, includeOverhang: false);
             if (PointInPolygon(poly, pixelPt)) return new PointF(cand.X, cand.Y);
-            float cx = layer.GridPointZeroPixel.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
-            float cy = layer.GridPointZeroPixel.Y + cand.Y * (H * 0.75f) + H / 2f;
+            float cx = layer.SceneLayerTileZeroPixel.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
+            float cy = layer.SceneLayerTileZeroPixel.Y + cand.Y * (H * 0.75f) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
             if (d < bestDist) { bestDist = d; best = cand; }
         }
@@ -44,16 +44,16 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
     public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        int W = layer.GridPointWidth; int H = layer.GridPointHeight;
+        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
 
-        int minRow = (int)Math.Floor((pixelRange.Top - layer.GridPointZeroPixel.Y) / (H * 0.75f)) - 2;
-        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - layer.GridPointZeroPixel.Y) / (H * 0.75f)) + 2;
+        int minRow = (int)Math.Floor((pixelRange.Top - layer.SceneLayerTileZeroPixel.Y) / (H * 0.75f)) - 2;
+        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - layer.SceneLayerTileZeroPixel.Y) / (H * 0.75f)) + 2;
 
         for (int row = minRow; row <= maxRow; row++)
         {
             int xOffset = ((row & 1) == 0 ? 0 : W / 2);
-            int minCol = (int)Math.Floor((pixelRange.Left - layer.GridPointZeroPixel.X - xOffset) / (float)W) - 2;
-            int maxCol = (int)Math.Ceiling((pixelRange.Right - layer.GridPointZeroPixel.X - xOffset) / (float)W) + 2;
+            int minCol = (int)Math.Floor((pixelRange.Left - layer.SceneLayerTileZeroPixel.X - xOffset) / (float)W) - 2;
+            int maxCol = (int)Math.Ceiling((pixelRange.Right - layer.SceneLayerTileZeroPixel.X - xOffset) / (float)W) + 2;
 
             for (int col = minCol; col <= maxCol; col++)
             {
@@ -68,7 +68,7 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang)
     {
         var p = GetSrcPixelAtLayerPoint(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.GridPointWidth; int H = tile.ParentGrid.GridPointHeight;
+        int W = tile.ParentGrid.SceneLayerTileWidth; int H = tile.ParentGrid.SceneLayerTileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
@@ -131,10 +131,10 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
 
     private static Point[] HexPolygonPointedTop(SceneLayer layer, int col, int row, bool includeOverhang)
     {
-        int W = layer.GridPointWidth; int H = layer.GridPointHeight;
+        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
         var p = new Point(
-            layer.GridPointZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2),
-            layer.GridPointZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f)));
+            layer.SceneLayerTileZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2),
+            layer.SceneLayerTileZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f)));
 
         var rect = new Rectangle(p.X, p.Y, W, H);
         var ohRect = TileBounds.ApplyOverhang(rect, includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None, includeOverhang);

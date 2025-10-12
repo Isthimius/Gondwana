@@ -202,13 +202,13 @@ public static class SpriteManager
             case HorizontalAlignment.Center:
                 // shift right by half the difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift left
-                pxlPt.X += (grid.GridPointWidth - size.Width) / 2;
+                pxlPt.X += (grid.SceneLayerTileWidth - size.Width) / 2;
                 break;
 
             case HorizontalAlignment.Right:
                 // shift right by the entire difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift left
-                pxlPt.X += (grid.GridPointWidth - size.Width);
+                pxlPt.X += (grid.SceneLayerTileWidth - size.Width);
                 break;
 
             default:
@@ -226,13 +226,13 @@ public static class SpriteManager
             case VerticalAlignment.Middle:
                 // shift down by half the difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift up
-                pxlPt.Y += (grid.GridPointHeight - size.Height) / 2;
+                pxlPt.Y += (grid.SceneLayerTileHeight - size.Height) / 2;
                 break;
 
             case VerticalAlignment.Bottom:
                 // shift down by the entire difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift up
-                pxlPt.Y += (grid.GridPointHeight - size.Height);
+                pxlPt.Y += (grid.SceneLayerTileHeight - size.Height);
                 break;
 
             default:
@@ -267,13 +267,13 @@ public static class SpriteManager
             case HorizontalAlignment.Center:
                 // shift left by half the difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift right
-                drawLocation.X -= (grid.GridPointWidth - drawLocation.Width) / 2;
+                drawLocation.X -= (grid.SceneLayerTileWidth - drawLocation.Width) / 2;
                 break;
 
             case HorizontalAlignment.Right:
                 // shift left by the entire difference between Tile Width values
                 // if Sprite Width > GridPt Width, Sprite will shift right
-                drawLocation.X -= (grid.GridPointWidth - drawLocation.Width);
+                drawLocation.X -= (grid.SceneLayerTileWidth - drawLocation.Width);
                 break;
 
             default:
@@ -291,13 +291,13 @@ public static class SpriteManager
             case VerticalAlignment.Middle:
                 // shift up by half the difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift down
-                drawLocation.Y -= (grid.GridPointHeight - drawLocation.Height) / 2;
+                drawLocation.Y -= (grid.SceneLayerTileHeight - drawLocation.Height) / 2;
                 break;
 
             case VerticalAlignment.Bottom:
                 // shift up by the entire difference between Tile Height values
                 // if Sprite Height > GridPt Height, Sprite will shift down
-                drawLocation.Y -= (grid.GridPointHeight - drawLocation.Height);
+                drawLocation.Y -= (grid.SceneLayerTileHeight - drawLocation.Height);
                 break;
 
             default:

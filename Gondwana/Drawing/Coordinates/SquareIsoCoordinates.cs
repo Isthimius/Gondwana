@@ -9,8 +9,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
     {
         Point retVal = new Point();
 
-        retVal.X = (int)(matrix.GridPointWidth * (gridCoord.X - matrix.SourceGridPoint.X));
-        retVal.Y = (int)(matrix.GridPointHeight * (gridCoord.Y - matrix.SourceGridPoint.Y));
+        retVal.X = (int)(matrix.SceneLayerTileWidth * (gridCoord.X - matrix.SourceSceneLayerTile.X));
+        retVal.Y = (int)(matrix.SceneLayerTileHeight * (gridCoord.Y - matrix.SourceSceneLayerTile.Y));
 
         return retVal;
     }
@@ -19,8 +19,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
     {
         PointF retPt = new PointF();
 
-        retPt.X = (pixelPt.X - matrix.GridPointZeroPixel.X) / (float)matrix.GridPointWidth;
-        retPt.Y = (pixelPt.Y - matrix.GridPointZeroPixel.Y) / (float)matrix.GridPointHeight;
+        retPt.X = (pixelPt.X - matrix.SceneLayerTileZeroPixel.X) / (float)matrix.SceneLayerTileWidth;
+        retPt.Y = (pixelPt.Y - matrix.SceneLayerTileZeroPixel.Y) / (float)matrix.SceneLayerTileHeight;
 
         return retPt;
     }
@@ -62,10 +62,10 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         // Base rect (unchanged)
         var baseRect = new Rectangle
         {
-            X = (int)(tile.ParentGrid.GridPointWidth * tile.GridCoordinates.X) + tile.ParentGrid.GridPointZeroPixel.X,
-            Y = (int)(tile.ParentGrid.GridPointHeight * tile.GridCoordinates.Y) + tile.ParentGrid.GridPointZeroPixel.Y,
-            Width = tile.ParentGrid.GridPointWidth,
-            Height = tile.ParentGrid.GridPointHeight
+            X = (int)(tile.ParentGrid.SceneLayerTileWidth * tile.GridCoordinates.X) + tile.ParentGrid.SceneLayerTileZeroPixel.X,
+            Y = (int)(tile.ParentGrid.SceneLayerTileHeight * tile.GridCoordinates.Y) + tile.ParentGrid.SceneLayerTileZeroPixel.Y,
+            Width = tile.ParentGrid.SceneLayerTileWidth,
+            Height = tile.ParentGrid.SceneLayerTileHeight
         };
 
         // Apply full overhang (Left/Top/Right/Bottom)

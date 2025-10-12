@@ -7,7 +7,7 @@ namespace Gondwana.Scenes;
 [JsonObject(IsReference = true)]
 public class SceneLayerScrollBinding
 {
-    internal static List<SceneLayerScrollBinding> _allScrollBindings =
+    internal readonly static List<SceneLayerScrollBinding> _allScrollBindings =
         new List<SceneLayerScrollBinding>();
 
     #region ctor
@@ -26,14 +26,14 @@ public class SceneLayerScrollBinding
     #endregion ctor
 
     [JsonIgnore]
-    public SceneLayer ParentGrid;
+    public SceneLayer ParentSceneLayer;
 
     [JsonIgnore]
     internal SceneLayer ChildGrid;
 
     [JsonProperty]
-    public PointF ParentAnchorGridPoint;
+    public PointF ParentAnchorSceneLayerTile;
 
     [JsonProperty]
-    public PointF ChildAnchorGridPoint;
+    public PointF ChildAnchorSceneLayerTile;
 }

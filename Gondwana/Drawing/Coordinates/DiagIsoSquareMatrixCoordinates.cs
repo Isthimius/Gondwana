@@ -11,29 +11,29 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 {
     public Point GetSrcPixelAtLayerPoint(SceneLayer layer, PointF gp)
     {
-        int W = layer.GridPointWidth;
-        int H = layer.GridPointHeight;
+        int W = layer.SceneLayerTileWidth;
+        int H = layer.SceneLayerTileHeight;
 
-        float dx = gp.X - layer.SourceGridPoint.X;
-        float dy = gp.Y - layer.SourceGridPoint.Y;
+        float dx = gp.X - layer.SourceSceneLayerTile.X;
+        float dy = gp.Y - layer.SourceSceneLayerTile.Y;
 
-        float px = layer.GridPointZeroPixel.X + (dx - dy) * (W / 2f);
-        float py = layer.GridPointZeroPixel.Y + (dx + dy) * (H / 2f);
+        float px = layer.SceneLayerTileZeroPixel.X + (dx - dy) * (W / 2f);
+        float py = layer.SceneLayerTileZeroPixel.Y + (dx + dy) * (H / 2f);
         return new Point((int)Math.Floor(px), (int)Math.Floor(py)); // top vertex
     }
 
     public PointF GetLayerPointAtPixel(SceneLayer layer, Point pixelPt)
     {
-        int W = layer.GridPointWidth;
-        int H = layer.GridPointHeight;
+        int W = layer.SceneLayerTileWidth;
+        int H = layer.SceneLayerTileHeight;
 
-        float a = (pixelPt.X - layer.GridPointZeroPixel.X) / (W / 2f); // = dx - dy
-        float b = (pixelPt.Y - layer.GridPointZeroPixel.Y) / (H / 2f); // = dx + dy
+        float a = (pixelPt.X - layer.SceneLayerTileZeroPixel.X) / (W / 2f); // = dx - dy
+        float b = (pixelPt.Y - layer.SceneLayerTileZeroPixel.Y) / (H / 2f); // = dx + dy
 
         float dx = (a + b) / 2f;
         float dy = (b - a) / 2f;
 
-        return new PointF(layer.SourceGridPoint.X + dx, layer.SourceGridPoint.Y + dy);
+        return new PointF(layer.SourceSceneLayerTile.X + dx, layer.SourceSceneLayerTile.Y + dy);
     }
 
     public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
@@ -71,8 +71,8 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
     {
         // Bounding box of the diamond anchored at top vertex
         var top = GetSrcPixelAtLayerPoint(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.GridPointWidth;
-        int H = tile.ParentGrid.GridPointHeight;
+        int W = tile.ParentGrid.SceneLayerTileWidth;
+        int H = tile.ParentGrid.SceneLayerTileHeight;
 
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
@@ -109,8 +109,8 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         var top = GetSrcPixelAtLayerPoint(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.GridPointWidth;
-        int H = tile.ParentGrid.GridPointHeight;
+        int W = tile.ParentGrid.SceneLayerTileWidth;
+        int H = tile.ParentGrid.SceneLayerTileHeight;
         var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
 
         // Diamond vertices (top, right, bottom, left)

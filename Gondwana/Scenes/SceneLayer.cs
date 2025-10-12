@@ -41,24 +41,18 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #endregion delegates
 
-    #region static fields
-
-    internal static List<SceneLayer> _allSceneLayer = new List<SceneLayer>();
-
-    #endregion static fields
-
     #region private / internal fields
 
     private string _id = Guid.NewGuid().ToString();
 
-    private int _tileWidth;             // rendered width
-    private int _tileHeight;            // rendered height
-    private bool _visible;              // is matrix to be rendered; useful with multiple layers
+    private int _tileWidth;                             // rendered width
+    private int _tileHeight;                            // rendered height
+    private bool _visible;                              // is SceneLayer to be rendered; useful with multiple layers
 
     [JsonProperty]
-    private SceneLayerTile[][] _matrix;      // array of points; 2 dimensions (X, Y)
+    private SceneLayerTile[][] _sceneLayerTileArray;    // array of points; 2 dimensions (X, Y)
 
-    private float _layerSyncModifier;   // 1 = default; <1 is slower, >1 is faster
+    private float _layerSyncModifier;                   // 1 = default; <1 is slower, >1 is faster
 
     internal bool _wrapHoriz = false;
     internal bool _wrapVerti = false;
@@ -82,11 +76,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region matrix wrapping delegates / variables
 
-    private delegate SceneLayerTile GetIndexer(int x, int y);
+    private delegate SceneLayerTile? GetIndexer(int x, int y);
 
-    private GetIndexer FindIndexedGridPoint;
+    private GetIndexer FindIndexedSceneLayerTile;
 
-    // TODO: remove this; wrapping should be handled via rendering, not by creating new GridPoints
+    // TODO: remove this; wrapping should be handled via rendering, not by creating new SceneLayerTiles
     internal List<SceneLayerTile> wrappedGridPts = new List<SceneLayerTile>();
 
     #endregion matrix wrapping delegates / variables
@@ -132,7 +126,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
     {
-        InitValues(_matrix, _tileWidth, _tileHeight, _layerSyncModifier, true);
+        InitValues(_sceneLayerTileArray, _tileWidth, _tileHeight, _layerSyncModifier, true);
     }
 
     #endregion constructors / finalizer
@@ -196,26 +190,26 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     [JsonProperty]
-    public int GridPointHeight
+    public int SceneLayerTileHeight
     {
         get { return _tileHeight; }
         set
         {
             // capture before and after values and raise event here
-            this.OnGridPointSizeChanged(_tileWidth, _tileHeight, _tileWidth, value);
+            this.OnSceneLayerTileSizeChanged(_tileWidth, _tileHeight, _tileWidth, value);
 
             _tileHeight = value;
         }
     }
 
     [JsonProperty]
-    public int GridPointWidth
+    public int SceneLayerTileWidth
     {
         get { return _tileWidth; }
         set
         {
             // capture before and after values and raise event here
-            this.OnGridPointSizeChanged(_tileWidth, _tileHeight, value, _tileHeight);
+            this.OnSceneLayerTileSizeChanged(_tileWidth, _tileHeight, value, _tileHeight);
 
             _tileWidth = value;
         }
@@ -236,28 +230,28 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     [JsonProperty]
-    public PointF SourceGridPoint
+    public PointF SourceSceneLayerTile
     {
         get { return _firstGridPt; }
-        set { this.SetSourceGridPoint(value); }
+        set { this.SetSourceSceneLayerTile(value); }
     }
 
     [JsonIgnore]
-    public SceneLayerTile[][] GridPointArray
+    public SceneLayerTile[][] SceneLayerTileArray
     {
-        get { return _matrix; }
+        get { return _sceneLayerTileArray; }
     }
 
     [JsonIgnore]
     public int GridColumnCount
     {
-        get { return _matrix.GetUpperBound(0) + 1; }
+        get { return _sceneLayerTileArray.GetUpperBound(0) + 1; }
     }
 
     [JsonIgnore]
     public int GridRowCount
     {
-        get { return _matrix[0].GetUpperBound(0) + 1; }
+        get { return _sceneLayerTileArray[0].GetUpperBound(0) + 1; }
     }
 
     [JsonProperty]
@@ -308,7 +302,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     [JsonIgnore]
-    public Point GridPointZeroPixel
+    public Point SceneLayerTileZeroPixel
     {
         get { return _gridPtZeroPxl; }
     }
@@ -351,7 +345,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region raise events
 
-    protected virtual void OnGridPointSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight)
+    protected virtual void OnSceneLayerTileSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight)
     {
         if (SceneLayerTileSizeChanged != null)
         {
@@ -374,7 +368,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         foreach (SceneLayerScrollBinding scrollBind in SceneLayerScrollBinding._allScrollBindings)
         {
-            if (scrollBind.ParentGrid == this)
+            if (scrollBind.ParentSceneLayer == this)
             {
                 scrollBind.ChildGrid.ScrollWithParent();
             }
@@ -410,9 +404,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         // set indexer delegate
         if (newHoriz || newVerti)
-            FindIndexedGridPoint = new GetIndexer(GetIndexer_Wrap);
+            FindIndexedSceneLayerTile = new GetIndexer(GetIndexer_Wrap);
         else
-            FindIndexedGridPoint = new GetIndexer(GetIndexer_NoWrap);
+            FindIndexedSceneLayerTile = new GetIndexer(GetIndexer_NoWrap);
     }
 
     protected virtual void OnShowGridLinesChanged(bool oldVal, bool newVal)
@@ -427,55 +421,55 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region public methods
 
-    public void SetGridPointSize(int newWidth, int newHeight)
+    public void SetSceneLayerTileSize(int newWidth, int newHeight)
     {
         // capture before and after values and raise event here
-        this.OnGridPointSizeChanged(_tileWidth, _tileHeight, newWidth, newHeight);
+        this.OnSceneLayerTileSizeChanged(_tileWidth, _tileHeight, newWidth, newHeight);
 
         _tileWidth = newWidth;
         _tileHeight = newHeight;
     }
 
-    public SceneLayerTile SetGridPoint(SceneLayerTile gridPt, int x, int y)
+    public SceneLayerTile SetSceneLayerTile(SceneLayerTile gridPt, int x, int y)
     {
         this[x, y] = gridPt;
         return this[x, y];
     }
 
-    public SceneLayerTile SetGridPoint(int x, int y, Frame frame)
+    public SceneLayerTile SetSceneLayerTile(int x, int y, Frame frame)
     {
         this[x, y].CurrentFrame = frame;
         return this[x, y];
     }
 
-    public void SetSourceGridPoint(float firstCol, float firstRow)
+    public void SetSourceSceneLayerTile(float firstCol, float firstRow)
     {
         PointF newPt = new PointF(firstCol, firstRow);
-        SetSourceGridPoint(newPt);
+        SetSourceSceneLayerTile(newPt);
     }
 
-    public void SetSourceGridPoint(PointF srcGridPt)
+    public void SetSourceSceneLayerTile(PointF srcGridPt)
     {
         // capture the existing / old source pixel before changes made
-        PointF oldSrcPt = SourceGridPoint;
+        PointF oldSrcPt = SourceSceneLayerTile;
         _firstGridPt = srcGridPt;
 
-        // update the first pixel position; the final SourceGridPoint might be slightly
-        // different to srcGridPt due to rounding if srcGridPoint is not a whole number
+        // update the first pixel position; the final SourceSceneLayerTile might be slightly
+        // different to srcGridPt due to rounding if srcSceneLayerTile is not a whole number
         _gridPtZeroPxl = CoordinateSystem.GetSrcPixelAtLayerPoint(this, new PointF(0, 0));
 
         // capture the before and after values and raise event
-        OnFirstColRowChanged(oldSrcPt, SourceGridPoint);
+        OnFirstColRowChanged(oldSrcPt, SourceSceneLayerTile);
     }
 
     public void BindScrollingToParentGrid(SceneLayer parent)
     {
-        BindScrollingToParentGrid(parent, parent.SourceGridPoint);
+        BindScrollingToParentGrid(parent, parent.SourceSceneLayerTile);
     }
 
     public void BindScrollingToParentGrid(SceneLayer parent, PointF parentAnchor)
     {
-        BindScrollingToParentGrid(parent, parentAnchor, this.SourceGridPoint);
+        BindScrollingToParentGrid(parent, parentAnchor, this.SourceSceneLayerTile);
     }
 
     public void BindScrollingToParentGrid(SceneLayer parent, PointF parentAnchor, PointF thisAnchor)
@@ -485,10 +479,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         // create new binding instance
         scrollBinding = new SceneLayerScrollBinding();
-        scrollBinding.ParentGrid = parent;
+        scrollBinding.ParentSceneLayer = parent;
         scrollBinding.ChildGrid = this;
-        scrollBinding.ParentAnchorGridPoint = parentAnchor;
-        scrollBinding.ChildAnchorGridPoint = thisAnchor;
+        scrollBinding.ParentAnchorSceneLayerTile = parentAnchor;
+        scrollBinding.ChildAnchorSceneLayerTile = thisAnchor;
     }
 
     public void UnbindScrolling()
@@ -497,14 +491,14 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             SceneLayerScrollBinding._allScrollBindings.Remove(scrollBinding);
 
-            if (scrollBinding.ParentGrid != null)
-                this.scrollBinding.ParentGrid = null;
+            if (scrollBinding.ParentSceneLayer != null)
+                this.scrollBinding.ParentSceneLayer = null;
 
             scrollBinding = null;
         }
     }
 
-    public void ScrollSourceGridPoint(double totalTime, PointF destCoord)
+    public void ScrollSourceSceneLayerTile(double totalTime, PointF destCoord)
     {
         _movement.Start(totalTime, destCoord);
     }
@@ -526,56 +520,56 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region private / internal methods
 
-    private void SaveGridCoordinatesToGridPoints()
+    private void SaveGridCoordinatesToSceneLayerTiles()
     {
-        // let each GridPoint in array know its position in the array
-        for (int X = 0; X <= _matrix.GetUpperBound(0); X++)
+        // let each SceneLayerTile in array know its position in the array
+        for (int X = 0; X <= _sceneLayerTileArray.GetUpperBound(0); X++)
         {
-            for (int Y = 0; Y <= _matrix[X].GetUpperBound(0); Y++)
+            for (int Y = 0; Y <= _sceneLayerTileArray[X].GetUpperBound(0); Y++)
             {
-                _matrix[X][Y] = new SceneLayerTile(this);
-                _matrix[X][Y].sceneLayerCoordinates = new Point(X, Y);
+                _sceneLayerTileArray[X][Y] = new SceneLayerTile(this);
+                _sceneLayerTileArray[X][Y].sceneLayerCoordinates = new Point(X, Y);
             }
         }
     }
 
     private void ScrollWithParent()
     {
-        PointF parentSrc = scrollBinding.ParentGrid.SourceGridPoint;
+        PointF parentSrc = scrollBinding.ParentSceneLayer.SourceSceneLayerTile;
 
         // find difference between anchor and current point with Parent
-        float parentDifX = parentSrc.X - scrollBinding.ParentAnchorGridPoint.X;
-        float parentDifY = parentSrc.Y - scrollBinding.ParentAnchorGridPoint.Y;
+        float parentDifX = parentSrc.X - scrollBinding.ParentAnchorSceneLayerTile.X;
+        float parentDifY = parentSrc.Y - scrollBinding.ParentAnchorSceneLayerTile.Y;
 
         // apply SynchLayerModifiers to the parent offset from anchor
         float netModifier = scrollBinding.ChildGrid._layerSyncModifier /
-            scrollBinding.ParentGrid._layerSyncModifier;
+            scrollBinding.ParentSceneLayer._layerSyncModifier;
 
         parentDifX *= netModifier;
         parentDifY *= netModifier;
 
         // apply the parent offset with modifier to the child
-        float childDifX = scrollBinding.ChildAnchorGridPoint.X + parentDifX;
-        float childDifY = scrollBinding.ChildAnchorGridPoint.Y + parentDifY;
+        float childDifX = scrollBinding.ChildAnchorSceneLayerTile.X + parentDifX;
+        float childDifY = scrollBinding.ChildAnchorSceneLayerTile.Y + parentDifY;
 
         //scrollBinding.ChildGrid._gridPtZeroPxl = new Point((int)childDifX, (int)childDifY);
-        scrollBinding.ChildGrid.SetSourceGridPoint(childDifX, childDifY);
+        scrollBinding.ChildGrid.SetSourceSceneLayerTile(childDifX, childDifY);
     }
 
     protected void InitValues(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier, bool addToInstances)
     {
-        _matrix = pt;
+        _sceneLayerTileArray = pt;
         _layerSyncModifier = layerSyncModifier;
         _tileWidth = width;
         _tileHeight = height;
         _visible = true;
         _gridPtZeroPxl = new Point(0, 0);
-        // let each GridPoint in array know its position in the array
-        SaveGridCoordinatesToGridPoints();
+        // let each SceneLayerTile in array know its position in the array
+        SaveGridCoordinatesToSceneLayerTiles();
         RefreshQueue = new RefreshQueue(this);
         refQueueDel = RefreshQueueNewTile;
         RefreshQueue.RefreshQueueAreaAdded += refQueueDel;
-        FindIndexedGridPoint = new GetIndexer(GetIndexer_NoWrap);
+        FindIndexedSceneLayerTile = new GetIndexer(GetIndexer_NoWrap);
         _movement = new Movement(this);
 
         if (addToInstances)
@@ -586,95 +580,97 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region indexers
 
-    public SceneLayerTile this[int x, int y]
+    public SceneLayerTile? this[int x, int y]
     {
-        get { return FindIndexedGridPoint(x, y); }
+        get { return FindIndexedSceneLayerTile(x, y); }
         set
         {
-            PointF actualGridPoint =
-                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
+            PointF actualSceneLayerTile =
+                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
 
-            _matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y] = value;
+            _sceneLayerTileArray[(int)actualSceneLayerTile.X][(int)actualSceneLayerTile.Y] = value;
         }
     }
 
-    public SceneLayerTile this[Point pt]
+    public SceneLayerTile? this[Point pt]
     {
         get { return this[pt.X, pt.Y]; }
         set { this[pt.X, pt.Y] = value; }
     }
 
-    public SceneLayerTile this[PointF ptF]
+    public SceneLayerTile? this[PointF ptF]
     {
         get { return this[(int)ptF.X, (int)ptF.Y]; }
         set { this[(int)ptF.X, (int)ptF.Y] = value; }
     }
 
-    private SceneLayerTile GetIndexer_NoWrap(int x, int y)
+    private SceneLayerTile? GetIndexer_NoWrap(int x, int y)
     {
-        if (x > _matrix.GetUpperBound(0)
-            || y > _matrix[0].GetUpperBound(0)
+        if (x > _sceneLayerTileArray.GetUpperBound(0)
+            || y > _sceneLayerTileArray[0].GetUpperBound(0)
             || x < 0
             || y < 0)
             return null;
         else
-            return _matrix[x][y];
+            return _sceneLayerTileArray[x][y];
     }
 
-    private SceneLayerTile GetIndexer_Wrap(int x, int y)
+    private SceneLayerTile? GetIndexer_Wrap(int x, int y)
     {
         // if not wrapping horizontally and outside of x bound range, return null
-        if ((!_wrapHoriz) && ((x > _matrix.GetUpperBound(0)) || (x < 0)))
+        if ((!_wrapHoriz) && ((x > _sceneLayerTileArray.GetUpperBound(0)) || (x < 0)))
             return null;
 
         // if not wrapping vertically and outside of y bound range, return null
-        if ((!_wrapVerti) && ((y > _matrix[x].GetUpperBound(0)) || (y < 0)))
+        if ((!_wrapVerti) && ((y > _sceneLayerTileArray[x].GetUpperBound(0)) || (y < 0)))
             return null;
 
         // check "non-wrapping" coordinates
-        SceneLayerTile newGridPoint = GetIndexer_NoWrap(x, y);
+        SceneLayerTile? newSceneLayerTile = GetIndexer_NoWrap(x, y);
 
         // if outside of "non-wrapping" coordinates, find the equivalent point
-        if (newGridPoint == null)
+        if (newSceneLayerTile == null)
         {
-            // find the coordinated of the GridPoint being "wrapped"
-            PointF actualGridPoint =
-                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
+            // find the coordinated of the SceneLayerTile being "wrapped"
+            PointF actualSceneLayerTile =
+                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
 
-            // capture GridPoint if x-y coord already exists in wrappedGridPts
+            // capture SceneLayerTile if x-y coord already exists in wrappedGridPts
             foreach (SceneLayerTile pt in wrappedGridPts)
             {
                 if ((pt.sceneLayerCoordinates.X == x) && (pt.sceneLayerCoordinates.Y == y))
                 {
-                    newGridPoint = pt;
+                    newSceneLayerTile = pt;
                     break;
                 }
             }
 
             // if not already found, create and add to wrappedGridPts, and associate with "parent"
-            if (newGridPoint == null)
+            if (newSceneLayerTile == null)
             {
-                newGridPoint = new SceneLayerTile(_matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y],
+                newSceneLayerTile = new SceneLayerTile(_sceneLayerTileArray[(int)actualSceneLayerTile.X][(int)actualSceneLayerTile.Y],
                     new Point(x, y));
 
-                wrappedGridPts.Add(newGridPoint);
+                wrappedGridPts.Add(newSceneLayerTile);
             }
         }
 
-        return newGridPoint;
+        return newSceneLayerTile;
     }
 
     #endregion indexers
 
     #region IEnumerable Members
 
+    public IEnumerator GetEnumerator() => ((IEnumerable<SceneLayerTile>)this).GetEnumerator();
+
     IEnumerator<SceneLayerTile> IEnumerable<SceneLayerTile>.GetEnumerator()
     {
-        for (int x = 0; x <= _matrix.GetUpperBound(0); x++)
+        for (int x = 0; x <= _sceneLayerTileArray.GetUpperBound(0); x++)
         {
-            for (int y = 0; y <= _matrix[x].GetUpperBound(0); y++)
+            for (int y = 0; y <= _sceneLayerTileArray[x].GetUpperBound(0); y++)
             {
-                yield return _matrix[x][y];
+                yield return _sceneLayerTileArray[x][y];
             }
         }
     }
@@ -715,16 +711,13 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #endregion IDisposable Members
 
-    #region static methods
+    #region static members
+    
+    internal readonly static List<SceneLayer> _allSceneLayer = new List<SceneLayer>();
 
-    public static ReadOnlyCollection<SceneLayer> GetAllSceneLayers()
-    {
-        return _allSceneLayer.AsReadOnly();
-    }
+    internal static ReadOnlyCollection<SceneLayer> GetAllSceneLayers() => _allSceneLayer.AsReadOnly();
 
-    public IEnumerator GetEnumerator() => ((IEnumerable<SceneLayerTile>)this).GetEnumerator();
-
-    #endregion static methods
+    #endregion static members
 
     internal class Movement
     {
@@ -867,7 +860,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             startTick = HighResTimer.GetCurrentTick();
             //lastTick = startTick;
             totalTicks = (long)(totalTime * HighResTimer.TicksPerSecond);
-            startCoord = parent.SourceGridPoint;
+            startCoord = parent.SourceSceneLayerTile;
             destCoord = dest;
 
             IsScrolling = true;
@@ -891,7 +884,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             if (tick >= startTick + totalTicks)
             {
-                parent.SetSourceGridPoint(destCoord);
+                parent.SetSourceSceneLayerTile(destCoord);
                 Stop();
             }
             else
@@ -900,7 +893,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 float newX = startCoord.X + ((float)(destCoord.X - startCoord.X) * percentComplete);
                 float newY = startCoord.Y + ((float)(destCoord.Y - startCoord.Y) * percentComplete);
 
-                parent.SetSourceGridPoint(new PointF(newX, newY));
+                parent.SetSourceSceneLayerTile(new PointF(newX, newY));
             }
 
             return;
@@ -923,10 +916,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 LimitVelocityYByTerminal();
             }
 
-            float newX = parent.SourceGridPoint.X + (float)((double)VelocityX * secondsElapsed);
-            float newY = parent.SourceGridPoint.Y + (float)((double)VelocityY * secondsElapsed);
+            float newX = parent.SourceSceneLayerTile.X + (float)((double)VelocityX * secondsElapsed);
+            float newY = parent.SourceSceneLayerTile.Y + (float)((double)VelocityY * secondsElapsed);
 
-            parent.SetSourceGridPoint(new PointF(newX, newY));
+            parent.SetSourceSceneLayerTile(new PointF(newX, newY));
             //lastTick = tick;
 
             return;

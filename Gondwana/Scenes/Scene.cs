@@ -300,7 +300,7 @@ public class Scene : IEnumerable, IDisposable
 
     #region indexers
 
-    public SceneLayer this[int i] => (i >= 0 && i < _sceneLayers.Count) ? _sceneLayers[i] : null;
+    public SceneLayer? this[int i] => (i >= 0 && i < _sceneLayers.Count) ? _sceneLayers[i] : null;
 
     public SceneLayer? this[string id] => GetSceneLayerByID(id);
 
@@ -346,7 +346,7 @@ public class Scene : IEnumerable, IDisposable
 
     #endregion IDisposable Members
 
-    #region static
+    #region static helpers
 
     internal readonly static List<Scene> _allScenes = new List<Scene>();
 
@@ -363,5 +363,5 @@ public class Scene : IEnumerable, IDisposable
             scene.Dispose();
     }
 
-    #endregion static
+    #endregion static helpers
 }

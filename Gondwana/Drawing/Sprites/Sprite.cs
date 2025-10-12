@@ -52,7 +52,7 @@ public class Sprite : Tile, IDisposable, ICloneable
         CurrentFrame = frame;
 
         if ((SpriteManager.SizeNewSpritesToParentGrid) && (parentGrid != null))
-            renderSize = new Size(parentGrid.GridPointWidth, parentGrid.GridPointHeight);
+            renderSize = new Size(parentGrid.SceneLayerTileWidth, parentGrid.SceneLayerTileHeight);
         else
             renderSize = CurrentFrame.Tilesheet.TileSize;
 
