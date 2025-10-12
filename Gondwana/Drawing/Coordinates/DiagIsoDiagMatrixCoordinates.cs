@@ -30,9 +30,9 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         return new PointF(layer.SourceGridPoint.X + dx, layer.SourceGridPoint.Y + dy);
     }
 
-    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
     {
-        var result = new List<SceneLayerPoint>();
+        var result = new List<SceneLayerTile>();
         var ul = GetLayerPointAtPixel(layer, new Point(pixelRange.Left, pixelRange.Top));
         var ur = GetLayerPointAtPixel(layer, new Point(pixelRange.Right, pixelRange.Top));
         var ll = GetLayerPointAtPixel(layer, new Point(pixelRange.Left, pixelRange.Bottom));
@@ -75,7 +75,7 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         return ret;
     }
 
-    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gp, CardinalDirections dir)
+    public SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile gp, CardinalDirections dir)
     {
         var m = gp.ParentGrid; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         return dir switch

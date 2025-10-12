@@ -35,10 +35,7 @@ public class EngineState
     public Dictionary<string, Cycle> Cycles => Cycle._cycles;
 
     [JsonProperty]
-    public List<SceneLayer> Grids => SceneLayer._allSceneLayer;
-
-    [JsonProperty]
-    public List<Scene> GridsDisplay => Scene._allSceneLayeres;
+    public List<Scene> Scenes => Scene._allScenes;
 
     [JsonProperty]
     public List<Sprite> Sprites => SpriteManager._spriteList;
@@ -52,8 +49,7 @@ public class EngineState
         AssetsFile.ClearAll();
         TilesheetRegistry.Instance.Clear();
         Cycle.ClearAllAnimationCycles();
-        Scene.ClearAllSceneLayers();
-        SceneLayer.ClearAllSceneLayer();
+        Scene.ClearAllScenes();
         SpriteManager.Clear();
         AudioResourceManager.Instance.Dispose();
     }

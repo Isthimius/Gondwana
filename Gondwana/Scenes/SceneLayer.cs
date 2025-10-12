@@ -15,23 +15,23 @@ namespace Gondwana.Scenes;
 ///
 /// </summary>
 [JsonObject(IsReference = true)]
-public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
+public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 {
     #region events
 
-    internal event EventHandler<RefreshQueueAreaAddedEventArgs> RefreshQueueAreaAdded;
+    internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
 
-    public event GridPointSizeChangedEventHandler GridPointSizeChanged;
+    public event Action<SceneLayerTileSizeChangedEventArgs>? GridPointSizeChanged;
 
-    public event VisibleChangedEventHandler VisibleChanged;
+    public event Action<SceneLayerVisibleChangedEventArgs>? VisibleChanged;
 
-    public event SourceGridPointChangedEventHandler FirstColRowChanged;
+    public event Action<SourceGridPointChangedEventArgs>? FirstColRowChanged;
 
-    public event SceneLayerWrappingChangedEventHandler WrappingChanged;
+    public event Action<SceneLayerWrappingChangedEventArgs>? WrappingChanged;
 
-    public event ShowGridLinesChangedEventHandler ShowGridLinesChanged;
+    public event Action<ShowGridLinesChangedEventArgs>? ShowGridLinesChanged;
 
-    public event SceneLayerDisposingEventHandler Disposing;
+    public event Action<SceneLayer>? SceneLayerDisposing;
 
     #endregion events
 
@@ -56,7 +56,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     private bool _visible;              // is matrix to be rendered; useful with multiple layers
 
     [JsonProperty]
-    private SceneLayerPoint[][] _matrix;      // array of points; 2 dimensions (X, Y)
+    private SceneLayerTile[][] _matrix;      // array of points; 2 dimensions (X, Y)
 
     private float _layerSyncModifier;   // 1 = default; <1 is slower, >1 is faster
 
@@ -82,12 +82,12 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
     #region matrix wrapping delegates / variables
 
-    private delegate SceneLayerPoint GetIndexer(int x, int y);
+    private delegate SceneLayerTile GetIndexer(int x, int y);
 
     private GetIndexer FindIndexedGridPoint;
 
     // TODO: remove this; wrapping should be handled via rendering, not by creating new GridPoints
-    internal List<SceneLayerPoint> wrappedGridPts = new List<SceneLayerPoint>();
+    internal List<SceneLayerTile> wrappedGridPts = new List<SceneLayerTile>();
 
     #endregion matrix wrapping delegates / variables
 
@@ -103,23 +103,23 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
     public SceneLayer(int columnCount, int rowCount, int width, int height, float layerSyncModifier)
     {
-        var pt = new SceneLayerPoint[columnCount][];
+        var pt = new SceneLayerTile[columnCount][];
 
         for (int i = 0; i < pt.Length; i++)
-            pt[i] = new SceneLayerPoint[rowCount];
+            pt[i] = new SceneLayerTile[rowCount];
 
         InitValues(pt, width, height, layerSyncModifier, true);
     }
 
-    public SceneLayer(SceneLayerPoint[][] pt) :
+    public SceneLayer(SceneLayerTile[][] pt) :
         this(pt, 0, 0, 1)
     { }
 
-    public SceneLayer(SceneLayerPoint[][] pt, int width, int height) :
+    public SceneLayer(SceneLayerTile[][] pt, int width, int height) :
         this(pt, width, height, 1)
     { }
 
-    public SceneLayer(SceneLayerPoint[][] pt, int width, int height, float layerSyncModifier)
+    public SceneLayer(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier)
     {
         InitValues(pt, width, height, layerSyncModifier, true);
     }
@@ -243,7 +243,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     }
 
     [JsonIgnore]
-    public SceneLayerPoint[][] GridPointArray
+    public SceneLayerTile[][] GridPointArray
     {
         get { return _matrix; }
     }
@@ -355,8 +355,8 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     {
         if (GridPointSizeChanged != null)
         {
-            SceneLayerPointSizeChangedEventArgs e;
-            e = new SceneLayerPointSizeChangedEventArgs(this, oldWidth, oldHeight, newWidth, newHeight);
+            SceneLayerTileSizeChangedEventArgs e;
+            e = new SceneLayerTileSizeChangedEventArgs(this, oldWidth, oldHeight, newWidth, newHeight);
             GridPointSizeChanged(e);
         }
     }
@@ -365,7 +365,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     {
         if (VisibleChanged != null)
         {
-            VisibleChangedEventArgs e = new VisibleChangedEventArgs(this, oldValue, newValue);
+            SceneLayerVisibleChangedEventArgs e = new SceneLayerVisibleChangedEventArgs(this, oldValue, newValue);
             VisibleChanged(e);
         }
     }
@@ -387,16 +387,16 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    internal virtual void OnRefreshQueueAreaAdded(object? sender, RefreshQueueAreaAddedEventArgs e)
+    internal virtual void OnRefreshQueueAreaAdded(RefreshQueueAreaAddedEventArgs e)
     {
         // just pass the event up
-        RefreshQueueAreaAdded?.Invoke(this, e);
+        RefreshQueueAreaAdded?.Invoke(e);
     }
 
     private void RefreshQueueNewTile(object? sender, RefreshQueueAreaAddedEventArgs e)
     {
-        // pass the event up to any containing SceneLayeres
-        OnRefreshQueueAreaAdded(sender, e);
+        // pass the event up to any containing SceneLayers
+        OnRefreshQueueAreaAdded(e);
     }
 
     protected virtual void OnWrappingChanged(bool oldHoriz, bool newHoriz, bool oldVerti, bool newVerti)
@@ -436,13 +436,13 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         _tileHeight = newHeight;
     }
 
-    public SceneLayerPoint SetGridPoint(SceneLayerPoint gridPt, int x, int y)
+    public SceneLayerTile SetGridPoint(SceneLayerTile gridPt, int x, int y)
     {
         this[x, y] = gridPt;
         return this[x, y];
     }
 
-    public SceneLayerPoint SetGridPoint(int x, int y, Frame frame)
+    public SceneLayerTile SetGridPoint(int x, int y, Frame frame)
     {
         this[x, y].CurrentFrame = frame;
         return this[x, y];
@@ -533,8 +533,8 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         {
             for (int Y = 0; Y <= _matrix[X].GetUpperBound(0); Y++)
             {
-                _matrix[X][Y] = new SceneLayerPoint(this);
-                _matrix[X][Y].gridCoordinates = new Point(X, Y);
+                _matrix[X][Y] = new SceneLayerTile(this);
+                _matrix[X][Y].sceneLayerTileCoordinates = new Point(X, Y);
             }
         }
     }
@@ -562,7 +562,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         scrollBinding.ChildGrid.SetSourceGridPoint(childDifX, childDifY);
     }
 
-    protected void InitValues(SceneLayerPoint[][] pt, int width, int height, float layerSyncModifier, bool addToInstances)
+    protected void InitValues(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier, bool addToInstances)
     {
         _matrix = pt;
         _layerSyncModifier = layerSyncModifier;
@@ -586,7 +586,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
     #region indexers
 
-    public SceneLayerPoint this[int x, int y]
+    public SceneLayerTile this[int x, int y]
     {
         get { return FindIndexedGridPoint(x, y); }
         set
@@ -598,19 +598,19 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         }
     }
 
-    public SceneLayerPoint this[Point pt]
+    public SceneLayerTile this[Point pt]
     {
         get { return this[pt.X, pt.Y]; }
         set { this[pt.X, pt.Y] = value; }
     }
 
-    public SceneLayerPoint this[PointF ptF]
+    public SceneLayerTile this[PointF ptF]
     {
         get { return this[(int)ptF.X, (int)ptF.Y]; }
         set { this[(int)ptF.X, (int)ptF.Y] = value; }
     }
 
-    private SceneLayerPoint GetIndexer_NoWrap(int x, int y)
+    private SceneLayerTile GetIndexer_NoWrap(int x, int y)
     {
         if (x > _matrix.GetUpperBound(0)
             || y > _matrix[0].GetUpperBound(0)
@@ -621,7 +621,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             return _matrix[x][y];
     }
 
-    private SceneLayerPoint GetIndexer_Wrap(int x, int y)
+    private SceneLayerTile GetIndexer_Wrap(int x, int y)
     {
         // if not wrapping horizontally and outside of x bound range, return null
         if ((!_wrapHoriz) && ((x > _matrix.GetUpperBound(0)) || (x < 0)))
@@ -632,7 +632,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             return null;
 
         // check "non-wrapping" coordinates
-        SceneLayerPoint newGridPoint = GetIndexer_NoWrap(x, y);
+        SceneLayerTile newGridPoint = GetIndexer_NoWrap(x, y);
 
         // if outside of "non-wrapping" coordinates, find the equivalent point
         if (newGridPoint == null)
@@ -642,9 +642,9 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
                 CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _matrix.GetUpperBound(0), _matrix[x].GetUpperBound(0));
 
             // capture GridPoint if x-y coord already exists in wrappedGridPts
-            foreach (SceneLayerPoint pt in wrappedGridPts)
+            foreach (SceneLayerTile pt in wrappedGridPts)
             {
-                if ((pt.gridCoordinates.X == x) && (pt.gridCoordinates.Y == y))
+                if ((pt.sceneLayerTileCoordinates.X == x) && (pt.sceneLayerTileCoordinates.Y == y))
                 {
                     newGridPoint = pt;
                     break;
@@ -654,7 +654,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
             // if not already found, create and add to wrappedGridPts, and associate with "parent"
             if (newGridPoint == null)
             {
-                newGridPoint = new SceneLayerPoint(_matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y],
+                newGridPoint = new SceneLayerTile(_matrix[(int)actualGridPoint.X][(int)actualGridPoint.Y],
                     new Point(x, y));
 
                 wrappedGridPts.Add(newGridPoint);
@@ -668,7 +668,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
     #region IEnumerable Members
 
-    IEnumerator<SceneLayerPoint> IEnumerable<SceneLayerPoint>.GetEnumerator()
+    IEnumerator<SceneLayerTile> IEnumerable<SceneLayerTile>.GetEnumerator()
     {
         for (int x = 0; x <= _matrix.GetUpperBound(0); x++)
         {
@@ -689,8 +689,8 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
         _allSceneLayer.Remove(this);
 
-        if (Disposing != null)
-            Disposing(new SceneLayerDisposingEventArgs(this));
+        if (SceneLayerDisposing != null)
+            SceneLayerDisposing.Invoke(this);
 
         // remove any scroll bindings
         UnbindScrolling();
@@ -701,7 +701,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         // dispose child objects
         RefreshQueue.Dispose();
 
-        foreach (SceneLayerPoint gridPt in this)
+        foreach (SceneLayerTile gridPt in this)
             gridPt.Dispose();
 
         // cancel all subscriptions to this object
@@ -710,7 +710,7 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
         FirstColRowChanged = null;
         RefreshQueueAreaAdded = null;
         WrappingChanged = null;
-        Disposing = null;
+        SceneLayerDisposing = null;
     }
 
     #endregion IDisposable Members
@@ -720,13 +720,6 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
     public static ReadOnlyCollection<SceneLayer> GetAllSceneLayers()
     {
         return _allSceneLayer.AsReadOnly();
-    }
-
-    public static void ClearAllSceneLayer()
-    {
-        var tmp = new List<SceneLayer>(_allSceneLayer);
-        foreach (var matrix in tmp)
-            matrix.Dispose();
     }
 
     public IEnumerator GetEnumerator()
@@ -885,9 +878,9 @@ public class SceneLayer : IEnumerable<SceneLayerPoint>, IDisposable
 
         internal void Next(long tick)
         {
-            foreach (Scene matrixes in Scene._allSceneLayeres)
+            foreach (Scene matrixes in Scene._allScenes)
             {
-                if (matrixes.GetMatrixByID(parent._id) != null)
+                if (matrixes.GetSceneLayerByID(parent._id) != null)
                     matrixes.refreshNeeded = SceneRefreshType.All;
             }
 

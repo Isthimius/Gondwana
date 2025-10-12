@@ -36,9 +36,9 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         return new PointF(layer.SourceGridPoint.X + dx, layer.SourceGridPoint.Y + dy);
     }
 
-    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
     {
-        var result = new List<SceneLayerPoint>();
+        var result = new List<SceneLayerTile>();
 
         // Convert AABB corners to coarse grid bounds
         var ul = GetLayerPointAtPixel(layer, new Point(pixelRange.Left, pixelRange.Top));
@@ -89,7 +89,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         return ret;
     }
 
-    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gp, CardinalDirections dir)
+    public SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile gp, CardinalDirections dir)
     {
         var m = gp.ParentGrid; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         return dir switch

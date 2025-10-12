@@ -44,9 +44,9 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         return new PointF(best.X, best.Y);
     }
 
-    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
     {
-        var result = new List<SceneLayerPoint>();
+        var result = new List<SceneLayerTile>();
         int W = layer.GridPointWidth; int H = layer.GridPointHeight;
 
         int minCol = (int)Math.Floor((pixelRange.Left - layer.GridPointZeroPixel.X) / (W * 0.75f)) - 2;
@@ -88,7 +88,7 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         return ret;
     }
 
-    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gp, CardinalDirections dir)
+    public SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile gp, CardinalDirections dir)
     {
         int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         bool even = (x & 1) == 0;

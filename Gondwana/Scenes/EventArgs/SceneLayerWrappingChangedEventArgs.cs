@@ -1,7 +1,5 @@
 ﻿namespace Gondwana.Scenes.EventArgs;
 
-public delegate void SceneLayerWrappingChangedEventHandler(SceneLayerWrappingChangedEventArgs e);
-
 public class SceneLayerWrappingChangedEventArgs : System.EventArgs
 {
     public SceneLayer layer;

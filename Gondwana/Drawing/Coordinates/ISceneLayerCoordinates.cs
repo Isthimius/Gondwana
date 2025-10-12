@@ -9,13 +9,13 @@ public interface ISceneLayerCoordinates
 
     PointF GetLayerPointAtPixel(SceneLayer sceneLayer, Point pixelPt);
 
-    List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang);
+    List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang);
 
     Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang);
 
     Rectangle GetPixelRangeAtLayerPointList(List<Tile> tileList, bool includeOverhang);
 
-    SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint layerPoint, CardinalDirections direction);
+    SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile layerPoint, CardinalDirections direction);
 
     Point[] GetPolygonPts(Tile tile, bool includeOverhang);
 

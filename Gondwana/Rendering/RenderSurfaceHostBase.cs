@@ -23,9 +23,9 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public abstract BackbufferBase Backbuffer { get; }
 
     /// <summary>
-    /// Gets the source <see cref="Scene"/> used for rendering operations.
+    /// Gets the source <see cref="Scenes.Scene"/> used for rendering operations.
     /// </summary>
-    public abstract Scene? DrawSource { get; }
+    public abstract Scene? Scene { get; }
 
     /// <summary>
     /// Gets the platform-specific <see cref="RenderSurfaceAdapterBase"> responsible

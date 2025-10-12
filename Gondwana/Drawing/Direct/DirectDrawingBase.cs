@@ -184,7 +184,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     /// </summary>
     protected internal void ForceRefresh()
     {
-        var scene = RenderSurfaceHost.DrawSource;
+        var scene = RenderSurfaceHost.Scene;
 
         if (scene?.Count > 0)
             scene[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);

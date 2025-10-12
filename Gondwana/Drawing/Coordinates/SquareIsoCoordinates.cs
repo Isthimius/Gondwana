@@ -26,9 +26,9 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
     }
 
     // Updated to properly consider overhang in all directions
-    public List<SceneLayerPoint> GetLayerPointListInPixelRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
     {
-        var retVal = new List<SceneLayerPoint>();
+        var retVal = new List<SceneLayerTile>();
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
         PointF ptUL = GetLayerPointAtPixel(matrix, new Point(pixelRange.Left, pixelRange.Top));
@@ -85,7 +85,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         return retVal;
     }
 
-    public SceneLayerPoint GetAdjacentLayerPoint(SceneLayerPoint gridPt, CardinalDirections direction)
+    public SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile gridPt, CardinalDirections direction)
     {
         SceneLayer matrix = gridPt.ParentGrid;
 

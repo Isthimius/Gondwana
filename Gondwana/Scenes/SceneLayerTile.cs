@@ -9,7 +9,7 @@ namespace Gondwana.Scenes;
 /// Represents the values stored at a single location on a SceneLayer
 /// </summary>
 [JsonObject(IsReference = true)]
-public class SceneLayerPoint : Tile, IDisposable
+public class SceneLayerTile : Tile, IDisposable
 {
     #region private / internal fields
 
@@ -17,7 +17,7 @@ public class SceneLayerPoint : Tile, IDisposable
     internal SceneLayer parentSceneLayer;
 
     [JsonProperty]
-    internal Point gridCoordinates;         // each SceneLayerPoint knows its location in the array in parentSceneLayer
+    internal Point sceneLayerTileCoordinates;         // each SceneLayerTile knows its location in the array in parentSceneLayer
 
     protected internal bool disableAddToRefreshQueue = true;
 
@@ -26,17 +26,17 @@ public class SceneLayerPoint : Tile, IDisposable
     #region constructors / finalizer
 
     [JsonConstructor]
-    public SceneLayerPoint(SceneLayer matrix)
+    public SceneLayerTile(SceneLayer matrix)
     {
         zOrder = 0;
         visible = true;
         parentSceneLayer = matrix;
     }
 
-    internal SceneLayerPoint(SceneLayerPoint gridPoint, Point gridCoord)
+    internal SceneLayerTile(SceneLayerTile gridPoint, Point gridCoord)
     {
         parentSceneLayer = gridPoint.parentSceneLayer;
-        gridCoordinates = gridCoord;
+        sceneLayerTileCoordinates = gridCoord;
         disableAddToRefreshQueue = gridPoint.disableAddToRefreshQueue;
         zOrder = gridPoint.zOrder;
         visible = gridPoint.visible;
@@ -45,7 +45,7 @@ public class SceneLayerPoint : Tile, IDisposable
         Tag = gridPoint.Tag;
     }
 
-    ~SceneLayerPoint()
+    ~SceneLayerTile()
     {
         Dispose();
     }
@@ -88,13 +88,13 @@ public class SceneLayerPoint : Tile, IDisposable
     [JsonIgnore]
     public override PointF GridCoordinates
     {
-        get { return (PointF)gridCoordinates; }
+        get { return (PointF)sceneLayerTileCoordinates; }
     }
 
     [JsonIgnore]
     public Point GridCoordinatesAbs
     {
-        get { return gridCoordinates; }
+        get { return sceneLayerTileCoordinates; }
     }
 
     [JsonIgnore]

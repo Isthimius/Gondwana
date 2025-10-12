@@ -292,8 +292,8 @@ public sealed class Engine : IDisposable
         GamepadEventPoller.Instance?.PollForEvents(tick);
 
         // perform any timed SceneLayer scrolling
-        foreach (SceneLayer matrix in SceneLayer.GetAllSceneLayers())
-            matrix.MoveNext(tick);
+        foreach (var sceneLayer in SceneLayer.GetAllSceneLayers())
+            sceneLayer.MoveNext(tick);
 
         // cycle Animator frames
         for (int i = 0; i < Tile.TilesAnimating.Count; i++)
@@ -356,7 +356,7 @@ public sealed class Engine : IDisposable
 
     private void ClearRefreshQueues()
     {
-        // step through all SceneLayeres objects
+        // step through all SceneLayers objects
         foreach (var scene in Scene.GetAllScenes())
         {
             // clear each queue, mark as no refresh needed

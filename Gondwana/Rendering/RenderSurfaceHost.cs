@@ -33,8 +33,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             Backbuffer!.SizeChanged += (w, h) =>
             {
-                if (DrawSource != null)
-                    DrawSource.RefreshNeeded = SceneRefreshType.All; // full redraw at the new size
+                if (Scene != null)
+                    Scene.RefreshNeeded = SceneRefreshType.All; // full redraw at the new size
             };
         }
     }
@@ -45,27 +45,27 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private RenderSurfaceAdapterBase? _renderSurfaceAdapter;
 
     public override BackbufferBase Backbuffer => _backbuffer;
-    public override Scene? DrawSource => _scene;
+    public override Scene? Scene => _scene;
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
 
     public void Bind(Scene drawSource)
     {
-        if (DrawSource != null)
-            DrawSource.Disposing -= OnSourceDisposing;
+        if (Scene != null)
+            Scene.SceneDisposing -= OnSourceDisposing;
 
-        var oldScene = DrawSource;
+        var oldScene = Scene;
         _scene = drawSource;
 
-        if (DrawSource != null)
+        if (Scene != null)
         {
-            DrawSource.Disposing += OnSourceDisposing;
-            DrawSource.RefreshNeeded = SceneRefreshType.All;
+            Scene.SceneDisposing += OnSourceDisposing;
+            Scene.RefreshNeeded = SceneRefreshType.All;
         }
 
-        BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, DrawSource));
+        BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, Scene));
     }
 
-    private void OnSourceDisposing(SceneLayeresDisposingEventArgs e) => _scene = null;
+    private void OnSourceDisposing(Scene scene) => _scene = null;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
@@ -80,18 +80,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// <description><see cref="SceneRefreshType.Queue"/>: Only the tiles in the refresh queue of each visible layer
     /// are redrawn.</description> </item> <item> <description><see cref="SceneRefreshType.All"/>: The entire backbuffer
     /// is cleared and fully redrawn, including all visible layers.</description> </item> </list> If no visible layers
-    /// are present or the <see cref="DrawSource"/> is null, the entire backbuffer is  marked as dirty to ensure a
+    /// are present or the <see cref="Scene"/> is null, the entire backbuffer is  marked as dirty to ensure a
     /// visible clear.</remarks>
     internal override void DrawRefreshQueueToBackbuffer()
     {
-        if (DrawSource is null || (DrawSource?.CountOfVisibleLayers ?? 0) == 0)
+        if (Scene is null || (Scene?.CountOfVisibleLayers ?? 0) == 0)
         {
             // Optionally mark whole surface dirty for a visible clear:
             Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
         }
         else
         {
-            switch (DrawSource!.RefreshNeeded)
+            switch (Scene!.RefreshNeeded)
             {
                 case SceneRefreshType.None:
                     // Nothing to redraw in the background; don’t publish a new frame.
@@ -100,9 +100,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 case SceneRefreshType.Queue:
                     {
-                        for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
+                        for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var layer = DrawSource.VisibleSceneLayerList[i];
+                            var layer = Scene.VisibleSceneLayerList[i];
 
                             // Draw tiles in this layer’s queue
                             Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
@@ -120,9 +120,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         Backbuffer.Canvas.Clear(Backbuffer.ClearColor);   // Canvas + ClearColor are on BackbufferBase
 
                         // clear per-layer queues and add full range, then draw
-                        for (int i = DrawSource.CountOfVisibleLayers - 1; i >= 0; i--)
+                        for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var layer = DrawSource.VisibleSceneLayerList[i];
+                            var layer = Scene.VisibleSceneLayerList[i];
                             layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
 
                             Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
@@ -133,7 +133,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 default:
                     // unknown state; skip
-                    Engine.Logger.LogWarning("Unknown Scene.RefreshNeeded state: {RefreshNeededState}", DrawSource.RefreshNeeded.ToString());
+                    Engine.Logger.LogWarning("Unknown Scene.RefreshNeeded state: {RefreshNeededState}", Scene.RefreshNeeded.ToString());
                     break;
             }
         }
@@ -198,8 +198,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var w = RenderSurfaceAdapter!.Width;
         var h = RenderSurfaceAdapter!.Height;
 
-        if (DrawSource != null)
-            DrawSource.RefreshNeeded = SceneRefreshType.All; // full redraw next frame
+        if (Scene != null)
+            Scene.RefreshNeeded = SceneRefreshType.All; // full redraw next frame
 
         _backbuffer?.RequestResize(w, h);                 // UI thread → request only
     }

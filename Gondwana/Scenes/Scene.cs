@@ -3,26 +3,18 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Gondwana.Rendering;
 using Gondwana.Scenes.EventArgs;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
 
-/// <summary>
-///
-/// </summary>
 [JsonObject(IsReference = true)]
 public class Scene : IEnumerable, IDisposable
 {
-    #region static fields
-
-    internal static List<Scene> _allSceneLayeres = new List<Scene>();
-
-    #endregion static fields
-
     #region private / internal field declarations
 
     [JsonProperty]
-    private List<SceneLayer> _matrixes;    // array of SceneLayer objects; each element is one "layer"
+    private List<SceneLayer> _sceneLayers;    // array of SceneLayer objects; each element is one "layer"
 
     internal List<SceneLayer> _visibleLayers = new List<SceneLayer>();
     internal SceneRefreshType refreshNeeded = SceneRefreshType.All;
@@ -31,52 +23,34 @@ public class Scene : IEnumerable, IDisposable
 
     #endregion private / internal field declarations
 
-    #region public fields
+    #region Scene events
 
-    [JsonIgnore]
-    public object Tag;
+    public event Action<SceneLayer>? SceneLayerAdded;
 
-    #endregion public fields
+    public event Action<SceneLayer>? SceneLayerRemoved;
 
-    #region events
+    public event Action<Scene>? SceneDisposing;
 
-    public event SceneLayerAddRemoveHandler SceneLayerAdded;
-
-    public event SceneLayerAddRemoveHandler SceneLayerRemoved;
-
-    public event SceneLayeresDisposingEventHandler Disposing;
-
-    #endregion events
-
-    #region delegates
-
-    private SourceGridPointChangedEventHandler firstCRDel;
-    private VisibleChangedEventHandler visChgDel;
-    private GridPointSizeChangedEventHandler gridPtSzDel;
-    private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
-    private SceneLayerWrappingChangedEventHandler wrappingDel;
-    private SceneLayerDisposingEventHandler matrixDisposingDel;
-
-    #endregion delegates
+    #endregion Scene events
 
     #region constructors / finalizer
 
     public Scene()
     {
-        _matrixes = new List<SceneLayer>();
+        _sceneLayers = new List<SceneLayer>();
         Init();
     }
 
-    public Scene(SceneLayer matrix)
+    public Scene(SceneLayer sceneLayer)
     {
-        _matrixes = new List<SceneLayer>();
-        _matrixes.Add(matrix);
+        _sceneLayers = new List<SceneLayer>();
+        _sceneLayers.Add(sceneLayer);
         Init();
     }
 
-    public Scene(List<SceneLayer> matrixes)
+    public Scene(List<SceneLayer> sceneLayers)
     {
-        _matrixes = matrixes;
+        _sceneLayers = sceneLayers;
         Init();
     }
 
@@ -91,9 +65,25 @@ public class Scene : IEnumerable, IDisposable
         Init();
     }
 
+    private void Init()
+    {
+        SetSceneLayerEventDelegates();
+
+        foreach (var sceneLayer in _sceneLayers)
+            OnSceneLayerAdded(sceneLayer);
+
+        // discover the list of visible arrays
+        _SetVisibleLayersArray();
+
+        _allScenes.Add(this);
+    }
+
     #endregion constructors / finalizer
 
-    #region properties
+    #region public properties
+
+    [JsonIgnore]
+    public object Tag { get; set; }
 
     [JsonProperty]
     public string ID
@@ -105,33 +95,13 @@ public class Scene : IEnumerable, IDisposable
     [JsonIgnore]
     public int Count
     {
-        get { return _matrixes.Count; }
+        get { return _sceneLayers.Count; }
     }
 
     [JsonIgnore]
     public int CountOfVisibleLayers
     {
         get { return _visibleLayers.Count; }
-    }
-
-    [JsonIgnore]
-    public SceneLayer ForemostVisibleLayer
-    {
-        get
-        {
-            if (_visibleLayers.Count == 0) { return null; }
-            else { return (SceneLayer)_visibleLayers[0]; }
-        }
-    }
-
-    [JsonIgnore]
-    public SceneLayer BackmostVisibleLayer
-    {
-        get
-        {
-            if (_visibleLayers.Count == 0) { return null; }
-            else { return (SceneLayer)_visibleLayers[_visibleLayers.Count - 1]; }
-        }
     }
 
     [JsonIgnore]
@@ -144,7 +114,7 @@ public class Scene : IEnumerable, IDisposable
     [JsonIgnore]
     public ReadOnlyCollection<SceneLayer> SceneLayerList
     {
-        get { return _matrixes.AsReadOnly(); }
+        get { return _sceneLayers.AsReadOnly(); }
     }
 
     [JsonIgnore]
@@ -153,14 +123,14 @@ public class Scene : IEnumerable, IDisposable
         get { return _visibleLayers; }
     }
 
-    #endregion properties
+    #endregion public properties
 
     #region public methods
 
-    public SceneLayer AddLayer(SceneLayer matrix)
+    public SceneLayer AddLayer(SceneLayer sceneLayer)
     {
-        _matrixes.Add(matrix);
-        int newIdx = _matrixes.Count - 1;
+        _sceneLayers.Add(sceneLayer);
+        int newIdx = _sceneLayers.Count - 1;
         OnSceneLayerAdded(this[newIdx]);
 
         // rediscover the list of visible arrays
@@ -171,13 +141,13 @@ public class Scene : IEnumerable, IDisposable
         return this[newIdx];
     }
 
-    public void ClearAllLayers()
+    public void RemoveAllLayers()
     {
         // raise "remove" event for each grid
         foreach (SceneLayer grid in this)
             OnSceneLayerRemoved(grid);
 
-        _matrixes.Clear();
+        _sceneLayers.Clear();
 
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
@@ -185,12 +155,10 @@ public class Scene : IEnumerable, IDisposable
         refreshNeeded = SceneRefreshType.All;
     }
 
-    public void ClearLayer(int matrix)
+    public void RemoveLayer(SceneLayer sceneLayer)
     {
-        SceneLayer grid = this[matrix];
-        _matrixes.Remove(grid);
-        OnSceneLayerRemoved(grid);
-        grid = null;
+        _sceneLayers.Remove(sceneLayer);
+        OnSceneLayerRemoved(sceneLayer);
 
         // rediscover the list of visible arrays
         _SetVisibleLayersArray();
@@ -198,87 +166,85 @@ public class Scene : IEnumerable, IDisposable
         refreshNeeded = SceneRefreshType.All;
     }
 
-    public void ClearLayer(SceneLayer matrix)
+    public SceneLayer GetSceneLayerByID(string id)
     {
-        _matrixes.Remove(matrix);
-        OnSceneLayerRemoved(matrix);
-
-        // rediscover the list of visible arrays
-        _SetVisibleLayersArray();
-
-        refreshNeeded = SceneRefreshType.All;
-    }
-
-    public SceneLayer GetMatrixByID(string id)
-    {
-        foreach (SceneLayer matrix in _matrixes)
+        foreach (var sceneLayer in _sceneLayers)
         {
-            if (matrix.ID == id)
-                return matrix;
+            if (sceneLayer.ID == id)
+                return sceneLayer;
         }
 
         return null;
     }
 
-    public int GetMatrixPosition(SceneLayer matrix)
-    {
-        int ret = -1;
-
-        for (int i = this.Count - 1; i >= 0; i--)
-        {
-            if (this[i] == matrix)
-            {
-                ret = i;
-                break;
-            }
-        }
-
-        return ret;
-    }
-
     #endregion public methods
 
-    #region raise events
+    #region handle / raise Scene events
 
-    protected virtual void OnSceneLayerAdded(SceneLayer grid)
+    protected virtual void OnSceneLayerAdded(SceneLayer sceneLayer)
     {
-        grid.Parent = this;
+        sceneLayer.Parent = this;
 
-        grid.FirstColRowChanged += firstCRDel;
-        grid.VisibleChanged += visChgDel;
-        grid.GridPointSizeChanged += gridPtSzDel;
-        grid.RefreshQueueAreaAdded += refQueueDel;
-        grid.WrappingChanged += wrappingDel;
+        sceneLayer.SceneLayerDisposing += sceneLayerDisposing;
+        sceneLayer.FirstColRowChanged += firstCRDel;
+        sceneLayer.VisibleChanged += visChgDel;
+        sceneLayer.GridPointSizeChanged += sceneLayerTileSizeDel;
+        sceneLayer.RefreshQueueAreaAdded += refQueueDel;
+        sceneLayer.WrappingChanged += wrappingDel;
 
         if (SceneLayerAdded != null)
-            SceneLayerAdded(new SceneLayerAddRemoveEventArgs(this, grid));
+            SceneLayerAdded.Invoke(sceneLayer);
     }
 
-    protected virtual void OnSceneLayerRemoved(SceneLayer grid)
+    protected virtual void OnSceneLayerRemoved(SceneLayer sceneLayer)
     {
-        grid.Parent = null;
+        sceneLayer.Parent = null;
 
-        grid.FirstColRowChanged -= firstCRDel;
-        grid.VisibleChanged -= visChgDel;
-        grid.GridPointSizeChanged -= gridPtSzDel;
-        grid.RefreshQueueAreaAdded -= refQueueDel;
-        grid.WrappingChanged -= wrappingDel;
+        sceneLayer.SceneLayerDisposing -= sceneLayerDisposing;
+        sceneLayer.FirstColRowChanged -= firstCRDel;
+        sceneLayer.VisibleChanged -= visChgDel;
+        sceneLayer.GridPointSizeChanged -= sceneLayerTileSizeDel;
+        sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
+        sceneLayer.WrappingChanged -= wrappingDel;
 
         if (SceneLayerRemoved != null)
-            SceneLayerRemoved(new SceneLayerAddRemoveEventArgs(this, grid));
+            SceneLayerRemoved.Invoke(sceneLayer);
     }
 
-    #endregion raise events
+    protected virtual void OnSceneDisposing()
+    {
+        if (SceneDisposing != null)
+            SceneDisposing.Invoke(this);
+    }
 
-    #region private methods
+    #endregion handle / raise Scene events
 
-    private void _MatrixColRowChanged(SourceGridPointChangedEventArgs e)
+    #region handle SceneLayer events
+
+    private Action<SceneLayer> sceneLayerDisposing;
+    private Action<SourceGridPointChangedEventArgs> firstCRDel;
+    private Action<SceneLayerVisibleChangedEventArgs> visChgDel;
+    private Action<SceneLayerTileSizeChangedEventArgs> sceneLayerTileSizeDel;
+    private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;
+    private Action<SceneLayerWrappingChangedEventArgs> wrappingDel;
+
+    private void SetSceneLayerEventDelegates()
+    {
+        sceneLayerDisposing = (sceneLayer) => RemoveLayer(sceneLayer);
+        firstCRDel = (eventArgs) => _SceneLayerFirstColRowChanged(eventArgs);
+        visChgDel = (eventArgs) => _SceneLayerVisibleChanged(eventArgs);
+        sceneLayerTileSizeDel = (eventArgs) => _GridPointSizeChanged(eventArgs);
+        refQueueDel = (eventArgs) => _RefreshQueueNewArea(eventArgs);
+        wrappingDel = (eventArgs) => _SceneLayerWrappingChanged(eventArgs);
+    }
+
+    private void _SceneLayerFirstColRowChanged(SourceGridPointChangedEventArgs e)
     {
         // shifting at least one Layer, so redraw entire Backbuffer
         refreshNeeded = SceneRefreshType.All;
     }
 
-    private void _MatrixVisibleChanged(VisibleChangedEventArgs e)
+    private void _SceneLayerVisibleChanged(SceneLayerVisibleChangedEventArgs e)
     {
         // redraw entire Backbuffer
         refreshNeeded = SceneRefreshType.All;
@@ -298,12 +264,12 @@ public class Scene : IEnumerable, IDisposable
         }
     }
 
-    private void _GridPointSizeChanged(SceneLayerPointSizeChangedEventArgs e)
+    private void _GridPointSizeChanged(SceneLayerTileSizeChangedEventArgs e)
     {
         refreshNeeded = SceneRefreshType.All;
     }
 
-    private void _RefreshQueueNewArea(object? sender, RefreshQueueAreaAddedEventArgs e)
+    private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
     {
         // set refresh to Queue if no refresh required
         if (refreshNeeded == SceneRefreshType.None)
@@ -312,15 +278,15 @@ public class Scene : IEnumerable, IDisposable
         // if matrix that added Tile to queue is visible...
         if (e.layer.Visible)
         {
-            // refresh all other visible matrixes
+            // refresh all other visible SceneLayers
             for (int i = _visibleLayers.Count - 1; i >= 0; i--)
             {
-                SceneLayer otherMatrix = _visibleLayers[i];
+                SceneLayer otherSceneLayer = _visibleLayers[i];
 
-                // refresh other matrixes; no need to do the calling one again
-                if (e.layer != otherMatrix)
+                // refresh other SceneLayers; no need to do the calling one again
+                if (e.layer != otherSceneLayer)
                     // only refresh e.tileAdded.DrawLocationRefresh rectangle; do not raise cascading events
-                    otherMatrix.RefreshQueue.AddPixelRangeToRefreshQueue(e.area, false);
+                    otherSceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(e.area, false);
             }
         }
     }
@@ -330,58 +296,13 @@ public class Scene : IEnumerable, IDisposable
         refreshNeeded = SceneRefreshType.All;
     }
 
-    private void _SceneLayerDisposing(SceneLayerDisposingEventArgs e)
-    {
-        ClearLayer(e.Matrix);
-    }
-
-    /// <summary>
-    /// set delegates to be used to subscribe to SceneLayer events
-    /// </summary>
-    private void SetEventDelegates()
-    {
-        firstCRDel = new SourceGridPointChangedEventHandler(_MatrixColRowChanged);
-        visChgDel = new VisibleChangedEventHandler(_MatrixVisibleChanged);
-        gridPtSzDel = new GridPointSizeChangedEventHandler(_GridPointSizeChanged);
-        refQueueDel = new EventHandler<RefreshQueueAreaAddedEventArgs>(_RefreshQueueNewArea);
-        wrappingDel = new SceneLayerWrappingChangedEventHandler(_SceneLayerWrappingChanged);
-        matrixDisposingDel = new SceneLayerDisposingEventHandler(_SceneLayerDisposing);
-    }
-
-    private void Init()
-    {
-        SetEventDelegates();
-
-        foreach (SceneLayer matrix in _matrixes)
-            OnSceneLayerAdded(matrix);
-
-        // discover the list of visible arrays
-        _SetVisibleLayersArray();
-
-        _allSceneLayeres.Add(this);
-    }
-
-    #endregion private methods
+    #endregion handle SceneLayer events
 
     #region indexers
 
-    public SceneLayer this[int i]
-    {
-        get
-        {
-            try { return _matrixes[i]; }
-            catch { throw; }
-        }
-    }
+    public SceneLayer this[int i] => _sceneLayers[i];
 
-    public SceneLayer this[string id]
-    {
-        get
-        {
-            try { return GetMatrixByID(id); }
-            catch { throw; }
-        }
-    }
+    public SceneLayer this[string id] => GetSceneLayerByID(id);
 
     #endregion indexers
 
@@ -389,9 +310,9 @@ public class Scene : IEnumerable, IDisposable
 
     public IEnumerator GetEnumerator()
     {
-        for (int i = 0; i < _matrixes.Count; i++)
+        for (int i = 0; i < _sceneLayers.Count; i++)
         {
-            yield return _matrixes[i];
+            yield return _sceneLayers[i];
         }
     }
 
@@ -403,62 +324,44 @@ public class Scene : IEnumerable, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        _allSceneLayeres.Remove(this);
-
-        if (Disposing != null)
-            Disposing(new SceneLayeresDisposingEventArgs(this));
+        OnSceneDisposing();
 
         // unsubscribe from events
-        foreach (SceneLayer grid in _matrixes)
+        foreach (SceneLayer grid in _sceneLayers)
         {
             grid.FirstColRowChanged -= firstCRDel;
             grid.VisibleChanged -= visChgDel;
-            grid.GridPointSizeChanged -= gridPtSzDel;
+            grid.GridPointSizeChanged -= sceneLayerTileSizeDel;
             grid.RefreshQueueAreaAdded -= refQueueDel;
             grid.WrappingChanged -= wrappingDel;
         }
 
+        _allScenes.Remove(this);
+
         // cancel all subscriptions to this object
         SceneLayerAdded = null;
         SceneLayerRemoved = null;
-        Disposing = null;
+        SceneDisposing = null;
     }
 
     #endregion IDisposable Members
 
-    #region static methods
+    #region static
 
-    public static Scene GetSceneLayeresByID(string id)
+    internal static List<Scene> _allScenes = new List<Scene>();
+
+    public static Scene? GetSceneByID(string id) => _allScenes.Find(s => s.ID == id);
+
+    public static List<string> GetAllSceneIDs() => _allScenes.FindAll(s => s != null).ConvertAll(s => s.ID);
+
+    public static ReadOnlyCollection<Scene> GetAllScenes() => _allScenes.AsReadOnly();
+
+    public static void ClearAllScenes()
     {
-        foreach (Scene matrixes in _allSceneLayeres)
-        {
-            if (matrixes.ID == id)
-                return matrixes;
-        }
-
-        return null;
+        var tmp = new List<Scene>(_allScenes);
+        foreach (var scene in tmp)
+            scene.Dispose();
     }
 
-    public static List<string> GetAllSceneLayeresIDs()
-    {
-        List<string> ret = new List<string>(_allSceneLayeres.Count);
-        foreach (Scene matrixes in _allSceneLayeres)
-            ret.Add(matrixes.ID);
-
-        return ret;
-    }
-
-    public static ReadOnlyCollection<Scene> GetAllScenes()
-    {
-        return _allSceneLayeres.AsReadOnly();
-    }
-
-    public static void ClearAllSceneLayers()
-    {
-        var tmp = new List<Scene>(_allSceneLayeres);
-        foreach (var matrixes in tmp)
-            matrixes.Dispose();
-    }
-
-    #endregion static methods
+    #endregion static
 }

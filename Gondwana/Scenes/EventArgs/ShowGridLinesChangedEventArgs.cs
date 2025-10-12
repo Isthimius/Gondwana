@@ -1,16 +1,14 @@
 ﻿namespace Gondwana.Scenes.EventArgs;
 
-public delegate void ShowGridLinesChangedEventHandler(ShowGridLinesChangedEventArgs e);
-
 public class ShowGridLinesChangedEventArgs : System.EventArgs
 {
-    public SceneLayer Matrix;
+    public SceneLayer SceneLayer;
     public bool oldValue;
     public bool newValue;
 
-    protected internal ShowGridLinesChangedEventArgs(SceneLayer matrix, bool oldVal, bool newVal)
+    protected internal ShowGridLinesChangedEventArgs(SceneLayer sceneLayer, bool oldVal, bool newVal)
     {
-        Matrix = matrix;
+        SceneLayer = sceneLayer;
         oldValue = oldVal;
         newValue = newVal;
     }

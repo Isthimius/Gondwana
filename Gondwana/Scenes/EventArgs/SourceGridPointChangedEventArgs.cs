@@ -2,18 +2,16 @@
 
 namespace Gondwana.Scenes.EventArgs;
 
-public delegate void SourceGridPointChangedEventHandler(SourceGridPointChangedEventArgs e);
-
 public class SourceGridPointChangedEventArgs : System.EventArgs
 {
-    public SceneLayer layer;
-    public PointF oldPt;
-    public PointF newPt;
+    public SceneLayer SceneLayer { get; set; }
+    public PointF OldPt { get; set; }
+    public PointF NewPt { get; set; }
 
-    protected internal SourceGridPointChangedEventArgs(SceneLayer matrix, PointF oldP, PointF newP)
+    protected internal SourceGridPointChangedEventArgs(SceneLayer sceneLayer, PointF oldP, PointF newP)
     {
-        layer = matrix;
-        oldPt = oldP;
-        newPt = newP;
+        SceneLayer = sceneLayer;
+        OldPt = oldP;
+        NewPt = newP;
     }
 }

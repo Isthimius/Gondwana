@@ -45,10 +45,10 @@ internal sealed class RefreshQueue : IDisposable
         }
     }
 
-    internal void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherMatrixes)
+    internal void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherRefreshQueues)
     {
         // cascade to other refresh queues if required
-        if (cascadeToOtherMatrixes)
+        if (cascadeToOtherRefreshQueues)
             RefreshQueueAreaAdded?.Invoke(this, new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
 
         // check all existing pixel ranges for an overlap with the new range
@@ -80,7 +80,7 @@ internal sealed class RefreshQueue : IDisposable
 
         foreach (Rectangle area in _rects)
         {
-            foreach (SceneLayerPoint gridPt in _sceneLayer.CoordinateSystem.GetLayerPointListInPixelRange(_sceneLayer, area, true))
+            foreach (SceneLayerTile gridPt in _sceneLayer.CoordinateSystem.GetLayerPointListInPixelRange(_sceneLayer, area, true))
             {
                 if (gridPt == null) continue;
                 tempTiles.Add(gridPt);

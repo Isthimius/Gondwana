@@ -257,7 +257,7 @@ namespace Slider
         private List<Sprite> FindSpritesAdjToOpenSpace()
         {
             List<Sprite> adjSprites = new List<Sprite>();
-            List<SceneLayerPoint> adjGridPts = new List<SceneLayerPoint>();
+            List<SceneLayerTile> adjGridPts = new List<SceneLayerTile>();
 
             adjGridPts.Add(
                 matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.N));
@@ -268,7 +268,7 @@ namespace Slider
             adjGridPts.Add(
                 matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.W));
 
-            foreach (SceneLayerPoint gPt in adjGridPts)
+            foreach (SceneLayerTile gPt in adjGridPts)
             {
                 if (gPt != null)
                     adjSprites.AddRange(SpriteManager.GetSpritesInRange(gPt.DrawLocation));
