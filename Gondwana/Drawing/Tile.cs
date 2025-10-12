@@ -31,7 +31,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     protected internal Frame frame;
     protected internal bool enableFog = false;
-    protected internal Animator animator;
+    protected internal Animator? animator;
     protected bool pauseAnimation;
     protected CollisionDetectionType collisionDetection = CollisionDetectionType.None;
     protected CollisionDetectionAdjustment adjustCollisionArea = new CollisionDetectionAdjustment();

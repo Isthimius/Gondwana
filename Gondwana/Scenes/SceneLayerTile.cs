@@ -9,17 +9,19 @@ namespace Gondwana.Scenes;
 /// Represents the values stored at a single location on a SceneLayer
 /// </summary>
 [JsonObject(IsReference = true)]
-public class SceneLayerTile : Tile, IDisposable
+public class SceneLayerTile : Tile
 {
     #region private / internal fields
 
     [JsonProperty]
     internal SceneLayer parentSceneLayer;
 
+    /// <summary>
+    /// each SceneLayerTile knows its location in the array in parentSceneLayer;
+    /// this is the position in the SceneLayer array, not pixel coordinates
+    /// </summary>
     [JsonProperty]
-    internal Point sceneLayerTileCoordinates;         // each SceneLayerTile knows its location in the array in parentSceneLayer
-
-    protected internal bool disableAddToRefreshQueue = true;
+    internal Point sceneLayerCoordinates;
 
     #endregion private / internal fields
 
@@ -36,8 +38,7 @@ public class SceneLayerTile : Tile, IDisposable
     internal SceneLayerTile(SceneLayerTile gridPoint, Point gridCoord)
     {
         parentSceneLayer = gridPoint.parentSceneLayer;
-        sceneLayerTileCoordinates = gridCoord;
-        disableAddToRefreshQueue = gridPoint.disableAddToRefreshQueue;
+        sceneLayerCoordinates = gridCoord;
         zOrder = gridPoint.zOrder;
         visible = gridPoint.visible;
         frame = gridPoint.frame;
@@ -54,54 +55,23 @@ public class SceneLayerTile : Tile, IDisposable
 
     #region public properties
 
-    [JsonProperty]
-    public virtual new Frame CurrentFrame
-    {
-        get { return frame; }
-        set
-        {
-            if (!disableAddToRefreshQueue)
-                base.frame = value;
-            else
-                base.CurrentFrame = value;
-        }
-    }
+    [JsonIgnore]
+    public virtual new int ZOrder => zOrder;
 
     [JsonIgnore]
-    public virtual new int ZOrder
-    {
-        get { return zOrder; }
-    }
+    public override Rectangle DrawLocation => parentSceneLayer.CoordinateSystem.GetPixelRangeAtLayerPoint(this, true);
 
     [JsonIgnore]
-    public override Rectangle DrawLocation
-    {
-        get { return parentSceneLayer.CoordinateSystem.GetPixelRangeAtLayerPoint(this, true); }
-    }
+    public override bool IsPositionFixed => true;
 
     [JsonIgnore]
-    public override bool IsPositionFixed
-    {
-        get { return true; }
-    }
+    public override PointF GridCoordinates => (PointF)sceneLayerCoordinates;
 
     [JsonIgnore]
-    public override PointF GridCoordinates
-    {
-        get { return (PointF)sceneLayerTileCoordinates; }
-    }
+    public Point GridCoordinatesAbs => sceneLayerCoordinates;
 
     [JsonIgnore]
-    public Point GridCoordinatesAbs
-    {
-        get { return sceneLayerTileCoordinates; }
-    }
-
-    [JsonIgnore]
-    public override SceneLayer ParentGrid
-    {
-        get { return parentSceneLayer; }
-    }
+    public override SceneLayer ParentGrid => parentSceneLayer;
 
     [JsonProperty]
     public bool EnableAnimator
@@ -109,28 +79,18 @@ public class SceneLayerTile : Tile, IDisposable
         get { return (animator != null); }
         set
         {
-            if (value == true)
+            if (value)
             {
                 if (animator == null)
                     animator = new Animator(this);
+
+                return;
             }
-            else
-                if (animator != null)
-            {
-                animator.Dispose();
-                animator = null;
-            }
+
+            animator?.Dispose();
+            animator = null;
         }
     }
 
     #endregion public properties
-
-    #region IDisposable Members
-
-    public new void Dispose()
-    {
-        base.Dispose();
-    }
-
-    #endregion IDisposable Members
 }

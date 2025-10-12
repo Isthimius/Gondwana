@@ -534,7 +534,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             for (int Y = 0; Y <= _matrix[X].GetUpperBound(0); Y++)
             {
                 _matrix[X][Y] = new SceneLayerTile(this);
-                _matrix[X][Y].sceneLayerTileCoordinates = new Point(X, Y);
+                _matrix[X][Y].sceneLayerCoordinates = new Point(X, Y);
             }
         }
     }
@@ -644,7 +644,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             // capture GridPoint if x-y coord already exists in wrappedGridPts
             foreach (SceneLayerTile pt in wrappedGridPts)
             {
-                if ((pt.sceneLayerTileCoordinates.X == x) && (pt.sceneLayerTileCoordinates.Y == y))
+                if ((pt.sceneLayerCoordinates.X == x) && (pt.sceneLayerCoordinates.Y == y))
                 {
                     newGridPoint = pt;
                     break;
