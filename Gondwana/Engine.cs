@@ -63,34 +63,137 @@ public sealed class Engine : IDisposable
     #region events
 
     /// <summary>
-    /// Runs when Initialize() is called, prior to internal initialization.
-    /// This event will only be raised the first time Initialize() is called.
+    /// Occurs immediately before the engine begins its internal initialization sequence.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This event is raised once per engine lifetime, the first time <see cref="Initialize"/> 
+    /// is called. It provides an early hook for systems that must perform setup prior to
+    /// configuration loading or input subsystem initialization.
+    /// </para>
+    /// <para>
+    /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread;
+    /// otherwise, it executes on the calling thread.
+    /// </para>
+    /// </remarks>
     public event Action? PreInitialization;
 
     /// <summary>
-    /// Runs when Initalize() is called, after all other internal initialization is complete.
-    /// This event will only be raised the first time Initialize() is called.
+    /// Occurs after all internal initialization routines have completed, but before
+    /// <see cref="InitializationComplete"/> is raised.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This event is raised once per engine lifetime, following successful configuration
+    /// loading, state restoration, and adapter setup.
+    /// </para>
+    /// <para>
+    /// Use this event for post-initialization logic that depends on fully loaded engine
+    /// settings but precedes runtime activation.
+    /// </para>
+    /// <para>
+    /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread;
+    /// otherwise, it executes on the calling thread.
+    /// </para>
+    /// </remarks>
     public event Action? PostInitialization;
 
     /// <summary>
-    /// Runs when Initalize() is called, after all other internal initialization and
-    /// PostInitialization is complete. This event will be raised each time Initialize() is called.
+    /// Occurs after all initialization steps and post-initialization logic have completed.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This event is raised at the end of <see cref="Initialize"/>, every time the method is called.
+    /// It signifies that the engine and its subsystems are fully active and ready for runtime operations.
+    /// </para>
+    /// <para>
+    /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread;
+    /// otherwise, it executes on the calling thread.
+    /// </para>
+    /// </remarks>
     public event Action? InitializationComplete;
 
+    /// <summary>
+    /// Occurs immediately before <see cref="DoBackgroundTasks(long)"/> executes within each engine cycle.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this event to inject custom background logic such as diagnostics, AI updates,
+    /// or subsystem polling prior to the engine’s own background operations.
+    /// </para>
+    /// </remarks>
     public event Action? BeforeBackgroundTasksExecute;
 
+    /// <summary>
+    /// Occurs immediately after <see cref="DoBackgroundTasks(long)"/> has completed.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this event to perform custom actions or monitoring after all background updates 
+    /// (timers, input, animations, surface refreshes, etc.) have been processed.
+    /// </para>
+    /// </remarks>
     public event Action? AfterBackgroundTasksExecute;
 
+    /// <summary>
+    /// Occurs immediately before <see cref="DoForegroundTasks(long)"/> executes within each engine cycle.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this event to perform per-frame setup tasks prior to rendering or to update 
+    /// game state that must occur before foreground drawing.
+    /// </para>
+    /// </remarks>
     public event Action? BeforeEngineCycle;
 
+    /// <summary>
+    /// Occurs immediately after <see cref="DoForegroundTasks(long)"/> completes within each engine cycle.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this event to perform logic that depends on a completed render frame,
+    /// such as post-render effects, profiling, or scheduling background jobs.
+    /// </para>
+    /// </remarks>
     public event Action? AfterEngineCycle;
 
+    /// <summary>
+    /// Occurs whenever cycles-per-second (CPS) and frames-per-second (FPS) metrics are calculated.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Raised at a regular interval defined by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
+    /// Provides a snapshot of gross and net cycle rates, total elapsed time, and sample interval 
+    /// through a <see cref="CyclesPerSecondCalculatedEventArgs"/> payload.
+    /// </para>
+    /// <para>
+    /// This event is posted to the UI thread when a <see cref="UiDispatcher"/> is available.
+    /// </para>
+    /// </remarks>
     public event Action<CyclesPerSecondCalculatedEventArgs>? CPSCalculated;
-    
+
+    /// <summary>
+    /// Raised when <see cref="Dispose()"/> begins the explicit disposal sequence.
+    /// </summary>
+    /// <remarks>
+    /// Fired only when <see cref="Dispose()"/> is called (never from the finalizer).
+    /// Handlers run before managed cleanup while engine state is still readable.
+    /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread.
+    /// </remarks>
+    public event Action? Disposing;
+
+    /// <summary>
+    /// Raised after the engine has completed explicit disposal.
+    /// </summary>
+    /// <remarks>
+    /// Fired only when <see cref="Dispose()"/> is called (never from the finalizer).
+    /// Indicates all managed cleanup has completed and <see cref="IsDisposed"/> is <c>true</c>.
+    /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread.
+    /// </remarks>
+    public event Action? Disposed;
+
     #endregion events
+
 
     private Engine()
     { }
@@ -98,6 +201,56 @@ public sealed class Engine : IDisposable
     private bool _isInitialized = false;
     private bool _isInitializing = false;
 
+    /// <summary>
+    /// Performs one-time or on-demand initialization of the <see cref="Engine"/> instance, 
+    /// loading configuration, state files, and input adapters required for execution.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method is responsible for preparing all core systems of the engine prior to starting
+    /// the main loop. It performs the following operations in order:
+    /// </para>
+    /// <list type="number">
+    ///   <item><description>Raises the <see cref="PreInitialization"/> event (on the UI thread if available).</description></item>
+    ///   <item><description>Loads engine configuration settings from file using <see cref="EngineConfigurationFile.Load"/>.</description></item>
+    ///   <item><description>Loads any <see cref="EngineState"/> files declared in configuration.</description></item>
+    ///   <item><description>Initializes input subsystems for keyboard, mouse, and gamepad polling, 
+    ///     if corresponding adapters are provided.</description></item>
+    ///   <item><description>Raises <see cref="PostInitialization"/> after all internal setup is complete.</description></item>
+    ///   <item><description>Marks the engine as initialized and raises <see cref="InitializationComplete"/>.</description></item>
+    /// </list>
+    /// <para>
+    /// This method is automatically invoked by <see cref="Start(SynchronizationContext)"/> if the engine 
+    /// has not yet been initialized. It is safe to call multiple times, but subsequent calls will 
+    /// return immediately once initialization has been completed or is in progress.
+    /// </para>
+    /// <para>
+    /// Thread-safe guarantees:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>Concurrent calls are prevented by internal <c>_isInitializing</c> and <c>_isInitialized</c> flags.</description></item>
+    ///   <item><description>Events that must run on the UI thread are dispatched through <see cref="UiDispatcher"/> if available.</description></item>
+    /// </list>
+    /// </remarks>
+    /// <param name="configFileName">
+    /// Optional path to a configuration file to load. If <c>null</c>, the default configuration is used.
+    /// </param>
+    /// <param name="autoSaveConfig">
+    /// Optional flag indicating whether configuration changes should be automatically saved back to disk.
+    /// </param>
+    /// <param name="keyboardAdapter">
+    /// Optional <see cref="IKeyboardAdapter"/> instance used to initialize the keyboard input subsystem.
+    /// </param>
+    /// <param name="mouseAdapter">
+    /// Optional <see cref="IMouseAdapter"/> instance used to initialize the mouse input subsystem.
+    /// </param>
+    /// <param name="gamepadManager">
+    /// Optional <see cref="IGamepadManager{T}"/> instance used to initialize the gamepad subsystem.
+    /// </param>
+    /// <seealso cref="Start(SynchronizationContext)"/>
+    /// <seealso cref="Stop"/>
+    /// <seealso cref="EngineConfiguration"/>
+    /// <seealso cref="EngineState"/>
     public void Initialize(
         string? configFileName = null,
         bool? autoSaveConfig = null,
@@ -148,12 +301,26 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>
-    /// Starts the operation using the current <see cref="SynchronizationContext"/>.
-    /// Must be called from the UI thread.
+    /// Starts the <see cref="Engine"/> using the current thread’s <see cref="SynchronizationContext"/>.
     /// </summary>
-    /// <remarks>This method requires a non-null <see cref="SynchronizationContext"/> to be present.  If no
-    /// <see cref="SynchronizationContext"/> is available, an exception is thrown.</remarks>
-    /// <exception cref="InvalidOperationException">Thrown if the current <see cref="SynchronizationContext"/> is <c>null</c>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This overload is intended for convenience when starting the engine from the UI thread.
+    /// It retrieves the current <see cref="SynchronizationContext"/> and forwards it to 
+    /// <see cref="Start(SynchronizationContext)"/>.
+    /// </para>
+    /// <para>
+    /// The engine must be started from a thread that has a valid <see cref="SynchronizationContext"/>,
+    /// typically the primary UI thread. If no synchronization context is available, an 
+    /// <see cref="InvalidOperationException"/> is thrown.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if <see cref="SynchronizationContext.Current"/> is <c>null</c>.
+    /// </exception>
+    /// <seealso cref="Start(SynchronizationContext)"/>
+    /// <seealso cref="Initialize"/>
+    /// <seealso cref="Stop"/>
     public void Start()
     {
         if (SynchronizationContext.Current == null)
@@ -163,11 +330,47 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>
-    /// Starts the main processing loop, initializing the instance if necessary.
+    /// Starts the <see cref="Engine"/> main loop using the provided <see cref="SynchronizationContext"/>,
+    /// initializing the engine if it has not yet been started.
     /// </summary>
-    /// <remarks>This method ensures that the instance is initialized before starting the processing loop.  If
-    /// the instance is already running, the method returns immediately without performing any action.</remarks>
-    /// <param name="uiContext">The <see cref="SynchronizationContext"/> used to synchronize UI-related operations.</param>
+    /// <remarks>
+    /// <para>
+    /// This method is the entry point for runtime execution. It ensures the engine is fully initialized
+    /// before beginning the continuous background processing loop. The loop runs on a separate worker 
+    /// thread and repeatedly invokes <see cref="Cycle"/>, yielding between iterations to allow 
+    /// cooperative multitasking.
+    /// </para>
+    /// <para>
+    /// The <paramref name="uiContext"/> argument establishes the <see cref="UiDispatcher"/> used for 
+    /// posting events and callbacks to the UI thread. All UI-bound events such as 
+    /// <see cref="PreInitialization"/>, <see cref="PostInitialization"/>, 
+    /// <see cref="InitializationComplete"/>, and <see cref="CPSCalculated"/> 
+    /// will be marshalled through this dispatcher when available.
+    /// </para>
+    /// <para>
+    /// If the engine is already running, this method returns immediately without taking further action.
+    /// </para>
+    /// <para>
+    /// Threading behavior:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>The engine’s main loop runs on a background task, not the UI thread.</description></item>
+    ///   <item><description>All rendering and timing operations are controlled through <see cref="Cycle"/>.</description></item>
+    ///   <item><description>The <see cref="UiDispatcher"/> guarantees that event notifications 
+    ///   targeting the UI are executed safely on the originating thread.</description></item>
+    /// </list>
+    /// </remarks>
+    /// <param name="uiContext">
+    /// The <see cref="SynchronizationContext"/> that defines the UI thread context to which 
+    /// UI-related operations and events will be dispatched.
+    /// </param>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if <paramref name="uiContext"/> is <c>null</c>.
+    /// </exception>
+    /// <seealso cref="Initialize"/>
+    /// <seealso cref="Stop"/>
+    /// <seealso cref="Cycle"/>
+    /// <seealso cref="UiDispatcher"/>
     public void Start(SynchronizationContext uiContext)
     {
         if (IsRunning)
@@ -198,6 +401,32 @@ public sealed class Engine : IDisposable
         });
     }
 
+    /// <summary>
+    /// Stops the <see cref="Engine"/> main loop and halts all ongoing processing.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method cleanly terminates the engine’s background execution cycle started by 
+    /// <see cref="Start(SynchronizationContext)"/>. It sets <see cref="IsRunning"/> to <c>false</c>,
+    /// signaling the loop in <see cref="Cycle"/> to exit on the next iteration.
+    /// </para>
+    /// <para>
+    /// <b>Stop()</b> does not immediately dispose of resources or clear state. It simply halts
+    /// ongoing updates and rendering, allowing the engine’s subsystems (timers, surfaces, 
+    /// input pollers, etc.) to remain intact for later reuse or inspection.
+    /// </para>
+    /// <para>
+    /// To fully clean up and release all managed resources, call <see cref="Dispose"/> after
+    /// stopping the engine.
+    /// </para>
+    /// <para>
+    /// This method is thread-safe and may be called from any thread.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="Start()"/>
+    /// <seealso cref="Cycle"/>
+    /// <seealso cref="Dispose()"/>
+    /// <seealso cref="IsRunning"/>
     public void Stop()
     {
         IsRunning = false;
@@ -233,6 +462,8 @@ public sealed class Engine : IDisposable
         private set => Volatile.Write(ref _config, value);
     }
 
+    public bool IsDisposing { get; private set; }
+
     #endregion public properties
 
     #region private methods
@@ -245,7 +476,7 @@ public sealed class Engine : IDisposable
 
         // if TargetFPS <= 0, render to screen unbounded;
         // otherwise, check if throttle time has passed since last tick...
-        if ((Configuration.TargetFPS <= 0) 
+        if ((Configuration.TargetFPS <= 0)
             || (tick - _lastTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS)
         {
             DoForegroundTasks(tick);
@@ -377,12 +608,31 @@ public sealed class Engine : IDisposable
         _netCyclesThisMeasure = 0;
     }
 
+    #endregion private methods
+
+    #region IDisposable support
+
     private void Dispose(bool disposing)
     {
         if (!IsDisposed)
         {
             if (disposing)
             {
+                IsDisposing = true;
+
+                // Stop the loop first so handlers don't race the cycle thread
+                try { Stop(); }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Unhandled exception calling Stop()");
+                }
+
+                // Raise Disposing on UI thread if possible; otherwise inline
+                if (UiDispatcher is not null)
+                    UiDispatcher.Post(() => SafeInvoke(Disposing));
+                else
+                    SafeInvoke(Disposing);
+
                 // managed cleanup...
                 Timer.ClearAll();
                 State.Clear();
@@ -390,6 +640,25 @@ public sealed class Engine : IDisposable
 
             // unmanaged cleanup...
             IsDisposed = true;
+
+            if (disposing)
+            {
+                // Now signal we're fully torn down
+                if (UiDispatcher is not null)
+                    UiDispatcher.Post(() => SafeInvoke(Disposed));
+                else
+                    SafeInvoke(Disposed);
+            }
+        }
+    }
+
+    private static void SafeInvoke(Action? evnt)
+    {
+        try { evnt?.Invoke(); }
+        catch (Exception ex)
+        {
+            // Keep disposal robust; log and continue
+            Logger.LogError(ex, "Unhandled exception in disposal event handler.");
         }
     }
 
@@ -405,5 +674,5 @@ public sealed class Engine : IDisposable
         Dispose(disposing: false);
     }
 
-    #endregion private methods
+    #endregion IDisposable support
 }
