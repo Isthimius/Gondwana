@@ -58,8 +58,6 @@ public sealed class Engine : IDisposable
     private readonly double _grossCPS = 0;
     private readonly double _netFPS = 0;
 
-    private bool _hasBackgroundRun = false;
-
     #endregion private fields
 
     #region events
@@ -215,10 +213,9 @@ public sealed class Engine : IDisposable
 
     public bool IsRunning { get; private set; }
 
-    public double TotalSecondsEngineRunning
-    {
-        get { return (double)(HighResTimer.GetCurrentTick() - _startTick) / (double)HighResTimer.TicksPerSecond; }
-    }
+    public long TotalTicksEngineRunning => HighResTimer.GetCurrentTick() - _startTick;
+
+    public double TotalSecondsEngineRunning => TotalTicksEngineRunning / (double)HighResTimer.TicksPerSecond;
 
     public double CyclesPerSecond => _grossCPS;
 
@@ -244,24 +241,18 @@ public sealed class Engine : IDisposable
     {
         long tick = HighResTimer.GetCurrentTick();
 
-        // throttle time hasn't passed; just do background tasks
-        if ((Configuration.TargetFPS > 0) && ((double)(tick - _lastTick) < (((double)1 / (double)Configuration.TargetFPS)) * (double)HighResTimer.TicksPerSecond))
-        {
-            DoBackgroundTasks(tick);
+        DoBackgroundTasks(tick);
 
-            // flag that the background tasks have been run this "tick"
-            _hasBackgroundRun = true;
-        }
-        else        // Settings.Throttle time has passed since last tick...
+        // if TargetFPS <= 0, render to screen unbounded;
+        // otherwise, check if throttle time has passed since last tick...
+        if ((Configuration.TargetFPS <= 0) 
+            || (tick - _lastTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS)
         {
-            // make sure background rendering done at least once
-            if (!_hasBackgroundRun)
-                DoBackgroundTasks(tick);
-
             DoForegroundTasks(tick);
 
-            // this "tick" complete, reset flag for next tick
-            _hasBackgroundRun = false;
+            // save time of this last tick; increment CPS counter
+            _lastTick = tick;
+            _netCyclesThisMeasure++;
         }
 
         // increment CPS counter
@@ -332,10 +323,6 @@ public sealed class Engine : IDisposable
 
         // update state of gamepad(s)
         GamepadManager?.Update();
-
-        // save time of this last tick; increment CPS counter
-        _lastTick = tick;
-        _netCyclesThisMeasure++;
 
         // raise event
         AfterEngineCycle?.Invoke();
