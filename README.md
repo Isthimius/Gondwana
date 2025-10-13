@@ -21,7 +21,7 @@
 
 ```
 Gondwana/
-├── Gondwana.Core/          # Core engine: timing, math, resource management
+├── Gondwana/               # Core engine: timing, math, resource management
 ├── Gondwana.Rendering/     # SkiaSharp rendering & backbuffer system
 ├── Gondwana.Audio/         # Audio playback (WAV, MP3, OGG via NAudio)
 ├── Gondwana.WinForms/      # Windows desktop adapter (SKControl integration)
@@ -49,7 +49,7 @@ The Gondwana Core library depends on the following NuGet packages:
 - **SkiaSharp.HarfBuzz** (3.119.0) — advanced text shaping/rendering
 
 
-### Build & Run
+## 🏃‍♂️ Build & Run
 ```bash
 git clone https://github.com/yourusername/gondwana.git
 cd gondwana
