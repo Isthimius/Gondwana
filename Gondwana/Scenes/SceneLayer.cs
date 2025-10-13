@@ -81,7 +81,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private GetIndexer FindIndexedSceneLayerTile;
 
     // TODO: remove this; wrapping should be handled via rendering, not by creating new SceneLayerTiles
-    internal List<SceneLayerTile> wrappedGridPts = new List<SceneLayerTile>();
+    //internal List<SceneLayerTile> wrappedGridPts = new List<SceneLayerTile>();
 
     #endregion matrix wrapping delegates / variables
 
@@ -635,23 +635,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             PointF actualSceneLayerTile =
                 CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
 
-            // capture SceneLayerTile if x-y coord already exists in wrappedGridPts
-            foreach (SceneLayerTile pt in wrappedGridPts)
-            {
-                if ((pt.sceneLayerCoordinates.X == x) && (pt.sceneLayerCoordinates.Y == y))
-                {
-                    newSceneLayerTile = pt;
-                    break;
-                }
-            }
-
             // if not already found, create and add to wrappedGridPts, and associate with "parent"
             if (newSceneLayerTile == null)
             {
                 newSceneLayerTile = new SceneLayerTile(_sceneLayerTileArray[(int)actualSceneLayerTile.X][(int)actualSceneLayerTile.Y],
                     new Point(x, y));
-
-                wrappedGridPts.Add(newSceneLayerTile);
             }
         }
 
