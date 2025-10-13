@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9381bf49-c5a7-4f81-8173-6debd01e073a" alt="Gondwana" width="80%">
+</p>
+
 # Gondwana Game Engine
 
 **Gondwana** is a cross-platform 2D game and rendering engine written in **C#/.NET 8**, built around **SkiaSharp** for graphics. It modernizes legacy Win32/GDI patterns into a modular, high-performance framework that runs on desktop, mobile, and web.  
