@@ -27,6 +27,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     public WinFormGpuRenderSurfaceAdapter(SKGLControl gl)
         : base(gl.Width, gl.Height)
     {
+        throw new NotImplementedException();
+
         _glControl = gl;
 
         // Wire events

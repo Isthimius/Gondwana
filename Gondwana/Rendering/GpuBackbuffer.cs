@@ -13,6 +13,8 @@ public class GpuBackbuffer : BackbufferBase
     public GpuBackbuffer(int width, int height)
         : base(width, height)
     {
+        throw new NotImplementedException();
+
         _grContext = GRContext.CreateGl() ?? throw new InvalidOperationException("No active OpenGL context.");
 
         var glInfo = new GRGlFramebufferInfo(0, SKColorType.Rgba8888.ToGlSizedFormat());

@@ -44,11 +44,6 @@ class GondwanaTest
         Console.Read();
     }
 
-    static void Engine_AfterEngineCycle(object sender, EngineCycleEventArgs e)
-    {
-        totalEngineCycles++;
-    }
-
     private static void EngineCPSCalculated(object sender, CyclesPerSecondCalculatedEventArgs e)
     {
         totalTimesCPSCalcd++;

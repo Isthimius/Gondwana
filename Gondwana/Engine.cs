@@ -53,12 +53,10 @@ public sealed class Engine : IDisposable
     private long _lastCPSSamplingTick;
     private long _lastTick = HighResTimer.GetCurrentTick();
 
-    private long _grossCycles = 0;
     private long _grossCyclesThisMeasure = 0;
-    private long _netCycles = 0;
     private long _netCyclesThisMeasure = 0;
-    private double _grossCPS = 0;
-    private double _netFPS = 0;
+    private readonly double _grossCPS = 0;
+    private readonly double _netFPS = 0;
 
     private bool _hasBackgroundRun = false;
 
@@ -70,30 +68,30 @@ public sealed class Engine : IDisposable
     /// Runs when Initialize() is called, prior to internal initialization.
     /// This event will only be raised the first time Initialize() is called.
     /// </summary>
-    public event Action PreInitialization;
+    public event Action? PreInitialization;
 
     /// <summary>
     /// Runs when Initalize() is called, after all other internal initialization is complete.
     /// This event will only be raised the first time Initialize() is called.
     /// </summary>
-    public event Action PostInitialization;
+    public event Action? PostInitialization;
 
     /// <summary>
     /// Runs when Initalize() is called, after all other internal initialization and
     /// PostInitialization is complete. This event will be raised each time Initialize() is called.
     /// </summary>
-    public event Action InitializationComplete;
+    public event Action? InitializationComplete;
 
-    public event Action BeforeBackgroundTasksExecute;
+    public event Action? BeforeBackgroundTasksExecute;
 
-    public event Action AfterBackgroundTasksExecute;
+    public event Action? AfterBackgroundTasksExecute;
 
-    public event Action<EngineCycleEventArgs> BeforeEngineCycle;
+    public event Action? BeforeEngineCycle;
 
-    public event Action<EngineCycleEventArgs> AfterEngineCycle;
+    public event Action? AfterEngineCycle;
 
-    public event Action<CyclesPerSecondCalculatedEventArgs> CPSCalculated;
-
+    public event Action<CyclesPerSecondCalculatedEventArgs>? CPSCalculated;
+    
     #endregion events
 
     private Engine()
@@ -268,7 +266,6 @@ public sealed class Engine : IDisposable
 
         // increment CPS counter
         _grossCyclesThisMeasure++;
-        _grossCycles++;
 
         // if 0 or negative, sampling is turned off
         if (Configuration.SamplingTimeForCPS > 0)
@@ -319,12 +316,12 @@ public sealed class Engine : IDisposable
     private void DoForegroundTasks(long tick)
     {
         // raise event
-        BeforeEngineCycle?.Invoke(new EngineCycleEventArgs(_grossCyclesThisMeasure, _grossCycles, _netCyclesThisMeasure, _netCycles, _grossCPS, _netFPS));
+        BeforeEngineCycle?.Invoke();
 
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 
-        // render all DirectDrawing instances;
+        // render all DirectDrawing instances.
         // this will add to the DirtyRects of any Backbuffers,
         // to be picked up next DoBackgroundTasks()
         DirectDrawingManager.Instance.RenderAll();
@@ -339,16 +336,9 @@ public sealed class Engine : IDisposable
         // save time of this last tick; increment CPS counter
         _lastTick = tick;
         _netCyclesThisMeasure++;
-        _netCycles++;
 
         // raise event
-        AfterEngineCycle?.Invoke(new EngineCycleEventArgs(
-            _grossCyclesThisMeasure,
-            _grossCycles,
-            _netCyclesThisMeasure,
-            _netCycles,
-            _grossCPS,
-            _netFPS));
+        AfterEngineCycle?.Invoke();
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);

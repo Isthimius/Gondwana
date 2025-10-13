@@ -40,11 +40,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     }
 
     private TBackbuffer? _backbuffer;
-    private readonly Color _clear;
     private Scene? _scene;
     private RenderSurfaceAdapterBase? _renderSurfaceAdapter;
 
-    public override BackbufferBase Backbuffer => _backbuffer;
+    public override BackbufferBase? Backbuffer => _backbuffer;
     public override Scene? Scene => _scene;
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
 
