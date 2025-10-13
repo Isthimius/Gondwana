@@ -20,7 +20,7 @@ public sealed class Timer : IDisposable
     /// <remarks>This event is raised each time the timer completes its interval. Subscribers can handle this
     /// event to execute custom logic at regular intervals. Ensure the timer is started and enabled for the event to be
     /// raised.</remarks>
-    public event TimerEventHandler? Tick;
+    public event Action? Tick;
 
     /// <summary>
     /// Gets the type of the timer, indicating whether it is a pre-cycle or post-cycle timer.
@@ -59,7 +59,7 @@ public sealed class Timer : IDisposable
         Paused = false;
     }
 
-    internal void RaiseTickEvent() => Tick?.Invoke(new TimerEventArgs(this));
+    internal void RaiseTickEvent() => Tick?.Invoke();
 
     public void Dispose()
     {
