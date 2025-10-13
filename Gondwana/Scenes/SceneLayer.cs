@@ -871,7 +871,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             foreach (Scene matrixes in Scene._allScenes)
             {
                 if (matrixes.GetSceneLayerByID(parent._id) != null)
-                    matrixes.refreshNeeded = SceneRefreshType.All;
+                    matrixes.RefreshNeeded = SceneRefreshType.All;
             }
 
             if (VelocityX != 0 || VelocityY != 0)

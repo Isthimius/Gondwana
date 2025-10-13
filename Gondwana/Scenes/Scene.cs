@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Gondwana.Scenes;
 
 [JsonObject(IsReference = true)]
-public class Scene : IEnumerable, IDisposable
+public class Scene : IEnumerable<SceneLayer>, IDisposable
 {
     #region private / internal field declarations
 
@@ -17,7 +17,7 @@ public class Scene : IEnumerable, IDisposable
     private List<SceneLayer> _sceneLayers;    // array of SceneLayer objects; each element is one "layer"
 
     internal List<SceneLayer> _visibleLayers = new List<SceneLayer>();
-    internal SceneRefreshType refreshNeeded = SceneRefreshType.All;
+    //internal SceneRefreshType refreshNeeded = SceneRefreshType.All;
 
     private string _id = Guid.NewGuid().ToString();
 
@@ -93,35 +93,19 @@ public class Scene : IEnumerable, IDisposable
     }
 
     [JsonIgnore]
-    public int Count
-    {
-        get { return _sceneLayers.Count; }
-    }
+    public int Count => _sceneLayers?.Count ?? 0;
 
     [JsonIgnore]
-    public int CountOfVisibleLayers
-    {
-        get { return _visibleLayers.Count; }
-    }
+    public int CountOfVisibleLayers => _visibleLayers?.Count ?? 0;
 
     [JsonIgnore]
-    public SceneRefreshType RefreshNeeded
-    {
-        get { return refreshNeeded; }
-        set { refreshNeeded = value; }
-    }
+    public SceneRefreshType RefreshNeeded { get; set; }
 
     [JsonIgnore]
-    public ReadOnlyCollection<SceneLayer> SceneLayerList
-    {
-        get { return _sceneLayers.AsReadOnly(); }
-    }
+    public ReadOnlyCollection<SceneLayer> SceneLayer => _sceneLayers.AsReadOnly();
 
     [JsonIgnore]
-    public List<SceneLayer> VisibleSceneLayerList
-    {
-        get { return _visibleLayers; }
-    }
+    public ReadOnlyCollection<SceneLayer> VisibleSceneLayer => _visibleLayers.AsReadOnly();
 
     #endregion public properties
 
@@ -136,7 +120,7 @@ public class Scene : IEnumerable, IDisposable
         // rediscover the list of visible arrays
         _SetVisibleSceneLayersArray();
 
-        refreshNeeded = SceneRefreshType.All;
+        RefreshNeeded = SceneRefreshType.All;
 
         return this[newIdx];
     }
@@ -152,7 +136,7 @@ public class Scene : IEnumerable, IDisposable
         // rediscover the list of visible arrays
         _SetVisibleSceneLayersArray();
 
-        refreshNeeded = SceneRefreshType.All;
+        RefreshNeeded = SceneRefreshType.All;
     }
 
     public void RemoveLayer(SceneLayer sceneLayer)
@@ -163,7 +147,7 @@ public class Scene : IEnumerable, IDisposable
         // rediscover the list of visible scene layers
         _SetVisibleSceneLayersArray();
 
-        refreshNeeded = SceneRefreshType.All;
+        RefreshNeeded = SceneRefreshType.All;
     }
 
     public SceneLayer? GetSceneLayerByID(string id)
@@ -241,13 +225,13 @@ public class Scene : IEnumerable, IDisposable
     private void _SceneLayerFirstColRowChanged()
     {
         // shifting at least one Layer, so redraw entire Backbuffer
-        refreshNeeded = SceneRefreshType.All;
+        RefreshNeeded = SceneRefreshType.All;
     }
 
     private void _SceneLayerVisibleChanged()
     {
         // redraw entire Backbuffer
-        refreshNeeded = SceneRefreshType.All;
+        RefreshNeeded = SceneRefreshType.All;
         _SetVisibleSceneLayersArray();
     }
 
@@ -266,14 +250,14 @@ public class Scene : IEnumerable, IDisposable
 
     private void _SceneLayerTileSizeChanged()
     {
-        refreshNeeded = SceneRefreshType.All;
+        RefreshNeeded = SceneRefreshType.All;
     }
 
     private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
     {
         // set refresh to Queue if no refresh required
-        if (refreshNeeded == SceneRefreshType.None)
-            refreshNeeded = SceneRefreshType.Queue;
+        if (RefreshNeeded == SceneRefreshType.None)
+            RefreshNeeded = SceneRefreshType.Queue;
 
         // if SceneLayer that added Tile to queue is visible...
         if (e.layer.Visible)
@@ -293,7 +277,7 @@ public class Scene : IEnumerable, IDisposable
 
     private void _SceneLayerWrappingChanged()
     {
-        refreshNeeded = SceneRefreshType.All;
+        RefreshNeeded = SceneRefreshType.All;
     }
 
     #endregion handle SceneLayer events
@@ -308,7 +292,9 @@ public class Scene : IEnumerable, IDisposable
 
     #region enumerable code
 
-    public IEnumerator GetEnumerator()
+    public IEnumerator GetEnumerator() => ((IEnumerable<SceneLayer>)this).GetEnumerator();
+
+    IEnumerator<SceneLayer> IEnumerable<SceneLayer>.GetEnumerator()
     {
         for (int i = 0; i < _sceneLayers.Count; i++)
         {

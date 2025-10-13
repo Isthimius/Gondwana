@@ -35,15 +35,15 @@ public class SceneLayerTile : Tile
         parentSceneLayer = matrix;
     }
 
-    internal SceneLayerTile(SceneLayerTile gridPoint, Point gridCoord)
+    internal SceneLayerTile(SceneLayerTile sceneLayerTile, Point gridCoord)
     {
-        parentSceneLayer = gridPoint.parentSceneLayer;
+        parentSceneLayer = sceneLayerTile.parentSceneLayer;
         sceneLayerCoordinates = gridCoord;
-        zOrder = gridPoint.zOrder;
-        visible = gridPoint.visible;
-        frame = gridPoint.frame;
-        enableFog = gridPoint.enableFog;
-        Tag = gridPoint.Tag;
+        zOrder = sceneLayerTile.zOrder;
+        visible = sceneLayerTile.visible;
+        frame = sceneLayerTile.frame;
+        enableFog = sceneLayerTile.enableFog;
+        Tag = sceneLayerTile.Tag;
     }
 
     ~SceneLayerTile()
