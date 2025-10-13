@@ -2,14 +2,14 @@
 
 public class ShowGridLinesChangedEventArgs : System.EventArgs
 {
-    public SceneLayer SceneLayer;
-    public bool oldValue;
-    public bool newValue;
+    public SceneLayer SceneLayer { get; set; }
+    public bool OldValue { get; set; }
+    public bool NewValue { get; set; }
 
     protected internal ShowGridLinesChangedEventArgs(SceneLayer sceneLayer, bool oldVal, bool newVal)
     {
         SceneLayer = sceneLayer;
-        oldValue = oldVal;
-        newValue = newVal;
+        OldValue = oldVal;
+        NewValue = newVal;
     }
 }

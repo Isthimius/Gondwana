@@ -2,14 +2,14 @@
 
 public class SceneLayerVisibleChangedEventArgs : System.EventArgs
 {
-    public SceneLayer SceneLayer;
-    public bool oldVisibleValue;
-    public bool newVisibleValue;
+    public SceneLayer SceneLayer { get; set; }
+    public bool OldVisibleValue { get; set; }
+    public bool NewVisibleValue { get; set; }
 
     protected internal SceneLayerVisibleChangedEventArgs(SceneLayer sceneLayer, bool oldValue, bool newValue)
     {
         SceneLayer = sceneLayer;
-        oldVisibleValue = oldValue;
-        newVisibleValue = newValue;
+        OldVisibleValue = oldValue;
+        NewVisibleValue = newValue;
     }
 }
