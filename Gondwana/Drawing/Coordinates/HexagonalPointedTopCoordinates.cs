@@ -9,55 +9,64 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPixelAtLayerPoint(SceneLayer layer, PointF gp)
+    public Point GetSrcPixelAtLayerPoint(SceneLayer sceneLayer, PointF gp)
     {
-        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
         int col = (int)Math.Round(gp.X); int row = (int)Math.Round(gp.Y);
 
-        int x = layer.SceneLayerTileZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2);
-        int y = layer.SceneLayerTileZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f));
+        int x = sceneLayer.SceneLayerTileZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2);
+        int y = sceneLayer.SceneLayerTileZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f));
         return new Point(x, y);
     }
 
-    public PointF GetLayerPointAtPixel(SceneLayer layer, Point pixelPt)
+    public PointF GetLayerPointAtPixel(SceneLayer sceneLayer, Point pixelPt)
     {
-        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
-        float fy = (pixelPt.Y - layer.SceneLayerTileZeroPixel.Y) / (H * 0.75f);
+        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
+        float fy = (pixelPt.Y - sceneLayer.SceneLayerTileZeroPixel.Y) / (H * 0.75f);
         int approxRow = (int)Math.Round(fy);
-        int baseX = layer.SceneLayerTileZeroPixel.X + ((approxRow & 1) == 0 ? 0 : W / 2);
+        int baseX = sceneLayer.SceneLayerTileZeroPixel.X + ((approxRow & 1) == 0 ? 0 : W / 2);
         float fx = (pixelPt.X - baseX) / (float)W;
         int approxCol = (int)Math.Round(fx);
 
         var best = new Point(approxCol, approxRow); float bestDist = float.MaxValue;
         foreach (var cand in NeighborsPointedTop(approxCol, approxRow, includeSelf: true))
         {
-            var poly = HexPolygonPointedTop(layer, cand.X, cand.Y, includeOverhang: false);
-            if (PointInPolygon(poly, pixelPt)) return new PointF(cand.X, cand.Y);
-            float cx = layer.SceneLayerTileZeroPixel.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
-            float cy = layer.SceneLayerTileZeroPixel.Y + cand.Y * (H * 0.75f) + H / 2f;
+            var poly = HexPolygonPointedTop(sceneLayer, cand.X, cand.Y, includeOverhang: false);
+
+            if (PointInPolygon(poly, pixelPt))
+                return new PointF(cand.X, cand.Y);
+
+            float cx = sceneLayer.SceneLayerTileZeroPixel.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
+            float cy = sceneLayer.SceneLayerTileZeroPixel.Y + cand.Y * (H * 0.75f) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
-            if (d < bestDist) { bestDist = d; best = cand; }
+            
+            if (d < bestDist)
+            {
+                bestDist = d;
+                best = cand;
+            }
         }
+
         return new PointF(best.X, best.Y);
     }
 
-    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
 
-        int minRow = (int)Math.Floor((pixelRange.Top - layer.SceneLayerTileZeroPixel.Y) / (H * 0.75f)) - 2;
-        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - layer.SceneLayerTileZeroPixel.Y) / (H * 0.75f)) + 2;
+        int minRow = (int)Math.Floor((pixelRange.Top - sceneLayer.SceneLayerTileZeroPixel.Y) / (H * 0.75f)) - 2;
+        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - sceneLayer.SceneLayerTileZeroPixel.Y) / (H * 0.75f)) + 2;
 
         for (int row = minRow; row <= maxRow; row++)
         {
             int xOffset = ((row & 1) == 0 ? 0 : W / 2);
-            int minCol = (int)Math.Floor((pixelRange.Left - layer.SceneLayerTileZeroPixel.X - xOffset) / (float)W) - 2;
-            int maxCol = (int)Math.Ceiling((pixelRange.Right - layer.SceneLayerTileZeroPixel.X - xOffset) / (float)W) + 2;
+            int minCol = (int)Math.Floor((pixelRange.Left - sceneLayer.SceneLayerTileZeroPixel.X - xOffset) / (float)W) - 2;
+            int maxCol = (int)Math.Ceiling((pixelRange.Right - sceneLayer.SceneLayerTileZeroPixel.X - xOffset) / (float)W) + 2;
 
             for (int col = minCol; col <= maxCol; col++)
             {
-                var gp = layer[col, row]; if (gp == null) continue;
+                var gp = sceneLayer[col, row]; if (gp == null) continue;
                 var r = GetPixelRangeAtLayerPoint(gp, includeOverhang);
                 if (r.IntersectsWith(pixelRange)) result.Add(gp);
             }
@@ -129,12 +138,12 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         yield return new Point(col - (even ? 1 : 0), row + 1); // SW
     }
 
-    private static Point[] HexPolygonPointedTop(SceneLayer layer, int col, int row, bool includeOverhang)
+    private static Point[] HexPolygonPointedTop(SceneLayer sceneLayer, int col, int row, bool includeOverhang)
     {
-        int W = layer.SceneLayerTileWidth; int H = layer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
         var p = new Point(
-            layer.SceneLayerTileZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2),
-            layer.SceneLayerTileZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f)));
+            sceneLayer.SceneLayerTileZeroPixel.X + col * W + ((row & 1) == 0 ? 0 : W / 2),
+            sceneLayer.SceneLayerTileZeroPixel.Y + (int)Math.Floor(row * (H * 0.75f)));
 
         var rect = new Rectangle(p.X, p.Y, W, H);
         var ohRect = TileBounds.ApplyOverhang(rect, includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None, includeOverhang);

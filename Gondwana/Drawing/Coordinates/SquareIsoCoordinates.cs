@@ -5,34 +5,34 @@ namespace Gondwana.Drawing.Coordinates;
 
 public class SquareIsoCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPixelAtLayerPoint(SceneLayer matrix, PointF gridCoord)
+    public Point GetSrcPixelAtLayerPoint(SceneLayer sceneLayer, PointF gridCoord)
     {
         Point retVal = new Point();
 
-        retVal.X = (int)(matrix.SceneLayerTileWidth * (gridCoord.X - matrix.SourceSceneLayerTile.X));
-        retVal.Y = (int)(matrix.SceneLayerTileHeight * (gridCoord.Y - matrix.SourceSceneLayerTile.Y));
+        retVal.X = (int)(sceneLayer.SceneLayerTileWidth * (gridCoord.X - sceneLayer.SourceSceneLayerTile.X));
+        retVal.Y = (int)(sceneLayer.SceneLayerTileHeight * (gridCoord.Y - sceneLayer.SourceSceneLayerTile.Y));
 
         return retVal;
     }
 
-    public PointF GetLayerPointAtPixel(SceneLayer matrix, Point pixelPt)
+    public PointF GetLayerPointAtPixel(SceneLayer sceneLayer, Point pixelPt)
     {
         PointF retPt = new PointF();
 
-        retPt.X = (pixelPt.X - matrix.SceneLayerTileZeroPixel.X) / (float)matrix.SceneLayerTileWidth;
-        retPt.Y = (pixelPt.Y - matrix.SceneLayerTileZeroPixel.Y) / (float)matrix.SceneLayerTileHeight;
+        retPt.X = (pixelPt.X - sceneLayer.SceneLayerTileZeroPixel.X) / (float)sceneLayer.SceneLayerTileWidth;
+        retPt.Y = (pixelPt.Y - sceneLayer.SceneLayerTileZeroPixel.Y) / (float)sceneLayer.SceneLayerTileHeight;
 
         return retPt;
     }
 
     // Updated to properly consider overhang in all directions
-    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer matrix, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var retVal = new List<SceneLayerTile>();
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
-        PointF ptUL = GetLayerPointAtPixel(matrix, new Point(pixelRange.Left, pixelRange.Top));
-        PointF ptBR = GetLayerPointAtPixel(matrix, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
+        PointF ptUL = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Top));
+        PointF ptBR = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
 
         int minY = (int)Math.Floor(ptUL.Y) - 1;
         int maxY = (int)Math.Ceiling(ptBR.Y) + 1;
@@ -44,7 +44,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         {
             for (int x = minX; x <= maxX; x++)
             {
-                var gPt = matrix[x, y];
+                var gPt = sceneLayer[x, y];
                 if (gPt == null) continue;
 
                 // Overhang-aware pixel rect
@@ -87,33 +87,33 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
 
     public SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile gridPt, CardinalDirections direction)
     {
-        SceneLayer matrix = gridPt.ParentGrid;
+        SceneLayer sceneLayer = gridPt.ParentGrid;
 
         switch (direction)
         {
             case CardinalDirections.N:
-                return matrix[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y - 1];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y - 1];
 
             case CardinalDirections.NE:
-                return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
 
             case CardinalDirections.E:
-                return matrix[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y];
 
             case CardinalDirections.SE:
-                return matrix[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y + 1];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y + 1];
 
             case CardinalDirections.S:
-                return matrix[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y + 1];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y + 1];
 
             case CardinalDirections.SW:
-                return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y + 1];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y + 1];
 
             case CardinalDirections.W:
-                return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y];
 
             case CardinalDirections.NW:
-                return matrix[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
+                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
 
             default:
                 return null;

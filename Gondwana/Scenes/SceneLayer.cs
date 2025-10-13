@@ -731,9 +731,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         #region ctor
 
-        internal Movement(SceneLayer matrix)
+        internal Movement(SceneLayer sceneLayer)
         {
-            parent = matrix;
+            parent = sceneLayer;
             IsScrolling = false;
         }
 
@@ -868,10 +868,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         internal void Next(long tick)
         {
-            foreach (Scene matrixes in Scene._allScenes)
+            foreach (var scene in Scene._allScenes)
             {
-                if (matrixes.GetSceneLayerByID(parent._id) != null)
-                    matrixes.RefreshNeeded = SceneRefreshType.All;
+                if (scene.GetSceneLayerByID(parent._id) != null)
+                    scene.RefreshNeeded = SceneRefreshType.All;
             }
 
             if (VelocityX != 0 || VelocityY != 0)

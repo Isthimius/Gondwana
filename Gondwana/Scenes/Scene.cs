@@ -334,7 +334,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region static helpers
 
-    internal readonly static List<Scene> _allScenes = new List<Scene>();
+    internal readonly static List<Scene> _allScenes = [];
 
     public static Scene? GetSceneByID(string id) => _allScenes.Find(s => s.ID == id);
 

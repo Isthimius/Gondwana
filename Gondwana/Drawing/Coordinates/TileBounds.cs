@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Gondwana.Drawing;
+namespace Gondwana.Drawing.Coordinates;
 
 public static class TileBounds
 {

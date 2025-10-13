@@ -9,42 +9,42 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPixelAtLayerPoint(SceneLayer layer, PointF gp)
+    public Point GetSrcPixelAtLayerPoint(SceneLayer sceneLayer, PointF gp)
     {
-        int W = layer.SceneLayerTileWidth;
-        int H = layer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
 
-        float dx = gp.X - layer.SourceSceneLayerTile.X;
-        float dy = gp.Y - layer.SourceSceneLayerTile.Y;
+        float dx = gp.X - sceneLayer.SourceSceneLayerTile.X;
+        float dy = gp.Y - sceneLayer.SourceSceneLayerTile.Y;
 
-        float px = layer.SceneLayerTileZeroPixel.X + (dx - dy) * (W / 2f);
-        float py = layer.SceneLayerTileZeroPixel.Y + (dx + dy) * (H / 2f);
+        float px = sceneLayer.SceneLayerTileZeroPixel.X + (dx - dy) * (W / 2f);
+        float py = sceneLayer.SceneLayerTileZeroPixel.Y + (dx + dy) * (H / 2f);
         return new Point((int)Math.Floor(px), (int)Math.Floor(py)); // top vertex
     }
 
-    public PointF GetLayerPointAtPixel(SceneLayer layer, Point pixelPt)
+    public PointF GetLayerPointAtPixel(SceneLayer sceneLayer, Point pixelPt)
     {
-        int W = layer.SceneLayerTileWidth;
-        int H = layer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
 
-        float a = (pixelPt.X - layer.SceneLayerTileZeroPixel.X) / (W / 2f); // = dx - dy
-        float b = (pixelPt.Y - layer.SceneLayerTileZeroPixel.Y) / (H / 2f); // = dx + dy
+        float a = (pixelPt.X - sceneLayer.SceneLayerTileZeroPixel.X) / (W / 2f); // = dx - dy
+        float b = (pixelPt.Y - sceneLayer.SceneLayerTileZeroPixel.Y) / (H / 2f); // = dx + dy
 
         float dx = (a + b) / 2f;
         float dy = (b - a) / 2f;
 
-        return new PointF(layer.SourceSceneLayerTile.X + dx, layer.SourceSceneLayerTile.Y + dy);
+        return new PointF(sceneLayer.SourceSceneLayerTile.X + dx, sceneLayer.SourceSceneLayerTile.Y + dy);
     }
 
-    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer layer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
 
         // Convert AABB corners to coarse grid bounds
-        var ul = GetLayerPointAtPixel(layer, new Point(pixelRange.Left, pixelRange.Top));
-        var ur = GetLayerPointAtPixel(layer, new Point(pixelRange.Right, pixelRange.Top));
-        var ll = GetLayerPointAtPixel(layer, new Point(pixelRange.Left, pixelRange.Bottom));
-        var lr = GetLayerPointAtPixel(layer, new Point(pixelRange.Right, pixelRange.Bottom));
+        var ul = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Top));
+        var ur = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Right, pixelRange.Top));
+        var ll = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Bottom));
+        var lr = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Right, pixelRange.Bottom));
 
         int minX = (int)Math.Floor(new[] { ul.X, ur.X, ll.X, lr.X }.Min()) - 1;
         int maxX = (int)Math.Ceiling(new[] { ul.X, ur.X, ll.X, lr.X }.Max()) + 1;
@@ -55,7 +55,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         {
             for (int x = minX; x <= maxX; x++)
             {
-                var gp = layer[x, y];
+                var gp = sceneLayer[x, y];
                 if (gp == null) continue;
 
                 var r = GetPixelRangeAtLayerPoint(gp, includeOverhang);
