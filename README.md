@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/9381bf49-c5a7-4f81-8173-6debd01e073a" alt="Gondwana" width="80%">
+  <img src="https://github.com/user-attachments/assets/dfab1ba4-205d-483c-a95b-3dd01175aeca" alt="Gondwana" width="80%">
 </p>
 
 # Gondwana Game Engine
