@@ -214,7 +214,7 @@ namespace Slider
 
         public PointF GetGridCoordinates(int pxlX, int pxlY)
         {
-            return matrixes[0].CoordinateSystem.GetLayerPointAtPixel(matrixes[0], new Point(pxlX, pxlY));
+            return matrixes[0].CoordinateSystem.GetSceneLayerCoordinatesAtPixel(matrixes[0], new Point(pxlX, pxlY));
         }
 
         #endregion public methods
@@ -260,13 +260,13 @@ namespace Slider
             List<SceneLayerTile> adjGridPts = new List<SceneLayerTile>();
 
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.N));
+                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.N));
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.S));
+                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.S));
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.E));
+                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.E));
             adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentLayerPoint(matrixes[0][openSpace], CardinalDirections.W));
+                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.W));
 
             foreach (SceneLayerTile gPt in adjGridPts)
             {

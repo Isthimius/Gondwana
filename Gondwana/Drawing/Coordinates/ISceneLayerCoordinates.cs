@@ -15,39 +15,39 @@ public interface ISceneLayerCoordinates
     /// Converts a grid-space layer point (column, row) into its corresponding
     /// top-left pixel position within the specified SceneLayer.
     /// </summary>
-    Point GetSrcPixelAtLayerPoint(SceneLayer sceneLayer, PointF layerPoint);
+    Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint);
 
     /// <summary>
     /// Converts a pixel-space point into its corresponding grid-space
     /// layer coordinate (column, row) within the specified SceneLayer.
     /// </summary>
-    PointF GetLayerPointAtPixel(SceneLayer sceneLayer, Point pixelPt);
+    PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, Point pixelPt);
 
     /// <summary>
     /// Returns a list of all layer points whose rendered pixel areas intersect
     /// the specified pixel-space rectangle, optionally including tiles with visual
     /// overhang regions (e.g., tall sprites or hexes that extend beyond their cell).
     /// </summary>
-    List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang);
+    List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang);
 
     /// <summary>
     /// Gets the pixel-space rectangle occupied by a given tile, optionally
     /// expanding to include any overhang region defined by the tile’s geometry.
     /// </summary>
-    Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang);
+    Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang);
 
     /// <summary>
     /// Computes a bounding pixel-space rectangle that encompasses all tiles
     /// in the specified list, optionally including their overhang areas.
     /// </summary>
-    Rectangle GetPixelRangeAtLayerPointList(List<Tile> tileList, bool includeOverhang);
+    Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang);
 
     /// <summary>
     /// Returns the layer point adjacent to the specified one in the given
     /// cardinal direction (up, down, left, right, etc.), according to the
     /// current coordinate system’s topology.
     /// </summary>
-    SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile layerPoint, CardinalDirections direction);
+    SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile layerPoint, CardinalDirections direction);
 
     /// <summary>
     /// Returns the polygon vertex positions (in pixel space) defining the
@@ -61,5 +61,5 @@ public interface ISceneLayerCoordinates
     /// the valid layer bounds, performing wrapping (modulo) as needed to keep
     /// the coordinate within the range [0..xUpperBound], [0..yUpperBound].
     /// </summary>
-    PointF FindEquivalentLayerPoint(PointF valColRow, int xUpperBound, int yUpperBound);
+    PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound);
 }

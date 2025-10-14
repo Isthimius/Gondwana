@@ -99,7 +99,7 @@ namespace GondwanaWinTest
 
         public static void AddMovePt(int x, int y)
         {
-            PointF ptF = matrix.CoordinateSystem.GetLayerPointAtPixel(matrix, new Point(x, y));
+            PointF ptF = matrix.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(matrix, new Point(x, y));
             sprite.SpriteMovement.AddMovePoint(3000, ptF);
             sprite.SpriteMovement.Start();
             //sprite.MoveSprite(ptF);
@@ -107,7 +107,7 @@ namespace GondwanaWinTest
 
         public static void AddScrollPt(int x, int y)
         {
-            PointF ptF = matrix.CoordinateSystem.GetLayerPointAtPixel(matrix, new Point(x, y));
+            PointF ptF = matrix.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(matrix, new Point(x, y));
             matrix.ScrollSourceGridPoint(2000, ptF);
         }
 

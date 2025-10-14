@@ -342,7 +342,7 @@ public class Sprite : Tile, IDisposable, ICloneable
     private void WrapSpriteLocation()
     {
         // find the "wrapped" equivalent point of gridCoordinates
-        PointF wrappedPt = parentGrid.CoordinateSystem.FindEquivalentLayerPoint(gridCoordinates,
+        PointF wrappedPt = parentGrid.CoordinateSystem.FindEquivalentSceneLayerCoordinates(gridCoordinates,
             parentGrid.GridColumnCount - 1, parentGrid.GridRowCount - 1);
 
         PointF moveTo = gridCoordinates;

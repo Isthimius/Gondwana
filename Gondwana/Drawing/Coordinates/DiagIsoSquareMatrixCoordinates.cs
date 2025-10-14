@@ -9,7 +9,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPixelAtLayerPoint(SceneLayer sceneLayer, PointF gp)
+    public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
@@ -22,7 +22,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         return new Point((int)Math.Floor(px), (int)Math.Floor(py)); // top vertex
     }
 
-    public PointF GetLayerPointAtPixel(SceneLayer sceneLayer, Point pixelPt)
+    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, Point pixelPt)
     {
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
@@ -36,15 +36,15 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         return new PointF(sceneLayer.SourceSceneLayerTile.X + dx, sceneLayer.SourceSceneLayerTile.Y + dy);
     }
 
-    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
 
         // Convert AABB corners to coarse grid bounds
-        var ul = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Top));
-        var ur = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Right, pixelRange.Top));
-        var ll = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Bottom));
-        var lr = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Right, pixelRange.Bottom));
+        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Top));
+        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Right, pixelRange.Top));
+        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Bottom));
+        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Right, pixelRange.Bottom));
 
         int minX = (int)Math.Floor(new[] { ul.X, ur.X, ll.X, lr.X }.Min()) - 1;
         int maxX = (int)Math.Ceiling(new[] { ul.X, ur.X, ll.X, lr.X }.Max()) + 1;
@@ -58,7 +58,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
                 var gp = sceneLayer[x, y];
                 if (gp == null) continue;
 
-                var r = GetPixelRangeAtLayerPoint(gp, includeOverhang);
+                var r = GetPixelRangeForTile(gp, includeOverhang);
                 if (r.IntersectsWith(pixelRange))
                     result.Add(gp);
             }
@@ -67,10 +67,10 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         return result;
     }
 
-    public Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang)
+    public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         // Bounding box of the diamond anchored at top vertex
-        var top = GetSrcPixelAtLayerPoint(tile.ParentGrid, tile.GridCoordinates);
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.ParentGrid, tile.GridCoordinates);
         int W = tile.ParentGrid.SceneLayerTileWidth;
         int H = tile.ParentGrid.SceneLayerTileHeight;
 
@@ -78,18 +78,18 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
 
-    public Rectangle GetPixelRangeAtLayerPointList(List<Tile> tileList, bool includeOverhang)
+    public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle ret = Rectangle.Empty;
         foreach (var t in tileList)
         {
-            var r = GetPixelRangeAtLayerPoint(t, includeOverhang);
+            var r = GetPixelRangeForTile(t, includeOverhang);
             ret = ret.IsEmpty ? r : Rectangle.Union(ret, r);
         }
         return ret;
     }
 
-    public SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile gp, CardinalDirections dir)
+    public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
         var m = gp.ParentGrid; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         return dir switch
@@ -108,7 +108,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        var top = GetSrcPixelAtLayerPoint(tile.ParentGrid, tile.GridCoordinates);
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.ParentGrid, tile.GridCoordinates);
         int W = tile.ParentGrid.SceneLayerTileWidth;
         int H = tile.ParentGrid.SceneLayerTileHeight;
         var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
@@ -123,7 +123,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         };
     }
 
-    public PointF FindEquivalentLayerPoint(PointF valColRow, int xUpperBound, int yUpperBound)
+    public PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound)
     {
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);

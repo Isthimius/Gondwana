@@ -126,7 +126,7 @@ public partial class Form1 : Form
 
     private void Form1_MouseClick(object sender, MouseEventArgs e)
     {
-        MessageBox.Show(Program.matrix.CoordinateSystem.GetLayerPointAtPixel(Program.matrix, new Point(e.X, e.Y)).ToString());
+        MessageBox.Show(Program.matrix.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(Program.matrix, new Point(e.X, e.Y)).ToString());
     }
 
     private void Form1_Load(object sender, EventArgs e)

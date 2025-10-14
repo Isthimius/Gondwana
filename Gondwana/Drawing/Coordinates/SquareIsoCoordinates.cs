@@ -5,7 +5,7 @@ namespace Gondwana.Drawing.Coordinates;
 
 public class SquareIsoCoordinates : ISceneLayerCoordinates
 {
-    public Point GetSrcPixelAtLayerPoint(SceneLayer sceneLayer, PointF gridCoord)
+    public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gridCoord)
     {
         Point retVal = new Point();
 
@@ -15,7 +15,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         return retVal;
     }
 
-    public PointF GetLayerPointAtPixel(SceneLayer sceneLayer, Point pixelPt)
+    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, Point pixelPt)
     {
         PointF retPt = new PointF();
 
@@ -26,13 +26,13 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
     }
 
     // Updated to properly consider overhang in all directions
-    public List<SceneLayerTile> GetLayerPointListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var retVal = new List<SceneLayerTile>();
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
-        PointF ptUL = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Top));
-        PointF ptBR = GetLayerPointAtPixel(sceneLayer, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
+        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Top));
+        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
 
         int minY = (int)Math.Floor(ptUL.Y) - 1;
         int maxY = (int)Math.Ceiling(ptBR.Y) + 1;
@@ -48,7 +48,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
                 if (gPt == null) continue;
 
                 // Overhang-aware pixel rect
-                var rect = GetPixelRangeAtLayerPoint(gPt, includeOverhang);
+                var rect = GetPixelRangeForTile(gPt, includeOverhang);
                 if (rect.IntersectsWith(pixelRange))
                     retVal.Add(gPt);
             }
@@ -57,7 +57,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         return retVal;
     }
 
-    public Rectangle GetPixelRangeAtLayerPoint(Tile tile, bool includeOverhang)
+    public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         // Base rect (unchanged)
         var baseRect = new Rectangle
@@ -72,20 +72,20 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         return TileBounds.ApplyOverhang(baseRect, tile.OverhangPixels, includeOverhang);
     }
 
-    public Rectangle GetPixelRangeAtLayerPointList(List<Tile> tileList, bool includeOverhang)
+    public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle retVal = Rectangle.Empty;
 
         foreach (Tile tile in tileList)
         {
-            var rect = GetPixelRangeAtLayerPoint(tile, includeOverhang);
+            var rect = GetPixelRangeForTile(tile, includeOverhang);
             retVal = retVal.IsEmpty ? rect : Rectangle.Union(retVal, rect);
         }
 
         return retVal;
     }
 
-    public SceneLayerTile GetAdjacentLayerPoint(SceneLayerTile gridPt, CardinalDirections direction)
+    public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gridPt, CardinalDirections direction)
     {
         SceneLayer sceneLayer = gridPt.ParentGrid;
 
@@ -123,7 +123,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         // Square polygon using the overhang-aware rect
-        var r = GetPixelRangeAtLayerPoint(tile, includeOverhang);
+        var r = GetPixelRangeForTile(tile, includeOverhang);
         return new[]
         {
                 new Point(r.Left,  r.Top),
@@ -133,7 +133,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
             };
     }
 
-    public PointF FindEquivalentLayerPoint(PointF valColRow, int xUpperBound, int yUpperBound)
+    public PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound)
     {
         float modX = valColRow.X % (xUpperBound + 1);
         float modY = valColRow.Y % (yUpperBound + 1);

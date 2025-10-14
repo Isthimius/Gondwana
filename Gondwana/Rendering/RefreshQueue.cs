@@ -80,7 +80,7 @@ internal sealed class RefreshQueue : IDisposable
 
         foreach (Rectangle area in _rects)
         {
-            foreach (SceneLayerTile gridPt in _sceneLayer.CoordinateSystem.GetLayerPointListInPixelRange(_sceneLayer, area, true))
+            foreach (SceneLayerTile gridPt in _sceneLayer.CoordinateSystem.GetSceneLayerTileListInPixelRange(_sceneLayer, area, true))
             {
                 if (gridPt == null) continue;
                 tempTiles.Add(gridPt);

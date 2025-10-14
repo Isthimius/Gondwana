@@ -74,16 +74,13 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #endregion public fields
 
-    #region matrix wrapping delegates / variables
+    #region SceneLayer wrapping delegates / variables
 
     private delegate SceneLayerTile? GetIndexer(int x, int y);
 
     private GetIndexer FindIndexedSceneLayerTile;
 
-    // TODO: remove this; wrapping should be handled via rendering, not by creating new SceneLayerTiles
-    //internal List<SceneLayerTile> wrappedGridPts = new List<SceneLayerTile>();
-
-    #endregion matrix wrapping delegates / variables
+    #endregion SceneLayer wrapping delegates / variables
 
     #region constructors / finalizer
 
@@ -456,7 +453,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         // update the first pixel position; the final SourceSceneLayerTile might be slightly
         // different to srcGridPt due to rounding if srcSceneLayerTile is not a whole number
-        _gridPtZeroPxl = CoordinateSystem.GetSrcPixelAtLayerPoint(this, new PointF(0, 0));
+        _gridPtZeroPxl = CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, new PointF(0, 0));
 
         // capture the before and after values and raise event
         OnFirstColRowChanged(oldSrcPt, SourceSceneLayerTile);
@@ -586,7 +583,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         set
         {
             PointF actualSceneLayerTile =
-                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
+                CoordinateSystem.FindEquivalentSceneLayerCoordinates(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
 
             _sceneLayerTileArray[(int)actualSceneLayerTile.X][(int)actualSceneLayerTile.Y] = value;
         }
@@ -633,7 +630,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             // find the coordinated of the SceneLayerTile being "wrapped"
             PointF actualSceneLayerTile =
-                CoordinateSystem.FindEquivalentLayerPoint(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
+                CoordinateSystem.FindEquivalentSceneLayerCoordinates(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
 
             // if not already found, create and add to wrappedGridPts, and associate with "parent"
             if (newSceneLayerTile == null)
