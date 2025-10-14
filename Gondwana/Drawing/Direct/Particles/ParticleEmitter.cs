@@ -127,12 +127,14 @@ public sealed class ParticleEmitter
     /// <summary>
     /// Gets or sets the horizontal component of the gravity vector in pixels per second squared (px/s²).
     /// Negative values pull left, positive values pull right. If null, the emitter uses the global gravity setting from the ParticleSurface.
+    /// Default <see cref="ParticleSurface.GravityX"/> is 0."/>
     /// </summary>
     public float? GravityX { get; set; } = null;
 
     /// <summary>
     /// Gets or sets the vertical component of the gravity vector in pixels per second squared (px/s²).
     /// Negative values pull up, positive values pull down. If null, the emitter uses the global gravity setting from the ParticleSurface.
+    /// Default <see cref="ParticleSurface.GravityY"/> is 400."/>
     /// </summary>
     public float? GravityY { get; set; } = null;
 
