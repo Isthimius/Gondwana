@@ -35,8 +35,6 @@ Gondwana/
 
 ---
 
-## 🚀 Getting Started
-
 ## 📦 Prerequisites
 
 The Gondwana Core library depends on the following NuGet packages:
