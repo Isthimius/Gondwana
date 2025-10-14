@@ -54,9 +54,10 @@ public partial class Form1 : Form
         _particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
         _particleSurface.Emitters.Add(GetRain(adapter.Width));
         _particleSurface.Emitters.Add(GetSnow(adapter.Width));
+        _particleSurface.Emitters.Add(GetSmoke(adapter.Width, adapter.Height));
 
-        _particleSurface.FadeOut(15f);
-        _particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
+        //_particleSurface.FadeOut(15f);
+        //_particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
 
         var glowBox = new DirectRectangle(renderSurface, new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), Color.Blue)
             .SetAlpha(128)
@@ -220,5 +221,20 @@ public partial class Form1 : Form
             }
         };
         return snow;
+    }
+
+    private ParticleEmitter GetSmoke(float width, float height)
+    {
+        return new ParticleEmitter
+        {
+            Position = new PointF(width / 2, height),
+            EmitRate = 120,
+            LifeRange = (2.5f, 4.0f),
+            VelocityRangeX = (-40f, 40f),
+            VelocityRangeY = (-120f, -60f),
+            SizeRange = (8f, 16f),
+            Color = new SKColor(80, 80, 80, 200),
+            GravityY = -20f // slight upward drift
+        };
     }
 }
