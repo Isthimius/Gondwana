@@ -2,11 +2,11 @@
 <img src="https://github.com/user-attachments/assets/64372678-7d38-47f8-b01a-511c3ef407cc"
      alt="Gondwana" align="left" width="40%" />
 
-**Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8, supporting scene parallax, z-ordering, pixel overhang, collision detection, and particle generation. The framework is built with SkiaSharp for graphics, NAudio for sound, and includes hooks for in-app video playback. It modernizes legacy Win32/GDI patterns into a modular, high-performance framework that runs on desktop, mobile, and web.
+**Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8, supporting scene parallax, z-ordering, pixel overhang, collision detection, and a particle system. The framework is built with SkiaSharp for graphics, NAudio for sound, and includes hooks for in-app video playback. It modernizes legacy Win32/GDI patterns into a modular, high-performance framework that runs on desktop, mobile, and web.
 
 The engine supports both bitmap- and GPU-based rendering back-ends and maintains a clean, extensible draw pipeline designed for compositing, layering, and post-processing effects. Input handling is unified across keyboard, mouse, and gamepad devices through a common event-polling interface.
 
-Under the hood, Gondwana employs a double-buffered rendering system, fine-grained timing controls, and thread-safe managers for resources such as tilesheets, sprites, scenes, and particle systems. Its architecture is built using modern .NET, allowing developers to write game logic that’s both performant and maintainable.
+Under the hood, Gondwana employs a double-buffered rendering system, fine-grained timing controls, and thread-safe managers for resource caching for tilesheets, audio, and video. Its architecture is built using modern .NET, allowing developers to write game logic that’s both performant and maintainable.
 
 The result is a framework that feels low-level enough for engine tinkerers but high-level enough for rapid game prototyping — bridging the gap between classic 2D engines and modern cross-platform development.
 
