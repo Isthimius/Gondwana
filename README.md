@@ -2,7 +2,7 @@
 <img src="https://github.com/user-attachments/assets/64372678-7d38-47f8-b01a-511c3ef407cc"
      alt="Gondwana" align="left" width="40%" />
 
-**Gondwana** is a cross-platform 2D game and rendering engine written in C#/.NET 8, built around SkiaSharp for graphics, and NAudio for sound, and includes hooks for in-app video playback. It modernizes legacy Win32/GDI patterns into a modular, high-performance framework that runs on desktop, mobile, and web.
+**Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8, supporting scene parallax, z-ordering, and pixel overhang. The framework is built with SkiaSharp for graphics, NAudio for sound, and includes hooks for in-app video playback. It modernizes legacy Win32/GDI patterns into a modular, high-performance framework that runs on desktop, mobile, and web.
 
 The engine supports both bitmap- and GPU-based rendering back-ends and maintains a clean, extensible draw pipeline designed for compositing, layering, and post-processing effects. Input handling is unified across keyboard, mouse, and gamepad devices through a common event-polling interface.
 
