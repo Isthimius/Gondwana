@@ -7,7 +7,7 @@ namespace Gondwana.Drawing.Direct;
 
 public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDisposable
 {
-    public event EventHandler<DirectDrawingBase> Disposing;
+    public event EventHandler<DirectDrawingBase>? Disposing;
     public event EventHandler<DirectDrawingBase>? FadeToCompleted;
 
     protected readonly RenderSurfaceHostBase _renderSurfaceHost;
