@@ -15,9 +15,7 @@ public sealed class DirectDrawingMovable : IMovable
 
     public Vector2 GetPosition() => new(_d.Bounds.X, _d.Bounds.Y);
 
-    public void SetPosition(Vector2 p)
-    {
+    public void SetPosition(Vector2 p) =>
         _d.Bounds = new Rectangle((int)p.X, (int)p.Y, _d.Bounds.Width, _d.Bounds.Height);
-    }
 }
 

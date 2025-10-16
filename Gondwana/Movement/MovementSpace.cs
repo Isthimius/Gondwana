@@ -1,5 +1,8 @@
 ﻿namespace Gondwana.Movement;
 
+/// <summary>
+/// Specifies the coordinate system used for movement calculations and updates.
+/// </summary>
 public enum MovementSpace
 {
     /// <summary>

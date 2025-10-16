@@ -29,13 +29,13 @@ public sealed class MovementController
         moveState.Position += moveState.Velocity * dt;
 
         // apply; convert if spaces differ
-        if (moveState.Space == mover.PositionSpace)
+        if (moveState.MovementSpace == mover.PositionSpace)
         {
             mover.SetPosition(moveState.Position);
         }
         
         // when you want to move a pixel-space entity to a grid-space location, e.g. health bar, sprite particle effects, etc.
-        else if (moveState.Space == MovementSpace.Grid && mover.PositionSpace == MovementSpace.Pixel)
+        else if (moveState.MovementSpace == MovementSpace.Grid && mover.PositionSpace == MovementSpace.Pixel)
         {
             var px = _coords.GetAnchorPixelAtSceneLayerCoordinates(_screenLayer, new PointF(moveState.Position.X, moveState.Position.Y));
             mover.SetPosition(new(px.X, px.Y));
