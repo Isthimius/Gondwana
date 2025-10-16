@@ -2,7 +2,6 @@
 using System.Numerics;
 using System.Xml.Linq;
 using Gondwana.Drawing.Direct;
-using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
@@ -18,4 +17,3 @@ public sealed class DirectDrawingMovable : IMovable
     public void SetPosition(Vector2 p) =>
         _d.Bounds = new Rectangle((int)p.X, (int)p.Y, _d.Bounds.Width, _d.Bounds.Height);
 }
-
