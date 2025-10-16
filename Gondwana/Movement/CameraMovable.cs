@@ -9,7 +9,7 @@ public sealed class CameraMovable : IMovable
     private readonly SceneLayer _layer;
     public CameraMovable(SceneLayer layer) => _layer = layer;
 
-    public MovementSpace PositionSpace => MovementSpace.Grid;
+    public CoordinateSpace PositionSpace => CoordinateSpace.Grid;
 
     public Vector2 GetPosition()
         => new(_layer.SourceSceneLayerTile.X, _layer.SourceSceneLayerTile.Y);

@@ -3,7 +3,7 @@
 /// <summary>
 /// Specifies the coordinate system used for movement calculations and updates.
 /// </summary>
-public enum MovementSpace
+public enum CoordinateSpace
 {
     /// <summary>
     /// Movement is in the scene's grid/tile coordinate system.

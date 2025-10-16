@@ -11,7 +11,7 @@ public sealed class DirectDrawingMovable : IMovable
     private readonly DirectDrawingBase _d;
     public DirectDrawingMovable(DirectDrawingBase d) => _d = d;
 
-    public MovementSpace PositionSpace => MovementSpace.Pixel;
+    public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
 
     public Vector2 GetPosition() => new(_d.Bounds.X, _d.Bounds.Y);
 
