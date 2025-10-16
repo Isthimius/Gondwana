@@ -8,7 +8,7 @@ The engine supports both bitmap- and GPU-based rendering back-ends and maintains
 
 Under the hood, Gondwana employs a double-buffered rendering system, fine-grained timing controls, and thread-safe managers for resource caching of tilesheets, audio, and video. Its architecture is built using modern .NET, allowing developers to write game logic that’s both performant and maintainable.
 
-The result is a framework that feels low-level enough for engine tinkerers but high-level enough for rapid game prototyping — bridging the gap between classic 2D engines and modern cross-platform development.
+The result is a framework that is low-level enough for engine tinkerers but high-level enough for rapid game prototyping — bridging the gap between classic 2D engines and modern cross-platform development.
 
 <br clear="left" />
 
