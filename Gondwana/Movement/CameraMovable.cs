@@ -1,16 +1,19 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
 public sealed class CameraMovable : IMovable
 {
-    private readonly SceneLayer _sceneLayer;
-    public CameraMovable(SceneLayer sceneLayer) => _sceneLayer = sceneLayer;
+    private readonly SceneLayer _layer;
+    public CameraMovable(SceneLayer layer) => _layer = layer;
 
-    public Vector2 GetGridPosition()
-        => new(_sceneLayer.SourceSceneLayerTile.X, _sceneLayer.SourceSceneLayerTile.Y);
+    public MovementSpace PositionSpace => MovementSpace.Grid;
 
-    public void SetGridPosition(System.Numerics.Vector2 p)
-        => _sceneLayer.SourceSceneLayerTile = new System.Drawing.PointF(p.X, p.Y);
+    public Vector2 GetPosition()
+        => new(_layer.SourceSceneLayerTile.X, _layer.SourceSceneLayerTile.Y);
+
+    public void SetPosition(Vector2 pos)
+        => _layer.SourceSceneLayerTile = new PointF(pos.X, pos.Y);
 }

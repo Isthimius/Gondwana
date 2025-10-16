@@ -5,12 +5,11 @@ namespace Gondwana.Movement;
 
 public sealed class SpriteMovable : IMovable
 {
-    private readonly Sprite _sprite;
-    public SpriteMovable(Sprite sprite) => _sprite = sprite;
+    private readonly Sprite _s;
+    public SpriteMovable(Sprite s) => _s = s;
 
-    public Vector2 GetGridPosition()
-        => new(_sprite.GridCoordinates.X, _sprite.GridCoordinates.Y);
+    public MovementSpace PositionSpace => MovementSpace.Grid;
 
-    public void SetGridPosition(System.Numerics.Vector2 p)
-        => _sprite.MoveSprite(p.X, p.Y);
+    public Vector2 GetPosition() => new(_s.GridCoordinates.X, _s.GridCoordinates.Y);
+    public void SetPosition(Vector2 p) => _s.MoveSprite(p.X, p.Y);
 }

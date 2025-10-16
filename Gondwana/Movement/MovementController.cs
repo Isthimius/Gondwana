@@ -1,12 +1,15 @@
-﻿using Gondwana.Drawing.Coordinates;
+﻿using System.Drawing;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
 public sealed class MovementController
 {
-    private readonly ISceneLayerCoordinates _coords; // per-layer impl
-    private readonly SceneLayer _screenLayer;
+    private readonly ISceneLayerCoordinates? _coords; // per-layer impl
+    private readonly SceneLayer? _screenLayer;
+
+    private MovementController() { }
 
     public MovementController(SceneLayer screenLayer)
     {
@@ -14,35 +17,35 @@ public sealed class MovementController
         _coords = _screenLayer.CoordinateSystem;
     }
 
-    public void Step(IMovable target, ref MotionState m, float dtSeconds)
+    public void Step(IMovable mover, ref MovementState moveState, float dt)
     {
-        // Pull current grid-space position from the target via its adapter
-        var p = target.GetGridPosition();
+        // integrate
+        moveState.Velocity += moveState.Acceleration * dt;
+        moveState.ClampVelocity();
 
-        // Semi-implicit Euler (stable enough for games)
-        m.Velocity += m.Acceleration * dtSeconds;
-        m.ClampVelocity();
+        if (moveState.LinearDamping > 0f)
+            moveState.Velocity *= MathF.Max(0, 1 - moveState.LinearDamping * dt);
 
-        // Apply linear damping (simple exponential decay)
-        if (m.LinearDamping > 0f)
-            m.Velocity *= MathF.Max(0f, 1f - m.LinearDamping * dtSeconds);
+        moveState.Position += moveState.Velocity * dt;
 
-        p += m.Velocity * dtSeconds;
-
-        // Optional wrapping using the coord system’s canonicalizer
-        if (m.WrapX || m.WrapY)
+        // apply; convert if spaces differ
+        if (moveState.Space == mover.PositionSpace)
         {
-            var eq = _coords.FindEquivalentSceneLayerCoordinates(
-                new System.Drawing.PointF(p.X, p.Y),
-                _screenLayer.GridColumnCount - 1, _screenLayer.GridRowCount - 1);
-            
-            // Respect only the axes you asked to wrap
-            p = new System.Numerics.Vector2(
-                m.WrapX ? eq.X : p.X,
-                m.WrapY ? eq.Y : p.Y);
+            mover.SetPosition(moveState.Position);
         }
-
-        // Push updated grid-space position back to the target
-        target.SetGridPosition(p);
+        
+        // when you want to move a pixel-space entity to a grid-space location, e.g. health bar, sprite particle effects, etc.
+        else if (moveState.Space == MovementSpace.Grid && mover.PositionSpace == MovementSpace.Pixel)
+        {
+            var px = _coords.GetAnchorPixelAtSceneLayerCoordinates(_screenLayer, new PointF(moveState.Position.X, moveState.Position.Y));
+            mover.SetPosition(new(px.X, px.Y));
+        }
+        
+        // when you want to move a grid-space entity to a pixel-space location, e.g. player character, pathfinding, etc.
+        else
+        {
+            var gp = _coords.GetSceneLayerCoordinatesAtPixel(_screenLayer, new Point((int)moveState.Position.X, (int)moveState.Position.Y));
+            mover.SetPosition(new(gp.X, gp.Y));
+        }
     }
 }
