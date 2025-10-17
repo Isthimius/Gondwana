@@ -23,6 +23,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     private float _fadeFrom, _fadeTo;
     private float _fadeDurationSec, _fadeElapsedSec;
     private bool _isFading;
+
     public bool HideWhenFullyTransparent { get; set; } = true;
 
     /// <summary>

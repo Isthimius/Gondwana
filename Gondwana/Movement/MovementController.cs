@@ -23,7 +23,7 @@ public sealed class MovementController
     public static MovementController ForRenderSurface() => new();
     public static MovementController ForSceneLayer(SceneLayer layer) => new(layer);
 
-    public void Step(IMovable mover, ref MovementState s, float dt)
+    internal void Step(IMovable mover, ref MovementState s, float dt)
     {
         // integrate
         s.Velocity += s.Acceleration * dt;
