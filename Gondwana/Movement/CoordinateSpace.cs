@@ -6,7 +6,7 @@
 public enum CoordinateSpace
 {
     /// <summary>
-    /// Movement is in the scene's grid/tile coordinate system.
+    /// Movement is in a scene's grid/tile coordinate system.
     /// </summary>
     Grid,
 

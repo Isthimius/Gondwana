@@ -36,7 +36,7 @@ namespace Gondwana.Drawing.Direct;
 ///     .UseShadow(true)
 ///     .UseOutline(true);
 /// </example>
-public class TextBlock : DirectDrawingBase
+public class TextBlock : DirectDrawingMovableBase
 {
     public enum VerticalAlign
     {

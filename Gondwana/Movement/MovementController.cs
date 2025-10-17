@@ -7,71 +7,74 @@ namespace Gondwana.Movement;
 
 public sealed class MovementController
 {
-    private readonly ISceneLayerCoordinates _coords;
-    private readonly SceneLayer _layer;
+    private readonly ISceneLayerCoordinates? _coords;
+    private readonly SceneLayer? _sceneLayer;
 
-    public MovementController(SceneLayer screenLayer)
+    // Pixel-only or Grid-only same-space usage
+    private MovementController() { }
+
+    // Layer-aware usage (Grid↔Pixel conversion, wrapping)
+    private MovementController(SceneLayer sceneLayer)
     {
-        _layer = screenLayer ?? throw new ArgumentNullException(nameof(screenLayer));
-        _coords = _layer.CoordinateSystem ?? throw new ArgumentNullException(nameof(screenLayer.CoordinateSystem));
+        _sceneLayer  = sceneLayer ?? throw new ArgumentNullException(nameof(sceneLayer));
+        _coords = _sceneLayer.CoordinateSystem ?? throw new ArgumentNullException(nameof(_sceneLayer.CoordinateSystem));
     }
 
-    public void Step(IMovable mover, ref MovementState moveState, float dt)
+    public static MovementController ForRenderSurface() => new();
+    public static MovementController ForSceneLayer(SceneLayer layer) => new(layer);
+
+    public void Step(IMovable mover, ref MovementState s, float dt)
     {
-        // Integrate (semi-implicit Euler)
-        moveState.Velocity += moveState.Acceleration * dt;
-        moveState.ClampVelocity();
+        // integrate
+        s.Velocity += s.Acceleration * dt;
+        s.ClampVelocity();
+        
+        if (s.LinearDamping > 0f)
+            s.Velocity *= MathF.Exp(-s.LinearDamping * dt);  // exp damping
 
-        // Exponential damping (frame-rate independent)
-        if (moveState.LinearDamping > 0f)
-            moveState.Velocity *= MathF.Exp(-moveState.LinearDamping * dt);
+        s.Position += s.Velocity * dt;
 
-        moveState.Position += moveState.Velocity * dt;
-
-        // Optional wrapping in GRID space
-        if (moveState.MovementSpace == CoordinateSpace.Grid && (moveState.WrapX || moveState.WrapY))
+        // optional grid wrapping needs coords/layer
+        if (s.MovementSpace == CoordinateSpace.Grid && (s.WrapX || s.WrapY))
         {
+            if (_coords is null || _sceneLayer is null)
+                throw new InvalidOperationException("Grid wrapping requires coordinates/layer.");
+
             var wrapped = _coords.FindEquivalentSceneLayerCoordinates(
-                new PointF(moveState.Position.X, moveState.Position.Y), 
-                _layer.GridColumnCount - 1,
-                _layer.GridRowCount - 1
-            );
-            moveState.Position = new Vector2(wrapped.X, wrapped.Y);
+                new PointF(s.Position.X, s.Position.Y),
+                _sceneLayer.GridColumnCount - 1, _sceneLayer.GridRowCount - 1);
+
+            s.Position = new Vector2(wrapped.X, wrapped.Y);
         }
 
-        // === Apply ===
-
-        // Same-space fast path
-        if (moveState.MovementSpace == mover.PositionSpace)
+        // same-space: no dependencies
+        if (s.MovementSpace == mover.PositionSpace)
         {
-            mover.SetPosition(moveState.Position);
+            mover.SetPosition(s.Position);
             return;
         }
 
-        // Grid (state) -> Pixel (mover): e.g., world-anchored overlay following a sprite
-        if (moveState.MovementSpace == CoordinateSpace.Grid && mover.PositionSpace == CoordinateSpace.Pixel)
+        // cross-space: require coords/layer
+        if (_coords is null || _sceneLayer is null)
+            throw new InvalidOperationException("Cross-space conversion requires coordinates/layer.");
+
+        if (s.MovementSpace == CoordinateSpace.Grid && mover.PositionSpace == CoordinateSpace.Pixel)
         {
-            var px = _coords.GetAnchorPixelAtSceneLayerCoordinates(
-                _layer,
-                new PointF(moveState.Position.X, moveState.Position.Y)
-            );
+            var px = _coords.GetAnchorPixelAtSceneLayerCoordinates(_sceneLayer,
+                      new PointF(s.Position.X, s.Position.Y));
             mover.SetPosition(new Vector2(px.X, px.Y));
             return;
         }
 
-        // Pixel (state) -> Grid (mover): e.g., mouse/drag/minimap driving a world entity
-        if (moveState.MovementSpace == CoordinateSpace.Pixel && mover.PositionSpace == CoordinateSpace.Grid)
+        if (s.MovementSpace == CoordinateSpace.Pixel && mover.PositionSpace == CoordinateSpace.Grid)
         {
-            // Prefer a PointF-taking API if available to avoid early truncation.
-            var gp = _coords.GetSceneLayerCoordinatesAtPixel(
-                _layer,
-                new Point((int)moveState.Position.X, (int)moveState.Position.Y)
-            );
+            // prefer PointF-taking API if you add one; avoid early truncation
+            var gp = _coords.GetSceneLayerCoordinatesAtPixel(_sceneLayer,
+                      new Point((int)s.Position.X, (int)s.Position.Y));
             mover.SetPosition(new Vector2(gp.X, gp.Y));
             return;
         }
 
-        // If we ever add new spaces, fail loudly now rather than mis-convert
-        throw new InvalidOperationException($"Unsupported MovementSpace conversion: {moveState.MovementSpace} -> {mover.PositionSpace}");
+        throw new InvalidOperationException($"Unsupported conversion {s.MovementSpace}->{mover.PositionSpace}");
     }
 }

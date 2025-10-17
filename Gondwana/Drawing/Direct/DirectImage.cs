@@ -13,7 +13,7 @@ namespace Gondwana.Drawing.Direct;
 /// The image object is not owned/disposed by this drawable; manage its lifetime externally.
 /// Setters mark the drawable dirty so the manager re-renders next frame.
 /// </remarks>
-public sealed class DirectImage : DirectDrawingBase
+public sealed class DirectImage : DirectDrawingMovableBase
 {
     public enum ScaleMode
     {

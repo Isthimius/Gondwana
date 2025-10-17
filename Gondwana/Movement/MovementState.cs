@@ -8,7 +8,7 @@ public struct MovementState
     /// What unit system these values are expressed in.
     /// Grid = tile units; Pixel = screen pixels.
     /// </summary>
-    public CoordinateSpace MovementSpace; // default Grid in your ctor/factory
+    public CoordinateSpace MovementSpace;
 
     /// <summary>
     /// Position in current MotionSpace units (Grid or Pixel).
@@ -56,14 +56,14 @@ public struct MovementState
     /// <summary>
     /// Convenience factories to make intent explicit at call sites.
     /// </summary>
-    public static MovementState Grid(Vector2 position, float linearDampening = 0f) => new()
+    public static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = CoordinateSpace.Grid,
         Position = position,
         LinearDamping = linearDampening
     };
 
-    public static MovementState Pixel(Vector2 position, float linearDampening = 0f) => new()
+    public static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = CoordinateSpace.Pixel,
         Position = position,

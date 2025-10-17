@@ -1,9 +1,11 @@
-﻿using Gondwana.Rendering;
+﻿using Gondwana.Movement;
+using Gondwana.Rendering;
 using System.Drawing;
+using System.Numerics;
 
 namespace Gondwana.Drawing.Direct;
 
-public class DirectComposite
+public class DirectComposite : IMovable
 {
     private readonly List<DirectDrawingBase> _children = new();
     private PointF _anchor;
@@ -16,13 +18,7 @@ public class DirectComposite
 
     public RenderSurfaceHostBase RenderSurfaceHost { get; private set; }
 
-    public PointF Anchor
-    {
-        get => _anchor;
-        set => SetAnchor(value.X, value.Y);
-    }
-
-    public DirectComposite SetAnchor(float x, float y)
+    public DirectComposite SetPosition(float x, float y)
     {
         var dx = x - _anchor.X;
         var dy = y - _anchor.Y;
@@ -43,7 +39,22 @@ public class DirectComposite
         if (child?.RenderSurfaceHost != RenderSurfaceHost)
             throw new ArgumentException("Child's RenderSurfaceHost must match the Composite's RenderSurfaceHost.", nameof(child));
 
-        _children.Add(child);
+        // ensure not already in list
+        if (_children.IndexOf(child) == -1)
+        {
+            _children.Add(child);
+            child.Disposing += (s, e) => _children.Remove(e);
+        }
+        
+        return this;
+    }
+
+    public DirectComposite Remove(DirectDrawingBase child)
+    {
+        if (child is null)
+            throw new ArgumentNullException(nameof(child));
+
+        _children.Remove(child);
         return this;
     }
 
@@ -90,6 +101,8 @@ public class DirectComposite
             );
         }
     }
+
+    public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
 
     public DirectComposite SetZOrder(int z)
     {
@@ -146,4 +159,8 @@ public class DirectComposite
 
         _children.Clear();
     }
+
+    public Vector2 GetPosition() => new(_anchor.X, _anchor.Y);
+
+    public void SetPosition(Vector2 pos) => SetPosition(pos.X, pos.Y);
 }

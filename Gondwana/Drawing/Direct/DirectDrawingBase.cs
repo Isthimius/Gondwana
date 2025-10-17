@@ -247,7 +247,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
             return;
         }
 
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
 
         // SaveLayer with alpha
         using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
@@ -273,6 +273,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
         {
             ForceRefresh();
             Disposing?.Invoke(this, this);
+            Disposing = null;
         }
 
         _disposed = true;
