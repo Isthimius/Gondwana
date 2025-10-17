@@ -226,9 +226,12 @@ public class TextBlock : DirectDrawingMovableBase
         if (_pulseLastTick is { } last)
         {
             long deltaTicks = tick - last;
-            if (deltaTicks < 0) deltaTicks = 0;
+            if (deltaTicks < 0)
+                deltaTicks = 0;
+
             float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
-            if (dt > 0f && dt < 1f) _timeSec += dt;
+            if (dt > 0f && dt < 1f)
+                _timeSec += dt;
         }
         _pulseLastTick = tick;
 
