@@ -2,15 +2,29 @@
 using System.Numerics;
 using Gondwana.Movement;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Direct;
 
-public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IMovementStateMutator
+public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IMovementStateMutator, IScriptedMovementListener
 {
     // --- Motion fields (pixel space) ---
-    private readonly MovementController _controller;
+    private MovementController _controller;
     private MovementState movementState;
+
+    public event EventHandler? ScriptedMovementStopped;
+
+    /// <summary>
+    /// Called when a scripted movement (MoveTo/MoveToward) finishes or is cancelled.
+    /// Override to add custom behavior.
+    /// </summary>
+    protected virtual void OnScriptedMovementStopped()
+    {
+        ScriptedMovementStopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    void IScriptedMovementListener.OnScriptedMovementStopped() => OnScriptedMovementStopped();
 
     protected DirectDrawingMovableBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
         : base(renderSurfaceHost, bounds)
@@ -27,6 +41,29 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     /// Use <see cref="IMovementStateMutator"/> methods to modify motion.
     /// </summary>
     public MovementState MovementState => movementState;
+
+    public void BindToSceneLayer(SceneLayer layer, Vector2 initialGrid)
+    {
+        // layer-aware controller (knows coords & wrapping)
+        _controller = MovementController.ForSceneLayer(layer);
+        // run the state in GRID units (drawable stays Pixel; controller will bridge)
+        movementState = MovementState.ForSceneLayer(initialGrid);
+    }
+
+    // Hard follow: snap overlay to target’s grid pos (+ optional grid offset) this frame.
+    public void Follow(IMovable gridTarget, Vector2 gridOffset)
+    {
+        var gp = gridTarget.GetPosition() + gridOffset;  // IMovable for sprites/camera use Grid space
+        movementState.Position = gp;
+        _controller.Step(this, ref movementState, 0f);   // converts Grid→Pixel and calls SetPosition(...)
+    }
+
+    // Soft follow: glide toward the target at N tiles/sec.
+    public void FollowToward(IMovable gridTarget, float tilesPerSec, float snap = 0.25f)
+    {
+        var gp = gridTarget.GetPosition();
+        _controller.ScheduleMoveToward(ref movementState, gp, tilesPerSec, snap);
+    }
 
     public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
 

@@ -273,7 +273,7 @@ internal sealed class MovementController
 
     internal void CancelScript(ref MovementState s)
     {
-        s.Script = default; // Type = None
+        s.Script = default;
     }
 
     // --- One place to advance any scripted motion; returns true if it handled movement this frame ---
@@ -323,6 +323,9 @@ internal sealed class MovementController
             s.Position = s.Script.Target;
             Step(mover, ref s, 0f);
             s.Script = default;
+
+            if (mover is IScriptedMovementListener listener)
+                listener.OnScriptedMovementStopped();
         }
 
         return true;
@@ -340,6 +343,10 @@ internal sealed class MovementController
             s.Acceleration = Vector2.Zero;
             Step(mover, ref s, 0f);
             s.Script = default;
+
+            if (mover is IScriptedMovementListener listener)
+                listener.OnScriptedMovementStopped();
+
             return true;
         }
 
