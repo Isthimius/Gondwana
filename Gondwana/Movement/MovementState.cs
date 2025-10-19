@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Gondwana.Movement.Scripted;
 
 namespace Gondwana.Movement;
 
@@ -51,11 +52,7 @@ public struct MovementState
     /// </summary>
     public bool HasMotion => Acceleration != Vector2.Zero || Velocity != Vector2.Zero;
 
-    public void Stop()
-    {
-        Velocity = Vector2.Zero;
-        Acceleration = Vector2.Zero;
-    }
+    internal ScriptedMovement Script;   // default = None
 
     /// <summary>
     /// returns a MovementState initialized for SceneLayer (Grid) coordinates

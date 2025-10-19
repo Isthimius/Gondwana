@@ -11,19 +11,6 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     // --- Motion fields (pixel space) ---
     private readonly MovementController _controller;
     private MovementState movementState;
-    private bool _motionActive;
-    private Vector2 _scriptedTarget;
-    private float _scriptedElapsed, _scriptedDuration;
-
-    // --- MoveTo state (duration-based tween) ---
-    private Func<float, float>? _scriptedEasing;    // easing curve delegate (e.g. EaseInOut)
-    private float _scriptedSnapEpsilon = 0.5f;      // snap threshold in px or units
-
-    // --- MoveToward state (constant-speed toward a target) ---
-    private bool _towardActive;
-    private Vector2 _towardTarget;
-    private float _towardSpeedPerSec;
-    private float _towardSnapEpsilon = 0.5f;        // px; tune as you like
 
     protected DirectDrawingMovableBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
         : base(renderSurfaceHost, bounds)
@@ -43,17 +30,18 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
 
     public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
 
-    // Reconciled: MovementState is authoritative for motion calculations.
+    // MovementState is authoritative for motion calculations.
     // Expose the movement state's position (float precision) instead of truncating to Bounds.
     public Vector2 GetPosition() => movementState.Position;
 
     public void SetPosition(Vector2 p)
     {
+        // Update display bounds from the (pixel) position. Round to reduce jitter instead of truncating.
+        ForceRefresh();
+
         // Keep MovementState in sync with explicit SetPosition calls.
         movementState.Position = p;
 
-        // Update display bounds from the (pixel) position. Round to reduce jitter instead of truncating.
-        ForceRefresh();
         Bounds = new Rectangle((int)Math.Round(p.X), (int)Math.Round(p.Y), Bounds.Width, Bounds.Height);
         ForceRefresh();
     }
@@ -65,84 +53,25 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
 
         float dt = HighResTimer.GetDuration(_lastTick, tick);
 
-        // 1) Duration-based scripted move (MoveTo)
-        if (_motionActive)
-        {
-            _scriptedElapsed += dt;
+        // Let controller handle ANY scripted motion; if it runs, we’re done for this frame.
+        bool scriptedRan = _controller.AdvanceScripted(this, ref movementState, dt); // controller owns scripted logic
 
-            bool finished = _controller.MoveTo(
-                (IMovable)this, ref movementState,
-                _scriptedTarget, _scriptedDuration, ref _scriptedElapsed,
-                _scriptedEasing, _scriptedSnapEpsilon
-            );
-
-            if (finished)
-                _motionActive = false;
-        }
-        // 2) Constant-speed MoveToward (uses controller each frame)
-        else if (_towardActive)
-        {
-            bool finished = _controller.MoveToward(
-                (IMovable)this, ref movementState,
-                _towardTarget, _towardSpeedPerSec, dt, _towardSnapEpsilon
-            );
-
-            if (finished)
-                _towardActive = false;
-        }
-        // 3) Physics-style (velocity/accel/damping)
-        else if (movementState.HasMotion)
-        {
-            _controller.Step(this, ref movementState, dt);
-        }
+        if (!scriptedRan && movementState.HasMotion)        // else physics path
+            _controller.Step(this, ref movementState, dt);  // physics, wrapping, space conversion live here
 
         base.Update(tick);
     }
 
     #region public "scripted" movement; independent of velocity/accel
 
-    public void MoveTo(Vector2 target, float seconds,
-                   Func<float, float>? easing = null,
-                   float snapEpsilon = 0.5f)
-    {
-        // cancel scripted MoveToward if it was running
-        _towardActive = false;
-        
-        _scriptedTarget = target;
-        _scriptedDuration = seconds;
-        _scriptedElapsed = 0f;
-        _scriptedEasing = easing;
-        _scriptedSnapEpsilon = snapEpsilon;
-        _motionActive = true;
-    }
+    public void MoveTo(Vector2 target, float seconds, Func<float, float>? easing = null, float snapEpsilon = 0.5f)
+        => _controller.ScheduleMoveTo(ref movementState, target, seconds, easing, snapEpsilon);
 
-    /// <summary>
-    /// Move toward a pixel target at a constant speed (px/sec). Stops when within snapEpsilon.
-    /// Cancels any active MoveTo() tween.
-    /// </summary>
     public void MoveToward(Vector2 targetPx, float speedPerSec, float snapEpsilon = 0.5f)
-    {
-        // cancel scripted MoveTo if it was running
-        _motionActive = false;
+        => _controller.ScheduleMoveToward(ref movementState, targetPx, speedPerSec, snapEpsilon);
 
-        _towardTarget = targetPx;
-        _towardSpeedPerSec = MathF.Max(0f, speedPerSec);
-        _towardSnapEpsilon = MathF.Max(0f, snapEpsilon);
-        _towardActive = true;
-    }
-
-    public void StopMoveTo()
-    {
-        _motionActive = false;
-        // leave velocity/accel alone; caller can also call Stop() if desired
-    }
-
-    /// <summary>Stops MoveToward immediately.</summary>
-    public void StopMoveToward()
-    {
-        _towardActive = false;
-        // leave velocity/accel alone; caller can also call Stop() if desired
-    }
+    public void StopMoveTo() => _controller.CancelScript(ref movementState);
+    public void StopMoveToward() => _controller.CancelScript(ref movementState);
 
     #endregion public "scripted" movement; independent of velocity/accel
 
@@ -150,34 +79,26 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
 
     public void SetVelocity(Vector2 v)
     {
-        _motionActive = false;
-        _towardActive = false;
+        _controller.CancelScript(ref movementState);
         movementState.Velocity = v;
     }
 
     public void SetAcceleration(Vector2 a)
     {
-        _motionActive = false;
-        _towardActive = false;
+        _controller.CancelScript(ref movementState);
         movementState.Acceleration = a;
     }
 
     public void StopMovement()
     {
-        _motionActive = false;
-        _towardActive = false;
-        movementState.Stop();
+        _controller.CancelScript(ref movementState);
+        movementState.Velocity = Vector2.Zero;
+        movementState.Acceleration = Vector2.Zero;
     }
 
-    public void SetMaxSpeed(float? maxSpeed)
-    {
-        movementState.MaxSpeed = maxSpeed;
-    }
+    public void SetMaxSpeed(float? maxSpeed) => movementState.MaxSpeed = maxSpeed;
 
-    public void SetLinearDamping(float dampingPerSec)
-    {
-        movementState.LinearDamping = MathF.Max(0f, dampingPerSec);
-    }
+    public void SetLinearDamping(float dampingPerSec) => movementState.LinearDamping = MathF.Max(0f, dampingPerSec);
 
     #endregion IMovementStateMutator
 }
