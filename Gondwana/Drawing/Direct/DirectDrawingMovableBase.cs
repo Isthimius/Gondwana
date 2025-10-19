@@ -34,6 +34,75 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
         movementState = MovementState.ForPixel(new Vector2(bounds.X, bounds.Y));
     }
 
+    #region sprite / camera follow support
+
+    // --- continuous follow state ---
+    private IMovable? _followTarget;
+    private SceneLayer? _followLayer;                    // inferred once from target
+    private Vector2 _followOffset;                       // grid-space offset
+    private bool _followHard;                            // true=hard, false=soft
+    private float _followSpeedTilesPerSec;               // soft
+    private float _followSnapEps = 0.25f;                // soft
+
+    /// <summary>
+    /// Gets the object this drawable is currently bound to for continuous follow,
+    /// or <see langword="null"/> if it is not following anything.
+    /// </summary>
+    public IMovable? BoundTarget => _followTarget;
+
+    /// <summary>
+    /// Hard, continuous follow. Snaps every frame to the target's current grid position (+offset).
+    /// One call sets it up; no per-frame calls needed.
+    /// </summary>
+    public void FollowHard(IMovable target, Vector2 gridOffset = default)
+    {
+        EnsureFollowBinding(target, gridOffset);
+        _followHard = true;
+    }
+
+    /// <summary>
+    /// Soft, continuous follow. Re-schedules a MoveToward each frame toward the target's current grid position (+offset).
+    /// </summary>
+    public void FollowSoft(IMovable target, float speedTilesPerSec, float snapEpsilon = 0.25f, Vector2 gridOffset = default)
+    {
+        EnsureFollowBinding(target, gridOffset);
+        _followHard = false;
+        _followSpeedTilesPerSec = MathF.Max(0f, speedTilesPerSec);
+        _followSnapEps = MathF.Max(0f, snapEpsilon);
+    }
+
+    /// <summary>Stop continuous follow and any scripted motion in progress.</summary>
+    public void Unfollow()
+    {
+        _followTarget = null;
+        _followLayer = null;
+        _controller.CancelScript(ref movementState);
+    }
+
+    // --- glue: infer layer and initialize a grid-state controller once ---
+    private void EnsureFollowBinding(IMovable target, Vector2 gridOffset)
+    {
+        if (target is not IMovableOnSceneLayer onLayer)
+            throw new InvalidOperationException("Target must expose a SceneLayer (IMovableOnSceneLayer).");
+
+        _followTarget = target;
+        _followLayer = onLayer.SceneLayer;
+        _followOffset = gridOffset;
+
+        // Switch to a layer-aware controller so Grid↔Pixel is handled automatically.
+        _controller = MovementController.ForSceneLayer(_followLayer);
+
+        // Make the movement state run in GRID units; drawable remains Pixel space.
+        // Controller will convert in Step(...) when spaces differ.
+        var startGrid = _followTarget.GetPosition() + _followOffset;
+        movementState = MovementState.ForSceneLayer(startGrid);    // grid state init
+
+        // Snap immediately on setup
+        _controller.Step(this, ref movementState, 0f);             // convert to pixels now
+    }
+
+    #endregion sprite / camera follow support
+
     /// <summary>
     /// Gets a copy of the current <see cref="MovementState"/> representing
     /// this object's motion parameters and position. Changes made to the
@@ -88,13 +157,40 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
         if (tick == _lastTick)
             return;
 
-        float dt = HighResTimer.GetDuration(_lastTick, tick);
+        float dt = Gondwana.Timers.HighResTimer.GetDuration(_lastTick, tick);
 
-        // Let controller handle ANY scripted motion; if it runs, we’re done for this frame.
-        bool scriptedRan = _controller.AdvanceScripted(this, ref movementState, dt); // controller owns scripted logic
+        // --- Continuous follow path (runs first) ---
+        if (_followTarget is not null && _followLayer is not null)
+        {
+            var targetGrid = _followTarget.GetPosition() + _followOffset;
 
-        if (!scriptedRan && movementState.HasMotion)        // else physics path
-            _controller.Step(this, ref movementState, dt);  // physics, wrapping, space conversion live here
+            if (_followHard)
+            {
+                // Snap every frame: set grid pos, convert immediately, done.
+                movementState.Position = targetGrid;
+                _controller.Step(this, ref movementState, 0f);      // Grid→Pixel SetPosition() happens in Step
+            }
+            else
+            {
+                // Soft: only re-issue if not already within epsilon to avoid jitter/ping-pong.
+                var to = targetGrid - movementState.Position;
+                if (to.LengthSquared() > _followSnapEps * _followSnapEps)
+                {
+                    _controller.ScheduleMoveToward(ref movementState, targetGrid, _followSpeedTilesPerSec, _followSnapEps);
+                }
+
+                // Advance scripted if any (toward); otherwise, let physics (rare) run.
+                if (!_controller.AdvanceScripted(this, ref movementState, dt) && movementState.HasMotion)
+                    _controller.Step(this, ref movementState, dt);
+            }
+
+            base.Update(tick);
+            return; // we handled our movement path
+        }
+
+        // --- Original movement paths when not following ---
+        if (!_controller.AdvanceScripted(this, ref movementState, dt) && movementState.HasMotion)
+            _controller.Step(this, ref movementState, dt);
 
         base.Update(tick);
     }
