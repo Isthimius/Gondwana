@@ -58,25 +58,6 @@ public struct MovementState
     }
 
     /// <summary>
-    /// Limits the current velocity to the maximum speed, if specified.
-    /// </summary>
-    /// <remarks>If <see cref="MaxSpeed"/> is not set, the method does nothing. If the current velocity
-    /// exceeds the  maximum speed, it is scaled down proportionally to ensure its magnitude does not exceed the
-    /// maximum.</remarks>
-    internal void ClampVelocity()
-    {
-        if (MaxSpeed is null)
-            return;
-
-        var v = Velocity;
-        var speed = v.Length();
-        var max = MaxSpeed.Value;
-
-        if (max > 0 && speed > max)
-            Velocity = v * (max / speed);
-    }
-
-    /// <summary>
     /// returns a MovementState initialized for SceneLayer (Grid) coordinates
     /// </summary>
     /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>

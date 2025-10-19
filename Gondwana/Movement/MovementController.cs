@@ -33,7 +33,7 @@ internal sealed class MovementController
     {
         // integrate
         s.Velocity += s.Acceleration * dt;
-        s.ClampVelocity();
+        ClampVelocity(ref s);
         
         if (s.LinearDamping > 0f)
             s.Velocity *= MathF.Exp(-s.LinearDamping * dt);  // exp damping
@@ -215,6 +215,25 @@ internal sealed class MovementController
         s.Velocity = dir * speedPerSec;
         Step(mover, ref s, dt);
         return false;
+    }
+
+    /// <summary>
+    /// Limits the current velocity to the maximum speed, if specified.
+    /// </summary>
+    /// <remarks>If <see cref="MaxSpeed"/> is not set, the method does nothing. If the current velocity
+    /// exceeds the  maximum speed, it is scaled down proportionally to ensure its magnitude does not exceed the
+    /// maximum.</remarks>
+    private static void ClampVelocity(ref MovementState movementState)
+    {
+        if (movementState.MaxSpeed is null)
+            return;
+
+        var v = movementState.Velocity;
+        var speed = v.Length();
+        var max = movementState.MaxSpeed.Value;
+
+        if (max > 0 && speed > max)
+            movementState.Velocity = v * (max / speed);
     }
 
     #region static factories
