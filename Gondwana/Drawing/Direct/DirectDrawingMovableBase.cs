@@ -48,13 +48,13 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     /// Gets the object this drawable is currently bound to for continuous follow,
     /// or <see langword="null"/> if it is not following anything.
     /// </summary>
-    public IMovable? BoundTarget => _followTarget;
+    public IMovable? FollowTarget => _followTarget;
 
     /// <summary>
     /// Hard, continuous follow. Snaps every frame to the target's current grid position (+offset).
     /// One call sets it up; no per-frame calls needed.
     /// </summary>
-    public void FollowHard(IMovable target, Vector2 gridOffset = default)
+    public void FollowHard(IMovableOnSceneLayer target, Vector2 gridOffset = default)
     {
         EnsureFollowBinding(target, gridOffset);
         _followHard = true;
@@ -63,7 +63,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     /// <summary>
     /// Soft, continuous follow. Re-schedules a MoveToward each frame toward the target's current grid position (+offset).
     /// </summary>
-    public void FollowSoft(IMovable target, float speedTilesPerSec, float snapEpsilon = 0.25f, Vector2 gridOffset = default)
+    public void FollowSoft(IMovableOnSceneLayer target, float speedTilesPerSec, float snapEpsilon = 0.25f, Vector2 gridOffset = default)
     {
         EnsureFollowBinding(target, gridOffset);
         _followHard = false;
@@ -80,25 +80,16 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     }
 
     // --- glue: infer layer and initialize a grid-state controller once ---
-    private void EnsureFollowBinding(IMovable target, Vector2 gridOffset)
+    private void EnsureFollowBinding(IMovableOnSceneLayer target, Vector2 gridOffset)
     {
-        if (target is not IMovableOnSceneLayer onLayer)
-            throw new InvalidOperationException("Target must expose a SceneLayer (IMovableOnSceneLayer).");
-
         _followTarget = target;
-        _followLayer = onLayer.SceneLayer;
+        _followLayer = target.SceneLayer;
         _followOffset = gridOffset;
 
-        // Switch to a layer-aware controller so Grid↔Pixel is handled automatically.
         _controller = MovementController.ForSceneLayer(_followLayer);
-
-        // Make the movement state run in GRID units; drawable remains Pixel space.
-        // Controller will convert in Step(...) when spaces differ.
-        var startGrid = _followTarget.GetPosition() + _followOffset;
-        movementState = MovementState.ForSceneLayer(startGrid);    // grid state init
-
-        // Snap immediately on setup
-        _controller.Step(this, ref movementState, 0f);             // convert to pixels now
+        var startGrid = target.GetPosition() + _followOffset;
+        movementState = MovementState.ForSceneLayer(startGrid);
+        _controller.Step(this, ref movementState, 0f);
     }
 
     #endregion sprite / camera follow support
@@ -110,21 +101,6 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     /// Use <see cref="IMovementStateMutator"/> methods to modify motion.
     /// </summary>
     public MovementState MovementState => movementState;
-
-    // Hard follow: snap overlay to target’s grid pos (+ optional grid offset) this frame.
-    public void Follow(IMovable gridTarget, Vector2 gridOffset)
-    {
-        var gp = gridTarget.GetPosition() + gridOffset;  // IMovable for sprites/camera use Grid space
-        movementState.Position = gp;
-        _controller.Step(this, ref movementState, 0f);   // converts Grid→Pixel and calls SetPosition(...)
-    }
-
-    // Soft follow: glide toward the target at N tiles/sec.
-    public void FollowToward(IMovable gridTarget, float tilesPerSec, float snap = 0.25f)
-    {
-        var gp = gridTarget.GetPosition();
-        _controller.ScheduleMoveToward(ref movementState, gp, tilesPerSec, snap);
-    }
 
     public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
 
