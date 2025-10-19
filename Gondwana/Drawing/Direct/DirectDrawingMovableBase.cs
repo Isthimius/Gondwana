@@ -6,7 +6,7 @@ using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Direct;
 
-public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
+public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IMovementStateMutator
 {
     // --- Motion fields (pixel space) ---
     private readonly MovementController _controller;
@@ -33,14 +33,28 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
         movementState = MovementState.ForPixel(new Vector2(bounds.X, bounds.Y));
     }
 
+    /// <summary>
+    /// Gets a copy of the current <see cref="MovementState"/> representing
+    /// this object's motion parameters and position. Changes made to the
+    /// returned struct do not affect the internal state.
+    /// Use <see cref="IMovementStateMutator"/> methods to modify motion.
+    /// </summary>
+    public MovementState MovementState => movementState;
+
     public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
 
-    public Vector2 GetPosition() => new(Bounds.X, Bounds.Y);
+    // Reconciled: MovementState is authoritative for motion calculations.
+    // Expose the movement state's position (float precision) instead of truncating to Bounds.
+    public Vector2 GetPosition() => movementState.Position;
 
     public void SetPosition(Vector2 p)
     {
+        // Keep MovementState in sync with explicit SetPosition calls.
+        movementState.Position = p;
+
+        // Update display bounds from the (pixel) position. Round to reduce jitter instead of truncating.
         ForceRefresh();
-        Bounds = new Rectangle((int)p.X, (int)p.Y, Bounds.Width, Bounds.Height);
+        Bounds = new Rectangle((int)Math.Round(p.X), (int)Math.Round(p.Y), Bounds.Width, Bounds.Height);
         ForceRefresh();
     }
 
@@ -85,7 +99,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
         base.Update(tick);
     }
 
-    #region public shims for MovementController methods
+    #region public "scripted" movement; independent of velocity/accel
 
     public void MoveTo(Vector2 target, float seconds,
                    Func<float, float>? easing = null,
@@ -130,5 +144,40 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
         // leave velocity/accel alone; caller can also call Stop() if desired
     }
 
-    #endregion public shims for MovementController methods
+    #endregion public "scripted" movement; independent of velocity/accel
+
+    #region IMovementStateMutator implementation
+
+    public void SetVelocity(Vector2 v)
+    {
+        _motionActive = false;
+        _towardActive = false;
+        movementState.Velocity = v;
+    }
+
+    public void SetAcceleration(Vector2 a)
+    {
+        _motionActive = false;
+        _towardActive = false;
+        movementState.Acceleration = a;
+    }
+
+    public void StopMovement()
+    {
+        _motionActive = false;
+        _towardActive = false;
+        movementState.Stop();
+    }
+
+    public void SetMaxSpeed(float? maxSpeed)
+    {
+        movementState.MaxSpeed = maxSpeed;
+    }
+
+    public void SetLinearDamping(float dampingPerSec)
+    {
+        movementState.LinearDamping = MathF.Max(0f, dampingPerSec);
+    }
+
+    #endregion IMovementStateMutator
 }

@@ -13,38 +13,38 @@ public struct MovementState
     /// <summary>
     /// Position in current MotionSpace units (Grid or Pixel).
     /// </summary>
-    public Vector2 Position { get; set; }
+    public Vector2 Position { get; internal set; }
 
     /// <summary>
     /// Velocity in current MotionSpace units per second.
     /// </summary>
-    public Vector2 Velocity { get; set; }
+    public Vector2 Velocity { get; internal set; }
 
     /// <summary>
     /// Acceleration in current MotionSpace units per second^2.
     /// </summary>
-    public Vector2 Acceleration { get; set; }
+    public Vector2 Acceleration { get; internal set; }
 
     /// <summary>
     /// Max speed in current MotionSpace units per second (null = no cap).
     /// </summary>
-    public float? MaxSpeed { get; set; }
+    public float? MaxSpeed { get; internal set; }
 
     /// <summary>
     /// Linear damping per second in [0..1]. 0 = no damping.
     /// Apply as v *= (1 - LinearDamping * dt) in the controller.
     /// </summary>
-    public float LinearDamping { get; set; }
+    public float LinearDamping { get; internal set; }
 
     /// <summary>
     /// Optional wrapping (only meaningful for Grid space; ignored for Pixel).
     /// </summary>
-    public bool WrapX { get; set; }
+    public bool WrapX { get; internal set; }
 
     /// <summary>
     /// Optional wrapping (only meaningful for Grid space; ignored for Pixel).
     /// </summary>
-    public bool WrapY { get; set; }
+    public bool WrapY { get; internal set; }
 
     /// <summary>
     /// Gets a value indicating whether the object is in motion.
