@@ -111,14 +111,6 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     /// </summary>
     public MovementState MovementState => movementState;
 
-    public void BindToSceneLayer(SceneLayer layer, Vector2 initialGrid)
-    {
-        // layer-aware controller (knows coords & wrapping)
-        _controller = MovementController.ForSceneLayer(layer);
-        // run the state in GRID units (drawable stays Pixel; controller will bridge)
-        movementState = MovementState.ForSceneLayer(initialGrid);
-    }
-
     // Hard follow: snap overlay to target’s grid pos (+ optional grid offset) this frame.
     public void Follow(IMovable gridTarget, Vector2 gridOffset)
     {
