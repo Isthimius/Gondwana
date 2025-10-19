@@ -15,8 +15,9 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     protected int _zOrder;
     protected bool _isVisible;
     protected internal bool _dirty = true;
+    protected long _lastTick = HighResTimer.GetCurrentTick();
+
     private bool _disposed = false;
-    protected long? _lastTick;
 
     // Fade/opacity state
     private float _opacity = 1f;                 // 0..1
@@ -174,19 +175,13 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     /// <param name="tick">Current engine tick from <see cref="HighResTimer"/>.</param>
     protected internal virtual void Update(long tick)
     {
-        // Initialize clock on first frame to avoid huge dt
-        if (!_lastTick.HasValue)
-        {
-            _lastTick = tick;
+        if (tick == _lastTick)
             return;
-        }
 
         // Advance fade tween
         if (_isFading)
         {
-            long deltaTicks = tick - _lastTick.Value;
-            if (deltaTicks < 0) deltaTicks = 0;
-            float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
+            float dt = HighResTimer.GetDuration(_lastTick, tick);
 
             _fadeElapsedSec += dt;
             float timeElapsed = Math.Clamp(_fadeElapsedSec / _fadeDurationSec, 0f, 1f);

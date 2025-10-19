@@ -5,7 +5,7 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
-public sealed class MovementController
+internal sealed class MovementController
 {
     private readonly ISceneLayerCoordinates? _coords;
     private readonly SceneLayer? _sceneLayer;
@@ -16,13 +16,19 @@ public sealed class MovementController
     // Layer-aware usage (Grid↔Pixel conversion, wrapping)
     private MovementController(SceneLayer sceneLayer)
     {
-        _sceneLayer  = sceneLayer ?? throw new ArgumentNullException(nameof(sceneLayer));
-        _coords = _sceneLayer.CoordinateSystem ?? throw new ArgumentNullException(nameof(_sceneLayer.CoordinateSystem));
+        if (sceneLayer is null)
+            throw new ArgumentNullException(nameof(sceneLayer));
+
+        if (sceneLayer.CoordinateSystem is null)
+            throw new ArgumentException("SceneLayer must have a CoordinateSystem.", nameof(sceneLayer));
+
+        _sceneLayer  = sceneLayer;
+        _coords = _sceneLayer.CoordinateSystem;
     }
 
-    public static MovementController ForRenderSurface() => new();
-    public static MovementController ForSceneLayer(SceneLayer layer) => new(layer);
-
+    /// <summary>
+    /// handle physics-based (velocity/acceleration, damping) movement step over dt seconds
+    /// </summary>
     internal void Step(IMovable mover, ref MovementState s, float dt)
     {
         // integrate
@@ -31,6 +37,12 @@ public sealed class MovementController
         
         if (s.LinearDamping > 0f)
             s.Velocity *= MathF.Exp(-s.LinearDamping * dt);  // exp damping
+
+        // after exp damping
+        const float StopEpsilon = 0.01f; // px/s for pixel; fine for grid too
+        if (s.Acceleration == Vector2.Zero &&
+            s.Velocity.LengthSquared() < StopEpsilon * StopEpsilon)
+            s.Velocity = Vector2.Zero;
 
         s.Position += s.Velocity * dt;
 
@@ -75,6 +87,140 @@ public sealed class MovementController
             return;
         }
 
+        // should not reach here...
         throw new InvalidOperationException($"Unsupported conversion {s.MovementSpace}->{mover.PositionSpace}");
     }
+
+    /// <summary>
+    /// Move <paramref name="mover"/> toward <paramref name="target"/> over <paramref name="durationSec"/> seconds,
+    /// using optional easing. Caller supplies and owns <paramref name="elapsedSec"/> (accumulate dt each frame).
+    /// Returns true when snapped to target.
+    /// </summary>
+    /// <remarks>
+    /// The <paramref name="easing"/> parameter allows you to customize how interpolation progresses over time.
+    /// It accepts a delegate of type <see cref="Func{T,TResult}"/> that takes a normalized time value (0..1)
+    /// and returns a modified value (also 0..1) that controls the easing curve.
+    ///
+    /// Common examples:
+    ///
+    /// <code>
+    /// // Linear (no easing)
+    /// float Linear(float t) => t;
+    ///
+    /// // Ease-in (slow start)
+    /// float EaseInQuad(float t) => t * t;
+    ///
+    /// // Ease-out (slow end)
+    /// float EaseOutQuad(float t) => 1 - (1 - t) * (1 - t);
+    ///
+    /// // Ease-in-out (slow start and end)
+    /// float EaseInOutQuad(float t)
+    /// {
+    ///     return t < 0.5f
+    ///         ? 2f * t * t
+    ///         : 1f - MathF.Pow(-2f * t + 2f, 2f) / 2f;
+    /// }
+    ///
+    /// // Example usage:
+    /// float elapsed = 0f;
+    /// while (!controller.MoveTo(mover, ref state, target, duration, ref elapsed, EaseInOutQuad))
+    /// {
+    ///     elapsed += dt;
+    ///     ...
+    /// }
+    /// </code>
+    ///
+    /// If <paramref name="easing"/> is null, interpolation defaults to linear.
+    /// </remarks>
+    internal bool MoveTo(
+        IMovable mover,
+        ref MovementState s,
+        Vector2 target,
+        float durationSec,
+        ref float elapsedSec,
+        Func<float, float>? easing = null,
+        float snapEpsilon = 0.01f)
+    {
+        if (durationSec <= 0f)
+        {
+            // instant snap
+            s.Acceleration = Vector2.Zero;
+            s.Velocity = Vector2.Zero;
+            s.Position = target;
+            // apply directly (no integration)
+            Step(mover, ref s, 0f);
+            return true;
+        }
+
+        float t = Math.Clamp(elapsedSec / durationSec, 0f, 1f);
+        if (easing is not null) t = Math.Clamp(easing(t), 0f, 1f);
+
+        // Lerp in the state's own space (Grid or Pixel)
+        var pos = Vector2.Lerp(s.Position, target, t); // using current pos -> avoids drift if interrupted
+        s.Acceleration = Vector2.Zero;
+        s.Velocity = Vector2.Zero;
+        s.Position = pos;
+
+        // apply without advancing time
+        Step(mover, ref s, 0f);
+
+        // snap when close enough
+        if (Vector2.DistanceSquared(pos, target) <= snapEpsilon * snapEpsilon || t >= 1f)
+        {
+            s.Position = target;
+            Step(mover, ref s, 0f);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Advance one frame toward <paramref name="target"/> at <paramref name="speedPerSec"/> (in s.MovementSpace units).
+    /// Call each frame with dt via Step(...). Returns true when snapped to target.
+    /// </summary>
+    internal bool MoveToward(
+        IMovable mover,
+        ref MovementState s,
+        Vector2 target,
+        float speedPerSec,
+        float dt,
+        float snapEpsilon = 0.01f)
+    {
+        var to = target - s.Position;
+        var dist = to.Length();
+        if (dist <= snapEpsilon || speedPerSec <= 0f || dt <= 0f)
+        {
+            s.Position = target;
+            s.Velocity = Vector2.Zero;
+            s.Acceleration = Vector2.Zero;
+            Step(mover, ref s, 0f);
+            return true;
+        }
+
+        var step = speedPerSec * dt;
+        if (step >= dist)
+        {
+            // we can reach this frame
+            s.Position = target;
+            s.Velocity = Vector2.Zero;
+            s.Acceleration = Vector2.Zero;
+            Step(mover, ref s, 0f);
+            return true;
+        }
+
+        // advance toward
+        var dir = to / dist;
+        s.Acceleration = Vector2.Zero;
+        s.Velocity = dir * speedPerSec;
+        Step(mover, ref s, dt);
+        return false;
+    }
+
+    #region static factories
+
+    internal static MovementController ForPixelOverlay() => new();
+    internal static MovementController ForSceneLayer(SceneLayer layer) => new(layer);
+
+    #endregion static factories
 }

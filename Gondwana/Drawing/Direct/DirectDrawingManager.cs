@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using Gondwana.Movement;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Direct;
@@ -16,13 +17,18 @@ public sealed class DirectDrawingManager
     private readonly ConcurrentDictionary<string, DirectDrawingBase> _directDrawings =
         new(StringComparer.Ordinal);
 
-    private DirectDrawingManager() { }
+    private DirectDrawingManager()
+    {
+        MovementController = MovementController.ForPixelOverlay();
+    }
 
     // Expose a read-only snapshot to callers.
     public ReadOnlyCollection<DirectDrawingBase> DirectDrawings =>
         new ReadOnlyCollection<DirectDrawingBase>([.. _directDrawings.Values]);
 
     public int Count => _directDrawings.Count;
+
+    internal MovementController MovementController { get; private set; }
 
     public DirectDrawingBase? GetDirectDrawing(string name)
     {
