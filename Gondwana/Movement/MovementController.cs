@@ -6,11 +6,14 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
-internal sealed class MovementController
+public sealed class MovementController
 {
     private readonly ISceneLayerCoordinates? _coords;
     private readonly SceneLayer? _sceneLayer;
 
+    private readonly IMovable _target;
+    private MovementState _state;
+     
     // Pixel-only or Grid-only same-space usage
     private MovementController() { }
 
@@ -252,6 +255,7 @@ internal sealed class MovementController
             SnapEpsilon = MathF.Max(0f, snapEpsilon),
             Easing = easing
         };
+
         // scripted motion overrides physics; zero them
         s.Acceleration = Vector2.Zero;
         s.Velocity = Vector2.Zero;

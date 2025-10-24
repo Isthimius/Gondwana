@@ -108,7 +108,7 @@ namespace GondwanaWinTest
         public static void AddScrollPt(int x, int y)
         {
             PointF ptF = matrix.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(matrix, new Point(x, y));
-            matrix.ScrollSourceGridPoint(2000, ptF);
+            //matrix.ScrollSourceGridPoint(2000, ptF);
         }
 
         public static void ResizePt(Rectangle newLoc)
@@ -222,27 +222,27 @@ namespace GondwanaWinTest
 
             //matrix[5, 5].CurrentFrame = new Frame(tilesheet, 2, 7);
 
-            foreach (SceneLayerPoint gridPt in matrix)
-                gridPt.CurrentFrame = new Frame(tilesheet, 0, 0);
+            //foreach (SceneLayerPoint gridPt in matrix)
+            //    gridPt.CurrentFrame = new Frame(tilesheet, 0, 0);
 
-            int i = 0;
-            foreach (SceneLayerPoint gridPt in matrix2)
-            {
-                switch (i++ % 3)
-                {
-                    case 0:
-                        gridPt.CurrentFrame = new Frame(tilesheet, 1, 6);
-                        break;
-                    case 1:
-                        gridPt.CurrentFrame = new Frame(tilesheet, 1, 7);
-                        break;
-                    case 2:
-                        gridPt.CurrentFrame = new Frame(tilesheet, 1, 8);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            //int i = 0;
+            //foreach (SceneLayerPoint gridPt in matrix2)
+            //{
+            //    switch (i++ % 3)
+            //    {
+            //        case 0:
+            //            gridPt.CurrentFrame = new Frame(tilesheet, 1, 6);
+            //            break;
+            //        case 1:
+            //            gridPt.CurrentFrame = new Frame(tilesheet, 1, 7);
+            //            break;
+            //        case 2:
+            //            gridPt.CurrentFrame = new Frame(tilesheet, 1, 8);
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //}
         }
 
         //static void Timers_Tick(Gondwana.Common.EventArgs.TimerEventArgs e)
@@ -349,35 +349,35 @@ namespace GondwanaWinTest
         #endregion
 
         #region event handlers
-        static void Engine_AfterEngineCycle(EngineCycleEventArgs e)
-        {
-            totalEngineCycles++;
+        //static void Engine_AfterEngineCycle(EngineCycleEventArgs e)
+        //{
+        //    totalEngineCycles++;
 
-            StringBuilder msg = new StringBuilder();
-            msg.AppendLine(string.Format("fps: {0}", fps.ToString("F3")));
-            msg.AppendLine(string.Format("fps (event): {0}", e.NetFPS.ToString("F3")));
-            msg.AppendLine(string.Format("cps: {0}", cps.ToString("F3")));
-            msg.AppendLine(string.Format("cps (event): {0}", e.GrossCPS.ToString("F3")));
-            msg.AppendLine(string.Format("net cycles: {0}", e.NetCyclesTotal.ToString()));
-            msg.AppendLine(string.Format("gross cycles: {0}", e.GrossCyclesTotal.ToString()));
-            msg.AppendLine(string.Format("seconds running: {0}", Gondwana.Engine.Instance.TotalSecondsEngineRunning.ToString()));
-            msg.AppendLine(string.Format("sprites: {0}", SpriteManager.AllSprites.Count.ToString()));
-            msg.AppendLine(string.Format("x1: {0}", matrix.SourceGridPoint.X.ToString("F3")));
-            msg.AppendLine(string.Format("x2: {0}", matrix2.SourceGridPoint.X.ToString("F3")));
-            msg.AppendLine(string.Format("y1: {0}", matrix.SourceGridPoint.Y.ToString("F3")));
-            msg.AppendLine(string.Format("y2: {0}", matrix2.SourceGridPoint.Y.ToString("F3")));
-            msg.AppendLine(string.Format("sprite x: {0}", sprite.GridCoordinates.X.ToString("F3")));
-            msg.AppendLine(string.Format("sprite y: {0}", sprite.GridCoordinates.Y.ToString("F3")));
-            //msg.AppendLine(string.Format("DirectDrawings: {0}", DirectDrawing.Count.ToString()));
-            msg.AppendLine(string.Format("GridPt Zero Pxl: {0}", matrix.GridPointZeroPixel.ToString()));
-            msg.AppendLine(string.Format("Sprite source pxl: {0}", sprite.DrawLocation.Location.ToString()));
-            msg.AppendLine(string.Format("X velocity: {0}", sprite.SpriteMovement.VelocityX.ToString("F3")));
-            msg.AppendLine(string.Format("Y velocity: {0}", sprite.SpriteMovement.VelocityY.ToString("F3")));
-            msg.AppendLine(string.Format("X acceleration: {0}", sprite.SpriteMovement.AccelerationX.ToString("F3")));
-            msg.AppendLine(string.Format("Y acceleration: {0}", sprite.SpriteMovement.AccelerationY.ToString("F3")));
+        //    StringBuilder msg = new StringBuilder();
+        //    msg.AppendLine(string.Format("fps: {0}", fps.ToString("F3")));
+        //    msg.AppendLine(string.Format("fps (event): {0}", e.NetFPS.ToString("F3")));
+        //    msg.AppendLine(string.Format("cps: {0}", cps.ToString("F3")));
+        //    msg.AppendLine(string.Format("cps (event): {0}", e.GrossCPS.ToString("F3")));
+        //    msg.AppendLine(string.Format("net cycles: {0}", e.NetCyclesTotal.ToString()));
+        //    msg.AppendLine(string.Format("gross cycles: {0}", e.GrossCyclesTotal.ToString()));
+        //    msg.AppendLine(string.Format("seconds running: {0}", Gondwana.Engine.Instance.TotalSecondsEngineRunning.ToString()));
+        //    msg.AppendLine(string.Format("sprites: {0}", SpriteManager.AllSprites.Count.ToString()));
+        //    msg.AppendLine(string.Format("x1: {0}", matrix.SourceGridPoint.X.ToString("F3")));
+        //    msg.AppendLine(string.Format("x2: {0}", matrix2.SourceGridPoint.X.ToString("F3")));
+        //    msg.AppendLine(string.Format("y1: {0}", matrix.SourceGridPoint.Y.ToString("F3")));
+        //    msg.AppendLine(string.Format("y2: {0}", matrix2.SourceGridPoint.Y.ToString("F3")));
+        //    msg.AppendLine(string.Format("sprite x: {0}", sprite.GridCoordinates.X.ToString("F3")));
+        //    msg.AppendLine(string.Format("sprite y: {0}", sprite.GridCoordinates.Y.ToString("F3")));
+        //    //msg.AppendLine(string.Format("DirectDrawings: {0}", DirectDrawing.Count.ToString()));
+        //    msg.AppendLine(string.Format("GridPt Zero Pxl: {0}", matrix.GridPointZeroPixel.ToString()));
+        //    msg.AppendLine(string.Format("Sprite source pxl: {0}", sprite.DrawLocation.Location.ToString()));
+        //    msg.AppendLine(string.Format("X velocity: {0}", sprite.SpriteMovement.VelocityX.ToString("F3")));
+        //    msg.AppendLine(string.Format("Y velocity: {0}", sprite.SpriteMovement.VelocityY.ToString("F3")));
+        //    msg.AppendLine(string.Format("X acceleration: {0}", sprite.SpriteMovement.AccelerationX.ToString("F3")));
+        //    msg.AppendLine(string.Format("Y acceleration: {0}", sprite.SpriteMovement.AccelerationY.ToString("F3")));
 
-            //fpsCounter.TextDisplay = msg.ToString();
-        }
+        //    //fpsCounter.TextDisplay = msg.ToString();
+        //}
 
         static void Keyboard_KeyDown(KeyDownEventArgs e)
         {

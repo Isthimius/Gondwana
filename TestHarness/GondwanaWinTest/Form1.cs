@@ -85,7 +85,7 @@ public partial class Form1 : Form
         //    Program.sprite.MoveSprite(Program.matrix2);
         //else
         //    Program.sprite.MoveSprite(Program.matrix);
-        Program.matrix.SetSourceGridPoint(0, 0);
+        //Program.matrix.SetSourceGridPoint(0, 0);
         Program.sprite.MoveSprite(0, 0);
         Program.sprite.SpriteMovement.Stop();
     }
@@ -136,7 +136,7 @@ public partial class Form1 : Form
 
     private void button6_Click(object sender, EventArgs e)
     {
-        Program.matrix.ScrollSourceGridPoint(5, new PointF(8, 8));
+        //Program.matrix.ScrollSourceGridPoint(5, new PointF(8, 8));
     }
 
     private void button7_Click(object sender, EventArgs e)

@@ -52,7 +52,7 @@ public sealed class Camera : IMovableOnSceneLayer
         _layer.SourceSceneLayerTile = new PointF(pos.X, pos.Y);                 // mirrors CameraMovable semantics
     }
 
-    // --- Public API ---
+    #region *** follow API ***
 
     public IMovableOnSceneLayer? FollowTarget => _target;
 
@@ -88,6 +88,8 @@ public sealed class Camera : IMovableOnSceneLayer
     public void SetDeadZone(RectangleF deadZoneGrid) => _deadZoneGrid = deadZoneGrid;
 
     public void ClearDeadZone() => _deadZoneGrid = null;
+
+    #endregion *** follow API ***
 
     /// <summary>Clamps the camera origin within world bounds (in grid units).</summary>
     public void SetWorldBounds(RectangleF worldBoundsGrid) => _worldBoundsGrid = worldBoundsGrid;
@@ -172,7 +174,7 @@ public sealed class Camera : IMovableOnSceneLayer
             _controller.Step(this, ref _state, dtSeconds);
     }
 
-    // --- Internals ---
+    #region private methods
 
     private void SnapNow()
     {
@@ -226,4 +228,6 @@ public sealed class Camera : IMovableOnSceneLayer
 
         return new Vector2(x, y);
     }
+
+    #endregion private methods
 }
