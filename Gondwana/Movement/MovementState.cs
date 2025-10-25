@@ -52,7 +52,18 @@ public struct MovementState
     /// </summary>
     public bool HasMotion => Acceleration != Vector2.Zero || Velocity != Vector2.Zero;
 
-    internal ScriptedMovement Script;   // default = None
+    /// <summary>Zeroes velocity and acceleration, preserving position and script.</summary>
+    public void StopMotion()
+    {
+        Velocity = Vector2.Zero;
+        Acceleration = Vector2.Zero;
+    }
+
+    /// <summary>
+    /// Active scripted movement command (TweenTo, Toward, etc.).
+    /// Default is <see cref="MovementScriptType.None"/>.
+    /// </summary>
+    internal ScriptedMovement Script;
 
     /// <summary>
     /// returns a MovementState initialized for SceneLayer (Grid) coordinates
