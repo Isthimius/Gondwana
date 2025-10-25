@@ -114,20 +114,20 @@ public class DirectComposite : IMovable
     // Group follow fan-outs: children do all grid↔pixel work; composite stays pixel-only.
     public DirectComposite FollowHard(IMovableOnSceneLayer gridTarget, Vector2 sharedGridOffset = default)
     {
-        foreach (var c in _children) c.FollowHard(gridTarget, sharedGridOffset);
+        foreach (var c in _children) c.Movement.FollowHard(gridTarget, sharedGridOffset);
         return this;
     }
 
     public DirectComposite FollowSoft(IMovableOnSceneLayer gridTarget, float speedTilesPerSec,
                                       float snapEpsilon = 0.25f, Vector2 sharedGridOffset = default)
     {
-        foreach (var c in _children) c.FollowSoft(gridTarget, speedTilesPerSec, snapEpsilon, sharedGridOffset);
+        foreach (var c in _children) c.Movement.FollowSoft(gridTarget, speedTilesPerSec, snapEpsilon, sharedGridOffset);
         return this;
     }
 
     public DirectComposite UnfollowAll()
     {
-        foreach (var c in _children) c.Unfollow();
+        foreach (var c in _children) c.Movement.Unfollow();
         return this;
     }
 

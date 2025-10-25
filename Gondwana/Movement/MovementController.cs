@@ -6,13 +6,21 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
-public sealed class MovementController : IMovementStateMutator
+public sealed class MovementController : IMovementStateMutator, IDisposable
 {
     private readonly ISceneLayerCoordinates? _coords;
     private readonly SceneLayer? _sceneLayer;
-
     private readonly IMovable _target;
     private MovementState _state;
+
+    // --- DirectDrawing (pixel) follow state ---
+    private Func<Vector2>? _followPixel;   // returns current target pixel position each frame
+    private Vector2 _followOffsetPx;
+    private bool _followHard;
+    private float _followSpeedPxPerSec;
+    private float _followSnapPx;
+
+    public event Action? ScriptedMovementStopped;
 
     // Bind to one target + initial state. Optional layer when you need Grid↔Pixel & wrapping.
     internal MovementController(IMovable target, MovementState initial, SceneLayer? layer = null)
@@ -217,8 +225,7 @@ public sealed class MovementController : IMovementStateMutator
             Step(mover, ref s, 0f);
             s.Script = default;
 
-            if (mover is IScriptedMovementListener listener)
-                listener.OnScriptedMovementStopped();
+            ScriptedMovementStopped?.Invoke();
         }
 
         return true;
@@ -237,8 +244,7 @@ public sealed class MovementController : IMovementStateMutator
             Step(mover, ref s, 0f);
             s.Script = default;
 
-            if (mover is IScriptedMovementListener listener)
-                listener.OnScriptedMovementStopped();
+            ScriptedMovementStopped?.Invoke();
 
             return true;
         }
@@ -274,4 +280,45 @@ public sealed class MovementController : IMovementStateMutator
     public void SetLinearDamping(float dampingPerSec) { _state.LinearDamping = MathF.Max(0f, dampingPerSec); }
 
     #endregion
+
+    #region follow methods
+
+    /// <summary>
+    /// Snap to the target's pixel position (+offset) every frame.
+    /// Pass a delegate that returns the CURRENT pixel position.
+    /// </summary>
+    public void FollowHard(Func<Vector2> getTargetPixelPosition, Vector2 offsetPx = default)
+    {
+        _followPixel = getTargetPixelPosition ?? throw new ArgumentNullException(nameof(getTargetPixelPosition));
+        _followOffsetPx = offsetPx;
+        _followHard = true;
+    }
+
+    /// <summary>
+    /// Move toward the target's pixel position each frame at a fixed pixel speed.
+    /// </summary>
+    public void FollowSoft(Func<Vector2> getTargetPixelPosition, float speedPxPerSec,
+                           float snapPx = 0.5f, Vector2 offsetPx = default)
+    {
+        if (speedPxPerSec <= 0f) throw new ArgumentOutOfRangeException(nameof(speedPxPerSec));
+        _followPixel = getTargetPixelPosition ?? throw new ArgumentNullException(nameof(getTargetPixelPosition));
+        _followOffsetPx = offsetPx;
+        _followHard = false;
+        _followSpeedPxPerSec = speedPxPerSec;
+        _followSnapPx = MathF.Max(0f, snapPx);
+    }
+
+    /// <summary>Stop continuous follow and cancel any active scripted motion.</summary>
+    public void Unfollow()
+    {
+        _followPixel = null;
+        CancelScript(ref _state);
+    }
+
+    public void Dispose()
+    {
+        ScriptedMovementStopped = null;
+    }
+
+    #endregion follow methods
 }
