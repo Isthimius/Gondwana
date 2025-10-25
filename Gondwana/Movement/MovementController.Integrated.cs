@@ -16,8 +16,10 @@ public sealed partial class MovementController
         s.Velocity += s.Acceleration * dt;
         ClampVelocity(ref s);
 
+        /// Linear damping per second in [0..∞). Applied exponentially in the controller:
+        /// v *= Exp(-LinearDamping * dt). Use 0 for no damping.
         if (s.LinearDamping > 0f)
-            s.Velocity *= MathF.Exp(-s.LinearDamping * dt);  // exp damping
+            s.Velocity *= MathF.Exp(-s.LinearDamping * dt);
 
         // after exp damping
         const float StopEpsilon = 0.01f; // px/s for pixel; fine for grid too

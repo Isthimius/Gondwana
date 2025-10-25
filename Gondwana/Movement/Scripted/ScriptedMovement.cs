@@ -5,6 +5,7 @@ namespace Gondwana.Movement.Scripted;
 internal struct ScriptedMovement
 {
     public MovementScriptType Type;     // None, TweenTo, Toward
+    public Vector2 Origin;              // starting point captured when scheduling the tween
     public Vector2 Target;
     public float DurationSec;           // for TweenTo
     public float ElapsedSec;            // for TweenTo

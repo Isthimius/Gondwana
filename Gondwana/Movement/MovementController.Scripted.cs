@@ -40,7 +40,7 @@ public sealed partial class MovementController
         if (s.Script.Easing is not null)
             t = Math.Clamp(s.Script.Easing(t), 0f, 1f);
 
-        var pos = Vector2.Lerp(s.Position, s.Script.Target, t);
+        var pos = Vector2.Lerp(s.Script.Origin, s.Script.Target, t);
         s.Position = pos;
         s.Acceleration = Vector2.Zero;
         s.Velocity = Vector2.Zero;
@@ -72,7 +72,6 @@ public sealed partial class MovementController
             s.Script = default;
 
             ScriptedMovementStopped?.Invoke();
-
             return true;
         }
 
@@ -85,6 +84,7 @@ public sealed partial class MovementController
             Step(mover, ref s, 0f);
             s.Script = default;
 
+            ScriptedMovementStopped?.Invoke();
             return true;
         }
 
@@ -102,6 +102,7 @@ public sealed partial class MovementController
         s.Script = new ScriptedMovement
         {
             Type = MovementScriptType.TweenTo,
+            Origin = s.Position,
             Target = target,
             DurationSec = MathF.Max(0f, durationSec),
             ElapsedSec = 0f,

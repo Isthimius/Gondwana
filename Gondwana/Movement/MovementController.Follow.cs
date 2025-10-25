@@ -1,11 +1,12 @@
 ﻿using System.Numerics;
+using Gondwana.Movement.Easing;
 
 namespace Gondwana.Movement;
 
 public sealed partial class MovementController
 {
     // --- Pixel-follow (DirectDrawing → DirectDrawing)
-    private Func<Vector2>? _followPixel;   // returns current target pixel position each frame
+    private Func<Vector2>? _followPixel;        // returns current target pixel position each frame
     private Vector2 _followOffsetPx;
     private bool _followHard;
     private float _followSpeedPxPerSec;
@@ -56,8 +57,17 @@ public sealed partial class MovementController
         _followHard = false;
         _followSpeedPxPerSec = 0f; // not used in tween mode
         _followSnapPx = snapPx;
-        _followEasing = easing ?? EasingFunctions.Linear; // assume your tween system has these
+        _followEasing = easing ?? EasingFunctions.Linear;
         _followDurationSec = durationSec;
+    }
+
+    public void FollowSoft(Func<Vector2> getPixelPos, float durationSec,
+                   EasingKind easingKind,
+                   float snapPx = 0.5f,
+                   Vector2 offsetPx = default)
+    {
+        var easing = EasingFunctions.From(easingKind);
+        FollowSoft(getPixelPos, durationSec, easing, snapPx, offsetPx);
     }
 
     public void FollowHard(IMovableOnSceneLayer gridTarget, Vector2 gridOffset = default)
