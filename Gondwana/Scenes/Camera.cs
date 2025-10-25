@@ -33,7 +33,7 @@ public sealed class Camera : IMovableOnSceneLayer
     public Camera(SceneLayer layer, Vector2? initialGridPos = null)
     {
         _layer = layer ?? throw new ArgumentNullException(nameof(layer));
-        _controller = MovementController.ForSceneLayer(_layer);                  // layer-aware controller
+        //_controller = MovementController.ForSceneLayer(_layer);                  // layer-aware controller
         var start = initialGridPos ?? new Vector2(_layer.SourceSceneLayerTile.X, _layer.SourceSceneLayerTile.Y);
         _state = MovementState.ForSceneLayer(start);                             // grid state
         // apply immediately
@@ -133,11 +133,11 @@ public sealed class Camera : IMovableOnSceneLayer
         if (_scriptDuration > 0f)
         {
             _scriptElapsed += dtSeconds;
-            if (_controller.MoveTo(this, ref _state, _scriptTarget, _scriptDuration,
-                                   ref _scriptElapsed, _scriptEasing, _scriptSnapEps))
-            {
-                _scriptDuration = 0f; // finished
-            }
+            //if (_controller.MoveTo(this, ref _state, _scriptTarget, _scriptDuration,
+            //                       ref _scriptElapsed, _scriptEasing, _scriptSnapEps))
+            //{
+            //    _scriptDuration = 0f; // finished
+            //}
 
             return; // scripted handled this frame
         }

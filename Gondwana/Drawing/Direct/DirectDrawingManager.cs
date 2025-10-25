@@ -19,7 +19,7 @@ public sealed class DirectDrawingManager
 
     private DirectDrawingManager()
     {
-        MovementController = MovementController.ForPixelOverlay();
+        //MovementController = MovementController.ForPixelOverlay();
     }
 
     // Expose a read-only snapshot to callers.

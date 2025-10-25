@@ -6,29 +6,31 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
-public sealed class MovementController
+public sealed class MovementController : IMovementStateMutator
 {
     private readonly ISceneLayerCoordinates? _coords;
     private readonly SceneLayer? _sceneLayer;
 
     private readonly IMovable _target;
     private MovementState _state;
-     
-    // Pixel-only or Grid-only same-space usage
-    private MovementController() { }
 
-    // Layer-aware usage (Grid↔Pixel conversion, wrapping)
-    private MovementController(SceneLayer sceneLayer)
+    // Bind to one target + initial state. Optional layer when you need Grid↔Pixel & wrapping.
+    internal MovementController(IMovable target, MovementState initial, SceneLayer? layer = null)
     {
-        if (sceneLayer is null)
-            throw new ArgumentNullException(nameof(sceneLayer));
+        _target = target;
+        _state = initial;
 
-        if (sceneLayer.CoordinateSystem is null)
-            throw new ArgumentException("SceneLayer must have a CoordinateSystem.", nameof(sceneLayer));
-
-        _sceneLayer  = sceneLayer;
-        _coords = _sceneLayer.CoordinateSystem;
+        if (layer is not null)
+        {
+            _sceneLayer = layer;
+            _coords = layer.CoordinateSystem ?? throw new ArgumentException("SceneLayer must have a CoordinateSystem.", nameof(layer));
+        }
     }
+
+    public MovementState MovementState => _state;               // snapshot
+    public CoordinateSpace PositionSpace => _target.PositionSpace;
+    public Vector2 GetPosition() => _target.GetPosition();
+    public void SetPosition(Vector2 p) { _state.Position = p; _target.SetPosition(p); }
 
     /// <summary>
     /// handle physics-based (velocity/acceleration, damping) movement step over dt seconds
@@ -95,131 +97,18 @@ public sealed class MovementController
         throw new InvalidOperationException($"Unsupported conversion {s.MovementSpace}->{mover.PositionSpace}");
     }
 
-    /// <summary>
-    /// Move <paramref name="mover"/> toward <paramref name="target"/> over <paramref name="durationSec"/> seconds,
-    /// using optional easing. Caller supplies and owns <paramref name="elapsedSec"/> (accumulate dt each frame).
-    /// Returns true when snapped to target.
-    /// </summary>
-    /// <remarks>
-    /// The <paramref name="easing"/> parameter allows you to customize how interpolation progresses over time.
-    /// It accepts a delegate of type <see cref="Func{T,TResult}"/> that takes a normalized time value (0..1)
-    /// and returns a modified value (also 0..1) that controls the easing curve.
-    ///
-    /// Common examples:
-    ///
-    /// <code>
-    /// // Linear (no easing)
-    /// float Linear(float t) => t;
-    ///
-    /// // Ease-in (slow start)
-    /// float EaseInQuad(float t) => t * t;
-    ///
-    /// // Ease-out (slow end)
-    /// float EaseOutQuad(float t) => 1 - (1 - t) * (1 - t);
-    ///
-    /// // Ease-in-out (slow start and end)
-    /// float EaseInOutQuad(float t)
-    /// {
-    ///     return t < 0.5f
-    ///         ? 2f * t * t
-    ///         : 1f - MathF.Pow(-2f * t + 2f, 2f) / 2f;
-    /// }
-    ///
-    /// // Example usage:
-    /// float elapsed = 0f;
-    /// while (!controller.MoveTo(mover, ref state, target, duration, ref elapsed, EaseInOutQuad))
-    /// {
-    ///     elapsed += dt;
-    ///     ...
-    /// }
-    /// </code>
-    ///
-    /// If <paramref name="easing"/> is null, interpolation defaults to linear.
-    /// </remarks>
-    internal bool MoveTo(
-        IMovable mover,
-        ref MovementState s,
-        Vector2 target,
-        float durationSec,
-        ref float elapsedSec,
-        Func<float, float>? easing = null,
-        float snapEpsilon = 0.01f)
-    {
-        if (durationSec <= 0f)
-        {
-            // instant snap
-            s.Acceleration = Vector2.Zero;
-            s.Velocity = Vector2.Zero;
-            s.Position = target;
-            // apply directly (no integration)
-            Step(mover, ref s, 0f);
-            return true;
-        }
+    // Ergonomic scripted APIs (delegate to existing schedulers)
+    public void MoveTo(Vector2 target, float seconds, Func<float, float>? easing = null, float snapEps = 0.5f)
+        => ScheduleMoveTo(ref _state, target, seconds, easing, snapEps);
 
-        float t = Math.Clamp(elapsedSec / durationSec, 0f, 1f);
-        if (easing is not null) t = Math.Clamp(easing(t), 0f, 1f);
+    public void MoveToward(Vector2 target, float speedPerSec, float snapEps = 0.5f)
+        => ScheduleMoveToward(ref _state, target, speedPerSec, snapEps);
 
-        // Lerp in the state's own space (Grid or Pixel)
-        var pos = Vector2.Lerp(s.Position, target, t); // using current pos -> avoids drift if interrupted
-        s.Acceleration = Vector2.Zero;
-        s.Velocity = Vector2.Zero;
-        s.Position = pos;
+    public void StopScript() => CancelScript(ref _state);
 
-        // apply without advancing time
-        Step(mover, ref s, 0f);
-
-        // snap when close enough
-        if (Vector2.DistanceSquared(pos, target) <= snapEpsilon * snapEpsilon || t >= 1f)
-        {
-            s.Position = target;
-            Step(mover, ref s, 0f);
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Advance one frame toward <paramref name="target"/> at <paramref name="speedPerSec"/> (in s.MovementSpace units).
-    /// Call each frame with dt via Step(...). Returns true when snapped to target.
-    /// </summary>
-    internal bool MoveToward(
-        IMovable mover,
-        ref MovementState s,
-        Vector2 target,
-        float speedPerSec,
-        float dt,
-        float snapEpsilon = 0.01f)
-    {
-        var to = target - s.Position;
-        var dist = to.Length();
-        if (dist <= snapEpsilon || speedPerSec <= 0f || dt <= 0f)
-        {
-            s.Position = target;
-            s.Velocity = Vector2.Zero;
-            s.Acceleration = Vector2.Zero;
-            Step(mover, ref s, 0f);
-            return true;
-        }
-
-        var step = speedPerSec * dt;
-        if (step >= dist)
-        {
-            // we can reach this frame
-            s.Position = target;
-            s.Velocity = Vector2.Zero;
-            s.Acceleration = Vector2.Zero;
-            Step(mover, ref s, 0f);
-            return true;
-        }
-
-        // advance toward
-        var dir = to / dist;
-        s.Acceleration = Vector2.Zero;
-        s.Velocity = dir * speedPerSec;
-        Step(mover, ref s, dt);
-        return false;
-    }
+    // Frame hooks (host drives these)
+    public bool AdvanceScripted(float dt) => AdvanceScripted(_target, ref _state, dt);   // uses your existing internal method
+    public void Step(float dt) { if (_state.HasMotion) Step(_target, ref _state, dt); }  // integrates & applies via IMovable
 
     /// <summary>
     /// Limits the current velocity to the maximum speed, if specified.
@@ -376,10 +265,13 @@ public sealed class MovementController
 
     #endregion scripted movement
 
-    #region static factories
+    #region IMovementStateMutator implementation
 
-    internal static MovementController ForPixelOverlay() => new();
-    internal static MovementController ForSceneLayer(SceneLayer layer) => new(layer);
+    public void SetVelocity(Vector2 v) { CancelScript(ref _state); _state.Velocity = v; }             // stop script on manual control
+    public void SetAcceleration(Vector2 a) { CancelScript(ref _state); _state.Acceleration = a; }
+    public void StopMovement() { CancelScript(ref _state); _state.Velocity = Vector2.Zero; _state.Acceleration = Vector2.Zero; }
+    public void SetMaxSpeed(float? maxSpeed) { _state.MaxSpeed = maxSpeed; }
+    public void SetLinearDamping(float dampingPerSec) { _state.LinearDamping = MathF.Max(0f, dampingPerSec); }
 
-    #endregion static factories
+    #endregion
 }

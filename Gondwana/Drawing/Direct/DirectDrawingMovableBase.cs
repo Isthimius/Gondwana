@@ -3,15 +3,29 @@ using System.Numerics;
 using Gondwana.Movement;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Direct;
 
-public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IMovementStateMutator, IScriptedMovementListener
+public abstract class DirectDrawingMovableBase : DirectDrawingBase, IScriptedMovementListener
 {
+    // add the tiny private adapter inside the class
+    private sealed class LocalMovable : IMovable
+    {
+        private readonly DirectDrawingMovableBase _o;
+        public LocalMovable(DirectDrawingMovableBase o) { _o = o; }
+        public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
+        public Vector2 GetPosition() => _o._movementState.Position;
+        public void SetPosition(Vector2 p)
+        {
+            _o._movementState.Position = p;
+            _o._bounds = new Rectangle((int)Math.Round(p.X), (int)Math.Round(p.Y), _o._bounds.Width, _o._bounds.Height);
+            _o.ForceRefresh();
+        }
+    }
+
     // --- Motion fields (pixel space) ---
-    private MovementController _controller;
-    private MovementState movementState;
+    private MovementState _movementState;
+    public MovementController Movement { get; private set; }
 
     public event EventHandler? ScriptedMovementStopped;
 
@@ -29,9 +43,9 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     protected DirectDrawingMovableBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
         : base(renderSurfaceHost, bounds)
     {
-        _controller = DirectDrawingManager.Instance.MovementController;
-        // initialize motion at current position (px)
-        movementState = MovementState.ForPixel(new Vector2(bounds.X, bounds.Y));
+        _movementState = MovementState.ForPixel(new Vector2(_bounds.X, _bounds.Y));
+        IMovable target = new LocalMovable(this);
+        Movement = new MovementController(target, _movementState);
     }
 
     #region sprite / camera follow support
@@ -76,7 +90,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     {
         _followTarget = null;
         _followLayer = null;
-        _controller.CancelScript(ref movementState);
+        Movement.CancelScript(ref _movementState);
     }
 
     // --- glue: infer layer and initialize a grid-state controller once ---
@@ -86,10 +100,10 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
         _followLayer = target.SceneLayer;
         _followOffset = gridOffset;
 
-        _controller = MovementController.ForSceneLayer(_followLayer);
+        //_controller = MovementController.ForSceneLayer(_followLayer);
         var startGrid = target.GetPosition() + _followOffset;
-        movementState = MovementState.ForSceneLayer(startGrid);
-        _controller.Step(this, ref movementState, 0f);
+        _movementState = MovementState.ForSceneLayer(startGrid);
+        Movement.Step(_followTarget, ref _movementState, 0f);
     }
 
     #endregion sprite / camera follow support
@@ -100,25 +114,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
     /// returned struct do not affect the internal state.
     /// Use <see cref="IMovementStateMutator"/> methods to modify motion.
     /// </summary>
-    public MovementState MovementState => movementState;
-
-    public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
-
-    // MovementState is authoritative for motion calculations.
-    // Expose the movement state's position (float precision) instead of truncating to Bounds.
-    public Vector2 GetPosition() => movementState.Position;
-
-    public void SetPosition(Vector2 p)
-    {
-        // Update display bounds from the (pixel) position. Round to reduce jitter instead of truncating.
-        ForceRefresh();
-
-        // Keep MovementState in sync with explicit SetPosition calls.
-        movementState.Position = p;
-
-        Bounds = new Rectangle((int)Math.Round(p.X), (int)Math.Round(p.Y), Bounds.Width, Bounds.Height);
-        ForceRefresh();
-    }
+    public MovementState MovementState => _movementState;
 
     protected internal override void Update(long tick)
     {
@@ -135,21 +131,21 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
             if (_followHard)
             {
                 // Snap every frame: set grid pos, convert immediately, done.
-                movementState.Position = targetGrid;
-                _controller.Step(this, ref movementState, 0f);      // Grid→Pixel SetPosition() happens in Step
+                _movementState.Position = targetGrid;
+                Movement.Step(this, ref _movementState, 0f);      // Grid→Pixel SetPosition() happens in Step
             }
             else
             {
                 // Soft: only re-issue if not already within epsilon to avoid jitter/ping-pong.
-                var to = targetGrid - movementState.Position;
+                var to = targetGrid - _movementState.Position;
                 if (to.LengthSquared() > _followSnapEps * _followSnapEps)
                 {
-                    _controller.ScheduleMoveToward(ref movementState, targetGrid, _followSpeedTilesPerSec, _followSnapEps);
+                    Movement.ScheduleMoveToward(ref _movementState, targetGrid, _followSpeedTilesPerSec, _followSnapEps);
                 }
 
                 // Advance scripted if any (toward); otherwise, let physics (rare) run.
-                if (!_controller.AdvanceScripted(this, ref movementState, dt) && movementState.HasMotion)
-                    _controller.Step(this, ref movementState, dt);
+                if (!Movement.AdvanceScripted(this, ref _movementState, dt) && _movementState.HasMotion)
+                    Movement.Step(this, ref _movementState, dt);
             }
 
             base.Update(tick);
@@ -157,49 +153,9 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable, IM
         }
 
         // --- Original movement paths when not following ---
-        if (!_controller.AdvanceScripted(this, ref movementState, dt) && movementState.HasMotion)
-            _controller.Step(this, ref movementState, dt);
+        if (!Movement.AdvanceScripted(this, ref _movementState, dt) && _movementState.HasMotion)
+            Movement.Step(this, ref _movementState, dt);
 
         base.Update(tick);
     }
-
-    #region public "scripted" movement; independent of velocity/accel
-
-    public void MoveTo(Vector2 target, float seconds, Func<float, float>? easing = null, float snapEpsilon = 0.5f)
-        => _controller.ScheduleMoveTo(ref movementState, target, seconds, easing, snapEpsilon);
-
-    public void MoveToward(Vector2 targetPx, float speedPerSec, float snapEpsilon = 0.5f)
-        => _controller.ScheduleMoveToward(ref movementState, targetPx, speedPerSec, snapEpsilon);
-
-    public void StopMoveTo() => _controller.CancelScript(ref movementState);
-    public void StopMoveToward() => _controller.CancelScript(ref movementState);
-
-    #endregion public "scripted" movement; independent of velocity/accel
-
-    #region IMovementStateMutator implementation
-
-    public void SetVelocity(Vector2 v)
-    {
-        _controller.CancelScript(ref movementState);
-        movementState.Velocity = v;
-    }
-
-    public void SetAcceleration(Vector2 a)
-    {
-        _controller.CancelScript(ref movementState);
-        movementState.Acceleration = a;
-    }
-
-    public void StopMovement()
-    {
-        _controller.CancelScript(ref movementState);
-        movementState.Velocity = Vector2.Zero;
-        movementState.Acceleration = Vector2.Zero;
-    }
-
-    public void SetMaxSpeed(float? maxSpeed) => movementState.MaxSpeed = maxSpeed;
-
-    public void SetLinearDamping(float dampingPerSec) => movementState.LinearDamping = MathF.Max(0f, dampingPerSec);
-
-    #endregion IMovementStateMutator
 }
