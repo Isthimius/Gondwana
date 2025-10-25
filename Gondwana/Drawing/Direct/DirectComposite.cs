@@ -136,7 +136,8 @@ public class DirectComposite : IMovable
     {
         get
         {
-            if (_children.Count == 0) return Rectangle.Empty;
+            if (_children.Count == 0)
+                return Rectangle.Empty;
 
             float minX = float.MaxValue, minY = float.MaxValue;
             float maxX = float.MinValue, maxY = float.MinValue;

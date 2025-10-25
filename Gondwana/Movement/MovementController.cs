@@ -6,19 +6,25 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
 
-public sealed class MovementController : IMovementStateMutator, IDisposable
+public sealed class MovementController : IDisposable
 {
     private readonly ISceneLayerCoordinates? _coords;
     private readonly SceneLayer? _sceneLayer;
     private readonly IMovable _target;
     private MovementState _state;
 
-    // --- DirectDrawing (pixel) follow state ---
+    // --- Pixel-follow (DirectDrawing → DirectDrawing)
     private Func<Vector2>? _followPixel;   // returns current target pixel position each frame
     private Vector2 _followOffsetPx;
     private bool _followHard;
     private float _followSpeedPxPerSec;
     private float _followSnapPx;
+
+    // Grid-follow (Scene-layer → this DirectDrawing in pixels)
+    private IMovableOnSceneLayer? _followGridTarget;
+    private Vector2 _followGridOffset;
+    private float _followSpeedTilesPerSec;
+    private float _followSnapTiles;
 
     public event Action? ScriptedMovementStopped;
 
@@ -114,8 +120,54 @@ public sealed class MovementController : IMovementStateMutator, IDisposable
 
     public void StopScript() => CancelScript(ref _state);
 
-    // Frame hooks (host drives these)
-    public bool AdvanceScripted(float dt) => AdvanceScripted(_target, ref _state, dt);   // uses your existing internal method
+    public bool AdvanceScripted(float dt)
+    {
+        // --- Pixel-follow ---
+        if (_followPixel is not null)
+        {
+            var goal = _followPixel() + _followOffsetPx;
+            if (_followHard) { SetPosition(goal); return true; }
+            ScheduleMoveToward(ref _state, goal, _followSpeedPxPerSec, _followSnapPx);
+            // fall through into scripted advance
+        }
+
+        // --- Grid-follow (convert grid→pixel each frame) ---
+        if (_followGridTarget is not null)
+        {
+            var layer = _followGridTarget.SceneLayer;
+            var coords = layer.CoordinateSystem
+                        ?? throw new InvalidOperationException("Follow target layer has no CoordinateSystem.");
+
+            var grid = _followGridTarget.GetPosition() + _followGridOffset;
+
+            var pxNow = coords.GetAnchorPixelAtSceneLayerCoordinates(layer,
+                         new System.Drawing.PointF(grid.X, grid.Y));
+            var goalPx = new Vector2(pxNow.X, pxNow.Y);
+
+            if (_followHard)
+            {
+                SetPosition(goalPx);
+                return true;
+            }
+            else
+            {
+                // tiles/sec → px/sec (sample +X; good first-order approximation)
+                var pxRight = coords.GetAnchorPixelAtSceneLayerCoordinates(layer,
+                              new System.Drawing.PointF(grid.X + 1f, grid.Y));
+                float pxPerTile = MathF.Max(1f, new Vector2(pxRight.X - pxNow.X, pxRight.Y - pxNow.Y).Length());
+
+                float speedPxPerSec = _followSpeedTilesPerSec * pxPerTile;
+                float snapPx = _followSnapTiles * pxPerTile;
+
+                ScheduleMoveToward(ref _state, goalPx, speedPxPerSec, snapPx);
+            }
+            // fall through into scripted advance
+        }
+
+        // --- Your existing internal script engine (uses MovementScriptType) ---
+        return AdvanceScripted(_target, ref _state, dt);
+    }
+
     public void Step(float dt) { if (_state.HasMotion) Step(_target, ref _state, dt); }  // integrates & applies via IMovable
 
     /// <summary>
@@ -271,54 +323,70 @@ public sealed class MovementController : IMovementStateMutator, IDisposable
 
     #endregion scripted movement
 
-    #region IMovementStateMutator implementation
-
     public void SetVelocity(Vector2 v) { CancelScript(ref _state); _state.Velocity = v; }             // stop script on manual control
     public void SetAcceleration(Vector2 a) { CancelScript(ref _state); _state.Acceleration = a; }
     public void StopMovement() { CancelScript(ref _state); _state.Velocity = Vector2.Zero; _state.Acceleration = Vector2.Zero; }
     public void SetMaxSpeed(float? maxSpeed) { _state.MaxSpeed = maxSpeed; }
     public void SetLinearDamping(float dampingPerSec) { _state.LinearDamping = MathF.Max(0f, dampingPerSec); }
 
-    #endregion
+    public void SetWrapX(bool enabled) => _state.WrapX = enabled;
+    public void SetWrapY(bool enabled) => _state.WrapY = enabled;
 
     #region follow methods
 
-    /// <summary>
-    /// Snap to the target's pixel position (+offset) every frame.
-    /// Pass a delegate that returns the CURRENT pixel position.
-    /// </summary>
-    public void FollowHard(Func<Vector2> getTargetPixelPosition, Vector2 offsetPx = default)
+    // ---------------- Pixel-follow (convenience): pass a delegate for current pixel pos
+    public void FollowHard(Func<Vector2> getPixelPos, Vector2 offsetPx = default)
     {
-        _followPixel = getTargetPixelPosition ?? throw new ArgumentNullException(nameof(getTargetPixelPosition));
+        _followPixel = getPixelPos ?? throw new ArgumentNullException(nameof(getPixelPos));
         _followOffsetPx = offsetPx;
         _followHard = true;
+        _followGridTarget = null; // ensure only one mode is active
     }
 
-    /// <summary>
-    /// Move toward the target's pixel position each frame at a fixed pixel speed.
-    /// </summary>
-    public void FollowSoft(Func<Vector2> getTargetPixelPosition, float speedPxPerSec,
+    public void FollowSoft(Func<Vector2> getPixelPos, float speedPxPerSec,
                            float snapPx = 0.5f, Vector2 offsetPx = default)
     {
-        if (speedPxPerSec <= 0f) throw new ArgumentOutOfRangeException(nameof(speedPxPerSec));
-        _followPixel = getTargetPixelPosition ?? throw new ArgumentNullException(nameof(getTargetPixelPosition));
+        if (speedPxPerSec <= 0) throw new ArgumentOutOfRangeException(nameof(speedPxPerSec));
+        _followPixel = getPixelPos ?? throw new ArgumentNullException(nameof(getPixelPos));
         _followOffsetPx = offsetPx;
         _followHard = false;
         _followSpeedPxPerSec = speedPxPerSec;
         _followSnapPx = MathF.Max(0f, snapPx);
+        _followGridTarget = null;
     }
 
-    /// <summary>Stop continuous follow and cancel any active scripted motion.</summary>
+    // ---------------- Grid-follow (for scene targets)
+    public void FollowHard(IMovableOnSceneLayer gridTarget, Vector2 gridOffset = default)
+    {
+        _followGridTarget = gridTarget ?? throw new ArgumentNullException(nameof(gridTarget));
+        _followGridOffset = gridOffset;
+        _followHard = true;
+        _followPixel = null;
+    }
+
+    public void FollowSoft(IMovableOnSceneLayer gridTarget, float speedTilesPerSec,
+                           float snapTiles = 0.25f, Vector2 gridOffset = default)
+    {
+        if (speedTilesPerSec <= 0) throw new ArgumentOutOfRangeException(nameof(speedTilesPerSec));
+        _followGridTarget = gridTarget ?? throw new ArgumentNullException(nameof(gridTarget));
+        _followGridOffset = gridOffset;
+        _followHard = false;
+        _followSpeedTilesPerSec = speedTilesPerSec;
+        _followSnapTiles = MathF.Max(0f, snapTiles);
+        _followPixel = null;
+    }
+
     public void Unfollow()
     {
         _followPixel = null;
+        _followGridTarget = null;
         CancelScript(ref _state);
     }
+
+    #endregion follow methods
 
     public void Dispose()
     {
         ScriptedMovementStopped = null;
     }
-
-    #endregion follow methods
 }
