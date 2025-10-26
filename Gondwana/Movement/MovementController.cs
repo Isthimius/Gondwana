@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Movement.Easing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
@@ -36,6 +37,12 @@ public sealed partial class MovementController : IDisposable
     // Ergonomic scripted APIs (delegate to existing schedulers)
     public void MoveTo(Vector2 target, float seconds, Func<float, float>? easing = null, float snapEps = 0.5f)
         => ScheduleMoveTo(ref _state, target, seconds, easing, snapEps);
+
+    public void MoveTo(Vector2 target, float seconds, EasingKind easingKind, float snapEps = 0.5f)
+    {
+        var easingFunc = EasingFunctions.From(easingKind);
+        ScheduleMoveTo(ref _state, target, seconds, easingFunc, snapEps);
+    }
 
     public void MoveToward(Vector2 target, float speedPerSec, float snapEps = 0.5f)
         => ScheduleMoveToward(ref _state, target, speedPerSec, snapEps);

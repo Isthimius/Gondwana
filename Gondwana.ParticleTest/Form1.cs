@@ -90,7 +90,7 @@ public partial class Form1 : Form
         composite.Add(glowBox)
                  .Add(_textBlock);
         //.FadeOut(10f);
-        glowBox.Movement.MoveTo(new System.Numerics.Vector2(Left, Top + 20), 10f, EasingFunctions.Linear , snapEps: 1f);
+        glowBox.Movement.MoveTo(new System.Numerics.Vector2(glowBox.Bounds.Left, glowBox.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad , snapEps: 1f);
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
