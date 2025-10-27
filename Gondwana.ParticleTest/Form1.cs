@@ -23,6 +23,7 @@ public partial class Form1 : Form
     private void Form1_Shown(object? sender, EventArgs e)
     {
         InitializeEngine();
+        Engine.Instance.Configuration.TargetFPS = 90;
     }
 
     private void InitializeEngine()
@@ -50,10 +51,10 @@ public partial class Form1 : Form
         Engine.Instance.Configuration.TargetFPS = 60;
 
         _particleSurface = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height), 10000);
-        _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
-        _particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
+        //_particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
         _particleSurface.Emitters.Add(GetRain(adapter.Width));
-        _particleSurface.Emitters.Add(GetSnow(adapter.Width));
+        //_particleSurface.Emitters.Add(GetSnow(adapter.Width));
         _particleSurface.Emitters.Add(GetSmoke(adapter.Width, adapter.Height));
 
         //_particleSurface.FadeOut(15f);
@@ -179,7 +180,7 @@ public partial class Form1 : Form
             VelocityRangeY = (500f, 700f),   // falling fast
             SizeRange = (1f, 2f),            // thin drops
             Color = new SKColor(120, 160, 255, 180),
-
+            
             OnSpawn = (ref Particle p) =>
             {
                 // spawn anywhere across the top edge

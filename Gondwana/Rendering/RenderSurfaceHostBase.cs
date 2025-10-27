@@ -35,7 +35,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
     /// <summary>
     /// Runs as part of DoBackgroundTasks(). Takes content of RefreshQueue
-    /// - which is a queue of tiles that need to be redrawn -
+    /// - which is a queue of tiles that need to be (re)drawn -
     /// and draws them to the backbuffer. This, in turn, updates the
     /// Backbuffer.DirtyRectangle.
     /// </summary>

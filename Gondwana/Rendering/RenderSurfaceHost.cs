@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
-using Gondwana.Scenes;
-using Gondwana.Scenes.EventArgs;
-using Gondwana.Skia;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
+using Gondwana.Scenes;
+using Gondwana.Skia;
 
 namespace Gondwana.Rendering;
 
@@ -41,7 +40,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private TBackbuffer? _backbuffer;
     private Scene? _scene;
-    private RenderSurfaceAdapterBase? _renderSurfaceAdapter;
+    private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
 
     public override BackbufferBase? Backbuffer => _backbuffer;
     public override Scene? Scene => _scene;
@@ -86,7 +85,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (Scene is null || (Scene?.CountOfVisibleLayers ?? 0) == 0)
         {
             // Optionally mark whole surface dirty for a visible clear:
-            Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+            Backbuffer!.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
         }
         else
         {
@@ -104,7 +103,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             var layer = Scene.VisibleSceneLayer[i];
 
                             // Draw tiles in this layer’s queue
-                            Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
+                            Backbuffer!.DrawTiles(layer.RefreshQueue.Tiles);
                         }
 
                         break;
@@ -113,7 +112,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 case SceneRefreshType.All:
                     {
                         // full redraw: treat whole backbuffer as dirty
-                        Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+                        Backbuffer!.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
 
                         // clear the backbuffer so no stale pixels survive this pass
                         Backbuffer.Canvas.Clear(Backbuffer.ClearColor);   // Canvas + ClearColor are on BackbufferBase
@@ -150,7 +149,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         if (RenderSurfaceAdapter is null) return;
 
-        Backbuffer.EndFrame();
+        Backbuffer!.EndFrame();
 
         if (RedrawDirtyRectangleOnly)
             RenderBackbufferRect();
