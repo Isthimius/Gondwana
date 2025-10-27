@@ -5,7 +5,11 @@ namespace Gondwana.Movement;
 
 public sealed partial class MovementController
 {
-    public void Step(float dt) { if (_state.HasMotion) Step(_target, ref _state, dt); }  // integrates & applies via IMovable
+    public void Step(float dt)
+    {
+        if (_state.HasMotion)
+            Step(_target, ref _state, dt);
+    }  // integrates & applies via IMovable
 
     /// <summary>
     /// handle physics-based (velocity/acceleration, damping) movement step over dt seconds

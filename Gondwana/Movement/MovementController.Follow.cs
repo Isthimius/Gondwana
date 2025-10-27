@@ -22,14 +22,6 @@ public sealed partial class MovementController
     private Func<float, float>? _followEasing;  // optional easing curve
     private float _followDurationSec;           // duration for easing-based follow
 
-    public void FollowHard(Func<Vector2> getPixelPos, Vector2 offsetPx = default)
-    {
-        _followPixel = getPixelPos ?? throw new ArgumentNullException(nameof(getPixelPos));
-        _followOffsetPx = offsetPx;
-        _followHard = true;
-        _followGridTarget = null; // ensure only one mode is active
-    }
-
     public void FollowSoft(Func<Vector2> getPixelPos, float speedPxPerSec,
                            float snapPx = 0.5f, Vector2 offsetPx = default)
     {
@@ -70,14 +62,6 @@ public sealed partial class MovementController
         FollowSoft(getPixelPos, durationSec, easing, snapPx, offsetPx);
     }
 
-    public void FollowHard(IMovableOnSceneLayer gridTarget, Vector2 gridOffset = default)
-    {
-        _followGridTarget = gridTarget ?? throw new ArgumentNullException(nameof(gridTarget));
-        _followGridOffset = gridOffset;
-        _followHard = true;
-        _followPixel = null;
-    }
-
     public void FollowSoft(IMovableOnSceneLayer gridTarget, float speedTilesPerSec,
                            float snapTiles = 0.25f, Vector2 gridOffset = default)
     {
@@ -87,6 +71,22 @@ public sealed partial class MovementController
         _followHard = false;
         _followSpeedTilesPerSec = speedTilesPerSec;
         _followSnapTiles = MathF.Max(0f, snapTiles);
+        _followPixel = null;
+    }
+
+    public void FollowHard(Func<Vector2> getPixelPos, Vector2 offsetPx = default)
+    {
+        _followPixel = getPixelPos ?? throw new ArgumentNullException(nameof(getPixelPos));
+        _followOffsetPx = offsetPx;
+        _followHard = true;
+        _followGridTarget = null; // ensure only one mode is active
+    }
+
+    public void FollowHard(IMovableOnSceneLayer gridTarget, Vector2 gridOffset = default)
+    {
+        _followGridTarget = gridTarget ?? throw new ArgumentNullException(nameof(gridTarget));
+        _followGridOffset = gridOffset;
+        _followHard = true;
         _followPixel = null;
     }
 

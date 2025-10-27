@@ -96,7 +96,7 @@ public sealed partial class MovementController
         return true;
     }
 
-    internal void ScheduleMoveTo(ref MovementState s, Vector2 target, float durationSec,
+    private void ScheduleMoveTo(ref MovementState s, Vector2 target, float durationSec,
                                  Func<float, float>? easing = null, float snapEpsilon = 0.5f)
     {
         s.Script = new ScriptedMovement
