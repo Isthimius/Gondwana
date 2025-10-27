@@ -43,7 +43,7 @@ namespace Gondwana.Drawing.Direct;
 /// // Pulsing alert border
 /// glow.PulseBorder(Color.FromArgb(255, 255, 64, 64), Color.FromArgb(80, 255, 0, 0), 1.2f);
 /// </example>
-public class DirectRectangle : DirectDrawingBase
+public class DirectRectangle : DirectDrawingMovableBase
 {
     private readonly SKPaint _fillPaint;        // cached fill
     private readonly SKPaint _strokePaint;      // cached stroke

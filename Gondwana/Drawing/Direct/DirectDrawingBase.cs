@@ -14,10 +14,10 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     protected Rectangle _bounds;
     protected int _zOrder;
     protected bool _isVisible;
-    internal Movement? _movement;
     protected internal bool _dirty = true;
+    protected long _lastTick = HighResTimer.GetCurrentTick();
+
     private bool _disposed = false;
-    protected long? _lastTick;
 
     // Fade/opacity state
     private float _opacity = 1f;                 // 0..1
@@ -154,31 +154,6 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
         return this;
     }
 
-    public bool IsScrolling => _movement != null;
-
-    public void ScrollToSourceGridPoint(double totalTime, Rectangle destBounds)
-    {
-        _movement?.Reset();
-        _movement = new Movement(this, totalTime, destBounds);
-    }
-
-    public void StopScrolling()
-    {
-        _movement?.Reset();
-        _movement = null;
-    }
-
-    internal void MoveNext(long tick)
-    {
-        if (_movement != null)
-        {
-            ForceRefresh();
-
-            if (_movement?.MoveNext(tick) == true)
-                _movement = null;
-        }
-    }
-
     /// <summary>
     /// Marke the current DirectDrawing as dirty, forcing a redraw on the next RenderAll().
     /// Also adds overlapping area on the <see cref="RenderSurfaceHost.DrawSource"> to the RefreshQueue.
@@ -200,21 +175,13 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     /// <param name="tick">Current engine tick from <see cref="HighResTimer"/>.</param>
     protected internal virtual void Update(long tick)
     {
-        MoveNext(tick);
-
-        // Initialize clock on first frame to avoid huge dt
-        if (!_lastTick.HasValue)
-        {
-            _lastTick = tick;
+        if (tick == _lastTick)
             return;
-        }
 
         // Advance fade tween
         if (_isFading)
         {
-            long deltaTicks = tick - _lastTick.Value;
-            if (deltaTicks < 0) deltaTicks = 0;
-            float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
+            float dt = HighResTimer.GetDuration(_lastTick, tick);
 
             _fadeElapsedSec += dt;
             float timeElapsed = Math.Clamp(_fadeElapsedSec / _fadeDurationSec, 0f, 1f);
@@ -248,7 +215,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
             return;
         }
 
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
 
         // SaveLayer with alpha
         using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
@@ -274,6 +241,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
         {
             ForceRefresh();
             Disposing?.Invoke(this, this);
+            Disposing = null;
         }
 
         _disposed = true;
@@ -303,50 +271,4 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
         ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
 
     #endregion Equality & Operators
-
-    #region Movement Inner Class
-
-    internal class Movement
-    {
-        internal DirectDrawingBase? parent;
-        private readonly long startTick;
-        private readonly long totalTicks;
-        private readonly Rectangle startBounds;
-        private readonly Rectangle destBounds;
-
-        internal Movement(DirectDrawingBase drawing, double totalTime, Rectangle dest)
-        {
-            parent = drawing;
-            startTick = HighResTimer.GetCurrentTick();
-            totalTicks = (long)(totalTime * HighResTimer.TicksPerSecond);
-            startBounds = parent.Bounds;
-            destBounds = dest;
-        }
-
-        internal bool IsFinished(long tick) => tick >= startTick + totalTicks;
-
-        internal bool MoveNext(long tick)
-        {
-            if (IsFinished(tick))
-            {
-                parent!.Bounds = destBounds;
-                parent = null;
-                return true;
-            }
-
-            double percent = (tick - startTick) / (double)totalTicks;
-
-            int newX = startBounds.X + (int)((destBounds.X - startBounds.X) * percent);
-            int newY = startBounds.Y + (int)((destBounds.Y - startBounds.Y) * percent);
-            int newWidth = startBounds.Width + (int)((destBounds.Width - startBounds.Width) * percent);
-            int newHeight = startBounds.Height + (int)((destBounds.Height - startBounds.Height) * percent);
-
-            parent!.Bounds = new Rectangle(newX, newY, newWidth, newHeight);
-            return false;
-        }
-
-        internal void Reset() => parent = null;
-    }
-
-    #endregion Movement Inner Class
 }

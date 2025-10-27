@@ -69,7 +69,7 @@ namespace Gondwana.Drawing.Direct.Particles;
 ///
 /// </code>
 /// </example>
-public sealed partial class ParticleSurface : DirectDrawingBase
+public sealed partial class ParticleSurface : DirectDrawingMovableBase
 {
     private readonly Particle[] _particles;
     private readonly Random _rng = new();
@@ -416,7 +416,7 @@ public sealed partial class ParticleSurface : DirectDrawingBase
 
     private float NextRange(float min, float max) => (float)(_rng.NextDouble() * (max - min) + min);
 
-    // Fast, branch-free tint (multiplies RGB by tint;
+    // Fast, branch-free tint (multiplies RGB by tint)
     // alpha = lifeAlpha * globalAlpha). Assumes particle base alpha = 255.
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private SKColor ApplyTint(SKColor c, byte lifeAlpha, SKColor tint)

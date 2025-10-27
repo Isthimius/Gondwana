@@ -13,7 +13,7 @@ namespace Gondwana.Drawing.Direct;
 /// The image object is not owned/disposed by this drawable; manage its lifetime externally.
 /// Setters mark the drawable dirty so the manager re-renders next frame.
 /// </remarks>
-public sealed class DirectImage : DirectDrawingBase
+public sealed class DirectImage : DirectDrawingMovableBase
 {
     public enum ScaleMode
     {
@@ -38,11 +38,12 @@ public sealed class DirectImage : DirectDrawingBase
     };
 
     // visual modifiers
-    private SKColor? _tint;             // multiplied over image
+    private SKColor? _tint;         // multiplied over image
     private byte _opacity = 255;    // 0..255
 
     // rotation
     private float _rotationDeg = 0f;
+
     // normalized anchor (0..1) where 0,0 = top-left of dest rect
     private float _anchorX = 0.5f, _anchorY = 0.5f;
 
@@ -158,7 +159,8 @@ public sealed class DirectImage : DirectDrawingBase
 
         // get SKImage to draw
         var img = _image ?? (_bitmap != null ? SKImage.FromBitmap(_bitmap) : null);
-        if (img is null) return;
+        if (img is null)
+            return;
 
         // source rect (pixels in image space)
         SKRect src = _src ?? new SKRect(0, 0, img.Width, img.Height);
@@ -189,18 +191,23 @@ public sealed class DirectImage : DirectDrawingBase
             canvas.Restore();
 
         // if we created a transient SKImage from a bitmap, dispose it now
-        if (_image is null && img is not null) img.Dispose();
+        if (_image is null && img is not null)
+            img.Dispose();
     }
 
     private static SKRect ComputeDestRect(Rectangle bounds, SKRect src, ScaleMode mode)
     {
         var dst = bounds.ToSKRect();
-        if (mode == ScaleMode.Stretch) return dst;
+
+        if (mode == ScaleMode.Stretch)
+            return dst;
+
         if (mode == ScaleMode.Center)  // center, no scale
         {
             float w = MathF.Min(dst.Width, src.Width);
             float h = MathF.Min(dst.Height, src.Height);
             float dx = dst.MidX - w * 0.5f, dy = dst.MidY - h * 0.5f;
+
             return new SKRect(dx, dy, dx + w, dy + h);
         }
 
@@ -214,13 +221,13 @@ public sealed class DirectImage : DirectDrawingBase
         {
             ScaleMode.Fit => MathF.Min(scaleX, scaleY),
             ScaleMode.Fill => MathF.Max(scaleX, scaleY),
-            ScaleMode.PixelPerfect => MathF.Max(1f, MathF.Floor(MathF.Min(scaleX, scaleY))),
-            _ => 1f
+            ScaleMode.PixelPerfect => MathF.Max(1f, MathF.Floor(MathF.Min(scaleX, scaleY))), _ => 1f
         };
 
         float w2 = srcW * scale, h2 = srcH * scale;
         float x = dst.MidX - w2 * 0.5f;
         float y = dst.MidY - h2 * 0.5f;
+
         return new SKRect(x, y, x + w2, y + h2);
     }
 }

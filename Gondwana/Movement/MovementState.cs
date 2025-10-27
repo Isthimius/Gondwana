@@ -1,27 +1,95 @@
 ﻿using System.Numerics;
+using Gondwana.Movement.Scripted;
 
 namespace Gondwana.Movement;
 
-public struct MotionState
+public struct MovementState
 {
-    // Position is always stored in GRID space (float col,row).
-    // Pixel targets convert in adapters.
-    public Vector2 Position;     // (col,row)
-    public Vector2 Velocity;     // Δ(grid)/sec
-    public Vector2 Acceleration; // Δ(grid)/sec^2
+    /// <summary>
+    /// What unit system these values are expressed in.
+    /// Grid = tile units; Pixel = screen pixels.
+    /// </summary>
+    public CoordinateSpace MovementSpace { get; private set; }
 
-    public float? MaxSpeed;       // in grid units/sec
-    public float LinearDamping;  // 0..1 per second (e.g., 0.1f)
-    public bool WrapX, WrapY;   // enable layer wrapping
+    /// <summary>
+    /// Position in current MotionSpace units (Grid or Pixel).
+    /// </summary>
+    public Vector2 Position { get; internal set; }
 
-    public void ClampVelocity()
+    /// <summary>
+    /// Velocity in current MotionSpace units per second.
+    /// </summary>
+    public Vector2 Velocity { get; internal set; }
+
+    /// <summary>
+    /// Acceleration in current MotionSpace units per second^2.
+    /// </summary>
+    public Vector2 Acceleration { get; internal set; }
+
+    /// <summary>
+    /// Max speed in current MotionSpace units per second (null = no cap).
+    /// </summary>
+    public float? MaxSpeed { get; internal set; }
+
+    /// <summary>
+    /// Linear damping per second in [0..1]. 0 = no damping.
+    /// Apply as v *= (1 - LinearDamping * dt) in the controller.
+    /// </summary>
+    public float LinearDamping { get; internal set; }
+
+    /// <summary>
+    /// Optional wrapping (only meaningful for Grid space; ignored for Pixel).
+    /// </summary>
+    public bool WrapX { get; internal set; }
+
+    /// <summary>
+    /// Optional wrapping (only meaningful for Grid space; ignored for Pixel).
+    /// </summary>
+    public bool WrapY { get; internal set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the object is in motion.
+    /// </summary>
+    public bool HasMotion => Acceleration != Vector2.Zero || Velocity != Vector2.Zero;
+
+    /// <summary>Zeroes velocity and acceleration, preserving position and script.</summary>
+    public void StopMotion()
     {
-        if (MaxSpeed is null) return;
-
-        var v = Velocity;
-        var len = v.Length();
-        
-        if (len > MaxSpeed && MaxSpeed > 0)
-            Velocity = v * (MaxSpeed.Value / len);
+        Velocity = Vector2.Zero;
+        Acceleration = Vector2.Zero;
     }
+
+    /// <summary>
+    /// Active scripted movement command (TweenTo, Toward, etc.).
+    /// Default is <see cref="MovementScriptType.None"/>.
+    /// </summary>
+    internal ScriptedMovement Script;
+
+    /// <summary>
+    /// returns a MovementState initialized for SceneLayer (Grid) coordinates
+    /// </summary>
+    /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
+    /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
+    /// coordinate space of <see cref="CoordinateSpace.Grid"/>.</returns>
+    public static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
+    {
+        MovementSpace = CoordinateSpace.Grid,
+        Position = position,
+        LinearDamping = linearDampening
+    };
+
+    /// <summary>
+    /// Creates a new <see cref="MovementState"/> instance with the specified position and optional linear damping,
+    /// using pixel-based coordinates.
+    /// </summary>
+    /// <param name="position">The position of the movement state in pixel-based coordinates.</param>
+    /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
+    /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
+    /// coordinate space of <see cref="CoordinateSpace.Pixel"/>.</returns>
+    public static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
+    {
+        MovementSpace = CoordinateSpace.Pixel,
+        Position = position,
+        LinearDamping = linearDampening
+    };
 }

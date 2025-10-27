@@ -5,6 +5,7 @@ using Gondwana.Drawing.Coordinates;
 using SkiaSharp;
 using System.Text;
 using static Gondwana.Drawing.Direct.TextBlock;
+using Gondwana.Movement.Easing;
 
 namespace Gondwana.ParticleTest;
 
@@ -89,7 +90,8 @@ public partial class Form1 : Form
         var composite = new DirectComposite(renderSurface);
         composite.Add(glowBox)
                  .Add(_textBlock);
-                 //.FadeOut(10f);
+        //.FadeOut(10f);
+        //glowBox.Movement.MoveTo(new System.Numerics.Vector2(glowBox.Bounds.Left, glowBox.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad , snapEps: 1f);
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)

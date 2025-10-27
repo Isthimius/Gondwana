@@ -474,7 +474,7 @@ public sealed class Engine : IDisposable
 
         DoBackgroundTasks(tick);
 
-        // if TargetFPS <= 0, render to screen unbounded -
+        // if TargetFPS <= 0, render to screen unbounded
         // otherwise, check if throttle time has passed since last tick...
         if ((Configuration.TargetFPS <= 0)
             || (tick - _lastTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS)

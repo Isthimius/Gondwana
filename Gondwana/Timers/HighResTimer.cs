@@ -31,15 +31,15 @@ public static class HighResTimer
     /// <summary>
     /// Returns the elapsed time in seconds between two tick counts.
     /// </summary>
-    public static double GetDuration(long start, long stop)
+    public static float GetDuration(long start, long stop)
     {
-        return (double)(stop - start) / TicksPerSecond;
+        return (float)(stop - start) / TicksPerSecond;
     }
 
     /// <summary>
     /// Returns the elapsed time in seconds since the given start tick.
     /// </summary>
-    public static double GetElapsedSince(long start)
+    public static float GetElapsedSince(long start)
     {
         return GetDuration(start, GetCurrentTick());
     }
