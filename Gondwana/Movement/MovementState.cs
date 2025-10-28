@@ -8,13 +8,10 @@ public struct MovementState
     /// <summary>
     /// What unit system these values are expressed in.
     /// Grid = tile units; Pixel = screen pixels.
+    /// This may differ from the IMovable.PositionSpace in some cases
+    /// (e.g., a Pixel-based mover following Grid-based Sprite, etc.).
     /// </summary>
     public CoordinateSpace MovementSpace { get; private set; }
-
-    /// <summary>
-    /// Position in current MotionSpace units (Grid or Pixel).
-    /// </summary>
-    public Vector2 Position { get; internal set; }
 
     /// <summary>
     /// Velocity in current MotionSpace units per second.
@@ -34,6 +31,7 @@ public struct MovementState
     /// <summary>
     /// Linear damping per second in [0..1]. 0 = no damping.
     /// Apply as v *= (1 - LinearDamping * dt) in the controller.
+    /// Only affects integrated movement (not scripted).
     /// </summary>
     public float LinearDamping { get; internal set; }
 
@@ -52,13 +50,6 @@ public struct MovementState
     /// </summary>
     public bool HasMotion => Acceleration != Vector2.Zero || Velocity != Vector2.Zero;
 
-    /// <summary>Zeroes velocity and acceleration, preserving position and script.</summary>
-    public void StopMotion()
-    {
-        Velocity = Vector2.Zero;
-        Acceleration = Vector2.Zero;
-    }
-
     /// <summary>
     /// Active scripted movement command (TweenTo, Toward, etc.).
     /// Default is <see cref="MovementScriptType.None"/>.
@@ -74,7 +65,7 @@ public struct MovementState
     public static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = CoordinateSpace.Grid,
-        Position = position,
+        //Position = position,
         LinearDamping = linearDampening
     };
 
@@ -89,7 +80,7 @@ public struct MovementState
     public static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = CoordinateSpace.Pixel,
-        Position = position,
+        //Position = position,
         LinearDamping = linearDampening
     };
 }

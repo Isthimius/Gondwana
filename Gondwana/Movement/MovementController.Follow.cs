@@ -96,6 +96,67 @@ public sealed partial class MovementController
         _followGridTarget = null;
         _followEasing = null;
         _followDurationSec = 0f;
-        CancelScript(ref _state);
+        CancelScript();
+    }
+
+    private bool AdvanceFollow()
+    {
+        // --- Pixel-follow ---
+        if (_followPixel is not null)
+        {
+            var goal = _followPixel() + _followOffsetPx;
+
+            if (_followHard)
+            {
+                _mover.SetPosition(goal);
+                return true;
+            }
+
+            // tweened follow
+            if (_followEasing is not null && _followDurationSec > 0f)
+            {
+                MoveTo(goal, _followDurationSec, _followEasing, _followSnapPx);
+            }
+            else
+            {
+                // constant-speed pursue
+                MoveToward(goal, _followSpeedPxPerSec, _followSnapPx);
+            }
+
+            return false; // we scheduled a script; let scripted stage consume this frame
+        }
+
+        // --- Grid-follow (convert grid→pixel each frame) ---
+        if (_followGridTarget is not null)
+        {
+            var layer = _followGridTarget.SceneLayer;
+            var coords = layer.CoordinateSystem
+                        ?? throw new InvalidOperationException("Follow target layer has no CoordinateSystem.");
+
+            var grid = _followGridTarget.GetPosition() + _followGridOffset;
+            var pxNow = coords.GetAnchorPixelAtSceneLayerCoordinates(layer, new System.Drawing.PointF(grid.X, grid.Y));
+            var goalPx = new Vector2(pxNow.X, pxNow.Y);
+
+            if (_followHard)
+            {
+                _mover.SetPosition(goalPx);
+                return true;
+            }
+            else
+            {
+                // tiles/sec → px/sec
+                var pxRight = coords.GetAnchorPixelAtSceneLayerCoordinates(layer, new System.Drawing.PointF(grid.X + 1f, grid.Y));
+                float pxPerTile = MathF.Max(1f, new Vector2(pxRight.X - pxNow.X, pxRight.Y - pxNow.Y).Length());
+
+                float speedPxPerSec = _followSpeedTilesPerSec * pxPerTile;
+                float snapPx = _followSnapTiles * pxPerTile;
+
+                MoveToward(goalPx, speedPxPerSec, snapPx);
+            }
+
+            return false; // scheduled a script; let scripted stage handle it
+        }
+
+        return false; // not following this frame
     }
 }

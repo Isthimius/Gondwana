@@ -8,8 +8,6 @@ namespace Gondwana.Drawing.Direct;
 
 public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
 {
-    private MovementState _movementState;
-
     // update timing for fixed-step physics
     private float _accum;
     private const float _fixedDt = 1f / 240f;
@@ -18,21 +16,18 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     protected DirectDrawingMovableBase(RenderSurfaceHostBase host, Rectangle bounds)
         : base(host, bounds)
     {
-        _movementState = MovementState.ForPixel(new Vector2(bounds.X, bounds.Y));
-        Movement = new MovementController(this, _movementState);
+        var movementState = MovementState.ForPixel(new Vector2(bounds.X, bounds.Y));
+        Movement = new MovementController(this, movementState);
     }
 
     public MovementController Movement { get; }
 
     public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
 
-    public Vector2 GetPosition() => _movementState.Position;
+    public Vector2 GetPosition() => new Vector2((float)Bounds.Location.X, (float)Bounds.Location.Y);
 
     public void SetPosition(Vector2 p)
     {
-        // keep MovementState and Bounds in sync
-        _movementState.Position = p;
-
         Bounds = new Rectangle(
             (int)Math.Round(p.X),
             (int)Math.Round(p.Y),
@@ -50,19 +45,26 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
         if (tick == _lastTick)
             return;
 
-        float dt = HighResTimer.GetDuration(_lastTick, tick);
+        // 1) clamp giant stalls (alt-tab, debugger break, GC, etc.)
+        const float MaxFrameDt = 1f / 15f; // ~66ms
+        float dt = MathF.Min(HighResTimer.GetDuration(_lastTick, tick), MaxFrameDt);
+
+        // 2) accumulate time
         _accum += dt;
 
         int steps = 0;
         while (_accum >= _fixedDt && steps < _maxSubsteps)
         {
-            // run scripted movement first; if none active, apply physics
-            if (!Movement.AdvanceScripted(dt))
-                Movement.Step(dt);
+            // Always integrate at the fixed step (not dt!)
+            Movement.AdvanceMovement(_fixedDt);
 
             _accum -= _fixedDt;
             steps++;
         }
+
+        // 3) if we hit the cap, drop remainder so we don't spiral
+        if (steps == _maxSubsteps)
+            _accum = 0f;
 
         base.Update(tick);
     }

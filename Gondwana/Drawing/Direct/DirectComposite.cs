@@ -48,7 +48,7 @@ public class DirectComposite : IMovable
         _localOffsetPx[child] = offset;
 
         // Normalize immediately
-        child.Movement.SetPosition(new Vector2(_anchor.X, _anchor.Y) + offset);
+        child.SetPosition(new Vector2(_anchor.X, _anchor.Y) + offset);
         return this;
     }
 
@@ -85,7 +85,7 @@ public class DirectComposite : IMovable
     {
         if (!_children.Contains(child)) return this;
         _localOffsetPx[child] = newLocalOffsetPx;
-        child.Movement.SetPosition(new Vector2(_anchor.X, _anchor.Y) + newLocalOffsetPx);
+        child.SetPosition(new Vector2(_anchor.X, _anchor.Y) + newLocalOffsetPx);
         return this;
     }
 
@@ -101,7 +101,7 @@ public class DirectComposite : IMovable
         foreach (var c in _children)
         {
             var off = _localOffsetPx.TryGetValue(c, out var v) ? v : Vector2.Zero;
-            c.Movement.SetPosition(anchorV + off); // child keeps MovementState↔Bounds in sync
+            c.SetPosition(anchorV + off);
         }
         return this;
     }
