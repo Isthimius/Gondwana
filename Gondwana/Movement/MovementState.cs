@@ -65,7 +65,6 @@ public struct MovementState
     public static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = CoordinateSpace.Grid,
-        //Position = position,
         LinearDamping = linearDampening
     };
 
@@ -80,7 +79,6 @@ public struct MovementState
     public static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = CoordinateSpace.Pixel,
-        //Position = position,
         LinearDamping = linearDampening
     };
 }

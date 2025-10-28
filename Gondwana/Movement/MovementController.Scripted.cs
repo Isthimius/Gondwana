@@ -6,6 +6,52 @@ namespace Gondwana.Movement;
 
 public sealed partial class MovementController
 {
+    public void MoveTo(Vector2 target, float durationSec, Func<float, float>? easing = null, float snapEpsilon = 0.5f)
+    {
+        _state.Script = new ScriptedMovement
+        {
+            Type = MovementScriptType.TweenTo,
+            Origin = _mover.GetPosition(),
+            Target = target,
+            DurationSec = MathF.Max(0f, durationSec),
+            ElapsedSec = 0f,
+            SnapEpsilon = MathF.Max(0f, snapEpsilon),
+            Easing = easing
+        };
+
+        // scripted motion overrides physics; zero them
+        _state.Acceleration = Vector2.Zero;
+        _state.Velocity = Vector2.Zero;
+    }
+
+    public void MoveTo(Vector2 target, float seconds, EasingKind easingKind, float snapEps = 0.5f)
+    {
+        var easingFunc = EasingFunctions.From(easingKind);
+        MoveTo(target, seconds, easingFunc, snapEps);
+    }
+
+    public void MoveToward(Vector2 target, float speedPerSec, float snapEpsilon = 0.5f)
+    {
+        _state.Script = new ScriptedMovement
+        {
+            Type = MovementScriptType.Toward,
+            Target = target,
+            SpeedPerSec = MathF.Max(0f, speedPerSec),
+            SnapEpsilon = MathF.Max(0f, snapEpsilon)
+        };
+
+        _state.Acceleration = Vector2.Zero;
+        _state.Velocity = Vector2.Zero;
+    }
+
+    public void CancelScript()
+    {
+        if (IsScripted)
+            ScriptedMovementStopped?.Invoke();
+
+        _state.Script = default;
+    }
+
     private bool AdvanceScripted(float dt)
     {
         switch (_state.Script.Type)
@@ -96,51 +142,5 @@ public sealed partial class MovementController
         Step(dt);
 
         return true;
-    }
-
-    public void MoveTo(Vector2 target, float durationSec, Func<float, float>? easing = null, float snapEpsilon = 0.5f)
-    {
-        _state.Script = new ScriptedMovement
-        {
-            Type = MovementScriptType.TweenTo,
-            Origin = _mover.GetPosition(),
-            Target = target,
-            DurationSec = MathF.Max(0f, durationSec),
-            ElapsedSec = 0f,
-            SnapEpsilon = MathF.Max(0f, snapEpsilon),
-            Easing = easing
-        };
-
-        // scripted motion overrides physics; zero them
-        _state.Acceleration = Vector2.Zero;
-        _state.Velocity = Vector2.Zero;
-    }
-
-    public void MoveTo(Vector2 target, float seconds, EasingKind easingKind, float snapEps = 0.5f)
-    {
-        var easingFunc = EasingFunctions.From(easingKind);
-        MoveTo(target, seconds, easingFunc, snapEps);
-    }
-
-    public void MoveToward(Vector2 target, float speedPerSec, float snapEpsilon = 0.5f)
-    {
-        _state.Script = new ScriptedMovement
-        {
-            Type = MovementScriptType.Toward,
-            Target = target,
-            SpeedPerSec = MathF.Max(0f, speedPerSec),
-            SnapEpsilon = MathF.Max(0f, snapEpsilon)
-        };
-
-        _state.Acceleration = Vector2.Zero;
-        _state.Velocity = Vector2.Zero;
-    }
-
-    public void CancelScript()
-    {
-        if (IsScripted)
-            ScriptedMovementStopped?.Invoke();
-
-        _state.Script = default;
     }
 }

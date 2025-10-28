@@ -5,12 +5,12 @@ namespace Gondwana.Drawing.Coordinates;
 
 public class SquareIsoCoordinates : ISceneLayerCoordinates
 {
-    public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gridCoord)
+    public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint)
     {
         Point retVal = new Point();
 
-        retVal.X = (int)(sceneLayer.SceneLayerTileWidth * (gridCoord.X - sceneLayer.SourceSceneLayerTile.X));
-        retVal.Y = (int)(sceneLayer.SceneLayerTileHeight * (gridCoord.Y - sceneLayer.SourceSceneLayerTile.Y));
+        retVal.X = (int)(sceneLayer.SceneLayerTileWidth * (layerPoint.X - sceneLayer.SourceSceneLayerTile.X));
+        retVal.Y = (int)(sceneLayer.SceneLayerTileHeight * (layerPoint.Y - sceneLayer.SourceSceneLayerTile.Y));
 
         return retVal;
     }
@@ -85,35 +85,35 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         return retVal;
     }
 
-    public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gridPt, CardinalDirections direction)
+    public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile layerPoint, CardinalDirections direction)
     {
-        SceneLayer sceneLayer = gridPt.ParentGrid;
+        SceneLayer sceneLayer = layerPoint.ParentGrid;
 
         switch (direction)
         {
             case CardinalDirections.N:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y - 1];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y - 1];
 
             case CardinalDirections.NE:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y - 1];
 
             case CardinalDirections.E:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y];
 
             case CardinalDirections.SE:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X + 1, gridPt.GridCoordinatesAbs.Y + 1];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y + 1];
 
             case CardinalDirections.S:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X, gridPt.GridCoordinatesAbs.Y + 1];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y + 1];
 
             case CardinalDirections.SW:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y + 1];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y + 1];
 
             case CardinalDirections.W:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y];
 
             case CardinalDirections.NW:
-                return sceneLayer[gridPt.GridCoordinatesAbs.X - 1, gridPt.GridCoordinatesAbs.Y - 1];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y - 1];
 
             default:
                 return null;
