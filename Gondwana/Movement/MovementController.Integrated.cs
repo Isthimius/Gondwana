@@ -96,12 +96,6 @@ public sealed partial class MovementController
         }
 
         _mover.SetPosition(newPos);
-
-        // NOTE: cross-space conversion removed by design:
-        // with IMovable as the position authority and no state.Position,
-        // integrated motion runs in the mover's own space. If you need
-        // cross-space motion, you must either (a) keep Position in state
-        // or (b) set a different IMovable that lives in the desired space.
     }
 
     /// <summary>

@@ -76,24 +76,24 @@ public sealed partial class MovementController
 
     /// <summary>
     /// Start following a <b>pixel-space target</b> using a duration-based tween (easing).
-    /// When easing is active, speed fields are ignored. The <paramref name="snapPx"/> value
+    /// When easing is active, speed fields are ignored. The <paramref name="snap"/> value
     /// is interpreted in the follower's space at runtime:
     /// <list type="bullet">
-    /// <item><description>Pixel follower uses <paramref name="snapPx"/> as pixels.</description></item>
-    /// <item><description>Grid follower treats <paramref name="snapPx"/> as tiles (internally mapped).</description></item>
+    /// <item><description>Pixel follower uses <paramref name="snap"/> as pixels.</description></item>
+    /// <item><description>Grid follower treats <paramref name="snap"/> as tiles (internally mapped).</description></item>
     /// </list>
     /// </summary>
     /// <param name="getPixelPos">Delegate that returns the current target position in pixels each frame.</param>
     /// <param name="durationSec">Tween duration in seconds. Must be &gt; 0.</param>
     /// <param name="easing">Optional easing function in the range [0,1]→[0,1]. If null, linear easing is used.</param>
-    /// <param name="snapPx">Arrival tolerance; interpreted in the follower's space at runtime (pixels for pixel followers, tiles for grid followers).</param>
+    /// <param name="snap">Arrival tolerance; interpreted in the follower's space at runtime (pixels for pixel followers, tiles for grid followers).</param>
     /// <param name="offsetPx">Optional additional pixel offset when the follower is pixel-space (ignored for grid followers).</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="getPixelPos"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="durationSec"/> ≤ 0.</exception>
     public void FollowPixelSoft(Func<Vector2> getPixelPos,
                                 float durationSec,
                                 Func<float, float>? easing = null,
-                                float snapPx = 0.5f,
+                                float snap = 0.5f,
                                 Vector2 offsetPx = default)
     {
         if (durationSec <= 0f)
@@ -110,12 +110,12 @@ public sealed partial class MovementController
         // Interpret snap in the follower’s space
         if (_mover.PositionSpace == CoordinateSpace.Pixel)
         {
-            _followSnapPx = MathF.Max(0f, snapPx);
+            _followSnapPx = MathF.Max(0f, snap);
             _followSnapTiles = 0f;
         }
         else
         {
-            _followSnapTiles = MathF.Max(0f, snapPx);
+            _followSnapTiles = MathF.Max(0f, snap);
             _followSnapPx = 0f;
         }
 
@@ -125,24 +125,29 @@ public sealed partial class MovementController
     }
 
     /// <summary>
-    /// Convenience overload of <see cref="FollowPixelSoft(Func{Vector2}, float, Func{float, float}?, float, Vector2)"/>
-    /// that specifies the easing curve via <see cref="EasingKind"/>.
+    /// Start following a <b>pixel-space target</b> using a duration-based tween (easing).
+    /// When easing is active, speed fields are ignored. The <paramref name="snap"/> value
+    /// is interpreted in the follower's space at runtime:
+    /// <list type="bullet">
+    /// <item><description>Pixel follower uses <paramref name="snap"/> as pixels.</description></item>
+    /// <item><description>Grid follower treats <paramref name="snap"/> as tiles (internally mapped).</description></item>
+    /// </list>
     /// </summary>
     /// <param name="getPixelPos">Delegate that returns the current target position in pixels each frame.</param>
     /// <param name="durationSec">Tween duration in seconds. Must be &gt; 0.</param>
     /// <param name="easingKind">Named easing preset.</param>
-    /// <param name="snapPx">Arrival tolerance; interpreted in the follower's space at runtime.</param>
+    /// <param name="snap">Arrival tolerance; interpreted in the follower's space at runtime.</param>
     /// <param name="offsetPx">Optional additional pixel offset for pixel-space followers.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="getPixelPos"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="durationSec"/> ≤ 0.</exception>
     public void FollowPixelSoft(Func<Vector2> getPixelPos,
                                 float durationSec,
                                 EasingKind easingKind,
-                                float snapPx = 0.5f,
+                                float snap = 0.5f,
                                 Vector2 offsetPx = default)
     {
         var easing = EasingFunctions.From(easingKind);
-        FollowPixelSoft(getPixelPos, durationSec, easing, snapPx, offsetPx);
+        FollowPixelSoft(getPixelPos, durationSec, easing, snap, offsetPx);
     }
 
     /// <summary>
@@ -454,9 +459,9 @@ public sealed partial class MovementController
         var pxRight = sceneLayer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(sceneLayer, new PointF(goalCoordinates.X + 1f, goalCoordinates.Y));
         float pxPerTile = MathF.Max(1f, new Vector2(pxRight.X - targetPx.X, pxRight.Y - targetPx.Y).Length());
         float speedPxPerSec = _followSpeedTilesPerSec * pxPerTile;
-        float snapPx = _followSnapTiles * pxPerTile;
+        float snap = _followSnapTiles * pxPerTile;
 
-        MoveToward(goalPx, speedPxPerSec, snapPx);
+        MoveToward(goalPx, speedPxPerSec, snap);
         return false;
     }
 }

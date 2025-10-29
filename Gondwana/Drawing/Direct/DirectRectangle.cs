@@ -262,7 +262,7 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
-    protected internal override void Update(long tick)
+    public override void Update(long tick)
     {
         base.Update(tick);
 

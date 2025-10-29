@@ -40,7 +40,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     // ---------------------------------------------------------------------
     // Per-frame update
     // ---------------------------------------------------------------------
-    protected internal override void Update(long tick)
+    public override void Update(long tick)
     {
         if (tick == _lastTick)
             return;

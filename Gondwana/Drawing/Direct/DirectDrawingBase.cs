@@ -5,9 +5,9 @@ using System.Drawing;
 
 namespace Gondwana.Drawing.Direct;
 
-public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDisposable
+public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDrawingBase>
 {
-    public event EventHandler<DirectDrawingBase>? Disposing;
+    public event EventHandler<IDirectDrawable>? Disposing;
     public event EventHandler<DirectDrawingBase>? FadeToCompleted;
 
     protected readonly RenderSurfaceHostBase _renderSurfaceHost;
@@ -173,7 +173,7 @@ public abstract class DirectDrawingBase : IComparable<DirectDrawingBase>, IDispo
     /// Called from <see cref="DirectDrawingManager.UpdateAll(long)"/>.
     /// </summary>
     /// <param name="tick">Current engine tick from <see cref="HighResTimer"/>.</param>
-    protected internal virtual void Update(long tick)
+    public virtual void Update(long tick)
     {
         if (tick == _lastTick)
             return;

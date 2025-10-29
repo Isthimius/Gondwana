@@ -14,25 +14,20 @@ public sealed class DirectDrawingManager
     internal static DirectDrawingManager Instance => _instance.Value;
 
     // ---- Storage (instance-level) ----
-    private readonly ConcurrentDictionary<string, DirectDrawingBase> _directDrawings =
+    private readonly ConcurrentDictionary<string, IDirectDrawable> _directDrawings =
         new(StringComparer.Ordinal);
 
-    private DirectDrawingManager()
-    {
-        //MovementController = MovementController.ForPixelOverlay();
-    }
+    private DirectDrawingManager() { }
 
     // Expose a read-only snapshot to callers.
-    public ReadOnlyCollection<DirectDrawingBase> DirectDrawings =>
-        new ReadOnlyCollection<DirectDrawingBase>([.. _directDrawings.Values]);
+    public ReadOnlyCollection<IDirectDrawable> DirectDrawings =>
+        new ReadOnlyCollection<IDirectDrawable>([.. _directDrawings.Values]);
 
     public int Count => _directDrawings.Count;
 
-    internal MovementController MovementController { get; private set; }
-
-    public DirectDrawingBase? GetDirectDrawing(string name)
+    public IDirectDrawable? GetDirectDrawing(string name)
     {
-        return name is null ? null : _directDrawings.TryGetValue(name, out DirectDrawingBase? d) ? d : null;
+        return name is null ? null : _directDrawings.TryGetValue(name, out IDirectDrawable? d) ? d : null;
     }
 
     public void ClearAll()
@@ -68,7 +63,7 @@ public sealed class DirectDrawingManager
     internal void RenderAll()
     {
         // Snapshot to avoid races while iterating.
-        var snapshot = _directDrawings.Values.ToArray();
+        var snapshot = _directDrawings.Values.OfType<DirectDrawingBase>().ToArray();
         Array.Sort(snapshot, _defaultComparer);
 
         foreach (var drawing in snapshot)
@@ -94,7 +89,7 @@ public sealed class DirectDrawingManager
     /// Adds a drawing by its Name. If a drawing with the same Name already exists,
     /// it is disposed and replaced by the new one. Automatically removes on Dispose.
     /// </summary>
-    internal void AddOrReplace(DirectDrawingBase drawing)
+    internal void AddOrReplace(IDirectDrawable drawing)
     {
         if (drawing is null) throw new ArgumentNullException(nameof(drawing));
         var name = drawing.Name ?? throw new ArgumentException("Drawing must have a Name.", nameof(drawing));
@@ -137,7 +132,7 @@ public sealed class DirectDrawingManager
             return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
         });
 
-    private void OnDrawingDisposing(object? sender, DirectDrawingBase drawing)
+    private void OnDrawingDisposing(object? sender, IDirectDrawable drawing)
     {
         _directDrawings.TryRemove(drawing.Name, out _);
         drawing.Disposing -= OnDrawingDisposing;

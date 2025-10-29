@@ -223,7 +223,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// Tick-driven update override. Computes delta internally and advances simulation.
     /// </summary>
     /// <param name="tick">Current tick from <see cref="HighResTimer"/>.</param>
-    protected internal override void Update(long tick)
+    public override void Update(long tick)
     {
         base.Update(tick);
 

@@ -1,16 +1,22 @@
 ﻿using Gondwana.Movement;
 using Gondwana.Rendering;
+using Gondwana.Timers;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Numerics;
 
 namespace Gondwana.Drawing.Direct;
 
-public class DirectComposite : IMovable
+public class DirectComposite : IDirectDrawable, IMovable
 {
+    private long _lastTick = HighResTimer.GetCurrentTick();
+
     private readonly List<DirectDrawingMovableBase> _children = new();
     private readonly Dictionary<DirectDrawingMovableBase, Vector2> _localOffsetPx = new();
     private PointF _anchor;
+
+    public event EventHandler<IDirectDrawable>? Disposing;
 
     public DirectComposite(RenderSurfaceHostBase renderSurfaceHost, PointF anchor = default)
     {
@@ -19,6 +25,7 @@ public class DirectComposite : IMovable
         Children = new ReadOnlyCollection<DirectDrawingMovableBase>(_children);
 
         Movement = new MovementController(this, MovementState.ForPixel(new Vector2(_anchor.X, _anchor.Y)));
+        DirectDrawingManager.Instance.AddOrReplace(this);
     }
 
     public RenderSurfaceHostBase RenderSurfaceHost { get; }
@@ -63,7 +70,7 @@ public class DirectComposite : IMovable
         return this;
     }
 
-    private void OnChildDisposing(object? sender, DirectDrawingBase drawing)
+    private void OnChildDisposing(object? sender, IDirectDrawable drawing)
     {
         if (drawing is DirectDrawingMovableBase m)
         {
@@ -106,6 +113,9 @@ public class DirectComposite : IMovable
             var off = _localOffsetPx.TryGetValue(c, out var v) ? v : Vector2.Zero;
             c.SetPosition(anchorV + off);
         }
+
+        Engine.Logger.LogTrace("Composite moved to {X},{Y}", x, y);
+
         return this;
     }
 
@@ -146,6 +156,16 @@ public class DirectComposite : IMovable
         }
     }
 
+    public string Name { get; set; } = Guid.NewGuid().ToString();
+
+    public int ZOrder => throw new NotImplementedException();
+
+    public void Update(long tick)
+    {
+        Movement.AdvanceMovement(HighResTimer.GetDuration(_lastTick, tick));
+        _lastTick = tick;
+    }
+
     // Group ops passthroughs
     public DirectComposite SetZOrder(int z) { foreach (var c in _children) c.ZOrder = z; return this; }
     public DirectComposite SetOpacity(float opacity) { foreach (var c in _children) c.Opacity = opacity; return this; }
@@ -154,10 +174,13 @@ public class DirectComposite : IMovable
     public DirectComposite FadeOut(float durationSec) { foreach (var c in _children) c.FadeOut(durationSec); return this; }
     public DirectComposite SetIsVisible(bool visible) { foreach (var c in _children) c.IsVisible = visible; return this; }
 
-    /// <summary>Dispose all children and clear the composite.</summary>
-    public void DisposeAll()
+    public void Dispose()
     {
-        foreach (var c in _children) c.Dispose();
+        Disposing?.Invoke(this, this);
+
+        foreach (var c in _children)
+            c.Dispose();
+
         _children.Clear();
         _localOffsetPx.Clear();
     }

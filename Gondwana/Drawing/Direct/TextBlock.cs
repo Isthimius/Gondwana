@@ -46,7 +46,7 @@ public class TextBlock : DirectDrawingMovableBase
     }
 
     private string _text = string.Empty;
-    private List<string> _lines = new();
+    private readonly List<string> _lines = new();
     private float _lineHeight;
     private bool _layoutDirty = true;
 
@@ -218,7 +218,7 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
-    protected internal override void Update(long tick)
+    public override void Update(long tick)
     {
         base.Update(tick);
 

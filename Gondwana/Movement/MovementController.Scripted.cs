@@ -44,13 +44,13 @@ public sealed partial class MovementController
     /// <param name="target">The absolute destination position.</param>
     /// <param name="seconds">The tween duration in seconds. Values less than 0 are clamped to 0.</param>
     /// <param name="easingKind">The built-in easing preset to apply.</param>
-    /// <param name="snapEps">
+    /// <param name="snapEpsilon">
     /// The arrival tolerance. When the mover is within this distance of the target, the tween completes early.
     /// </param>
-    public void MoveTo(Vector2 target, float seconds, EasingKind easingKind, float snapEps = 0.5f)
+    public void MoveTo(Vector2 target, float seconds, EasingKind easingKind, float snapEpsilon = 0.5f)
     {
         var easingFunc = EasingFunctions.From(easingKind);
-        MoveTo(target, seconds, easingFunc, snapEps);
+        MoveTo(target, seconds, easingFunc, snapEpsilon);
     }
 
     /// <summary>
