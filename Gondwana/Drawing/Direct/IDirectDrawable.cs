@@ -17,7 +17,7 @@ public interface IDirectDrawable : IDisposable
     /// <summary>
     /// Name associated with the object.
     /// </summary>
-    string Name { get; set; }
+    string Name { get; }
 
     /// <summary>
     /// The rendering surface to which this drawable belongs.

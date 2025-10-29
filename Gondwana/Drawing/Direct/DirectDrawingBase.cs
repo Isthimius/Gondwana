@@ -32,13 +32,13 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// </summary>
     protected internal abstract void Draw();
 
-    protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
+    protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds, string? name = null)
     {
         _renderSurfaceHost = renderSurfaceHost;
         _bounds = bounds;
         _zOrder = 0;
         _isVisible = true;
-        Name = Guid.NewGuid().ToString();
+        Name = name ?? Guid.NewGuid().ToString();
 
         DirectDrawingManager.Instance.AddOrReplace(this);
         ForceRefresh();
@@ -48,7 +48,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
     public RenderSurfaceHostBase RenderSurfaceHost => _renderSurfaceHost;
 
-    public string Name { get; set; }
+    public string Name { get; private set; }
 
     public Rectangle Bounds
     {

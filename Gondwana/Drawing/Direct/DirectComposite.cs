@@ -18,11 +18,12 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     public event EventHandler<IDirectDrawable>? Disposing;
 
-    public DirectComposite(RenderSurfaceHostBase renderSurfaceHost, PointF anchor = default)
+    public DirectComposite(RenderSurfaceHostBase renderSurfaceHost, PointF anchor = default, string? name = null)
     {
         RenderSurfaceHost = renderSurfaceHost;
         _anchor = anchor;
         Children = new ReadOnlyCollection<DirectDrawingMovableBase>(_children);
+        Name = name ?? Guid.NewGuid().ToString();
 
         Movement = new MovementController(this, MovementState.ForPixel(new Vector2(_anchor.X, _anchor.Y)));
         DirectDrawingManager.Instance.AddOrReplace(this);
@@ -156,7 +157,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
     }
 
-    public string Name { get; set; } = Guid.NewGuid().ToString();
+    public string Name { get; private set; }
 
     public int ZOrder => throw new NotImplementedException();
 

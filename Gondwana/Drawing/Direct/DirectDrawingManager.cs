@@ -91,8 +91,10 @@ public sealed class DirectDrawingManager
     /// </summary>
     internal void AddOrReplace(IDirectDrawable drawing)
     {
-        if (drawing is null) throw new ArgumentNullException(nameof(drawing));
-        var name = drawing.Name ?? throw new ArgumentException("Drawing must have a Name.", nameof(drawing));
+        if (drawing is null)
+            throw new ArgumentNullException(nameof(drawing));
+
+        var name = drawing.Name;
 
         _directDrawings.AddOrUpdate(
             name,
