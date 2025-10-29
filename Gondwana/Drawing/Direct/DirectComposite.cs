@@ -17,10 +17,13 @@ public class DirectComposite : IMovable
         RenderSurfaceHost = renderSurfaceHost;
         _anchor = anchor;
         Children = new ReadOnlyCollection<DirectDrawingMovableBase>(_children);
+
+        Movement = new MovementController(this, MovementState.ForPixel(new Vector2(_anchor.X, _anchor.Y)));
     }
 
     public RenderSurfaceHostBase RenderSurfaceHost { get; }
     public ReadOnlyCollection<DirectDrawingMovableBase> Children { get; }
+    public MovementController Movement { get; private set; }
 
     /// <summary>
     /// Adds a child and stores its local pixel offset from the composite anchor.
