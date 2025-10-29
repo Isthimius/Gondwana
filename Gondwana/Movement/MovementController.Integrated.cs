@@ -5,6 +5,49 @@ namespace Gondwana.Movement;
 
 public sealed partial class MovementController
 {
+    /// <summary>
+    /// Sets the velocity of the object.
+    /// </summary>
+    /// <remarks>This method cancels any ongoing scripts before applying the new velocity.</remarks>
+    /// <param name="velocity">The new velocity to apply, represented as a <see cref="Vector2"/>.</param>
+    public void SetVelocity(Vector2 velocity)
+    {
+        CancelScript();
+        _state.Velocity = velocity;
+    }
+
+    /// <summary>
+    /// Sets the acceleration of the object.
+    /// </summary>
+    /// <remarks>This method cancels any ongoing scripts before updating the acceleration.</remarks>
+    /// <param name="acceleration">The new acceleration to apply, represented as a <see cref="Vector2"/></param>
+    public void SetAcceleration(Vector2 acceleration)
+    {
+        CancelScript();
+        _state.Acceleration = acceleration;
+    }
+
+    /// <summary>
+    /// Sets the maximum speed for the current state. Only applies to integrated movement.
+    /// </summary>
+    /// <param name="maxSpeed">The maximum speed to set, in units appropriate to the context. Specify <see langword="null"/> to remove the
+    /// speed limit.</param>
+    public void SetMaxSpeed(float? maxSpeed)
+    {
+        _state.MaxSpeed = maxSpeed;
+    }
+
+    /// <summary>
+    /// Sets the linear damping value, which determines the rate at which linear motion is reduced over time.
+    /// </summary>
+    /// <remarks>Linear damping is used to simulate the gradual reduction of velocity in a system, such as due
+    /// to friction or drag. If the specified value is negative, it will be clamped to zero.</remarks>
+    /// <param name="dampingPerSec">The damping value per second. Must be a non-negative value.</param>
+    public void SetLinearDamping(float dampingPerSec)
+    {
+        _state.LinearDamping = MathF.Max(0f, dampingPerSec);
+    }
+
     private bool AdvanceIntegrated(float dt)
     {
         if (_state.HasMotion)
@@ -78,48 +121,5 @@ public sealed partial class MovementController
 
         if (max > 0 && speed > max)
             _state.Velocity = v * (max / speed);
-    }
-
-    /// <summary>
-    /// Sets the velocity of the object.
-    /// </summary>
-    /// <remarks>This method cancels any ongoing scripts before applying the new velocity.</remarks>
-    /// <param name="velocity">The new velocity to apply, represented as a <see cref="Vector2"/>.</param>
-    public void SetVelocity(Vector2 velocity)
-    {
-        CancelScript();
-        _state.Velocity = velocity;
-    }
-
-    /// <summary>
-    /// Sets the acceleration of the object.
-    /// </summary>
-    /// <remarks>This method cancels any ongoing scripts before updating the acceleration.</remarks>
-    /// <param name="acceleration">The new acceleration to apply, represented as a <see cref="Vector2"/></param>
-    public void SetAcceleration(Vector2 acceleration)
-    {
-        CancelScript();
-        _state.Acceleration = acceleration;
-    }
-
-    /// <summary>
-    /// Sets the maximum speed for the current state. Only applies to integrated movement.
-    /// </summary>
-    /// <param name="maxSpeed">The maximum speed to set, in units appropriate to the context. Specify <see langword="null"/> to remove the
-    /// speed limit.</param>
-    public void SetMaxSpeed(float? maxSpeed)
-    {
-        _state.MaxSpeed = maxSpeed;
-    }
-
-    /// <summary>
-    /// Sets the linear damping value, which determines the rate at which linear motion is reduced over time.
-    /// </summary>
-    /// <remarks>Linear damping is used to simulate the gradual reduction of velocity in a system, such as due
-    /// to friction or drag. If the specified value is negative, it will be clamped to zero.</remarks>
-    /// <param name="dampingPerSec">The damping value per second. Must be a non-negative value.</param>
-    public void SetLinearDamping(float dampingPerSec)
-    {
-        _state.LinearDamping = MathF.Max(0f, dampingPerSec);
     }
 }

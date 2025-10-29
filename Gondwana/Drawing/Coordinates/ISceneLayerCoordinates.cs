@@ -21,7 +21,7 @@ public interface ISceneLayerCoordinates
     /// Converts a pixel-space point into its corresponding grid-space
     /// layer coordinate (column, row) within the specified SceneLayer.
     /// </summary>
-    PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, Point pixelPt);
+    PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt);
 
     /// <summary>
     /// Returns a list of all layer points whose rendered pixel areas intersect

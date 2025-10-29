@@ -19,7 +19,7 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         return new Point(x, y);
     }
 
-    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, Point pixelPt)
+    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
         int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
         float fy = (pixelPt.Y - sceneLayer.SceneLayerTileZeroPixel.Y) / (H * 0.75f);
@@ -28,25 +28,22 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         float fx = (pixelPt.X - baseX) / (float)W;
         int approxCol = (int)Math.Round(fx);
 
-        var best = new Point(approxCol, approxRow); float bestDist = float.MaxValue;
+        var best = new Point(approxCol, approxRow);
+        float bestDist = float.MaxValue;
+
         foreach (var cand in NeighborsPointedTop(approxCol, approxRow, includeSelf: true))
         {
             var poly = HexPolygonPointedTop(sceneLayer, cand.X, cand.Y, includeOverhang: false);
 
-            if (PointInPolygon(poly, pixelPt))
-                return new PointF(cand.X, cand.Y);
+            // Only here: round once for PIP test
+            var pInt = new Point((int)Math.Round(pixelPt.X), (int)Math.Round(pixelPt.Y));
+            if (PointInPolygon(poly, pInt)) return new PointF(cand.X, cand.Y);
 
             float cx = sceneLayer.SceneLayerTileZeroPixel.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
             float cy = sceneLayer.SceneLayerTileZeroPixel.Y + cand.Y * (H * 0.75f) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
-            
-            if (d < bestDist)
-            {
-                bestDist = d;
-                best = cand;
-            }
+            if (d < bestDist) { bestDist = d; best = cand; }
         }
-
         return new PointF(best.X, best.Y);
     }
 

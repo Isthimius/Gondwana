@@ -111,26 +111,6 @@ public class DirectComposite : IMovable
     public Vector2 GetPosition() => new(_anchor.X, _anchor.Y);
     public void SetPosition(Vector2 pos) => SetPosition(pos.X, pos.Y);
 
-    // Group follow fan-outs: children do all grid↔pixel work; composite stays pixel-only.
-    public DirectComposite FollowHard(IMovableOnSceneLayer gridTarget, Vector2 sharedGridOffset = default)
-    {
-        foreach (var c in _children) c.Movement.FollowHard(gridTarget, sharedGridOffset);
-        return this;
-    }
-
-    public DirectComposite FollowSoft(IMovableOnSceneLayer gridTarget, float speedTilesPerSec,
-                                      float snapEpsilon = 0.25f, Vector2 sharedGridOffset = default)
-    {
-        foreach (var c in _children) c.Movement.FollowSoft(gridTarget, speedTilesPerSec, snapEpsilon, sharedGridOffset);
-        return this;
-    }
-
-    public DirectComposite UnfollowAll()
-    {
-        foreach (var c in _children) c.Movement.Unfollow();
-        return this;
-    }
-
     // Bounding box = union of visible children (unchanged)
     public Rectangle Bounds
     {

@@ -6,6 +6,18 @@ namespace Gondwana.Movement;
 
 public sealed partial class MovementController
 {
+    /// <summary>
+    /// Begins a scripted tween toward the specified <paramref name="target"/> position over a fixed duration.
+    /// This method interpolates linearly or with an optional easing function from the mover’s current position
+    /// to the target, automatically cancelling any existing scripted or physics-based movement.
+    /// </summary>
+    /// <param name="target">The absolute destination position.</param>
+    /// <param name="durationSec">The total tween duration in seconds. Values less than 0 are clamped to 0.</param>
+    /// <param name="easing">Optional easing function mapping normalized time [0,1] → [0,1]. If null, linear easing is used.</param>
+    /// <param name="snapEpsilon">
+    /// The arrival tolerance. When the mover is within this distance of the target, the tween completes early.
+    /// Values less than 0 are clamped to 0.
+    /// </param>
     public void MoveTo(Vector2 target, float durationSec, Func<float, float>? easing = null, float snapEpsilon = 0.5f)
     {
         _state.Script = new ScriptedMovement
@@ -24,12 +36,34 @@ public sealed partial class MovementController
         _state.Velocity = Vector2.Zero;
     }
 
+    /// <summary>
+    /// Begins a scripted tween toward the specified <paramref name="target"/> position over a fixed duration,
+    /// using a predefined <see cref="EasingKind"/> curve. This overload is a convenience wrapper around
+    /// <see cref="MoveTo(Vector2, float, Func{float, float}?, float)"/>.
+    /// </summary>
+    /// <param name="target">The absolute destination position.</param>
+    /// <param name="seconds">The tween duration in seconds. Values less than 0 are clamped to 0.</param>
+    /// <param name="easingKind">The built-in easing preset to apply.</param>
+    /// <param name="snapEps">
+    /// The arrival tolerance. When the mover is within this distance of the target, the tween completes early.
+    /// </param>
     public void MoveTo(Vector2 target, float seconds, EasingKind easingKind, float snapEps = 0.5f)
     {
         var easingFunc = EasingFunctions.From(easingKind);
         MoveTo(target, seconds, easingFunc, snapEps);
     }
 
+    /// <summary>
+    /// Begins a scripted motion toward the <paramref name="target"/> position at a constant speed.
+    /// Unlike <see cref="MoveTo(Vector2, float, Func{float, float}?, float)"/>, this motion continues each frame
+    /// until the target is reached or cancelled, rather than running for a fixed duration.
+    /// </summary>
+    /// <param name="target">The absolute destination position.</param>
+    /// <param name="speedPerSec">The movement speed per second. Values less than 0 are clamped to 0.</param>
+    /// <param name="snapEpsilon">
+    /// The arrival tolerance. When the mover is within this distance of the target, motion completes early.
+    /// Values less than 0 are clamped to 0.
+    /// </param>
     public void MoveToward(Vector2 target, float speedPerSec, float snapEpsilon = 0.5f)
     {
         _state.Script = new ScriptedMovement
@@ -44,6 +78,10 @@ public sealed partial class MovementController
         _state.Velocity = Vector2.Zero;
     }
 
+    /// <summary>
+    /// Cancels any active scripted movement (tween or constant-speed) and clears the current script state.
+    /// Raises <see cref="ScriptedMovementStopped"/> if a script was active.
+    /// </summary>
     public void CancelScript()
     {
         if (IsScripted)

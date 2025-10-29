@@ -15,7 +15,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         return retVal;
     }
 
-    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, Point pixelPt)
+    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
         PointF retPt = new PointF();
 
@@ -31,8 +31,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         var retVal = new List<SceneLayerTile>();
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
-        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Left, pixelRange.Top));
-        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new Point(pixelRange.Right - 1, pixelRange.Bottom - 1));
+        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Left, pixelRange.Top));
+        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Right - 1, pixelRange.Bottom - 1));
 
         int minY = (int)Math.Floor(ptUL.Y) - 1;
         int maxY = (int)Math.Ceiling(ptBR.Y) + 1;

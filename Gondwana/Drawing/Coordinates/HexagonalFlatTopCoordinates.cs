@@ -20,7 +20,7 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         return new Point(x, y);
     }
 
-    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, Point pixelPt)
+    public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
         int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
         float fx = (pixelPt.X - sceneLayer.SceneLayerTileZeroPixel.X) / (W * 0.75f);
@@ -29,13 +29,17 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         float fy = (pixelPt.Y - baseY) / (float)H;
         int approxRow = (int)Math.Round(fy);
 
-        // refine by checking which nearby hex actually contains the pixel (up to 6 neighbors)
         var best = new Point(approxCol, approxRow);
         float bestDist = float.MaxValue;
+
         foreach (var cand in NeighborsFlatTop(approxCol, approxRow, includeSelf: true))
         {
             var poly = HexPolygonFlatTop(sceneLayer, cand.X, cand.Y, includeOverhang: false);
-            if (PointInPolygon(poly, pixelPt)) return new PointF(cand.X, cand.Y);
+
+            // Only here do we round for the point-in-polygon, not earlier
+            var pInt = new Point((int)Math.Round(pixelPt.X), (int)Math.Round(pixelPt.Y));
+            if (PointInPolygon(poly, pInt)) return new PointF(cand.X, cand.Y);
+
             float cx = sceneLayer.SceneLayerTileZeroPixel.X + cand.X * (W * 0.75f) + W / 2f;
             float cy = sceneLayer.SceneLayerTileZeroPixel.Y + cand.Y * H + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
