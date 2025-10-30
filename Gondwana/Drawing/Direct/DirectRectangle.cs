@@ -48,6 +48,7 @@ public class DirectRectangle : DirectDrawingMovableBase
     private readonly SKPaint _fillPaint;        // cached fill
     private readonly SKPaint _strokePaint;      // cached stroke
     private SKColor? _borderColor;              // optional distinct border color
+    private SKShader? _fillShader;              // optional fill shader
 
     private bool _isFilled;
     private float _cornerRadius;
@@ -258,6 +259,47 @@ public class DirectRectangle : DirectDrawingMovableBase
     {
         _pulseFillEnabled = _pulseBorderEnabled = false;
         RebuildPaints();   // restore fill/border to SetColor/SetBorderColor values
+        ForceRefresh();
+        return this;
+    }
+
+    /// <summary>Fill with a tiled image pattern instead of a solid color.</summary>
+    /// <param name="bitmap">The source bitmap to tile.</param>
+    /// <param name="tileX">Horizontal tiling mode (Repeat, Mirror, Clamp).</param>
+    /// <param name="tileY">Vertical tiling mode (Repeat, Mirror, Clamp).</param>
+    /// <param name="scale">Optional scale applied to the bitmap (1 = native size).</param>
+    /// <param name="offsetPx">Optional offset of the pattern origin in pixels.</param>
+    /// <remarks>
+    /// The shader uses the mover's current pixel space. Paint color tints the pattern; set it to white to keep original colors.
+    /// To control overall opacity, adjust <see cref="SetAlpha(int)"/>.
+    /// </remarks>
+    public DirectRectangle SetFillPattern(SKBitmap bitmap,
+                                          SKShaderTileMode tileX = SKShaderTileMode.Repeat,
+                                          SKShaderTileMode tileY = SKShaderTileMode.Repeat,
+                                          float scale = 1f,
+                                          SKPoint? offsetPx = null,
+                                          SKFilterQuality filterQuality = SKFilterQuality.None)
+    {
+        var m = SKMatrix.CreateScale(scale, scale);
+        if (offsetPx is { } o)
+            m = m.PostConcat(SKMatrix.CreateTranslation(o.X, o.Y));
+
+        _fillShader = SKShader.CreateBitmap(bitmap, tileX, tileY, m);
+        _fillPaint.Shader = _fillShader;
+        _fillPaint.FilterQuality = filterQuality; // or Low/Medium/High
+
+        // Ensure we’re in filled mode for visibility
+        _isFilled = true;
+        ForceRefresh();
+        return this;
+    }
+
+    /// <summary>Remove the pattern fill and return to solid color.</summary>
+    public DirectRectangle ClearFillPattern()
+    {
+        _fillShader?.Dispose();
+        _fillShader = null;
+        _fillPaint.Shader = null;
         ForceRefresh();
         return this;
     }
