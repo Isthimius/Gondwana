@@ -54,6 +54,71 @@ public sealed partial class MovementController
     }
 
     /// <summary>
+    /// Scripted relative motion by a delta over a fixed duration (with optional easing).
+    /// Interprets <paramref name="delta"/> in the mover's PositionSpace (Grid or Pixel).
+    /// </summary>
+    /// <param name="delta">
+    /// The offset by which to move, relative to the mover’s current position.
+    /// Units are in the mover’s PositionSpace (grid cells or pixels).
+    /// </param>
+    /// <param name="durationSec">
+    /// The total duration of the motion in seconds.
+    /// </param>
+    /// <param name="easing">
+    /// Optional easing function that determines interpolation over time.
+    /// If null, the motion is linear.
+    /// </param>
+    /// <param name="snapEpsilon">
+    /// The distance threshold (in PositionSpace units) at which the motion will snap to the goal and stop.
+    /// </param>
+    public void MoveBy(Vector2 delta, float durationSec, Func<float, float>? easing = null, float snapEpsilon = 0.5f)
+    {
+        var goal = _mover.GetPosition() + delta;
+        MoveTo(goal, durationSec, easing, snapEpsilon);   // delegate to existing tween
+    }
+
+    /// <summary>
+    /// Scripted relative motion by a delta over a fixed duration using an easing preset.
+    /// </summary>
+    /// <param name="delta">
+    /// The offset by which to move, relative to the mover’s current position.
+    /// Units are in the mover’s PositionSpace (grid cells or pixels).
+    /// </param>
+    /// <param name="durationSec">
+    /// The total duration of the motion in seconds.
+    /// </param>
+    /// <param name="easingKind">
+    /// The predefined easing curve (e.g., EaseInOutQuad, EaseOutCubic) to apply during the motion.
+    /// </param>
+    /// <param name="snapEpsilon">
+    /// The distance threshold (in PositionSpace units) at which the motion will snap to the goal and stop.
+    /// </param>
+    public void MoveBy(Vector2 delta, float durationSec, EasingKind easingKind, float snapEpsilon = 0.5f)
+    {
+        var goal = _mover.GetPosition() + delta;
+        MoveTo(goal, durationSec, easingKind, snapEpsilon); // overload
+    }
+
+    /// <summary>
+    /// Scripted relative motion by a delta at a constant speed (units/sec in the mover's PositionSpace).
+    /// </summary>
+    /// <param name="delta">
+    /// The offset by which to move, relative to the mover’s current position.
+    /// Units are in the mover’s PositionSpace (grid cells or pixels).
+    /// </param>
+    /// <param name="speedPerSec">
+    /// The speed of movement in PositionSpace units per second (e.g., pixels/sec or tiles/sec).
+    /// </param>
+    /// <param name="snapEpsilon">
+    /// The distance threshold (in PositionSpace units) at which the motion will snap to the goal and stop.
+    /// </param>
+    public void MoveBy(Vector2 delta, float speedPerSec, float snapEpsilon = 0.5f)
+    {
+        var goal = _mover.GetPosition() + delta;
+        MoveToward(goal, MathF.Max(0f, speedPerSec), snapEpsilon); // delegate to Toward
+    }
+
+    /// <summary>
     /// Begins a scripted motion toward the <paramref name="target"/> position at a constant speed.
     /// Unlike <see cref="MoveTo(Vector2, float, Func{float, float}?, float)"/>, this motion continues each frame
     /// until the target is reached or cancelled, rather than running for a fixed duration.

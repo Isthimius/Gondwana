@@ -94,14 +94,14 @@ public sealed partial class MovementController : IDisposable
 
     /// <summary>
     /// Enables or disables horizontal world wrapping.
-    /// When enabled, movement crossing the left/right edges wraps to the opposite side.
+    /// When enabled, movement crossing the left/right edges wraps the IMovable to the opposite side.
     /// </summary>
     /// <param name="enabled"><see langword="true"/> to enable horizontal wraparound; otherwise <see langword="false"/>.</param>
     public void SetWrapX(bool enabled) => _state.WrapX = enabled;
 
     /// <summary>
     /// Enables or disables vertical world wrapping.
-    /// When enabled, movement crossing the top/bottom edges wraps to the opposite side.
+    /// When enabled, movement crossing the top/bottom edges wraps the IMovable to the opposite side.
     /// </summary>
     /// <param name="enabled"><see langword="true"/> to enable vertical wraparound; otherwise <see langword="false"/>.</param>
     public void SetWrapY(bool enabled) => _state.WrapY = enabled;

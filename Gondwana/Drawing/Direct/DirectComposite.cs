@@ -100,9 +100,6 @@ public class DirectComposite : IDirectDrawable, IMovable
         return this;
     }
 
-    /// <summary>Move the composite anchor by a pixel delta and reposition all children.</summary>
-    public DirectComposite MoveBy(float dx, float dy) => SetPosition(_anchor.X + dx, _anchor.Y + dy);
-
     /// <summary>Set the composite anchor in pixels and reposition all children from their stored local offsets.</summary>
     public DirectComposite SetPosition(float x, float y)
     {
