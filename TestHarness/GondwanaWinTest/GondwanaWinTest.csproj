@@ -44,20 +44,5 @@
     <Content Include="resources\smooth.wmv" />
     <Content Include="resources\systems.wav" />
     <Content Include="resources\tsunami-worldpropagation2004.mpeg" />
-    <Content Include="XMLFile2.xml" />
-    <Content Include="XMLFile1.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
 </Project>
