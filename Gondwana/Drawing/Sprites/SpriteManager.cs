@@ -6,24 +6,13 @@ namespace Gondwana.Drawing.Sprites;
 
 public static class SpriteManager
 {
-    internal static List<Sprite> _spriteList = new List<Sprite>();
+    internal readonly static List<Sprite> _spriteList = new List<Sprite>();
 
-    static SpriteManager()
-    {
-    }
+    static SpriteManager() { }
 
-    public static ReadOnlyCollection<Sprite> AllSprites
-    {
-        get { return _spriteList.AsReadOnly(); }
-    }
+    public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
 
-    private static bool _sizeNewSpriteToParentGrid = true;
-
-    public static bool SizeNewSpritesToParentGrid
-    {
-        get { return _sizeNewSpriteToParentGrid; }
-        set { _sizeNewSpriteToParentGrid = value; }
-    }
+    public static bool SizeNewSpritesToParentGrid { get; set; } = true;
 
     #region public methods
 
@@ -33,11 +22,10 @@ public static class SpriteManager
         return sprite;
     }
 
-    public static Sprite CreateSprite(SceneLayer matrix, Frame frame, string ID)
+    public static Sprite CreateSprite(SceneLayer matrix, Frame frame, string id)
     {
         Sprite sprite = CreateSprite(matrix, frame);
-        if (sprite != null)
-            sprite.ID = ID;
+        sprite.ID = id;
 
         return sprite;
     }
@@ -54,9 +42,9 @@ public static class SpriteManager
         return newSprite;
     }
 
-    public static Sprite CloneSprite(string ID, SceneLayer destMatrix)
+    public static Sprite? CloneSprite(string ID, SceneLayer destMatrix)
     {
-        Sprite sprite = GetSpriteByID(ID);
+        Sprite? sprite = GetSpriteByID(ID);
         if (sprite != null)
             return CloneSprite(sprite, destMatrix);
 
@@ -71,7 +59,7 @@ public static class SpriteManager
 
     public static void Remove(string ID)
     {
-        Sprite sprite = GetSpriteByID(ID);
+        Sprite? sprite = GetSpriteByID(ID);
         if (sprite != null)
             Remove(sprite);
     }
@@ -121,12 +109,7 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer grid)
-    {
-        return GetSpritesInRange(range, grid, false);
-    }
-
-    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer grid, bool fullEnclosures)
+    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer grid, bool fullEnclosures = false)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
