@@ -53,10 +53,10 @@ public partial class Form1 : Form
         Engine.Instance.Configuration.TargetFPS = 60;
 
         _particleSurface = new ParticleSurface(renderSurface, new Rectangle(0, 0, adapter.Width, adapter.Height), 10000);
-        //_particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
-        //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
         _particleSurface.Emitters.Add(GetRain(adapter.Width));
-        //_particleSurface.Emitters.Add(GetSnow(adapter.Width));
+        _particleSurface.Emitters.Add(GetSnow(adapter.Width));
         _particleSurface.Emitters.Add(GetSmoke(adapter.Width, adapter.Height));
 
         //_particleSurface.FadeOut(15f);
@@ -94,7 +94,8 @@ public partial class Form1 : Form
         //.FadeOut(10f);
         //glowBox.Movement.MoveTo(new Vector2(glowBox.Bounds.Left, glowBox.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
 
-        composite.Movement.MoveTo(new Vector2(composite.Bounds.Left, composite.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
+        //composite.Movement.MoveTo(new Vector2(composite.Bounds.Left, composite.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
+        composite.Movement.MoveBy(new Vector2(0, -500), 10f, EasingFunctions.EaseInOutQuad);
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
