@@ -82,6 +82,7 @@ public class TextBlock : DirectDrawingMovableBase
     private float _timeSec;
 
     // --- Text reveal animation ---
+    private long _revealLastTick;
     private TextRevealMode _textRevealMode = TextRevealMode.None;
     private int _revealCharCount;        // how many chars currently visible
     private int _revealTargetCharCount;  // cap (usually Text.Length)
@@ -91,6 +92,11 @@ public class TextBlock : DirectDrawingMovableBase
     // precomputed for word-based reveal
     private int[]? _wordEndCharIndexes;    // end indexes (exclusive) per word
     private int _wordIndex;             // words shown so far
+
+    // Punctuation pause tuning
+    private bool _pauseEnabled = true;
+    private float _pauseLongSec = 0.25f;
+    private float _pauseShortSec = 0.10f;
 
     // current resolved color used for drawing (defaults to _foreColor)
     private SKColor _resolvedForeColor;
@@ -109,6 +115,27 @@ public class TextBlock : DirectDrawingMovableBase
     {
         _text = text ?? string.Empty;
         _layoutDirty = true;
+
+        if (_textRevealMode == TextRevealMode.None)
+        {
+            // when not revealing, default to fully visible
+            _revealCharCount = _text.Length;
+        }
+        else
+        {
+            // keep the animation’s target in sync with the new text
+            _revealTargetCharCount = _text.Length;
+
+            // if we had already revealed more than the new length, clamp it
+            if (_revealCharCount > _revealTargetCharCount)
+                _revealCharCount = _revealTargetCharCount;
+
+            // optional: smooth start after text swap
+            _revealAccum = 0f;
+            // if you added a dedicated reveal timer, warm it so first frame doesn't "time-warp"
+            _revealLastTick = 0;   // keep this if you’re using the separate reveal timer
+        }
+
         ForceRefresh();
         return this;
     }
@@ -230,7 +257,11 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
-    public TextBlock StartTypewriter(float charsPerSecond, int? maxChars = null)
+    public TextBlock StartTypewriter(float charsPerSecond,
+                                     int? maxChars = null,
+                                     bool enablePauses = true,
+                                     float longPauseSec = 0.25f,
+                                     float shortPauseSec = 0.10f)
     {
         _textRevealMode = TextRevealMode.CharactersPerSecond;
         _revealRate = MathF.Max(0f, charsPerSecond);
@@ -238,11 +269,22 @@ public class TextBlock : DirectDrawingMovableBase
         _revealTargetCharCount = maxChars.HasValue ? Math.Min(maxChars.Value, _text.Length) : _text.Length;
         _revealAccum = 0f;
         _wordEndCharIndexes = null;
+
+        _revealLastTick = 0;
+
+        // punctuation tuning
+        _pauseEnabled = enablePauses;
+        _pauseLongSec = longPauseSec;
+        _pauseShortSec = shortPauseSec;
+
         ForceRefresh();
         return this;
     }
 
-    public TextBlock StartWordReveal(float wordsPerSecond)
+    public TextBlock StartWordReveal(float wordsPerSecond,
+                                     bool enablePauses = true,
+                                     float longPauseSec = 0.25f,
+                                     float shortPauseSec = 0.10f)
     {
         _textRevealMode = TextRevealMode.WordsPerSecond;
         _revealRate = MathF.Max(0f, wordsPerSecond);
@@ -256,7 +298,22 @@ public class TextBlock : DirectDrawingMovableBase
         _wordEndCharIndexes = Regex.Matches(_text, @"\S+\s*")
                                    .Select(m => m.Index + m.Length)
                                    .ToArray();
+
+        _revealLastTick = 0;
+
+        _pauseEnabled = enablePauses;
+        _pauseLongSec = longPauseSec;
+        _pauseShortSec = shortPauseSec;
+
         ForceRefresh();
+        return this;
+    }
+
+    public TextBlock SetPunctuationPauses(bool enabled, float longPauseSec = 0.25f, float shortPauseSec = 0.10f)
+    {
+        _pauseEnabled = enabled;
+        _pauseLongSec = longPauseSec;
+        _pauseShortSec = shortPauseSec;
         return this;
     }
 
@@ -277,28 +334,32 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
-    static float PauseFor(char c, float longPause = 0.25f, float shortPause = 0.10f) => c switch
+    private float PauseFor(char c)
     {
-        '.' or '!' or '?' => longPause,
-        ',' or ';' or ':' => shortPause,
-        _ => 0f
-    };
+        if (!_pauseEnabled) return 0f;
+
+        return c switch
+        {
+            '.' or '!' or '?' => _pauseLongSec,
+            ',' or ';' or ':' => _pauseShortSec,
+            _ => 0f
+        };
+    }
 
     public override void Update(long tick)
     {
         if (tick == _lastTick)
             return;
 
+        // --- PULSE TIMING (independent) ---
+        float dtPulse = 0f;
+        if (_pulseLastTick.HasValue)
+            dtPulse = HighResTimer.GetDuration(_pulseLastTick.Value, tick);
+
         _pulseLastTick = tick;
 
-        float dt = HighResTimer.GetDuration(_lastTick, tick);
-
-        // time accumulation (same timer model as your particles)
-        if (_pulseLastTick is { } last)
-        {
-            if (dt > 0f && dt < 1f)
-                _timeSec += dt;
-        }
+        if (dtPulse > 0f && dtPulse < 1f)
+            _timeSec += dtPulse;
 
         if (_pulseTextEnabled)
         {
@@ -320,10 +381,26 @@ public class TextBlock : DirectDrawingMovableBase
             }
         }
 
+        // --- REVEAL TIMING (independent and clamped) ---
+        float dtReveal = 0f;
+        if (_revealLastTick == 0)
+        {
+            _revealLastTick = tick;           // warm up: first frame uses 0 dt
+        }
+        else
+        {
+            dtReveal = HighResTimer.GetDuration(_revealLastTick, tick);
+            _revealLastTick = tick;
+
+            // Clamp to avoid first-frame "time warp" completing the whole text
+            if (dtReveal > 0.1f) dtReveal = 0.1f;   // ~100ms/frame cap
+            if (dtReveal < 0f) dtReveal = 0f;
+        }
+
         // --- Typewriter / word reveal ---
         if (_textRevealMode == TextRevealMode.CharactersPerSecond)
         {
-            _revealAccum += dt;
+            _revealAccum += dtReveal;
             if (_revealRate > 0f)
             {
                 int step = (int)(_revealAccum * _revealRate);
@@ -348,7 +425,7 @@ public class TextBlock : DirectDrawingMovableBase
         }
         else if (_textRevealMode == TextRevealMode.WordsPerSecond && _wordEndCharIndexes is not null)
         {
-            _revealAccum += dt;
+            _revealAccum += dtReveal;
             if (_revealRate > 0f)
             {
                 int step = (int)(_revealAccum * _revealRate);
@@ -361,7 +438,7 @@ public class TextBlock : DirectDrawingMovableBase
                     _wordIndex = Math.Min(_wordIndex + step, _wordEndCharIndexes.Length);
                     _revealCharCount = _wordIndex == 0 ? 0 : _wordEndCharIndexes[_wordIndex - 1];
 
-                    // Simple frontier pause (cheap). If you prefer, loop oldCount.._revealCharCount-1.
+                    // Simple frontier pause (cheap). Loop oldCount.._revealCharCount-1 if you want per-char.
                     if (_revealCharCount > 0)
                         _revealAccum -= PauseFor(_text[_revealCharCount - 1]);
 
@@ -374,6 +451,7 @@ public class TextBlock : DirectDrawingMovableBase
             }
         }
 
+        // Let the base advance fade tween and set _lastTick
         base.Update(tick);
     }
 
@@ -426,7 +504,7 @@ public class TextBlock : DirectDrawingMovableBase
         }
 
         // Determine how many characters are currently visible (content-driven reveal)
-        int visibleChars = (_textRevealMode != TextRevealMode.None || _revealCharCount < _text.Length)
+        int visibleChars = _textRevealMode != TextRevealMode.None
             ? Math.Clamp(_revealCharCount, 0, _text.Length)
             : _text.Length;
 

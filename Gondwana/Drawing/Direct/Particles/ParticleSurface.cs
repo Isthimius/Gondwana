@@ -75,7 +75,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     private readonly Random _rng = new();
     private readonly SKPaint _paint = new() { IsAntialias = true };
     private int _alive;
-    private long? _particlesLastTick;
+    private long _particlesLastTick = 0;
 
     // If you want textured particles, supply a tilesheet frame and draw bitmap quads instead of circles.
     private readonly SKBitmap? _particleSprite;
@@ -214,7 +214,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             ArrayPool<Particle>.Shared.Return(_particles, clearArray: true);
             _paint.Dispose();
             _alive = 0;
-            _particlesLastTick = null;
+            _particlesLastTick = 0;
         }
         base.Dispose(disposing);
     }
@@ -225,20 +225,16 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// <param name="tick">Current tick from <see cref="HighResTimer"/>.</param>
     public override void Update(long tick)
     {
-        base.Update(tick);
+        if (tick <= _lastTick)
+            return;
 
         // Compute dt from ticks (seconds)
-        float dt;
-        if (_particlesLastTick is { } last)
-        {
-            long deltaTicks = tick - last;
-            if (deltaTicks < 0) deltaTicks = 0; // guard against clock reset
-            dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
-        }
-        else
-        {
-            dt = 0f; // first frame
-        }
+        float dt = 0f;
+
+        // no previous tick assume first frame, so skip dt-based updates
+        if (_particlesLastTick > 0)
+            dt = HighResTimer.GetDuration(_particlesLastTick, tick);
+
         _particlesLastTick = tick;
 
         // (A) per-emitter motion
@@ -302,6 +298,8 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
         _alive = write;
 
         ForceRefresh();
+
+        base.Update(tick);
     }
 
     /// <summary>

@@ -42,7 +42,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     // ---------------------------------------------------------------------
     public override void Update(long tick)
     {
-        if (tick == _lastTick)
+        if (tick <= _lastTick)
             return;
 
         // 1) clamp giant stalls (alt-tab, debugger break, GC, etc.)

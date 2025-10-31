@@ -201,7 +201,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         var scene = RenderSurfaceHost.Scene;
 
         if (scene?.Count > 0)
-            scene[0].RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
+            scene[0]!.RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
 
         _dirty = true;
     }
@@ -213,7 +213,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// <param name="tick">Current engine tick from <see cref="HighResTimer"/>.</param>
     public virtual void Update(long tick)
     {
-        if (tick == _lastTick)
+        if (tick <= _lastTick)
             return;
 
         // Advance fade tween
@@ -264,12 +264,11 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         // Compute reveal clip rect (in pixel space) from Bounds
         // If fully revealed, skip the whole clip branch.
         bool useClip = _revealT < 0.999f;
-        SKRect clipRect = default;
 
         if (useClip)
         {
             var r = new SKRect(_bounds.Left, _bounds.Top, _bounds.Right, _bounds.Bottom);
-            clipRect = _revealDir switch
+            SKRect clipRect = _revealDir switch
             {
                 RevealDirection.LeftToRight => new SKRect(r.Left, r.Top, r.Left + r.Width * _revealT, r.Bottom),
                 RevealDirection.RightToLeft => new SKRect(r.Right - r.Width * _revealT, r.Top, r.Right, r.Bottom),

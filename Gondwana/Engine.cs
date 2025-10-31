@@ -194,7 +194,6 @@ public sealed class Engine : IDisposable
 
     #endregion events
 
-
     private Engine()
     { }
 

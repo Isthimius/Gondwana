@@ -2,7 +2,6 @@
 using Gondwana.Skia;
 using Gondwana.Timers;
 using SkiaSharp;
-using System;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 
@@ -70,7 +69,7 @@ public class DirectRectangle : DirectDrawingMovableBase
     private PulseWave _pulseBorderWave = PulseWave.Sine;
 
     // --- Time keeping for Update(tick) ---
-    private long? _pulseLastTick;
+    private long _pulseLastTick = 0;
     private float _timeSec; // accumulated seconds
 
     public DirectRectangle(
@@ -306,16 +305,19 @@ public class DirectRectangle : DirectDrawingMovableBase
 
     public override void Update(long tick)
     {
-        base.Update(tick);
+        if (tick <= _lastTick)
+            return;
 
-        if (_pulseLastTick is { } last)
+        // Compute dt from ticks (seconds)
+        float dt = 0f;
+
+        // no previous tick assume first frame, so skip dt-based updates
+        if (_pulseLastTick > 0)
         {
-            long deltaTicks = tick - last;
-            if (deltaTicks < 0) deltaTicks = 0; // guard against clock reset
-            float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
-
-            if (dt > 0f && dt < 1f) _timeSec += dt; // clamp outliers
+            dt = HighResTimer.GetDuration(_pulseLastTick, tick);
+            _timeSec += dt;
         }
+
         _pulseLastTick = tick;
 
         bool changed = false;
@@ -344,13 +346,16 @@ public class DirectRectangle : DirectDrawingMovableBase
             _needsRebuildPaints = false;    // we already set paints directly
             ForceRefresh();                 // request redraw
         }
+
+        base.Update(tick);
     }
 
     protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
 
-        if (_needsRebuildPaints) RebuildPaints();
+        if (_needsRebuildPaints)
+            RebuildPaints();
 
         var fillRect = Bounds.ToSKRect();
         var strokeRect = fillRect;
@@ -481,10 +486,12 @@ public class DirectRectangle : DirectDrawingMovableBase
     private static SKColor LerpColor(SKColor a, SKColor b, float t01)
     {
         t01 = Math.Clamp(t01, 0f, 1f);
+
         byte r = (byte)(a.Red + (b.Red - a.Red) * t01);
         byte g = (byte)(a.Green + (b.Green - a.Green) * t01);
         byte bch = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte aA = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
+        
         return new SKColor(r, g, bch, aA);
     }
 }

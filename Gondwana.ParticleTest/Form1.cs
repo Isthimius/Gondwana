@@ -46,7 +46,7 @@ public partial class Form1 : Form
                 .AppendLine($" There are {_particleSurface?.ActiveParticleCount ?? 0} active particles!!!")
                 .AppendLine(cps.ToString());
 
-            _textBlock?.SetText(sb.ToString());
+            _textBlock?.SetText(sb.ToString()).StartWordReveal(5);
         };
 
         Engine.Instance.Start();
@@ -70,8 +70,8 @@ public partial class Form1 : Form
             .SetStrokeWidth(6f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
             .PulseBorder(Color.Lime, Color.Red, 2.0f)
-            .SetBlendMode(SKBlendMode.Screen)
-            .PulseFill(Color.Blue, Color.Purple, 1.25f);
+            .SetBlendMode(SKBlendMode.Screen);
+            //.PulseFill(Color.Blue, Color.Purple, 1.25f);
 
         glowBox.ZOrder = 1;
 
@@ -81,10 +81,11 @@ public partial class Form1 : Form
             .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)
             .EnableWrapping()
             .SetMaxLines(6)
-            .PulseColor(Color.Red, Color.White, 1.75f)
+            //.PulseColor(Color.Red, Color.White, 1.75f)
             .UseShadow()
             .SetShadow(6, 6, 200, 3.0f)
-            .UseOutline();
+            .UseOutline()
+            .StartTypewriter(5);
 
         _textBlock.ZOrder = 10;
 
