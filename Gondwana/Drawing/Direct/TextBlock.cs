@@ -1,9 +1,10 @@
-using System.Drawing;
-using System.Runtime.CompilerServices;
 using Gondwana.Rendering;
 using Gondwana.Skia;
 using Gondwana.Timers;
 using SkiaSharp;
+using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -79,6 +80,17 @@ public class TextBlock : DirectDrawingMovableBase
     // timing
     private long? _pulseLastTick;
     private float _timeSec;
+
+    // --- Text reveal animation ---
+    private TextRevealMode _textRevealMode = TextRevealMode.None;
+    private int _revealCharCount;        // how many chars currently visible
+    private int _revealTargetCharCount;  // cap (usually Text.Length)
+    private float _revealRate;             // cps or wps (depending on mode)
+    private float _revealAccum;            // accumulator for dt-based stepping
+
+    // precomputed for word-based reveal
+    private int[]? _wordEndCharIndexes;    // end indexes (exclusive) per word
+    private int _wordIndex;             // words shown so far
 
     // current resolved color used for drawing (defaults to _foreColor)
     private SKColor _resolvedForeColor;
@@ -218,22 +230,75 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    public TextBlock StartTypewriter(float charsPerSecond, int? maxChars = null)
+    {
+        _textRevealMode = TextRevealMode.CharactersPerSecond;
+        _revealRate = MathF.Max(0f, charsPerSecond);
+        _revealCharCount = 0;
+        _revealTargetCharCount = maxChars.HasValue ? Math.Min(maxChars.Value, _text.Length) : _text.Length;
+        _revealAccum = 0f;
+        _wordEndCharIndexes = null;
+        ForceRefresh();
+        return this;
+    }
+
+    public TextBlock StartWordReveal(float wordsPerSecond)
+    {
+        _textRevealMode = TextRevealMode.WordsPerSecond;
+        _revealRate = MathF.Max(0f, wordsPerSecond);
+        _revealCharCount = 0;
+        _revealTargetCharCount = _text.Length;
+        _revealAccum = 0f;
+        _wordIndex = 0;
+
+        // split words once; keep trailing punctuation with the word so it reveals naturally
+        // You can refine this regex to match your localization needs.
+        _wordEndCharIndexes = Regex.Matches(_text, @"\S+\s*")
+                                   .Select(m => m.Index + m.Length)
+                                   .ToArray();
+        ForceRefresh();
+        return this;
+    }
+
+    public TextBlock RevealSetCount(int charCount)
+    {
+        _textRevealMode = TextRevealMode.ManualCount;
+        _revealCharCount = Math.Clamp(charCount, 0, _text.Length);
+        _revealTargetCharCount = _text.Length;
+        ForceRefresh();
+        return this;
+    }
+
+    public TextBlock RevealStop()
+    {
+        _textRevealMode = TextRevealMode.None;
+        _revealCharCount = _text.Length;
+        ForceRefresh();
+        return this;
+    }
+
+    static float PauseFor(char c, float longPause = 0.25f, float shortPause = 0.10f) => c switch
+    {
+        '.' or '!' or '?' => longPause,
+        ',' or ';' or ':' => shortPause,
+        _ => 0f
+    };
+
     public override void Update(long tick)
     {
-        base.Update(tick);
+        if (tick == _lastTick)
+            return;
+
+        _pulseLastTick = tick;
+
+        float dt = HighResTimer.GetDuration(_lastTick, tick);
 
         // time accumulation (same timer model as your particles)
         if (_pulseLastTick is { } last)
         {
-            long deltaTicks = tick - last;
-            if (deltaTicks < 0)
-                deltaTicks = 0;
-
-            float dt = (float)(deltaTicks / (double)HighResTimer.TicksPerSecond);
             if (dt > 0f && dt < 1f)
                 _timeSec += dt;
         }
-        _pulseLastTick = tick;
 
         if (_pulseTextEnabled)
         {
@@ -254,6 +319,41 @@ public class TextBlock : DirectDrawingMovableBase
                 ForceRefresh();
             }
         }
+
+        // get dt in seconds the same way you do elsewhere (HighResTimer or stored lastTick) :contentReference[oaicite:1]{index=1}
+        if (_textRevealMode == TextRevealMode.CharactersPerSecond)
+        {
+            _revealAccum += dt;
+            if (_revealRate > 0f)
+            {
+                int step = (int)(_revealAccum * _revealRate);
+                if (step > 0)
+                {
+                    _revealAccum -= step / _revealRate;
+                    _revealCharCount = Math.Min(_revealCharCount + step, _revealTargetCharCount);
+                    _dirty = true;
+                    if (_revealCharCount >= _revealTargetCharCount) _textRevealMode = TextRevealMode.None;
+                }
+            }
+        }
+        else if (_textRevealMode == TextRevealMode.WordsPerSecond && _wordEndCharIndexes is not null)
+        {
+            _revealAccum += dt;
+            if (_revealRate > 0f)
+            {
+                int step = (int)(_revealAccum * _revealRate);
+                if (step > 0)
+                {
+                    _revealAccum -= step / _revealRate;
+                    _wordIndex = Math.Min(_wordIndex + step, _wordEndCharIndexes.Length);
+                    _revealCharCount = _wordIndex == 0 ? 0 : _wordEndCharIndexes[_wordIndex - 1];
+                    _dirty = true;
+                    if (_wordIndex >= _wordEndCharIndexes.Length) _textRevealMode = TextRevealMode.None;
+                }
+            }
+        }
+
+        base.Update(tick);
     }
 
     protected internal override void Draw()
@@ -427,5 +527,13 @@ public class TextBlock : DirectDrawingMovableBase
         byte bl = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte al = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
         return new SKColor(r, g, bl, al);
+    }
+
+    public enum TextRevealMode
+    {
+        None,
+        CharactersPerSecond,
+        WordsPerSecond,
+        ManualCount
     }
 }

@@ -19,6 +19,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
     private bool _disposed = false;
 
+
     // Fade/opacity state
     private float _opacity = 1f;                 // 0..1
     private float _fadeFrom, _fadeTo;
@@ -26,6 +27,17 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     private bool _isFading;
 
     public bool HideWhenFullyTransparent { get; set; } = true;
+
+
+    // Reveal state
+    private float _revealT = 1f;                 // 0 = hidden, 1 = fully shown
+    private RevealDirection _revealDir = RevealDirection.LeftToRight;
+
+    // optional tween state
+    private bool _revealAnimating;
+    private float _revealElapsedSec, _revealDurationSec;
+    private Func<float, float>? _revealEasing;
+    private float _revealStart = 1f, _revealTarget = 1f;
 
     /// <summary>
     /// Render the drawable to the current backbuffer.
@@ -154,9 +166,35 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         return this;
     }
 
+    public DirectDrawingBase SetReveal(float t01)
+    {
+        _revealT = Math.Clamp(t01, 0f, 1f);
+        ForceRefresh();
+        return this;
+    }
+
+    public DirectDrawingBase SetRevealDirection(RevealDirection dir)
+    {
+        _revealDir = dir;
+        ForceRefresh();
+        return this;
+    }
+
+    public DirectDrawingBase RevealTo(float t01, float durationSec, Func<float, float>? easing = null)
+    {
+        _revealAnimating = true;
+        _revealElapsedSec = 0f;
+        _revealDurationSec = Math.Max(0.0001f, durationSec);
+        _revealEasing = easing;
+        // target is t01; we’ll lerp in Update
+        _revealTarget = Math.Clamp(t01, 0f, 1f);
+        _revealStart = _revealT;
+        return this;
+    }
+
     /// <summary>
-    /// Marke the current DirectDrawing as dirty, forcing a redraw on the next RenderAll().
-    /// Also adds overlapping area on the <see cref="RenderSurfaceHost.DrawSource"> to the RefreshQueue.
+    /// Mark the current DirectDrawing as dirty, forcing a redraw on the next RenderAll().
+    /// Also adds overlapping area on the <see cref="RenderSurfaceHost.DrawSource" /> to the RefreshQueue.
     /// </summary>
     protected internal void ForceRefresh()
     {
@@ -200,6 +238,19 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             }
         }
 
+        // Advance reveal tween
+        if (_revealAnimating)
+        {
+            float dt = HighResTimer.GetDuration(_lastTick, tick);
+            _revealElapsedSec = Math.Min(_revealElapsedSec + dt, _revealDurationSec);
+            float u = _revealElapsedSec / _revealDurationSec;
+            _revealT = (_revealEasing is null ? u : _revealEasing(u));
+            _revealT = _revealStart + (_revealTarget - _revealStart) * _revealT;
+
+            _dirty = true;
+            if (_revealElapsedSec >= _revealDurationSec) _revealAnimating = false;
+        }
+
         _lastTick = tick;
     }
 
@@ -208,20 +259,47 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         if (!IsVisible)
             return;
 
-        // Fast path if fully opaque
+        var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
+
+        // Compute reveal clip rect (in pixel space) from Bounds
+        // If fully revealed, skip the whole clip branch.
+        bool useClip = _revealT < 0.999f;
+        SKRect clipRect = default;
+
+        if (useClip)
+        {
+            var r = new SKRect(_bounds.Left, _bounds.Top, _bounds.Right, _bounds.Bottom);
+            clipRect = _revealDir switch
+            {
+                RevealDirection.LeftToRight => new SKRect(r.Left, r.Top, r.Left + r.Width * _revealT, r.Bottom),
+                RevealDirection.RightToLeft => new SKRect(r.Right - r.Width * _revealT, r.Top, r.Right, r.Bottom),
+                RevealDirection.TopToBottom => new SKRect(r.Left, r.Top, r.Right, r.Top + r.Height * _revealT),
+                RevealDirection.BottomToTop => new SKRect(r.Left, r.Bottom - r.Height * _revealT, r.Right, r.Bottom),
+                _ => r
+            };
+
+            // Early-out: if clip is empty, no need to draw at all.
+            if (clipRect.Width <= 0f || clipRect.Height <= 0f)
+                return;
+
+            canvas.Save();
+            canvas.ClipRect(clipRect, SKClipOperation.Intersect, antialias: false);
+        }
+
         if (_opacity >= 0.999f)
         {
             Draw();
-            return;
+        }
+        else
+        {
+            using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
+            canvas.SaveLayer(layerPaint);
+            Draw();
+            canvas.Restore(); // end SaveLayer
         }
 
-        var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
-
-        // SaveLayer with alpha
-        using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
-        canvas.SaveLayer(layerPaint);
-        Draw();
-        canvas.Restore();
+        if (useClip)
+            canvas.Restore(); // end Clip Save
     }
 
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
@@ -271,4 +349,12 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
 
     #endregion Equality & Operators
+
+    public enum RevealDirection
+    {
+        LeftToRight,
+        RightToLeft,
+        TopToBottom,
+        BottomToTop
+    }
 }
