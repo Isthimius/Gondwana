@@ -119,7 +119,9 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     // IMovable (pixel space only)
     public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
+    
     public Vector2 GetPosition() => new(_anchor.X, _anchor.Y);
+
     public void SetPosition(Vector2 pos) => SetPosition(pos.X, pos.Y);
 
     // Bounding box = union of visible children (unchanged)
@@ -156,7 +158,7 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     public string Name { get; private set; }
 
-    public int ZOrder => throw new NotImplementedException();
+    public int ZOrder => 0;
 
     public void Update(long tick)
     {
@@ -165,12 +167,53 @@ public class DirectComposite : IDirectDrawable, IMovable
     }
 
     // Group ops passthroughs
-    public DirectComposite SetZOrder(int z) { foreach (var c in _children) c.ZOrder = z; return this; }
-    public DirectComposite SetOpacity(float opacity) { foreach (var c in _children) c.Opacity = opacity; return this; }
-    public DirectComposite FadeTo(float targetOpacity, float durationSec) { foreach (var c in _children) c.FadeTo(targetOpacity, durationSec); return this; }
-    public DirectComposite FadeIn(float durationSec) { foreach (var c in _children) c.FadeIn(durationSec); return this; }
-    public DirectComposite FadeOut(float durationSec) { foreach (var c in _children) c.FadeOut(durationSec); return this; }
-    public DirectComposite SetIsVisible(bool visible) { foreach (var c in _children) c.IsVisible = visible; return this; }
+    public DirectComposite SetZOrder(int z)
+    {
+        foreach (var c in _children)
+            c.ZOrder = z;
+        
+        return this;
+    }
+
+    public DirectComposite SetOpacity(float opacity)
+    {
+        foreach (var c in _children)
+            c.Opacity = opacity;
+        
+        return this;
+    }
+
+    public DirectComposite FadeTo(float targetOpacity, float durationSec)
+    {
+        foreach (var c in _children)
+            c.FadeTo(targetOpacity, durationSec);
+        
+        return this;
+    }
+
+    public DirectComposite FadeIn(float durationSec)
+    {
+        foreach (var c in _children)
+            c.FadeIn(durationSec);
+        
+        return this;
+    }
+
+    public DirectComposite FadeOut(float durationSec)
+    {
+        foreach (var c in _children)
+            c.FadeOut(durationSec);
+        
+        return this;
+    }
+
+    public DirectComposite SetIsVisible(bool visible)
+    {
+        foreach (var c in _children)
+            c.IsVisible = visible;
+
+        return this;
+    }
 
     public void Dispose()
     {
