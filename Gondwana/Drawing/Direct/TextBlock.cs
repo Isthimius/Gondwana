@@ -320,7 +320,7 @@ public class TextBlock : DirectDrawingMovableBase
             }
         }
 
-        // get dt in seconds the same way you do elsewhere (HighResTimer or stored lastTick) :contentReference[oaicite:1]{index=1}
+        // --- Typewriter / word reveal ---
         if (_textRevealMode == TextRevealMode.CharactersPerSecond)
         {
             _revealAccum += dt;
@@ -330,9 +330,19 @@ public class TextBlock : DirectDrawingMovableBase
                 if (step > 0)
                 {
                     _revealAccum -= step / _revealRate;
+
+                    int old = _revealCharCount;
                     _revealCharCount = Math.Min(_revealCharCount + step, _revealTargetCharCount);
+
+                    // Punctuation pauses for newly revealed chars
+                    for (int i = old; i < _revealCharCount; i++)
+                        _revealAccum -= PauseFor(_text[i]);
+
                     _dirty = true;
-                    if (_revealCharCount >= _revealTargetCharCount) _textRevealMode = TextRevealMode.None;
+                    ForceRefresh();
+
+                    if (_revealCharCount >= _revealTargetCharCount)
+                        _textRevealMode = TextRevealMode.None;
                 }
             }
         }
@@ -345,10 +355,21 @@ public class TextBlock : DirectDrawingMovableBase
                 if (step > 0)
                 {
                     _revealAccum -= step / _revealRate;
+
+                    int oldCount = _revealCharCount;
+
                     _wordIndex = Math.Min(_wordIndex + step, _wordEndCharIndexes.Length);
                     _revealCharCount = _wordIndex == 0 ? 0 : _wordEndCharIndexes[_wordIndex - 1];
+
+                    // Simple frontier pause (cheap). If you prefer, loop oldCount.._revealCharCount-1.
+                    if (_revealCharCount > 0)
+                        _revealAccum -= PauseFor(_text[_revealCharCount - 1]);
+
                     _dirty = true;
-                    if (_wordIndex >= _wordEndCharIndexes.Length) _textRevealMode = TextRevealMode.None;
+                    ForceRefresh();
+
+                    if (_wordIndex >= _wordEndCharIndexes.Length)
+                        _textRevealMode = TextRevealMode.None;
                 }
             }
         }
@@ -376,7 +397,7 @@ public class TextBlock : DirectDrawingMovableBase
         {
             Typeface = _typeface ?? SKTypeface.Default,
             TextSize = _fontSize,
-            Color = _resolvedForeColor,   // <<< use resolved color
+            Color = _resolvedForeColor,   // resolved (pulsed) color
             IsAntialias = true,
             IsStroke = false,
             TextAlign = _hAlign
@@ -404,16 +425,52 @@ public class TextBlock : DirectDrawingMovableBase
             break;
         }
 
-        // Vertical start (remember: Skia draws at baseline, so apply ascent shift)
+        // Determine how many characters are currently visible (content-driven reveal)
+        int visibleChars = (_textRevealMode != TextRevealMode.None || _revealCharCount < _text.Length)
+            ? Math.Clamp(_revealCharCount, 0, _text.Length)
+            : _text.Length;
+
+        // Build the set of lines to draw from the already-laid-out _lines,
+        // truncating at 'visibleChars' so wrapping and alignment still work.
+        List<string> drawLines = new List<string>(_lines.Count);
+        if (visibleChars <= 0)
+        {
+            // nothing to show
+        }
+        else if (visibleChars >= _text.Length)
+        {
+            drawLines.AddRange(_lines);
+        }
+        else
+        {
+            int remaining = visibleChars;
+            foreach (var ln in _lines)
+            {
+                if (remaining <= 0) break;
+                if (ln.Length <= remaining)
+                {
+                    drawLines.Add(ln);
+                    remaining -= ln.Length;
+                }
+                else
+                {
+                    drawLines.Add(ln.Substring(0, remaining));
+                    remaining = 0;
+                }
+            }
+        }
+
+        // Apply max-lines cap at draw time
+        int linesToDraw = _maxLines.HasValue ? Math.Min(drawLines.Count, _maxLines.Value) : drawLines.Count;
+
+        // Vertical start (Skia draws at baseline, so apply ascent shift)
         var fm = paint.FontMetrics;
         float baselineShift = -fm.Ascent;
 
-        int linesToDraw = _maxLines.HasValue ? Math.Min(_lines.Count, _maxLines.Value) : _lines.Count;
         float contentH = linesToDraw * _lineHeight;
-
         float yStart = _vAlign switch
         {
-            VerticalAlign.Center => rect.Top + VerticalPadding + (innerH - contentH) * 0.5f,
+            VerticalAlign.Center => rect.Top + VerticalPadding + Math.Max(0, (innerH - contentH) * 0.5f),
             VerticalAlign.Bottom => rect.Bottom - VerticalPadding - contentH,
             _ => rect.Top + VerticalPadding
         };
@@ -426,7 +483,7 @@ public class TextBlock : DirectDrawingMovableBase
         float y = yStart;
         for (int i = 0; i < linesToDraw; i++)
         {
-            var line = _lines[i];
+            var line = drawLines[i];
             float x = _hAlign switch
             {
                 SKTextAlign.Center => xAnchorCenter,
@@ -456,6 +513,7 @@ public class TextBlock : DirectDrawingMovableBase
 
             canvas.DrawText(line, x, y + baselineShift, paint);
             y += _lineHeight;
+
             if (y > rect.Bottom) break; // safety clip
         }
     }
