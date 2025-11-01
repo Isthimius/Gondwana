@@ -9,13 +9,13 @@ using System.Text.RegularExpressions;
 namespace Gondwana.Drawing.Direct;
 
 /// <summary>
-/// A retained-mode text drawable with wrapping, multi-line (\\n) support, horizontal/vertical
+/// A retained-mode text drawable with wrapping, multi-line (\n) support, horizontal/vertical
 /// alignment, padding, optional shadow/outline effects, and auto-shrink to fit.
 /// </summary>
 /// <remarks>
 /// <para>
 /// <c>TextBlock</c> caches a line layout derived from the current text, font, bounds, and
-/// wrapping settings, and only rebuilds when any of those change. Newlines (<c>\\n</c>) are
+/// wrapping settings, and only rebuilds when any of those change. Newlines (<c>\n</c>) are
 /// respected as hard breaks; long lines wrap to the available width when wrapping is enabled.
 /// </para>
 /// <para>
@@ -28,7 +28,7 @@ namespace Gondwana.Drawing.Direct;
 /// <example>
 /// // Centered, wrapped headline with shadow and outline
 /// var headline = new TextBlock(surface, new Rectangle(0, 0, 640, 140))
-///     .SetText("Gondwana welcomes you\\n— render boldly.")
+///     .SetText("Gondwana welcomes you\n— render boldly.")
 ///     .SetFont(SKTypeface.Default, 28f, minSize: 16f)
 ///     .SetColors(SKColors.White, SKColors.Transparent)
 ///     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
@@ -39,10 +39,16 @@ namespace Gondwana.Drawing.Direct;
 /// </example>
 public class TextBlock : DirectDrawingMovableBase
 {
+    /// <summary>
+    /// Vertical alignment options for multi-line text within the control's bounds.
+    /// </summary>
     public enum VerticalAlign
     {
+        /// <summary>Align text to the top of the inner content area.</summary>
         Top,
+        /// <summary>Center text vertically within the inner content area.</summary>
         Center,
+        /// <summary>Align text to the bottom of the inner content area.</summary>
         Bottom
     }
 
@@ -100,16 +106,39 @@ public class TextBlock : DirectDrawingMovableBase
     // current resolved color used for drawing (defaults to _foreColor)
     private SKColor _resolvedForeColor;
 
+    /// <summary>
+    /// Creates a new <see cref="TextBlock"/> bound to a render surface and rectangle.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The target render surface host responsible for drawing.</param>
+    /// <param name="bounds">The outer bounds (in pixels) where the text will be laid out and rendered.</param>
     public TextBlock(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
         : base(renderSurfaceHost, bounds)
     {
         _resolvedForeColor = _foreColor;
     }
 
+    /// <summary>
+    /// Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing).
+    /// </summary>
     public float LineSpacingMultiplier { get; set; } = 1.0f;
+
+    /// <summary>
+    /// Gets or sets the horizontal padding (in pixels) on both left and right sides of the text.
+    /// </summary>
     public float HorizontalPadding { get; set; } = 0f;
+
+    /// <summary>
+    /// Gets or sets the vertical padding (in pixels) on both top and bottom sides of the text.
+    /// </summary>
     public float VerticalPadding { get; set; } = 0f;
 
+    /// <summary>
+    /// Sets the current text content and rebuilds layout as needed.
+    /// If no reveal animation is active, the text is shown fully.
+    /// If a reveal animation is active, the target length is synced to the new text.
+    /// </summary>
+    /// <param name="text">The new text to display (null is treated as an empty string).</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock SetText(string text)
     {
         _text = text ?? string.Empty;
@@ -139,6 +168,13 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Sets the font face and size (and optional minimum size for auto-shrink).
+    /// </summary>
+    /// <param name="typeface">Typeface to use; defaults to <see cref="SKTypeface.Default"/> if null.</param>
+    /// <param name="size">Requested font size in pixels.</param>
+    /// <param name="minSize">Optional minimum size for auto-shrink; if set, layout will step down to fit height.</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock SetFont(SKTypeface typeface, float size, float? minSize = null)
     {
         _typeface = typeface;
@@ -149,6 +185,12 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Sets the foreground (text) and background colors using Skia colors.
+    /// </summary>
+    /// <param name="fg">Text color.</param>
+    /// <param name="bg">Background color (drawn as a solid rect if alpha &gt; 0).</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock SetColors(SKColor fg, SKColor bg)
     {
         _foreColor = fg;
@@ -158,8 +200,20 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Sets the foreground (text) and background colors using System.Drawing colors.
+    /// </summary>
+    /// <param name="fg">Text color.</param>
+    /// <param name="bg">Background color (drawn as a solid rect if alpha &gt; 0).</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock SetColors(Color fg, Color bg) => SetColors(fg.ToSKColor(), bg.ToSKColor());
 
+    /// <summary>
+    /// Sets the horizontal and vertical alignment used when drawing the laid-out lines within the bounds.
+    /// </summary>
+    /// <param name="h">Horizontal alignment (Left, Center, Right).</param>
+    /// <param name="v">Vertical alignment (Top, Center, Bottom).</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock SetAlignment(SKTextAlign h, VerticalAlign v)
     {
         _hAlign = h;
@@ -168,6 +222,11 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Enables or disables drawing a drop shadow behind the text (parameters are configured via <see cref="SetShadow(float, float, byte, float)"/>).
+    /// </summary>
+    /// <param name="enable">True to enable the shadow; false to disable.</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock UseShadow(bool enable = true)
     {
         _useShadow = enable;
@@ -208,6 +267,11 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Enables or disables a 1-pixel outline stroke around the text glyphs.
+    /// </summary>
+    /// <param name="enable">True to enable an outline; false to disable.</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock UseOutline(bool enable = true)
     {
         _useOutline = enable;
@@ -215,6 +279,11 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Enables or disables word wrapping when laying out paragraphs.
+    /// </summary>
+    /// <param name="enable">True to wrap text to the available width; false to keep each paragraph on one line.</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock EnableWrapping(bool enable = true)
     {
         _wrapText = enable;
@@ -223,6 +292,11 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Sets a maximum number of lines to draw. If null, all laid-out lines are drawn.
+    /// </summary>
+    /// <param name="maxLines">Maximum visible lines, or null for no limit.</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock SetMaxLines(int? maxLines)
     {
         _maxLines = maxLines;
@@ -233,6 +307,12 @@ public class TextBlock : DirectDrawingMovableBase
     /// <summary>
     /// Animates the text color between <paramref name="from"/> and <paramref name="to"/> over <paramref name="periodSec"/> seconds.
     /// </summary>
+    /// <param name="from">Starting text color.</param>
+    /// <param name="to">Ending text color.</param>
+    /// <param name="periodSec">Time in seconds for one full pulse cycle.</param>
+    /// <param name="enabled">True to enable pulsing; false to disable.</param>
+    /// <param name="triangle">True to use a triangle waveform; otherwise a sine wave is used.</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock PulseColor(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
     {
         _pulseTextEnabled = enabled;
@@ -247,7 +327,10 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
-    /// <summary>Stops text color pulsing and restores the base text color.</summary>
+    /// <summary>
+    /// Stops text color pulsing and restores the base foreground color.
+    /// </summary>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock StopColorPulse()
     {
         _pulseTextEnabled = false;
@@ -256,6 +339,15 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Begins a character-by-character reveal (typewriter effect).
+    /// </summary>
+    /// <param name="charsPerSecond">Characters per second to reveal.</param>
+    /// <param name="maxChars">Optional cap on total characters to reveal; defaults to the full text length.</param>
+    /// <param name="enablePauses">True to add punctuation pauses during reveal; false for uniform pacing.</param>
+    /// <param name="longPauseSec">Pause added after '.', '!', or '?' characters (seconds).</param>
+    /// <param name="shortPauseSec">Pause added after ',', ';', or ':' characters (seconds).</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock StartTypewriter(float charsPerSecond,
                                      int? maxChars = null,
                                      bool enablePauses = true,
@@ -280,6 +372,14 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Begins a word-by-word reveal. Words are detected by <c>\S+\s*</c> and include their trailing whitespace/punctuation.
+    /// </summary>
+    /// <param name="wordsPerSecond">Words per second to reveal.</param>
+    /// <param name="enablePauses">True to add punctuation pauses during reveal; false for uniform pacing.</param>
+    /// <param name="longPauseSec">Pause added after '.', '!', or '?' characters (seconds).</param>
+    /// <param name="shortPauseSec">Pause added after ',', ';', or ':' characters (seconds).</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock StartWordReveal(float wordsPerSecond,
                                      bool enablePauses = true,
                                      float longPauseSec = 0.25f,
@@ -308,6 +408,13 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Configures punctuation pause behavior used by the current or next reveal animation.
+    /// </summary>
+    /// <param name="enabled">True to enable punctuation pauses; false to disable.</param>
+    /// <param name="longPauseSec">Pause after '.', '!', or '?' (seconds).</param>
+    /// <param name="shortPauseSec">Pause after ',', ';', or ':' (seconds).</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock SetPunctuationPauses(bool enabled, float longPauseSec = 0.25f, float shortPauseSec = 0.10f)
     {
         _pauseEnabled = enabled;
@@ -316,6 +423,11 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Sets the currently revealed character count directly (manual mode).
+    /// </summary>
+    /// <param name="charCount">The number of characters (from the start of the text) to show.</param>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock RevealSetCount(int charCount)
     {
         _textRevealMode = TextRevealMode.ManualCount;
@@ -325,6 +437,10 @@ public class TextBlock : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Stops any active reveal animation and shows the full text immediately.
+    /// </summary>
+    /// <returns>The current <see cref="TextBlock"/> for chaining.</returns>
     public TextBlock RevealStop()
     {
         _textRevealMode = TextRevealMode.None;
@@ -345,6 +461,11 @@ public class TextBlock : DirectDrawingMovableBase
         };
     }
 
+    /// <summary>
+    /// Advances internal animations (pulse, typewriter/word reveal) based on the current tick, and
+    /// then allows the base class to progress fade and bookkeeping. Called once per frame.
+    /// </summary>
+    /// <param name="tick">High-resolution tick value for this frame.</param>
     public override void Update(long tick)
     {
         if (tick == _lastTick)
@@ -666,49 +787,118 @@ public class TextBlock : DirectDrawingMovableBase
 
     #region public readonly properties
 
+    /// <summary>Gets the current raw text content.</summary>
     public string Text => _text;
+
+    /// <summary>Gets the laid-out lines (after wrapping and paragraph processing).</summary>
     public List<string> Lines => _lines;
+
+    /// <summary>Gets the measured line height (in pixels) used for drawing.</summary>
     public float LineHeight => _lineHeight;
+
+    /// <summary>Gets the configured foreground (text) color.</summary>
     public SKColor ForeColor => _foreColor;
+
+    /// <summary>Gets the configured background color.</summary>
     public SKColor BackColor => _backColor;
+
+    /// <summary>Gets the requested font size (before any auto-shrink adjustments).</summary>
     public float FontSize => _fontSize;
+
+    /// <summary>Gets the optional minimum font size used by auto-shrink (or null if disabled).</summary>
     public float? MinFontSize => _minFontSize;
+
+    /// <summary>Gets the configured typeface (or null to use <see cref="SKTypeface.Default"/>).</summary>
     public SKTypeface? TypeFace => _typeface;
+
+    /// <summary>Gets a value indicating whether an outline stroke is enabled.</summary>
     public bool OutlineEnabled => _useOutline;
+
+    /// <summary>Gets a value indicating whether word wrapping is enabled.</summary>
     public bool WrapText => _wrapText;
+
+    /// <summary>Gets the optional maximum number of lines to draw (or null for no limit).</summary>
     public int? MaxLines => _maxLines;
+
+    /// <summary>Gets a value indicating whether a drop shadow is enabled.</summary>
     public bool ShadowEnabled => _useShadow;
+
+    /// <summary>Gets the horizontal shadow offset (in pixels).</summary>
     public float ShadowDx => _shadowDx;
+
+    /// <summary>Gets the vertical shadow offset (in pixels).</summary>
     public float ShadowDy => _shadowDy;
+
+    /// <summary>Gets the shadow opacity (0–255).</summary>
     public byte ShadowAlpha => _shadowAlpha;
+
+    /// <summary>Gets the blur radius for the shadow (sigma, in pixels).</summary>
     public float ShadowBlurSigma => _shadowBlurSigma;
+
+    /// <summary>Gets the horizontal alignment used when drawing lines.</summary>
     public SKTextAlign AlignHoriz => _hAlign;
+
+    /// <summary>Gets the vertical alignment used when drawing lines.</summary>
     public VerticalAlign AlignVert => _vAlign;
+
+    /// <summary>Gets a value indicating whether color pulsing is enabled.</summary>
     public bool PulseTextEnabled => _pulseTextEnabled;
+
+    /// <summary>Gets the starting color for the pulse effect.</summary>
     public SKColor PulseFrom => _pulseFrom;
+
+    /// <summary>Gets the ending color for the pulse effect.</summary>
     public SKColor PulseTo => _pulseTo;
+
+    /// <summary>Gets the pulse period in seconds.</summary>
     public float PulsePeriodSec => _pulsePeriodSec;
+
+    /// <summary>Gets the pulse waveform currently in use.</summary>
     public PulseWave PulseWaveValue => _pulseWave;
+
+    /// <summary>Gets the active text reveal mode.</summary>
     public TextRevealMode TextRevealModeValue => _textRevealMode;
+
+    /// <summary>Gets the configured reveal rate (characters/sec or words/sec depending on mode).</summary>
     public float TextRevealRate => _revealRate;
+
+    /// <summary>Gets a value indicating whether punctuation pauses are enabled.</summary>
     public bool PuctuationPauseEnabled => _pauseEnabled;
+
+    /// <summary>Gets the long punctuation pause duration (seconds) used for '.', '!', '?'.</summary>
     public float PunctiationPauseLongSec => _pauseLongSec;
+
+    /// <summary>Gets the short punctuation pause duration (seconds) used for ',', ';', ':'.</summary>
     public float PunctiationPauseShortSec => _pauseShortSec;
+
+    /// <summary>Gets the currently resolved (effective) foreground color used for drawing.</summary>
     public SKColor ResovedForeColor => _resolvedForeColor;
 
     #endregion public readonly properties
 
+    /// <summary>
+    /// Selects the waveform used by <see cref="PulseColor(Color, Color, float, bool, bool)"/>.
+    /// </summary>
     public enum PulseWave
     {
+        /// <summary>Sine wave: smooth continuous pulse between colors.</summary>
         Sine,
+        /// <summary>Triangle wave: linear fade-in/out between colors.</summary>
         Triangle
     }
 
+    /// <summary>
+    /// Describes the mode used for revealing text over time.
+    /// </summary>
     public enum TextRevealMode
     {
+        /// <summary>No reveal is active; all text is shown.</summary>
         None,
+        /// <summary>Reveal advances by characters per second.</summary>
         CharactersPerSecond,
+        /// <summary>Reveal advances by words per second.</summary>
         WordsPerSecond,
+        /// <summary>Reveal amount is controlled directly via <see cref="RevealSetCount(int)"/>.</summary>
         ManualCount
     }
 }
