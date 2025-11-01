@@ -46,7 +46,7 @@ public partial class Form1 : Form
                 .AppendLine($" There are {_particleSurface?.ActiveParticleCount ?? 0} active particles!!!")
                 .AppendLine(cps.ToString());
 
-            _textBlock?.SetText(sb.ToString()).StartWordReveal(5);
+            _textBlock?.SetText(sb.ToString());     //.StartWordReveal(5);
         };
 
         Engine.Instance.Start();
@@ -84,8 +84,8 @@ public partial class Form1 : Form
             //.PulseColor(Color.Red, Color.White, 1.75f)
             .UseShadow()
             .SetShadow(6, 6, 200, 3.0f)
-            .UseOutline()
-            .StartTypewriter(5);
+            .UseOutline();
+            //.StartTypewriter(5);
 
         _textBlock.ZOrder = 10;
 
@@ -96,7 +96,7 @@ public partial class Form1 : Form
         //glowBox.Movement.MoveTo(new Vector2(glowBox.Bounds.Left, glowBox.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
 
         //composite.Movement.MoveTo(new Vector2(composite.Bounds.Left, composite.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
-        composite.Movement.MoveBy(new Vector2(0, -500), 10f, EasingFunctions.EaseInOutQuad);
+        //composite.Movement.MoveBy(new Vector2(0, -500), 10f, EasingFunctions.EaseInOutQuad);
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)

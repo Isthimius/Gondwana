@@ -74,7 +74,6 @@ public class TextBlock : DirectDrawingMovableBase
     private bool _pulseTextEnabled;
     private SKColor _pulseFrom, _pulseTo;
     private float _pulsePeriodSec = 1f;
-    private enum PulseWave { Sine, Triangle }
     private PulseWave _pulseWave = PulseWave.Sine;
 
     // timing
@@ -663,6 +662,46 @@ public class TextBlock : DirectDrawingMovableBase
         byte bl = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte al = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
         return new SKColor(r, g, bl, al);
+    }
+
+    #region public readonly properties
+
+    public string Text => _text;
+    public List<string> Lines => _lines;
+    public float LineHeight => _lineHeight;
+    public SKColor ForeColor => _foreColor;
+    public SKColor BackColor => _backColor;
+    public float FontSize => _fontSize;
+    public float? MinFontSize => _minFontSize;
+    public SKTypeface? TypeFace => _typeface;
+    public bool OutlineEnabled => _useOutline;
+    public bool WrapText => _wrapText;
+    public int? MaxLines => _maxLines;
+    public bool ShadowEnabled => _useShadow;
+    public float ShadowDx => _shadowDx;
+    public float ShadowDy => _shadowDy;
+    public byte ShadowAlpha => _shadowAlpha;
+    public float ShadowBlurSigma => _shadowBlurSigma;
+    public SKTextAlign AlignHoriz => _hAlign;
+    public VerticalAlign AlignVert => _vAlign;
+    public bool PulseTextEnabled => _pulseTextEnabled;
+    public SKColor PulseFrom => _pulseFrom;
+    public SKColor PulseTo => _pulseTo;
+    public float PulsePeriodSec => _pulsePeriodSec;
+    public PulseWave PulseWaveValue => _pulseWave;
+    public TextRevealMode TextRevealModeValue => _textRevealMode;
+    public float TextRevealRate => _revealRate;
+    public bool PuctuationPauseEnabled => _pauseEnabled;
+    public float PunctiationPauseLongSec => _pauseLongSec;
+    public float PunctiationPauseShortSec => _pauseShortSec;
+    public SKColor ResovedForeColor => _resolvedForeColor;
+
+    #endregion public readonly properties
+
+    public enum PulseWave
+    {
+        Sine,
+        Triangle
     }
 
     public enum TextRevealMode
