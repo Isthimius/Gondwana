@@ -410,7 +410,7 @@ public class DirectRectangle : DirectDrawingMovableBase
             _strokePaint.IsAntialias = false;
             _strokePaint.BlendMode = SKBlendMode.Src;
 
-            // If pulsing, keep color from Update();
+            // If pulsing, keep color from Update(),
             // else use base border color (or previous).
             var strokeColor = _pulseBorderEnabled ? _strokePaint.Color
                                                   : (_borderColor ?? prevColor);

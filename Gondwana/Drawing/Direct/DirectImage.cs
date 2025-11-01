@@ -24,9 +24,9 @@ public sealed class DirectImage : DirectDrawingMovableBase
         PixelPerfect // scale by integer factors only (min integer that fits)
     }
 
-    private SKImage? _image;          // primary storage
-    private SKBitmap? _bitmap;         // optional if provided instead of SKImage
-    private SKRect? _src;            // source sprite region (in image pixels)
+    private SKImage? _image;        // primary storage
+    private SKBitmap? _bitmap;      // optional if provided instead of SKImage
+    private SKRect? _src;           // source sprite region (in image pixels)
     private ScaleMode _scale = ScaleMode.Stretch;
 
     private readonly SKPaint _paint = new()
