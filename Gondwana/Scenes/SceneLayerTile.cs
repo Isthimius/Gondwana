@@ -71,7 +71,7 @@ public class SceneLayerTile : Tile
     public Point GridCoordinatesAbs => sceneLayerCoordinates;
 
     [JsonIgnore]
-    public override SceneLayer ParentGrid => parentSceneLayer;
+    public override SceneLayer SceneLayer => parentSceneLayer;
 
     [JsonProperty]
     public bool EnableAnimator

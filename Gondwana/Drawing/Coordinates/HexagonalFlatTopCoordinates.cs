@@ -75,8 +75,8 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
-        var p = GetAnchorPixelAtSceneLayerCoordinates(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.SceneLayerTileWidth; int H = tile.ParentGrid.SceneLayerTileHeight;
+        var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H); // hex image fits W x H box
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
@@ -96,7 +96,7 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
     {
         int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         bool even = (x & 1) == 0;
-        var m = gp.ParentGrid;
+        var m = gp.SceneLayer;
         return dir switch
         {
             CardinalDirections.E => m[x + 1, y],
@@ -113,7 +113,7 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        return HexPolygonFlatTop(tile.ParentGrid, (int)tile.GridCoordinates.X, (int)tile.GridCoordinates.Y, includeOverhang);
+        return HexPolygonFlatTop(tile.SceneLayer, (int)tile.GridCoordinates.X, (int)tile.GridCoordinates.Y, includeOverhang);
     }
 
     public PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound)

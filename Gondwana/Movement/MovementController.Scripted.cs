@@ -34,6 +34,8 @@ public sealed partial class MovementController
         // scripted motion overrides physics; zero them
         _state.Acceleration = Vector2.Zero;
         _state.Velocity = Vector2.Zero;
+
+        ScriptedMovementStarted?.Invoke(_state.Script);
     }
 
     /// <summary>
@@ -141,6 +143,8 @@ public sealed partial class MovementController
 
         _state.Acceleration = Vector2.Zero;
         _state.Velocity = Vector2.Zero;
+
+        ScriptedMovementStarted?.Invoke(_state.Script);
     }
 
     /// <summary>
@@ -150,7 +154,7 @@ public sealed partial class MovementController
     public void CancelScript()
     {
         if (IsScripted)
-            ScriptedMovementStopped?.Invoke();
+            ScriptedMovementStopped?.Invoke(_state.Script);
 
         _state.Script = default;
     }
@@ -200,9 +204,9 @@ public sealed partial class MovementController
         {
             _mover.SetPosition(_state.Script.Target);
             Step(0f);
-            _state.Script = default;
 
-            ScriptedMovementStopped?.Invoke();
+            ScriptedMovementStopped?.Invoke(_state.Script);
+            _state.Script = default;
         }
 
         return true;
@@ -220,9 +224,10 @@ public sealed partial class MovementController
             _state.Velocity = Vector2.Zero;
             _state.Acceleration = Vector2.Zero;
             Step(0f);
+
+            ScriptedMovementStopped?.Invoke(_state.Script);
             _state.Script = default;
 
-            ScriptedMovementStopped?.Invoke();
             return true;
         }
 
@@ -233,9 +238,10 @@ public sealed partial class MovementController
             _state.Velocity = Vector2.Zero;
             _state.Acceleration = Vector2.Zero;
             Step(0f);
+
+            ScriptedMovementStopped?.Invoke(_state.Script);
             _state.Script = default;
 
-            ScriptedMovementStopped?.Invoke();
             return true;
         }
 

@@ -58,8 +58,8 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
 
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.SceneLayerTileWidth; int H = tile.ParentGrid.SceneLayerTileHeight;
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
@@ -77,7 +77,7 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
 
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
-        var m = gp.ParentGrid; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
+        var m = gp.SceneLayer; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         return dir switch
         {
             CardinalDirections.N => m[x, y - 1],
@@ -94,8 +94,8 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.SceneLayerTileWidth; int H = tile.ParentGrid.SceneLayerTileHeight;
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
         var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
 
         return new[]

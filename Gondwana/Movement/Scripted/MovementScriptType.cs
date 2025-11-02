@@ -1,6 +1,6 @@
 ﻿namespace Gondwana.Movement.Scripted;
 
-internal enum MovementScriptType
+public enum MovementScriptType
 {
     None,
     TweenTo,

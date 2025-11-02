@@ -54,26 +54,9 @@ public class CompositeSprite
         _children.Remove(sprite);
     }
 
-    private void sprite_Disposing(SpriteDisposingEventArgs e)
+    private void sprite_Disposing(Sprite sprite)
     {
-        _children.Remove(e.sprite);
-    }
-
-    public Rectangle SetRangeLocation(Point newLocation)
-    {
-        Rectangle oldRange = Range;
-
-        int difX = newLocation.X - oldRange.Location.X;
-        int difY = newLocation.Y - oldRange.Location.Y;
-
-        foreach (var sprite in _children)
-        {
-            var drawRange = sprite.DrawLocation;
-            drawRange.Location = new Point(drawRange.X + difX, drawRange.Y + difY);
-            sprite.MoveSprite(drawRange);
-        }
-
-        return Range;
+        _children.Remove(sprite);
     }
 
     #endregion methods
@@ -81,10 +64,7 @@ public class CompositeSprite
     #region properties
 
     [JsonIgnore]
-    public ReadOnlyCollection<Sprite> Children
-    {
-        get { return _children.AsReadOnly(); }
-    }
+    public ReadOnlyCollection<Sprite> Children => _children.AsReadOnly();
 
     [JsonIgnore]
     public Rectangle Range

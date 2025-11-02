@@ -83,7 +83,7 @@ public sealed partial class MovementController
         var newPos = pos + _state.Velocity * dt;
 
         // optional wrapping if mover lives in Grid space
-        if (_mover.PositionSpace == CoordinateSpace.Grid && (_state.WrapX || _state.WrapY))
+        if (_mover.PositionSpace == CoordinateSpace.Grid && (WrapX || WrapY))
         {
             if (_coords is null || _sceneLayer is null)
                 throw new InvalidOperationException("Grid wrapping requires coordinates/layer.");

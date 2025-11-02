@@ -54,7 +54,7 @@ namespace Slider
                     Program.puzzle.Dispose();
 
                 Program.puzzle = new Puzzle(winFormBitmapRenderSurfaceControl1.RenderSurfaceHost, openFileBox.FileName, int.Parse(txtCol.Text), int.Parse(txtRow.Text), winFormBitmapRenderSurfaceControl1.Size);
-                Sprites_SpriteMovePointFinished(null);
+                //Sprites_SpriteMovePointFinished(null);
 
                 if (!Gondwana.Engine.Instance.IsRunning)
                 {
@@ -91,7 +91,7 @@ namespace Slider
                 {
                     List<Sprite> sprites = SpriteManager.GetSpritesAtPixel(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
                     if (sprites.Count != 0)
-                        Program.puzzle.SlidePiece(sprites[0], 0.15);
+                        Program.puzzle.SlidePiece(sprites[0], 0.15f);
                 }
             }
         }
@@ -107,11 +107,11 @@ namespace Slider
                 e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SampleTime.ToString("N2"));
         }
 
-        private void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
-        {
-            txtPieces.Text = Program.puzzle.TotalPieces.ToString();
-            txtCorrect.Text = Program.puzzle.TotalPiecesCorrect.ToString();
-        }
+        //private void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
+        //{
+        //    txtPieces.Text = Program.puzzle.TotalPieces.ToString();
+        //    txtCorrect.Text = Program.puzzle.TotalPiecesCorrect.ToString();
+        //}
 
         private void txtRow_Leave(object sender, EventArgs e)
         {
@@ -129,7 +129,7 @@ namespace Slider
             if (Program.puzzle != null && !Program.puzzle._isShuffling)
             {
                 int numberOfSlides = Program.puzzle.Rows * Program.puzzle.Columns * 3;
-                double slideTime = (double)15 / (double)numberOfSlides;
+                float slideTime = 15f / (float)numberOfSlides;
                 Program.puzzle.Shuffle(numberOfSlides, slideTime);
             }
         }

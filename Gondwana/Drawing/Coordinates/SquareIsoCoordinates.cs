@@ -62,10 +62,10 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         // Base rect (unchanged)
         var baseRect = new Rectangle
         {
-            X = (int)(tile.ParentGrid.SceneLayerTileWidth * tile.GridCoordinates.X) + tile.ParentGrid.SceneLayerTileZeroPixel.X,
-            Y = (int)(tile.ParentGrid.SceneLayerTileHeight * tile.GridCoordinates.Y) + tile.ParentGrid.SceneLayerTileZeroPixel.Y,
-            Width = tile.ParentGrid.SceneLayerTileWidth,
-            Height = tile.ParentGrid.SceneLayerTileHeight
+            X = (int)(tile.SceneLayer.SceneLayerTileWidth * tile.GridCoordinates.X) + tile.SceneLayer.SceneLayerTileZeroPixel.X,
+            Y = (int)(tile.SceneLayer.SceneLayerTileHeight * tile.GridCoordinates.Y) + tile.SceneLayer.SceneLayerTileZeroPixel.Y,
+            Width = tile.SceneLayer.SceneLayerTileWidth,
+            Height = tile.SceneLayer.SceneLayerTileHeight
         };
 
         // Apply full overhang (Left/Top/Right/Bottom)
@@ -87,7 +87,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
 
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile layerPoint, CardinalDirections direction)
     {
-        SceneLayer sceneLayer = layerPoint.ParentGrid;
+        SceneLayer sceneLayer = layerPoint.SceneLayer;
 
         switch (direction)
         {

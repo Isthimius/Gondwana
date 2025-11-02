@@ -2,8 +2,6 @@
 
 namespace Gondwana.Drawing.Sprites;
 
-public delegate void SpriteMovedEventHandler(SpriteMovedEventArgs e);
-
 public class SpriteMovedEventArgs : EventArgs
 {
     public Sprite sprite;

@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Movement.Scripted;
 using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
@@ -22,10 +23,16 @@ public sealed partial class MovementController : IDisposable
     private MovementState _state;
 
     /// <summary>
+    /// Raised when a scripted movement (tween or MoveToward) begins.
+    /// Subscribers are notified exactly once per script initialization.
+    /// </summary>
+    public event Action<ScriptedMovement>? ScriptedMovementStarted;
+
+    /// <summary>
     /// Raised when a scripted movement (tween or MoveToward) completes or is explicitly cancelled.
     /// Subscribers are notified exactly once per script termination.
     /// </summary>
-    public event Action? ScriptedMovementStopped;
+    public event Action<ScriptedMovement>? ScriptedMovementStopped;
 
     // Bind to one target + initial state. Optional layer when you need Grid↔Pixel & wrapping.
     internal MovementController(IMovable mover, MovementState initial, SceneLayer? layer = null)
@@ -95,16 +102,16 @@ public sealed partial class MovementController : IDisposable
     /// <summary>
     /// Enables or disables horizontal world wrapping.
     /// When enabled, movement crossing the left/right edges wraps the IMovable to the opposite side.
+    /// Only meaningful for Grid space; ignored for Pixel space.
     /// </summary>
-    /// <param name="enabled"><see langword="true"/> to enable horizontal wraparound; otherwise <see langword="false"/>.</param>
-    public void SetWrapX(bool enabled) => _state.WrapX = enabled;
+    public bool WrapX { get; internal set; } = false;
 
     /// <summary>
     /// Enables or disables vertical world wrapping.
     /// When enabled, movement crossing the top/bottom edges wraps the IMovable to the opposite side.
+    /// Only meaningful for Grid space; ignored for Pixel space.
     /// </summary>
-    /// <param name="enabled"><see langword="true"/> to enable vertical wraparound; otherwise <see langword="false"/>.</param>
-    public void SetWrapY(bool enabled) => _state.WrapY = enabled;
+    public bool WrapY { get; internal set; } = false;
 
     /// <summary>
     /// Immediately stops all forms of movement — follow, scripted, and integrated.
@@ -122,6 +129,7 @@ public sealed partial class MovementController : IDisposable
     /// </summary>
     public void Dispose()
     {
+        ScriptedMovementStarted = null;
         ScriptedMovementStopped = null;
     }
 }

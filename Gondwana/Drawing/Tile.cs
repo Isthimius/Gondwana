@@ -13,13 +13,11 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     public static List<Tile> TileCollisions { get; private set; }
     public static List<Tile> TilesAnimating { get; private set; }
-    public static List<Tile> TilesMoving { get; private set; }
 
     static Tile()
     {
         TileCollisions = new List<Tile>();
         TilesAnimating = new List<Tile>();
-        TilesMoving = new List<Tile>();
     }
 
     #endregion static members
@@ -50,7 +48,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     public abstract bool IsPositionFixed { get; }
     public abstract Rectangle DrawLocation { get; }
     public abstract PointF GridCoordinates { get; }
-    public abstract SceneLayer ParentGrid { get; }
+    public abstract SceneLayer SceneLayer { get; }
 
     #endregion abstract properties
 
@@ -73,7 +71,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             zOrder = value;
-            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
     }
 
@@ -84,7 +82,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             visible = value;
-            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
     }
 
@@ -96,7 +94,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         {
             // animation doesn't change Sprite size, so only add to refresh queue after
             frame = value;
-            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
     }
 
@@ -153,7 +151,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             enableFog = value;
-            ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
     }
 
@@ -164,7 +162,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     [JsonIgnore]
     public virtual Point[] OutlinePoints
     {
-        get { return ParentGrid.CoordinateSystem.GetPolygonPts(this, false); }
+        get { return SceneLayer.CoordinateSystem.GetPolygonPts(this, false); }
     }
 
     [JsonProperty]
@@ -216,9 +214,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
         if (TilesAnimating.IndexOf(this) != -1)
             TilesAnimating.Remove(this);
-
-        if (TilesMoving.IndexOf(this) != -1)
-            TilesMoving.Remove(this);
 
         // dispose any associate Animator instances
         if (animator != null)

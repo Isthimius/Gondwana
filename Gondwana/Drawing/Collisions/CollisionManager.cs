@@ -71,7 +71,7 @@ internal class CollisionManager
         foreach (Tile tile in secondaryList)
         {
             // only check for collisions if on same layer
-            if (tile.ParentGrid == primary.ParentGrid)
+            if (tile.SceneLayer == primary.SceneLayer)
             {
                 // Sprite can't collide with itself
                 if (tile != primary)

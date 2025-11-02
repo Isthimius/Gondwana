@@ -89,7 +89,7 @@ internal sealed class RefreshQueue : IDisposable
             // find all Sprite objects in range
             foreach (Sprite sprite in SpriteManager.GetSpritesInRange(area, _sceneLayer))
             {
-                if (sprite.ParentGrid == _sceneLayer && sprite.Visible)
+                if (sprite.SceneLayer == _sceneLayer && sprite.Visible)
                 {
                     if (sprite.DrawLocation.IntersectsWith(area))
                         tempTiles.Add(sprite);

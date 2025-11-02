@@ -70,9 +70,9 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         // Bounding box of the diamond anchored at top vertex
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.SceneLayerTileWidth;
-        int H = tile.ParentGrid.SceneLayerTileHeight;
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        int W = tile.SceneLayer.SceneLayerTileWidth;
+        int H = tile.SceneLayer.SceneLayerTileHeight;
 
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
@@ -91,7 +91,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
-        var m = gp.ParentGrid; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
+        var m = gp.SceneLayer; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         return dir switch
         {
             CardinalDirections.N => m[x, y - 1],
@@ -108,9 +108,9 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.ParentGrid, tile.GridCoordinates);
-        int W = tile.ParentGrid.SceneLayerTileWidth;
-        int H = tile.ParentGrid.SceneLayerTileHeight;
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        int W = tile.SceneLayer.SceneLayerTileWidth;
+        int H = tile.SceneLayer.SceneLayerTileHeight;
         var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
 
         // Diamond vertices (top, right, bottom, left)

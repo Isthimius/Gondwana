@@ -1,31 +1,25 @@
 using System.Drawing;
+using System.Numerics;
 using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
+using Gondwana.Movement;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Sprites;
 
 [JsonObject(IsReference = true)]
-public class Sprite : Tile, IDisposable, ICloneable
+public class Sprite : Tile, IMovableOnSceneLayer, ICloneable, IDisposable
 {
-    #region events
+    public event Action<SpriteMovedEventArgs>? SpriteMoved;
 
-    public event SpriteMovedEventHandler SpriteMoved;
-
-    public event SpriteDisposingEventHandler Disposing;
-
-    #endregion events
+    public event Action<Sprite>? Disposing;
 
     #region private / internal fields
 
-    protected internal Movement movement;
-    private string id;
+    [JsonProperty("SceneLayer")]
+    internal SceneLayer _sceneLayer;
 
-    [DataMember(Name = "ParentGrid")]
-    private SceneLayer parentGrid;
-
-    private bool pauseMovement;
     private HorizontalAlignment horizAlign;
     private VerticalAlignment vertAlign;
     private int nudgeX;
@@ -37,29 +31,30 @@ public class Sprite : Tile, IDisposable, ICloneable
 
     #region constructors / finalizer
 
-    protected internal Sprite(SceneLayer matrix, Frame frame)
+    protected internal Sprite(SceneLayer sceneLayer, Frame frame)
     {
-        id = Guid.NewGuid().ToString();
-        parentGrid = matrix;
+        if (sceneLayer == null)
+            throw new ArgumentNullException(nameof(sceneLayer), "Sprite must be attached to a SceneLayer.");
+
+        _sceneLayer = sceneLayer;
         animator = new Animator(this);
-        movement = new Movement(this);
         pauseAnimation = false;
-        pauseMovement = false;
         horizAlign = HorizontalAlignment.Center;
         vertAlign = VerticalAlignment.Bottom;
         nudgeX = 0;
         nudgeY = 0;
         CurrentFrame = frame;
 
-        if ((SpriteManager.SizeNewSpritesToParentGrid) && (parentGrid != null))
-            renderSize = new Size(parentGrid.SceneLayerTileWidth, parentGrid.SceneLayerTileHeight);
+        if (SpriteManager.SizeNewSpritesToSceneLayer)
+            renderSize = new Size(_sceneLayer.SceneLayerTileWidth, _sceneLayer.SceneLayerTileHeight);
         else
             renderSize = CurrentFrame.Tilesheet.TileSize;
 
         zOrder = 1;
 
-        if (parentGrid != null)
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+
+        Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
 
         SpriteManager._spriteList.Add(this);
     }
@@ -69,12 +64,10 @@ public class Sprite : Tile, IDisposable, ICloneable
     /// </summary>
     private Sprite(Sprite sprite)
     {
-        id = Guid.NewGuid().ToString();
         animator = new Animator(this);
-        movement = new Movement(this);
         SpriteManager._spriteList.Add(this);
 
-        parentGrid = sprite.parentGrid;
+        _sceneLayer = sprite._sceneLayer;
         frame = sprite.frame;
         DetectCollision = sprite.collisionDetection;
         horizAlign = sprite.horizAlign;
@@ -84,10 +77,12 @@ public class Sprite : Tile, IDisposable, ICloneable
         renderSize = sprite.renderSize;
         ZOrder = sprite.zOrder;
         visible = sprite.visible;
-        gridCoordinates = sprite.gridCoordinates;
+        gridCoordinates = sprite.GridCoordinates;
         AdjustCollisionArea = sprite.AdjustCollisionArea;
 
-        parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+        Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
+
+        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
     }
 
     ~Sprite()
@@ -99,17 +94,45 @@ public class Sprite : Tile, IDisposable, ICloneable
     private void OnDeserialized(StreamingContext context)
     {
         animator = new Animator(this);
-        movement = new Movement(this);
         pauseAnimation = false;
-        pauseMovement = false;
 
-        if (parentGrid != null)
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+        if (_sceneLayer != null)
+            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+
+        Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
 
         SpriteManager._spriteList.Add(this);
     }
 
     #endregion constructors / finalizer
+
+    #region IMovable Members
+
+    public CoordinateSpace PositionSpace => CoordinateSpace.Grid;
+
+    public Vector2 GetPosition() => new Vector2(gridCoordinates.X, gridCoordinates.Y);
+
+    public void SetPosition(Vector2 pos)
+    {
+        // capture the Sprite coordinates before the move
+        PointF oldCoord = gridCoordinates;
+        PointF newCoord = new PointF(pos.X, pos.Y);
+
+        // add to refresh queue before move, then move, then add to queue after move
+        if (_sceneLayer != null)
+        {
+            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+            gridCoordinates = newCoord;
+            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+        }
+        else
+            gridCoordinates = newCoord;
+
+        // raise the SpriteMoved event
+        SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, newCoord));
+    }
+
+    #endregion IMovable Members
 
     #region ICloneable Members
 
@@ -128,24 +151,10 @@ public class Sprite : Tile, IDisposable, ICloneable
     #region public properties
 
     [JsonProperty]
-    public string ID
-    {
-        get { return id; }
-        set { id = value; }
-    }
+    public string ID { get; set; } = Guid.NewGuid().ToString();
 
     [JsonIgnore]
-    public Movement SpriteMovement
-    {
-        get { return movement; }
-    }
-
-    [JsonIgnore]
-    public bool PauseMovement
-    {
-        get { return pauseMovement; }
-        set { pauseMovement = value; }
-    }
+    public MovementController Movement { get; private set; }
 
     [JsonProperty]
     public HorizontalAlignment HorizAlign
@@ -154,11 +163,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         set
         {
             // add to refresh queue before and after property change
-            if (parentGrid != null)
+            if (_sceneLayer != null)
             {
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
                 horizAlign = value;
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
             }
             else
                 horizAlign = value;
@@ -172,11 +181,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         set
         {
             // add to refresh queue before and after property change
-            if (parentGrid != null)
+            if (_sceneLayer != null)
             {
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
                 vertAlign = value;
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
             }
             else
                 vertAlign = value;
@@ -190,11 +199,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         set
         {
             // add to refresh queue before and after property change
-            if (parentGrid != null)
+            if (_sceneLayer != null)
             {
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
                 nudgeX = value;
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
             }
             else
                 nudgeX = value;
@@ -208,11 +217,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         set
         {
             // add to refresh queue before and after property change
-            if (parentGrid != null)
+            if (_sceneLayer != null)
             {
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
                 nudgeY = value;
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
             }
             else
                 nudgeY = value;
@@ -226,11 +235,11 @@ public class Sprite : Tile, IDisposable, ICloneable
         set
         {
             // add to refresh queue before and after property change
-            if (parentGrid != null)
+            if (_sceneLayer != null)
             {
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
                 renderSize = value;
-                parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+                _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
             }
             else
                 renderSize = value;
@@ -238,28 +247,16 @@ public class Sprite : Tile, IDisposable, ICloneable
     }
 
     [JsonIgnore]
-    public override Rectangle DrawLocation
-    {
-        get { return SpriteManager.GetDrawLocation(this, parentGrid, gridCoordinates, renderSize); }
-    }
+    public override Rectangle DrawLocation => SpriteManager.GetDrawLocation(this, _sceneLayer, gridCoordinates, renderSize);
 
     [JsonIgnore]
-    public override bool IsPositionFixed
-    {
-        get { return false; }
-    }
+    public override bool IsPositionFixed => false;
 
     [JsonIgnore]
-    public override PointF GridCoordinates
-    {
-        get { return gridCoordinates; }
-    }
+    public override PointF GridCoordinates => gridCoordinates;
 
     [JsonIgnore]
-    public override SceneLayer ParentGrid
-    {
-        get { return parentGrid; }
-    }
+    public override SceneLayer SceneLayer => _sceneLayer;
 
     [JsonProperty]
     public virtual new int ZOrder
@@ -276,120 +273,24 @@ public class Sprite : Tile, IDisposable, ICloneable
 
     #endregion public properties
 
-    #region public methods
-
-    public void MoveSprite(float X, float Y)
-    {
-        MoveSprite(new PointF(X, Y));
-    }
-
-    public void MoveSprite(double X, double Y)
-    {
-        MoveSprite(new PointF((float)X, (float)Y));
-    }
-
-    public void MoveSprite(PointF newGridCoordinates)
-    {
-        // capture the Sprite coordinates before the move
-        PointF oldCoord = gridCoordinates;
-
-        // add to refresh queue before move, then move, then add to queue after move
-        if (parentGrid != null)
-        {
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-            gridCoordinates = newGridCoordinates;
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-        }
-        else
-            gridCoordinates = newGridCoordinates;
-
-        // raise the SpriteMoved event
-        if (SpriteMoved != null)
-            SpriteMoved(new SpriteMovedEventArgs(this, oldCoord, newGridCoordinates));
-
-        // TODO: how to handle this now that Parent / ghost children removed?
-        if ((parentGrid.WrapHorizontally || parentGrid.WrapVertically))
-            WrapSpriteLocation();
-    }
-
-    public void MoveSprite(Rectangle newDrawLocation)
-    {
-        RenderSize = new Size(newDrawLocation.Size.Width, newDrawLocation.Size.Height);
-        MoveSprite(SpriteManager.GridCoordinates(this, parentGrid, newDrawLocation));
-    }
-
-    public void MoveSprite(SceneLayer newLayer)
-    {
-        Rectangle drawLoc = DrawLocation;
-
-        if (parentGrid != null)
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-
-        parentGrid = newLayer;
-        MoveSprite(drawLoc);
-    }
-
-    public void MoveSprite(SceneLayer newLayer, Size newSize)
-    {
-        MoveSprite(newLayer);
-        RenderSize = newSize;
-    }
-
-    #endregion public methods
-
-    #region private methods
-
-    private void WrapSpriteLocation()
-    {
-        // find the "wrapped" equivalent point of gridCoordinates
-        PointF wrappedPt = parentGrid.CoordinateSystem.FindEquivalentSceneLayerCoordinates(gridCoordinates,
-            parentGrid.GridColumnCount - 1, parentGrid.GridRowCount - 1);
-
-        PointF moveTo = gridCoordinates;
-        bool wrapped = false;
-
-        // if horizontal wrapping is turned on and X is outside of X range, wrap it
-        if (parentGrid.WrapHorizontally &&
-            ((gridCoordinates.X >= parentGrid.GridColumnCount) || (gridCoordinates.X < 0)))
-        {
-            moveTo.X = wrappedPt.X;
-            wrapped = true;
-        }
-
-        // if horizontal wrapping is turned on and Y is outside of Y range, wrap it
-        if (parentGrid.WrapVertically &&
-            ((gridCoordinates.Y >= parentGrid.GridRowCount) || (gridCoordinates.Y < 0)))
-        {
-            moveTo.Y = wrappedPt.Y;
-            wrapped = true;
-        }
-
-        // if we wrapped, move the Sprite
-        if (wrapped)
-            MoveSprite(moveTo);
-    }
-
-    #endregion private methods
-
     #region IDisposable Members
 
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
 
-        if (Disposing != null)
-            Disposing(new SpriteDisposingEventArgs(this));
+        Disposing?.Invoke(this);
 
         base.Dispose();
 
-        if (parentGrid != null)
+        if (_sceneLayer != null)
         {
-            parentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
             // just added Sprite and overhanging Tile objects to queue,
             // remove the actual Sprite from the queue since it will
             // no longer be available
-            parentGrid.RefreshQueue.Tiles.Remove(this);
+            _sceneLayer.RefreshQueue.Tiles.Remove(this);
         }
 
         if (SpriteManager._spriteList.IndexOf(this) != -1)

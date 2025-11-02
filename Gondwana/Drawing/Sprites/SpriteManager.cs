@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Drawing;
 using Gondwana.Scenes;
+using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -8,11 +9,13 @@ public static class SpriteManager
 {
     internal readonly static List<Sprite> _spriteList = new List<Sprite>();
 
+    private static long _lastTick = HighResTimer.GetCurrentTick();
+
     static SpriteManager() { }
 
     public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
 
-    public static bool SizeNewSpritesToParentGrid { get; set; } = true;
+    public static bool SizeNewSpritesToSceneLayer { get; set; } = true;
 
     #region public methods
 
@@ -30,13 +33,13 @@ public static class SpriteManager
         return sprite;
     }
 
-    public static Sprite CloneSprite(Sprite sprite, SceneLayer destMatrix)
+    public static Sprite CloneSprite(Sprite sprite, SceneLayer sceneLayer)
     {
         Sprite newSprite = (Sprite)sprite.Clone();
-        if (newSprite.ParentGrid != destMatrix)
+        if (newSprite.SceneLayer != sceneLayer)
         {
-            newSprite.MoveSprite(destMatrix);
-            newSprite.ParentGrid.RefreshQueue.AddPixelRangeToRefreshQueue(newSprite.DrawLocation, true);
+            newSprite._sceneLayer = sceneLayer;
+            newSprite.SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(newSprite.DrawLocation, true);
         }
 
         return newSprite;
@@ -115,7 +118,7 @@ public static class SpriteManager
 
         foreach (Sprite sprite in _spriteList)
         {
-            if (sprite.ParentGrid == grid)
+            if (sprite.SceneLayer == grid)
             {
                 // check if sprite in range
                 if (fullEnclosures)
@@ -155,7 +158,7 @@ public static class SpriteManager
         foreach (Sprite sprite in _spriteList)
         {
             // check if sprite at Point
-            if ((sprite.ParentGrid == grid) && (sprite.DrawLocation.Contains(pxlPt)))
+            if ((sprite.SceneLayer == grid) && (sprite.DrawLocation.Contains(pxlPt)))
                 retSprites.Add(sprite);
         }
 
@@ -292,24 +295,16 @@ public static class SpriteManager
         return grid.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(grid, drawLocation.Location);
     }
 
-    public static void MoveSprites(long tick)
+    internal static void MoveSprites(long tick)
     {
-        // advance MovePoints
-        for (int i = 0; i < Tile.TilesMoving.Count; i++)
-        {
-            Sprite sprite = Tile.TilesMoving[i] as Sprite;
-            if (sprite != null)
-                sprite.movement?.MoveNext(tick);
-        }
+        if (tick <= _lastTick)
+            return;
 
-        // move by velocity
-        foreach (Sprite sprite in _spriteList)
-        {
-            if ((sprite.movement.VelocityX != 0) || (sprite.movement.VelocityY != 0) ||
-                (sprite.movement.AccelerationX != 0) || (sprite.movement.AccelerationY != 0))
-                sprite.movement.AdjustPositionByVelocity(tick);
+        float duration = HighResTimer.GetDuration(_lastTick, tick);
 
-            sprite.movement._lastTick = tick;
+        foreach (var sprite in _spriteList)
+        {
+            sprite.Movement.AdvanceMovement(duration);
         }
     }
 

@@ -10,6 +10,8 @@ using Gondwana.Drawing.Tilesheets;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.Drawing.Coordinates;
+using System.Numerics;
+using Gondwana.Movement.Scripted;
 
 namespace Slider
 {
@@ -20,8 +22,8 @@ namespace Slider
         internal bool _spriteMoving = false;
         internal bool _isShuffling = false;
 
-        private SpriteMovementEventHandler delMoveStart;
-        private SpriteMovementEventHandler delMoveStop;
+        private Action<ScriptedMovement> delMoveStart;
+        private Action<ScriptedMovement> delMoveStop;
 
         private int numColumns;
         private int numRows;
@@ -70,8 +72,8 @@ namespace Slider
             renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Black;
             renderSurfaceHost.Bind(matrixes);
 
-            delMoveStart = new SpriteMovementEventHandler(Sprites_SpriteMovementStarted);
-            delMoveStop = new SpriteMovementEventHandler(Sprites_SpriteMovementStopped);
+            delMoveStart = Sprites_SpriteMovementStarted;
+            delMoveStop = Sprites_SpriteMovementStopped;
 
             InitializeSprites(tileWidth, tileHeight);
             slideSound = AudioResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
@@ -153,7 +155,7 @@ namespace Slider
 
         #region public methods
 
-        public bool SlidePiece(Sprite sprite, double slideTime)
+        public bool SlidePiece(Sprite sprite, float slideTime)
         {
             if (FindSpritesAdjToOpenSpace().IndexOf(sprite) == -1)
                 // sprite not eligible to move
@@ -164,7 +166,7 @@ namespace Slider
                 Point startPt = new Point((int)sprite.GridCoordinates.X, (int)sprite.GridCoordinates.Y);
 
                 // move the sprite to the open space
-                sprite.SpriteMovement.Start(slideTime, new PointF((float)openSpace.X, (float)openSpace.Y));
+                sprite.Movement.MoveTo(new Vector2(openSpace.X, openSpace.Y), slideTime, null , 0.1f);
 
                 // make the openSpace value equal to the original sprite starting point
                 openSpace = startPt;
@@ -175,11 +177,11 @@ namespace Slider
         }
 
         private int _totalMoves;
-        private double _slideTime;
+        private float _slideTime;
         private int _moveNumber;
         private Sprite _lastMoved;
 
-        public void Shuffle(int totalMoves, double slideTime)
+        public void Shuffle(int totalMoves, float slideTime)
         {
             _isShuffling = true;
             _totalMoves = totalMoves;
@@ -231,11 +233,11 @@ namespace Slider
                 {
                     Sprite sprite = SpriteManager.CreateSprite(matrixes[0], new Frame(tilesheet, x, y),
                         x.ToString() + "-" + y.ToString());
-                    sprite.MoveSprite((float)x, (float)y);
+                    sprite.SetPosition(new System.Numerics.Vector2((float)x, (float)y));
                     sprite.Visible = true;
 
-                    sprite.SpriteMovement.Started += delMoveStart;
-                    sprite.SpriteMovement.Stopped += delMoveStop;
+                    sprite.Movement.ScriptedMovementStarted += delMoveStart;
+                    sprite.Movement.ScriptedMovementStopped += delMoveStop;
                 }
             }
 
@@ -281,13 +283,13 @@ namespace Slider
 
         #region event handlers
 
-        private void Sprites_SpriteMovementStarted(SpriteMovementEventArgs e)
+        private void Sprites_SpriteMovementStarted(ScriptedMovement scriptedMovement)
         {
             _spriteMoving = true;
             slideSound.Play();
         }
 
-        private void Sprites_SpriteMovementStopped(SpriteMovementEventArgs e)
+        private void Sprites_SpriteMovementStopped(ScriptedMovement scriptedMovement)
         {
             _spriteMoving = false;
             slideSound.Stop();

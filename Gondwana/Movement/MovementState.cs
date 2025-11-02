@@ -36,19 +36,9 @@ public struct MovementState
     public float LinearDamping { get; internal set; }
 
     /// <summary>
-    /// Optional wrapping (only meaningful for Grid space; ignored for Pixel).
-    /// </summary>
-    public bool WrapX { get; internal set; }
-
-    /// <summary>
-    /// Optional wrapping (only meaningful for Grid space; ignored for Pixel).
-    /// </summary>
-    public bool WrapY { get; internal set; }
-
-    /// <summary>
     /// Gets a value indicating whether the object is in motion.
     /// </summary>
-    public bool HasMotion => Acceleration != Vector2.Zero || Velocity != Vector2.Zero;
+    public readonly bool HasMotion => Acceleration != Vector2.Zero || Velocity != Vector2.Zero;
 
     /// <summary>
     /// Active scripted movement command (TweenTo, Toward, etc.).
