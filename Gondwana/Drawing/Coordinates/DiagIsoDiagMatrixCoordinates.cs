@@ -58,7 +58,7 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
 
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
@@ -94,7 +94,7 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
         var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
 

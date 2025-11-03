@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Gondwana.Drawing.Sprites;
 
 [JsonObject(IsReference = true)]
-public class Sprite : Tile, IMovableOnSceneLayer, ICloneable, IDisposable
+public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 {
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
 
@@ -25,7 +25,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, ICloneable, IDisposable
     private int nudgeX;
     private int nudgeY;
     private Size renderSize;
-    private PointF gridCoordinates;
+    private PointF sceneLayerCoordinates;
 
     #endregion private / internal fields
 
@@ -62,7 +62,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, ICloneable, IDisposable
     /// <summary>
     /// Private constructor used when calling the Clone() method on a Sprite.
     /// </summary>
-    private Sprite(Sprite sprite)
+    internal Sprite(Sprite sprite)
     {
         animator = new Animator(this);
         SpriteManager._spriteList.Add(this);
@@ -77,7 +77,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, ICloneable, IDisposable
         renderSize = sprite.renderSize;
         ZOrder = sprite.zOrder;
         visible = sprite.visible;
-        gridCoordinates = sprite.GridCoordinates;
+        sceneLayerCoordinates = sprite.SceneLayerCoordinates;
         AdjustCollisionArea = sprite.AdjustCollisionArea;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
@@ -110,43 +110,24 @@ public class Sprite : Tile, IMovableOnSceneLayer, ICloneable, IDisposable
 
     public CoordinateSpace PositionSpace => CoordinateSpace.Grid;
 
-    public Vector2 GetPosition() => new Vector2(gridCoordinates.X, gridCoordinates.Y);
+    public Vector2 GetPosition() => new Vector2(sceneLayerCoordinates.X, sceneLayerCoordinates.Y);
 
     public void SetPosition(Vector2 pos)
     {
         // capture the Sprite coordinates before the move
-        PointF oldCoord = gridCoordinates;
+        PointF oldCoord = sceneLayerCoordinates;
         PointF newCoord = new PointF(pos.X, pos.Y);
 
         // add to refresh queue before move, then move, then add to queue after move
-        if (_sceneLayer != null)
-        {
-            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-            gridCoordinates = newCoord;
-            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-        }
-        else
-            gridCoordinates = newCoord;
+        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+        sceneLayerCoordinates = newCoord;
+        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
         // raise the SpriteMoved event
         SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, newCoord));
     }
 
     #endregion IMovable Members
-
-    #region ICloneable Members
-
-    /// <summary>
-    /// does not copy the value of the Tag property
-    /// </summary>
-    /// <returns></returns>
-    public object Clone()
-    {
-        Sprite newSprite = new Sprite(this);
-        return newSprite;
-    }
-
-    #endregion ICloneable Members
 
     #region public properties
 
@@ -247,13 +228,13 @@ public class Sprite : Tile, IMovableOnSceneLayer, ICloneable, IDisposable
     }
 
     [JsonIgnore]
-    public override Rectangle DrawLocation => SpriteManager.GetDrawLocation(this, _sceneLayer, gridCoordinates, renderSize);
+    public override Rectangle DrawLocation => SpriteManager.GetDrawLocation(this, _sceneLayer, sceneLayerCoordinates, renderSize);
 
     [JsonIgnore]
     public override bool IsPositionFixed => false;
 
     [JsonIgnore]
-    public override PointF GridCoordinates => gridCoordinates;
+    public override PointF SceneLayerCoordinates => sceneLayerCoordinates;
 
     [JsonIgnore]
     public override SceneLayer SceneLayer => _sceneLayer;

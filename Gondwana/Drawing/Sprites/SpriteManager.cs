@@ -35,7 +35,8 @@ public static class SpriteManager
 
     public static Sprite CloneSprite(Sprite sprite, SceneLayer sceneLayer)
     {
-        Sprite newSprite = (Sprite)sprite.Clone();
+        Sprite newSprite = new Sprite(sprite);
+
         if (newSprite.SceneLayer != sceneLayer)
         {
             newSprite._sceneLayer = sceneLayer;
@@ -45,11 +46,12 @@ public static class SpriteManager
         return newSprite;
     }
 
-    public static Sprite? CloneSprite(string ID, SceneLayer destMatrix)
+    public static Sprite? CloneSprite(string id, SceneLayer sceneLayer)
     {
-        Sprite? sprite = GetSpriteByID(ID);
+        Sprite? sprite = GetSpriteByID(id);
+
         if (sprite != null)
-            return CloneSprite(sprite, destMatrix);
+            return CloneSprite(sprite, sceneLayer);
 
         return null;
     }

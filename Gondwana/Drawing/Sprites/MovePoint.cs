@@ -37,7 +37,7 @@ namespace Gondwana.Drawing.Sprites
         protected internal void InitializeMovePoint()
         {
             TotalTicksRunning = 0;
-            origCoord = parent.GridCoordinates;
+            origCoord = parent.SceneLayerCoordinates;
             origSize = parent.RenderSize;
         }
 

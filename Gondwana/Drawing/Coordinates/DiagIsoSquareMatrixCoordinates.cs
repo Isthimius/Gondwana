@@ -70,7 +70,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         // Bounding box of the diamond anchored at top vertex
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.SceneLayerTileWidth;
         int H = tile.SceneLayer.SceneLayerTileHeight;
 
@@ -108,7 +108,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.SceneLayerTileWidth;
         int H = tile.SceneLayer.SceneLayerTileHeight;
         var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;

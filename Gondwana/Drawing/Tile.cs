@@ -47,7 +47,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     public abstract bool IsPositionFixed { get; }
     public abstract Rectangle DrawLocation { get; }
-    public abstract PointF GridCoordinates { get; }
+    public abstract PointF SceneLayerCoordinates { get; }
     public abstract SceneLayer SceneLayer { get; }
 
     #endregion abstract properties
@@ -198,8 +198,8 @@ public abstract class Tile : IComparable<Tile>, IDisposable
             return 1;
 
         // Use tuple comparison for the rest (Y, Z, X)
-        return (thisLoc, zOrder, GridCoordinates.X)
-             .CompareTo((tileLoc, tile.zOrder, tile.GridCoordinates.X));
+        return (thisLoc, zOrder, SceneLayerCoordinates.X)
+             .CompareTo((tileLoc, tile.zOrder, tile.SceneLayerCoordinates.X));
     }
 
     #endregion IComparable<Tile> Members

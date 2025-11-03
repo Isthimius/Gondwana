@@ -65,7 +65,7 @@ public class SceneLayerTile : Tile
     public override bool IsPositionFixed => true;
 
     [JsonIgnore]
-    public override PointF GridCoordinates => (PointF)sceneLayerCoordinates;
+    public override PointF SceneLayerCoordinates => (PointF)sceneLayerCoordinates;
 
     [JsonIgnore]
     public Point GridCoordinatesAbs => sceneLayerCoordinates;

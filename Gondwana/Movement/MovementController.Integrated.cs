@@ -92,7 +92,16 @@ public sealed partial class MovementController
                 new PointF(newPos.X, newPos.Y),
                 _sceneLayer.GridColumnCount - 1, _sceneLayer.GridRowCount - 1);
 
-            newPos = new Vector2(wrapped.X, wrapped.Y);
+            float newX = newPos.X;
+            float newY = newPos.Y;
+
+            if (WrapX)
+                newX = wrapped.X;
+
+            if (WrapY)
+                newY = wrapped.Y;
+
+            newPos = new Vector2(newX, newY);
         }
 
         _mover.SetPosition(newPos);

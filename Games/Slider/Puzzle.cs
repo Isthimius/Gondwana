@@ -141,7 +141,7 @@ namespace Slider
 
                 foreach (Sprite sprite in SpriteManager.AllSprites)
                 {
-                    Point spriteLoc = new Point((int)sprite.GridCoordinates.X, (int)sprite.GridCoordinates.Y);
+                    Point spriteLoc = new Point((int)sprite.SceneLayerCoordinates.X, (int)sprite.SceneLayerCoordinates.Y);
 
                     if (spriteLoc == ParseSpriteCoordID(sprite.ID))
                         totalCorrect++;
@@ -163,7 +163,7 @@ namespace Slider
             else
             {
                 // capture the starting point of the sprite being moved
-                Point startPt = new Point((int)sprite.GridCoordinates.X, (int)sprite.GridCoordinates.Y);
+                Point startPt = new Point((int)sprite.SceneLayerCoordinates.X, (int)sprite.SceneLayerCoordinates.Y);
 
                 // move the sprite to the open space
                 sprite.Movement.MoveTo(new Vector2(openSpace.X, openSpace.Y), slideTime, null , 0.01f);

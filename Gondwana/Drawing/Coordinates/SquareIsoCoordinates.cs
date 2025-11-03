@@ -62,8 +62,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         // Base rect (unchanged)
         var baseRect = new Rectangle
         {
-            X = (int)(tile.SceneLayer.SceneLayerTileWidth * tile.GridCoordinates.X) + tile.SceneLayer.SceneLayerTileZeroPixel.X,
-            Y = (int)(tile.SceneLayer.SceneLayerTileHeight * tile.GridCoordinates.Y) + tile.SceneLayer.SceneLayerTileZeroPixel.Y,
+            X = (int)(tile.SceneLayer.SceneLayerTileWidth * tile.SceneLayerCoordinates.X) + tile.SceneLayer.SceneLayerTileZeroPixel.X,
+            Y = (int)(tile.SceneLayer.SceneLayerTileHeight * tile.SceneLayerCoordinates.Y) + tile.SceneLayer.SceneLayerTileZeroPixel.Y,
             Width = tile.SceneLayer.SceneLayerTileWidth,
             Height = tile.SceneLayer.SceneLayerTileHeight
         };

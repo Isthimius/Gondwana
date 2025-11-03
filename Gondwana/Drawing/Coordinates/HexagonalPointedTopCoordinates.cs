@@ -73,7 +73,7 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
 
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
-        var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.GridCoordinates);
+        var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
@@ -110,7 +110,7 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
 
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
-        return HexPolygonPointedTop(tile.SceneLayer, (int)tile.GridCoordinates.X, (int)tile.GridCoordinates.Y, includeOverhang);
+        return HexPolygonPointedTop(tile.SceneLayer, (int)tile.SceneLayerCoordinates.X, (int)tile.SceneLayerCoordinates.Y, includeOverhang);
     }
 
     public PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound)
