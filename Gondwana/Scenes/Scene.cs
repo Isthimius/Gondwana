@@ -167,7 +167,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     protected virtual void OnSceneLayerAdded(SceneLayer sceneLayer)
     {
-        sceneLayer.Parent = this;
+        sceneLayer.Scene = this;
 
         sceneLayer.SceneLayerDisposing += sceneLayerDisposing;
         sceneLayer.FirstColRowChanged += firstColRowDel;
@@ -182,7 +182,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     protected virtual void OnSceneLayerRemoved(SceneLayer sceneLayer)
     {
-        sceneLayer.Parent = null;
+        sceneLayer.Scene = null;
 
         sceneLayer.SceneLayerDisposing -= sceneLayerDisposing;
         sceneLayer.FirstColRowChanged -= firstColRowDel;

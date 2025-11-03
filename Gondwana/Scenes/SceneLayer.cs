@@ -56,14 +56,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     internal bool _wrapHoriz = false;
     internal bool _wrapVerti = false;
-    internal SceneLayerScrollBinding scrollBinding = null;
+    internal SceneLayerScrollBinding? scrollBinding = null;
 
     // first pixel visible (i.e., source pixel for rendering calculations)
     private Point _gridPtZeroPxl;
 
     private PointF _firstGridPt = new PointF();
-
-    internal SceneLayer.Movement _movement;
 
     #endregion private / internal fields
 
@@ -99,7 +97,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         for (int i = 0; i < pt.Length; i++)
             pt[i] = new SceneLayerTile[rowCount];
 
-        InitValues(pt, width, height, layerSyncModifier, true);
+        InitValues(pt, width, height, layerSyncModifier);
     }
 
     public SceneLayer(SceneLayerTile[][] pt) :
@@ -112,7 +110,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     public SceneLayer(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier)
     {
-        InitValues(pt, width, height, layerSyncModifier, true);
+        InitValues(pt, width, height, layerSyncModifier);
     }
 
     ~SceneLayer()
@@ -123,7 +121,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
     {
-        InitValues(_sceneLayerTileArray, _tileWidth, _tileHeight, _layerSyncModifier, true);
+        InitValues(_sceneLayerTileArray, _tileWidth, _tileHeight, _layerSyncModifier);
     }
 
     #endregion constructors / finalizer
@@ -149,7 +147,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         set
         {
             if (string.IsNullOrEmpty(value))
-                CoordinateSystem = null;
+                throw new ArgumentException("CoordinateSystemType must have a value", nameof(value));
             else
             {
                 var values = value.Split(';');
@@ -167,7 +165,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     [JsonProperty]
-    public Scene? Parent { get; internal set; }
+    public Scene Scene { get; internal set; }
 
     [JsonIgnore]
     internal RefreshQueue RefreshQueue { get; set; }
@@ -304,40 +302,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _gridPtZeroPxl; }
     }
 
-    [JsonIgnore]
-    public bool IsScrolling
-    {
-        get { return _movement.IsScrolling; }
-    }
-
-    [JsonIgnore]
-    public float VelocityX
-    {
-        get { return _movement.VelocityX; }
-        set { _movement.VelocityX = value; }
-    }
-
-    [JsonIgnore]
-    public float VelocityY
-    {
-        get { return _movement.VelocityY; }
-        set { _movement.VelocityY = value; }
-    }
-
-    [JsonIgnore]
-    public float AccelerationX
-    {
-        get { return _movement.AccelerationX; }
-        set { _movement.AccelerationX = value; }
-    }
-
-    [JsonIgnore]
-    public float AccelerationY
-    {
-        get { return _movement.AccelerationY; }
-        set { _movement.AccelerationY = value; }
-    }
-
     #endregion properties
 
     #region raise events
@@ -367,7 +331,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             if (scrollBind.ParentSceneLayer == this)
             {
-                scrollBind.ChildGrid.ScrollWithParent();
+                //scrollBind.ChildGrid.ScrollWithParent();
             }
         }
 
@@ -408,7 +372,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     protected virtual void OnShowGridLinesChanged(bool oldVal, bool newVal)
     {
-        this.Parent.RefreshNeeded = SceneRefreshType.All;
+        this.Scene.RefreshNeeded = SceneRefreshType.All;
 
         if (ShowGridLinesChanged != null)
             ShowGridLinesChanged(new ShowGridLinesChangedEventArgs(this, oldVal, newVal));
@@ -459,60 +423,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         OnFirstColRowChanged(oldSrcPt, SourceSceneLayerTile);
     }
 
-    public void BindScrollingToParentGrid(SceneLayer parent)
-    {
-        BindScrollingToParentGrid(parent, parent.SourceSceneLayerTile);
-    }
-
-    public void BindScrollingToParentGrid(SceneLayer parent, PointF parentAnchor)
-    {
-        BindScrollingToParentGrid(parent, parentAnchor, this.SourceSceneLayerTile);
-    }
-
-    public void BindScrollingToParentGrid(SceneLayer parent, PointF parentAnchor, PointF thisAnchor)
-    {
-        // remove any previous binding
-        UnbindScrolling();
-
-        // create new binding instance
-        scrollBinding = new SceneLayerScrollBinding();
-        scrollBinding.ParentSceneLayer = parent;
-        scrollBinding.ChildGrid = this;
-        scrollBinding.ParentAnchorSceneLayerTile = parentAnchor;
-        scrollBinding.ChildAnchorSceneLayerTile = thisAnchor;
-    }
-
-    public void UnbindScrolling()
-    {
-        if (scrollBinding != null)
-        {
-            SceneLayerScrollBinding._allScrollBindings.Remove(scrollBinding);
-
-            if (scrollBinding.ParentSceneLayer != null)
-                this.scrollBinding.ParentSceneLayer = null;
-
-            scrollBinding = null;
-        }
-    }
-
-    public void ScrollSourceSceneLayerTile(double totalTime, PointF destCoord)
-    {
-        _movement.Start(totalTime, destCoord);
-    }
-
-    public void StopScrolling()
-    {
-        _movement.Stop();
-    }
-
-    public void MoveNext(long tick)
-    {
-        if (_movement.IsScrolling)
-            _movement.Next(tick);
-
-        _movement.lastTick = tick;
-    }
-
     #endregion public methods
 
     #region private / internal methods
@@ -530,30 +440,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    private void ScrollWithParent()
-    {
-        PointF parentSrc = scrollBinding.ParentSceneLayer.SourceSceneLayerTile;
-
-        // find difference between anchor and current point with Parent
-        float parentDifX = parentSrc.X - scrollBinding.ParentAnchorSceneLayerTile.X;
-        float parentDifY = parentSrc.Y - scrollBinding.ParentAnchorSceneLayerTile.Y;
-
-        // apply SynchLayerModifiers to the parent offset from anchor
-        float netModifier = scrollBinding.ChildGrid._layerSyncModifier /
-            scrollBinding.ParentSceneLayer._layerSyncModifier;
-
-        parentDifX *= netModifier;
-        parentDifY *= netModifier;
-
-        // apply the parent offset with modifier to the child
-        float childDifX = scrollBinding.ChildAnchorSceneLayerTile.X + parentDifX;
-        float childDifY = scrollBinding.ChildAnchorSceneLayerTile.Y + parentDifY;
-
-        //scrollBinding.ChildGrid._gridPtZeroPxl = new Point((int)childDifX, (int)childDifY);
-        scrollBinding.ChildGrid.SetSourceSceneLayerTile(childDifX, childDifY);
-    }
-
-    protected void InitValues(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier, bool addToInstances)
+    protected void InitValues(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier)
     {
         _sceneLayerTileArray = pt;
         _layerSyncModifier = layerSyncModifier;
@@ -567,10 +454,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         refQueueDel = RefreshQueueNewTile;
         RefreshQueue.RefreshQueueAreaAdded += refQueueDel;
         FindIndexedSceneLayerTile = new GetIndexer(GetIndexer_NoWrap);
-        _movement = new Movement(this);
-
-        if (addToInstances)
-            _allSceneLayer.Add(this);
     }
 
     #endregion private / internal methods
@@ -668,13 +551,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        _allSceneLayer.Remove(this);
-
-        if (SceneLayerDisposing != null)
-            SceneLayerDisposing.Invoke(this);
-
-        // remove any scroll bindings
-        UnbindScrolling();
+        SceneLayerDisposing?.Invoke(this);
 
         // unsubscribe from events
         RefreshQueue.RefreshQueueAreaAdded -= refQueueDel;
@@ -695,252 +572,4 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     #endregion IDisposable Members
-
-    #region static members
-    
-    internal readonly static List<SceneLayer> _allSceneLayer = new List<SceneLayer>();
-
-    internal static ReadOnlyCollection<SceneLayer> GetAllSceneLayers() => _allSceneLayer.AsReadOnly();
-
-    #endregion static members
-
-    internal class Movement
-    {
-        internal SceneLayer parent;
-
-        internal long startTick;
-        internal long lastTick;
-        internal long totalTicks;
-        internal PointF startCoord;
-        internal PointF destCoord;
-
-        #region ctor
-
-        internal Movement(SceneLayer sceneLayer)
-        {
-            parent = sceneLayer;
-            IsScrolling = false;
-        }
-
-        #endregion ctor
-
-        #region properties
-
-        private float _velocityX;
-
-        internal float VelocityX
-        {
-            get { return _velocityX; }
-            set
-            {
-                var oldVelocityY = _velocityY;
-                Stop();
-                lastTick = HighResTimer.GetCurrentTick();
-                _velocityX = value;
-                _velocityY = oldVelocityY;
-                IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
-            }
-        }
-
-        private float _velocityY;
-
-        internal float VelocityY
-        {
-            get { return _velocityY; }
-            set
-            {
-                var oldVelocityX = _velocityX;
-                Stop();
-                lastTick = HighResTimer.GetCurrentTick();
-                _velocityX = oldVelocityX;
-                _velocityY = value;
-                IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
-            }
-        }
-
-        internal bool IsScrolling { get; set; }
-
-        private float _accelerationX;
-
-        internal float AccelerationX
-        {
-            get { return _accelerationX; }
-            set
-            {
-                lastTick = HighResTimer.GetCurrentTick();
-                _accelerationX = value;
-                IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
-            }
-        }
-
-        private float _accelerationY;
-
-        internal float AccelerationY
-        {
-            get { return _accelerationY; }
-            set
-            {
-                lastTick = HighResTimer.GetCurrentTick();
-                _accelerationY = value;
-                IsScrolling = (_velocityX != 0 || _velocityY != 0 || _accelerationX != 0 || _accelerationY != 0);
-            }
-        }
-
-        private float _terminalVelocityXMin = float.MinValue;
-
-        public float TerminalVelocityXMin
-        {
-            get { return _terminalVelocityXMin; }
-            set
-            {
-                _terminalVelocityXMin = value;
-                LimitVelocityXByTerminal();
-            }
-        }
-
-        private float _terminalVelocityXMax = float.MaxValue;
-
-        public float TerminalVelocityXMax
-        {
-            get { return _terminalVelocityXMax; }
-            set
-            {
-                _terminalVelocityXMax = value;
-                LimitVelocityXByTerminal();
-            }
-        }
-
-        private float _terminalVelocityYMin = float.MinValue;
-
-        public float TerminalVelocityYMin
-        {
-            get { return _terminalVelocityYMin; }
-            set
-            {
-                _terminalVelocityYMin = value;
-                LimitVelocityYByTerminal();
-            }
-        }
-
-        private float _terminalVelocityYMax = float.MaxValue;
-
-        public float TerminalVelocityYMax
-        {
-            get { return _terminalVelocityYMax; }
-            set
-            {
-                _terminalVelocityYMax = value;
-                LimitVelocityYByTerminal();
-            }
-        }
-
-        #endregion properties
-
-        #region methods
-
-        internal void Start(double totalTime, PointF dest)
-        {
-            Stop();
-
-            startTick = HighResTimer.GetCurrentTick();
-            //lastTick = startTick;
-            totalTicks = (long)(totalTime * HighResTimer.TicksPerSecond);
-            startCoord = parent.SourceSceneLayerTile;
-            destCoord = dest;
-
-            IsScrolling = true;
-        }
-
-        internal void Next(long tick)
-        {
-            foreach (var scene in Scene._allScenes)
-            {
-                if (scene.GetSceneLayerByID(parent._id) != null)
-                    scene.RefreshNeeded = SceneRefreshType.All;
-            }
-
-            if (VelocityX != 0 || VelocityY != 0)
-                NextVelocity(tick);
-            else
-                NextDestination(tick);
-        }
-
-        private void NextDestination(long tick)
-        {
-            if (tick >= startTick + totalTicks)
-            {
-                parent.SetSourceSceneLayerTile(destCoord);
-                Stop();
-            }
-            else
-            {
-                float percentComplete = (float)(tick - startTick) / (float)totalTicks;
-                float newX = startCoord.X + ((float)(destCoord.X - startCoord.X) * percentComplete);
-                float newY = startCoord.Y + ((float)(destCoord.Y - startCoord.Y) * percentComplete);
-
-                parent.SetSourceSceneLayerTile(new PointF(newX, newY));
-            }
-
-            return;
-        }
-
-        private void NextVelocity(long tick)
-        {
-            double secondsElapsed = (double)(tick - lastTick) / (double)HighResTimer.TicksPerSecond;
-
-            // adjust velocity if acceleration is not 0
-            if (AccelerationX != 0)
-            {
-                _velocityX += (float)(AccelerationX * secondsElapsed);
-                LimitVelocityXByTerminal();
-            }
-
-            if (AccelerationY != 0)
-            {
-                _velocityY += (float)(AccelerationY * secondsElapsed);
-                LimitVelocityYByTerminal();
-            }
-
-            float newX = parent.SourceSceneLayerTile.X + (float)((double)VelocityX * secondsElapsed);
-            float newY = parent.SourceSceneLayerTile.Y + (float)((double)VelocityY * secondsElapsed);
-
-            parent.SetSourceSceneLayerTile(new PointF(newX, newY));
-            //lastTick = tick;
-
-            return;
-        }
-
-        internal void Stop()
-        {
-            _velocityX = 0;
-            _velocityY = 0;
-            _accelerationX = 0;
-            _accelerationY = 0;
-            startTick = 0;
-            lastTick = 0;
-            totalTicks = 0;
-
-            IsScrolling = false;
-        }
-
-        private void LimitVelocityXByTerminal()
-        {
-            if (_velocityX < TerminalVelocityXMin)
-                _velocityX = TerminalVelocityXMin;
-
-            if (_velocityX > TerminalVelocityXMax)
-                _velocityX = TerminalVelocityXMax;
-        }
-
-        private void LimitVelocityYByTerminal()
-        {
-            if (_velocityY < TerminalVelocityYMin)
-                _velocityY = TerminalVelocityYMin;
-
-            if (_velocityY > TerminalVelocityYMax)
-                _velocityY = TerminalVelocityYMax;
-        }
-
-        #endregion methods
-    }
 }
