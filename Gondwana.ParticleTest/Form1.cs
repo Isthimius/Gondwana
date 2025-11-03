@@ -96,7 +96,7 @@ public partial class Form1 : Form
         //glowBox.Movement.MoveTo(new Vector2(glowBox.Bounds.Left, glowBox.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
 
         //composite.Movement.MoveTo(new Vector2(composite.Bounds.Left, composite.Bounds.Top - 300), 10f, EasingFunctions.EaseInOutQuad, 1f);
-        //composite.Movement.MoveBy(new Vector2(0, -500), 10f, EasingFunctions.EaseInOutQuad);
+        composite.Movement.MoveBy(new Vector2(0, -500), 10f, EasingFunctions.EaseInOutQuad);
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)

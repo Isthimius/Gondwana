@@ -306,6 +306,8 @@ public static class SpriteManager
         {
             sprite.Movement.AdvanceMovement(duration);
         }
+
+        _lastTick = tick;
     }
 
     #endregion internal methods

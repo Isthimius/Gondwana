@@ -22,8 +22,8 @@ namespace Slider
         internal bool _spriteMoving = false;
         internal bool _isShuffling = false;
 
-        private Action<ScriptedMovement> delMoveStart;
-        private Action<ScriptedMovement> delMoveStop;
+        private readonly Action<ScriptedMovement> delMoveStart;
+        private readonly Action<ScriptedMovement> delMoveStop;
 
         private int numColumns;
         private int numRows;
@@ -166,7 +166,7 @@ namespace Slider
                 Point startPt = new Point((int)sprite.GridCoordinates.X, (int)sprite.GridCoordinates.Y);
 
                 // move the sprite to the open space
-                sprite.Movement.MoveTo(new Vector2(openSpace.X, openSpace.Y), slideTime, null , 0.1f);
+                sprite.Movement.MoveTo(new Vector2(openSpace.X, openSpace.Y), slideTime, null , 0.01f);
 
                 // make the openSpace value equal to the original sprite starting point
                 openSpace = startPt;
