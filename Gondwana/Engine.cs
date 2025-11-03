@@ -510,8 +510,8 @@ public sealed class Engine : IDisposable
         GamepadEventPoller.Instance?.PollForEvents(tick);
 
         // perform any timed SceneLayer scrolling
-        foreach (var sceneLayer in SceneLayer.GetAllSceneLayers())
-            sceneLayer.MoveNext(tick);
+        //foreach (var sceneLayer in SceneLayer.GetAllSceneLayers())
+        //    sceneLayer.MoveNext(tick);
 
         // cycle Animator frames
         for (int i = 0; i < Tile.TilesAnimating.Count; i++)
