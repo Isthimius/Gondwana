@@ -237,7 +237,12 @@ public class AudioResource : IDisposable
     public void Play(bool fromStart = true)
     {
         if (fromStart)
+        {
+            if (IsPlaying)
+                outputDevice.Stop();
+
             waveStream.Position = 0;
+        }
 
         if (!IsPlaying)
             outputDevice.Play();
