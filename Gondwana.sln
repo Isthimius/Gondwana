@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video", "Gondwana.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.ParticleTest", "Gondwana.ParticleTest\Gondwana.ParticleTest.csproj", "{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.CoordinateeTest", "Gondwana.CoordinateeTest\Gondwana.CoordinateeTest.csproj", "{96925DE4-23FD-4438-A79C-77E2A2D97136}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.CoordinateTest", "Gondwana.CoordinateeTest\Gondwana.CoordinateTest.csproj", "{96925DE4-23FD-4438-A79C-77E2A2D97136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

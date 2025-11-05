@@ -1,4 +1,4 @@
-﻿namespace Gondwana.CoordinateeTest
+﻿namespace Gondwana.CoordinateTest
 {
     partial class Form1
     {
