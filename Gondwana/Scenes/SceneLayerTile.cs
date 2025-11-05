@@ -28,11 +28,11 @@ public class SceneLayerTile : Tile
     #region constructors / finalizer
 
     [JsonConstructor]
-    public SceneLayerTile(SceneLayer matrix)
+    public SceneLayerTile(SceneLayer sceneLayer)
     {
         zOrder = 0;
         visible = true;
-        parentSceneLayer = matrix;
+        parentSceneLayer = sceneLayer;
     }
 
     internal SceneLayerTile(SceneLayerTile sceneLayerTile, Point gridCoord)
