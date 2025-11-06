@@ -28,7 +28,7 @@ public partial class GameWindow : Form
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        _game = new Game(renderSurface);   // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _game = new Game(renderSurface);
     }
 
     protected override void OnShown(EventArgs e)
@@ -45,6 +45,8 @@ public partial class GameWindow : Form
         this.FormBorderStyle = FormBorderStyle.None;
         this.WindowState = FormWindowState.Normal; // force apply bounds first
         this.WindowState = FormWindowState.Maximized;
+
+        _game!.InitializeGame();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)

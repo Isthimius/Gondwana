@@ -1,4 +1,5 @@
 ﻿using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Direct;
 using Gondwana.Input.Gamepad;
 using Gondwana.Logging;
 using Gondwana.Scenes;
@@ -10,8 +11,6 @@ namespace Gondwana.CoordinateTest;
 
 public class Game : IDisposable
 {
-    private bool disposedValue;
-
     public WinFormBitmapRenderSurfaceControl RenderSurface { get; private set; }
 
     public Scene? Scene { get; private set; }
@@ -19,10 +18,9 @@ public class Game : IDisposable
     public Game(WinFormBitmapRenderSurfaceControl renderSurface)
     {
         RenderSurface = renderSurface;
-        InitializeEngine();
     }
 
-    private void InitializeEngine(string? configPath = null, bool? autoSaveConfig = null)
+    public void InitializeGame(string? configPath = null, bool? autoSaveConfig = null)
     {
         EngineLogger.SetLogLevel(LogLevel.Trace);
 
@@ -77,6 +75,10 @@ public class Game : IDisposable
     private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
     {
         // Handle mouse events here
+        var message = $"Anchor Col/Row: {Scene![0].SourceSceneLayerTile}\n" +
+                      $"Mouse Pos: {args.CurrentPosition.X}, {args.CurrentPosition.Y}\n" +
+                      $"Grid coordinates: {Scene[0]!.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(Scene[0]!, args.CurrentPosition) }";
+        _textBlockMouse?.SetText(message);
     }
 
     private void ConfigureGamepadInput()
@@ -125,21 +127,44 @@ public class Game : IDisposable
         // Implementation for creating sprites goes here
     }
 
+    private DirectRectangle? _directRectangle;
+    private TextBlock? _textBlockCPS;
+    private TextBlock? _textBlockMouse;
+
     private void InitDirectDrawings()
     {
         // Implementation for creating direct drawings goes here
+        _directRectangle = new DirectRectangle(RenderSurface.Host,
+                                               new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
+                                               Color.Wheat);
+        _directRectangle.SetFilled(true);
+
+        _textBlockCPS = new TextBlock(RenderSurface.Host,_directRectangle.Bounds);
+        _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
+
+        Engine.Instance.CPSCalculated += (e) =>
+        {
+            _textBlockCPS.SetText(e.ToString());
+        };
+
+        _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
+        _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
     }
 
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        SceneLayer sceneLayer = new SceneLayer(100, 90, 64, 64);
+        SceneLayer sceneLayer = new SceneLayer(100, 100, 64, 64);
         sceneLayer.CoordinateSystem = new HexagonalPointedTopCoordinates();
         scene.AddLayer(sceneLayer);
+        
         return scene;
     }
 
     #region IDisposable support
+
+    private bool disposedValue;
+
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -171,5 +196,6 @@ public class Game : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
     #endregion IDisposable support
 }
