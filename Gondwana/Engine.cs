@@ -55,8 +55,8 @@ public sealed class Engine : IDisposable
 
     private long _grossCyclesThisMeasure = 0;
     private long _netCyclesThisMeasure = 0;
-    private readonly double _grossCPS = 0;
-    private readonly double _netFPS = 0;
+    private double _grossCPS = 0;
+    private double _netFPS = 0;
 
     #endregion private fields
 
@@ -197,8 +197,9 @@ public sealed class Engine : IDisposable
     private Engine()
     { }
 
-    private bool _isInitialized = false;
-    private bool _isInitializing = false;
+    private volatile bool _isInitialized = false;
+    private volatile bool _isInitializing = false;
+    private readonly ManualResetEventSlim _initDone = new(false);
 
     /// <summary>
     /// Performs one-time or on-demand initialization of the <see cref="Engine"/> instance, 
@@ -260,6 +261,9 @@ public sealed class Engine : IDisposable
         if (_isInitialized || _isInitializing)
             return;
 
+        // reset in case this instance has been initialized before
+        _initDone.Reset();
+
         _isInitializing = true;
 
         if (UiDispatcher == null)
@@ -297,6 +301,9 @@ public sealed class Engine : IDisposable
             InitializationComplete?.Invoke();
         else
             UiDispatcher!.Post(() => InitializationComplete?.Invoke());
+
+        // signal that init is done
+        _initDone.Set();
     }
 
     /// <summary>
@@ -379,10 +386,14 @@ public sealed class Engine : IDisposable
 
         if (!IsInitialized)
         {
-            // wait for any previous initialization to complete
-            while (IsInitializing) { }
-
-            Initialize();
+            if (IsInitializing)
+            {
+                _initDone.Wait();        // someone else is initializing—wait for it
+            }
+            else
+            {
+                Initialize();            // we're the initializer—do it now
+            }
         }
 
         IsRunning = true;
@@ -509,6 +520,7 @@ public sealed class Engine : IDisposable
         // check for gamepad events
         GamepadEventPoller.Instance?.PollForEvents(tick);
 
+        // TODO: camera movement handling
         // perform any timed SceneLayer scrolling
         //foreach (var sceneLayer in SceneLayer.GetAllSceneLayers())
         //    sceneLayer.MoveNext(tick);
@@ -600,6 +612,9 @@ public sealed class Engine : IDisposable
 
         // Post the snapshot
         UiDispatcher!.Post(() => CPSCalculated?.Invoke(args));
+
+        _grossCPS = grossCps;
+        _netFPS = netCps;
 
         // Reset for next window
         _lastCPSSamplingTick = tick;
