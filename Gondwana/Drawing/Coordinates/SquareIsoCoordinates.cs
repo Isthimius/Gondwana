@@ -95,7 +95,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
                 return sceneLayer[layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y - 1];
 
             case CardinalDirections.NE:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y - 1];
+                return sceneLayer[layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y - 1];
 
             case CardinalDirections.E:
                 return sceneLayer[layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y];
