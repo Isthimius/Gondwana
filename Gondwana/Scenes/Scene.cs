@@ -102,7 +102,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public SceneRefreshType RefreshNeeded { get; set; }
 
     [JsonIgnore]
-    public ReadOnlyCollection<SceneLayer> SceneLayer => _sceneLayers.AsReadOnly();
+    public ReadOnlyCollection<SceneLayer> SceneLayers => _sceneLayers.AsReadOnly();
 
     [JsonIgnore]
     public ReadOnlyCollection<SceneLayer> VisibleSceneLayer => _visibleLayers.AsReadOnly();

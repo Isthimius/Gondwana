@@ -109,7 +109,7 @@ public abstract class BackbufferBase : IDisposable
         foreach (var tile in tiles)
         {
             if (tile.SceneLayer.ShowGridLines && tile.Visible)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), GridLinePaint);
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), GridLinePaint);
         }
     }
 

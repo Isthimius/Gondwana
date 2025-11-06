@@ -1,4 +1,5 @@
-﻿using Gondwana.Input.Gamepad;
+﻿using Gondwana.Drawing.Coordinates;
+using Gondwana.Input.Gamepad;
 using Gondwana.Logging;
 using Gondwana.Scenes;
 using Gondwana.WinForms;
@@ -25,23 +26,29 @@ public class Game : IDisposable
     {
         EngineLogger.SetLogLevel(LogLevel.Trace);
 
+        // initialize engine, platform-specific adapters, etc.
         Engine.Instance.Initialize(configPath, autoSaveConfig);
-
         Engine.Instance.InitializeWinFormsAudioFormats();
 
-        ConfigureKeyboardInput();
-        ConfigureMouseInput();
-        ConfigureGamepadInput();
-
+        // load game content here
         LoadAssets();
         LoadTilesheets();
         LoadAnimationCycles();
         InitSprites();
         InitDirectDrawings();
 
+        // create initial scene here and bind to render surface
         Scene = CreateInitialScene();
         RenderSurface.Host.Bind(Scene);
 
+        Scene!.SceneLayers[0].ShowGridLines = true;
+
+        // configure input handling here
+        ConfigureKeyboardInput();
+        ConfigureMouseInput();
+        ConfigureGamepadInput();
+
+        // start the engine main loop
         Engine.Instance.Start(SynchronizationContext.Current!);
     }
 
@@ -125,7 +132,11 @@ public class Game : IDisposable
 
     private Scene? CreateInitialScene()
     {
-        return null;
+        var scene = new Scene();
+        SceneLayer sceneLayer = new SceneLayer(100, 90, 64, 64);
+        sceneLayer.CoordinateSystem = new HexagonalPointedTopCoordinates();
+        scene.AddLayer(sceneLayer);
+        return scene;
     }
 
     #region IDisposable support
@@ -135,6 +146,10 @@ public class Game : IDisposable
         {
             if (disposing)
             {
+                Engine.KeyboardEventPoller!.KeyDown -= KeyboardEventPoller_KeyDown;
+                Engine.MouseEventPoller!.MouseEvent -= MouseEventPoller_MouseEvent;
+                Engine.GamepadEventPoller!.ButtonDown -= GamepadEventPoller_ButtonDown;
+
                 // Dispose managed resources
                 Engine.Instance.Stop();
                 Engine.Instance.Dispose();

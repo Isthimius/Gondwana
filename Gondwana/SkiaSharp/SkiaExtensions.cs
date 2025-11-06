@@ -14,6 +14,20 @@ public static class SkiaExtensions
     public static SKRectI ToSKRectI(this Rectangle rect)
         => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 
-    public static SKPoint[] ToSKPoints(this Point[] points)
-        => points.Select(p => new SKPoint(p.X, p.Y)).ToArray();
+    public static SKPoint[] ToSKPoints(this Point[] points, bool enclose = false)
+    {
+        if (!enclose)
+            return points.Select(p => new SKPoint(p.X, p.Y)).ToArray(); ;
+
+        var len = points.Length + 1;
+        var result = new SKPoint[len];
+
+        for (int i = 0; i < points.Length; i++)
+            result[i] = new SKPoint(points[i].X, points[i].Y);
+
+        if (enclose)
+            result[^1] = result[0]; // append first point to close polygon
+
+        return result;
+    }
 }
