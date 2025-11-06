@@ -154,8 +154,8 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        SceneLayer sceneLayer = new SceneLayer(100, 100, 64, 64);
-        sceneLayer.CoordinateSystem = new HexagonalPointedTopCoordinates();
+        SceneLayer sceneLayer = new SceneLayer(45, 45, 64, 32);
+        sceneLayer.CoordinateSystem = new DiagIsoSquareMatrixCoordinates();
         scene.AddLayer(sceneLayer);
         
         return scene;
