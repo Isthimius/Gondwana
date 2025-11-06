@@ -30,7 +30,7 @@ public partial class Form1 : Form
 
     private void InitializeEngine()
     {
-        var renderSurface = winFormBitmapRenderSurfaceControl1.RenderSurfaceHost;
+        var renderSurface = winFormBitmapRenderSurfaceControl1.Host;
         var adapter = renderSurface.RenderSurfaceAdapter;
 
         var sceneLayer = new SceneLayer(1, 1, adapter!.Width, adapter.Height);

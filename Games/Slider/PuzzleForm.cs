@@ -53,7 +53,7 @@ namespace Slider
                 if (Program.puzzle != null)
                     Program.puzzle.Dispose();
 
-                Program.puzzle = new Puzzle(winFormBitmapRenderSurfaceControl1.RenderSurfaceHost, openFileBox.FileName, int.Parse(txtCol.Text), int.Parse(txtRow.Text), winFormBitmapRenderSurfaceControl1.Size);
+                Program.puzzle = new Puzzle(winFormBitmapRenderSurfaceControl1.Host, openFileBox.FileName, int.Parse(txtCol.Text), int.Parse(txtRow.Text), winFormBitmapRenderSurfaceControl1.Size);
                 //Sprites_SpriteMovePointFinished(null);
 
                 if (!Gondwana.Engine.Instance.IsRunning)

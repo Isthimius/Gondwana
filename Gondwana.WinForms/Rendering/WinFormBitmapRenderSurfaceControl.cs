@@ -7,9 +7,9 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
 {
     private readonly SKControl _skControl;
 
-    public WinFormBitmapRenderSurfaceAdapter RenderSurfaceAdapter { get; }
+    public WinFormBitmapRenderSurfaceAdapter Adapter { get; }
 
-    public RenderSurfaceHost<BitmapBackbuffer> RenderSurfaceHost { get; }
+    public RenderSurfaceHost<BitmapBackbuffer> Host { get; }
 
     public WinFormBitmapRenderSurfaceControl()
     {
@@ -25,25 +25,25 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
         _skControl.MouseLeave += (s, e) => OnMouseLeave(e);
 
         // Create the render adapter for the SKControl
-        RenderSurfaceAdapter = new WinFormBitmapRenderSurfaceAdapter(_skControl);
+        Adapter = new WinFormBitmapRenderSurfaceAdapter(_skControl);
 
         // Create the surface and hook the adapter
-        RenderSurfaceHost = new RenderSurfaceHost<BitmapBackbuffer>(RenderSurfaceAdapter);
+        Host = new RenderSurfaceHost<BitmapBackbuffer>(Adapter);
 
         // Ensure the adapter re-reads size whenever THIS wrapper changes size
-        SizeChanged += (_, __) => RenderSurfaceAdapter.RefreshDestinationSize();
+        SizeChanged += (_, __) => Adapter.RefreshDestinationSize();
 
         // Fire once after this control is realized
-        HandleCreated += (_, __) => RenderSurfaceAdapter.RefreshDestinationSize();
+        HandleCreated += (_, __) => Adapter.RefreshDestinationSize();
         if (IsHandleCreated)
-            BeginInvoke((Action)RenderSurfaceAdapter.RefreshDestinationSize);
+            BeginInvoke((Action)Adapter.RefreshDestinationSize);
     }
 
     protected override void OnParentChanged(EventArgs e)
     {
         base.OnParentChanged(e);
         if (IsHandleCreated)
-            BeginInvoke((Action)RenderSurfaceAdapter.RefreshDestinationSize);
+            BeginInvoke((Action)Adapter.RefreshDestinationSize);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
         if (disposing && (components != null))
         {
             components.Dispose();
-            RenderSurfaceHost?.Dispose();
+            Host?.Dispose();
         }
 
         base.Dispose(disposing);

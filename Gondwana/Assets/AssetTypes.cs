@@ -13,7 +13,7 @@ public enum AssetTypes
     Audio = 1,
 
     /// <summary>
-    /// Video; not currently supported
+    /// Video; supported via platform-specific media players
     /// </summary>
     Video = 2,
 

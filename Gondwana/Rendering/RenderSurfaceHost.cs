@@ -46,7 +46,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     public override Scene? Scene => _scene;
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
 
-    public void Bind(Scene drawSource)
+    public void Bind(Scene? drawSource)
     {
         if (Scene != null)
             Scene.SceneDisposing -= OnSourceDisposing;

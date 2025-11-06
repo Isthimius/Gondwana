@@ -661,7 +661,7 @@ public sealed class Engine : IDisposable
         }
     }
 
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
