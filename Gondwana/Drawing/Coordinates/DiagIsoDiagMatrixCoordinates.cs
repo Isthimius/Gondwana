@@ -10,7 +10,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
 {
-    public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer  sceneLayer, PointF gp)
+    public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
         int W =  sceneLayer.SceneLayerTileWidth; int H =  sceneLayer.SceneLayerTileHeight;
         float dx = gp.X -  sceneLayer.SourceSceneLayerTile.X;

@@ -4,8 +4,6 @@ using System.Runtime.Serialization;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Rendering;
-using Gondwana.Scenes.EventArgs;
-using Gondwana.Timers;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -18,31 +16,24 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 {
     #region events
 
+    private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
     internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
 
-    public event Action<SceneLayerTileSizeChangedEventArgs>? SceneLayerTileSizeChanged;
+    public event Action<SceneLayer>? SceneLayerTileSizeChanged;
 
-    public event Action<SceneLayerVisibleChangedEventArgs>? VisibleChanged;
+    public event Action<SceneLayer>? VisibleChanged;
 
-    public event Action<SourceSceneLayerTileChangedEventArgs>? FirstColRowChanged;
+    public event Action<SceneLayer>? WrappingChanged;
 
-    public event Action<SceneLayerWrappingChangedEventArgs>? WrappingChanged;
+    public event Action<SceneLayer>? ShowGridLinesChanged;
 
-    public event Action<ShowGridLinesChangedEventArgs>? ShowGridLinesChanged;
+    public event Action<SceneLayer>? ParallaxChanged;
 
     public event Action<SceneLayer>? SceneLayerDisposing;
 
     #endregion events
 
-    #region delegates
-
-    private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
-
-    #endregion delegates
-
     #region private / internal fields
-
-    private string _id = Guid.NewGuid().ToString();
 
     private int _tileWidth;                             // rendered width
     private int _tileHeight;                            // rendered height
@@ -51,11 +42,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonProperty]
     private SceneLayerTile[][] _sceneLayerTileArray;    // array of points; 2 dimensions (X, Y)
 
-    private float _layerSyncModifier;                   // 1 = default; <1 is slower, >1 is faster
-
     internal bool _wrapHoriz = false;
     internal bool _wrapVerti = false;
-    internal SceneLayerScrollBinding? scrollBinding = null;
 
     // first pixel visible (i.e., source pixel for rendering calculations)
     private Point _gridPtZeroPxl;
@@ -120,7 +108,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
     {
-        InitValues(_sceneLayerTileArray, _tileWidth, _tileHeight, _layerSyncModifier);
+        InitValues(_sceneLayerTileArray, _tileWidth, _tileHeight, _parallax);
     }
 
     #endregion constructors / finalizer
@@ -157,11 +145,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     [JsonProperty]
-    public string ID
-    {
-        get { return _id; }
-        protected internal set { _id = value; }
-    }
+    public string ID { get; protected internal set; } = Guid.NewGuid().ToString();
 
     [JsonProperty]
     public Scene Scene { get; internal set; }
@@ -169,18 +153,18 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     internal RefreshQueue RefreshQueue { get; set; }
 
-    [JsonProperty]
-    public float LayerSyncModifier
-    {
-        get { return _layerSyncModifier; }
-        set { _layerSyncModifier = value; }
-    }
+
+    private float _parallax = 1f;       // 1 = default; <1 is slower, >1 is faster
 
     [JsonProperty]
-    public SceneLayerScrollBinding ScrollBinding
+    public float Parallax
     {
-        get { return scrollBinding; }
-        private set { scrollBinding = value; }
+        get { return _parallax; }
+        set
+        {
+            _parallax = value;
+            ParallaxChanged?.Invoke(this);
+        }
     }
 
     [JsonProperty]
@@ -189,9 +173,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _tileHeight; }
         set
         {
-            // capture before and after values and raise event here
-            this.OnSceneLayerTileSizeChanged(_tileWidth, _tileHeight, _tileWidth, value);
-
+            SceneLayerTileSizeChanged?.Invoke(this);
             _tileHeight = value;
         }
     }
@@ -202,9 +184,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _tileWidth; }
         set
         {
-            // capture before and after values and raise event here
-            this.OnSceneLayerTileSizeChanged(_tileWidth, _tileHeight, value, _tileHeight);
-
+            SceneLayerTileSizeChanged?.Invoke(this);
             _tileWidth = value;
         }
     }
@@ -215,11 +195,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _visible; }
         set
         {
-            // capture before and after values and raise event here
-            bool oldVal = _visible;
-            bool newVal = value;
             _visible = value;
-            this.OnVisibleChanged(oldVal, newVal);
+            VisibleChanged?.Invoke(this);
         }
     }
 
@@ -254,13 +231,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _wrapHoriz; }
         set
         {
-            bool oldH = _wrapHoriz;
-            bool newH = value;
-            bool oldV = _wrapVerti;
-            bool newV = _wrapVerti;
-
             _wrapHoriz = value;
-            OnWrappingChanged(oldH, newH, oldV, newV);
+            WrappingChanged?.Invoke(this);
         }
     }
 
@@ -270,13 +242,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _wrapVerti; }
         set
         {
-            bool oldH = _wrapHoriz;
-            bool newH = _wrapHoriz;
-            bool oldV = _wrapVerti;
-            bool newV = value;
-
             _wrapVerti = value;
-            OnWrappingChanged(oldH, newH, oldV, newV);
+            WrappingChanged?.Invoke(this);
         }
     }
 
@@ -289,9 +256,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return showGridLines; }
         set
         {
-            bool oldVal = showGridLines;
             showGridLines = value;
-            OnShowGridLinesChanged(oldVal, value);
+            ShowGridLinesChanged?.Invoke(this);
         }
     }
 
@@ -305,42 +271,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region raise events
 
-    protected virtual void OnSceneLayerTileSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight)
-    {
-        if (SceneLayerTileSizeChanged != null)
-        {
-            SceneLayerTileSizeChangedEventArgs e;
-            e = new SceneLayerTileSizeChangedEventArgs(this, oldWidth, oldHeight, newWidth, newHeight);
-            SceneLayerTileSizeChanged(e);
-        }
-    }
-
-    protected virtual void OnVisibleChanged(bool oldValue, bool newValue)
-    {
-        if (VisibleChanged != null)
-        {
-            SceneLayerVisibleChangedEventArgs e = new SceneLayerVisibleChangedEventArgs(this, oldValue, newValue);
-            VisibleChanged(e);
-        }
-    }
-
-    protected virtual void OnFirstColRowChanged(PointF oldPt, PointF newPt)
-    {
-        foreach (SceneLayerScrollBinding scrollBind in SceneLayerScrollBinding._allScrollBindings)
-        {
-            if (scrollBind.ParentSceneLayer == this)
-            {
-                //scrollBind.ChildGrid.ScrollWithParent();
-            }
-        }
-
-        if (FirstColRowChanged != null)
-        {
-            SourceSceneLayerTileChangedEventArgs e = new SourceSceneLayerTileChangedEventArgs(this, oldPt, newPt);
-            FirstColRowChanged(e);
-        }
-    }
-
     internal virtual void OnRefreshQueueAreaAdded(RefreshQueueAreaAddedEventArgs e)
     {
         // just pass the event up
@@ -353,41 +283,15 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         OnRefreshQueueAreaAdded(e);
     }
 
-    protected virtual void OnWrappingChanged(bool oldHoriz, bool newHoriz, bool oldVerti, bool newVerti)
-    {
-        if (WrappingChanged != null)
-        {
-            SceneLayerWrappingChangedEventArgs e =
-                new SceneLayerWrappingChangedEventArgs(this, oldHoriz, newHoriz, oldVerti, newVerti);
-            WrappingChanged(e);
-        }
-
-        // set indexer delegate
-        if (newHoriz || newVerti)
-            FindIndexedSceneLayerTile = new GetIndexer(GetIndexer_Wrap);
-        else
-            FindIndexedSceneLayerTile = new GetIndexer(GetIndexer_NoWrap);
-    }
-
-    protected virtual void OnShowGridLinesChanged(bool oldVal, bool newVal)
-    {
-        this.Scene.RefreshNeeded = SceneRefreshType.All;
-
-        if (ShowGridLinesChanged != null)
-            ShowGridLinesChanged(new ShowGridLinesChangedEventArgs(this, oldVal, newVal));
-    }
-
     #endregion raise events
 
     #region public methods
 
     public void SetSceneLayerTileSize(int newWidth, int newHeight)
     {
-        // capture before and after values and raise event here
-        this.OnSceneLayerTileSizeChanged(_tileWidth, _tileHeight, newWidth, newHeight);
-
         _tileWidth = newWidth;
         _tileHeight = newHeight;
+        SceneLayerTileSizeChanged?.Invoke(this);
     }
 
     public SceneLayerTile SetSceneLayerTile(SceneLayerTile gridPt, int x, int y)
@@ -417,9 +321,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // update the first pixel position; the final SourceSceneLayerTile might be slightly
         // different to srcGridPt due to rounding if srcSceneLayerTile is not a whole number
         _gridPtZeroPxl = CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, new PointF(0, 0));
-
-        // capture the before and after values and raise event
-        OnFirstColRowChanged(oldSrcPt, SourceSceneLayerTile);
     }
 
     #endregion public methods
@@ -442,7 +343,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     protected void InitValues(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier)
     {
         _sceneLayerTileArray = pt;
-        _layerSyncModifier = layerSyncModifier;
+        _parallax = layerSyncModifier;
         _tileWidth = width;
         _tileHeight = height;
         _visible = true;
@@ -564,7 +465,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // cancel all subscriptions to this object
         SceneLayerTileSizeChanged = null;
         VisibleChanged = null;
-        FirstColRowChanged = null;
         RefreshQueueAreaAdded = null;
         WrappingChanged = null;
         SceneLayerDisposing = null;

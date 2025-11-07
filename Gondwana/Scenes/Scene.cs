@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Gondwana.Rendering;
-using Gondwana.Scenes.EventArgs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -170,7 +169,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.Scene = this;
 
         sceneLayer.SceneLayerDisposing += sceneLayerDisposing;
-        sceneLayer.FirstColRowChanged += firstColRowDel;
         sceneLayer.VisibleChanged += visChgDel;
         sceneLayer.SceneLayerTileSizeChanged += sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded += refQueueDel;
@@ -185,7 +183,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.Scene = null;
 
         sceneLayer.SceneLayerDisposing -= sceneLayerDisposing;
-        sceneLayer.FirstColRowChanged -= firstColRowDel;
         sceneLayer.VisibleChanged -= visChgDel;
         sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
@@ -206,16 +203,14 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     #region handle SceneLayer events
 
     private Action<SceneLayer> sceneLayerDisposing;
-    private Action<SourceSceneLayerTileChangedEventArgs> firstColRowDel;
-    private Action<SceneLayerVisibleChangedEventArgs> visChgDel;
-    private Action<SceneLayerTileSizeChangedEventArgs> sceneLayerTileSizeDel;
+    private Action<SceneLayer> visChgDel;
+    private Action<SceneLayer> sceneLayerTileSizeDel;
     private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;
-    private Action<SceneLayerWrappingChangedEventArgs> wrappingDel;
+    private Action<SceneLayer> wrappingDel;
 
     private void SetSceneLayerEventDelegates()
     {
         sceneLayerDisposing = (sceneLayer) => RemoveLayer(sceneLayer);
-        firstColRowDel = (eventArgs) => _SceneLayerFirstColRowChanged();
         visChgDel = (eventArgs) => _SceneLayerVisibleChanged();
         sceneLayerTileSizeDel = (eventArgs) => _SceneLayerTileSizeChanged();
         refQueueDel = (eventArgs) => _RefreshQueueNewArea(eventArgs);
@@ -315,7 +310,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         // unsubscribe from events
         foreach (var sceneLayer in _sceneLayers)
         {
-            sceneLayer.FirstColRowChanged -= firstColRowDel;
             sceneLayer.VisibleChanged -= visChgDel;
             sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
             sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
