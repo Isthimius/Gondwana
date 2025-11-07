@@ -47,7 +47,7 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         return new PointF(best.X, best.Y);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;

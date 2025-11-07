@@ -28,7 +28,7 @@ public interface ISceneLayerCoordinates
     /// the specified pixel-space rectangle, optionally including tiles with visual
     /// overhang regions (e.g., tall sprites or hexes that extend beyond their cell).
     /// </summary>
-    List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang);
+    List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang);
 
     /// <summary>
     /// Gets the pixel-space rectangle occupied by a given tile, optionally

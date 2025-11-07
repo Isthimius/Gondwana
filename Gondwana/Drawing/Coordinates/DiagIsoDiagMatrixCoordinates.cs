@@ -30,7 +30,7 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         return new PointF( sceneLayer.SourceSceneLayerTile.X + dx,  sceneLayer.SourceSceneLayerTile.Y + dy);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer  sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         var ul = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Left, pixelRange.Top));

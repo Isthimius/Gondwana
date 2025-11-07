@@ -49,7 +49,7 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
                           sceneLayer.SourceSceneLayerTile.Y + gyF);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);

@@ -26,7 +26,7 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
     }
 
     // Updated to properly consider overhang in all directions
-    public List<SceneLayerTile> GetSceneLayerTileListInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var retVal = new List<SceneLayerTile>();
 
