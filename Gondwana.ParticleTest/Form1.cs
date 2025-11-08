@@ -34,7 +34,7 @@ public partial class Form1 : Form
         var adapter = renderSurface.RenderSurfaceAdapter;
 
         var sceneLayer = new SceneLayer(1, 1, adapter!.Width, adapter.Height);
-        sceneLayer.CoordinateSystem = new SquareIsoCoordinates();
+        sceneLayer.CoordinateSystemType = CoordinateSystemTypes.SqaureIso;
         var scene = new Scene(sceneLayer);
 
         renderSurface.Bind(scene);

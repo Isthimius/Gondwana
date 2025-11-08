@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Runtime.Serialization;
-using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
@@ -55,21 +53,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #endregion private / internal fields
 
-    #region public fields
-
-    [JsonIgnore]
-    public object Tag;
-
-    #endregion public fields
-
-    #region SceneLayer wrapping delegates / variables
-
-    private delegate SceneLayerTile? GetIndexer(int x, int y);
-
-    private GetIndexer FindIndexedSceneLayerTile;
-
-    #endregion SceneLayer wrapping delegates / variables
-
     #region constructors / finalizer
 
     public SceneLayer(int columnCount, int rowCount) :
@@ -119,31 +102,37 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     #region properties
 
     [JsonIgnore]
-    public ISceneLayerCoordinates CoordinateSystem { get; set; } = new SquareIsoCoordinates();
+    public object? Tag { get; set; }
 
-    [DataMember(Name = "CoordinateSystem")]
-    private string CoordinateSystemType
+    [JsonIgnore]
+    public ISceneLayerCoordinates CoordinateSystem { get; private set; } = new SquareIsoCoordinates();
+
+    [JsonProperty]
+    public CoordinateSystemTypes CoordinateSystemType
     {
         get
         {
-            if (CoordinateSystem == null)
-                return string.Empty;
-            else
+            return CoordinateSystem switch
             {
-                Type type = CoordinateSystem.GetType();
-                return type.Assembly.FullName + ";" + type.ToString();
-            }
+                SquareIsoCoordinates => CoordinateSystemTypes.SqaureIso,
+                DiagIsoDiagMatrixCoordinates => CoordinateSystemTypes.DiagIso_DiagMatrix,
+                DiagIsoSquareMatrixCoordinates => CoordinateSystemTypes.DiagIso_SquareMatrix,
+                HexagonalFlatTopCoordinates => CoordinateSystemTypes.HexFlatTop,
+                HexagonalPointedTopCoordinates => CoordinateSystemTypes.HexPointedTop,
+                _ => throw new InvalidOperationException($"Unknown coordinate system type: {CoordinateSystem.GetType().Name}")
+            };
         }
         set
         {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentException("CoordinateSystemType must have a value", nameof(value));
-            else
+            CoordinateSystem = value switch
             {
-                var values = value.Split(';');
-                var handle = Activator.CreateInstance(values[0], values[1]);
-                CoordinateSystem = (ISceneLayerCoordinates)handle.Unwrap();
-            }
+                CoordinateSystemTypes.SqaureIso => new SquareIsoCoordinates(),
+                CoordinateSystemTypes.DiagIso_DiagMatrix => new DiagIsoDiagMatrixCoordinates(),
+                CoordinateSystemTypes.DiagIso_SquareMatrix => new DiagIsoSquareMatrixCoordinates(),
+                CoordinateSystemTypes.HexFlatTop => new HexagonalFlatTopCoordinates(),
+                CoordinateSystemTypes.HexPointedTop => new HexagonalPointedTopCoordinates(),
+                _ => throw new ArgumentOutOfRangeException(nameof(value), $"Unknown coordinate system type: {value}")
+            };
         }
     }
 
@@ -350,7 +339,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         RefreshQueue = new RefreshQueue(this);
         refQueueDel = RefreshQueueNewTile;
         RefreshQueue.RefreshQueueAreaAdded += refQueueDel;
-        FindIndexedSceneLayerTile = new GetIndexer(GetIndexer_NoWrap);
     }
 
     #endregion private / internal methods
@@ -359,7 +347,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     public SceneLayerTile? this[int x, int y]
     {
-        get { return FindIndexedSceneLayerTile(x, y); }
+        get { return GetIndexer_NoWrap(x, y); }
         set
         {
             PointF actualSceneLayerTile =
@@ -390,37 +378,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             return null;
         else
             return _sceneLayerTileArray[x][y];
-    }
-
-    private SceneLayerTile? GetIndexer_Wrap(int x, int y)
-    {
-        // if not wrapping horizontally and outside of x bound range, return null
-        if ((!_wrapHoriz) && ((x > _sceneLayerTileArray.GetUpperBound(0)) || (x < 0)))
-            return null;
-
-        // if not wrapping vertically and outside of y bound range, return null
-        if ((!_wrapVerti) && ((y > _sceneLayerTileArray[x].GetUpperBound(0)) || (y < 0)))
-            return null;
-
-        // check "non-wrapping" coordinates
-        SceneLayerTile? newSceneLayerTile = GetIndexer_NoWrap(x, y);
-
-        // if outside of "non-wrapping" coordinates, find the equivalent point
-        if (newSceneLayerTile == null)
-        {
-            // find the coordinated of the SceneLayerTile being "wrapped"
-            PointF actualSceneLayerTile =
-                CoordinateSystem.FindEquivalentSceneLayerCoordinates(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
-
-            // if not already found, create and add to wrappedGridPts, and associate with "parent"
-            if (newSceneLayerTile == null)
-            {
-                newSceneLayerTile = new SceneLayerTile(_sceneLayerTileArray[(int)actualSceneLayerTile.X][(int)actualSceneLayerTile.Y],
-                    new Point(x, y));
-            }
-        }
-
-        return newSceneLayerTile;
     }
 
     #endregion indexers

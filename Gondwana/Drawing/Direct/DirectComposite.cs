@@ -118,7 +118,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     }
 
     // IMovable (pixel space only)
-    public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
+    public MovementSpace PositionSpace => MovementSpace.Pixel;
     
     public Vector2 GetPosition() => new(_anchor.X, _anchor.Y);
 

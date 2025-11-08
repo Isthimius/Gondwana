@@ -2,9 +2,9 @@
 
 public enum CoordinateSystemTypes
 {
-    DiagIso_DiagMatrix,
-    DiagIso_SquareMatrix,
-    HexFlatTop,
-    HexPointedTop,
-    SqaureIso
+    SqaureIso = 0,
+    DiagIso_DiagMatrix = 1,
+    DiagIso_SquareMatrix = 2,
+    HexFlatTop = 3,
+    HexPointedTop = 4
 }

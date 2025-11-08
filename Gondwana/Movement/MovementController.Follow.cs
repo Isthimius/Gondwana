@@ -51,7 +51,7 @@ public sealed partial class MovementController
         _followGridTarget = null;
         _followHard = false;
 
-        if (_mover.PositionSpace == CoordinateSpace.Pixel)
+        if (_mover.PositionSpace == MovementSpace.Pixel)
         {
             _followOffsetPx = offsetPx;
             _followSpeedPxPerSec = speed;
@@ -108,7 +108,7 @@ public sealed partial class MovementController
         _followDurationSec = durationSec;
 
         // Interpret snap in the follower’s space
-        if (_mover.PositionSpace == CoordinateSpace.Pixel)
+        if (_mover.PositionSpace == MovementSpace.Pixel)
         {
             _followSnapPx = MathF.Max(0f, snap);
             _followSnapTiles = 0f;
@@ -163,7 +163,7 @@ public sealed partial class MovementController
         _followGridTarget = null;
         _followHard = true;
 
-        _followOffsetPx = (_mover.PositionSpace == CoordinateSpace.Pixel) ? offsetPx : Vector2.Zero;
+        _followOffsetPx = (_mover.PositionSpace == MovementSpace.Pixel) ? offsetPx : Vector2.Zero;
 
         // neutralize speed/tween fields
         _followSpeedPxPerSec = 0f;
@@ -204,7 +204,7 @@ public sealed partial class MovementController
         _followSpeedPxPerSec = 0f;
         _followSnapPx = 0f;
 
-        _followOffsetPx = (_mover.PositionSpace == CoordinateSpace.Pixel) ? pixelOffset : Vector2.Zero;
+        _followOffsetPx = (_mover.PositionSpace == MovementSpace.Pixel) ? pixelOffset : Vector2.Zero;
 
         // clear tween state
         _followEasing = null;
@@ -239,7 +239,7 @@ public sealed partial class MovementController
         _followPixel = null;
         _followHard = false;
 
-        _followOffsetPx = (_mover.PositionSpace == CoordinateSpace.Pixel) ? pixelOffset : Vector2.Zero;
+        _followOffsetPx = (_mover.PositionSpace == MovementSpace.Pixel) ? pixelOffset : Vector2.Zero;
 
         _followEasing = easing ?? EasingFunctions.Linear;
         _followDurationSec = durationSec;
@@ -297,7 +297,7 @@ public sealed partial class MovementController
         _followPixel = null;
         _followHard = true;
 
-        _followOffsetPx = (_mover.PositionSpace == CoordinateSpace.Pixel) ? pixelOffset : Vector2.Zero;
+        _followOffsetPx = (_mover.PositionSpace == MovementSpace.Pixel) ? pixelOffset : Vector2.Zero;
 
         // neutralize speed/tween fields
         _followSpeedTilesPerSec = 0f;
@@ -337,7 +337,7 @@ public sealed partial class MovementController
         {
             var goalPx = _followPixel() + _followOffsetPx;
 
-            if (_mover.PositionSpace == CoordinateSpace.Grid)
+            if (_mover.PositionSpace == MovementSpace.Grid)
             {
                 // grid-space mover following pixel goal...
                 return Advance_TargetPixel_MoverGrid(goalPx);
@@ -357,7 +357,7 @@ public sealed partial class MovementController
             // target grid coordinate (+ any grid offset)
             var goalCoordinates = _followGridTarget.GetPosition() + _followGridOffset;
 
-            if (_mover.PositionSpace == CoordinateSpace.Grid)
+            if (_mover.PositionSpace == MovementSpace.Grid)
             {
                 // GRID follower -> set/use GRID directly (no conversion)
                 return Advance_TargetGrid_MoverGrid(goalCoordinates);

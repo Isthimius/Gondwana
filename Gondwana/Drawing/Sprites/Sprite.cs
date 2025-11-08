@@ -108,7 +108,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     #region IMovable Members
 
-    public CoordinateSpace PositionSpace => CoordinateSpace.Grid;
+    public MovementSpace PositionSpace => MovementSpace.Grid;
 
     public Vector2 GetPosition() => new Vector2(sceneLayerCoordinates.X, sceneLayerCoordinates.Y);
 

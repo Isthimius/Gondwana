@@ -11,7 +11,7 @@ public struct MovementState
     /// This may differ from the IMovable.PositionSpace in some cases
     /// (e.g., a Pixel-based mover following Grid-based Sprite, etc.).
     /// </summary>
-    public CoordinateSpace MovementSpace { get; private set; }
+    public MovementSpace MovementSpace { get; private set; }
 
     /// <summary>
     /// Velocity in current MotionSpace units per second.
@@ -51,10 +51,10 @@ public struct MovementState
     /// </summary>
     /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
     /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
-    /// coordinate space of <see cref="CoordinateSpace.Grid"/>.</returns>
+    /// coordinate space of <see cref="MovementSpace.Grid"/>.</returns>
     public static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
     {
-        MovementSpace = CoordinateSpace.Grid,
+        MovementSpace = MovementSpace.Grid,
         LinearDamping = linearDampening
     };
 
@@ -65,10 +65,10 @@ public struct MovementState
     /// <param name="position">The position of the movement state in pixel-based coordinates.</param>
     /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
     /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
-    /// coordinate space of <see cref="CoordinateSpace.Pixel"/>.</returns>
+    /// coordinate space of <see cref="MovementSpace.Pixel"/>.</returns>
     public static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
     {
-        MovementSpace = CoordinateSpace.Pixel,
+        MovementSpace = MovementSpace.Pixel,
         LinearDamping = linearDampening
     };
 }

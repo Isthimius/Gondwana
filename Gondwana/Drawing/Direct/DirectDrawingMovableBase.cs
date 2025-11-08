@@ -22,7 +22,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
 
     public MovementController Movement { get; }
 
-    public CoordinateSpace PositionSpace => CoordinateSpace.Pixel;
+    public MovementSpace PositionSpace => MovementSpace.Pixel;
 
     public Vector2 GetPosition() => new Vector2((float)Bounds.Location.X, (float)Bounds.Location.Y);
 
