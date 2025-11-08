@@ -84,11 +84,26 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     [JsonIgnore]
     public ReadOnlyCollection<SceneLayer> SceneLayers => _sceneLayers.AsReadOnly();
 
+    private ReadOnlyCollection<SceneLayer>? _visibleSortedCache;
+    private bool _visibleSortedDirty = true;
+
     [JsonIgnore]
-    public ReadOnlyCollection<SceneLayer> VisibleSceneLayers => _sceneLayers.Where(sl => sl.Visible)
-                                                                            .OrderBy(sl => sl.ZOrder)
-                                                                            .ToList()
-                                                                            .AsReadOnly();
+    public ReadOnlyCollection<SceneLayer> VisibleSceneLayers
+    {
+        get
+        {
+            if (_visibleSortedDirty || _visibleSortedCache == null)
+            {
+                _visibleSortedCache = _sceneLayers
+                    .Where(sl => sl.Visible)
+                    .OrderBy(sl => sl.ZOrder)
+                    .ToList()
+                    .AsReadOnly();
+                _visibleSortedDirty = false;
+            }
+            return _visibleSortedCache;
+        }
+    }
 
     [JsonIgnore]
     public int CountOfVisibleLayers => VisibleSceneLayers?.Count ?? 0;
