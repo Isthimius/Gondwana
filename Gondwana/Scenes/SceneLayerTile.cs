@@ -35,17 +35,6 @@ public class SceneLayerTile : Tile
         parentSceneLayer = sceneLayer;
     }
 
-    internal SceneLayerTile(SceneLayerTile sceneLayerTile, Point gridCoord)
-    {
-        parentSceneLayer = sceneLayerTile.parentSceneLayer;
-        sceneLayerCoordinates = gridCoord;
-        zOrder = sceneLayerTile.zOrder;
-        visible = sceneLayerTile.visible;
-        frame = sceneLayerTile.frame;
-        enableFog = sceneLayerTile.enableFog;
-        Tag = sceneLayerTile.Tag;
-    }
-
     ~SceneLayerTile()
     {
         Dispose();
