@@ -69,7 +69,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region public properties
 
-    [JsonIgnore]
+    [JsonProperty]
     public object Tag { get; set; }
 
     [JsonProperty]
@@ -115,7 +115,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public SceneLayer AddLayer(SceneLayer sceneLayer)
     {
         _sceneLayers.Add(sceneLayer);
-        int newIdx = _sceneLayers.Count - 1;
         OnSceneLayerAdded(sceneLayer);
 
         RefreshNeeded = SceneRefreshType.All;
@@ -169,8 +168,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ZOrderChanged += zOrderChangedDel;
         sceneLayer.ParallaxChanged += parallaxChangedDel;
 
-        if (SceneLayerAdded != null)
-            SceneLayerAdded.Invoke(sceneLayer);
+        _visibleSortedDirty = true;
+        SceneLayerAdded?.Invoke(sceneLayer);
     }
 
     protected virtual void OnSceneLayerRemoved(SceneLayer sceneLayer)
@@ -185,6 +184,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ZOrderChanged -= zOrderChangedDel;
         sceneLayer.ParallaxChanged -= parallaxChangedDel;
 
+        _visibleSortedDirty = true;
         SceneLayerRemoved?.Invoke(sceneLayer);
     }
 
@@ -213,7 +213,11 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         parallaxChangedDel = (sceneLayer) => _SceneLayerParallaxChanged();
     }
 
-    private void _SceneLayerVisibleChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerVisibleChanged()
+    {
+        _visibleSortedDirty = true;
+        RefreshNeeded = SceneRefreshType.All;
+    }
 
     private void _SceneLayerTileSizeChanged() => RefreshNeeded = SceneRefreshType.All;
 
