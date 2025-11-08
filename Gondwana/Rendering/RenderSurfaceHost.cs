@@ -100,7 +100,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     {
                         for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var layer = Scene.VisibleSceneLayer[i];
+                            var layer = Scene.VisibleSceneLayers[i];
 
                             // Draw tiles in this layer’s queue
                             Backbuffer!.DrawTiles(layer.RefreshQueue.Tiles);
@@ -120,7 +120,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         // clear per-layer queues and add full range, then draw
                         for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
                         {
-                            var layer = Scene.VisibleSceneLayer[i];
+                            var layer = Scene.VisibleSceneLayers[i];
                             layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
 
                             Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);

@@ -10,17 +10,8 @@ namespace Gondwana.Scenes;
 [JsonObject(IsReference = true)]
 public class Scene : IEnumerable<SceneLayer>, IDisposable
 {
-    #region private / internal field declarations
-
     [JsonProperty]
-    private List<SceneLayer> _sceneLayers;    // array of SceneLayer objects; each element is one "layer"
-
-    internal List<SceneLayer> _visibleLayers = new List<SceneLayer>();
-    //internal SceneRefreshType refreshNeeded = SceneRefreshType.All;
-
-    private string _id = Guid.NewGuid().ToString();
-
-    #endregion private / internal field declarations
+    private readonly List<SceneLayer> _sceneLayers = [];
 
     #region Scene events
 
@@ -71,9 +62,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         foreach (var sceneLayer in _sceneLayers)
             OnSceneLayerAdded(sceneLayer);
 
-        // discover the list of visible arrays
-        _SetVisibleSceneLayersArray();
-
         _allScenes.Add(this);
     }
 
@@ -85,17 +73,10 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public object Tag { get; set; }
 
     [JsonProperty]
-    public string ID
-    {
-        get { return _id; }
-        protected internal set { _id = value; }
-    }
+    public string ID { get; protected internal set; } = Guid.NewGuid().ToString();
 
     [JsonIgnore]
     public int Count => _sceneLayers?.Count ?? 0;
-
-    [JsonIgnore]
-    public int CountOfVisibleLayers => _visibleLayers?.Count ?? 0;
 
     [JsonIgnore]
     public SceneRefreshType RefreshNeeded { get; set; }
@@ -104,7 +85,13 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public ReadOnlyCollection<SceneLayer> SceneLayers => _sceneLayers.AsReadOnly();
 
     [JsonIgnore]
-    public ReadOnlyCollection<SceneLayer> VisibleSceneLayer => _visibleLayers.AsReadOnly();
+    public ReadOnlyCollection<SceneLayer> VisibleSceneLayers => _sceneLayers.Where(sl => sl.Visible)
+                                                                            .OrderBy(sl => sl.ZOrder)
+                                                                            .ToList()
+                                                                            .AsReadOnly();
+
+    [JsonIgnore]
+    public int CountOfVisibleLayers => VisibleSceneLayers?.Count ?? 0;
 
     #endregion public properties
 
@@ -114,14 +101,11 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     {
         _sceneLayers.Add(sceneLayer);
         int newIdx = _sceneLayers.Count - 1;
-        OnSceneLayerAdded(this[newIdx]);
-
-        // rediscover the list of visible arrays
-        _SetVisibleSceneLayersArray();
+        OnSceneLayerAdded(sceneLayer);
 
         RefreshNeeded = SceneRefreshType.All;
 
-        return this[newIdx];
+        return sceneLayer;
     }
 
     public void RemoveAllLayers()
@@ -132,9 +116,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
         _sceneLayers.Clear();
 
-        // rediscover the list of visible arrays
-        _SetVisibleSceneLayersArray();
-
         RefreshNeeded = SceneRefreshType.All;
     }
 
@@ -142,9 +123,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     {
         _sceneLayers.Remove(sceneLayer);
         OnSceneLayerRemoved(sceneLayer);
-
-        // rediscover the list of visible scene layers
-        _SetVisibleSceneLayersArray();
 
         RefreshNeeded = SceneRefreshType.All;
     }
@@ -168,11 +146,13 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     {
         sceneLayer.Scene = this;
 
-        sceneLayer.SceneLayerDisposing += sceneLayerDisposing;
+        sceneLayer.Disposing += sceneLayerDisposing;
         sceneLayer.VisibleChanged += visChgDel;
         sceneLayer.SceneLayerTileSizeChanged += sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded += refQueueDel;
         sceneLayer.WrappingChanged += wrappingDel;
+        sceneLayer.ZOrderChanged += zOrderChangedDel;
+        sceneLayer.ParallaxChanged += parallaxChangedDel;
 
         if (SceneLayerAdded != null)
             SceneLayerAdded.Invoke(sceneLayer);
@@ -182,71 +162,45 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     {
         sceneLayer.Scene = null;
 
-        sceneLayer.SceneLayerDisposing -= sceneLayerDisposing;
+        sceneLayer.Disposing -= sceneLayerDisposing;
         sceneLayer.VisibleChanged -= visChgDel;
         sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
         sceneLayer.WrappingChanged -= wrappingDel;
+        sceneLayer.ZOrderChanged -= zOrderChangedDel;
+        sceneLayer.ParallaxChanged -= parallaxChangedDel;
 
-        if (SceneLayerRemoved != null)
-            SceneLayerRemoved.Invoke(sceneLayer);
+        SceneLayerRemoved?.Invoke(sceneLayer);
     }
 
-    protected virtual void OnSceneDisposing()
-    {
-        if (SceneDisposing != null)
-            SceneDisposing.Invoke(this);
-    }
+    protected virtual void OnSceneDisposing() => SceneDisposing?.Invoke(this);
 
     #endregion handle / raise Scene events
 
     #region handle SceneLayer events
 
+    private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;
     private Action<SceneLayer> sceneLayerDisposing;
     private Action<SceneLayer> visChgDel;
     private Action<SceneLayer> sceneLayerTileSizeDel;
-    private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;
     private Action<SceneLayer> wrappingDel;
+    private Action<SceneLayer> zOrderChangedDel;
+    private Action<SceneLayer> parallaxChangedDel;
 
     private void SetSceneLayerEventDelegates()
     {
-        sceneLayerDisposing = (sceneLayer) => RemoveLayer(sceneLayer);
-        visChgDel = (eventArgs) => _SceneLayerVisibleChanged();
-        sceneLayerTileSizeDel = (eventArgs) => _SceneLayerTileSizeChanged();
         refQueueDel = (eventArgs) => _RefreshQueueNewArea(eventArgs);
-        wrappingDel = (eventArgs) => _SceneLayerWrappingChanged();
+        sceneLayerDisposing = (sceneLayer) => RemoveLayer(sceneLayer);
+        visChgDel = (sceneLayer) => _SceneLayerVisibleChanged();
+        sceneLayerTileSizeDel = (sceneLayer) => _SceneLayerTileSizeChanged();
+        wrappingDel = (sceneLayer) => _SceneLayerWrappingChanged();
+        zOrderChangedDel = (sceneLayer) => _SceneLayerZOrderChanged();
+        parallaxChangedDel = (sceneLayer) => _SceneLayerParallaxChanged();
     }
 
-    private void _SceneLayerFirstColRowChanged()
-    {
-        // shifting at least one Layer, so redraw entire Backbuffer
-        RefreshNeeded = SceneRefreshType.All;
-    }
+    private void _SceneLayerVisibleChanged() => RefreshNeeded = SceneRefreshType.All;
 
-    private void _SceneLayerVisibleChanged()
-    {
-        // redraw entire Backbuffer
-        RefreshNeeded = SceneRefreshType.All;
-        _SetVisibleSceneLayersArray();
-    }
-
-    private void _SetVisibleSceneLayersArray()
-    {
-        if (_visibleLayers == null)
-            _visibleLayers = new List<SceneLayer>();
-
-        _visibleLayers.Clear();
-        foreach (SceneLayer sceneLayer in this)
-        {
-            if (sceneLayer.Visible)
-                _visibleLayers.Add(sceneLayer);
-        }
-    }
-
-    private void _SceneLayerTileSizeChanged()
-    {
-        RefreshNeeded = SceneRefreshType.All;
-    }
+    private void _SceneLayerTileSizeChanged() => RefreshNeeded = SceneRefreshType.All;
 
     private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
     {
@@ -258,9 +212,9 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         if (e.layer.Visible)
         {
             // refresh all other visible SceneLayers
-            for (int i = _visibleLayers.Count - 1; i >= 0; i--)
+            for (int i = VisibleSceneLayers.Count - 1; i >= 0; i--)
             {
-                SceneLayer otherSceneLayer = _visibleLayers[i];
+                SceneLayer otherSceneLayer = VisibleSceneLayers[i];
 
                 // refresh other SceneLayers; no need to do the calling one again
                 if (e.layer != otherSceneLayer)
@@ -270,10 +224,11 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         }
     }
 
-    private void _SceneLayerWrappingChanged()
-    {
-        RefreshNeeded = SceneRefreshType.All;
-    }
+    private void _SceneLayerWrappingChanged() => RefreshNeeded = SceneRefreshType.All;
+
+    private void _SceneLayerParallaxChanged() => RefreshNeeded = SceneRefreshType.All;
+
+    private void _SceneLayerZOrderChanged() => RefreshNeeded = SceneRefreshType.All;
 
     #endregion handle SceneLayer events
 
@@ -307,14 +262,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
         OnSceneDisposing();
 
-        // unsubscribe from events
-        foreach (var sceneLayer in _sceneLayers)
-        {
-            sceneLayer.VisibleChanged -= visChgDel;
-            sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
-            sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
-            sceneLayer.WrappingChanged -= wrappingDel;
-        }
+        RemoveAllLayers();
 
         _allScenes.Remove(this);
 

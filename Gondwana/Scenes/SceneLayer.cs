@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing;
@@ -27,9 +28,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     public event Action<SceneLayer>? ShowGridLinesChanged;
 
+    public event Action<SceneLayer>? ZOrderChanged;
+
     public event Action<SceneLayer>? ParallaxChanged;
 
-    public event Action<SceneLayer>? SceneLayerDisposing;
+    public event Action<SceneLayer>? Disposing;
 
     #endregion events
 
@@ -153,6 +156,18 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     internal RefreshQueue RefreshQueue { get; set; }
 
+    private int _zOrder = 0;
+
+    [JsonProperty]
+    public int ZOrder
+    {
+        get => _zOrder;
+        set
+        {
+            _zOrder = value;
+            ZOrderChanged?.Invoke(this);
+        }
+    }
 
     private float _parallax = 1f;       // 1 = default; <1 is slower, >1 is faster
 
@@ -294,24 +309,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         SceneLayerTileSizeChanged?.Invoke(this);
     }
 
-    public SceneLayerTile SetSceneLayerTile(SceneLayerTile gridPt, int x, int y)
-    {
-        this[x, y] = gridPt;
-        return this[x, y];
-    }
-
-    public SceneLayerTile SetSceneLayerTile(int x, int y, Frame frame)
-    {
-        this[x, y].CurrentFrame = frame;
-        return this[x, y];
-    }
-
-    public void SetSourceSceneLayerTile(float firstCol, float firstRow)
-    {
-        PointF newPt = new PointF(firstCol, firstRow);
-        SetSourceSceneLayerTile(newPt);
-    }
-
     public void SetSourceSceneLayerTile(PointF srcGridPt)
     {
         // capture the existing / old source pixel before changes made
@@ -339,7 +336,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             }
         }
     }
-
+    
     protected void InitValues(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier)
     {
         _sceneLayerTileArray = pt;
@@ -451,7 +448,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        SceneLayerDisposing?.Invoke(this);
+        Disposing?.Invoke(this);
 
         // unsubscribe from events
         RefreshQueue.RefreshQueueAreaAdded -= refQueueDel;
@@ -467,7 +464,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         VisibleChanged = null;
         RefreshQueueAreaAdded = null;
         WrappingChanged = null;
-        SceneLayerDisposing = null;
+        Disposing = null;
     }
 
     #endregion IDisposable Members
