@@ -155,7 +155,7 @@ public class Game : IDisposable
     {
         var scene = new Scene();
         SceneLayer sceneLayer = new SceneLayer(60, 60, 64, 64);
-        sceneLayer.CoordinateSystemType = CoordinateSystemTypes.SqaureIso;
+        sceneLayer.CoordinateSystemType = CoordinateSystemTypes.HexFlatTop;
         scene.AddLayer(sceneLayer);
         
         return scene;

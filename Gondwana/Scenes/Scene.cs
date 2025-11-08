@@ -165,6 +165,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.SceneLayerTileSizeChanged += sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded += refQueueDel;
         sceneLayer.WrappingChanged += wrappingDel;
+        sceneLayer.ShowGridLinesChanged += gridLinesShowChanged;
         sceneLayer.ZOrderChanged += zOrderChangedDel;
         sceneLayer.ParallaxChanged += parallaxChangedDel;
 
@@ -181,6 +182,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
         sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
         sceneLayer.WrappingChanged -= wrappingDel;
+        sceneLayer.ShowGridLinesChanged -= gridLinesShowChanged;
         sceneLayer.ZOrderChanged -= zOrderChangedDel;
         sceneLayer.ParallaxChanged -= parallaxChangedDel;
 
@@ -199,6 +201,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     private Action<SceneLayer> visChgDel;
     private Action<SceneLayer> sceneLayerTileSizeDel;
     private Action<SceneLayer> wrappingDel;
+    private Action<SceneLayer> gridLinesShowChanged;
     private Action<SceneLayer> zOrderChangedDel;
     private Action<SceneLayer> parallaxChangedDel;
 
@@ -209,6 +212,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         visChgDel = (sceneLayer) => _SceneLayerVisibleChanged();
         sceneLayerTileSizeDel = (sceneLayer) => _SceneLayerTileSizeChanged();
         wrappingDel = (sceneLayer) => _SceneLayerWrappingChanged();
+        gridLinesShowChanged = (sceneLayer) => _SceneLayerGridLinesShowChanged();
         zOrderChangedDel = (sceneLayer) => _SceneLayerZOrderChanged();
         parallaxChangedDel = (sceneLayer) => _SceneLayerParallaxChanged();
     }
@@ -245,9 +249,11 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     private void _SceneLayerWrappingChanged() => RefreshNeeded = SceneRefreshType.All;
 
-    private void _SceneLayerParallaxChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerGridLinesShowChanged() => RefreshNeeded = SceneRefreshType.All;
 
     private void _SceneLayerZOrderChanged() => RefreshNeeded = SceneRefreshType.All;
+
+    private void _SceneLayerParallaxChanged() => RefreshNeeded = SceneRefreshType.All;
 
     #endregion handle SceneLayer events
 

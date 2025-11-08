@@ -116,7 +116,7 @@ public abstract class BackbufferBase : IDisposable
     /// <summary>
     /// Runs as part of DoBackgroundTasks()
     /// </summary>
-    protected void AddToDirtyRectangle(Rectangle area)
+    protected internal void AddToDirtyRectangle(Rectangle area)
     {
         if (area.IsEmpty) return;
 

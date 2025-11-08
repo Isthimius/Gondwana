@@ -28,7 +28,6 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
     public bool HideWhenFullyTransparent { get; set; } = true;
 
-
     // Reveal state
     private float _revealT = 1f;                 // 0 = hidden, 1 = fully shown
     private RevealDirection _revealDir = RevealDirection.LeftToRight;
@@ -202,6 +201,8 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
         if (scene?.Count > 0)
             scene[0]!.RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
+
+        RenderSurfaceHost.Backbuffer!.AddToDirtyRectangle(_bounds);
 
         _dirty = true;
     }
