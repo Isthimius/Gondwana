@@ -648,6 +648,13 @@ public sealed class Engine : IDisposable
                     SafeInvoke(Disposing);
 
                 // managed cleanup...
+                KeyboardEventPoller?.StopMonitoringAllKeys();
+                MouseEventPoller?.StopMonitoringMouse();
+
+                if (GamepadManager is not null)
+                    foreach (var gamepadAdapter in GamepadManager.ConnectedAdapters)
+                        GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
+
                 Timer.ClearAll();
                 State.Clear();
             }
