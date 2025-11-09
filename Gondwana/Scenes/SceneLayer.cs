@@ -27,7 +27,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     public event Action<SceneLayer>? ParallaxChanged;
 
-    public event Action<SceneLayer>? ZeroPixelChanged;
+    public event Action<SceneLayer>? RenderSurfaceOriginPxChanged;
 
     public event Action<SceneLayer>? Disposing;
 
@@ -226,17 +226,17 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     // first pixel visible (i.e., source pixel for rendering calculations)
-    [JsonProperty("ZeroPixel")]
-    private Point _zeroPixel;
+    [JsonProperty("RenderSurfaceOriginPx")]
+    private Point _renderSurfaceOriginPx;
 
     [JsonIgnore]
-    public Point ZeroPixel
+    public Point RenderSurfaceOriginPx
     {
-        get => _zeroPixel;
+        get => _renderSurfaceOriginPx;
         set
         {
-            _zeroPixel = value;
-            ZeroPixelChanged?.Invoke(this);
+            _renderSurfaceOriginPx = value;
+            RenderSurfaceOriginPxChanged?.Invoke(this);
         }
     }
 
@@ -282,7 +282,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         _tileWidth = width;
         _tileHeight = height;
         _visible = true;
-        _zeroPixel = new Point(0, 0);
+        _renderSurfaceOriginPx = new Point(0, 0);
         CoordinateSystemType = coordinateSystem;
 
         // let each SceneLayerTile in array know its position in the array
