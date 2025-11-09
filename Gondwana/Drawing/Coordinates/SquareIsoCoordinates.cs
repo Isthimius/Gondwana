@@ -19,8 +19,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
     {
         PointF retPt = new PointF();
 
-        retPt.X = (pixelPt.X - sceneLayer.SceneLayerTileZeroPixel.X) / (float)sceneLayer.SceneLayerTileWidth;
-        retPt.Y = (pixelPt.Y - sceneLayer.SceneLayerTileZeroPixel.Y) / (float)sceneLayer.SceneLayerTileHeight;
+        retPt.X = (pixelPt.X - sceneLayer.ZeroPixel.X) / (float)sceneLayer.SceneLayerTileWidth;
+        retPt.Y = (pixelPt.Y - sceneLayer.ZeroPixel.Y) / (float)sceneLayer.SceneLayerTileHeight;
 
         return retPt;
     }
@@ -62,8 +62,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         // Base rect (unchanged)
         var baseRect = new Rectangle
         {
-            X = (int)(tile.SceneLayer.SceneLayerTileWidth * tile.SceneLayerCoordinates.X) + tile.SceneLayer.SceneLayerTileZeroPixel.X,
-            Y = (int)(tile.SceneLayer.SceneLayerTileHeight * tile.SceneLayerCoordinates.Y) + tile.SceneLayer.SceneLayerTileZeroPixel.Y,
+            X = (int)(tile.SceneLayer.SceneLayerTileWidth * tile.SceneLayerCoordinates.X) + tile.SceneLayer.ZeroPixel.X,
+            Y = (int)(tile.SceneLayer.SceneLayerTileHeight * tile.SceneLayerCoordinates.Y) + tile.SceneLayer.ZeroPixel.Y,
             Width = tile.SceneLayer.SceneLayerTileWidth,
             Height = tile.SceneLayer.SceneLayerTileHeight
         };

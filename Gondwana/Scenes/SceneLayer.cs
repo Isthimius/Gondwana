@@ -7,16 +7,13 @@ using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
 
-/// <summary>
-///
-/// </summary>
 [JsonObject(IsReference = true)]
 public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 {
     #region events
 
-    private EventHandler<RefreshQueueAreaAddedEventArgs> refQueueDel;
-    internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
+    private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;     // for responding to *other* SceneLayers' RefreshQueue events
+    internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;   // raised by *this* SceneLayer's RefreshQueue
 
     public event Action<SceneLayer>? SceneLayerTileSizeChanged;
 
@@ -30,71 +27,41 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     public event Action<SceneLayer>? ParallaxChanged;
 
+    public event Action<SceneLayer>? ZeroPixelChanged;
+
     public event Action<SceneLayer>? Disposing;
 
     #endregion events
 
-    #region private / internal fields
+    #region private fields
 
     private int _tileWidth;                             // rendered width
     private int _tileHeight;                            // rendered height
     private bool _visible;                              // is SceneLayer to be rendered; useful with multiple layers
 
-    [JsonProperty]
-    private SceneLayerTile[][] _sceneLayerTileArray;    // array of points; 2 dimensions (X, Y)
-
-    internal bool _wrapHoriz = false;
-    internal bool _wrapVerti = false;
-
-    // first pixel visible (i.e., source pixel for rendering calculations)
-    private Point _gridPtZeroPxl;
-
-    private PointF _firstGridPt = new PointF();
-
-    #endregion private / internal fields
+    #endregion private fields
 
     #region constructors / finalizer
 
-    public SceneLayer(int columnCount, int rowCount) :
-        this(columnCount, rowCount, 0, 0, 1)
-    { }
-
-    public SceneLayer(int columnCount, int rowCount, int width, int height) :
-        this(columnCount, rowCount, width, height, 1)
-    { }
-
-    public SceneLayer(int columnCount, int rowCount, int width, int height, float layerSyncModifier)
+    internal SceneLayer(int columnCount,
+                        int rowCount,
+                        int width = 32,
+                        int height = 32,
+                        float parallax = 1,
+                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SqaureIso)
     {
-        var pt = new SceneLayerTile[columnCount][];
+        var tileArray = new SceneLayerTile[columnCount, rowCount];
 
-        for (int i = 0; i < pt.Length; i++)
-            pt[i] = new SceneLayerTile[rowCount];
-
-        InitValues(pt, width, height, layerSyncModifier);
+        InitValues(tileArray, width, height, parallax, coordinateSystem);
     }
 
-    public SceneLayer(SceneLayerTile[][] pt) :
-        this(pt, 0, 0, 1)
-    { }
-
-    public SceneLayer(SceneLayerTile[][] pt, int width, int height) :
-        this(pt, width, height, 1)
-    { }
-
-    public SceneLayer(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier)
-    {
-        InitValues(pt, width, height, layerSyncModifier);
-    }
+    [OnDeserialized]
+    private void OnDeserialized(StreamingContext context) =>
+        InitValues(_sceneLayerTileArray, _tileWidth, _tileHeight, _parallax, CoordinateSystemType);
 
     ~SceneLayer()
     {
         Dispose();
-    }
-
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
-    {
-        InitValues(_sceneLayerTileArray, _tileWidth, _tileHeight, _parallax);
     }
 
     #endregion constructors / finalizer
@@ -177,8 +144,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _tileHeight; }
         set
         {
-            SceneLayerTileSizeChanged?.Invoke(this);
             _tileHeight = value;
+            SceneLayerTileSizeChanged?.Invoke(this);
         }
     }
 
@@ -188,8 +155,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         get { return _tileWidth; }
         set
         {
-            SceneLayerTileSizeChanged?.Invoke(this);
             _tileWidth = value;
+            SceneLayerTileSizeChanged?.Invoke(this);
         }
     }
 
@@ -204,32 +171,22 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    [JsonProperty]
-    public PointF SourceSceneLayerTile
-    {
-        get { return _firstGridPt; }
-        set { this.SetSourceSceneLayerTile(value); }
-    }
+    [JsonProperty("SceneLayerTileArray")]
+    private SceneLayerTile[,] _sceneLayerTileArray;    // array of points; 2 dimensions (X, Y)
 
     [JsonIgnore]
-    public SceneLayerTile[][] SceneLayerTileArray
-    {
-        get { return _sceneLayerTileArray; }
-    }
+    public SceneLayerTile[,] SceneLayerTileArray => _sceneLayerTileArray;
 
     [JsonIgnore]
-    public int GridColumnCount
-    {
-        get { return _sceneLayerTileArray.GetUpperBound(0) + 1; }
-    }
+    public int GridColumnCount => _sceneLayerTileArray.GetUpperBound(0) + 1;
 
     [JsonIgnore]
-    public int GridRowCount
-    {
-        get { return _sceneLayerTileArray[0].GetUpperBound(0) + 1; }
-    }
+    public int GridRowCount => _sceneLayerTileArray.GetUpperBound(1) + 1;
 
-    [JsonProperty]
+    [JsonProperty("WrapHorizontally")]
+    private bool _wrapHoriz = false;
+
+    [JsonIgnore]
     public bool WrapHorizontally
     {
         get { return _wrapHoriz; }
@@ -240,7 +197,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    [JsonProperty]
+    [JsonProperty("WrapVertically")]
+    private bool _wrapVerti = false;
+
+    [JsonIgnore]
     public bool WrapVertically
     {
         get { return _wrapVerti; }
@@ -251,7 +211,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    [JsonProperty]
+    [JsonProperty("ShowGridLines")]
     private bool showGridLines;
 
     [JsonIgnore]
@@ -265,11 +225,24 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    // first pixel visible (i.e., source pixel for rendering calculations)
+    [JsonProperty("ZeroPixel")]
+    private Point _zeroPixel;
+
     [JsonIgnore]
-    public Point SceneLayerTileZeroPixel
+    public Point ZeroPixel
     {
-        get { return _gridPtZeroPxl; }
+        get => _zeroPixel;
+        set
+        {
+            _zeroPixel = value;
+            ZeroPixelChanged?.Invoke(this);
+        }
     }
+
+    [JsonIgnore]
+    public PointF SourceSceneLayerTile =>
+        CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, new PointF(0, 0));
 
     #endregion properties
 
@@ -281,7 +254,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         RefreshQueueAreaAdded?.Invoke(e);
     }
 
-    private void RefreshQueueNewTile(object? sender, RefreshQueueAreaAddedEventArgs e)
+    private void RefreshQueueNewTile(RefreshQueueAreaAddedEventArgs e)
     {
         // pass the event up to any containing SceneLayers
         OnRefreshQueueAreaAdded(e);
@@ -298,47 +271,38 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         SceneLayerTileSizeChanged?.Invoke(this);
     }
 
-    public void SetSourceSceneLayerTile(PointF srcGridPt)
-    {
-        // capture the existing / old source pixel before changes made
-        PointF oldSrcPt = SourceSceneLayerTile;
-        _firstGridPt = srcGridPt;
-
-        // update the first pixel position; the final SourceSceneLayerTile might be slightly
-        // different to srcGridPt due to rounding if srcSceneLayerTile is not a whole number
-        _gridPtZeroPxl = CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, new PointF(0, 0));
-    }
-
     #endregion public methods
 
     #region private / internal methods
+
+    private void InitValues(SceneLayerTile[,] tileArray, int width, int height, float parallax, CoordinateSystemTypes coordinateSystem)
+    {
+        _sceneLayerTileArray = tileArray;
+        _parallax = parallax;
+        _tileWidth = width;
+        _tileHeight = height;
+        _visible = true;
+        _zeroPixel = new Point(0, 0);
+        CoordinateSystemType = coordinateSystem;
+
+        // let each SceneLayerTile in array know its position in the array
+        SaveGridCoordinatesToSceneLayerTiles();
+        RefreshQueue = new RefreshQueue(this);
+        refQueueDel = RefreshQueueNewTile;
+        RefreshQueue.RefreshQueueAreaAdded += refQueueDel;
+    }
 
     private void SaveGridCoordinatesToSceneLayerTiles()
     {
         // let each SceneLayerTile in array know its position in the array
         for (int X = 0; X <= _sceneLayerTileArray.GetUpperBound(0); X++)
         {
-            for (int Y = 0; Y <= _sceneLayerTileArray[X].GetUpperBound(0); Y++)
+            for (int Y = 0; Y <= _sceneLayerTileArray.GetUpperBound(1); Y++)
             {
-                _sceneLayerTileArray[X][Y] = new SceneLayerTile(this);
-                _sceneLayerTileArray[X][Y].sceneLayerCoordinates = new Point(X, Y);
+                _sceneLayerTileArray[X, Y] = new SceneLayerTile(this);
+                _sceneLayerTileArray[X, Y].sceneLayerCoordinates = new Point(X, Y);
             }
         }
-    }
-    
-    protected void InitValues(SceneLayerTile[][] pt, int width, int height, float layerSyncModifier)
-    {
-        _sceneLayerTileArray = pt;
-        _parallax = layerSyncModifier;
-        _tileWidth = width;
-        _tileHeight = height;
-        _visible = true;
-        _gridPtZeroPxl = new Point(0, 0);
-        // let each SceneLayerTile in array know its position in the array
-        SaveGridCoordinatesToSceneLayerTiles();
-        RefreshQueue = new RefreshQueue(this);
-        refQueueDel = RefreshQueueNewTile;
-        RefreshQueue.RefreshQueueAreaAdded += refQueueDel;
     }
 
     #endregion private / internal methods
@@ -348,36 +312,21 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public SceneLayerTile? this[int x, int y]
     {
         get { return GetIndexer_NoWrap(x, y); }
-        set
-        {
-            PointF actualSceneLayerTile =
-                CoordinateSystem.FindEquivalentSceneLayerCoordinates(new PointF((float)x, (float)y), _sceneLayerTileArray.GetUpperBound(0), _sceneLayerTileArray[x].GetUpperBound(0));
-
-            _sceneLayerTileArray[(int)actualSceneLayerTile.X][(int)actualSceneLayerTile.Y] = value;
-        }
     }
 
-    public SceneLayerTile? this[Point pt]
-    {
-        get { return this[pt.X, pt.Y]; }
-        set { this[pt.X, pt.Y] = value; }
-    }
+    public SceneLayerTile? this[Point pt] => this[pt.X, pt.Y];
 
-    public SceneLayerTile? this[PointF ptF]
-    {
-        get { return this[(int)ptF.X, (int)ptF.Y]; }
-        set { this[(int)ptF.X, (int)ptF.Y] = value; }
-    }
+    public SceneLayerTile? this[PointF ptF] => this[(int)ptF.X, (int)ptF.Y];
 
     private SceneLayerTile? GetIndexer_NoWrap(int x, int y)
     {
         if (x > _sceneLayerTileArray.GetUpperBound(0)
-            || y > _sceneLayerTileArray[0].GetUpperBound(0)
+            || y > _sceneLayerTileArray.GetUpperBound(1)
             || x < 0
             || y < 0)
             return null;
         else
-            return _sceneLayerTileArray[x][y];
+            return _sceneLayerTileArray[x, y];
     }
 
     #endregion indexers
@@ -390,9 +339,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         for (int x = 0; x <= _sceneLayerTileArray.GetUpperBound(0); x++)
         {
-            for (int y = 0; y <= _sceneLayerTileArray[x].GetUpperBound(0); y++)
+            for (int y = 0; y <= _sceneLayerTileArray.GetUpperBound(1); y++)
             {
-                yield return _sceneLayerTileArray[x][y];
+                yield return _sceneLayerTileArray[x, y];
             }
         }
     }

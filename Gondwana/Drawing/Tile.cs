@@ -24,7 +24,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     #region fields
 
-    protected internal int zOrder;
+    protected internal int zOrder = 0;
     protected internal bool visible;
 
     protected internal Frame frame;
@@ -52,14 +52,8 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     #endregion abstract properties
 
-    private List<Rectangle> _drawLocationRefresh = new List<Rectangle>();
-
     [JsonIgnore]
-    public virtual List<Rectangle> DrawLocationRefresh
-    {
-        get { return _drawLocationRefresh; }
-        internal set { _drawLocationRefresh = value; }
-    }
+    public virtual List<Rectangle> DrawLocationRefresh { get; internal set; } = new List<Rectangle>();
 
     [JsonIgnore]
     public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
@@ -172,7 +166,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     /// if position is fixed, use top of primary (i.e., non-overhanging) area;
     /// otherwise, use bottom of location for comparison
     /// </summary>
-    private float GetTileLocForCompare(Tile tile)
+    private static float GetTileLocForCompare(Tile tile)
     {
         if (!tile.IsPositionFixed)
             return tile.DrawLocation.Bottom - tile.OverhangPixels.Bottom - 1;

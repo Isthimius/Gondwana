@@ -39,8 +39,6 @@ public class Game : IDisposable
         Scene = CreateInitialScene();
         RenderSurface.Host.Bind(Scene);
 
-        Scene!.SceneLayers[0].ShowGridLines = true;
-
         // configure input handling here
         ConfigureKeyboardInput();
         ConfigureMouseInput();
@@ -154,10 +152,10 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        SceneLayer sceneLayer = new SceneLayer(60, 60, 64, 64);
-        sceneLayer.CoordinateSystemType = CoordinateSystemTypes.HexFlatTop;
-        scene.AddLayer(sceneLayer);
-        
+        scene.AddLayer(60, 60, 64, 64, 1, CoordinateSystemTypes.HexFlatTop);
+
+        scene!.SceneLayers[0].ShowGridLines = true;
+
         return scene;
     }
 

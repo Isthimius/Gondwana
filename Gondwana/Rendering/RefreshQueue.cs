@@ -19,7 +19,7 @@ internal sealed class RefreshQueue : IDisposable
     private List<Rectangle> _rects;     // array of Rectangle areas being refreshed
     private SceneLayer _sceneLayer;     // associated SceneLayer (parent)
 
-    internal event EventHandler<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
+    internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
 
     internal RefreshQueue(SceneLayer layer)
     {
@@ -49,7 +49,7 @@ internal sealed class RefreshQueue : IDisposable
     {
         // cascade to other refresh queues if required
         if (cascadeToOtherRefreshQueues)
-            RefreshQueueAreaAdded?.Invoke(this, new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
+            RefreshQueueAreaAdded?.Invoke(new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
 
         // check all existing pixel ranges for an overlap with the new range
         for (int i = 0; i < _rects.Count; i++)
@@ -107,6 +107,7 @@ internal sealed class RefreshQueue : IDisposable
             // add the new refresh area to the Tile's refresh area
             foreach (Tile tile in _tiles)
             {
+                // find intersection of area and Tile's DrawLocation (i.e., allow for partial Tile refresh)
                 Rectangle tileRefresh = Rectangle.Intersect(area, tile.DrawLocation);
 
                 if (tile.DrawLocationRefresh != null && !tileRefresh.IsEmpty && !tile.DrawLocationRefresh.Contains(tileRefresh))

@@ -28,7 +28,7 @@ public class SceneLayerTile : Tile
     #region constructors / finalizer
 
     [JsonConstructor]
-    public SceneLayerTile(SceneLayer sceneLayer)
+    internal SceneLayerTile(SceneLayer sceneLayer)
     {
         zOrder = 0;
         visible = true;

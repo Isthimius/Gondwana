@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Rendering;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -112,8 +112,15 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region public methods
 
-    public SceneLayer AddLayer(SceneLayer sceneLayer)
+    public SceneLayer AddLayer(int columnCount,
+                               int rowCount,
+                               int width = 32,
+                               int height = 32,
+                               float parallax = 1,
+                               CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SqaureIso)
     {
+        var sceneLayer = new SceneLayer(columnCount, rowCount, width, height, parallax, coordinateSystem);
+
         _sceneLayers.Add(sceneLayer);
         OnSceneLayerAdded(sceneLayer);
 
@@ -168,6 +175,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowGridLinesChanged += gridLinesShowChanged;
         sceneLayer.ZOrderChanged += zOrderChangedDel;
         sceneLayer.ParallaxChanged += parallaxChangedDel;
+        sceneLayer.ZeroPixelChanged += zeroPixelChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerAdded?.Invoke(sceneLayer);
@@ -185,6 +193,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowGridLinesChanged -= gridLinesShowChanged;
         sceneLayer.ZOrderChanged -= zOrderChangedDel;
         sceneLayer.ParallaxChanged -= parallaxChangedDel;
+        sceneLayer.ZeroPixelChanged -= zeroPixelChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerRemoved?.Invoke(sceneLayer);
@@ -204,6 +213,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     private Action<SceneLayer> gridLinesShowChanged;
     private Action<SceneLayer> zOrderChangedDel;
     private Action<SceneLayer> parallaxChangedDel;
+    private Action<SceneLayer> zeroPixelChangedDel;
 
     private void SetSceneLayerEventDelegates()
     {
@@ -215,6 +225,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         gridLinesShowChanged = (sceneLayer) => _SceneLayerGridLinesShowChanged();
         zOrderChangedDel = (sceneLayer) => _SceneLayerZOrderChanged();
         parallaxChangedDel = (sceneLayer) => _SceneLayerParallaxChanged();
+        zeroPixelChangedDel = (sceneLayer) => _SceneLayerZeroPixelChanged();
     }
 
     private void _SceneLayerVisibleChanged()
@@ -254,6 +265,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     private void _SceneLayerZOrderChanged() => RefreshNeeded = SceneRefreshType.All;
 
     private void _SceneLayerParallaxChanged() => RefreshNeeded = SceneRefreshType.All;
+
+    private void _SceneLayerZeroPixelChanged() => RefreshNeeded = SceneRefreshType.All;
 
     #endregion handle SceneLayer events
 
