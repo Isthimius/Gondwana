@@ -13,21 +13,21 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
         int W =  sceneLayer.SceneLayerTileWidth; int H =  sceneLayer.SceneLayerTileHeight;
-        float dx = gp.X -  sceneLayer.SourceSceneLayerTile.X;
-        float dy = gp.Y -  sceneLayer.SourceSceneLayerTile.Y;
-        float px =  sceneLayer.ZeroPixel.X + (dx - dy) * (W / 2f);
-        float py =  sceneLayer.ZeroPixel.Y + (dx + dy) * (H / 2f);
+        float dx = gp.X -  sceneLayer.RenderSurfaceOriginCoordinates.X;
+        float dy = gp.Y -  sceneLayer.RenderSurfaceOriginCoordinates.Y;
+        float px =  sceneLayer.RenderSurfaceOriginPx.X + (dx - dy) * (W / 2f);
+        float py =  sceneLayer.RenderSurfaceOriginPx.Y + (dx + dy) * (H / 2f);
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
 
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
         int W =  sceneLayer.SceneLayerTileWidth; int H =  sceneLayer.SceneLayerTileHeight;
-        float a = (pixelPt.X -  sceneLayer.ZeroPixel.X) / (W / 2f);
-        float b = (pixelPt.Y -  sceneLayer.ZeroPixel.Y) / (H / 2f);
+        float a = (pixelPt.X -  sceneLayer.RenderSurfaceOriginPx.X) / (W / 2f);
+        float b = (pixelPt.Y -  sceneLayer.RenderSurfaceOriginPx.Y) / (H / 2f);
         float dx = (a + b) / 2f;
         float dy = (b - a) / 2f;
-        return new PointF( sceneLayer.SourceSceneLayerTile.X + dx,  sceneLayer.SourceSceneLayerTile.Y + dy);
+        return new PointF( sceneLayer.RenderSurfaceOriginCoordinates.X + dx,  sceneLayer.RenderSurfaceOriginCoordinates.Y + dy);
     }
 
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle pixelRange, bool includeOverhang)

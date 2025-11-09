@@ -1,233 +1,172 @@
-﻿//using System.Drawing;
-//using System.Numerics;
-//using Gondwana.Movement;
+﻿using System;
+using System.Drawing;
+using Gondwana.Scenes;
 
-//namespace Gondwana.Scenes;
+namespace Gondwana.Rendering;
 
-///// <summary>
-///// A grid-space camera that can hard- or soft-follow a target on a SceneLayer.
-///// Replaces legacy "scroll binding" with controller-driven movement.
-///// </summary>
-//public sealed class Camera : IMovableOnSceneLayer
-//{
-//    private readonly SceneLayer _layer;
-//    private readonly MovementController _controller;
-//    private MovementState _state;
+/// <summary>
+/// Parallax-aware camera that controls how SceneLayers map world->screen.
+/// - Set ViewportPx to your render surface size.
+/// - Set WorldBoundsPx to your total world rect in pixels (optional).
+/// - Call Update(dt) each frame; call Follow(...) or SnapTo(...) to move.
+/// It writes RenderSurfaceOriginPx on each visible SceneLayer.
+/// </summary>
+public sealed class Camera
+{
+    private readonly Scene _scene;
 
-//    // Follow state
-//    private IMovableOnSceneLayer? _target;
-//    private Vector2 _offsetGrid;
-//    private bool _hardFollow;
-//    private float _softSpeedTilesPerSec;
-//    private float _softSnapEps = 0.25f;
+    // Upper-left of the camera in WORLD PIXELS (what the camera is looking at)
+    public PointF PositionPx { get; private set; } = new PointF(0, 0);
 
-//    private float _scriptElapsed, _scriptDuration;
-//    private float _scriptSnapEps = 0.25f;
-//    private Func<float, float>? _scriptEasing;
-//    private Vector2 _scriptTarget;
+    // Size of the render target in pixels (used for clamping)
+    public Size ViewportPx { get; set; } = new Size(1280, 720);
 
-//    // Optional constraints (grid units)
-//    private RectangleF? _deadZoneGrid;   // camera only moves when target exits this zone (relative to camera)
-//    private RectangleF? _worldBoundsGrid; // clamp camera origin within these bounds
+    // Optional world bounds in pixels. If empty, no clamping.
+    public RectangleF WorldBoundsPx { get; set; } = RectangleF.Empty;
 
-//    public Camera(SceneLayer layer, Vector2? initialGridPos = null)
-//    {
-//        _layer = layer ?? throw new ArgumentNullException(nameof(layer));
-//        //_controller = MovementController.ForSceneLayer(_layer);                  // layer-aware controller
-//        var start = initialGridPos ?? new Vector2(_layer.SourceSceneLayerTile.X, _layer.SourceSceneLayerTile.Y);
-//        _state = MovementState.ForSceneLayer(start);                             // grid state
-//        // apply immediately
-//        SetPosition(_state.Position);
-//    }
+    // Dead-zone (relative to viewport) to reduce camera jitter while following
+    // Example: new Rectangle(400, 240, 480, 240) for a 1280x720 viewport
+    public Rectangle DeadZonePx { get; set; } = Rectangle.Empty;
 
-//    // IMovableOnSceneLayer
-//    public SceneLayer SceneLayer => _layer;
-//    public CoordinateSpace PositionSpace => CoordinateSpace.Grid;               // camera lives in grid space
-//    public Vector2 GetPosition() => _state.Position;
+    // Smooth follow
+    public float FollowLerpPerSecond { get; set; } = 8f; // 0 = snap
 
-//    public void SetPosition(Vector2 pos)
-//    {
-//        _state.Position = pos;
-//        // Apply to the SceneLayer (camera = source tile)
-//        _layer.SourceSceneLayerTile = new PointF(pos.X, pos.Y);                 // mirrors CameraMovable semantics
-//    }
+    // Target in world pixels (null = free camera)
+    private Func<PointF>? _followWorldPx;
+    private bool _hardFollow;
 
-//    #region *** follow API ***
+    public Camera(Scene scene)
+    {
+        _scene = scene ?? throw new ArgumentNullException(nameof(scene));
+    }
 
-//    public IMovableOnSceneLayer? FollowTarget => _target;
+    /// <summary>Snap the camera so that PositionPx becomes the given world pixel.</summary>
+    public void SnapTo(PointF worldUpperLeftPx)
+    {
+        PositionPx = ClampToWorld(worldUpperLeftPx);
+        PushToLayers();
+    }
 
-//    public void FollowHard(IMovableOnSceneLayer target, Vector2 gridOffset = default)
-//    {
-//        _target = target;
-//        _offsetGrid = gridOffset;
-//        _hardFollow = true;
-//        _controller.CancelScript(ref _state);
-//        SnapNow(); // snap immediately to starting position
-//    }
+    /// <summary>Center the camera on a world pixel position.</summary>
+    public void CenterOn(PointF worldCenterPx)
+    {
+        var ul = new PointF(worldCenterPx.X - ViewportPx.Width * 0.5f,
+                            worldCenterPx.Y - ViewportPx.Height * 0.5f);
+        SnapTo(ul);
+    }
 
-//    public void FollowSoft(IMovableOnSceneLayer target, float speedTilesPerSec, float snapEpsilon = 0.25f, Vector2 gridOffset = default)
-//    {
-//        _target = target;
-//        _offsetGrid = gridOffset;
-//        _hardFollow = false;
-//        _softSpeedTilesPerSec = MathF.Max(0f, speedTilesPerSec);
-//        _softSnapEps = MathF.Max(0f, snapEpsilon);
-//        _controller.CancelScript(ref _state);
-//        // schedule first leg; subsequent legs happen in Update
-//        var desired = DesiredCameraOrigin();
-//        _controller.ScheduleMoveToward(ref _state, desired, _softSpeedTilesPerSec, _softSnapEps);
-//    }
+    /// <summary>Pan by a pixel delta in world space.</summary>
+    public void PanBy(PointF deltaPx)
+    {
+        SnapTo(new PointF(PositionPx.X + deltaPx.X, PositionPx.Y + deltaPx.Y));
+    }
 
-//    public void Unfollow()
-//    {
-//        _target = null;
-//        _controller.CancelScript(ref _state);
-//    }
+    /// <summary>Follow a moving world-space pixel point (e.g., player sprite center).</summary>
+    public void Follow(Func<PointF> getWorldPixel, bool hardFollow = false)
+    {
+        _followWorldPx = getWorldPixel ?? throw new ArgumentNullException(nameof(getWorldPixel));
+        _hardFollow = hardFollow;
+    }
 
-//    /// <summary>Sets a dead-zone rectangle (in grid units) centered on the camera. Camera only moves when the target exits this region.</summary>
-//    public void SetDeadZone(RectangleF deadZoneGrid) => _deadZoneGrid = deadZoneGrid;
+    /// <summary>Stop following.</summary>
+    public void ClearFollow() => _followWorldPx = null;
 
-//    public void ClearDeadZone() => _deadZoneGrid = null;
+    /// <summary>Advance camera one frame. dtSeconds = time step.</summary>
+    public void Update(float dtSeconds)
+    {
+        if (_followWorldPx is null)
+        {
+            // Free camera: still push parallax origins in case viewport changed.
+            PushToLayers();
+            return;
+        }
 
-//    #endregion *** follow API ***
+        var target = _followWorldPx();
 
-//    /// <summary>Clamps the camera origin within world bounds (in grid units).</summary>
-//    public void SetWorldBounds(RectangleF worldBoundsGrid) => _worldBoundsGrid = worldBoundsGrid;
+        // Compute the desired UL so target lies within the dead-zone (or centered if none)
+        var desiredUL = DesiredUpperLeftToContainTarget(target);
 
-//    public void ClearWorldBounds() => _worldBoundsGrid = null;
+        if (_hardFollow || FollowLerpPerSecond <= 0f)
+        {
+            PositionPx = ClampToWorld(desiredUL);
+        }
+        else
+        {
+            // Critically-damped-ish simple lerp
+            float t = 1f - (float)Math.Exp(-FollowLerpPerSecond * Math.Max(0f, dtSeconds));
+            var cur = PositionPx;
+            var clamped = ClampToWorld(desiredUL);
+            PositionPx = new PointF(cur.X + (clamped.X - cur.X) * t,
+                                    cur.Y + (clamped.Y - cur.Y) * t);
+        }
 
-//    // Duration-based tween to a grid target (optional easing)
-//    public void MoveTo(Vector2 targetGrid, float durationSec,
-//                       Func<float, float>? easing = null, float snapEpsilon = 0.25f)
-//    {
-//        _hardFollow = false;         // scripted move overrides follow
-//        _target = null;
-//        _controller.CancelScript(ref _state);
-//        _scriptElapsed = 0f;
-//        _scriptDuration = MathF.Max(0f, durationSec);
-//        _scriptSnapEps = MathF.Max(0f, snapEpsilon);
-//        _scriptEasing = easing;
+        PushToLayers();
+    }
 
-//        _scriptTarget = targetGrid;  // remember for re-entrancy if desired
-//                                     // first frame is advanced in Update via AdvanceScripted
-//    }
+    // --- Helpers ---------------------------------------------------------
 
-//    // Constant-speed move toward a grid target
-//    public void MoveToward(Vector2 targetGrid, float tilesPerSec, float snapEpsilon = 0.25f)
-//    {
-//        _hardFollow = false;
-//        _target = null;
-//        _controller.CancelScript(ref _state);
-//        _softSnapEps = MathF.Max(0f, snapEpsilon);
-//        _softSpeedTilesPerSec = MathF.Max(0f, tilesPerSec);
+    private PointF DesiredUpperLeftToContainTarget(PointF targetWorldPx)
+    {
+        if (DeadZonePx == Rectangle.Empty)
+        {
+            // Center the target if no dead-zone is defined
+            return new PointF(targetWorldPx.X - ViewportPx.Width * 0.5f,
+                              targetWorldPx.Y - ViewportPx.Height * 0.5f);
+        }
 
-//        // schedule first leg; Update will advance and re-schedule as needed
-//        _controller.ScheduleMoveToward(ref _state, targetGrid, _softSpeedTilesPerSec, _softSnapEps);
-//        _scriptTarget = targetGrid;
-//    }
+        // World-space rect currently visible
+        var viewWorld = new RectangleF(PositionPx.X, PositionPx.Y, ViewportPx.Width, ViewportPx.Height);
+        // World-space dead-zone rect
+        var dzWorld = new RectangleF(viewWorld.X + DeadZonePx.X,
+                                     viewWorld.Y + DeadZonePx.Y,
+                                     DeadZonePx.Width, DeadZonePx.Height);
 
-//    /// <summary>Advance camera one frame. Call from your engine loop.</summary>
-//    public void Update(float dtSeconds)
-//    {
-//        // 1) Scripted MoveTo (duration-based) has priority
-//        if (_scriptDuration > 0f)
-//        {
-//            _scriptElapsed += dtSeconds;
-//            //if (_controller.MoveTo(this, ref _state, _scriptTarget, _scriptDuration,
-//            //                       ref _scriptElapsed, _scriptEasing, _scriptSnapEps))
-//            //{
-//            //    _scriptDuration = 0f; // finished
-//            //}
+        // If target is inside dead-zone, no change
+        if (dzWorld.Contains(targetWorldPx)) return PositionPx;
 
-//            return; // scripted handled this frame
-//        }
+        float newX = PositionPx.X;
+        float newY = PositionPx.Y;
 
-//        // 2) Follow logic (hard/soft)
-//        if (_target is not null)
-//        {
-//            if (_hardFollow)
-//            {
-//                // Snap each frame with dead-zone awareness
-//                var newOrigin = DesiredCameraOriginWithDeadZone();
-//                SetPosition(ClampToWorld(newOrigin));
-//            }
-//            else
-//            {
-//                // Soft follow: re-issue toward current desired origin if far enough
-//                var desired = DesiredCameraOrigin();
-//                var delta = desired - _state.Position;
+        if (targetWorldPx.X < dzWorld.Left) newX -= (dzWorld.Left - targetWorldPx.X);
+        if (targetWorldPx.X > dzWorld.Right) newX += (targetWorldPx.X - dzWorld.Right);
+        if (targetWorldPx.Y < dzWorld.Top) newY -= (dzWorld.Top - targetWorldPx.Y);
+        if (targetWorldPx.Y > dzWorld.Bottom) newY += (targetWorldPx.Y - dzWorld.Bottom);
 
-//                if (delta.LengthSquared() > _softSnapEps * _softSnapEps)
-//                    _controller.ScheduleMoveToward(ref _state, ClampToWorld(desired),
-//                                                   _softSpeedTilesPerSec, _softSnapEps);
+        return new PointF(newX, newY);
+    }
 
-//                // Advance the scheduled tween/toward; else run physics if any
-//                if (!_controller.AdvanceScripted(this, ref _state, dtSeconds) && _state.HasMotion)
-//                    _controller.Step(this, ref _state, dtSeconds);
-//            }
+    private PointF ClampToWorld(PointF ul)
+    {
+        if (WorldBoundsPx == RectangleF.Empty) return ul;
 
-//            return; // follow handled this frame
-//        }
+        float minX = WorldBoundsPx.Left;
+        float minY = WorldBoundsPx.Top;
+        float maxX = WorldBoundsPx.Right - ViewportPx.Width;
+        float maxY = WorldBoundsPx.Bottom - ViewportPx.Height;
 
-//        // 3) Neither scripted nor following: let inertial/physics glide
-//        if (_state.HasMotion)
-//            _controller.Step(this, ref _state, dtSeconds);
-//    }
+        // If the world is smaller than the viewport, lock to min
+        if (maxX < minX) maxX = minX;
+        if (maxY < minY) maxY = minY;
 
-//    #region private methods
+        return new PointF(
+            Math.Clamp(ul.X, minX, maxX),
+            Math.Clamp(ul.Y, minY, maxY)
+        );
+    }
 
-//    private void SnapNow()
-//    {
-//        if (_target is null) return;
-//        var p = DesiredCameraOriginWithDeadZone();
-//        SetPosition(ClampToWorld(p));
-//    }
+    private void PushToLayers()
+    {
+        // For each visible layer, compute originPx = -cameraUL * Parallax
+        // (Parallax of 1.0 tracks camera exactly; <1.0 moves slower; >1.0 faster.)
+        foreach (var layer in _scene.VisibleSceneLayers)
+        {
+            float p = layer.Parallax; // already exposed on SceneLayer
+            int ox = (int)Math.Floor(-PositionPx.X * p);
+            int oy = (int)Math.Floor(-PositionPx.Y * p);
 
-//    private Vector2 DesiredCameraOrigin()
-//    {
-//        var targetPos = _target!.GetPosition() + _offsetGrid;                    // grid target + offset
-//        return targetPos;
-//    }
-
-//    private Vector2 DesiredCameraOriginWithDeadZone()
-//    {
-//        var desired = DesiredCameraOrigin();
-//        if (_deadZoneGrid is null)
-//            return desired;
-
-//        // dead-zone is defined relative to current camera origin. If target is inside, keep current origin.
-//        var cam = _state.Position;
-//        var dz = _deadZoneGrid.Value;
-//        var dzLeft = cam.X + dz.Left;
-//        var dzRight = cam.X + dz.Right;
-//        var dzTop = cam.Y + dz.Top;
-//        var dzBottom = cam.Y + dz.Bottom;
-
-//        var tx = desired.X;
-//        var ty = desired.Y;
-
-//        float nx = cam.X;
-//        float ny = cam.Y;
-
-//        if (tx < dzLeft) nx += tx - dzLeft;
-//        if (tx > dzRight) nx += tx - dzRight;
-//        if (ty < dzTop) ny += ty - dzTop;
-//        if (ty > dzBottom) ny += ty - dzBottom;
-
-//        return new Vector2(nx, ny);
-//    }
-
-//    private Vector2 ClampToWorld(Vector2 pos)
-//    {
-//        if (_worldBoundsGrid is null)
-//            return pos;
-
-//        var b = _worldBoundsGrid.Value;
-//        var x = Math.Clamp(pos.X, b.Left, b.Right);
-//        var y = Math.Clamp(pos.Y, b.Top, b.Bottom);
-
-//        return new Vector2(x, y);
-//    }
-
-//    #endregion private methods
-//}
+            // Only push if changed to avoid excess invalidation
+            if (layer.RenderSurfaceOriginPx.X != ox || layer.RenderSurfaceOriginPx.Y != oy)
+                layer.RenderSurfaceOriginPx = new Point(ox, oy);
+        }
+    }
+}

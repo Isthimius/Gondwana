@@ -27,12 +27,12 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
 
         // Axis-aligned layout: gx only affects X; gy only affects Y.
-        float gx = gp.X - sceneLayer.SourceSceneLayerTile.X;
-        float gy = gp.Y - sceneLayer.SourceSceneLayerTile.Y;
+        float gx = gp.X - sceneLayer.RenderSurfaceOriginCoordinates.X;
+        float gy = gp.Y - sceneLayer.RenderSurfaceOriginCoordinates.Y;
 
         // STEP BY FULL TILE SIZE (W, H) — not half
-        float px = sceneLayer.ZeroPixel.X + gx * W;
-        float py = sceneLayer.ZeroPixel.Y + gy * H;
+        float px = sceneLayer.RenderSurfaceOriginPx.X + gx * W;
+        float py = sceneLayer.RenderSurfaceOriginPx.Y + gy * H;
 
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
@@ -42,11 +42,11 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
 
         // Inverse for full-tile stepping
-        float gxF = (pixelPt.X - sceneLayer.ZeroPixel.X) / W;
-        float gyF = (pixelPt.Y - sceneLayer.ZeroPixel.Y) / H;
+        float gxF = (pixelPt.X - sceneLayer.RenderSurfaceOriginPx.X) / W;
+        float gyF = (pixelPt.Y - sceneLayer.RenderSurfaceOriginPx.Y) / H;
 
-        return new PointF(sceneLayer.SourceSceneLayerTile.X + gxF,
-                          sceneLayer.SourceSceneLayerTile.Y + gyF);
+        return new PointF(sceneLayer.RenderSurfaceOriginCoordinates.X + gxF,
+                          sceneLayer.RenderSurfaceOriginCoordinates.Y + gyF);
     }
 
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)

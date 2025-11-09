@@ -241,8 +241,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     [JsonIgnore]
-    public PointF SourceSceneLayerTile =>
-        CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, new PointF(0, 0));
+    public PointF RenderSurfaceOriginCoordinates => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, RenderSurfaceOriginPx);
 
     #endregion properties
 

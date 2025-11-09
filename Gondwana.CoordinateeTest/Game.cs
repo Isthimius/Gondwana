@@ -73,7 +73,7 @@ public class Game : IDisposable
     private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
     {
         // Handle mouse events here
-        var message = $"Anchor Col/Row: {Scene![0].SourceSceneLayerTile}\n" +
+        var message = $"Anchor Col/Row: {Scene![0].RenderSurfaceOriginCoordinates}\n" +
                       $"Mouse Pos: {args.CurrentPosition.X}, {args.CurrentPosition.Y}\n" +
                       $"Grid coordinates: {Scene[0]!.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(Scene[0]!, args.CurrentPosition) }";
         _textBlockMouse?.SetText(message);
