@@ -39,7 +39,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// and draws them to the backbuffer. This, in turn, updates the
     /// Backbuffer.DirtyRectangle.
     /// </summary>
-    internal abstract void DrawRefreshQueueToBackbuffer();
+    internal abstract void DrawRefreshQueueToBackbuffer(long tick);
 
     /// <summary>
     /// Runs as part of DoForegroundTasks(). This renders the DirtyRectangle

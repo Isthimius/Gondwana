@@ -1,7 +1,8 @@
-using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
+using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.Rendering;
 
@@ -117,6 +118,40 @@ internal sealed class RefreshQueue : IDisposable
 
         _isDirty = false;
         _tiles.Sort();
+    }
+
+    internal Rectangle GetWorldDirtyBoundsPx()
+    {
+        if (_rects is null || _rects.Count == 0)
+            return Rectangle.Empty;
+
+        int left = int.MaxValue,
+            top = int.MaxValue,
+            right = int.MinValue,
+            bottom = int.MinValue;
+
+        foreach (var r in _rects)
+        {
+            if (r.IsEmpty)
+                continue;
+
+            if (r.Left < left)
+                left = r.Left;
+
+            if (r.Top < top)
+                top = r.Top;
+
+            if (r.Right > right)
+                right = r.Right;
+
+            if (r.Bottom > bottom)
+                bottom = r.Bottom;
+        }
+
+        if (right <= left || bottom <= top)
+            return Rectangle.Empty;
+
+        return Rectangle.FromLTRB(left, top, right, bottom);
     }
 
     public void Dispose()

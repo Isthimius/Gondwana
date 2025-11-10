@@ -19,7 +19,6 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
     private bool _disposed = false;
 
-
     // Fade/opacity state
     private float _opacity = 1f;                 // 0..1
     private float _fadeFrom, _fadeTo;

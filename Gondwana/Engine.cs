@@ -538,7 +538,7 @@ public sealed class Engine : IDisposable
 
         // refresh all RenderSurfaceHost backbuffers
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.DrawRefreshQueueToBackbuffer();
+            surface.DrawRefreshQueueToBackbuffer(tick);
 
         // all attached VisibleSurface backbuffers drawn; clear the refresh queues
         ClearRefreshQueues();

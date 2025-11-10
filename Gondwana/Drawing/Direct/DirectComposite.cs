@@ -137,14 +137,25 @@ public class DirectComposite : IDirectDrawable, IMovable
 
             foreach (var child in _children)
             {
-                if (!child.IsVisible) continue;
-                var b = child.Bounds;
-                if (b == Rectangle.Empty) continue;
+                if (!child.IsVisible)
+                    continue;
 
-                if (b.Left < minX) minX = b.Left;
-                if (b.Top < minY) minY = b.Top;
-                if (b.Right > maxX) maxX = b.Right;
-                if (b.Bottom > maxY) maxY = b.Bottom;
+                var b = child.Bounds;
+
+                if (b == Rectangle.Empty)
+                    continue;
+
+                if (b.Left < minX)
+                    minX = b.Left;
+
+                if (b.Top < minY)
+                    minY = b.Top;
+
+                if (b.Right > maxX)
+                    maxX = b.Right;
+
+                if (b.Bottom > maxY)
+                    maxY = b.Bottom;
             }
 
             if (minX == float.MaxValue) return Rectangle.Empty;
