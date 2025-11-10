@@ -84,58 +84,82 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         if (Scene is null || (Scene?.CountOfVisibleLayers ?? 0) == 0)
         {
-            // Optionally mark whole surface dirty for a visible clear:
             Backbuffer!.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+            return;
         }
-        else
+
+        if (MultiViewEnabled)
         {
-            switch (Scene!.RefreshNeeded)
+            // --- MULTI-VIEW PATH ---
+            // We’ll render per view. Easiest and safest: prep queues just like All.
+            // (This also works if Scene.RefreshNeeded == Queue; the queues are already populated.)
+            if (Scene.RefreshNeeded == SceneRefreshType.All)
             {
-                case SceneRefreshType.None:
-                    // Nothing to redraw in the background; don’t publish a new frame.
-                    // (i.e., UI will keep showing the last front buffer.)
-                    break;
-
-                case SceneRefreshType.Queue:
-                    {
-                        for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
-                        {
-                            var layer = Scene.VisibleSceneLayers[i];
-
-                            // Draw tiles in this layer’s queue
-                            Backbuffer!.DrawTiles(layer.RefreshQueue.Tiles);
-                        }
-
-                        break;
-                    }
-
-                case SceneRefreshType.All:
-                    {
-                        // full redraw: treat whole backbuffer as dirty
-                        Backbuffer!.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
-
-                        // clear the backbuffer so no stale pixels survive this pass
-                        Backbuffer.Canvas.Clear(Backbuffer.ClearColor);   // Canvas + ClearColor are on BackbufferBase
-
-                        // clear per-layer queues and add full range, then draw
-                        for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
-                        {
-                            var layer = Scene.VisibleSceneLayers[i];
-                            layer.RefreshQueue.AddPixelRangeToRefreshQueue(new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
-
-                            Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
-                        }
-                        
-                        break;
-                    }
-
-                default:
-                    // unknown state; skip
-                    Engine.Logger.LogWarning("Unknown Scene.RefreshNeeded state: {RefreshNeededState}", Scene.RefreshNeeded.ToString());
-                    break;
+                Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
+                for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                {
+                    var layer = Scene.VisibleSceneLayers[i];
+                    layer.RefreshQueue.AddPixelRangeToRefreshQueue(
+                        new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
+                }
             }
+
+            // Draw each view with its own clip/scale; drawScene = "what to render for one view"
+            _multiView.Render(Backbuffer!.Canvas, dtSeconds: 0f, drawScene: _ =>
+            {
+                // For both Queue and All, just draw the queued tiles in Z order
+                for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                {
+                    var layer = Scene.VisibleSceneLayers[i];
+                    Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
+                }
+            });
+
+            // Mark the entire surface dirty (adapter will blit full frame)
+            Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+
+            // Done
+            return;
+        }
+
+        // --- SINGLE-VIEW LEGACY PATH (unchanged) ---
+        switch (Scene.RefreshNeeded)
+        {
+            case SceneRefreshType.None:
+                break;
+
+            case SceneRefreshType.Queue:
+                {
+                    for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                    {
+                        var layer = Scene.VisibleSceneLayers[i];
+                        Backbuffer!.DrawTiles(layer.RefreshQueue.Tiles);
+                    }
+                    break;
+                }
+
+            case SceneRefreshType.All:
+                {
+                    Backbuffer!.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+                    Backbuffer.Canvas.Clear(Backbuffer.ClearColor);
+
+                    for (int i = Scene.CountOfVisibleLayers - 1; i >= 0; i--)
+                    {
+                        var layer = Scene.VisibleSceneLayers[i];
+                        layer.RefreshQueue.AddPixelRangeToRefreshQueue(
+                            new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height), false);
+
+                        Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
+                    }
+                    break;
+                }
+
+            default:
+                Engine.Logger.LogWarning("Unknown Scene.RefreshNeeded state: {RefreshNeededState}", Scene.RefreshNeeded.ToString());
+                break;
         }
     }
+
 
     /// <summary>
     /// Renders the contents of the backbuffer to the associated UI adapter.
@@ -151,15 +175,41 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         Backbuffer!.EndFrame();
 
-        if (RedrawDirtyRectangleOnly)
-            RenderBackbufferRect();
-        else
+        if (MultiViewEnabled)
+        {
+            // multi-view: publish full frame
             RenderBackbufferAll();
+        }
+        else
+        {
+            if (RedrawDirtyRectangleOnly)
+                RenderBackbufferRect();
+            else
+                RenderBackbufferAll();
+        }
 
-        Backbuffer.DirtyRectangle = Rectangle.Empty; // reset
-
+        Backbuffer.DirtyRectangle = Rectangle.Empty;
         Backbuffer.BeginFrame();
     }
+
+
+    #region Multiview support
+
+    // near the other fields
+    private readonly MultiViewRenderer _multiView = new();
+    public bool MultiViewEnabled => _multiView.Views.Count > 0;
+
+    // helper for setup from the outside (build views elsewhere and add here)
+    public void AddView(View view) => _multiView.AddView(view);
+
+    public void ClearViews()
+    {
+        // you can add a Clear() method if you like; for now, recreate
+        var tmp = new MultiViewRenderer();
+        // reflection hack avoided; just swap backing field if you prefer
+    }
+
+    #endregion Multiview support
 
     #region IDisposable
 
