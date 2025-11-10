@@ -233,7 +233,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public Point RenderSurfaceOriginPx
     {
         get => _renderSurfaceOriginPx;
-        set
+        internal set
         {
             _renderSurfaceOriginPx = value;
             RenderSurfaceOriginPxChanged?.Invoke(this);
