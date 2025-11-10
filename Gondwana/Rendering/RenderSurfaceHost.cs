@@ -11,6 +11,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     where TBackbuffer : BackbufferBase
 {
     private long _lastTick = HighResTimer.GetCurrentTick();
+    private long _lastViewsStateHash = 0;
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
@@ -107,22 +108,48 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        // 1) Ensure at least one view exists (full-screen default if none)
-        EnsureDefaultView();
-
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
-        // 2) Handle full scene refresh (prefill queues once)
+        // 1) Ensure at least one view exists (default full-screen if none)
+        EnsureDefaultView();
+
+        // 2) Build a cheap per-view state hash (camera pos, zoom, viewport rect)
+        long viewsHash = 1469598103934665603L; // FNV-1a
+        foreach (var v in _multiView.Views)
+        {
+            unchecked
+            {
+                viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.X); viewsHash *= 1099511628211L;
+                viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.Y); viewsHash *= 1099511628211L;
+                viewsHash ^= v.Viewport.TargetRectPx.GetHashCode(); viewsHash *= 1099511628211L;
+                viewsHash ^= BitConverter.DoubleToInt64Bits(v.Viewport.Zoom); viewsHash *= 1099511628211L;
+            }
+        }
+
+        // 3) Fast “no work” probe: no overlay dirty, no layer queues pending, and no view change
+        bool noScreenDirty = Backbuffer.DirtyRectangle.IsEmpty;
+        bool noWorldDirty = true;
+        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+        {
+            // If your RefreshQueue exposes a cheap IsEmpty, use it; otherwise check tiles count lazily.
+            var q = Scene.VisibleSceneLayers[i].RefreshQueue;
+            if (q is not null && (q.Tiles.Count > 0)) { noWorldDirty = false; break; }
+        }
+        if (Scene.RefreshNeeded == SceneRefreshType.None && noScreenDirty && noWorldDirty && viewsHash == _lastViewsStateHash)
+            return;
+
+        // 4) Handle full scene refresh once
         if (Scene.RefreshNeeded == SceneRefreshType.All)
         {
             Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
             var full = new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
             for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
                 Scene.VisibleSceneLayers[i].RefreshQueue.AddPixelRangeToRefreshQueue(full, cascadeToOtherRefreshQueues: false);
+
+            Scene.RefreshNeeded = SceneRefreshType.None;
         }
 
-        // 3) If overlays/DirectDrawings dirtied the SCREEN, project that into WORLD per view
-        //    and enqueue to each visible layer so tiles under/around overlays repaint.
+        // 5) If overlays dirtied the SCREEN, project that dirty into WORLD per view and enqueue to layers
         Rectangle screenDirty = Backbuffer.DirtyRectangle;
         if (!screenDirty.IsEmpty)
         {
@@ -132,30 +159,22 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 var vp = v.Viewport;
                 float z = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
 
-                // Screen -> World:
+                // Screen -> World
                 int wx = (int)Math.Floor(cam.PositionPx.X + (screenDirty.Left - vp.TargetRectPx.Left) * z);
                 int wy = (int)Math.Floor(cam.PositionPx.Y + (screenDirty.Top - vp.TargetRectPx.Top) * z);
                 int ww = (int)Math.Ceiling(screenDirty.Width * z);
                 int wh = (int)Math.Ceiling(screenDirty.Height * z);
-
                 var worldDirtyForView = new Rectangle(wx, wy, ww, wh);
 
                 for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
                     Scene.VisibleSceneLayers[i].RefreshQueue.AddPixelRangeToRefreshQueue(worldDirtyForView, cascadeToOtherRefreshQueues: true);
             }
+
+            // Clear the overlay dirty so it doesn’t re-trigger every frame
+            Backbuffer.DirtyRectangle = Rectangle.Empty;
         }
 
-        // 4) Compute WORLD-space dirty union across visible layers (includes step 3 additions)
-        Rectangle worldDirty = Rectangle.Empty;
-        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
-        {
-            var layer = Scene.VisibleSceneLayers[i];
-            var d = layer.RefreshQueue.GetWorldDirtyBoundsPx(); // requires the small helper added to RefreshQueue
-            if (!d.IsEmpty)
-                worldDirty = worldDirty.IsEmpty ? d : Rectangle.Union(worldDirty, d);
-        }
-
-        // 5) Render all views. Draw layers back->front (ascending Z).
+        // 6) Render all views. Draw layers back -> front (ascending Z).
         _multiView.Render(Backbuffer!.Canvas, dtSeconds: deltaSeconds, drawScene: _ =>
         {
             for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
@@ -165,39 +184,123 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             }
         });
 
-        // 6) Transform WORLD dirty -> per-view SCREEN dirty and union into adapter-space rect
+        // 7) Compute adapter-space dirty from the tiles we actually drew (no RefreshQueue changes needed)
+        //    We union per-layer, per-tile DrawLocationRefresh if available; else DrawLocation.
         Rectangle adapterDirty = Rectangle.Empty;
-        if (!worldDirty.IsEmpty)
+
+        // Single-view + zoom=1 + fullscreen fast path (avoid float math/divs)
+        bool singleFullView =
+            _multiView.Views.Count == 1 &&
+            Math.Abs(_multiView.Views[0].Viewport.Zoom - 1f) < 1e-6 &&
+            _multiView.Views[0].Viewport.TargetRectPx == new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
+
+        if (singleFullView)
         {
-            foreach (var v in _multiView.Views)
+            var cam = _multiView.Views[0].Camera;
+            for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             {
-                var cam = v.Camera;
-                var vp = v.Viewport;
+                var tiles = Scene.VisibleSceneLayers[i].RefreshQueue.Tiles;
+                for (int t = 0; t < tiles.Count; t++)
+                {
+                    var tile = tiles[t];
+                    // Prefer partial refresh; fallback to full draw rect
+                    if (tile.DrawLocationRefresh is not null && tile.DrawLocationRefresh.Count > 0)
+                    {
+                        for (int r = 0; r < tile.DrawLocationRefresh.Count; r++)
+                        {
+                            // World->Screen with zoom=1, full target
+                            var rr = tile.DrawLocationRefresh[r];
+                            var scr = new Rectangle(rr.Left - (int)cam.PositionPx.X,
+                                                    rr.Top - (int)cam.PositionPx.Y,
+                                                    rr.Width, rr.Height);
+                            if (!scr.IsEmpty)
+                                adapterDirty = adapterDirty.IsEmpty ? scr : Rectangle.Union(adapterDirty, scr);
+                        }
+                    }
+                    else
+                    {
+                        var rr = tile.DrawLocation;
+                        var scr = new Rectangle(rr.Left - (int)cam.PositionPx.X,
+                                                rr.Top - (int)cam.PositionPx.Y,
+                                                rr.Width, rr.Height);
+                        if (!scr.IsEmpty)
+                            adapterDirty = adapterDirty.IsEmpty ? scr : Rectangle.Union(adapterDirty, scr);
+                    }
+                }
+            }
+
+            // Clamp to adapter bounds
+            var fullScreen = new Rectangle(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
+            adapterDirty.Intersect(fullScreen);
+        }
+        else
+        {
+            // General case: per-view, account for zoom and viewport placement
+            for (int v = 0; v < _multiView.Views.Count; v++)
+            {
+                var view = _multiView.Views[v];
+                var cam = view.Camera;
+                var vp = view.Viewport;
                 float z = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
+                float invZ = 1f / z;
 
-                // World -> Screen (inside viewport)
-                int sx = vp.TargetRectPx.Left + (int)Math.Floor((worldDirty.Left - cam.PositionPx.X) / z);
-                int sy = vp.TargetRectPx.Top + (int)Math.Floor((worldDirty.Top - cam.PositionPx.Y) / z);
-                int sw = (int)Math.Ceiling(worldDirty.Width / z);
-                int sh = (int)Math.Ceiling(worldDirty.Height / z);
+                Rectangle viewDirty = Rectangle.Empty;
 
-                var viewDirty = new Rectangle(sx, sy, sw, sh);
-                viewDirty.Intersect(vp.TargetRectPx); // clamp to the viewport window
+                for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+                {
+                    var tiles = Scene.VisibleSceneLayers[i].RefreshQueue.Tiles;
+                    for (int t = 0; t < tiles.Count; t++)
+                    {
+                        var tile = tiles[t];
+
+                        if (tile.DrawLocationRefresh is not null && tile.DrawLocationRefresh.Count > 0)
+                        {
+                            for (int r = 0; r < tile.DrawLocationRefresh.Count; r++)
+                            {
+                                var rr = tile.DrawLocationRefresh[r]; // world px
+                                var sx = vp.TargetRectPx.Left + (int)Math.Floor((rr.Left - cam.PositionPx.X) * invZ);
+                                var sy = vp.TargetRectPx.Top + (int)Math.Floor((rr.Top - cam.PositionPx.Y) * invZ);
+                                var sw = (int)Math.Ceiling(rr.Width * invZ);
+                                var sh = (int)Math.Ceiling(rr.Height * invZ);
+                                var scr = new Rectangle(sx, sy, sw, sh);
+                                if (!scr.IsEmpty)
+                                    viewDirty = viewDirty.IsEmpty ? scr : Rectangle.Union(viewDirty, scr);
+                            }
+                        }
+                        else
+                        {
+                            var rr = tile.DrawLocation; // world px
+                            var sx = vp.TargetRectPx.Left + (int)Math.Floor((rr.Left - cam.PositionPx.X) * invZ);
+                            var sy = vp.TargetRectPx.Top + (int)Math.Floor((rr.Top - cam.PositionPx.Y) * invZ);
+                            var sw = (int)Math.Ceiling(rr.Width * invZ);
+                            var sh = (int)Math.Ceiling(rr.Height * invZ);
+                            var scr = new Rectangle(sx, sy, sw, sh);
+                            if (!scr.IsEmpty)
+                                viewDirty = viewDirty.IsEmpty ? scr : Rectangle.Union(viewDirty, scr);
+                        }
+                    }
+                }
 
                 if (!viewDirty.IsEmpty)
+                {
+                    viewDirty.Intersect(vp.TargetRectPx);
                     adapterDirty = adapterDirty.IsEmpty ? viewDirty : Rectangle.Union(adapterDirty, viewDirty);
+                }
             }
         }
 
-        // 7) Preserve any existing screen-space dirty (e.g., DirectDrawings) — union, don't replace
-        var ddDirty = Backbuffer.DirtyRectangle;
-        var finalDirty = adapterDirty.IsEmpty
-            ? ddDirty
-            : (ddDirty.IsEmpty ? adapterDirty : Rectangle.Union(adapterDirty, ddDirty));
+        // 8) Preserve any pre-existing dirty (e.g., set earlier this frame) — union, don’t replace
+        var carry = Backbuffer.DirtyRectangle;
+        Backbuffer.DirtyRectangle = adapterDirty.IsEmpty
+            ? carry.IsEmpty ? new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height) : carry
+            : (carry.IsEmpty ? adapterDirty : Rectangle.Union(adapterDirty, carry));
 
-        Backbuffer.DirtyRectangle = finalDirty.IsEmpty
-            ? new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height) // fallback (first frame, etc.)
-            : finalDirty;
+        // 9) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
+        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+            Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
+
+        // 10) Remember view state for the next fast-path check
+        _lastViewsStateHash = viewsHash;
 
         _lastTick = tick;
     }
@@ -285,6 +388,23 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Scene.RefreshNeeded = SceneRefreshType.All;   // full redraw next frame
 
         _backbuffer?.RequestResize(w, h);                 // UI thread → request only
+
+        // update each viewport in MultiView to fit the new adapter dimensions.
+        foreach (var view in _multiView.Views)
+        {
+            // Update viewport to new screen rect
+            view.Viewport.TargetRectPx = new Rectangle(0, 0,
+                RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
+
+            // Optionally, if your camera world bounds were "clamped" to visible area, update those too:
+            var cam = view.Camera;
+            if (cam.WorldBoundsPx.Width <= RenderSurfaceAdapter.Width &&
+                cam.WorldBoundsPx.Height <= RenderSurfaceAdapter.Height)
+            {
+                cam.WorldBoundsPx = new RectangleF(0, 0,
+                    RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
+            }
+        }
     }
 
     /// <summary>
