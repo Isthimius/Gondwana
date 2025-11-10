@@ -192,7 +192,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Backbuffer.BeginFrame();
     }
 
-
     #region Multiview support
 
     // near the other fields

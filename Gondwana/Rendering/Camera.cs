@@ -51,7 +51,7 @@ public sealed class Camera
 
     public void ClearFollow() => _followWorldPx = null;
 
-    public void Update(float dtSeconds)
+    internal void Update(float dtSeconds)
     {
         if (_followWorldPx is null) { PushToLayers(); return; }
 
@@ -71,6 +71,7 @@ public sealed class Camera
         PushToLayers();
     }
 
+    #region private methods
     private PointF DesiredUpperLeftToContainTarget(PointF targetWorldPx)
     {
         var vis = GetVisibleWorldSizePx();
@@ -83,14 +84,24 @@ public sealed class Camera
                                      viewWorld.Y + DeadZonePx.Y,
                                      DeadZonePx.Width, DeadZonePx.Height);
 
-        if (dzWorld.Contains(targetWorldPx)) return PositionPx;
+        if (dzWorld.Contains(targetWorldPx))
+            return PositionPx;
 
         float newX = PositionPx.X;
         float newY = PositionPx.Y;
-        if (targetWorldPx.X < dzWorld.Left) newX -= (dzWorld.Left - targetWorldPx.X);
-        if (targetWorldPx.X > dzWorld.Right) newX += (targetWorldPx.X - dzWorld.Right);
-        if (targetWorldPx.Y < dzWorld.Top) newY -= (dzWorld.Top - targetWorldPx.Y);
-        if (targetWorldPx.Y > dzWorld.Bottom) newY += (targetWorldPx.Y - dzWorld.Bottom);
+
+        if (targetWorldPx.X < dzWorld.Left)
+            newX -= (dzWorld.Left - targetWorldPx.X);
+
+        if (targetWorldPx.X > dzWorld.Right)
+            newX += (targetWorldPx.X - dzWorld.Right);
+
+        if (targetWorldPx.Y < dzWorld.Top)
+            newY -= (dzWorld.Top - targetWorldPx.Y);
+
+        if (targetWorldPx.Y > dzWorld.Bottom)
+            newY += (targetWorldPx.Y - dzWorld.Bottom);
+
         return new PointF(newX, newY);
     }
 
@@ -103,8 +114,12 @@ public sealed class Camera
         float minY = WorldBoundsPx.Top;
         float maxX = WorldBoundsPx.Right - vis.Width;
         float maxY = WorldBoundsPx.Bottom - vis.Height;
-        if (maxX < minX) maxX = minX;
-        if (maxY < minY) maxY = minY;
+
+        if (maxX < minX)
+            maxX = minX;
+
+        if (maxY < minY)
+            maxY = minY;
 
         return new PointF(Math.Clamp(ul.X, minX, maxX),
                           Math.Clamp(ul.Y, minY, maxY));
@@ -117,8 +132,10 @@ public sealed class Camera
             float p = layer.Parallax;
             int ox = (int)Math.Floor(-PositionPx.X * p);
             int oy = (int)Math.Floor(-PositionPx.Y * p);
+
             if (layer.RenderSurfaceOriginPx.X != ox || layer.RenderSurfaceOriginPx.Y != oy)
                 layer.RenderSurfaceOriginPx = new Point(ox, oy);
         }
     }
+    #endregion private methods
 }

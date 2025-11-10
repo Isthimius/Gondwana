@@ -10,7 +10,7 @@ public sealed class MultiViewRenderer
 
     public void AddView(View v) => _views.Add(v);
 
-    public void Render(SKCanvas canvas, float dtSeconds, System.Action<SKCanvas> drawScene)
+    internal void Render(SKCanvas canvas, float dtSeconds, System.Action<SKCanvas> drawScene)
     {
         // Update each camera, then draw each view with its own clip/scale.
         foreach (var v in _views)
