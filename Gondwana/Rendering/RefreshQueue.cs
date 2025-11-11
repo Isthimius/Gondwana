@@ -42,11 +42,6 @@ internal sealed class RefreshQueue : IDisposable
     ~RefreshQueue() => Dispose();
 
     /// <summary>
-    /// Quickly indicates whether there is any pending work.
-    /// </summary>
-    internal bool IsEmpty => _cachedUnion.IsEmpty;
-
-    /// <summary>
     /// The tiles that must be redrawn this pass. Recomputed lazily when <see cref="_isDirty"/> is set.
     /// </summary>
     internal List<Tile> Tiles
@@ -153,39 +148,6 @@ internal sealed class RefreshQueue : IDisposable
 
         // Stable painter’s order if Tile implements IComparable; otherwise no-op.
         _tiles.Sort();
-    }
-
-    /// <summary>
-    /// O(1) accessor for the cached union of all queued rectangles.
-    /// </summary>
-    internal Rectangle GetWorldDirtyBoundsPxFast() => _cachedUnion;
-
-    /// <summary>
-    /// Back-compat method: computes a union by scanning rects (O(n)).
-    /// Prefer <see cref="GetWorldDirtyBoundsPxFast"/>.
-    /// </summary>
-    internal Rectangle GetWorldDirtyBoundsPx()
-    {
-        if (_rects is null || _rects.Count == 0)
-            return Rectangle.Empty;
-
-        int left = int.MaxValue, top = int.MaxValue, right = int.MinValue, bottom = int.MinValue;
-
-        for (int i = 0; i < _rects.Count; i++)
-        {
-            var r = _rects[i];
-            if (r.IsEmpty) continue;
-
-            if (r.Left < left) left = r.Left;
-            if (r.Top < top) top = r.Top;
-            if (r.Right > right) right = r.Right;
-            if (r.Bottom > bottom) bottom = r.Bottom;
-        }
-
-        if (right <= left || bottom <= top)
-            return Rectangle.Empty;
-
-        return Rectangle.FromLTRB(left, top, right, bottom);
     }
 
     public void Dispose()

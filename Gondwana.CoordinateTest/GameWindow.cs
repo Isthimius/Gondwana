@@ -20,11 +20,12 @@ public partial class GameWindow : Form
         this.KeyPreview = true;
         this.KeyDown += (_, e) =>
         {
-            if (e.KeyCode == Keys.Escape) this.Close();
+            if (e.KeyCode == Keys.Escape)
+                this.Close();
         };
     }
 
-    // Create the Game (and thereby start the engine) once the form & controls are ready
+    // create the Game (and thereby start the engine) once the form & controls are ready
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -35,10 +36,8 @@ public partial class GameWindow : Form
     {
         base.OnShown(e);
 
-        // Respect the desktop working area (won’t cover taskbar)
-        var screen = Screen.FromHandle(this.Handle);
-
         // Fill the entire display, ignoring the taskbar
+        var screen = Screen.FromHandle(this.Handle);
         this.Bounds = screen.Bounds;
 
         // Optional but good practice for a “real” full screen feel

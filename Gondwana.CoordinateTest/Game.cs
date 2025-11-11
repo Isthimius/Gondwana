@@ -48,54 +48,7 @@ public class Game : IDisposable
         Engine.Instance.Start(SynchronizationContext.Current!);
     }
 
-    private void ConfigureKeyboardInput()
-    {
-        Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
-        Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey("w");
-        Engine.KeyboardEventPoller.StartMonitoringKey("a");
-        Engine.KeyboardEventPoller.StartMonitoringKey("s");
-        Engine.KeyboardEventPoller.StartMonitoringKey("d");
-    }
-
-    private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
-    {
-        // Handle key down events here
-    }
-
-    private void ConfigureMouseInput()
-    {
-        Engine.Instance.InitializeWinFormsMouseAdapter(RenderSurface);
-        Engine.MouseEventPoller!.MouseEvent += MouseEventPoller_MouseEvent;
-        Engine.MouseEventPoller.StartMonitoringMouse();
-    }
-
-    private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
-    {
-        // Handle mouse events here
-        var message = $"Anchor Col/Row: {Scene![0].RenderSurfaceOriginCoordinates}\n" +
-                      $"Mouse Pos: {args.CurrentPosition.X}, {args.CurrentPosition.Y}\n" +
-                      $"Grid coordinates: {Scene[0]!.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(Scene[0]!, args.CurrentPosition) }";
-        _textBlockMouse?.SetText(message);
-    }
-
-    private void ConfigureGamepadInput()
-    {
-        //Engine.Instance.InitializeSdlGamepadManager();
-
-        Engine.Instance.InitializeXInputGamepadManager();
-        Engine.GamepadEventPoller!.ButtonDown += GamepadEventPoller_ButtonDown;
-
-        foreach (var gamepadAdapter in Engine.GamepadManager!.ConnectedAdapters)
-        {
-            Engine.GamepadEventPoller.StartMonitoringButton(gamepadAdapter.GamepadId, "");
-        }
-    }
-
-    private void GamepadEventPoller_ButtonDown(GamepadButtonDownEventArgs args)
-    {
-        // Handle gamepad button down events here
-    }
+    #region load and init game content
 
     private void LoadAssets()
     {
@@ -149,6 +102,8 @@ public class Game : IDisposable
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
     }
 
+    #endregion load and init game content
+
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
@@ -158,6 +113,59 @@ public class Game : IDisposable
 
         return scene;
     }
+
+    #region input configuration
+
+    private void ConfigureKeyboardInput()
+    {
+        Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
+        Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
+        Engine.KeyboardEventPoller.StartMonitoringKey("w");
+        Engine.KeyboardEventPoller.StartMonitoringKey("a");
+        Engine.KeyboardEventPoller.StartMonitoringKey("s");
+        Engine.KeyboardEventPoller.StartMonitoringKey("d");
+    }
+
+    private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
+    {
+        // Handle key down events here
+    }
+
+    private void ConfigureMouseInput()
+    {
+        Engine.Instance.InitializeWinFormsMouseAdapter(RenderSurface);
+        Engine.MouseEventPoller!.MouseEvent += MouseEventPoller_MouseEvent;
+        Engine.MouseEventPoller.StartMonitoringMouse();
+    }
+
+    private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
+    {
+        // Handle mouse events here
+        var message = $"Anchor Col/Row: {Scene![0]!.RenderSurfaceOriginCoordinates}\n" +
+                      $"Mouse Pos: {args.CurrentPosition.X}, {args.CurrentPosition.Y}\n" +
+                      $"Grid coordinates: {Scene[0]!.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(Scene[0]!, args.CurrentPosition)}";
+        _textBlockMouse?.SetText(message);
+    }
+
+    private void ConfigureGamepadInput()
+    {
+        //Engine.Instance.InitializeSdlGamepadManager();
+
+        Engine.Instance.InitializeXInputGamepadManager();
+        Engine.GamepadEventPoller!.ButtonDown += GamepadEventPoller_ButtonDown;
+
+        foreach (var gamepadAdapter in Engine.GamepadManager!.ConnectedAdapters)
+        {
+            Engine.GamepadEventPoller.StartMonitoringButton(gamepadAdapter.GamepadId, "");
+        }
+    }
+
+    private void GamepadEventPoller_ButtonDown(GamepadButtonDownEventArgs args)
+    {
+        // Handle gamepad button down events here
+    }
+
+    #endregion input configuration
 
     #region IDisposable support
 
