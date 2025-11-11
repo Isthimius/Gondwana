@@ -17,6 +17,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC217C36-1278-4820-86D5-951EFEF6E28D}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		version.json = version.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana", "Gondwana\Gondwana.csproj", "{208754FD-B132-EEBD-A1C1-FC105730B970}"
