@@ -102,9 +102,16 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     internal override void DrawRefreshQueueToBackbuffer(long tick)
     {
+        // if there’s no Scene (or no visible layers), clear and publish the full frame
         if (Scene is null || Scene.CountOfVisibleLayers == 0)
         {
-            Backbuffer!.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+            // Erase prior overlay pixels so moving composites/particles don’t smear
+            Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
+
+            // Publish the whole surface; adapter code will blit only the dirty rect if enabled
+            Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+
+            _lastTick = tick;        // keep timing consistent
             return;
         }
 
@@ -145,8 +152,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var full = new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
             for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
                 Scene.VisibleSceneLayers[i].RefreshQueue.AddPixelRangeToRefreshQueue(full, cascadeToOtherRefreshQueues: false);
-
-            Scene.RefreshNeeded = SceneRefreshType.None;
         }
 
         // 5) If overlays dirtied the SCREEN, project that dirty into WORLD per view and enqueue to layers
@@ -302,6 +307,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 10) Remember view state for the next fast-path check
         _lastViewsStateHash = viewsHash;
 
+        Scene.RefreshNeeded = SceneRefreshType.None;
         _lastTick = tick;
     }
 
