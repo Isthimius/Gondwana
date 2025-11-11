@@ -353,6 +353,22 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     public void ClearViews() => _multiView = new MultiViewRenderer();
 
+    /// <summary>
+    /// Returns the current visible world size (in pixels), factoring in zoom.
+    /// </summary>
+    public SizeF VisibleWorldSizePx()
+    {
+        var v = _multiView.Views.Count > 0 ? _multiView.Views[0] : null;
+        if (v is null)
+            return new SizeF(RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
+
+        var invZ = v.Viewport.Zoom <= 0f ? 1f : 1f / v.Viewport.Zoom;
+        return new SizeF(
+            v.Viewport.TargetRectPx.Width * invZ,
+            v.Viewport.TargetRectPx.Height * invZ
+        );
+    }
+
     #endregion Multiview support
 
     #region IDisposable
