@@ -129,7 +129,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.X); viewsHash *= 1099511628211L;
                 viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.Y); viewsHash *= 1099511628211L;
                 viewsHash ^= v.Viewport.TargetRectPx.GetHashCode(); viewsHash *= 1099511628211L;
-                viewsHash ^= BitConverter.DoubleToInt64Bits(v.Viewport.Zoom); viewsHash *= 1099511628211L;
+                viewsHash ^= BitConverter.SingleToInt32Bits(v.Viewport.Zoom); viewsHash *= 1099511628211L;
             }
         }
 
@@ -140,9 +140,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             // If your RefreshQueue exposes a cheap IsEmpty, use it; otherwise check tiles count lazily.
             var q = Scene.VisibleSceneLayers[i].RefreshQueue;
-            if (q is not null && (q.Tiles.Count > 0)) { noWorldDirty = false; break; }
+            if (q is not null && (q.Tiles.Count > 0))
+            {
+                noWorldDirty = false;
+                break;
+            }
         }
-        if (Scene.RefreshNeeded == SceneRefreshType.None && noScreenDirty && noWorldDirty && viewsHash == _lastViewsStateHash)
+
+        if (Scene.RefreshNeeded == SceneRefreshType.None 
+                                && noScreenDirty
+                                && noWorldDirty
+                                && viewsHash == _lastViewsStateHash)
             return;
 
         // 4) Handle full scene refresh once
@@ -158,6 +166,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Rectangle screenDirty = Backbuffer.DirtyRectangle;
         if (!screenDirty.IsEmpty)
         {
+            // A) Erase the old overlay pixels in SCREEN space
+            var sk = new SKRect(screenDirty.Left, screenDirty.Top, screenDirty.Right, screenDirty.Bottom);
+            using (new SKAutoCanvasRestore(Backbuffer!.Canvas, true))
+            {
+                Backbuffer.Canvas.ClipRect(sk);
+                Backbuffer.Canvas.Clear(Backbuffer.ClearColor);
+            }
+
+            // B) project screen->world per view and enqueue to layer queues...
             foreach (var v in _multiView.Views)
             {
                 var cam = v.Camera;
@@ -418,7 +435,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             view.Viewport.TargetRectPx = new Rectangle(0, 0,
                 RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
 
-            // Optionally, if your camera world bounds were "clamped" to visible area, update those too:
+            // Optionally, if camera world bounds were "clamped" to visible area, update those too:
             var cam = view.Camera;
             if (cam.WorldBoundsPx.Width <= RenderSurfaceAdapter.Width &&
                 cam.WorldBoundsPx.Height <= RenderSurfaceAdapter.Height)
@@ -472,8 +489,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void RenderBackbufferRect()
     {
-        var dirty = Backbuffer.DirtyRectangle;
-        if (dirty.IsEmpty) return;
+        if (Backbuffer == null)
+            return;
+
+        var dirty = Backbuffer!.DirtyRectangle;
+        if (dirty.IsEmpty)
+            return;
 
         var img = Backbuffer.Snapshot();
 

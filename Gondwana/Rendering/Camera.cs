@@ -22,6 +22,12 @@ public sealed class Camera
 
     public Camera(Scene scene) => _scene = scene ?? throw new ArgumentNullException(nameof(scene));
 
+    /// <summary>
+    /// Returns the current visible world size (in pixels).
+    /// Typically assigned by <see cref="View"/> to point at its <see cref="Viewport.VisibleWorldSizePx"/>.
+    /// </summary>
+    public Func<SizeF> GetVisibleWorldSizePx { get; set; } = () => new SizeF(1280, 720);
+
     public void SnapTo(PointF worldUpperLeftPx)
     {
         PositionPx = ClampToWorld(worldUpperLeftPx);

@@ -6,7 +6,7 @@ namespace Gondwana.Rendering;
 /// <summary>
 /// A rectangular window on the render target with its own zoom and placement.
 /// Viewport never moves the world; it only scales and positions the drawing.
-/// Camera moves the world (by pushing RenderSurfaceOriginPx to layers).
+/// Camera "moves" the world (by pushing RenderSurfaceOriginPx to layers).
 /// </summary>
 public sealed class Viewport
 {

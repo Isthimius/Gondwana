@@ -38,7 +38,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     #region public fields
 
-    [JsonIgnore]
+    [JsonProperty]
     public object Tag;
 
     #endregion public fields
@@ -93,10 +93,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     [JsonIgnore]
-    public virtual Animator TileAnimator
-    {
-        get { return animator; }
-    }
+    public virtual Animator TileAnimator => animator!;
 
     [JsonIgnore]
     public virtual bool PauseAnimation { get; set; }
@@ -150,14 +147,11 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     }
 
     /// <summary>
-    /// This property is used to determine polygonal area when drawing grid lines or fog.
+    /// Used to determine polygonal area when drawing grid lines or fog.
     /// Override this property in a derived class to define custom areas for these effects.
     /// </summary>
     [JsonIgnore]
-    public virtual Point[] OutlinePoints
-    {
-        get { return SceneLayer.CoordinateSystem.GetPolygonPts(this, false); }
-    }
+    public virtual Point[] OutlinePoints => SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
 
     [JsonProperty]
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; }
