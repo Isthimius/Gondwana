@@ -20,12 +20,6 @@ public sealed class Camera
     private Func<PointF>? _followWorldPx;
     private bool _hardFollow;
 
-    /// <summary>
-    /// Provide the current view’s visible world size (width,height) in world pixels.
-    /// Typically: () => viewport.VisibleWorldSizePx
-    /// </summary>
-    public Func<SizeF> GetVisibleWorldSizePx { get; set; } = () => new SizeF(1280, 720);
-
     public Camera(Scene scene) => _scene = scene ?? throw new ArgumentNullException(nameof(scene));
 
     public void SnapTo(PointF worldUpperLeftPx)
