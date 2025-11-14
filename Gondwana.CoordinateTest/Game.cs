@@ -107,7 +107,7 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        scene.AddLayer(20, 20, 64, 64, 1, CoordinateSystemTypes.HexFlatTop);
+        scene.AddLayer(60, 60, 64, 64, 1, CoordinateSystemTypes.HexFlatTop);
 
         scene!.SceneLayers[0].ShowGridLines = true;
 

@@ -13,11 +13,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private long _lastTick = HighResTimer.GetCurrentTick();
     private long _lastViewsStateHash = 0;
 
+    private TBackbuffer? _backbuffer;
+    private Scene? _scene;
+    private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
+
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
-    private RenderSurfaceHost() : base()
-    {
-    }
+    private RenderSurfaceHost() : base() { }
 
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
@@ -42,13 +44,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
-    private TBackbuffer? _backbuffer;
-    private Scene? _scene;
-    private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
-
     public override BackbufferBase? Backbuffer => _backbuffer;
     public override Scene? Scene => _scene;
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
+
+    public ViewRenderer? ViewRenderer { get; private set; }
 
     public void Bind(Scene? drawSource)
     {
@@ -73,6 +73,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     /// <summary>
     /// Renders all visible scene layers for every configured view onto the backbuffer.
+    /// Called as part of DoBackgroundTasks().
     /// <para>
     /// This is the unified render path — it handles both single- and multi-view rendering.
     /// It performs the following steps each frame:
@@ -89,7 +90,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     ///     screen-space rectangles per view, producing a final adapter-space dirty rectangle.
     ///   </description></item>
     ///   <item><description>
-    ///     Invokes <see cref="MultiViewRenderer.Render"/> to update each camera, apply viewport transforms,
+    ///     Invokes <see cref="ViewRenderer.Render"/> to update each camera, apply viewport transforms,
     ///     and draw every visible layer’s tiles in ascending Z order (back → front).
     ///   </description></item>
     ///   <item><description>
@@ -118,11 +119,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
         // 1) Ensure at least one view exists (default full-screen if none)
-        EnsureDefaultView();
+        //EnsureDefaultView();
 
         // 2) Build a cheap per-view state hash (camera pos, zoom, viewport rect)
         long viewsHash = 1469598103934665603L; // FNV-1a
-        foreach (var v in _multiView.Views)
+        foreach (var v in ViewRenderer.Views)
         {
             unchecked
             {
@@ -133,26 +134,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             }
         }
 
-        // 3) Fast “no work” probe: no overlay dirty, no layer queues pending, and no view change
-        bool noScreenDirty = Backbuffer.DirtyRectangle.IsEmpty;
-        bool noWorldDirty = true;
-        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
-        {
-            // If your RefreshQueue exposes a cheap IsEmpty, use it; otherwise check tiles count lazily.
-            var q = Scene.VisibleSceneLayers[i].RefreshQueue;
-            if (q is not null && (q.Tiles.Count > 0))
-            {
-                noWorldDirty = false;
-                break;
-            }
-        }
-
-        if (Scene.RefreshNeeded == SceneRefreshType.None 
-                                && noScreenDirty
-                                && noWorldDirty
-                                && viewsHash == _lastViewsStateHash)
-            return;
-
         // 4) Handle full scene refresh once
         if (Scene.RefreshNeeded == SceneRefreshType.All)
         {
@@ -160,6 +141,28 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var full = new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
             for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
                 Scene.VisibleSceneLayers[i].RefreshQueue.AddPixelRangeToRefreshQueue(full, cascadeToOtherRefreshQueues: false);
+        }
+
+        // 3) Fast “no work” probe: no overlay dirty, no layer queues pending, and no view change
+        bool backbufferDirty = !Backbuffer!.DirtyRectangle.IsEmpty;
+        bool sceneDirty = false;
+        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+        {
+
+            if (Scene.VisibleSceneLayers[i].RefreshQueue.Tiles.Any())
+            {
+                sceneDirty = true;
+                break;
+            }
+        }
+
+        // if nothing is dirty, skip rendering this frame
+        if (Scene.RefreshNeeded == SceneRefreshType.None
+                                && !backbufferDirty
+                                && !sceneDirty
+                                && viewsHash == _lastViewsStateHash)
+        {
+            return;
         }
 
         // 5) If overlays dirtied the SCREEN, project that dirty into WORLD per view and enqueue to layers
@@ -175,7 +178,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             }
 
             // B) project screen->world per view and enqueue to layer queues...
-            foreach (var v in _multiView.Views)
+            foreach (var v in ViewRenderer.Views)
             {
                 var cam = v.Camera;
                 var vp = v.Viewport;
@@ -197,7 +200,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         // 6) Render all views. Draw layers back -> front (ascending Z).
-        _multiView.Render(Backbuffer!.Canvas, dtSeconds: deltaSeconds, drawScene: _ =>
+        ViewRenderer.Render(Backbuffer!.Canvas, dtSeconds: deltaSeconds, drawScene: _ =>
         {
             for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             {
@@ -212,13 +215,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // Single-view + zoom=1 + fullscreen fast path (avoid float math/divs)
         bool singleFullView =
-            _multiView.Views.Count == 1 &&
-            Math.Abs(_multiView.Views[0].Viewport.Zoom - 1f) < 1e-6 &&
-            _multiView.Views[0].Viewport.TargetRectPx == new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
+            ViewRenderer.Views.Count == 1 &&
+            Math.Abs(ViewRenderer.Views[0].Viewport.Zoom - 1f) < 1e-6 &&
+            ViewRenderer.Views[0].Viewport.TargetRectPx == new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
 
         if (singleFullView)
         {
-            var cam = _multiView.Views[0].Camera;
+            var cam = ViewRenderer.Views[0].Camera;
             for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             {
                 var tiles = Scene.VisibleSceneLayers[i].RefreshQueue.Tiles;
@@ -258,9 +261,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         else
         {
             // General case: per-view, account for zoom and viewport placement
-            for (int v = 0; v < _multiView.Views.Count; v++)
+            for (int v = 0; v < ViewRenderer.Views.Count; v++)
             {
-                var view = _multiView.Views[v];
+                var view = ViewRenderer.Views[v];
                 var cam = view.Camera;
                 var vp = view.Viewport;
                 float z = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
@@ -342,51 +345,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         Backbuffer!.EndFrame();
 
-        if (MultiViewEnabled)
-        {
-            // multi-view: publish full frame
-            RenderBackbufferAll();
-        }
+        if (RedrawDirtyRectangleOnly)
+            RenderBackbufferRect();
         else
-        {
-            if (RedrawDirtyRectangleOnly)
-                RenderBackbufferRect();
-            else
-                RenderBackbufferAll();
-        }
+            RenderBackbufferAll();
 
         Backbuffer.DirtyRectangle = Rectangle.Empty;
         Backbuffer.BeginFrame();
     }
-
-    #region Multiview support
-
-    // near the other fields
-    private MultiViewRenderer _multiView = new();
-    public bool MultiViewEnabled => _multiView.Views.Count > 0;
-
-    // helper for setup from the outside (build views elsewhere and add here)
-    public void AddView(View view) => _multiView.AddView(view);
-
-    public void ClearViews() => _multiView = new MultiViewRenderer();
-
-    /// <summary>
-    /// Returns the current visible world size (in pixels), factoring in zoom.
-    /// </summary>
-    public SizeF VisibleWorldSizePx()
-    {
-        var v = _multiView.Views.Count > 0 ? _multiView.Views[0] : null;
-        if (v is null)
-            return new SizeF(RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
-
-        var invZ = v.Viewport.Zoom <= 0f ? 1f : 1f / v.Viewport.Zoom;
-        return new SizeF(
-            v.Viewport.TargetRectPx.Width * invZ,
-            v.Viewport.TargetRectPx.Height * invZ
-        );
-    }
-
-    #endregion Multiview support
 
     #region IDisposable
 
@@ -429,7 +395,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         _backbuffer?.RequestResize(w, h);                 // UI thread → request only
 
         // update each viewport in MultiView to fit the new adapter dimensions.
-        foreach (var view in _multiView.Views)
+        foreach (var view in ViewRenderer.Views)
         {
             // Update viewport to new screen rect
             view.Viewport.TargetRectPx = new Rectangle(0, 0,
@@ -446,40 +412,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
-    /// <summary>
-    /// Ensure at least one view exists. If none are configured, create a full-screen
-    /// default View (Camera + Viewport) bound to the current Scene and adapter size.
-    /// </summary>
-    private void EnsureDefaultView()
-    {
-        if (_multiView.Views.Count > 0)
-            return;
-
-        if (Scene is null || RenderSurfaceAdapter is null)
-            return;
-
-        var cam = new Camera(Scene)
-        {
-            // Safe clamp box: use adapter size as the initial world bounds.
-            // You can replace with your map/world size later.
-            WorldBoundsPx = new RectangleF(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height),
-            FollowLerpPerSecond = 0f // snap by default
-        };
-
-        cam.SnapTo(new PointF(0, 0));
-
-        var vp = new Viewport
-        {
-            TargetRectPx = new Rectangle(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height),
-            Zoom = 1f
-        };
-
-        _multiView.AddView(new View(cam, vp));
-    }
-
     private void RenderBackbufferAll()
     {
-        var img = Backbuffer.Snapshot();
+        var img = Backbuffer!.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
 

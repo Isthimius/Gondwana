@@ -31,19 +31,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         Init();
     }
 
-    public Scene(SceneLayer sceneLayer)
-    {
-        _sceneLayers = new List<SceneLayer>();
-        _sceneLayers.Add(sceneLayer);
-        Init();
-    }
-
-    public Scene(List<SceneLayer> sceneLayers)
-    {
-        _sceneLayers = sceneLayers;
-        Init();
-    }
-
     ~Scene()
     {
         Dispose();
@@ -161,7 +148,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #endregion public methods
 
-    #region handle / raise Scene events
+    #region raise Scene events
 
     protected virtual void OnSceneLayerAdded(SceneLayer sceneLayer)
     {
@@ -201,7 +188,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     protected virtual void OnSceneDisposing() => SceneDisposing?.Invoke(this);
 
-    #endregion handle / raise Scene events
+    #endregion raise handle Scene events
 
     #region handle SceneLayer events
 

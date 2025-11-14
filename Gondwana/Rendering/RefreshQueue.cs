@@ -11,7 +11,6 @@ namespace Gondwana.Rendering;
 /// </summary>
 /// <remarks>
 /// Optimizations:
-/// - Maintains a cached union of all enqueued rectangles (O(1) to read dirty bounds).
 /// - Uses a HashSet to de-duplicate tiles (O(1) membership) instead of O(n) IndexOf.
 /// - Per-area refresh updates only the tiles hit by that area (avoids O(T) per area).
 /// - Early exit when new rect is contained by an existing rect.
@@ -24,9 +23,6 @@ internal sealed class RefreshQueue : IDisposable
     private readonly HashSet<Tile> _tileSet;     // O(1) membership check mirroring _tiles.
     private readonly List<Rectangle> _rects;     // Pixel areas requiring refresh.
     private readonly SceneLayer _sceneLayer;     // Parent layer (for coords and sprite queries).
-
-    // Cached union of all _rects for fast bounds queries.
-    private Rectangle _cachedUnion = Rectangle.Empty;
 
     internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
 
@@ -68,22 +64,22 @@ internal sealed class RefreshQueue : IDisposable
             RefreshQueueAreaAdded?.Invoke(new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
 
         // Fast containment check: if any existing rect already fully contains this one, skip it.
-        // (We still update the cached union below; but containment means this rect adds no new coverage.)
+        bool isContained = false;
         for (int i = 0; i < _rects.Count; i++)
         {
             if (_rects[i].Contains(pixelRange))
-                goto UPDATE_UNION_ONLY;
+            {
+                isContained = true;
+                break;
+            }
         }
 
-        // New contributing area: mark dirty and store it.
-        _rects.Add(pixelRange);
-        _isDirty = true;
-
-    UPDATE_UNION_ONLY:
-        // Always update cached union so callers can fetch O(1) overall bounds.
-        _cachedUnion = _cachedUnion.IsEmpty
-            ? pixelRange
-            : Rectangle.Union(_cachedUnion, pixelRange);
+        if (!isContained)
+        {
+            // New contributing area: mark dirty and store it.
+            _rects.Add(pixelRange);
+            _isDirty = true;
+        }
     }
 
     /// <summary>
@@ -98,7 +94,6 @@ internal sealed class RefreshQueue : IDisposable
         _tiles.Clear();
         _tileSet.Clear();
         _rects.Clear();
-        _cachedUnion = Rectangle.Empty;
         _isDirty = false;
     }
 
