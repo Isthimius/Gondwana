@@ -15,6 +15,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private TBackbuffer? _backbuffer;
     private Scene? _scene;
+
     private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
@@ -24,6 +25,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
         _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
+
+        ViewRenderer = new ViewRenderer(this);
 
         // Recreate backbuffer on adapter resize
         RenderSurfaceAdapter!.Resized += (_, _) => OnRenderSurfaceAdapterResized();
@@ -48,7 +51,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     public override Scene? Scene => _scene;
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
 
-    public ViewRenderer? ViewRenderer { get; private set; }
+    public ViewRenderer ViewRenderer { get; private set; }
 
     public void Bind(Scene? drawSource)
     {

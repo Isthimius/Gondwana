@@ -6,12 +6,15 @@ namespace Gondwana.Rendering;
 
 public sealed class ViewRenderer
 {
+    private readonly RenderSurfaceHostBase _renderSurfaceHost;
     private readonly List<View> _views = new();
 
     private ViewRenderer() { }
 
-    public ViewRenderer(Scene scene)
+    internal ViewRenderer(RenderSurfaceHostBase renderSurfaceHost)
     {
+        _renderSurfaceHost = renderSurfaceHost;
+        EnsureDefaultView();
     }
 
     public IReadOnlyList<View> Views => _views;
@@ -36,26 +39,29 @@ public sealed class ViewRenderer
     /// Ensure at least one view exists. If none are configured, create a full-screen
     /// default View (Camera + Viewport) bound to the current Scene and adapter size.
     /// </summary>
-    private void EnsureDefaultView(Scene scene)
+    private void EnsureDefaultView()
     {
         if (Views.Count > 0)
             return;
 
-        var cam = new Camera(scene)
+        if (_renderSurfaceHost.Scene is not null)
         {
-            // clamp camera to Scene pixel bounds
-            WorldBoundsPx = new RectangleF(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height),
-            FollowLerpPerSecond = 0f // snap by default
-        };
+            var cam = new Camera(_renderSurfaceHost.Scene)
+            {
+                // clamp camera to Scene pixel bounds
+                WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
+                FollowLerpPerSecond = 0f // snap by default
+            };
 
-        cam.SnapTo(new PointF(0, 0));
+            cam.SnapTo(new PointF(0, 0));
 
-        var vp = new Viewport
-        {
-            TargetRectPx = new Rectangle(0, 0, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height),
-            Zoom = 1f
-        };
+            var vp = new Viewport
+            {
+                TargetRectPx = new Rectangle(0, 0, _renderSurfaceHost.RenderSurfaceAdapter.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
+                Zoom = 1f
+            };
 
-        ViewRenderer.AddView(new View(cam, vp));
+            AddView(new View(cam, vp));
+        }
     }
 }
