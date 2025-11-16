@@ -1,0 +1,37 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam wrapWidth 200
+
+actor User as U
+participant "RenderSurface\n(mouse coordinates)" as Screen
+participant "View\n(Camera + Viewport)" as View
+participant "SceneLayer" as Layer
+participant "CoordinateSystem\n(SquareIso / HexFlatTop / etc.)" as Coords
+
+U -> Screen: Move mouse / click\n(screenPx)
+Screen -> View: ScreenToGrid(layer, screenPx)
+activate View
+
+View -> View: ScreenToWorld(screenPx)\n(using Camera.PositionPx,\nViewport.TargetRectPx, Zoom)
+note right of View
+worldPx.X = Camera.PositionPx.X\n  + (screenPx.X - TargetRectPx.Left) / Zoom
+worldPx.Y = Camera.PositionPx.Y\n  + (screenPx.Y - TargetRectPx.Top)  / Zoom
+end note
+
+View --> View: worldPx
+View -> Layer: GetSceneLayerCoordinatesAtPixel(layer, worldPx)
+activate Layer
+
+Layer -> Coords: Resolve tile for worldPx
+activate Coords
+Coords --> Layer: gridCoord (e.g. col,row)
+deactivate Coords
+
+Layer --> View: gridCoord
+deactivate Layer
+
+View --> Screen: gridCoord
+deactivate View
+
+Screen --> U: Tile under mouse = gridCoord
+@enduml

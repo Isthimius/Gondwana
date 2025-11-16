@@ -22,9 +22,12 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+
         float fx = (pixelPt.X - sceneLayer.RenderSurfaceOriginPx.X) / (W * 0.75f);
         int approxCol = (int)Math.Round(fx);
+
         int baseY = sceneLayer.RenderSurfaceOriginPx.Y + ((approxCol & 1) == 0 ? 0 : H / 2);
         float fy = (pixelPt.Y - baseY) / (float)H;
         int approxRow = (int)Math.Round(fy);
@@ -36,15 +39,25 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         {
             var poly = HexPolygonFlatTop(sceneLayer, cand.X, cand.Y, includeOverhang: false);
 
-            // Only here do we round for the point-in-polygon, not earlier
             var pInt = new Point((int)Math.Round(pixelPt.X), (int)Math.Round(pixelPt.Y));
-            if (PointInPolygon(poly, pInt)) return new PointF(cand.X, cand.Y);
+            if (PointInPolygon(poly, pInt))
+                return new PointF(cand.X, cand.Y);
 
             float cx = sceneLayer.RenderSurfaceOriginPx.X + cand.X * (W * 0.75f) + W / 2f;
-            float cy = sceneLayer.RenderSurfaceOriginPx.Y + cand.Y * H + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
-            float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
-            if (d < bestDist) { bestDist = d; best = cand; }
+            float cy = sceneLayer.RenderSurfaceOriginPx.Y + cand.Y * H
+                       + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
+
+            float dx = cx - pixelPt.X;
+            float dy = cy - pixelPt.Y;
+            float d = dx * dx + dy * dy;
+
+            if (d < bestDist)
+            {
+                bestDist = d;
+                best = cand;
+            }
         }
+
         return new PointF(best.X, best.Y);
     }
 

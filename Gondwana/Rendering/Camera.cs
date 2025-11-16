@@ -11,7 +11,17 @@ public sealed class Camera
 {
     private readonly Scene _scene;
 
-    public PointF PositionPx { get; private set; } = new(0, 0); // world UL
+    /// <summary>
+    /// World-space pixel position of the top-left corner of this view’s viewport.
+    /// Moving this value pans the camera across the world.
+    /// </summary>
+    public PointF PositionPx { get; private set; } = new(0, 0);
+
+    /// <summary>
+    /// World-space rectangle (in pixels) that the camera is allowed to move within.
+    /// Clamping logic uses this to prevent the view from scrolling past the edges
+    /// of the world or map.
+    /// </summary>
     public RectangleF WorldBoundsPx { get; set; } = RectangleF.Empty;
 
     public Rectangle DeadZonePx { get; set; } = Rectangle.Empty;

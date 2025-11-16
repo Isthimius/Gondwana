@@ -10,11 +10,16 @@ namespace Gondwana.Rendering;
 /// </summary>
 public sealed class Viewport
 {
-    /// <summary>Target rectangle (in device pixels) on the render surface.</summary>
+    /// <summary>
+    /// Screen-space rectangle (in RenderSurface pixels) where this view is drawn.
+    /// This defines the on-screen position and size of the viewport for this view.
+    /// </summary>
     public Rectangle TargetRectPx { get; set; } = new Rectangle(0, 0, 1280, 720);
 
     /// <summary>
-    /// Zoom = world pixels per screen pixel (1 = 1:1; 2 = zoomed out (see more); 0.5 = zoomed in).
+    /// Zoom factor applied to the world when rendering this view. Values greater
+    /// than 1 zoom in, values between 0 and 1 zoom out. Used when converting
+    /// between screen-space and world-space pixels.
     /// </summary>
     public float Zoom { get; set; } = 1f;
 

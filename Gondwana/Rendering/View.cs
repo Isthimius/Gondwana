@@ -1,4 +1,7 @@
-﻿namespace Gondwana.Rendering;
+﻿using System.Drawing;
+using Gondwana.Scenes;
+
+namespace Gondwana.Rendering;
 
 public sealed class View
 {
@@ -11,5 +14,36 @@ public sealed class View
         Viewport = vp;
         // Let camera clamp against THIS viewport’s visible world size.
         Camera.GetVisibleWorldSizePx = () => Viewport.VisibleWorldSizePx;
+    }
+
+    /// <summary>
+    /// Converts a point in screen-space (RenderSurface pixel coordinates) into a
+    /// world-space pixel position using this view’s camera, viewport offset, and zoom.
+    /// </summary>
+    /// <param name="screenPx">The pixel position relative to the RenderSurface.</param>
+    /// <returns>The corresponding world-space pixel coordinate.</returns>
+    public PointF ScreenToWorldPx(PointF screenPx)
+    {
+        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+
+        // Invert what Viewport.Begin actually does (translate + scale).
+        float worldX = (screenPx.X - Viewport.TargetRectPx.Left - Viewport.ScreenOffsetPx.X) * zoom;
+        float worldY = (screenPx.Y - Viewport.TargetRectPx.Top - Viewport.ScreenOffsetPx.Y) * zoom;
+
+        return new PointF(worldX, worldY);
+    }
+
+    /// <summary>
+    /// Converts a point in screen-space into the grid coordinate on the specified
+    /// SceneLayer by first mapping the screen pixel to world-space, then letting the
+    /// layer’s coordinate system resolve the corresponding tile.
+    /// </summary>
+    /// <param name="layer">The SceneLayer whose grid the point should be mapped onto.</param>
+    /// <param name="screenPx">The pixel position relative to the RenderSurface.</param>
+    /// <returns>The grid coordinate (column/row or axial) under the screen pixel.</returns>
+    public PointF ScreenToGrid(SceneLayer layer, PointF screenPx)
+    {
+        var world = ScreenToWorldPx(screenPx);
+        return layer.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(layer, world);
     }
 }
