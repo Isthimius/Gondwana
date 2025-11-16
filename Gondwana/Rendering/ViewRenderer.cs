@@ -13,12 +13,36 @@ public sealed class ViewRenderer
     internal ViewRenderer(RenderSurfaceHostBase renderSurfaceHost)
     {
         _renderSurfaceHost = renderSurfaceHost;
-        EnsureDefaultView();
     }
 
     public IReadOnlyList<View> Views => _views;
 
-    public void AddView(View v) => _views.Add(v);
+    internal void AddView(View v) => _views.Add(v);
+
+    public void AddView(Rectangle targetRectPx, float zoom = 1f)
+    {
+        if (_renderSurfaceHost.Scene is not null)
+        {
+            var cam = new Camera(_renderSurfaceHost.Scene)
+            {
+                // TODO: this should be world pixel size, not adapter size
+                // clamp camera to Scene pixel bounds
+                //WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
+                WorldBoundsPx = RectangleF.Empty,
+                FollowLerpPerSecond = 0f // snap by default
+            };
+
+            cam.SnapTo(new PointF(0, 0));
+
+            var vp = new Viewport
+            {
+                TargetRectPx = targetRectPx,
+                Zoom = zoom
+            };
+
+            AddView(new View(cam, vp));
+        }
+    }
 
     public void ClearViews() => _views.Clear();
 
@@ -34,21 +58,19 @@ public sealed class ViewRenderer
         }
     }
 
-    /// <summary>
-    /// Ensure at least one view exists. If none are configured, create a full-screen
-    /// default View (Camera + Viewport) bound to the current Scene and adapter size.
-    /// </summary>
-    private void EnsureDefaultView()
+    internal void BindToScene()
     {
-        if (Views.Count > 0)
-            return;
+        // new Scene, new Views
+        ClearViews();
 
         if (_renderSurfaceHost.Scene is not null)
         {
             var cam = new Camera(_renderSurfaceHost.Scene)
             {
+                // TODO: this should be world pixel size, not adapter size
                 // clamp camera to Scene pixel bounds
-                WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
+                //WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
+                WorldBoundsPx = RectangleF.Empty,
                 FollowLerpPerSecond = 0f // snap by default
             };
 

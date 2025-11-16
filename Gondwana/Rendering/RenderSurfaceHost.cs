@@ -63,6 +63,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         if (Scene != null)
         {
+            ViewRenderer.BindToScene();
             Scene.SceneDisposing += OnSourceDisposing;
             Scene.RefreshNeeded = SceneRefreshType.All;
         }
@@ -400,18 +401,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // update each viewport in MultiView to fit the new adapter dimensions.
         foreach (var view in ViewRenderer.Views)
         {
+            // TODO: resize proportionally
             // Update viewport to new screen rect
             view.Viewport.TargetRectPx = new Rectangle(0, 0,
                 RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
-
-            // Optionally, if camera world bounds were "clamped" to visible area, update those too:
-            var cam = view.Camera;
-            if (cam.WorldBoundsPx.Width <= RenderSurfaceAdapter.Width &&
-                cam.WorldBoundsPx.Height <= RenderSurfaceAdapter.Height)
-            {
-                cam.WorldBoundsPx = new RectangleF(0, 0,
-                    RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
-            }
         }
     }
 

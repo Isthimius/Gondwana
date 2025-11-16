@@ -39,6 +39,8 @@ public class Game : IDisposable
         Scene = CreateInitialScene();
         RenderSurface.Host.Bind(Scene);
 
+        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
+
         // configure input handling here
         ConfigureKeyboardInput();
         ConfigureMouseInput();
@@ -46,6 +48,9 @@ public class Game : IDisposable
 
         // start the engine main loop
         Engine.Instance.Start(SynchronizationContext.Current!);
+
+        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-200, 100));
+        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(200, -200));
     }
 
     #region load and init game content
@@ -107,7 +112,7 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        scene.AddLayer(200, 200, 64, 64, 1, CoordinateSystemTypes.HexFlatTop);
+        scene.AddLayer(15, 5, 64, 64, 1, CoordinateSystemTypes.HexFlatTop);
 
         scene!.SceneLayers[0].ShowGridLines = true;
 

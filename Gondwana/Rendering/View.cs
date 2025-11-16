@@ -5,7 +5,7 @@ public sealed class View
     public Camera Camera { get; }
     public Viewport Viewport { get; }
 
-    public View(Camera cam, Viewport vp)
+    internal View(Camera cam, Viewport vp)
     {
         Camera = cam;
         Viewport = vp;

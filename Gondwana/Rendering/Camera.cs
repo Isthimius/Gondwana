@@ -20,13 +20,13 @@ public sealed class Camera
     private Func<PointF>? _followWorldPx;
     private bool _hardFollow;
 
-    public Camera(Scene scene) => _scene = scene ?? throw new ArgumentNullException(nameof(scene));
+    internal Camera(Scene scene) => _scene = scene ?? throw new ArgumentNullException(nameof(scene));
 
     /// <summary>
     /// Returns the current visible world size (in pixels).
     /// Typically assigned by <see cref="View"/> to point at its <see cref="Viewport.VisibleWorldSizePx"/>.
     /// </summary>
-    public Func<SizeF> GetVisibleWorldSizePx { get; set; } = () => new SizeF(1280, 720);
+    internal Func<SizeF> GetVisibleWorldSizePx { get; set; } = () => new SizeF(1280, 720);
 
     public void SnapTo(PointF worldUpperLeftPx)
     {
@@ -107,7 +107,8 @@ public sealed class Camera
 
     private PointF ClampToWorld(PointF ul)
     {
-        if (WorldBoundsPx == RectangleF.Empty) return ul;
+        if (WorldBoundsPx == RectangleF.Empty)
+            return ul;
 
         var vis = GetVisibleWorldSizePx();
         float minX = WorldBoundsPx.Left;

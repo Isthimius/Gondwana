@@ -21,12 +21,15 @@ public sealed class Viewport
     /// <summary>Optional per-view HUD/safe-area offset in screen pixels.</summary>
     public PointF ScreenOffsetPx { get; set; } = PointF.Empty;
 
+    /// <summary>World size visible through this viewport (useful for Camera clamping).</summary>
+    public SizeF VisibleWorldSizePx => new SizeF(TargetRectPx.Width * Zoom, TargetRectPx.Height * Zoom);
+
     /// <summary>
     /// Apply clip and transform for this viewport. Must be paired with End().
     /// NOTE: This intentionally does NOT translate by camera position; Camera already
     ///       pushed parallax origins into SceneLayers via RenderSurfaceOriginPx.
     /// </summary>
-    public void Begin(SKCanvas canvas)
+    internal void Begin(SKCanvas canvas)
     {
         canvas.Save();
 
@@ -42,9 +45,5 @@ public sealed class Viewport
         canvas.Scale(s, s);
     }
 
-    public void End(SKCanvas canvas) => canvas.Restore();
-
-    /// <summary>World size visible through this viewport (useful for Camera clamping).</summary>
-    public SizeF VisibleWorldSizePx
-        => new SizeF(TargetRectPx.Width * Zoom, TargetRectPx.Height * Zoom);
+    internal void End(SKCanvas canvas) => canvas.Restore();
 }
