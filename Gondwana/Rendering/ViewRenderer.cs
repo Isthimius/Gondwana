@@ -17,7 +17,11 @@ public sealed class ViewRenderer
 
     public IReadOnlyList<View> Views => _views;
 
-    internal void AddView(View v) => _views.Add(v);
+    internal void AddView(View v)
+    {
+        _views.Add(v);
+        _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
+    }
 
     public void AddView(Rectangle targetRectPx, float zoom = 1f)
     {
