@@ -63,7 +63,11 @@ public sealed class Camera
 
     internal void Update(float dtSeconds)
     {
-        if (_followWorldPx is null) { PushToLayers(); return; }
+        if (_followWorldPx is null)
+        {
+            PushToLayers();
+            return;
+        }
 
         var desiredUL = DesiredUpperLeftToContainTarget(_followWorldPx());
         if (_hardFollow || FollowLerpPerSecond <= 0f)
