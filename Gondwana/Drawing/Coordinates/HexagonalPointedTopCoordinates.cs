@@ -11,20 +11,31 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
-        int col = (int)Math.Round(gp.X); int row = (int)Math.Round(gp.Y);
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+        int col = (int)Math.Round(gp.X);
+        int row = (int)Math.Round(gp.Y);
 
-        int x = sceneLayer.RenderSurfaceOriginPx.X + col * W + ((row & 1) == 0 ? 0 : W / 2);
-        int y = sceneLayer.RenderSurfaceOriginPx.Y + (int)Math.Floor(row * (H * 0.75f));
+        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
+        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+
+        int x = originX + col * W + ((row & 1) == 0 ? 0 : W / 2);
+        int y = originY + (int)Math.Floor(row * (H * 0.75f));
         return new Point(x, y);
     }
 
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
-        float fy = (pixelPt.Y - sceneLayer.RenderSurfaceOriginPx.Y) / (H * 0.75f);
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+
+        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
+        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+
+        float fy = (pixelPt.Y - originY) / (H * 0.75f);
         int approxRow = (int)Math.Round(fy);
-        int baseX = sceneLayer.RenderSurfaceOriginPx.X + ((approxRow & 1) == 0 ? 0 : W / 2);
+
+        int baseX = originX + ((approxRow & 1) == 0 ? 0 : W / 2);
         float fx = (pixelPt.X - baseX) / (float)W;
         int approxCol = (int)Math.Round(fx);
 
@@ -137,10 +148,15 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
 
     private static Point[] HexPolygonPointedTop(SceneLayer sceneLayer, int col, int row, bool includeOverhang)
     {
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+
+        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
+        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+
         var p = new Point(
-            sceneLayer.RenderSurfaceOriginPx.X + col * W + ((row & 1) == 0 ? 0 : W / 2),
-            sceneLayer.RenderSurfaceOriginPx.Y + (int)Math.Floor(row * (H * 0.75f)));
+            originX + col * W + ((row & 1) == 0 ? 0 : W / 2),
+            originY + (int)Math.Floor(row * (H * 0.75f)));
 
         var rect = new Rectangle(p.X, p.Y, W, H);
         var ohRect = TileBounds.ApplyOverhang(rect, includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None, includeOverhang);

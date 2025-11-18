@@ -142,15 +142,7 @@ public sealed class Camera
 
     private void PushToLayers()
     {
-        foreach (var layer in _scene.VisibleSceneLayers)
-        {
-            float p = layer.Parallax;
-            int ox = (int)Math.Floor(-PositionPx.X * p);
-            int oy = (int)Math.Floor(-PositionPx.Y * p);
-
-            if (layer.RenderSurfaceOriginPx.X != ox || layer.RenderSurfaceOriginPx.Y != oy)
-                layer.RenderSurfaceOriginPx = new Point(ox, oy);
-        }
+        // No-op
     }
     #endregion private methods
 }

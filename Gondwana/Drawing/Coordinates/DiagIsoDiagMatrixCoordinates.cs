@@ -12,22 +12,38 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        int W =  sceneLayer.SceneLayerTileWidth; int H =  sceneLayer.SceneLayerTileHeight;
-        float dx = gp.X -  sceneLayer.RenderSurfaceOriginCoordinates.X;
-        float dy = gp.Y -  sceneLayer.RenderSurfaceOriginCoordinates.Y;
-        float px =  sceneLayer.RenderSurfaceOriginPx.X + (dx - dy) * (W / 2f);
-        float py =  sceneLayer.RenderSurfaceOriginPx.Y + (dx + dy) * (H / 2f);
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+
+        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
+        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+
+        // gp is in grid-space (x,y) already.
+        float dx = gp.X;
+        float dy = gp.Y;
+
+        float px = originX + (dx - dy) * (W / 2f);
+        float py = originY + (dx + dy) * (H / 2f);
+
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
 
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        int W =  sceneLayer.SceneLayerTileWidth; int H =  sceneLayer.SceneLayerTileHeight;
-        float a = (pixelPt.X -  sceneLayer.RenderSurfaceOriginPx.X) / (W / 2f);
-        float b = (pixelPt.Y -  sceneLayer.RenderSurfaceOriginPx.Y) / (H / 2f);
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+
+        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
+        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+
+        float a = (pixelPt.X - originX) / (W / 2f);
+        float b = (pixelPt.Y - originY) / (H / 2f);
+
         float dx = (a + b) / 2f;
         float dy = (b - a) / 2f;
-        return new PointF( sceneLayer.RenderSurfaceOriginCoordinates.X + dx,  sceneLayer.RenderSurfaceOriginCoordinates.Y + dy);
+
+        return new PointF(dx, dy);
+
     }
 
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle pixelRange, bool includeOverhang)

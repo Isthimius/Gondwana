@@ -48,9 +48,11 @@ public class Game : IDisposable
         Engine.Instance.Start(SynchronizationContext.Current!);
 
         RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
-        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-100, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(-100, -100));
-        RenderSurface.Host.RedrawDirtyRectangleOnly = false;
+        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
+        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        //RenderSurface.Host.RedrawDirtyRectangleOnly = false;
+
+        RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
 
         DumpCoordinateDebug();
     }
@@ -149,22 +151,13 @@ public class Game : IDisposable
     {
         var view = RenderSurface.Host.ViewRenderer.Views[0];
         var layer = Scene!.SceneLayers[0];
-        var vp = view.Viewport;
 
-        // Undo the viewport's translate + scale to get world-pixel coords
-        float zoom = (vp.Zoom <= 0f ? 1f : vp.Zoom);
-
-        var worldPos = new PointF(
-            (args.CurrentPosition.X - vp.TargetRectPx.Left - vp.ScreenOffsetPx.X) * zoom,
-            (args.CurrentPosition.Y - vp.TargetRectPx.Top - vp.ScreenOffsetPx.Y) * zoom
-        );
-
-        // Now use the layer's coordinate system to get the tile
-        var gridPos = layer.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(layer, worldPos);
+        var screenPos = args.CurrentPosition;
+        var worldPos = view.ScreenToWorldPx(screenPos);                // uses camera + viewport
+        var gridPos = view.ScreenToGrid(layer, screenPos);            // uses worldPos internally
 
         var message =
-            $"Anchor Col/Row: {layer.RenderSurfaceOriginCoordinates}\n" +
-            $"Mouse Pos (screen): {args.CurrentPosition.X}, {args.CurrentPosition.Y}\n" +
+            $"Mouse Pos (screen): {screenPos.X}, {screenPos.Y}\n" +
             $"World Pos (px): {worldPos.X:F1}, {worldPos.Y:F1}\n" +
             $"Grid coordinates: {gridPos.X}, {gridPos.Y}";
 

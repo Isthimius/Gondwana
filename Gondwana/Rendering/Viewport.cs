@@ -31,23 +31,24 @@ public sealed class Viewport
 
     /// <summary>
     /// Apply clip and transform for this viewport. Must be paired with End().
-    /// NOTE: This intentionally does NOT translate by camera position; Camera already
-    ///       pushed parallax origins into SceneLayers via RenderSurfaceOriginPx.
+    /// Camera position is applied as a world-space offset.
     /// </summary>
-    internal void Begin(SKCanvas canvas)
+    internal void Begin(SKCanvas canvas, PointF cameraPositionPx)
     {
         canvas.Save();
 
         // Clip to viewport rectangle so views don't bleed into each other.
         canvas.ClipRect(new SKRect(TargetRectPx.Left, TargetRectPx.Top, TargetRectPx.Right, TargetRectPx.Bottom));
 
-        // Move origin to the viewport rectangle’s top-left.
-        canvas.Translate(TargetRectPx.Left + ScreenOffsetPx.X, TargetRectPx.Top + ScreenOffsetPx.Y);
-
         // Scale from world pixels -> screen pixels (1/Zoom).
-        // Higher Zoom shows more of the world (zoom out).
         float s = 1f / Math.Max(Zoom, 1e-6f);
         canvas.Scale(s, s);
+
+        // Translate so that the camera's upper-left maps to the viewport's upper-left.
+        // This yields: screen = TargetRect + ScreenOffset + (world - camera) / Zoom
+        float offsetX = TargetRectPx.Left + ScreenOffsetPx.X - cameraPositionPx.X * s;
+        float offsetY = TargetRectPx.Top + ScreenOffsetPx.Y - cameraPositionPx.Y * s;
+        canvas.Translate(offsetX, offsetY);
     }
 
     internal void End(SKCanvas canvas) => canvas.Restore();

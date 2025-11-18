@@ -56,8 +56,8 @@ public sealed class ViewRenderer
         foreach (var v in _views)
         {
             v.Camera.Update(dtSeconds);
-            v.Viewport.Begin(canvas);
-            drawScene(canvas);   // Your existing Scene rendering (layers already offset by camera)
+            v.Viewport.Begin(canvas, v.Camera.PositionPx);
+            drawScene(canvas);
             v.Viewport.End(canvas);
         }
     }

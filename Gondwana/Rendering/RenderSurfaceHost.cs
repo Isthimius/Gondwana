@@ -189,8 +189,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 float z = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
 
                 // Screen -> World
-                int wx = (int)Math.Floor(cam.PositionPx.X + (screenDirty.Left - vp.TargetRectPx.Left) * z);
-                int wy = (int)Math.Floor(cam.PositionPx.Y + (screenDirty.Top - vp.TargetRectPx.Top) * z);
+                int wx = (int)Math.Floor(cam.PositionPx.X + (screenDirty.Left - vp.TargetRectPx.Left - vp.ScreenOffsetPx.X) * z);
+                int wy = (int)Math.Floor(cam.PositionPx.Y + (screenDirty.Top - vp.TargetRectPx.Top - vp.ScreenOffsetPx.Y) * z);
                 int ww = (int)Math.Ceiling(screenDirty.Width * z);
                 int wh = (int)Math.Ceiling(screenDirty.Height * z);
                 var worldDirtyForView = new Rectangle(wx, wy, ww, wh);
@@ -228,30 +228,40 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var cam = ViewRenderer.Views[0].Camera;
             for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             {
-                var tiles = Scene.VisibleSceneLayers[i].RefreshQueue.Tiles;
+                var layer = Scene.VisibleSceneLayers[i];
+                float p = layer.Parallax;
+
+                var tiles = layer.RefreshQueue.Tiles;
                 for (int t = 0; t < tiles.Count; t++)
                 {
                     var tile = tiles[t];
-                    // Prefer partial refresh; fallback to full draw rect
+
                     if (tile.DrawLocationRefresh is not null && tile.DrawLocationRefresh.Count > 0)
                     {
                         for (int r = 0; r < tile.DrawLocationRefresh.Count; r++)
                         {
-                            // World->Screen with zoom=1, full target
-                            var rr = tile.DrawLocationRefresh[r];
-                            var scr = new Rectangle(rr.Left - (int)cam.PositionPx.X,
-                                                    rr.Top - (int)cam.PositionPx.Y,
+                            var rr = tile.DrawLocationRefresh[r]; // world px
+                            int ox = (int)Math.Floor(cam.PositionPx.X * p);
+                            int oy = (int)Math.Floor(cam.PositionPx.Y * p);
+
+                            var scr = new Rectangle(rr.Left - ox,
+                                                    rr.Top - oy,
                                                     rr.Width, rr.Height);
+
                             if (!scr.IsEmpty)
                                 adapterDirty = adapterDirty.IsEmpty ? scr : Rectangle.Union(adapterDirty, scr);
                         }
                     }
                     else
                     {
-                        var rr = tile.DrawLocation;
-                        var scr = new Rectangle(rr.Left - (int)cam.PositionPx.X,
-                                                rr.Top - (int)cam.PositionPx.Y,
+                        var rr = tile.DrawLocation; // world px
+                        int ox = (int)Math.Floor(cam.PositionPx.X * p);
+                        int oy = (int)Math.Floor(cam.PositionPx.Y * p);
+
+                        var scr = new Rectangle(rr.Left - ox,
+                                                rr.Top - oy,
                                                 rr.Width, rr.Height);
+
                         if (!scr.IsEmpty)
                             adapterDirty = adapterDirty.IsEmpty ? scr : Rectangle.Union(adapterDirty, scr);
                     }
@@ -277,7 +287,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
                 {
-                    var tiles = Scene.VisibleSceneLayers[i].RefreshQueue.Tiles;
+                    var layer = Scene.VisibleSceneLayers[i];
+                    float p = layer.Parallax;
+                    var tiles = layer.RefreshQueue.Tiles;
+
                     for (int t = 0; t < tiles.Count; t++)
                     {
                         var tile = tiles[t];
@@ -287,11 +300,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             for (int r = 0; r < tile.DrawLocationRefresh.Count; r++)
                             {
                                 var rr = tile.DrawLocationRefresh[r]; // world px
-                                var sx = vp.TargetRectPx.Left + (int)Math.Floor((rr.Left - cam.PositionPx.X) * invZ);
-                                var sy = vp.TargetRectPx.Top + (int)Math.Floor((rr.Top - cam.PositionPx.Y) * invZ);
+                                float offsetX = rr.Left - cam.PositionPx.X * p;
+                                float offsetY = rr.Top - cam.PositionPx.Y * p;
+
+                                var sx = vp.TargetRectPx.Left + (int)Math.Floor(offsetX * invZ);
+                                var sy = vp.TargetRectPx.Top + (int)Math.Floor(offsetY * invZ);
                                 var sw = (int)Math.Ceiling(rr.Width * invZ);
                                 var sh = (int)Math.Ceiling(rr.Height * invZ);
                                 var scr = new Rectangle(sx, sy, sw, sh);
+
                                 if (!scr.IsEmpty)
                                     viewDirty = viewDirty.IsEmpty ? scr : Rectangle.Union(viewDirty, scr);
                             }
@@ -299,11 +316,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         else
                         {
                             var rr = tile.DrawLocation; // world px
-                            var sx = vp.TargetRectPx.Left + (int)Math.Floor((rr.Left - cam.PositionPx.X) * invZ);
-                            var sy = vp.TargetRectPx.Top + (int)Math.Floor((rr.Top - cam.PositionPx.Y) * invZ);
+                            float offsetX = rr.Left - cam.PositionPx.X * p;
+                            float offsetY = rr.Top - cam.PositionPx.Y * p;
+
+                            var sx = vp.TargetRectPx.Left + (int)Math.Floor(offsetX * invZ);
+                            var sy = vp.TargetRectPx.Top + (int)Math.Floor(offsetY * invZ);
                             var sw = (int)Math.Ceiling(rr.Width * invZ);
                             var sh = (int)Math.Ceiling(rr.Height * invZ);
                             var scr = new Rectangle(sx, sy, sw, sh);
+
                             if (!scr.IsEmpty)
                                 viewDirty = viewDirty.IsEmpty ? scr : Rectangle.Union(viewDirty, scr);
                         }

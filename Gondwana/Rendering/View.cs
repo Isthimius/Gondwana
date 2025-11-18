@@ -26,11 +26,34 @@ public sealed class View
     {
         float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
 
-        // Invert what Viewport.Begin actually does (translate + scale).
-        float worldX = (screenPx.X - Viewport.TargetRectPx.Left - Viewport.ScreenOffsetPx.X) * zoom;
-        float worldY = (screenPx.Y - Viewport.TargetRectPx.Top - Viewport.ScreenOffsetPx.Y) * zoom;
+        float worldX =
+            Camera.PositionPx.X +
+            (screenPx.X - Viewport.TargetRectPx.Left - Viewport.ScreenOffsetPx.X) * zoom;
+
+        float worldY =
+            Camera.PositionPx.Y +
+            (screenPx.Y - Viewport.TargetRectPx.Top - Viewport.ScreenOffsetPx.Y) * zoom;
 
         return new PointF(worldX, worldY);
+    }
+
+    public PointF WorldToScreenPx(PointF worldPx)
+    {
+        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+
+        // Subtract camera
+        float localX = worldPx.X - Camera.PositionPx.X;
+        float localY = worldPx.Y - Camera.PositionPx.Y;
+
+        // Apply inverse zoom
+        localX /= zoom;
+        localY /= zoom;
+
+        // Apply viewport placement
+        localX += Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        localY += Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
+
+        return new PointF(localX, localY);
     }
 
     /// <summary>

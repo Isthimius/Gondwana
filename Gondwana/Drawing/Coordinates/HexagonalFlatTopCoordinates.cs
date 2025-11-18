@@ -9,13 +9,27 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 {
+    /// <summary>
+    /// Returns the world-space pixel position of the *top-left anchor* of the tile
+    /// at the given grid coordinate (col,row) in this SceneLayer.
+    /// 
+    /// This is the starting pixel used to draw the tile’s image or polygon.
+    /// Every tile's shape (square, isometric, hex) is positioned by taking this
+    /// anchor pixel and adding its local geometry.
+    /// 
+    /// In other words: given grid coordinates, this tells you exactly where on
+    /// the world the tile begins.
+    /// </summary>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
-        int col = (int)Math.Round(gp.X); int row = (int)Math.Round(gp.Y);
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+        int col = (int)Math.Round(gp.X);
+        int row = (int)Math.Round(gp.Y);
 
-        int x = sceneLayer.RenderSurfaceOriginPx.X + (int)Math.Floor(col * (W * 0.75f));
-        int y = sceneLayer.RenderSurfaceOriginPx.Y + row * H + ((col & 1) == 0 ? 0 : H / 2);
+        var origin = sceneLayer.OriginPx;
+        int x = (int)Math.Floor(origin.X + col * (W * 0.75f));
+        int y = (int)Math.Floor((double)(origin.Y + row * H + ((col & 1) == 0 ? 0 : H / 2)));
 
         return new Point(x, y);
     }
@@ -25,10 +39,13 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        float fx = (pixelPt.X - sceneLayer.RenderSurfaceOriginPx.X) / (W * 0.75f);
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
+
+        float fx = (pixelPt.X - originX) / (W * 0.75f);
         int approxCol = (int)Math.Round(fx);
 
-        int baseY = sceneLayer.RenderSurfaceOriginPx.Y + ((approxCol & 1) == 0 ? 0 : H / 2);
+        int baseY = originY + ((approxCol & 1) == 0 ? 0 : H / 2);
         float fy = (pixelPt.Y - baseY) / (float)H;
         int approxRow = (int)Math.Round(fy);
 
@@ -43,8 +60,8 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
             if (PointInPolygon(poly, pInt))
                 return new PointF(cand.X, cand.Y);
 
-            float cx = sceneLayer.RenderSurfaceOriginPx.X + cand.X * (W * 0.75f) + W / 2f;
-            float cy = sceneLayer.RenderSurfaceOriginPx.Y + cand.Y * H
+            float cx = originX + cand.X * (W * 0.75f) + W / 2f;
+            float cy = originY + cand.Y * H
                        + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
 
             float dx = cx - pixelPt.X;
@@ -64,25 +81,31 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
 
-        int minCol = (int)Math.Floor((pixelRange.Left - sceneLayer.RenderSurfaceOriginPx.X) / (W * 0.75f)) - 2;
-        int maxCol = (int)Math.Ceiling((pixelRange.Right - sceneLayer.RenderSurfaceOriginPx.X) / (W * 0.75f)) + 2;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
+
+        int minCol = (int)Math.Floor((pixelRange.Left - originX) / (W * 0.75f)) - 2;
+        int maxCol = (int)Math.Ceiling((pixelRange.Right - originX) / (W * 0.75f)) + 2;
 
         for (int col = minCol; col <= maxCol; col++)
         {
             int yOffset = ((col & 1) == 0 ? 0 : H / 2);
-            int minRow = (int)Math.Floor((pixelRange.Top - sceneLayer.RenderSurfaceOriginPx.Y - yOffset) / (float)H) - 2;
-            int maxRow = (int)Math.Ceiling((pixelRange.Bottom - sceneLayer.RenderSurfaceOriginPx.Y - yOffset) / (float)H) + 2;
+            int minRow = (int)Math.Floor((pixelRange.Top - originY - yOffset) / (float)H) - 2;
+            int maxRow = (int)Math.Ceiling((pixelRange.Bottom - originY - yOffset) / (float)H) + 2;
 
             for (int row = minRow; row <= maxRow; row++)
             {
                 var gp = sceneLayer[col, row];
                 if (gp == null) continue;
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(pixelRange)) result.Add(gp);
+                if (r.IntersectsWith(pixelRange))
+                    result.Add(gp);
             }
         }
+
         return result;
     }
 
@@ -139,7 +162,8 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         return new PointF(modX, modY);
     }
 
-    // Helpers ---------------------------------------------------
+    #region helpers
+
     private static IEnumerable<Point> NeighborsFlatTop(int col, int row, bool includeSelf)
     {
         if (includeSelf) yield return new Point(col, row);
@@ -154,26 +178,37 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 
     private static Point[] HexPolygonFlatTop(SceneLayer sceneLayer, int col, int row, bool includeOverhang)
     {
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
+
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
+
         var p = new Point(
-            sceneLayer.RenderSurfaceOriginPx.X + (int)Math.Floor(col * (W * 0.75f)),
-            sceneLayer.RenderSurfaceOriginPx.Y + row * H + ((col & 1) == 0 ? 0 : H / 2));
+            originX + (int)Math.Floor(col * (W * 0.75f)),
+            originY + row * H + ((col & 1) == 0 ? 0 : H / 2));
 
         var rect = new Rectangle(p.X, p.Y, W, H);
-        var ohRect = TileBounds.ApplyOverhang(rect, includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None, includeOverhang); // polygon uses base box; overhang impacts range, not shape
+        var ohRect = TileBounds.ApplyOverhang(
+            rect,
+            includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None,
+            includeOverhang); // polygon uses base box; overhang impacts range, not shape
 
-        int x = ohRect.X; int y = ohRect.Y;
+        int x = ohRect.X;
+        int y = ohRect.Y;
+
         // Flat-top vertices from bounding box
         return new[]
         {
-                new Point(x + W/4, y),
-                new Point(x + 3*W/4, y),
-                new Point(x + W, y + H/2),
-                new Point(x + 3*W/4, y + H),
-                new Point(x + W/4, y + H),
-                new Point(x, y + H/2)
-            };
+            new Point(x + W/4,    y),
+            new Point(x + 3*W/4,  y),
+            new Point(x + W,      y + H/2),
+            new Point(x + 3*W/4,  y + H),
+            new Point(x + W/4,    y + H),
+            new Point(x,          y + H/2)
+        };
     }
+
 
     private static bool PointInPolygon(Point[] poly, Point p)
     {
@@ -186,4 +221,6 @@ public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         }
         return inside;
     }
+
+    #endregion helpers
 }

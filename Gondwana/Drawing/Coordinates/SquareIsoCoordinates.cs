@@ -7,22 +7,30 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint)
     {
-        Point retVal = new Point();
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
 
-        retVal.X = (int)(sceneLayer.SceneLayerTileWidth * (layerPoint.X - sceneLayer.RenderSurfaceOriginCoordinates.X));
-        retVal.Y = (int)(sceneLayer.SceneLayerTileHeight * (layerPoint.Y - sceneLayer.RenderSurfaceOriginCoordinates.Y));
+        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
+        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
 
-        return retVal;
+        int x = originX + (int)(W * layerPoint.X);
+        int y = originY + (int)(H * layerPoint.Y);
+
+        return new Point(x, y);
     }
 
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        PointF retPt = new PointF();
+        int W = sceneLayer.SceneLayerTileWidth;
+        int H = sceneLayer.SceneLayerTileHeight;
 
-        retPt.X = (pixelPt.X - sceneLayer.RenderSurfaceOriginPx.X) / (float)sceneLayer.SceneLayerTileWidth;
-        retPt.Y = (pixelPt.Y - sceneLayer.RenderSurfaceOriginPx.Y) / (float)sceneLayer.SceneLayerTileHeight;
+        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
+        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
 
-        return retPt;
+        float gx = (pixelPt.X - originX) / W;
+        float gy = (pixelPt.Y - originY) / H;
+
+        return new PointF(gx, gy);
     }
 
     // Updated to properly consider overhang in all directions
@@ -59,13 +67,19 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
 
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
-        // Base rect (unchanged)
+        var layer = tile.SceneLayer;
+        int W = layer.SceneLayerTileWidth;
+        int H = layer.SceneLayerTileHeight;
+
+        int originX = layer.OriginPx.X + layer.RenderSurfaceOriginPx.X;
+        int originY = layer.OriginPx.Y + layer.RenderSurfaceOriginPx.Y;
+
         var baseRect = new Rectangle
         {
-            X = (int)(tile.SceneLayer.SceneLayerTileWidth * tile.SceneLayerCoordinates.X) + tile.SceneLayer.RenderSurfaceOriginPx.X,
-            Y = (int)(tile.SceneLayer.SceneLayerTileHeight * tile.SceneLayerCoordinates.Y) + tile.SceneLayer.RenderSurfaceOriginPx.Y,
-            Width = tile.SceneLayer.SceneLayerTileWidth,
-            Height = tile.SceneLayer.SceneLayerTileHeight
+            X = originX + (int)(W * tile.SceneLayerCoordinates.X),
+            Y = originY + (int)(H * tile.SceneLayerCoordinates.Y),
+            Width = W,
+            Height = H
         };
 
         // Apply full overhang (Left/Top/Right/Bottom)
