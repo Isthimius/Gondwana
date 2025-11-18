@@ -3,7 +3,7 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
 
-public class SquareIsoCoordinates : ISceneLayerCoordinates
+internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint)
     {

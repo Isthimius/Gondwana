@@ -1,17 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Movement.Scripted;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.Drawing.Coordinates;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
-using Gondwana.Movement.Scripted;
 
 namespace Slider
 {
@@ -31,6 +30,7 @@ namespace Slider
         private Size adjustedSize;
         private Point openSpace;
 
+        private RenderSurfaceHost<BitmapBackbuffer> _renderSurfaceHost;
         private Tilesheet tilesheet;
         private Scene matrixes;
 
@@ -67,9 +67,10 @@ namespace Slider
 
             Engine.Instance.InitializationComplete += OnEngineInitializationComplete;
 
-            renderSurfaceHost.RedrawDirtyRectangleOnly = true;
-            renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Black;
-            renderSurfaceHost.Bind(matrixes);
+            _renderSurfaceHost = renderSurfaceHost;
+            _renderSurfaceHost.RedrawDirtyRectangleOnly = true;
+            _renderSurfaceHost.Backbuffer.ClearColor = SkiaSharp.SKColors.Black;
+            _renderSurfaceHost.Bind(matrixes);
 
             delMoveStart = Sprites_SpriteMovementStarted;
             delMoveStop = Sprites_SpriteMovementStopped;
@@ -215,7 +216,9 @@ namespace Slider
 
         public PointF GetGridCoordinates(int pxlX, int pxlY)
         {
-            return matrixes[0].CoordinateSystem.GetSceneLayerCoordinatesAtPixel(matrixes[0], new Point(pxlX, pxlY));
+            var view = _renderSurfaceHost.ViewRenderer.Views[0];
+            var worldPx = view.ScreenToWorldPx(new PointF(pxlX, pxlY));
+            return matrixes[0].WorldPxToGrid(worldPx);
         }
 
         #endregion public methods
@@ -260,14 +263,13 @@ namespace Slider
             List<Sprite> adjSprites = new List<Sprite>();
             List<SceneLayerTile> adjGridPts = new List<SceneLayerTile>();
 
-            adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.N));
-            adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.S));
-            adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.E));
-            adjGridPts.Add(
-                matrixes[0].CoordinateSystem.GetAdjacentSceneLayerTile(matrixes[0][openSpace], CardinalDirections.W));
+            var layer = matrixes[0];
+            var centerTile = layer[openSpace];
+
+            adjGridPts.Add(layer.GetAdjacentTile(centerTile, CardinalDirections.N));
+            adjGridPts.Add(layer.GetAdjacentTile(centerTile, CardinalDirections.S));
+            adjGridPts.Add(layer.GetAdjacentTile(centerTile, CardinalDirections.E));
+            adjGridPts.Add(layer.GetAdjacentTile(centerTile, CardinalDirections.W));
 
             foreach (SceneLayerTile gPt in adjGridPts)
             {

@@ -56,8 +56,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region public properties
 
-    [JsonProperty]
-    public object Tag { get; set; }
+    [JsonIgnore]
+    public object? Tag { get; set; }
 
     [JsonProperty]
     public string ID { get; protected internal set; } = Guid.NewGuid().ToString();

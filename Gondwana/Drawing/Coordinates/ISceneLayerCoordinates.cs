@@ -9,11 +9,18 @@ namespace Gondwana.Drawing.Coordinates;
 /// as well as geometric queries such as adjacency, polygon outlines, and
 /// wrapping behavior for different coordinate systems (square, isometric, hex, etc.).
 /// </summary>
-public interface ISceneLayerCoordinates
+internal interface ISceneLayerCoordinates
 {
     /// <summary>
-    /// Converts a grid-space layer point (column, row) into its corresponding
-    /// top-left pixel position within the specified SceneLayer.
+    /// Returns the world-space pixel position of the *top-left anchor* of the tile
+    /// at the given grid coordinate (col,row) in this SceneLayer.
+    /// 
+    /// This is the starting pixel used to draw the tile’s image or polygon.
+    /// Every tile's shape (square, isometric, hex) is positioned by taking this
+    /// anchor pixel and adding its local geometry.
+    /// 
+    /// In other words: given grid coordinates, this tells you exactly where on
+    /// the world the tile begins.
     /// </summary>
     Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint);
 

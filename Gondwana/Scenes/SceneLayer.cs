@@ -72,7 +72,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public object? Tag { get; set; }
 
     [JsonIgnore]
-    public ISceneLayerCoordinates CoordinateSystem { get; private set; } = new SquareIsoCoordinates();
+    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new SquareIsoCoordinates();
 
     [JsonProperty]
     public CoordinateSystemTypes CoordinateSystemType
@@ -272,6 +272,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public PointF GridToWorldPx(PointF grid) => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
 
     public PointF WorldPxToGrid(PointF worldPx) => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
+
+    public SceneLayerTile? GetAdjacentTile(SceneLayerTile tile, CardinalDirections direction) => CoordinateSystem.GetAdjacentSceneLayerTile(tile, direction);
 
     #endregion public methods
 

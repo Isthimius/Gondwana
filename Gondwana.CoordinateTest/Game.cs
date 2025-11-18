@@ -53,8 +53,6 @@ public class Game : IDisposable
         //RenderSurface.Host.RedrawDirtyRectangleOnly = false;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
-
-        DumpCoordinateDebug();
     }
 
     #region load and init game content
@@ -221,36 +219,4 @@ public class Game : IDisposable
     }
 
     #endregion IDisposable support
-
-    private void DumpCoordinateDebug()
-    {
-        var layer = Scene!.SceneLayers[0];
-        var view = RenderSurface.Host.ViewRenderer.Views[0];
-
-        // 1) Raw screen center
-        var screen = new PointF(
-            RenderSurface.Width / 2,
-            RenderSurface.Height / 2);
-
-        // 2) Convert screen to world
-        var worldFromScreen = view.ScreenToWorldPx(screen);
-
-        // 3) Convert screen directly (wrong path)
-        var grid_viaScreen = layer.CoordinateSystem
-            .GetSceneLayerCoordinatesAtPixel(layer, screen);
-
-        // 4) Convert world (intended path)
-        var grid_viaWorld = layer.CoordinateSystem
-            .GetSceneLayerCoordinatesAtPixel(layer, worldFromScreen);
-
-        // 5) Log everything
-        Engine.Logger.LogDebug("---- COORD DEBUG ----");
-        Engine.Logger.LogDebug($"Camera.PosPx: {view.Camera.PositionPx}");
-        Engine.Logger.LogDebug($"Layer.OriginPx: {layer.OriginPx}");
-        Engine.Logger.LogDebug($"Screen: {screen}");
-        Engine.Logger.LogDebug($"WorldFromScreen: {worldFromScreen}");
-        Engine.Logger.LogDebug($"Grid via SCREEN: {grid_viaScreen}");
-        Engine.Logger.LogDebug($"Grid via WORLD: {grid_viaWorld}");
-        Engine.Logger.LogDebug("----------------------");
-    }
 }

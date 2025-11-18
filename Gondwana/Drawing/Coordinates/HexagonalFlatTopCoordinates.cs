@@ -7,19 +7,8 @@ namespace Gondwana.Drawing.Coordinates;
 /// Hexagonal – Flat-Top layout (even-q vertical layout)
 /// Bounding rectangle is (W x H). Centers advance by (0.75*W, H/2 per column parity)
 /// </summary>
-public class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
+internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 {
-    /// <summary>
-    /// Returns the world-space pixel position of the *top-left anchor* of the tile
-    /// at the given grid coordinate (col,row) in this SceneLayer.
-    /// 
-    /// This is the starting pixel used to draw the tile’s image or polygon.
-    /// Every tile's shape (square, isometric, hex) is positioned by taking this
-    /// anchor pixel and adding its local geometry.
-    /// 
-    /// In other words: given grid coordinates, this tells you exactly where on
-    /// the world the tile begins.
-    /// </summary>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
         int W = sceneLayer.SceneLayerTileWidth;
