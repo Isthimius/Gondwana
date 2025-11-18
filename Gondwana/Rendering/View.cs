@@ -8,6 +8,12 @@ public sealed class View
     public Camera Camera { get; }
     public Viewport Viewport { get; }
 
+    /// <summary>
+    /// Controls the draw order of this view relative to other views.
+    /// Lower values are drawn first (behind); higher values are drawn later (in front).
+    /// </summary>
+    public int ZOrder { get; set; } = 0;
+
     internal View(Camera cam, Viewport vp)
     {
         Camera = cam;
@@ -15,6 +21,8 @@ public sealed class View
         // Let camera clamp against THIS viewport’s visible world size.
         Camera.GetVisibleWorldSizePx = () => Viewport.VisibleWorldSizePx;
     }
+
+    #region Coordinate conversion methods
 
     /// <summary>
     /// Converts a point in screen-space (RenderSurface pixel coordinates) into a
@@ -125,4 +133,6 @@ public sealed class View
 
         return new RectangleF(worldLeft, worldTop, worldWidth, worldHeight);
     }
+
+    #endregion Coordinate conversion methods
 }

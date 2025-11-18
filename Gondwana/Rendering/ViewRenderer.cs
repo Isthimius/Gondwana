@@ -23,7 +23,7 @@ public sealed class ViewRenderer
         _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
     }
 
-    public void AddView(Rectangle targetRectPx, float zoom = 1f)
+    public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0)
     {
         if (_renderSurfaceHost.Scene is not null)
         {
@@ -44,7 +44,8 @@ public sealed class ViewRenderer
                 Zoom = zoom
             };
 
-            AddView(new View(cam, vp));
+            var view = new View(cam, vp) { ZOrder = zOrder };
+            AddView(view);
         }
     }
 
@@ -52,8 +53,9 @@ public sealed class ViewRenderer
 
     internal void Render(SKCanvas canvas, float dtSeconds, System.Action<SKCanvas> drawScene)
     {
-        // Update each camera, then draw each view with its own clip/scale.
-        foreach (var v in _views)
+        // Update each camera, then draw each view with its own clip/scale,
+        // in ascending ZOrder (back -> front).
+        foreach (var v in _views.OrderBy(v => v.ZOrder))
         {
             v.Camera.Update(dtSeconds);
             v.Viewport.Begin(canvas, v.Camera.PositionPx);
