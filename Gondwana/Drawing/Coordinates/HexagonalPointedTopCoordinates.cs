@@ -16,8 +16,8 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         int col = (int)Math.Round(gp.X);
         int row = (int)Math.Round(gp.Y);
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         int x = originX + col * W + ((row & 1) == 0 ? 0 : W / 2);
         int y = originY + (int)Math.Floor(row * (H * 0.75f));
@@ -29,8 +29,8 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         float fy = (pixelPt.Y - originY) / (H * 0.75f);
         int approxRow = (int)Math.Round(fy);
@@ -50,8 +50,8 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
             var pInt = new Point((int)Math.Round(pixelPt.X), (int)Math.Round(pixelPt.Y));
             if (PointInPolygon(poly, pInt)) return new PointF(cand.X, cand.Y);
 
-            float cx = sceneLayer.RenderSurfaceOriginPx.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
-            float cy = sceneLayer.RenderSurfaceOriginPx.Y + cand.Y * (H * 0.75f) + H / 2f;
+            float cx = sceneLayer.OriginPx.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
+            float cy = sceneLayer.OriginPx.Y + cand.Y * (H * 0.75f) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
             if (d < bestDist) { bestDist = d; best = cand; }
         }
@@ -63,14 +63,14 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         var result = new List<SceneLayerTile>();
         int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
 
-        int minRow = (int)Math.Floor((pixelRange.Top - sceneLayer.RenderSurfaceOriginPx.Y) / (H * 0.75f)) - 2;
-        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - sceneLayer.RenderSurfaceOriginPx.Y) / (H * 0.75f)) + 2;
+        int minRow = (int)Math.Floor((pixelRange.Top - sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
+        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
 
         for (int row = minRow; row <= maxRow; row++)
         {
             int xOffset = ((row & 1) == 0 ? 0 : W / 2);
-            int minCol = (int)Math.Floor((pixelRange.Left - sceneLayer.RenderSurfaceOriginPx.X - xOffset) / (float)W) - 2;
-            int maxCol = (int)Math.Ceiling((pixelRange.Right - sceneLayer.RenderSurfaceOriginPx.X - xOffset) / (float)W) + 2;
+            int minCol = (int)Math.Floor((pixelRange.Left - sceneLayer.OriginPx.X - xOffset) / (float)W) - 2;
+            int maxCol = (int)Math.Ceiling((pixelRange.Right - sceneLayer.OriginPx.X - xOffset) / (float)W) + 2;
 
             for (int col = minCol; col <= maxCol; col++)
             {
@@ -151,8 +151,8 @@ public class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         var p = new Point(
             originX + col * W + ((row & 1) == 0 ? 0 : W / 2),

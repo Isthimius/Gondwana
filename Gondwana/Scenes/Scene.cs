@@ -162,7 +162,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowGridLinesChanged += gridLinesShowChanged;
         sceneLayer.ZOrderChanged += zOrderChangedDel;
         sceneLayer.ParallaxChanged += parallaxChangedDel;
-        sceneLayer.RenderSurfaceOriginPxChanged += zeroPixelChangedDel;
+        sceneLayer.OriginPxChanged += zeroPixelChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerAdded?.Invoke(sceneLayer);
@@ -180,7 +180,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowGridLinesChanged -= gridLinesShowChanged;
         sceneLayer.ZOrderChanged -= zOrderChangedDel;
         sceneLayer.ParallaxChanged -= parallaxChangedDel;
-        sceneLayer.RenderSurfaceOriginPxChanged -= zeroPixelChangedDel;
+        sceneLayer.OriginPxChanged -= zeroPixelChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerRemoved?.Invoke(sceneLayer);

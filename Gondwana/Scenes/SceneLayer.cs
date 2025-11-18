@@ -29,8 +29,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     public event Action<SceneLayer>? OriginPxChanged;
 
-    public event Action<SceneLayer>? RenderSurfaceOriginPxChanged;
-
     public event Action<SceneLayer>? Disposing;
 
     #endregion events
@@ -40,11 +38,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private int _tileWidth;     // rendered width
     private int _tileHeight;    // rendered height
     private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
-
-    // World-space origin (in pixels) of this layer’s (0,0) tile.
-    // Usually (0,0); can be shifted to move the entire layer as a block.
-    [JsonProperty("OriginPx")]
-    private Point _originPx = Point.Empty;
 
     #endregion private fields
 
@@ -232,6 +225,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    // World-space origin (in pixels) of this layer’s (0,0) tile.
+    // Usually (0,0); can be shifted to move the entire layer as a block.
+    [JsonProperty("OriginPx")]
+    private Point _originPx = Point.Empty;
+
     [JsonIgnore]
     public Point OriginPx
     {
@@ -243,24 +241,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             OriginPxChanged?.Invoke(this);
         }
     }
-
-    // first pixel visible (i.e., source pixel for rendering calculations)
-    [JsonProperty("RenderSurfaceOriginPx")]
-    private Point _renderSurfaceOriginPx;
-
-    [JsonIgnore]
-    public Point RenderSurfaceOriginPx
-    {
-        get => _renderSurfaceOriginPx;
-        internal set
-        {
-            _renderSurfaceOriginPx = value;
-            RenderSurfaceOriginPxChanged?.Invoke(this);
-        }
-    }
-
-    [JsonIgnore]
-    public PointF RenderSurfaceOriginCoordinates => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, RenderSurfaceOriginPx);
 
     #endregion properties
 
@@ -289,15 +269,13 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         SceneLayerTileSizeChanged?.Invoke(this);
     }
 
-    public PointF GridToWorldPx(PointF grid)
-    => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
+    public PointF GridToWorldPx(PointF grid) => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
 
-    public PointF WorldPxToGrid(PointF worldPx)
-        => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
+    public PointF WorldPxToGrid(PointF worldPx) => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
 
     #endregion public methods
 
-    #region private / internal methods
+    #region private methods
 
     private void InitValues(SceneLayerTile[,] tileArray, int width, int height, float parallax, CoordinateSystemTypes coordinateSystem)
     {
@@ -307,8 +285,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         _tileHeight = height;
         _visible = true;
 
-        _originPx = Point.Empty;                  // NEW: layer world origin
-        _renderSurfaceOriginPx = new Point(0, 0); // existing
+        _originPx = Point.Empty;                  // layer world origin
 
         CoordinateSystemType = coordinateSystem;
 
@@ -332,7 +309,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    #endregion private / internal methods
+    #endregion private methods
 
     #region indexers
 

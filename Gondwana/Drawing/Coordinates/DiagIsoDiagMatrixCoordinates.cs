@@ -15,8 +15,8 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         // gp is in grid-space (x,y) already.
         float dx = gp.X;
@@ -33,8 +33,8 @@ public class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         float a = (pixelPt.X - originX) / (W / 2f);
         float b = (pixelPt.Y - originY) / (H / 2f);

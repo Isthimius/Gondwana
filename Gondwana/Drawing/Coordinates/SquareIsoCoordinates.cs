@@ -10,11 +10,10 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        var origin = sceneLayer.OriginPx;
 
-        int x = originX + (int)(W * layerPoint.X);
-        int y = originY + (int)(H * layerPoint.Y);
+        int x = origin.X + (int)(W * layerPoint.X);
+        int y = origin.Y + (int)(H * layerPoint.Y);
 
         return new Point(x, y);
     }
@@ -24,8 +23,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         float gx = (pixelPt.X - originX) / W;
         float gy = (pixelPt.Y - originY) / H;
@@ -71,8 +70,8 @@ public class SquareIsoCoordinates : ISceneLayerCoordinates
         int W = layer.SceneLayerTileWidth;
         int H = layer.SceneLayerTileHeight;
 
-        int originX = layer.OriginPx.X + layer.RenderSurfaceOriginPx.X;
-        int originY = layer.OriginPx.Y + layer.RenderSurfaceOriginPx.Y;
+        int originX = layer.OriginPx.X;
+        int originY = layer.OriginPx.Y;
 
         var baseRect = new Rectangle
         {

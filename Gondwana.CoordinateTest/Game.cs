@@ -246,7 +246,7 @@ public class Game : IDisposable
         // 5) Log everything
         Engine.Logger.LogDebug("---- COORD DEBUG ----");
         Engine.Logger.LogDebug($"Camera.PosPx: {view.Camera.PositionPx}");
-        Engine.Logger.LogDebug($"Layer.OriginPx: {layer.RenderSurfaceOriginPx}");
+        Engine.Logger.LogDebug($"Layer.OriginPx: {layer.OriginPx}");
         Engine.Logger.LogDebug($"Screen: {screen}");
         Engine.Logger.LogDebug($"WorldFromScreen: {worldFromScreen}");
         Engine.Logger.LogDebug($"Grid via SCREEN: {grid_viaScreen}");

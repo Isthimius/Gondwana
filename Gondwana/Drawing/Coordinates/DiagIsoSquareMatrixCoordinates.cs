@@ -26,8 +26,8 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
     {
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         // gp is already in grid-space.
         float gx = gp.X;
@@ -44,8 +44,8 @@ public class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
     {
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
 
-        int originX = sceneLayer.OriginPx.X + sceneLayer.RenderSurfaceOriginPx.X;
-        int originY = sceneLayer.OriginPx.Y + sceneLayer.RenderSurfaceOriginPx.Y;
+        int originX = sceneLayer.OriginPx.X;
+        int originY = sceneLayer.OriginPx.Y;
 
         // Inverse for full-tile stepping
         float gxF = (pixelPt.X - originX) / W;
