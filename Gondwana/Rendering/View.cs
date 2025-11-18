@@ -22,7 +22,7 @@ public sealed class View
     /// </summary>
     /// <param name="screenPx">The pixel position relative to the RenderSurface.</param>
     /// <returns>The corresponding world-space pixel coordinate.</returns>
-    public PointF ScreenToWorldPx(PointF screenPx)
+    public PointF ScreenPxToWorldPx(PointF screenPx)
     {
         float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
 
@@ -37,7 +37,13 @@ public sealed class View
         return new PointF(worldX, worldY);
     }
 
-    public PointF WorldToScreenPx(PointF worldPx)
+    /// <summary>
+    /// Converts a world-space pixel position into screen-space pixel coordinates
+    /// for this View. This applies the camera offset, viewport placement, and 
+    /// zoom level so the returned point matches where the world pixel appears 
+    /// on the final rendered surface.
+    /// </summary>
+    public PointF WorldPxToScreenPx(PointF worldPx)
     {
         float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
 
@@ -64,9 +70,59 @@ public sealed class View
     /// <param name="layer">The SceneLayer whose grid the point should be mapped onto.</param>
     /// <param name="screenPx">The pixel position relative to the RenderSurface.</param>
     /// <returns>The grid coordinate (column/row or axial) under the screen pixel.</returns>
-    public PointF ScreenToGrid(SceneLayer layer, PointF screenPx)
+    public PointF ScreenPxToGrid(SceneLayer layer, PointF screenPx)
     {
-        var world = ScreenToWorldPx(screenPx);
+        var world = ScreenPxToWorldPx(screenPx);
         return layer.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(layer, world);
+    }
+
+    /// <summary>
+    /// Converts a world-space pixel rectangle into a screen-space rectangle
+    /// for this View. Each edge is transformed using the same mapping as
+    /// <see cref="WorldPxToScreenPx(PointF)"/> (camera offset, zoom, and
+    /// viewport placement).
+    /// </summary>
+    public RectangleF WorldRectToScreenRect(RectangleF worldRect)
+    {
+        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+
+        // Subtract camera → camera-relative
+        float localLeft = worldRect.Left - Camera.PositionPx.X;
+        float localTop = worldRect.Top - Camera.PositionPx.Y;
+
+        // Scale from world → screen (1 / zoom)
+        float scaledLeft = localLeft / zoom;
+        float scaledTop = localTop / zoom;
+        float scaledWidth = worldRect.Width / zoom;
+        float scaledHeight = worldRect.Height / zoom;
+
+        // Place inside the viewport’s target rect
+        float screenLeft = scaledLeft + Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        float screenTop = scaledTop + Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
+
+        return new RectangleF(screenLeft, screenTop, scaledWidth, scaledHeight);
+    }
+
+    /// <summary>
+    /// Converts a screen-space pixel rectangle into a world-space pixel
+    /// rectangle for this View. Each edge is transformed using the same
+    /// mapping as <see cref="ScreenPxToWorldPx(PointF)"/> (inverse viewport
+    /// placement, inverse zoom, then camera offset).
+    /// </summary>
+    public RectangleF ScreenRectToWorldRect(RectangleF screenRect)
+    {
+        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+
+        // Undo viewport placement → view-local
+        float localLeft = screenRect.Left - Viewport.TargetRectPx.Left - Viewport.ScreenOffsetPx.X;
+        float localTop = screenRect.Top - Viewport.TargetRectPx.Top - Viewport.ScreenOffsetPx.Y;
+
+        // Scale from screen → world (zoom)
+        float worldLeft = Camera.PositionPx.X + localLeft * zoom;
+        float worldTop = Camera.PositionPx.Y + localTop * zoom;
+        float worldWidth = screenRect.Width * zoom;
+        float worldHeight = screenRect.Height * zoom;
+
+        return new RectangleF(worldLeft, worldTop, worldWidth, worldHeight);
     }
 }
