@@ -262,18 +262,57 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region public methods
 
-    public void SetSceneLayerTileSize(int newWidth, int newHeight)
+    public void SetTileSize(int newWidth, int newHeight)
     {
         _tileWidth = newWidth;
         _tileHeight = newHeight;
         SceneLayerTileSizeChanged?.Invoke(this);
     }
 
+    /// <summary>
+    /// Converts a grid coordinate (col,row) into the world-space pixel anchor
+    /// where that tile begins. This returns the tile’s top-left anchor in world
+    /// pixels, not the tile center.
+    /// </summary>
     public PointF GridToWorldPx(PointF grid) => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
 
+    /// <summary>
+    /// Converts a world-space pixel position into this layer’s grid coordinates.
+    /// This uses the layer’s active coordinate system (square, iso, hex, etc.)
+    /// and returns fractional grid values when the point lies between tiles.
+    /// </summary>
     public PointF WorldPxToGrid(PointF worldPx) => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
 
+    /// <summary>
+    /// Returns the neighboring tile in the given direction, or null if the
+    /// direction would move off the layer and wrapping is not enabled. The
+    /// meaning of N,S,E,W depends on the active coordinate system.
+    /// </summary>
     public SceneLayerTile? GetAdjacentTile(SceneLayerTile tile, CardinalDirections direction) => CoordinateSystem.GetAdjacentSceneLayerTile(tile, direction);
+
+    /// <summary>
+    /// Returns all tiles in this layer that overlap the given world-space pixel 
+    /// rectangle. This is used for picking, refresh queues, visibility checks, 
+    /// and collision queries. Includes polygon overhang when requested.
+    /// </summary>
+    public IReadOnlyList<SceneLayerTile> GetTilesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
+    {
+        return CoordinateSystem.GetSceneLayerTilesInPixelRange(this, worldRect, includeOverhang);
+    }
+
+    /// <summary>
+    /// Wraps a grid coordinate around the layer’s valid grid bounds using 
+    /// toroidal wrapping (0..max). Used by movement and map designs that 
+    /// loop at edges.
+    /// </summary>
+    public PointF WrapGrid(PointF grid)
+    {
+        // grid indices wrap based on tile array width/height
+        return CoordinateSystem.FindEquivalentSceneLayerCoordinates(
+            grid,
+            GridColumnCount - 1,
+            GridRowCount - 1);
+    }
 
     #endregion public methods
 
