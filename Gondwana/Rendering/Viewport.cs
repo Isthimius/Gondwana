@@ -10,12 +10,18 @@ namespace Gondwana.Rendering;
 public sealed class Viewport
 {
     private Rectangle _targetRectPx = new Rectangle(0, 0, 1280, 720);
+    private float _zoom = 1f;
 
     /// <summary>
     /// Fired whenever <see cref="TargetRectPx"/> changes (viewport resized or moved).
     /// Provides the Viewport instance and the old and new rectangles.
     /// </summary>
     public event Action<ViewportResizedEventArgs>? TargetRectChanged;
+
+    /// <summary>
+    /// Occurs when the zoom level of the viewport changes.
+    /// </summary>
+    public event Action<ViewportZoomChangedEventArgs>? ZoomChanged;
 
     /// <summary>
     /// Screen-space rectangle (in RenderSurface pixels) where this view is drawn.
@@ -40,7 +46,19 @@ public sealed class Viewport
     /// than 1 zoom in, values between 0 and 1 zoom out. Used when converting
     /// between screen-space and world-space pixels.
     /// </summary>
-    public float Zoom { get; set; } = 1f;
+    public float Zoom
+    {
+        get => _zoom;
+        set
+        {
+            if (Math.Abs(value - _zoom) < 1e-6f)
+                return;
+
+            var oldZoom = _zoom;
+            _zoom = value;
+            ZoomChanged?.Invoke(new ViewportZoomChangedEventArgs(this, oldZoom, value));
+        }
+    }
 
     /// <summary>Optional per-view HUD/safe-area offset in screen pixels.</summary>
     public PointF ScreenOffsetPx { get; set; } = PointF.Empty;

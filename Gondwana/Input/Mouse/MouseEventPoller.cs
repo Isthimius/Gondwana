@@ -56,6 +56,7 @@ public sealed class MouseEventPoller
         var scrollDelta = Adapter.ScrollDelta;
 
         bool anyButtonChange = false;
+        bool isAnyButtonDown = false;
 
         // update per-button state every cycle
         foreach (var kvp in _buttonStates.ToList())
@@ -73,13 +74,16 @@ public sealed class MouseEventPoller
 
             anyButtonChange |= justPressed || justReleased;
             _buttonStates[button] = state;
+
+            if (isCurrentlyDown)
+                isAnyButtonDown = true;
         }
 
         // now decide whether to emit an event
         bool moved = (Configuration?.TrackMouseMovement ?? false) && _lastPosition != currentPos;
         bool scrolled = _lastScrollDelta != scrollDelta;
 
-        if (anyButtonChange || moved || scrolled)
+        if (anyButtonChange || moved || scrolled || isAnyButtonDown)
         {
             MouseEvent?.Invoke(new MouseEventArgs(
                 Configuration!,

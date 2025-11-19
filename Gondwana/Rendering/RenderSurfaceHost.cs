@@ -108,7 +108,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     internal override void DrawRefreshQueueToBackbuffer(long tick)
     {
         // if there’s no Scene (or no visible layers), clear and publish the full frame
-        if (Scene is null || Scene.CountOfVisibleLayers == 0)
+        if (Scene is null || Scene.CountOfVisibleLayers == 0 || Scene.RefreshNeeded == SceneRefreshType.All)
         {
             // Erase prior overlay pixels so moving composites/particles don’t smear
             Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
@@ -116,27 +116,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             // Publish the whole surface; adapter code will blit only the dirty rect if enabled
             Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
 
+            if (Scene is not null)
+                Scene.RefreshNeeded = SceneRefreshType.None;
+
             _lastTick = tick;        // keep timing consistent
             return;
         }
 
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
-
-        // 1) Ensure at least one view exists (default full-screen if none)
-        //EnsureDefaultView();
-
-        // 2) Build a cheap per-view state hash (camera pos, zoom, viewport rect)
-        //long viewsHash = 1469598103934665603L; // FNV-1a
-        //foreach (var v in ViewRenderer.Views)
-        //{
-        //    unchecked
-        //    {
-        //        viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.X); viewsHash *= 1099511628211L;
-        //        viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.Y); viewsHash *= 1099511628211L;
-        //        viewsHash ^= v.Viewport.TargetRectPx.GetHashCode(); viewsHash *= 1099511628211L;
-        //        viewsHash ^= BitConverter.SingleToInt32Bits(v.Viewport.Zoom); viewsHash *= 1099511628211L;
-        //    }
-        //}
 
         // 4) Handle full scene refresh once
         if (Scene.RefreshNeeded == SceneRefreshType.All)
@@ -346,9 +333,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 9) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
-
-        // 10) Remember view state for the next fast-path check
-        //_lastViewsStateHash = viewsHash;
 
         Scene.RefreshNeeded = SceneRefreshType.None;
         _lastTick = tick;

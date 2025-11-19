@@ -1,12 +1,15 @@
 ﻿using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
+using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Input.Gamepad;
 using Gondwana.Logging;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.WinForms;
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.CoordinateTest;
 
@@ -90,6 +93,8 @@ public class Game : IDisposable
     private DirectRectangle? _directRectangle;
     private TextBlock? _textBlockCPS;
     private TextBlock? _textBlockMouse;
+    private ParticleSurface? _particleSurface;
+    private ParticleEmitter? _clickEmitter;
 
     private void InitDirectDrawings()
     {
@@ -109,6 +114,38 @@ public class Game : IDisposable
 
         _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
+
+        InitializeParticles();
+    }
+
+    private void InitializeParticles()
+    {
+        // Cover the whole adapter in pixels
+        var bounds = new Rectangle(
+            0,
+            0,
+            RenderSurface.Host.RenderSurfaceAdapter!.Width,
+            RenderSurface.Host.RenderSurfaceAdapter!.Height);
+
+        // Particle system registered like any other DirectDrawing
+        _particleSurface = new ParticleSurface(RenderSurface.Host, bounds);
+
+        // Tweak gravity if you want more “floaty” bursts
+        _particleSurface.GravityY = 0f;
+
+        // Configure an emitter specifically for click bursts
+        _clickEmitter = new ParticleEmitter
+        {
+            EmitRate = 0f, // we only use Burst(), no continuous emission
+
+            LifeRange = (0.35f, 0.7f),
+            VelocityRangeX = (-280f, 280f),
+            VelocityRangeY = (-280f, 280f),
+            SizeRange = (2f, 5f),
+
+            Color = SKColors.OrangeRed,
+            MaxVelocity = 400f,   // optional, keeps them from going insane
+        };
     }
 
     #endregion load and init game content
@@ -168,6 +205,16 @@ public class Game : IDisposable
 
         if (layer[gridPos] is not null)
             layer[gridPos]!.EnableFog = true;
+
+        if (args.ScrollDelta != 0)
+            view.Viewport.Zoom += args.ScrollDelta * 0.001f;
+
+        if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
+        {
+            var pos = args.CurrentPosition;
+            _clickEmitter.Position = new PointF(pos.X, pos.Y);
+            _particleSurface.Burst(_clickEmitter, 80);
+        }
     }
 
     private void ConfigureGamepadInput()

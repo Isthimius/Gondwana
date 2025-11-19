@@ -44,29 +44,39 @@ public sealed class ViewRenderer
 
             var view = new View(cam, vp) { ZOrder = zOrder };
             view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
+            view.Viewport.ZoomChanged += OnViewportTargetRectChanged;
 
             _views.Add(view);
 
             if (_renderSurfaceHost.Scene is not null)
-                _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
+                _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
         }
+    }
+
+    private void OnViewportTargetRectChanged(ViewportZoomChangedEventArgs args)
+    {
+        if (_renderSurfaceHost.Scene is not null)
+            _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
     }
 
     private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
     {
         if (_renderSurfaceHost.Scene is not null)
-            _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
+            _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
     }
 
     public void ClearViews()
     {
         foreach (var v in _views)
+        {
             v.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
+            v.Viewport.ZoomChanged -= OnViewportTargetRectChanged;
+        }
 
         _views.Clear();
 
         if (_renderSurfaceHost.Scene is not null)
-            _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
+            _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
     }
 
     internal void Render(SKCanvas canvas, float dtSeconds, Action<SKCanvas> drawScene)
