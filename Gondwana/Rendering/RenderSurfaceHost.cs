@@ -191,7 +191,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 6) Render all views. Draw layers back -> front (ascending Z).
         ViewRenderer.Render(Backbuffer!.Canvas, dtSeconds: deltaSeconds, drawScene: _ =>
         {
-            for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+            for (int i = 0; i < Scene?.CountOfVisibleLayers; i++)
             {
                 var layer = Scene.VisibleSceneLayers[i];
                 Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
@@ -270,7 +270,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 Rectangle viewDirty = Rectangle.Empty;
 
-                for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+                for (int i = 0; i < Scene?.CountOfVisibleLayers; i++)
                 {
                     var layer = Scene.VisibleSceneLayers[i];
                     float p = layer.Parallax;
@@ -331,7 +331,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             : (carry.IsEmpty ? adapterDirty : Rectangle.Union(adapterDirty, carry));
 
         // 9) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
-        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+        for (int i = 0; i < Scene?.CountOfVisibleLayers; i++)
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
         Scene.RefreshNeeded = SceneRefreshType.None;

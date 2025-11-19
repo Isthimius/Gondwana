@@ -14,6 +14,7 @@ namespace Gondwana.Rendering;
 public sealed class Camera
 {
     private readonly Scene _scene;
+    private PointF _positionPx = new(0, 0);
     private Func<PointF>? _followWorldPx;
     private bool _hardFollow;
 
@@ -22,7 +23,18 @@ public sealed class Camera
     /// as the upper-left corner of the visible region. All world-to-screen
     /// projections for this camera are based on this position.
     /// </summary>
-    public PointF PositionPx { get; private set; } = new(0, 0);
+    public PointF PositionPx
+    {
+        get => _positionPx;
+        private set
+        {
+            if (_positionPx != value)
+            {
+                _positionPx = value;
+                _scene.RefreshNeeded = SceneRefreshType.All;
+            }
+        }
+    }
 
     /// <summary>
     /// World-space rectangle (in pixels) that the camera is allowed to move within.

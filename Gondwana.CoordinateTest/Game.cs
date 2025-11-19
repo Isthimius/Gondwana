@@ -10,6 +10,7 @@ using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.CoordinateTest;
 
@@ -44,6 +45,13 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
+        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
+        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
+        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        //RenderSurface.Host.RedrawDirtyRectangleOnly = false;
+
+        RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
+
         // configure input handling here
         ConfigureKeyboardInput();
         ConfigureMouseInput();
@@ -51,13 +59,6 @@ public class Game : IDisposable
 
         // start the engine main loop
         Engine.Instance.Start(SynchronizationContext.Current!);
-
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
-        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
-        //RenderSurface.Host.RedrawDirtyRectangleOnly = false;
-
-        RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
     }
 
     #region load and init game content
@@ -104,7 +105,7 @@ public class Game : IDisposable
                                                Color.Wheat);
         _directRectangle.SetFilled(true);
 
-        _textBlockCPS = new TextBlock(RenderSurface.Host,_directRectangle.Bounds);
+        _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
         Engine.Instance.CPSCalculated += (e) =>
@@ -166,15 +167,44 @@ public class Game : IDisposable
     {
         Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
         Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey("w");
-        Engine.KeyboardEventPoller.StartMonitoringKey("a");
-        Engine.KeyboardEventPoller.StartMonitoringKey("s");
-        Engine.KeyboardEventPoller.StartMonitoringKey("d");
+        Engine.KeyboardEventPoller.StartMonitoringKey("W");
+        Engine.KeyboardEventPoller.StartMonitoringKey("A");
+        Engine.KeyboardEventPoller.StartMonitoringKey("S");
+        Engine.KeyboardEventPoller.StartMonitoringKey("D");
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
     {
+        var camera = RenderSurface.Host.ViewRenderer.Views[0].Camera;
+        var curPos = camera.PositionPx;
+
+        switch (args.KeyConfig.Key)
+        {
+            case "W":
+                Engine.Logger.LogTrace("W key pressed");
+                camera.PanTo(new PointF(curPos.X, curPos.Y - 10), 10f);
+                break;
+            case "A":
+                Engine.Logger.LogTrace("A key pressed");
+                camera.PanTo(new PointF(curPos.X - 10, curPos.Y), 10f);
+                break;
+            case "S":
+                Engine.Logger.LogTrace("S key pressed");
+                camera.PanTo(new PointF(curPos.X, curPos.Y + 10), 10f);
+                break;
+            case "D":
+                Engine.Logger.LogTrace("D key pressed");
+                camera.PanTo(new PointF(curPos.X + 10, curPos.Y), 10f);
+                break;
+            default:
+                break;
+        }
+
         // Handle key down events here
+        //if (args.KeyConfig.Key == "W")
+        //{
+        //    RenderSurface.Host.ViewRenderer.Views[0].Camera.PanTo(new PointF(0, -20), 0.1f);
+        //}
     }
 
     private void ConfigureMouseInput()

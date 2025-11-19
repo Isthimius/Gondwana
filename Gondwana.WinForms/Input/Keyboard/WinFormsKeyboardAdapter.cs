@@ -18,19 +18,31 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 
     internal WinFormsKeyboardAdapter(Control control)
     {
-        _control = control ?? throw new ArgumentNullException(nameof(control));
-        _control.KeyDown += OnKeyDown;
-        _control.KeyUp += OnKeyUp;
+        if (control is null)
+            throw new ArgumentNullException(nameof(control));
 
-        // Only set KeyPreview and handle FormClosed if it's actually a Form
-        if (control is Form form)
+        // Walk up the hierarchy to find the Form
+        var form = control.FindForm();
+
+        if (form is not null)
         {
+            // Use the Form as the actual event source
+            _control = form;
+
             form.KeyPreview = true;
+            form.KeyDown += OnKeyDown;
+            form.KeyUp += OnKeyUp;
             form.FormClosed += (_, __) => Dispose();
         }
         else
         {
-            // If it's not a Form, hook into the general Disposed event
+            // Fallback – control is our event source
+            _control = control;
+
+            _control.KeyDown += OnKeyDown;
+            _control.KeyUp += OnKeyUp;
+
+            // At least clean up when control is destroyed
             _control.Disposed += (_, __) => Dispose();
         }
 
