@@ -29,7 +29,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         ViewRenderer = new ViewRenderer(this);
 
         // Recreate backbuffer on adapter resize
-        RenderSurfaceAdapter!.Resized += (_, _) => OnRenderSurfaceAdapterResized();
+        RenderSurfaceAdapter!.Resized += (args) => OnRenderSurfaceAdapterResized(args);
 
         var w = RenderSurfaceAdapter!.Width;
         var h = RenderSurfaceAdapter!.Height;
@@ -53,7 +53,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     public ViewRenderer ViewRenderer { get; private set; }
 
-    public void Bind(Scene? drawSource)
+    public void Bind(Scene? drawSource, bool limitCameraToWorldBoundPx = true)
     {
         if (Scene != null)
             Scene.SceneDisposing -= OnSourceDisposing;
@@ -63,7 +63,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         if (Scene != null)
         {
-            ViewRenderer.BindToScene();
+            ViewRenderer.BindToScene(Scene, limitCameraToWorldBoundPx);
             Scene.SceneDisposing += OnSourceDisposing;
             Scene.RefreshNeeded = SceneRefreshType.All;
         }
@@ -126,17 +126,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         //EnsureDefaultView();
 
         // 2) Build a cheap per-view state hash (camera pos, zoom, viewport rect)
-        long viewsHash = 1469598103934665603L; // FNV-1a
-        foreach (var v in ViewRenderer.Views)
-        {
-            unchecked
-            {
-                viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.X); viewsHash *= 1099511628211L;
-                viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.Y); viewsHash *= 1099511628211L;
-                viewsHash ^= v.Viewport.TargetRectPx.GetHashCode(); viewsHash *= 1099511628211L;
-                viewsHash ^= BitConverter.SingleToInt32Bits(v.Viewport.Zoom); viewsHash *= 1099511628211L;
-            }
-        }
+        //long viewsHash = 1469598103934665603L; // FNV-1a
+        //foreach (var v in ViewRenderer.Views)
+        //{
+        //    unchecked
+        //    {
+        //        viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.X); viewsHash *= 1099511628211L;
+        //        viewsHash ^= (long)Math.Floor(v.Camera.PositionPx.Y); viewsHash *= 1099511628211L;
+        //        viewsHash ^= v.Viewport.TargetRectPx.GetHashCode(); viewsHash *= 1099511628211L;
+        //        viewsHash ^= BitConverter.SingleToInt32Bits(v.Viewport.Zoom); viewsHash *= 1099511628211L;
+        //    }
+        //}
 
         // 4) Handle full scene refresh once
         if (Scene.RefreshNeeded == SceneRefreshType.All)
@@ -152,7 +152,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         bool sceneDirty = false;
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
         {
-
             if (Scene.VisibleSceneLayers[i].RefreshQueue.Tiles.Any())
             {
                 sceneDirty = true;
@@ -163,8 +162,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // if nothing is dirty, skip rendering this frame
         if (Scene.RefreshNeeded == SceneRefreshType.None
                                 && !backbufferDirty
-                                && !sceneDirty
-                                && viewsHash == _lastViewsStateHash)
+                                && !sceneDirty)
         {
             return;
         }
@@ -350,7 +348,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
         // 10) Remember view state for the next fast-path check
-        _lastViewsStateHash = viewsHash;
+        //_lastViewsStateHash = viewsHash;
 
         Scene.RefreshNeeded = SceneRefreshType.None;
         _lastTick = tick;
@@ -409,23 +407,28 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     #region private methods
 
-    private void OnRenderSurfaceAdapterResized()
+    private void OnRenderSurfaceAdapterResized(RenderSurfaceAdapterResizedEventArgs args)
     {
-        var w = RenderSurfaceAdapter!.Width;
-        var h = RenderSurfaceAdapter!.Height;
-
         if (Scene != null)
-            Scene.RefreshNeeded = SceneRefreshType.All;   // full redraw next frame
+            Scene.RefreshNeeded = SceneRefreshType.All;                 // full redraw next frame
 
-        _backbuffer?.RequestResize(w, h);                 // UI thread → request only
+        _backbuffer?.RequestResize(args.NewWidth, args.NewHeight);      // UI thread → request only
 
-        // update each viewport in MultiView to fit the new adapter dimensions.
+        float scaleX = (float)args.NewWidth / args.OldWidth;
+        float scaleY = (float)args.NewHeight / args.OldHeight;
+
+        // resize each View proportionally
         foreach (var view in ViewRenderer.Views)
         {
-            // TODO: resize proportionally
-            // Update viewport to new screen rect
-            view.Viewport.TargetRectPx = new Rectangle(0, 0,
-                RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height);
+            var old = view.Viewport.TargetRectPx;
+
+            int newLeft = (int)Math.Round(old.Left * scaleX);
+            int newTop = (int)Math.Round(old.Top * scaleY);
+            int newWidth = (int)Math.Round(old.Width * scaleX);
+            int newHeight = (int)Math.Round(old.Height * scaleY);
+
+            view.Viewport.TargetRectPx = new Rectangle(
+                newLeft, newTop, newWidth, newHeight);
         }
     }
 

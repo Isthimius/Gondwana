@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace Gondwana.Scenes;
 
@@ -144,6 +145,39 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Computes a world-space pixel bounding rectangle that encloses all layers
+    /// in the Scene. Each layer reports its own bounds via GetLayerBoundsPx(),
+    /// and this method unions them together.
+    /// </summary>
+    public RectangleF GetWorldBoundsPx()
+    {
+        if (_sceneLayers.Count == 0)
+            return RectangleF.Empty;
+
+        RectangleF result = RectangleF.Empty;
+        bool hasBounds = false;
+
+        foreach (var layer in _sceneLayers)
+        {
+            var lb = layer.GetLayerBoundsPx();
+            if (lb.IsEmpty)
+                continue;
+
+            if (!hasBounds)
+            {
+                result = lb;
+                hasBounds = true;
+            }
+            else
+            {
+                result = RectangleF.Union(result, lb);
+            }
+        }
+
+        return result;
     }
 
     #endregion public methods

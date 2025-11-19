@@ -314,6 +314,51 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             GridRowCount - 1);
     }
 
+    /// <summary>
+    /// Computes the world-space pixel bounding rectangle for this SceneLayer.
+    /// This uses the coordinate system to evaluate the pixel extents of the
+    /// extreme grid tiles. Works for square, iso, hex, and any other supported
+    /// projection.
+    /// </summary>
+    public RectangleF GetLayerBoundsPx()
+    {
+        if (GridColumnCount == 0 || GridRowCount == 0)
+            return RectangleF.Empty;
+
+        int maxCol = GridColumnCount - 1;
+        int maxRow = GridRowCount - 1;
+
+        // Corner tiles
+        var corners = new[]
+        {
+        this[0, 0],
+        this[maxCol, 0],
+        this[0, maxRow],
+        this[maxCol, maxRow]
+    };
+
+        RectangleF result = RectangleF.Empty;
+        bool hasBounds = false;
+
+        foreach (var tile in corners)
+        {
+            var px = CoordinateSystem.GetPixelRangeForTile(tile, includeOverhang: true);
+            var rf = RectangleF.FromLTRB(px.Left, px.Top, px.Right, px.Bottom);
+
+            if (!hasBounds)
+            {
+                result = rf;
+                hasBounds = true;
+            }
+            else
+            {
+                result = RectangleF.Union(result, rf);
+            }
+        }
+
+        return result;
+    }
+
     #endregion public methods
 
     #region private methods

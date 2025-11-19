@@ -6,15 +6,34 @@ namespace Gondwana.Rendering;
 /// <summary>
 /// A rectangular window on the render target with its own zoom and placement.
 /// Viewport never moves the world; it only scales and positions the drawing.
-/// Camera "moves" the world (by pushing RenderSurfaceOriginPx to layers).
 /// </summary>
 public sealed class Viewport
 {
+    private Rectangle _targetRectPx = new Rectangle(0, 0, 1280, 720);
+
+    /// <summary>
+    /// Fired whenever <see cref="TargetRectPx"/> changes (viewport resized or moved).
+    /// Provides the Viewport instance and the old and new rectangles.
+    /// </summary>
+    public event Action<ViewportResizedEventArgs>? TargetRectChanged;
+
     /// <summary>
     /// Screen-space rectangle (in RenderSurface pixels) where this view is drawn.
     /// This defines the on-screen position and size of the viewport for this view.
     /// </summary>
-    public Rectangle TargetRectPx { get; set; } = new Rectangle(0, 0, 1280, 720);
+    public Rectangle TargetRectPx
+    {
+        get => _targetRectPx;
+        set
+        {
+            if (value == _targetRectPx)
+                return;
+
+            var oldRect = _targetRectPx;
+            _targetRectPx = value;
+            TargetRectChanged?.Invoke(new ViewportResizedEventArgs(this, oldRect, value));
+        }
+    }
 
     /// <summary>
     /// Zoom factor applied to the world when rendering this view. Values greater

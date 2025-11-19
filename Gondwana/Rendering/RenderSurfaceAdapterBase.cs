@@ -4,7 +4,7 @@ namespace Gondwana.Rendering;
 
 public abstract class RenderSurfaceAdapterBase
 {
-    public event EventHandler? Resized;
+    public event Action<RenderSurfaceAdapterResizedEventArgs>? Resized;
 
     public int Width { get; protected set; }
     public int Height { get; protected set; }
@@ -16,11 +16,15 @@ public abstract class RenderSurfaceAdapterBase
 
     protected void SetDestinationSize(int destWidth, int destHeight)
     {
-        if (destWidth == Width && destHeight == Height) return;
+        if (destWidth == Width && destHeight == Height)
+            return;
+
+        var oldWidth = Width;
+        var oldHeight = Height;
 
         Width = destWidth;
         Height = destHeight;
-        Resized?.Invoke(this, EventArgs.Empty);
+        Resized?.Invoke(new RenderSurfaceAdapterResizedEventArgs(this, oldWidth, oldHeight, Width, Height));
     }
 
     /// <summary>

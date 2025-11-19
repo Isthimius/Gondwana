@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Gondwana.Scenes;
+using SkiaSharp;
 using System.Drawing;
 
 namespace Gondwana.Rendering;
@@ -17,22 +18,19 @@ public sealed class ViewRenderer
 
     public IReadOnlyList<View> Views => _views;
 
-    internal void AddView(View v)
-    {
-        _views.Add(v);
-        _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
-    }
-
-    public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0)
+    public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0, RectangleF? worldBoundsPx = null)
     {
         if (_renderSurfaceHost.Scene is not null)
         {
+            if (worldBoundsPx is null)
+                worldBoundsPx = RectangleF.Empty;
+
             var cam = new Camera(_renderSurfaceHost.Scene)
             {
                 // TODO: this should be world pixel size, not adapter size
                 // clamp camera to Scene pixel bounds
                 //WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
-                WorldBoundsPx = RectangleF.Empty,
+                WorldBoundsPx = worldBoundsPx.Value,
                 FollowLerpPerSecond = 0f // snap by default
             };
 
@@ -45,13 +43,33 @@ public sealed class ViewRenderer
             };
 
             var view = new View(cam, vp) { ZOrder = zOrder };
-            AddView(view);
+            view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
+
+            _views.Add(view);
+
+            if (_renderSurfaceHost.Scene is not null)
+                _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
         }
     }
 
-    public void ClearViews() => _views.Clear();
+    private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
+    {
+        if (_renderSurfaceHost.Scene is not null)
+            _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
+    }
 
-    internal void Render(SKCanvas canvas, float dtSeconds, System.Action<SKCanvas> drawScene)
+    public void ClearViews()
+    {
+        foreach (var v in _views)
+            v.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
+
+        _views.Clear();
+
+        if (_renderSurfaceHost.Scene is not null)
+            _renderSurfaceHost.Scene.RefreshNeeded = Scenes.SceneRefreshType.All;
+    }
+
+    internal void Render(SKCanvas canvas, float dtSeconds, Action<SKCanvas> drawScene)
     {
         // Update each camera, then draw each view with its own clip/scale,
         // in ascending ZOrder (back -> front).
@@ -64,31 +82,21 @@ public sealed class ViewRenderer
         }
     }
 
-    internal void BindToScene()
+    internal void BindToScene(Scene scene, bool limitCameraToWorldBoundPx)
     {
-        // new Scene, new Views
-        ClearViews();
+        RectangleF worldBoundsPx = limitCameraToWorldBoundPx ? scene.GetWorldBoundsPx() : new RectangleF(0, 0, float.MaxValue, float.MaxValue);
 
-        if (_renderSurfaceHost.Scene is not null)
+        // if no views exist, create a default one
+        if (!_views.Any())
         {
-            var cam = new Camera(_renderSurfaceHost.Scene)
+            AddView(new Rectangle(0, 0, _renderSurfaceHost.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height), 1, 0, worldBoundsPx);
+        }
+        else
+        {
+            foreach (var v in _views)
             {
-                // TODO: this should be world pixel size, not adapter size
-                // clamp camera to Scene pixel bounds
-                //WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
-                WorldBoundsPx = RectangleF.Empty,
-                FollowLerpPerSecond = 0f // snap by default
-            };
-
-            cam.SnapTo(new PointF(0, 0));
-
-            var vp = new Viewport
-            {
-                TargetRectPx = new Rectangle(0, 0, _renderSurfaceHost.RenderSurfaceAdapter.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
-                Zoom = 1f
-            };
-
-            AddView(new View(cam, vp));
+                v.Camera.WorldBoundsPx = worldBoundsPx;
+            }
         }
     }
 }

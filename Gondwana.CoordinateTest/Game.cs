@@ -151,8 +151,8 @@ public class Game : IDisposable
         var layer = Scene!.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
-        var worldPos = view.ScreenPxToWorldPx(screenPos);                // uses camera + viewport
-        var gridPos = view.ScreenToGrid(layer, screenPos);            // uses worldPos internally
+        var worldPos = view.ScreenPxToWorldPx(screenPos);           // uses camera + viewport
+        var gridPos = view.ScreenPxToGrid(layer, screenPos);        // uses worldPos internally
 
         var message =
             $"Mouse Pos (screen): {screenPos.X}, {screenPos.Y}\n" +
