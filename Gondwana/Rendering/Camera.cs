@@ -469,6 +469,8 @@ public sealed class Camera
 
     private PointF ClampToWorldBounds(PointF ul)
     {
+        return ul;
+
         if (WorldBoundsPx == RectangleF.Empty)
             return ul;
 

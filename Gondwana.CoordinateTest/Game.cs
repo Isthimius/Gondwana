@@ -199,12 +199,6 @@ public class Game : IDisposable
             default:
                 break;
         }
-
-        // Handle key down events here
-        //if (args.KeyConfig.Key == "W")
-        //{
-        //    RenderSurface.Host.ViewRenderer.Views[0].Camera.PanTo(new PointF(0, -20), 0.1f);
-        //}
     }
 
     private void ConfigureMouseInput()
@@ -218,6 +212,7 @@ public class Game : IDisposable
     {
         var view = RenderSurface.Host.ViewRenderer.Views[0];
         var layer = Scene!.SceneLayers[0];
+        var cameraPos = view.Camera.PositionPx;
 
         var screenPos = args.CurrentPosition;
         var worldPos = view.ScreenPxToWorldPx(screenPos);           // uses camera + viewport
@@ -226,7 +221,8 @@ public class Game : IDisposable
         var message =
             $"Mouse Pos (screen): {screenPos.X}, {screenPos.Y}\n" +
             $"World Pos (px): {worldPos.X:F1}, {worldPos.Y:F1}\n" +
-            $"Grid coordinates: {gridPos.X}, {gridPos.Y}";
+            $"Grid coordinates: {gridPos.X}, {gridPos.Y}\n" +
+            $"Camera Pos: (px): {cameraPos.X}, {cameraPos.Y}";
 
         _textBlockMouse?.SetText(message);
 
