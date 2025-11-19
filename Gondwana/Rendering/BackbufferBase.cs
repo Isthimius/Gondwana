@@ -100,13 +100,20 @@ public abstract class BackbufferBase : IDisposable
                 continue;
 
             DrawTileFrame(tile);
-
-            if (tile.EnableFog)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(), FogPaint);
         }
 
         foreach (var tile in tiles)
         {
+            if (tile.EnableFog)
+            {
+                using var path = new SKPath();
+                var pts = tile.OutlinePoints.ToSKPoints(enclose: true);
+
+                path.AddPoly(pts, close: true);
+
+                Canvas.DrawPath(path, FogPaint);
+            }
+
             if (tile.SceneLayer.ShowGridLines && tile.Visible)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), GridLinePaint);
         }

@@ -6,6 +6,7 @@ using Gondwana.Scenes;
 using Gondwana.WinForms;
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.CoordinateTest;
 
@@ -38,6 +39,7 @@ public class Game : IDisposable
         // create initial scene here and bind to render surface
         Scene = CreateInitialScene();
         RenderSurface.Host.Bind(Scene);
+        RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
         // configure input handling here
         ConfigureKeyboardInput();
@@ -160,6 +162,12 @@ public class Game : IDisposable
             $"Grid coordinates: {gridPos.X}, {gridPos.Y}";
 
         _textBlockMouse?.SetText(message);
+
+        foreach (SceneLayerTile tile in layer)
+            tile.EnableFog = false;
+
+        if (layer[gridPos] is not null)
+            layer[gridPos]!.EnableFog = true;
     }
 
     private void ConfigureGamepadInput()
