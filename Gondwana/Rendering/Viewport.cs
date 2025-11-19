@@ -46,7 +46,7 @@ public sealed class Viewport
     public PointF ScreenOffsetPx { get; set; } = PointF.Empty;
 
     /// <summary>World size visible through this viewport (useful for Camera clamping).</summary>
-    public SizeF VisibleWorldSizePx => new SizeF(TargetRectPx.Width * Zoom, TargetRectPx.Height * Zoom);
+    public SizeF VisibleWorldSizePx => new SizeF(TargetRectPx.Width / Zoom, TargetRectPx.Height / Zoom);
 
     /// <summary>
     /// Apply clip and transform for this viewport. Must be paired with End().
