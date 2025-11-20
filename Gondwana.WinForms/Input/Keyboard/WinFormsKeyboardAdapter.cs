@@ -53,12 +53,14 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
     {
         _pressedKeys.Add(NormalizeKey(e.KeyCode));
         RecomputeModifiers(e);
+        Engine.Logger.LogTrace("KEY DOWN: " + NormalizeKey(e.KeyCode));
     }
 
     private void OnKeyUp(object? sender, KeyEventArgs e)
     {
         _pressedKeys.Remove(NormalizeKey(e.KeyCode));
         RecomputeModifiers(e);
+        Engine.Logger.LogTrace("KEY UP: " + NormalizeKey(e.KeyCode));
     }
 
     private void RecomputeModifiers(KeyEventArgs e)

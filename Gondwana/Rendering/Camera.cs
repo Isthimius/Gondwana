@@ -1,7 +1,8 @@
-﻿using Gondwana.Movement;
-using Gondwana.Scenes;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Numerics;
+using Gondwana.Movement;
+using Gondwana.Scenes;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering;
 
@@ -17,6 +18,11 @@ public sealed class Camera
     private PointF _positionPx = new(0, 0);
     private Func<PointF>? _followWorldPx;
     private bool _hardFollow;
+
+    // Explicit pan-to-target (camera upper-left) state.
+    // This is used by PanTo and is independent of the "follow" target.
+    private PointF? _panTargetUpperLeftPx;
+    private float _panLerpPerSecond;
 
     /// <summary>
     /// Gets or sets the camera's world-space position in pixels, interpreted
@@ -70,7 +76,7 @@ public sealed class Camera
     /// <summary>
     /// Instantly moves the camera to the specified world-space position,
     /// interpreted as the upper-left corner of the visible region. Any
-    /// active smooth follow continues from this new position.
+    /// active smooth follow or pan continues from this new position.
     /// </summary>
     /// <param name="worldUpperLeftPx">
     /// World-space pixel position for the camera's upper-left corner.
@@ -100,15 +106,6 @@ public sealed class Camera
     /// <see cref="SceneLayer"/>. The tile's visual center is placed at the
     /// center of the view.
     /// </summary>
-    /// <param name="layer">
-    /// The SceneLayer that owns the grid coordinate.
-    /// </param>
-    /// <param name="col">
-    /// Tile column in grid coordinates.
-    /// </param>
-    /// <param name="row">
-    /// Tile row in grid coordinates.
-    /// </param>
     public void CenterOnGrid(SceneLayer layer, int col, int row)
     {
         // Anchor (top-left of tile)
@@ -141,33 +138,18 @@ public sealed class Camera
     {
         FollowLerpPerSecond = speed;
 
-        var vis = GetVisibleWorldSizePx();
-        var camTargetTopLeft = new PointF(
-            worldCenterPx.X - vis.Width * 0.5f,
-            worldCenterPx.Y - vis.Height * 0.5f);
-
-        FollowTo(camTargetTopLeft);
+        // For center-based pans, we treat the target as a "point of interest"
+        // and let the follow/dead-zone logic convert it to a camera UL.
+        Follow(() => worldCenterPx, hardFollow: false);
     }
 
     /// <summary>
     /// Smoothly pans the camera until the specified grid tile is centered in
     /// the view. Uses the given follow speed for the motion.
     /// </summary>
-    /// <param name="layer">
-    /// The SceneLayer that owns the grid coordinate.
-    /// </param>
-    /// <param name="col">
-    /// Tile column in grid coordinates.
-    /// </param>
-    /// <param name="row">
-    /// Tile row in grid coordinates.
-    /// </param>
-    /// <param name="speed">
-    /// Follow speed in lerp-units per second used for the pan.
-    /// </param>
     public void AnimateCenterOnGrid(SceneLayer layer, int col, int row, float speed)
     {
-        // Reuse the same center calculation as CenterOnGrid
+        // Compute world center of the tile and reuse PanCenterTo.
         var anchor = layer.GridToWorldPx(new PointF(col, row));
         float tileCenterX = anchor.X + layer.SceneLayerTileWidth * 0.5f;
         float tileCenterY = anchor.Y + layer.SceneLayerTileHeight * 0.5f;
@@ -179,18 +161,6 @@ public sealed class Camera
     /// Convenience helper that smoothly pans the camera to center on a
     /// specific grid tile in the given SceneLayer.
     /// </summary>
-    /// <param name="layer">
-    /// The SceneLayer that owns the grid coordinate.
-    /// </param>
-    /// <param name="col">
-    /// Tile column in grid coordinates.
-    /// </param>
-    /// <param name="row">
-    /// Tile row in grid coordinates.
-    /// </param>
-    /// <param name="speed">
-    /// Follow speed in lerp-units per second used for the pan.
-    /// </param>
     public void PanToGrid(SceneLayer layer, int col, int row, float speed)
     {
         AnimateCenterOnGrid(layer, col, row, speed);
@@ -198,48 +168,65 @@ public sealed class Camera
 
     /// <summary>
     /// Smoothly pans the camera toward a world-space top-left position for the
-    /// view, using the given follow speed.
+    /// view, using the given follow speed. This interprets the input as the
+    /// desired camera upper-left, not a center point.
     /// </summary>
-    /// <param name="worldUpperLeftPx">
+    /// <param name="worldTopLeftPx">
     /// World-space pixel position for the camera's upper-left corner.
     /// </param>
     /// <param name="speed">
-    /// Follow speed in lerp-units per second. Higher values feel snappier,
-    /// lower values feel more floaty.
+    /// Pan speed in lerp-units per second. Higher values feel snappier,
+    /// lower values feel more floaty. If &lt;= 0, the camera snaps.
     /// </param>
     public void PanTo(PointF worldTopLeftPx, float speed)
     {
-        FollowLerpPerSecond = speed;
-        FollowTo(worldTopLeftPx);
+        Engine.Logger.LogTrace("PanTo on camera {Id}: from {X},{Y} to {TX},{TY} speed={Speed}",
+            GetHashCode(), PositionPx.X, PositionPx.Y, worldTopLeftPx.X, worldTopLeftPx.Y, speed);
+
+        // TEMP: ignore speed, just move the camera’s upper-left directly
+        SnapTo(worldTopLeftPx);
+
+        return;
+
+        // Cancel any center-based follow when we take direct manual control.
+        _followWorldPx = null;
+
+        if (speed <= 0f)
+        {
+            _panTargetUpperLeftPx = null;
+            SnapTo(worldTopLeftPx);
+            return;
+        }
+
+        _panLerpPerSecond = speed;
+        _panTargetUpperLeftPx = ClampToWorldBounds(worldTopLeftPx);
     }
 
     /// <summary>
     /// Instantly pans the camera by the given offset in world-space pixels.
     /// This adds the offset to the current camera position without changing
-    /// any follow targets.
+    /// any follow or pan targets.
     /// </summary>
-    /// <param name="dx">
-    /// Horizontal offset in world-space pixels (positive moves right).
-    /// </param>
-    /// <param name="dy">
-    /// Vertical offset in world-space pixels (positive moves down).
-    /// </param>
-    public void PanBy(PointF deltaPx) => SnapTo(new PointF(PositionPx.X + deltaPx.X, PositionPx.Y + deltaPx.Y));
+    public void PanBy(PointF deltaPx)
+    {
+        SnapTo(new PointF(PositionPx.X + deltaPx.X,
+                          PositionPx.Y + deltaPx.Y));
+    }
 
     /// <summary>
     /// Configures the camera to follow a dynamically supplied world-space
     /// target position. Each update, the supplier is called to get the
-    /// desired camera upper-left in world pixels, and the camera moves
-    /// toward it using smooth or hard follow.
+    /// desired target "point of interest" in world pixels (typically a
+    /// character center), and the camera moves so that point stays visible,
+    /// honoring dead-zones and clamping.
     /// </summary>
-    /// <param name="followTargetSupplier">
-    /// Function that returns the desired camera upper-left position in
-    /// world-space pixels each frame.
+    /// <param name="getWorldPixel">
+    /// Function that returns the target world-space point of interest each frame.
     /// </param>
-    /// <param name="hard">
-    /// If true, the camera snaps directly to the supplied position (no
-    /// smoothing). If false, the camera smoothly lerps toward the target
-    /// using <see cref="FollowLerpPerSecond"/>.
+    /// <param name="hardFollow">
+    /// If true, the camera snaps directly to the desired position (no smoothing).
+    /// If false, the camera smoothly lerps toward the target using
+    /// <see cref="FollowLerpPerSecond"/>.
     /// </param>
     public void Follow(Func<PointF> getWorldPixel, bool hardFollow = false)
     {
@@ -248,21 +235,17 @@ public sealed class Camera
     }
 
     /// <summary>
-    /// Starts smooth camera movement toward a fixed world-space top-left position.
-    /// Uses the same follow logic as <see cref="Follow(Func{PointF}, bool)"/> but
-    /// with a constant target instead of a dynamic supplier.
+    /// Starts smooth camera movement toward a fixed world-space "point of
+    /// interest" (typically a center point). Uses the same follow logic as
+    /// <see cref="Follow(Func{PointF}, bool)"/> but with a constant target.
     /// </summary>
-    /// <param name="worldUpperLeftPx">
-    /// World-space pixel position for the camera's upper-left corner.
+    /// <param name="worldPointOfInterestPx">
+    /// World-space pixel position of the target point of interest.
     /// </param>
-    /// <param name="hard">
-    /// If true, the camera snaps directly to the target each frame (hard follow).
-    /// If false, movement is smoothed using <see cref="FollowLerpPerSecond"/>.
-    /// </param>
-    public void FollowTo(PointF worldTopLeftPx)
+    public void FollowTo(PointF worldPointOfInterestPx)
     {
         // Freeze the value so the camera lerps toward a fixed point.
-        Follow(() => worldTopLeftPx);
+        Follow(() => worldPointOfInterestPx);
     }
 
     /// <summary>
@@ -270,19 +253,6 @@ public sealed class Camera
     /// stays centered in the view. Supports both grid-space and pixel-space
     /// movement, using the current coordinate system for the layer.
     /// </summary>
-    /// <param name="target">
-    /// The movable object to follow. Its <see cref="IMovableOnSceneLayer.Position"/>
-    /// and <see cref="IMovableOnSceneLayer.PositionSpace"/> are used to determine
-    /// the world-space center point.
-    /// </param>
-    /// <param name="speed">
-    /// Optional follow speed in lerp-units per second. If &lt;= 0, the existing
-    /// <see cref="FollowLerpPerSecond"/> value is used.
-    /// </param>
-    /// <param name="hard">
-    /// If true, uses hard follow (no smoothing). If false, uses smooth follow
-    /// based on <see cref="FollowLerpPerSecond"/>.
-    /// </param>
     public void FollowCentered(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
         if (speed > 0f)
@@ -293,17 +263,13 @@ public sealed class Camera
             var layer = target.SceneLayer;
             var pos = target.GetPosition();     // Vector2
 
-            // Convert to world center px
+            // Convert to world-space center.
             PointF worldCenter =
                 target.PositionSpace == MovementSpace.Grid
                     ? GetCenteredTile(layer, pos)
                     : new PointF(pos.X, pos.Y);
 
-            // Convert center → camera UL
-            var vis = GetVisibleWorldSizePx();
-            return new PointF(
-                worldCenter.X - vis.Width * 0.5f,
-                worldCenter.Y - vis.Height * 0.5f);
+            return worldCenter; // treated as point-of-interest (center)
         },
         hard);
     }
@@ -312,19 +278,6 @@ public sealed class Camera
     /// Smoothly follows an IMovable target, centering it horizontally only.
     /// Vertical camera position is left unchanged.
     /// </summary>
-    /// <param name="target">
-    /// The movable object to follow. Its <see cref="IMovableOnSceneLayer.Position"/>
-    /// and <see cref="IMovableOnSceneLayer.PositionSpace"/> are used to determine
-    /// the world-space center point.
-    /// </param>
-    /// <param name="speed">
-    /// Optional follow speed in lerp-units per second. If &lt;= 0, the existing
-    /// <see cref="FollowLerpPerSecond"/> value is used.
-    /// </param>
-    /// <param name="hard">
-    /// If true, uses hard follow (no smoothing). If false, uses smooth follow
-    /// based on <see cref="FollowLerpPerSecond"/>.
-    /// </param>
     public void FollowCenteredX(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
         if (speed > 0f)
@@ -335,7 +288,7 @@ public sealed class Camera
             var layer = target.SceneLayer;
             var pos = target.GetPosition();
 
-            // Convert to world pixel center
+            // Convert to world pixel center X.
             float worldCenterX;
             if (target.PositionSpace == MovementSpace.Grid)
             {
@@ -347,35 +300,22 @@ public sealed class Camera
                 worldCenterX = pos.X;
             }
 
-            // Current camera Y stays unchanged
+            // Use current camera Y as the vertical "anchor".
             float currentCamY = PositionPx.Y;
             var vis = GetVisibleWorldSizePx();
 
+            // Reconstruct a center point whose Y keeps the current camera row.
             return new PointF(
-                worldCenterX - vis.Width * 0.5f,
-                currentCamY);
+                worldCenterX,
+                currentCamY + vis.Height * 0.5f);
         },
         hard);
     }
-
 
     /// <summary>
     /// Smoothly follows an IMovable target, centering it vertically only.
     /// Horizontal camera position is left unchanged.
     /// </summary>
-    /// <param name="target">
-    /// The movable object to follow. Its <see cref="IMovableOnSceneLayer.Position"/>
-    /// and <see cref="IMovableOnSceneLayer.PositionSpace"/> are used to determine
-    /// the world-space center point.
-    /// </param>
-    /// <param name="speed">
-    /// Optional follow speed in lerp-units per second. If &lt;= 0, the existing
-    /// <see cref="FollowLerpPerSecond"/> value is used.
-    /// </param>
-    /// <param name="hard">
-    /// If true, uses hard follow (no smoothing). If false, uses smooth follow
-    /// based on <see cref="FollowLerpPerSecond"/>.
-    /// </param>
     public void FollowCenteredY(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
         if (speed > 0f)
@@ -386,7 +326,7 @@ public sealed class Camera
             var layer = target.SceneLayer;
             var pos = target.GetPosition();
 
-            // Convert to world pixel center
+            // Convert to world pixel center Y.
             float worldCenterY;
             if (target.PositionSpace == MovementSpace.Grid)
             {
@@ -398,23 +338,74 @@ public sealed class Camera
                 worldCenterY = pos.Y;
             }
 
-            // Current camera X stays unchanged
+            // Use current camera X as the horizontal "anchor".
             float currentCamX = PositionPx.X;
             var vis = GetVisibleWorldSizePx();
 
+            // Reconstruct a center point whose X keeps the current camera column.
             return new PointF(
-                currentCamX,
-                worldCenterY - vis.Height * 0.5f);
+                currentCamX + vis.Width * 0.5f,
+                worldCenterY);
         },
         hard);
     }
 
-    public void ClearFollow() => _followWorldPx = null;
+    /// <summary>
+    /// Clears any active follow or pan targets; the camera remains at its
+    /// current position until moved again.
+    /// </summary>
+    public void ClearFollow()
+    {
+        _followWorldPx = null;
+        _panTargetUpperLeftPx = null;
+    }
 
     #endregion Camera movement methods
 
     internal void Update(float dtSeconds)
     {
+        Engine.Logger.LogTrace(
+    "Camera {Id} tick at time {t}: {X}, {Y}",
+    GetHashCode(), dtSeconds, PositionPx.X, PositionPx.Y);
+
+        // 1) Explicit pan-to-UL (PanTo) takes priority over center-follow.
+        if (_panTargetUpperLeftPx is { } panTarget)
+        {
+            Engine.Logger.LogTrace(
+        "Camera {Id} pan-update: current={X},{Y} target={TX},{TY} lerp={Lerp}",
+        GetHashCode(), PositionPx.X, PositionPx.Y, panTarget.X, panTarget.Y, _panLerpPerSecond);
+
+            var clamped = ClampToWorldBounds(panTarget);
+
+            if (_hardFollow || _panLerpPerSecond <= 0f)
+            {
+                PositionPx = clamped;
+                _panTargetUpperLeftPx = null;
+            }
+            else
+            {
+                float t = 1f - (float)Math.Exp(-_panLerpPerSecond * Math.Max(0f, dtSeconds));
+                var newPos = new PointF(
+                    PositionPx.X + (clamped.X - PositionPx.X) * t,
+                    PositionPx.Y + (clamped.Y - PositionPx.Y) * t);
+
+                PositionPx = newPos;
+
+                // Close enough → snap and finish.
+                if (Math.Abs(newPos.X - clamped.X) < 0.5f &&
+                    Math.Abs(newPos.Y - clamped.Y) < 0.5f)
+                {
+                    PositionPx = clamped;
+                    _panTargetUpperLeftPx = null;
+                }
+            }
+
+            // If we're actively panning, don't also run center-follow this frame.
+            if (_panTargetUpperLeftPx is not null)
+                return;
+        }
+
+        // 2) Center-follow / dead-zone logic.
         if (_followWorldPx is null)
             return;
 
@@ -427,13 +418,14 @@ public sealed class Camera
         {
             float t = 1f - (float)Math.Exp(-FollowLerpPerSecond * Math.Max(0f, dtSeconds));
             var clamped = ClampToWorldBounds(desiredUL);
-            PositionPx = new PointF(PositionPx.X + (clamped.X - PositionPx.X) * t,
-                                    PositionPx.Y + (clamped.Y - PositionPx.Y) * t);
+            PositionPx = new PointF(
+                PositionPx.X + (clamped.X - PositionPx.X) * t,
+                PositionPx.Y + (clamped.Y - PositionPx.Y) * t);
         }
     }
 
     #region private methods
-    
+
     private PointF DesiredUpperLeftToContainTarget(PointF targetWorldPx)
     {
         var vis = GetVisibleWorldSizePx();
@@ -469,8 +461,6 @@ public sealed class Camera
 
     private PointF ClampToWorldBounds(PointF ul)
     {
-        return ul;
-
         if (WorldBoundsPx == RectangleF.Empty)
             return ul;
 
@@ -486,23 +476,15 @@ public sealed class Camera
         if (maxY < minY)
             maxY = minY;
 
-        return new PointF(Math.Clamp(ul.X, minX, maxX),
-                          Math.Clamp(ul.Y, minY, maxY));
+        return new PointF(
+            Math.Clamp(ul.X, minX, maxX),
+            Math.Clamp(ul.Y, minY, maxY));
     }
 
     /// <summary>
     /// Computes the world-space center point of a tile at the given grid
     /// position within a SceneLayer.
     /// </summary>
-    /// <param name="layer">
-    /// The SceneLayer that owns the grid coordinate.
-    /// </param>
-    /// <param name="gridPos">
-    /// Grid position (col,row) as a Vector2.
-    /// </param>
-    /// <returns>
-    /// World-space pixel position at the visual center of the tile.
-    /// </returns>
     private static PointF GetCenteredTile(SceneLayer layer, Vector2 gridPos)
     {
         var anchor = layer.GridToWorldPx(new PointF(gridPos.X, gridPos.Y));

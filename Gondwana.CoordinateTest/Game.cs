@@ -42,7 +42,7 @@ public class Game : IDisposable
 
         // create initial scene here and bind to render surface
         Scene = CreateInitialScene();
-        RenderSurface.Host.Bind(Scene);
+        RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
         RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
@@ -116,7 +116,7 @@ public class Game : IDisposable
         _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        InitializeParticles();
+        //InitializeParticles();
     }
 
     private void InitializeParticles()
@@ -178,6 +178,8 @@ public class Game : IDisposable
         var camera = RenderSurface.Host.ViewRenderer.Views[0].Camera;
         var curPos = camera.PositionPx;
 
+        Engine.Logger.LogTrace("Key={Key} BEFORE pan: {X}, {Y}", args.KeyConfig.Key, curPos.X, curPos.Y);
+
         switch (args.KeyConfig.Key)
         {
             case "W":
@@ -235,12 +237,12 @@ public class Game : IDisposable
         if (args.ScrollDelta != 0)
             view.Viewport.Zoom += args.ScrollDelta * 0.001f;
 
-        if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
-        {
-            var pos = args.CurrentPosition;
-            _clickEmitter.Position = new PointF(pos.X, pos.Y);
-            _particleSurface.Burst(_clickEmitter, 80);
-        }
+        //if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
+        //{
+        //    var pos = args.CurrentPosition;
+        //    _clickEmitter.Position = new PointF(pos.X, pos.Y);
+        //    _particleSurface.Burst(_clickEmitter, 80);
+        //}
     }
 
     private void ConfigureGamepadInput()
