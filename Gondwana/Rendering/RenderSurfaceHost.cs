@@ -244,6 +244,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     private Rectangle ComputeAdapterDirtyRectangle()
     {
+        // TODO: this should go to RefreshQueue
         Rectangle adapterDirty = Rectangle.Empty;
 
         // Single-view + zoom=1 + fullscreen fast path (avoid float math/divs)
