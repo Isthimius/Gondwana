@@ -1,0 +1,310 @@
+
+@startuml
+' =========================
+' Gondwana Core – Package Map
+' =========================
+title Gondwana Core – Package (Namespace) Dependency Map
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+package "Gondwana" as GondwanaRoot {
+  package "Gondwana.Timing" as P_Timing
+  package "Gondwana.Skia" as P_Skia
+  package "Gondwana.Rendering.Direct" as P_Direct
+  package "Gondwana.Rendering.Text" as P_Text
+  package "Gondwana.Rendering.Particles" as P_Particles
+  package "Gondwana.Drawing.Tilesheets" as P_Tilesheets
+  package "Gondwana.Resource" as P_Resource
+}
+
+package "Third‑Party" as ThirdParty {
+  package "SkiaSharp" as TP_Skia
+  package "SkiaSharp.HarfBuzz" as TP_HB
+  package "Newtonsoft.Json" as TP_Json
+  package "SharpZipLib" as TP_Zip
+  package "Microsoft.Extensions.*" as TP_MSExt
+}
+
+' Edges (direction = depends on)
+P_Direct -down-> P_Skia : draw via Backbuffer
+P_Text -down-> P_Skia
+P_Text -down-> TP_HB : shaping
+P_Particles -down-> P_Skia
+
+P_Tilesheets -down-> P_Resource
+P_Resource -down-> TP_Json
+P_Resource -down-> TP_Zip
+
+P_Timing -down-> TP_MSExt : logging (optional)
+P_Direct -down-> TP_MSExt : logging/config (optional)
+
+P_Skia -down-> TP_Skia
+
+@enduml
+
+' =========================
+' Backbuffer Cluster
+' =========================
+@startuml
+title Rendering Backbuffer Cluster (Gondwana.Skia)
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Gondwana.Skia" {
+  interface IBackbuffer {
+    +Width : int
+    +Height : int
+    +IsDisposed : bool
+    +Resize(width:int, height:int) : void
+    +BeginFrame() : SKCanvas
+    +EndFrame() : void
+    +Dispose() : void
+  }
+
+  abstract class Backbuffer {
+    - _width : int
+    - _height : int
+    +Width : int
+    +Height : int
+    +IsDisposed : bool
+    +Resize(width:int, height:int) : void
+    +BeginFrame() : SKCanvas
+    +EndFrame() : void
+    +Dispose() : void
+  }
+
+  class BitmapBackbuffer {
+    - _bitmap : SKBitmap
+    - _surface : SKSurface
+    +BeginFrame() : SKCanvas
+    +EndFrame() : void
+  }
+
+  class GpuBackbuffer {
+    - _grContext : GRContext
+    - _surface : SKSurface
+    +BeginFrame() : SKCanvas
+    +EndFrame() : void
+  }
+}
+
+IBackbuffer <|.. Backbuffer
+Backbuffer <|-- BitmapBackbuffer
+Backbuffer <|-- GpuBackbuffer
+
+@enduml
+
+' =========================
+' Direct Drawing Manager + Base
+' =========================
+@startuml
+title Direct Drawing Core + Manager (Gondwana.Rendering.Direct)
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Gondwana.Rendering.Direct" {
+  abstract class DirectDrawingBase {
+    +Name : string
+    +ZOrder : int
+    +Visible : bool
+    +Disposing : event
+    +Update(dt:float) : void
+    +Draw(canvas:SKCanvas) : void
+    +Dispose() : void
+  }
+
+  class DirectDrawingManager {
+    - _drawings : ConcurrentDictionary<string, DirectDrawingBase>
+    +Items : IEnumerable<DirectDrawingBase>
+    +AddOrReplace(d:DirectDrawingBase) : void
+    +Remove(name:string) : bool
+    +TryGet(name:string, out d:DirectDrawingBase) : bool
+    +UpdateAll(dt:float) : void
+    +DrawAll(canvas:SKCanvas) : void
+  }
+}
+
+DirectDrawingManager --> "0..*" DirectDrawingBase : manages
+
+@enduml
+
+' =========================
+' Concrete Drawables
+' =========================
+@startuml
+title Concrete Drawables (Direct, Text, Particles)
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Gondwana.Rendering.Direct" {
+  class DirectRectangle {
+    +Rect : SKRect
+    +StrokeWidth : float
+    +Fill : SKPaint
+    +Stroke : SKPaint
+    +Update(dt:float) : void
+    +Draw(canvas:SKCanvas) : void
+  }
+
+  class DirectImage {
+    +Image : SKImage
+    +SourceRect : SKRect?
+    +DestRect : SKRect
+    +Opacity : float
+    +Update(dt:float) : void
+    +Draw(canvas:SKCanvas) : void
+  }
+}
+
+package "Gondwana.Rendering.Text" {
+  class TextBlock {
+    +Text : string
+    +Typeface : SKTypeface
+    +FontSize : float
+    +Foreground : SKColor
+    +Background : SKColor
+    +HorizontalAlign : SKTextAlign
+    +VerticalAlign : VerticalAlign
+    +Wrap : bool
+    +MaxLines : int?
+    +UseShadow : bool
+    +UseOutline : bool
+    +Update(dt:float) : void
+    +Draw(canvas:SKCanvas) : void
+  }
+}
+
+package "Gondwana.Rendering.Particles" {
+  class DirectParticles {
+    +Emitters : IList<ParticleEmitter>
+    +MaxParticles : int
+    +Update(dt:float) : void
+    +Draw(canvas:SKCanvas) : void
+  }
+}
+
+DirectDrawingBase <|-- DirectRectangle
+DirectDrawingBase <|-- DirectImage
+DirectDrawingBase <|-- TextBlock
+DirectDrawingBase <|-- DirectParticles
+
+@enduml
+
+' =========================
+' Particle System
+' =========================
+@startuml
+title Particle System (Gondwana.Rendering.Particles)
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Gondwana.Rendering.Particles" {
+  class Particle {
+    +Position : SKPoint
+    +Velocity : SKPoint
+    +Age : float
+    +Lifetime : float
+    +Size : float
+    +Color : SKColor
+  }
+
+  class ParticleEmitter {
+    +Name : string
+    +RatePerSecond : float
+    +LifetimeRange : Range<float>
+    +SpeedRange : Range<float>
+    +SizeRange : Range<float>
+    +ColorRange : Range<SKColor>
+    +Origin : SKPoint
+    +EmissionAngleDeg : float
+    +EmissionSpreadDeg : float
+    +Enabled : bool
+    +Update(dt:float) : void
+    +Spawn(dt:float, outList:IList<Particle>) : void
+  }
+
+  class DirectParticles {
+    +Emitters : IList<ParticleEmitter>
+    +MaxParticles : int
+    - _active : List<Particle>
+    +Update(dt:float) : void
+    +Draw(canvas:SKCanvas) : void
+  }
+}
+
+ParticleEmitter --> "spawns" Particle
+DirectParticles --> "0..*" ParticleEmitter : contains
+DirectParticles --> "many" Particle : manages
+
+@enduml
+
+' =========================
+' Tilesheets / Resources
+' =========================
+@startuml
+title Tilesheets & Registry (Gondwana.Drawing.Tilesheets / Gondwana.Resource)
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Gondwana.Drawing.Tilesheets" {
+  class Tilesheet {
+    +Name : string
+    +SkBitmap : SKBitmap
+    +TileWidth : int
+    +TileHeight : int
+    - _tileCache : TilesheetSlice?[,]? 
+    +GetTileBitmap(col:int, row:int) : SKBitmap
+    +GetTileImage(col:int, row:int) : SKImage
+    +Dispose() : void
+  }
+
+  class TilesheetSlice <<struct>> {
+    +Bitmap : SKBitmap
+    +Image  : SKImage
+  }
+}
+
+package "Gondwana.Resource" {
+  class TilesheetRegistry <<singleton>> {
+    - _registry : ConcurrentDictionary<string, Tilesheet>
+    +Instance : TilesheetRegistry
+    +Register(ts:Tilesheet) : void
+    +TryGet(name:string, out ts:Tilesheet) : bool
+    +Unregister(name:string) : bool
+    +All() : IEnumerable<Tilesheet>
+  }
+}
+
+TilesheetRegistry --> "0..*" Tilesheet : indexes
+Tilesheet "1" o-- "0..*" TilesheetSlice : cached slices
+
+@enduml
+
+' =========================
+' Timing
+' =========================
+@startuml
+title High-Resolution Timer (Gondwana.Timing)
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Gondwana.Timing" {
+  class HighResTimer {
+    +IsRunning : bool
+    +DeltaSeconds : double
+    +TotalSeconds : double
+    +TargetFps : double
+    +Tick : event<double>
+    +Start() : void
+    +Stop() : void
+    +Reset() : void
+  }
+}
+@enduml

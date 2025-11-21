@@ -18,9 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
-		Screen-World-Grid.puml = Screen-World-Grid.puml
 		version.json = version.json
-		World-Screen.puml = World-Screen.puml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana", "Gondwana\Gondwana.csproj", "{208754FD-B132-EEBD-A1C1-FC105730B970}"
@@ -37,8 +35,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.CoordinateTest", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
-		Screen-World-Grid.puml = Screen-World-Grid.puml
-		World-Screen.puml = World-Screen.puml
+		docs\gondwana-core-diagrams.puml = docs\gondwana-core-diagrams.puml
+		docs\Screen-World-Grid.puml = docs\Screen-World-Grid.puml
+		docs\World-Screen.puml = docs\World-Screen.puml
 	EndProjectSection
 EndProject
 Global
