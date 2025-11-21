@@ -582,7 +582,7 @@ public sealed class Engine : IDisposable
             foreach (SceneLayer sceneLayer in scene)
                 sceneLayer.RefreshQueue.ClearRefreshQueue();
 
-            scene.RefreshNeeded = SceneRefreshType.None;
+            scene.RefreshNeeded = SceneRefreshType.Tiles;
         }
     }
 

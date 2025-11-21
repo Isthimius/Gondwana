@@ -44,7 +44,7 @@ public sealed class ViewRenderer
 
             var view = new View(cam, vp) { ZOrder = zOrder };
             view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
-            view.Viewport.ZoomChanged += OnViewportTargetRectChanged;
+            view.Viewport.ZoomChanged += OnViewportZoomChanged;
 
             _views.Add(view);
 
@@ -53,7 +53,7 @@ public sealed class ViewRenderer
         }
     }
 
-    private void OnViewportTargetRectChanged(ViewportZoomChangedEventArgs args)
+    private void OnViewportZoomChanged(ViewportZoomChangedEventArgs args)
     {
         if (_renderSurfaceHost.Scene is not null)
             _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
@@ -70,7 +70,7 @@ public sealed class ViewRenderer
         foreach (var v in _views)
         {
             v.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
-            v.Viewport.ZoomChanged -= OnViewportTargetRectChanged;
+            v.Viewport.ZoomChanged -= OnViewportZoomChanged;
         }
 
         _views.Clear();

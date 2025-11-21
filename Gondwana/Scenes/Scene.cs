@@ -259,10 +259,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
     {
-        // set refresh to Queue if no refresh required
-        if (RefreshNeeded == SceneRefreshType.None)
-            RefreshNeeded = SceneRefreshType.Queue;
-
         // if SceneLayer that added Tile to queue is visible...
         if (e.layer.Visible)
         {
