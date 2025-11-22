@@ -40,13 +40,13 @@ public sealed class View
     {
         float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
 
-        float worldX =
-            Camera.PositionPx.X +
-            (screenPx.X - Viewport.TargetRectPx.Left - Viewport.ScreenOffsetPx.X) * zoom;
+        var offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        var offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
-        float worldY =
-            Camera.PositionPx.Y +
-            (screenPx.Y - Viewport.TargetRectPx.Top - Viewport.ScreenOffsetPx.Y) * zoom;
+        // screen = (world + offset) / zoom - camera
+        // => world = zoom * (screen + camera) - offset
+        float worldX = zoom * (screenPx.X + Camera.PositionPx.X) - offsetX;
+        float worldY = zoom * (screenPx.Y + Camera.PositionPx.Y) - offsetY;
 
         return new PointF(worldX, worldY);
     }
@@ -67,19 +67,14 @@ public sealed class View
     {
         float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
 
-        // Subtract camera
-        float localX = worldPx.X - Camera.PositionPx.X;
-        float localY = worldPx.Y - Camera.PositionPx.Y;
+        var offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        var offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
-        // Apply inverse zoom
-        localX /= zoom;
-        localY /= zoom;
+        // screen = (world + offset) / zoom - camera
+        float screenX = (worldPx.X + offsetX) / zoom - Camera.PositionPx.X;
+        float screenY = (worldPx.Y + offsetY) / zoom - Camera.PositionPx.Y;
 
-        // Apply viewport placement
-        localX += Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
-        localY += Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
-
-        return new PointF(localX, localY);
+        return new PointF(screenX, screenY);
     }
 
     /// <summary>
@@ -143,17 +138,16 @@ public sealed class View
     {
         float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
 
-        // Undo viewport placement → view-local
-        float localLeft = screenRect.Left - Viewport.TargetRectPx.Left - Viewport.ScreenOffsetPx.X;
-        float localTop = screenRect.Top - Viewport.TargetRectPx.Top - Viewport.ScreenOffsetPx.Y;
+        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
-        // Scale from screen → world (zoom)
-        float worldLeft = Camera.PositionPx.X + localLeft * zoom;
-        float worldTop = Camera.PositionPx.Y + localTop * zoom;
-        float worldWidth = screenRect.Width * zoom;
-        float worldHeight = screenRect.Height * zoom;
+        // world = zoom * (screen + camera) - offset
+        float worldLeft = zoom * (screenRect.Left + Camera.PositionPx.X) - offsetX;
+        float worldTop = zoom * (screenRect.Top + Camera.PositionPx.Y) - offsetY;
+        float worldRight = zoom * (screenRect.Right + Camera.PositionPx.X) - offsetX;
+        float worldBottom = zoom * (screenRect.Bottom + Camera.PositionPx.Y) - offsetY;
 
-        return new RectangleF(worldLeft, worldTop, worldWidth, worldHeight);
+        return RectangleF.FromLTRB(worldLeft, worldTop, worldRight, worldBottom);
     }
 
     #endregion Coordinate conversion methods

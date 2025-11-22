@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 using Microsoft.Extensions.Logging;
+using Gondwana.Drawing.Coordinates; // your coordinate systems live here
 
 namespace Gondwana.CoordinateTest;
 
@@ -45,9 +46,9 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
+        //RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
         RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
         //RenderSurface.Host.RedrawDirtyRectangleOnly = false;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
@@ -214,26 +215,53 @@ public class Game : IDisposable
     {
         var view = RenderSurface.Host.ViewRenderer.Views[0];
         var layer = Scene!.SceneLayers[0];
-        var cameraPos = view.Camera.PositionPx;
 
         var screenPos = args.CurrentPosition;
-        var worldPos = view.ScreenPxToWorldPx(screenPos);           // uses camera + viewport
-        var gridPos = view.ScreenPxToGrid(layer, screenPos);        // uses worldPos internally
 
+        // 1) screen → world (via View)
+        var worldFromScreen = view.ScreenPxToWorldPx(screenPos);
+
+        // 2) world → grid (via View wrapper, which calls SceneLayer internally)
+        var gridFromScreen = view.ScreenPxToGrid(layer, screenPos);
+
+        // 3) grid → world (via SceneLayer wrapper)
+        var worldFromGrid = layer.GridToWorldPx(gridFromScreen);
+
+        // 4) world → screen (via View)
+        var screenFromGrid = view.WorldPxToScreenPx(worldFromGrid);
+
+        Engine.Logger.LogTrace(
+            "PICK DEBUG: " +
+            "SCR={0,6:F1},{1,6:F1}  " +
+            "W(scr)={2,7:F1},{3,7:F1}  " +
+            "GRID={4,5:F2},{5,5:F2}  " +
+            "W(grid)={6,7:F1},{7,7:F1}  " +
+            "SCR(grid)={8,6:F1},{9,6:F1}",
+            screenPos.X, screenPos.Y,
+            worldFromScreen.X, worldFromScreen.Y,
+            gridFromScreen.X, gridFromScreen.Y,
+            worldFromGrid.X, worldFromGrid.Y,
+            screenFromGrid.X, screenFromGrid.Y
+        );
+
+        // Existing HUD text
+        var cameraPos = view.Camera.PositionPx;
         var message =
             $"Mouse Pos (screen): {screenPos.X}, {screenPos.Y}\n" +
-            $"World Pos (px): {worldPos.X:F1}, {worldPos.Y:F1}\n" +
-            $"Grid coordinates: {gridPos.X}, {gridPos.Y}\n" +
+            $"World Pos (px): {worldFromScreen.X:F1}, {worldFromScreen.Y:F1}\n" +
+            $"Grid coordinates: {gridFromScreen.X}, {gridFromScreen.Y}\n" +
             $"Camera Pos: (px): {cameraPos.X}, {cameraPos.Y}";
-
         _textBlockMouse?.SetText(message);
 
+        // Highlight logic, unchanged
         foreach (SceneLayerTile tile in layer)
             tile.EnableFog = false;
 
-        if (layer[gridPos] is not null)
-            layer[gridPos]!.EnableFog = true;
+        var pickedTile = layer[gridFromScreen];
+        if (pickedTile is not null)
+            pickedTile.EnableFog = true;
 
+        // Zoom with scroll, unchanged
         if (args.ScrollDelta != 0)
             view.Viewport.Zoom += args.ScrollDelta * 0.001f;
 
