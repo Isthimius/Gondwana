@@ -28,18 +28,35 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         int W = sceneLayer.SceneLayerTileWidth;
         int H = sceneLayer.SceneLayerTileHeight;
 
-        int originX = sceneLayer.OriginPx.X;
-        int originY = sceneLayer.OriginPx.Y;
+        float originX = sceneLayer.OriginPx.X;
+        float originY = sceneLayer.OriginPx.Y;
 
-        float fx = (pixelPt.X - originX) / (W * 0.75f);
-        int approxCol = (int)Math.Round(fx);
+        // --- 1) Coarse column estimate using centers, not box top-left ---
 
-        int baseY = originY + ((approxCol & 1) == 0 ? 0 : H / 2);
-        float fy = (pixelPt.Y - baseY) / (float)H;
-        int approxRow = (int)Math.Round(fy);
+        // Center of column 0 is at originX + W/2
+        float dxFromCol0Center = pixelPt.X - (originX + W * 0.5f);
+
+        // Columns advance by 0.75 * W horizontally
+        float colF = dxFromCol0Center / (W * 0.75f);
+        int approxCol = (int)Math.Round(colF);
+
+        // --- 2) Coarse row estimate using centers and parity ---
+
+        // Center Y of row 0 in this column:
+        //   even col: originY + H/2
+        //   odd  col: originY + H/2 + H/2 = originY + H
+        float baseCenterY =
+            originY + H * 0.5f
+            + ((approxCol & 1) == 0 ? 0f : H * 0.5f);
+
+        float dyFromRow0Center = pixelPt.Y - baseCenterY;
+        float rowF = dyFromRow0Center / H;
+        int approxRow = (int)Math.Round(rowF);
 
         var best = new Point(approxCol, approxRow);
         float bestDist = float.MaxValue;
+
+        // --- 3) Refine via polygon hit-test + nearest center ---
 
         foreach (var cand in NeighborsFlatTop(approxCol, approxRow, includeSelf: true))
         {
@@ -49,6 +66,7 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
             if (PointInPolygon(poly, pInt))
                 return new PointF(cand.X, cand.Y);
 
+            // Center of candidate hex
             float cx = originX + cand.X * (W * 0.75f) + W / 2f;
             float cy = originY + cand.Y * H
                        + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
