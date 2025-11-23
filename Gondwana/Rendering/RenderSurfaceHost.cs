@@ -174,14 +174,26 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
 
-        var full = new Rectangle(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter!.Height);
-        for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
+        // For each view, compute the world-space area that is visible through that viewport,
+        // then enqueue that world rect into each visible layer's RefreshQueue.
+        foreach (var view in ViewRenderer.Views)
         {
-            Scene.VisibleSceneLayers[i]
-                 .RefreshQueue
-                 .AddPixelRangeToRefreshQueue(full, cascadeToOtherRefreshQueues: false);
+            // Full viewport in screen pixels
+            var screenRect = view.Viewport.TargetRectPx;
+
+            // Convert that to world pixels using the same math as picking
+            var worldRectF = view.ScreenRectToWorldRect(screenRect);
+            var worldRect = Rectangle.Round(worldRectF);
+
+            for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
+            {
+                Scene.VisibleSceneLayers[i]
+                     .RefreshQueue
+                     .AddPixelRangeToRefreshQueue(worldRect, cascadeToOtherRefreshQueues: false);
+            }
         }
     }
+
 
     private bool HasSceneDirty()
     {
