@@ -117,9 +117,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         ProcessOverlayScreenDirty();
 
         // 5) Render all views. Draw layers back -> front (ascending Z).
-        ViewRenderer.Render(Backbuffer.Canvas, dtSeconds: deltaSeconds, drawScene: _ =>
+        ViewRenderer.Render(Backbuffer.Canvas, deltaSeconds, () =>
         {
-            for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+            var countOfVisibleLayers = Scene?.CountOfVisibleLayers ?? 0;
+            for (int i = 0; i < countOfVisibleLayers; i++)
             {
                 var layer = Scene.VisibleSceneLayers[i];
                 Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
@@ -193,7 +194,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             }
         }
     }
-
 
     private bool HasSceneDirty()
     {

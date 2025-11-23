@@ -79,7 +79,7 @@ public sealed class ViewRenderer
             _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
     }
 
-    internal void Render(SKCanvas canvas, float dtSeconds, Action<SKCanvas> drawScene)
+    internal void Render(SKCanvas canvas, float dtSeconds, Action drawScene)
     {
         // Update each camera, then draw each view with its own clip/scale,
         // in ascending ZOrder (back -> front).
@@ -87,7 +87,7 @@ public sealed class ViewRenderer
         {
             v.Camera.Update(dtSeconds);
             v.Viewport.Begin(canvas, v.Camera.PositionPx);
-            drawScene(canvas);
+            drawScene();
             v.Viewport.End(canvas);
         }
     }

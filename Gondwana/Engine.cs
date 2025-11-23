@@ -561,7 +561,10 @@ public sealed class Engine : IDisposable
 
         // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
+        {
+            //surface.DrawRefreshQueueToBackbuffer(tick);
             surface.RenderBackbufferToAdapter();
+        }
 
         // update state of gamepad(s)
         GamepadManager?.Update();

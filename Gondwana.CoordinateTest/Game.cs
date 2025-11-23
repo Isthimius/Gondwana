@@ -230,6 +230,17 @@ public class Game : IDisposable
         // 4) world → screen (via View)
         var screenFromGrid = view.WorldPxToScreenPx(worldFromGrid);
 
+        var dx = screenFromGrid.X - screenPos.X;
+        var dy = screenFromGrid.Y - screenPos.Y;
+
+        Engine.Logger.LogTrace(
+            "ROUNDTRIP: ΔSCR = ({0:F3}, {1:F3})  " +
+            "SCR={2:F1},{3:F1}  SCR(grid)={4:F1},{5:F1}",
+            dx, dy,
+            screenPos.X, screenPos.Y,
+            screenFromGrid.X, screenFromGrid.Y
+        );
+
         Engine.Logger.LogTrace(
             "PICK DEBUG: " +
             "SCR={0,6:F1},{1,6:F1}  " +
