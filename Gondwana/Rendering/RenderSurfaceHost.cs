@@ -245,9 +245,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                      .AddPixelRangeToRefreshQueue(worldDirtyForView, cascadeToOtherRefreshQueues: true);
             }
         }
-
-        // Clear the overlay dirty so it doesn’t re-trigger every frame
-        Backbuffer.DirtyRectangle = Rectangle.Empty;
     }
 
     /// <summary>

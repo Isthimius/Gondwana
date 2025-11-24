@@ -38,15 +38,14 @@ public sealed class View
     /// </returns>
     public PointF ScreenPxToWorldPx(PointF screenPx)
     {
-        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
 
-        var offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
-        var offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
+        // same origin we use in Begin()
+        float vx = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        float vy = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
-        // screen = (world + offset) / zoom - camera
-        // => world = zoom * (screen + camera) - offset
-        float worldX = zoom * (screenPx.X + Camera.PositionPx.X) - offsetX;
-        float worldY = zoom * (screenPx.Y + Camera.PositionPx.Y) - offsetY;
+        float worldX = Camera.PositionPx.X + (screenPx.X - vx) * zoom;
+        float worldY = Camera.PositionPx.Y + (screenPx.Y - vy) * zoom;
 
         return new PointF(worldX, worldY);
     }

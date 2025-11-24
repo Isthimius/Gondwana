@@ -5,4 +5,7 @@
 /// All -> redraw layer
 /// </summary>
 public enum SceneRefreshType
-{ Tiles, All }
+{
+    Tiles,
+    All
+}
