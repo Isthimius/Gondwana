@@ -74,25 +74,24 @@ public sealed class Viewport
     {
         canvas.Save();
 
+        var r = TargetRectPx;
+
         // Clip to viewport rect
-        canvas.ClipRect(new SKRect(
-            TargetRectPx.Left,
-            TargetRectPx.Top,
-            TargetRectPx.Right,
-            TargetRectPx.Bottom));
+        canvas.ClipRect(new SKRect(r.Left, r.Top, r.Right, r.Bottom));
 
         float zoom = Math.Max(Zoom, 1e-6f);
         float s = 1f / zoom;
 
-        // Apply in this order (because Skia pre-concats):
-        //   1) world -> world - camera
-        //   2) scale by 1/zoom
-        //   3) shift into viewport on the adapter
-        canvas.Translate(-cameraPos.X, -cameraPos.Y);
+        // 1) Move origin to viewport top-left in screen space
+        canvas.Translate(r.Left + ScreenOffsetPx.X,
+                         r.Top + ScreenOffsetPx.Y);
+
+        // 2) Apply zoom (world → screen)
         canvas.Scale(s, s);
-        canvas.Translate(
-            TargetRectPx.Left + ScreenOffsetPx.X,
-            TargetRectPx.Top + ScreenOffsetPx.Y);
+
+        // 3) Move world so cameraPos is at the viewport origin
+        canvas.Translate(-cameraPos.X, -cameraPos.Y);
     }
+
     internal void End(SKCanvas canvas) => canvas.Restore();
 }
