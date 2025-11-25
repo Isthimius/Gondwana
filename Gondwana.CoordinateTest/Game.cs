@@ -101,21 +101,21 @@ public class Game : IDisposable
     private void InitDirectDrawings()
     {
         // Implementation for creating direct drawings goes here
-        //_directRectangle = new DirectRectangle(RenderSurface.Host,
-                                               //new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
-                                               //Color.Wheat);
-        //_directRectangle.SetFilled(true);
+        _directRectangle = new DirectRectangle(RenderSurface.Host,
+                                               new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
+                                               Color.Wheat);
+        _directRectangle.SetFilled(true);
 
-        //_textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
-        //_textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
+        _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
+        _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
         Engine.Instance.CPSCalculated += (e) =>
         {
-            //_textBlockCPS.SetText(e.ToString());
+            _textBlockCPS.SetText(e.ToString());
         };
 
-        //_textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
-        //_textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
+        _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
+        _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         //InitializeParticles();
     }
@@ -155,9 +155,11 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        scene.AddLayer(60, 5, 64, 64, 1, CoordinateSystemTypes.HexFlatTop);
+        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 1f, CoordinateSystemTypes.HexFlatTop);
+        var sceneLayer2 = scene.AddLayer(60, 5, 64, 64, 0.5f, CoordinateSystemTypes.HexFlatTop);
 
-        scene!.SceneLayers[0].ShowGridLines = true;
+        sceneLayer1.ShowGridLines = true;
+        sceneLayer2.ShowGridLines = true;
 
         return scene;
     }
