@@ -68,9 +68,8 @@ public sealed class Viewport
 
     /// <summary>
     /// Apply clip and transform for this viewport. Must be paired with End().
-    /// Camera position is applied as a world-space offset.
     /// </summary>
-    internal void Begin(SKCanvas canvas, PointF cameraPos)
+    internal void Begin(SKCanvas canvas)
     {
         canvas.Save();
 
@@ -88,9 +87,6 @@ public sealed class Viewport
 
         // 2) Apply zoom (world → screen)
         canvas.Scale(s, s);
-
-        // 3) Move world so cameraPos is at the viewport origin
-        canvas.Translate(-cameraPos.X, -cameraPos.Y);
     }
 
     internal void End(SKCanvas canvas) => canvas.Restore();

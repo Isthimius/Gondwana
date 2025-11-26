@@ -117,14 +117,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         ProcessOverlayScreenDirty();
 
         // 5) Render all views. Draw layers back -> front (ascending Z).
-        ViewRenderer.Render(Backbuffer.Canvas, deltaSeconds, () =>
+        ViewRenderer.Render(Backbuffer.Canvas, deltaSeconds, Scene!, (view, layer) =>
         {
-            var countOfVisibleLayers = Scene?.CountOfVisibleLayers ?? 0;
-            for (int i = 0; i < countOfVisibleLayers; i++)
-            {
-                var layer = Scene.VisibleSceneLayers[i];
-                Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
-            }
+            Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
         });
 
         // 6) Compute adapter-space dirty from the tiles we actually drew

@@ -79,15 +79,39 @@ public sealed class ViewRenderer
             _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
     }
 
-    internal void Render(SKCanvas canvas, float dtSeconds, Action drawScene)
+    internal void Render(
+        SKCanvas canvas,
+        float dtSeconds,
+        Scene scene,
+        Action<View, SceneLayer> drawLayer)
     {
-        // Update each camera, then draw each view with its own clip/scale,
-        // in ascending ZOrder (back -> front).
         foreach (var v in _views.OrderBy(v => v.ZOrder))
         {
             v.Camera.Update(dtSeconds);
-            v.Viewport.Begin(canvas, v.Camera.PositionPx);
-            drawScene();
+            v.Viewport.Begin(canvas);
+
+            var cam = v.Camera;
+
+            int countOfVisibleLayers = scene?.CountOfVisibleLayers ?? 0;
+            for (int i = 0; i < countOfVisibleLayers; i++)
+            {
+                var layer = scene.VisibleSceneLayers[i];
+
+                canvas.Save();
+
+                float p = layer.Parallax;
+
+                // camera + parallax applied HERE, per view + per layer
+                canvas.Translate(
+                    -cam.PositionPx.X * p,
+                    -cam.PositionPx.Y * p);
+
+                // Let the caller draw this layer (in world coords)
+                drawLayer(v, layer);
+
+                canvas.Restore();
+            }
+
             v.Viewport.End(canvas);
         }
     }
