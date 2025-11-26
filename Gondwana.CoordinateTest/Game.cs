@@ -117,7 +117,7 @@ public class Game : IDisposable
         _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        //InitializeParticles();
+        InitializeParticles();
     }
 
     private void InitializeParticles()
@@ -285,12 +285,12 @@ public class Game : IDisposable
         if (args.ScrollDelta != 0)
             view.Viewport.Zoom += args.ScrollDelta * 0.001f;
 
-        //if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
-        //{
-        //    var pos = args.CurrentPosition;
-        //    _clickEmitter.Position = new PointF(pos.X, pos.Y);
-        //    _particleSurface.Burst(_clickEmitter, 80);
-        //}
+        if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
+        {
+            var pos = args.CurrentPosition;
+            _clickEmitter.Position = new PointF(pos.X, pos.Y);
+            _particleSurface.Burst(_clickEmitter, 80);
+        }
     }
 
     private void ConfigureGamepadInput()

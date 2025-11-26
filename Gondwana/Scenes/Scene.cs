@@ -105,7 +105,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
                                int width = 32,
                                int height = 32,
                                int zOrder = 0,
-                               float parallax = 1,
+                               float parallax = 1f,
                                CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SqaureIso)
     {
         var sceneLayer = new SceneLayer(columnCount, rowCount, width, height, parallax, coordinateSystem);

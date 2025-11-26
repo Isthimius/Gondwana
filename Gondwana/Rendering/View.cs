@@ -64,14 +64,14 @@ public sealed class View
     /// </returns>
     public PointF WorldPxToScreenPx(PointF worldPx)
     {
-        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
 
-        var offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
-        var offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
+        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
-        // screen = (world + offset) / zoom - camera
-        float screenX = (worldPx.X + offsetX) / zoom - Camera.PositionPx.X;
-        float screenY = (worldPx.Y + offsetY) / zoom - Camera.PositionPx.Y;
+        // screen = offset + (world - camera) / zoom
+        float screenX = offsetX + (worldPx.X - Camera.PositionPx.X) / zoom;
+        float screenY = offsetY + (worldPx.Y - Camera.PositionPx.Y) / zoom;
 
         return new PointF(screenX, screenY);
     }
