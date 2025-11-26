@@ -1,3 +1,4 @@
+using System;
 using Gondwana.Rendering;
 using Gondwana.Skia;
 using Gondwana.Timers;
@@ -51,6 +52,23 @@ public class TextBlock : DirectDrawingMovableBase
         /// <summary>Align text to the bottom of the inner content area.</summary>
         Bottom
     }
+
+    #region events
+
+    /// <summary>
+    /// Raised whenever the revealed text portion advances. The argument is the cumulative
+    /// text currently revealed (substring from start to visible character count).
+    /// </summary>
+    public event Action<string>? TextRevealed;
+
+    /// <summary>
+    /// Raised once when the reveal completes. Argument is the full text content.
+    /// Note: when the final chunk is revealed this class will raise TextRevealed first,
+    /// then TextRevealComplete.
+    /// </summary>
+    public event Action<string>? TextRevealComplete;
+
+    #endregion events
 
     private string _text = string.Empty;
     private readonly List<string> _lines = new();
@@ -445,6 +463,11 @@ public class TextBlock : DirectDrawingMovableBase
     {
         _textRevealMode = TextRevealMode.None;
         _revealCharCount = _text.Length;
+
+        // Fire final events: first the revealed text (full), then the completion event
+        TextRevealed?.Invoke(_text);
+        TextRevealComplete?.Invoke(_text);
+
         ForceRefresh();
         return this;
     }
@@ -535,11 +558,24 @@ public class TextBlock : DirectDrawingMovableBase
                     for (int i = old; i < _revealCharCount; i++)
                         _revealAccum -= PauseFor(_text[i]);
 
+                    // Mark dirty + redraw
                     _dirty = true;
                     ForceRefresh();
 
+                    // Fire TextRevealed with the cumulative revealed text
+                    if (_revealCharCount > old)
+                    {
+                        var revealed = _text.Substring(0, _revealCharCount);
+                        TextRevealed?.Invoke(revealed);
+                    }
+
+                    // If we've reached the target, fire completion (TextRevealed already sent above)
                     if (_revealCharCount >= _revealTargetCharCount)
+                    {
                         _textRevealMode = TextRevealMode.None;
+                        // Ensure ordering: revealed then complete
+                        TextRevealComplete?.Invoke(_text);
+                    }
                 }
             }
         }
@@ -565,8 +601,19 @@ public class TextBlock : DirectDrawingMovableBase
                     _dirty = true;
                     ForceRefresh();
 
+                    // Fire TextRevealed with the cumulative revealed text
+                    if (_revealCharCount > oldCount)
+                    {
+                        var revealed = _text.Substring(0, _revealCharCount);
+                        TextRevealed?.Invoke(revealed);
+                    }
+
                     if (_wordIndex >= _wordEndCharIndexes.Length)
+                    {
                         _textRevealMode = TextRevealMode.None;
+                        // Ensure ordering: revealed then complete
+                        TextRevealComplete?.Invoke(_text);
+                    }
                 }
             }
         }
@@ -900,5 +947,21 @@ public class TextBlock : DirectDrawingMovableBase
         WordsPerSecond,
         /// <summary>Reveal amount is controlled directly via <see cref="RevealSetCount(int)"/>.</summary>
         ManualCount
+    }
+
+    private readonly object _eventLock = new();
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            lock (_eventLock)
+            {
+                TextRevealed = null;
+                TextRevealComplete = null;
+            }
+        }
+
+        base.Dispose(disposing);
     }
 }
