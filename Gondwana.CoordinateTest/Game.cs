@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 using Microsoft.Extensions.Logging;
-using Gondwana.Drawing.Coordinates; // your coordinate systems live here
+using Gondwana.Drawing.Coordinates;
 
 namespace Gondwana.CoordinateTest;
 
@@ -155,8 +155,8 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 1f, CoordinateSystemTypes.HexFlatTop);
-        var sceneLayer2 = scene.AddLayer(60, 5, 64, 64, 0.5f, CoordinateSystemTypes.HexFlatTop);
+        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.HexFlatTop);
+        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.HexFlatTop);
 
         sceneLayer1.ShowGridLines = true;
         sceneLayer2.ShowGridLines = true;
@@ -170,10 +170,10 @@ public class Game : IDisposable
     {
         Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
         Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey("W");
-        Engine.KeyboardEventPoller.StartMonitoringKey("A");
-        Engine.KeyboardEventPoller.StartMonitoringKey("S");
-        Engine.KeyboardEventPoller.StartMonitoringKey("D");
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.W.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.A.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.S.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.D.ToString());
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
@@ -183,21 +183,28 @@ public class Game : IDisposable
 
         Engine.Logger.LogTrace("Key={Key} BEFORE pan: {X}, {Y}", args.KeyConfig.Key, curPos.X, curPos.Y);
 
-        switch (args.KeyConfig.Key)
+        // Parse the received key string into the Keys enum (case-insensitive)
+        if (!Enum.TryParse<Keys>(args.KeyConfig.Key, ignoreCase: true, out var key))
         {
-            case "W":
+            // If parsing fails, ignore — preserves existing behavior for any non-standard strings
+            return;
+        }
+
+        switch (key)
+        {
+            case Keys.W:
                 Engine.Logger.LogTrace("W key pressed");
                 camera.PanTo(new PointF(curPos.X, curPos.Y - 10), 10f);
                 break;
-            case "A":
+            case Keys.A:
                 Engine.Logger.LogTrace("A key pressed");
                 camera.PanTo(new PointF(curPos.X - 10, curPos.Y), 10f);
                 break;
-            case "S":
+            case Keys.S:
                 Engine.Logger.LogTrace("S key pressed");
                 camera.PanTo(new PointF(curPos.X, curPos.Y + 10), 10f);
                 break;
-            case "D":
+            case Keys.D:
                 Engine.Logger.LogTrace("D key pressed");
                 camera.PanTo(new PointF(curPos.X + 10, curPos.Y), 10f);
                 break;

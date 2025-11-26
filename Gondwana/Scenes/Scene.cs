@@ -104,10 +104,12 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
                                int rowCount,
                                int width = 32,
                                int height = 32,
+                               int zOrder = 0,
                                float parallax = 1,
                                CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SqaureIso)
     {
         var sceneLayer = new SceneLayer(columnCount, rowCount, width, height, parallax, coordinateSystem);
+        sceneLayer.ZOrder = zOrder;
 
         _sceneLayers.Add(sceneLayer);
         OnSceneLayerAdded(sceneLayer);

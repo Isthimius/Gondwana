@@ -17,7 +17,11 @@ public sealed class KeyboardEventPoller
 
     public event Action<KeyDownEventArgs>? KeyDown;
 
-    private readonly Dictionary<string, KeyEventConfiguration> _keyConfigs = new();
+    // case-insensitive keys
+    private readonly Dictionary<string, KeyEventConfiguration> _keyConfigs = new(StringComparer.OrdinalIgnoreCase);
+
+    // track previous pressed state for each monitored key so we can detect transitions
+    private readonly Dictionary<string, bool> _previousPressed = new(StringComparer.OrdinalIgnoreCase);
 
     private KeyboardEventPoller()
     { }
@@ -39,28 +43,53 @@ public sealed class KeyboardEventPoller
 
     /// <summary>
     /// Updates internal key states and raises throttled key down events.
+    /// Emits platform-agnostic KeyAction (Pressed / Released / Repeated).
     /// </summary>
     /// <param name="tick">Current global tick</param>
-    /// <param name="keyStates">Set of currently pressed keys (as strings or codes)</param>
-    /// <param name="modifiers">Optional modifier state</param>
     internal void PollForEvents(long tick)
     {
         if (PauseAllKeyEvents || Adapter is null) return;
 
-        foreach (var kvp in _keyConfigs)
+        foreach (var kvp in _keyConfigs.ToList())
         {
             var key = kvp.Key;
             var config = kvp.Value;
 
-            if (config.IsPaused || !Adapter.PressedKeys.Contains(key)) continue;
+            bool currentlyPressed = Adapter.PressedKeys.Contains(key);
+            bool previouslyPressed = _previousPressed.TryGetValue(key, out var prev) && prev;
 
-            if (config.ReadyForNextEvent(tick))
+            // Transition: not pressed -> pressed (initial KeyDown)
+            if (currentlyPressed && !previouslyPressed)
             {
+                _previousPressed[key] = true;
                 config._lastEventTick = tick;
                 _keyConfigs[key] = config;
-
-                KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentKeyboardModifiers));
+                KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentKeyboardModifiers, KeyAction.Pressed));
+                continue;
             }
+
+            // Still pressed -> may produce Repeated events (throttled)
+            if (currentlyPressed && previouslyPressed)
+            {
+                if (!config.IsPaused && config.ReadyForNextEvent(tick))
+                {
+                    config._lastEventTick = tick;
+                    _keyConfigs[key] = config;
+                    KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentKeyboardModifiers, KeyAction.Repeated));
+                }
+                continue;
+            }
+
+            // Transition: pressed -> not pressed (key release)
+            if (!currentlyPressed && previouslyPressed)
+            {
+                _previousPressed[key] = false;
+                // Releases should be delivered immediately (not throttled)
+                KeyDown?.Invoke(new KeyDownEventArgs(config, Adapter.CurrentKeyboardModifiers, KeyAction.Released));
+                continue;
+            }
+
+            // not pressed && not previously pressed => nothing
         }
     }
 
@@ -70,11 +99,22 @@ public sealed class KeyboardEventPoller
             timeBetweenEvents = Engine.Instance.Configuration.TimeBetweenKeyboardEvents;
 
         _keyConfigs[key] = new KeyEventConfiguration(key, timeBetweenEvents, isPaused);
+
+        // initialize previous state from current adapter state if available
+        _previousPressed[key] = Adapter?.PressedKeys.Contains(key) ?? false;
     }
 
-    public void StopMonitoringKey(string key) => _keyConfigs.Remove(key);
+    public void StopMonitoringKey(string key)
+    {
+        _keyConfigs.Remove(key);
+        _previousPressed.Remove(key);
+    }
 
-    public void StopMonitoringAllKeys() => _keyConfigs.Clear();
+    public void StopMonitoringAllKeys()
+    {
+        _keyConfigs.Clear();
+        _previousPressed.Clear();
+    }
 
     public IReadOnlyDictionary<string, KeyEventConfiguration> AllKeyConfigs => _keyConfigs;
 }

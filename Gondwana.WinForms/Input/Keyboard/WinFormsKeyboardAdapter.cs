@@ -9,7 +9,7 @@ namespace Gondwana.WinForms.Input.Keyboard;
 public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
 {
     private readonly Control _control;
-    private readonly HashSet<string> _pressedKeys = new();
+    private readonly HashSet<string> _pressedKeys = new(StringComparer.OrdinalIgnoreCase);
     private KeyboardModifierState _mods;
 
     public ICollection<string> PressedKeys => _pressedKeys;
@@ -66,9 +66,15 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
     private void RecomputeModifiers(KeyEventArgs e)
     {
         _mods = KeyboardModifierState.None;
-        if (e.Shift) _mods |= KeyboardModifierState.Shift;
-        if (e.Control) _mods |= KeyboardModifierState.Ctrl;
-        if (e.Alt) _mods |= KeyboardModifierState.Alt;
+        
+        if (e.Shift)
+            _mods |= KeyboardModifierState.Shift;
+
+        if (e.Control)
+            _mods |= KeyboardModifierState.Ctrl;
+
+        if (e.Alt)
+            _mods |= KeyboardModifierState.Alt;
     }
 
     private static string NormalizeKey(Keys keyCode) => keyCode switch
