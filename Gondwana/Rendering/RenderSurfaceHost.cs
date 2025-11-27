@@ -183,7 +183,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var camera = view.Camera;
         var screenRect = viewport.TargetRectPx;
 
-        float zoom = GetZoom(viewport);
+        float zoom = viewport.Zoom;
         float offsetX = viewport.TargetRectPx.Left + viewport.ScreenOffsetPx.X;
         float offsetY = viewport.TargetRectPx.Top + viewport.ScreenOffsetPx.Y;
 

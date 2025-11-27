@@ -228,7 +228,7 @@ public class Game : IDisposable
         var screenPos = args.CurrentPosition;
 
         // 1) screen → world (via View)
-        var worldFromScreen = view.ScreenPxToWorldPx(screenPos);
+        var worldFromScreen = view.ScreenPxToWorldPx(layer, screenPos);
 
         // 2) world → grid (via View wrapper, which calls SceneLayer internally)
         var gridFromScreen = view.ScreenPxToGrid(layer, screenPos);
@@ -237,7 +237,7 @@ public class Game : IDisposable
         var worldFromGrid = layer.GridToWorldPx(gridFromScreen);
 
         // 4) world → screen (via View)
-        var screenFromGrid = view.WorldPxToScreenPx(worldFromGrid);
+        var screenFromGrid = view.WorldPxToScreenPx(layer, worldFromGrid);
 
         var dx = screenFromGrid.X - screenPos.X;
         var dy = screenFromGrid.Y - screenPos.Y;

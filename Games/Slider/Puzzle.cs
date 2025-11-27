@@ -217,7 +217,7 @@ namespace Slider
         public PointF GetGridCoordinates(int pxlX, int pxlY)
         {
             var view = _renderSurfaceHost.ViewRenderer.Views[0];
-            var worldPx = view.ScreenPxToWorldPx(new PointF(pxlX, pxlY));
+            var worldPx = view.ScreenPxToWorldPx(matrixes[0], new PointF(pxlX, pxlY));
             return matrixes[0].WorldPxToGrid(worldPx);
         }
 

@@ -24,54 +24,36 @@ public sealed class View
 
     #region Coordinate conversion methods
 
-    /// <summary>
-    /// Converts a screen-space pixel position (relative to the render surface)
-    /// into a world-space pixel position for this View. This applies the
-    /// inverse viewport placement, zoom, and camera offset so the result can
-    /// be used with SceneLayer/world-space logic.
-    /// </summary>
-    /// <param name="screenPx">
-    /// Screen-space pixel position on the render surface.
-    /// </param>
-    /// <returns>
-    /// The corresponding world-space pixel position.
-    /// </returns>
-    public PointF ScreenPxToWorldPx(PointF screenPx)
+    public PointF ScreenPxToWorldPx(SceneLayer layer, PointF screenPx)
     {
-        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
-
-        // same origin we use in Begin()
-        float vx = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
-        float vy = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
-
-        float worldX = Camera.PositionPx.X + (screenPx.X - vx) * zoom;
-        float worldY = Camera.PositionPx.Y + (screenPx.Y - vy) * zoom;
-
-        return new PointF(worldX, worldY);
-    }
-
-    /// <summary>
-    /// Converts a world-space pixel position into a screen-space pixel position
-    /// for this View. This applies the camera offset, zoom, and viewport
-    /// placement so the result matches where the world point is drawn on the
-    /// render surface.
-    /// </summary>
-    /// <param name="worldPx">
-    /// World-space pixel position.
-    /// </param>
-    /// <returns>
-    /// The corresponding screen-space pixel position on the render surface.
-    /// </returns>
-    public PointF WorldPxToScreenPx(PointF worldPx)
-    {
-        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
+        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
 
         float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
         float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
-        // screen = offset + (world - camera) / zoom
-        float screenX = offsetX + (worldPx.X - Camera.PositionPx.X) / zoom;
-        float screenY = offsetY + (worldPx.Y - Camera.PositionPx.Y) / zoom;
+        float p = layer.Parallax;
+
+        // screen = offset + (world - camera * p) / zoom
+        // => world = (screen - offset) * zoom + camera * p
+
+        float worldX = (screenPx.X - offsetX) * zoom + Camera.PositionPx.X * p;
+        float worldY = (screenPx.Y - offsetY) * zoom + Camera.PositionPx.Y * p;
+
+        return new PointF(worldX, worldY);
+    }
+
+    public PointF WorldPxToScreenPx(SceneLayer layer, PointF worldPx)
+    {
+        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+
+        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
+
+        float p = layer.Parallax;
+
+        // screen = offset + (world - camera * p) / zoom
+        float screenX = offsetX + (worldPx.X - Camera.PositionPx.X * p) / zoom;
+        float screenY = offsetY + (worldPx.Y - Camera.PositionPx.Y * p) / zoom;
 
         return new PointF(screenX, screenY);
     }
@@ -86,7 +68,7 @@ public sealed class View
     /// <returns>The grid coordinate (column/row or axial) under the screen pixel.</returns>
     public PointF ScreenPxToGrid(SceneLayer layer, PointF screenPx)
     {
-        var world = ScreenPxToWorldPx(screenPx);
+        var world = ScreenPxToWorldPx(layer, screenPx);
         return layer.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(layer, world);
     }
 
