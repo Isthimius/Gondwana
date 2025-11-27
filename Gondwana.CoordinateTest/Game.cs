@@ -49,7 +49,7 @@ public class Game : IDisposable
         //RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
         RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
         //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
-        //RenderSurface.Host.RedrawDirtyRectangleOnly = false;
+        RenderSurface.Host.RedrawDirtyRectangleOnly = false;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
 
@@ -101,23 +101,23 @@ public class Game : IDisposable
     private void InitDirectDrawings()
     {
         // Implementation for creating direct drawings goes here
-        _directRectangle = new DirectRectangle(RenderSurface.Host,
-                                               new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
-                                               Color.Wheat);
-        _directRectangle.SetFilled(true);
+        //_directRectangle = new DirectRectangle(RenderSurface.Host,
+        //                                       new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
+        //                                       Color.Wheat);
+        //_directRectangle.SetFilled(true);
 
-        _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
-        _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
+        //_textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
+        //_textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
-        Engine.Instance.CPSCalculated += (e) =>
-        {
-            _textBlockCPS.SetText(e.ToString());
-        };
+        //Engine.Instance.CPSCalculated += (e) =>
+        //{
+        //    _textBlockCPS.SetText(e.ToString());
+        //};
 
-        _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
-        _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
+        //_textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
+        //_textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        InitializeParticles();
+        //InitializeParticles();
     }
 
     private void InitializeParticles()
@@ -155,11 +155,11 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.HexFlatTop);
-        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.HexFlatTop);
+        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 2f, CoordinateSystemTypes.HexFlatTop);
+        //var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.HexFlatTop);
 
         sceneLayer1.ShowGridLines = true;
-        sceneLayer2.ShowGridLines = true;
+        //sceneLayer2.ShowGridLines = true;
 
         return scene;
     }
@@ -285,12 +285,12 @@ public class Game : IDisposable
         if (args.ScrollDelta != 0)
             view.Viewport.Zoom += args.ScrollDelta * 0.001f;
 
-        if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
-        {
-            var pos = args.CurrentPosition;
-            _clickEmitter.Position = new PointF(pos.X, pos.Y);
-            _particleSurface.Burst(_clickEmitter, 80);
-        }
+        //if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
+        //{
+        //    var pos = args.CurrentPosition;
+        //    _clickEmitter.Position = new PointF(pos.X, pos.Y);
+        //    _particleSurface.Burst(_clickEmitter, 80);
+        //}
     }
 
     private void ConfigureGamepadInput()

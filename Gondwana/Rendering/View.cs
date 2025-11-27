@@ -122,17 +122,6 @@ public sealed class View
         return new RectangleF(screenLeft, screenTop, scaledWidth, scaledHeight);
     }
 
-    /// <summary>
-    /// Converts a screen-space pixel rectangle (relative to the render surface)
-    /// into a world-space pixel rectangle for this View. Each edge is mapped
-    /// using the same transform as <see cref="ScreenPxToWorldPx(PointF)"/>.
-    /// </summary>
-    /// <param name="screenRect">
-    /// Screen-space rectangle on the render surface.
-    /// </param>
-    /// <returns>
-    /// The corresponding world-space rectangle covered by this View.
-    /// </returns>
     public RectangleF ScreenRectToWorldRect(RectangleF screenRect)
     {
         float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
@@ -140,14 +129,15 @@ public sealed class View
         float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
         float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
-        // world = zoom * (screen + camera) - offset
-        float worldLeft = zoom * (screenRect.Left + Camera.PositionPx.X) - offsetX;
-        float worldTop = zoom * (screenRect.Top + Camera.PositionPx.Y) - offsetY;
-        float worldRight = zoom * (screenRect.Right + Camera.PositionPx.X) - offsetX;
-        float worldBottom = zoom * (screenRect.Bottom + Camera.PositionPx.Y) - offsetY;
+        // world = (screen - offset) * zoom + camera
+        float worldLeft = (screenRect.Left - offsetX) * zoom + Camera.PositionPx.X;
+        float worldTop = (screenRect.Top - offsetY) * zoom + Camera.PositionPx.Y;
+        float worldRight = (screenRect.Right - offsetX) * zoom + Camera.PositionPx.X;
+        float worldBottom = (screenRect.Bottom - offsetY) * zoom + Camera.PositionPx.Y;
 
         return RectangleF.FromLTRB(worldLeft, worldTop, worldRight, worldBottom);
     }
+
 
     #endregion Coordinate conversion methods
 }
