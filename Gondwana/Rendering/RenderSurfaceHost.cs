@@ -169,62 +169,68 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private void EnqueueFullSceneRefresh()
     {
         Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
+        var scene = Scene!; // local for clarity
 
         foreach (var view in ViewRenderer.Views)
         {
-            var viewport = view.Viewport;
-            var camera = view.Camera;
-
-            var screenRect = viewport.TargetRectPx;
-
-            float zoom = (viewport.Zoom <= 0f ? 1f : viewport.Zoom);
-            float offsetX = viewport.TargetRectPx.Left + viewport.ScreenOffsetPx.X;
-            float offsetY = viewport.TargetRectPx.Top + viewport.ScreenOffsetPx.Y;
-
-            for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
-            {
-                var layer = Scene.VisibleSceneLayers[i];
-                float parallax = layer.Parallax;
-
-                //
-                // 1) Compute layer-specific visible world rect
-                //
-                float worldLeft = (screenRect.Left - offsetX) * zoom + camera.PositionPx.X * parallax;
-                float worldTop = (screenRect.Top - offsetY) * zoom + camera.PositionPx.Y * parallax;
-                float worldRight = (screenRect.Right - offsetX) * zoom + camera.PositionPx.X * parallax;
-                float worldBottom = (screenRect.Bottom - offsetY) * zoom + camera.PositionPx.Y * parallax;
-
-                var layerWorldRect = RectangleF.FromLTRB(worldLeft, worldTop, worldRight, worldBottom);
-
-                //
-                // 2) Expand world rect by **one full tile** in all directions.
-                //    This compensates for fractional-layer motion (parallax),
-                //    camera motion, and tile boundaries.
-                //
-                int expandX = layer.SceneLayerTileWidth;
-                int expandY = layer.SceneLayerTileHeight;
-
-                layerWorldRect.Inflate(expandX, expandY);
-
-                //
-                // 3) Round to ints and enqueue
-                //
-                var worldRectInt = Rectangle.Round(layerWorldRect);
-
-                layer.RefreshQueue.AddPixelRangeToRefreshQueue(
-                    worldRectInt,
-                    cascadeToOtherRefreshQueues: false);
-            }
+            EnqueueFullSceneRefreshForView(view, scene);
         }
     }
 
+    private void EnqueueFullSceneRefreshForView(View view, Scene scene)
+    {
+        var viewport = view.Viewport;
+        var camera = view.Camera;
+        var screenRect = viewport.TargetRectPx;
 
+        float zoom = GetZoom(viewport);
+        float offsetX = viewport.TargetRectPx.Left + viewport.ScreenOffsetPx.X;
+        float offsetY = viewport.TargetRectPx.Top + viewport.ScreenOffsetPx.Y;
+
+        for (int i = 0; i < scene.CountOfVisibleLayers; i++)
+        {
+            var layer = scene.VisibleSceneLayers[i];
+            float parallax = layer.Parallax;
+
+            //
+            // 1) Compute layer-specific visible world rect
+            //
+            float worldLeft = (screenRect.Left - offsetX) * zoom + camera.PositionPx.X * parallax;
+            float worldTop = (screenRect.Top - offsetY) * zoom + camera.PositionPx.Y * parallax;
+            float worldRight = (screenRect.Right - offsetX) * zoom + camera.PositionPx.X * parallax;
+            float worldBottom = (screenRect.Bottom - offsetY) * zoom + camera.PositionPx.Y * parallax;
+
+            var layerWorldRect = RectangleF.FromLTRB(worldLeft, worldTop, worldRight, worldBottom);
+
+            //
+            // 2) Expand world rect by **one full tile** in all directions.
+            //    This compensates for fractional-layer motion (parallax),
+            //    camera motion, and tile boundaries.
+            //
+            int expandX = layer.SceneLayerTileWidth;
+            int expandY = layer.SceneLayerTileHeight;
+
+            layerWorldRect.Inflate(expandX, expandY);
+
+            //
+            // 3) Round to ints and enqueue
+            //
+            var worldRectInt = Rectangle.Round(layerWorldRect);
+
+            layer.RefreshQueue.AddPixelRangeToRefreshQueue(
+                worldRectInt,
+                cascadeToOtherRefreshQueues: false);
+        }
+    }
+
+    private float GetZoom(Viewport vp) => (vp.Zoom <= 0f ? 1f : vp.Zoom);
 
     private bool HasSceneDirty()
     {
-        for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
+        var scene = Scene!;
+        for (int i = 0; i < scene.CountOfVisibleLayers; i++)
         {
-            if (Scene.VisibleSceneLayers[i].RefreshQueue.Tiles.Any())
+            if (scene.VisibleSceneLayers[i].RefreshQueue.Tiles.Any())
                 return true;
         }
         return false;
@@ -242,33 +248,44 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
 
         // A) Erase the old overlay pixels in SCREEN space
+        EraseOverlayRegion(screenDirty);
+
+        // B) Project screen->world per view and enqueue to layer queues...
+        var scene = Scene!;
+        foreach (var v in ViewRenderer.Views)
+        {
+            EnqueueOverlayToLayersForView(v, scene, screenDirty);
+        }
+    }
+
+    private void EraseOverlayRegion(Rectangle screenDirty)
+    {
         var sk = new SKRect(screenDirty.Left, screenDirty.Top, screenDirty.Right, screenDirty.Bottom);
-        using (new SKAutoCanvasRestore(Backbuffer.Canvas, true))
+        using (new SKAutoCanvasRestore(Backbuffer!.Canvas, true))
         {
             Backbuffer.Canvas.ClipRect(sk);
             Backbuffer.Canvas.Clear(Backbuffer.ClearColor);
         }
+    }
 
-        // B) Project screen->world per view and enqueue to layer queues...
-        foreach (var v in ViewRenderer.Views)
+    private void EnqueueOverlayToLayersForView(View v, Scene scene, Rectangle screenDirty)
+    {
+        var cam = v.Camera;
+        var vp = v.Viewport;
+        float z = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
+
+        // Screen -> World (integer conservative bounds)
+        int wx = (int)Math.Floor(cam.PositionPx.X + (screenDirty.Left - vp.TargetRectPx.Left - vp.ScreenOffsetPx.X) * z);
+        int wy = (int)Math.Floor(cam.PositionPx.Y + (screenDirty.Top - vp.TargetRectPx.Top - vp.ScreenOffsetPx.Y) * z);
+        int ww = (int)Math.Ceiling(screenDirty.Width * z);
+        int wh = (int)Math.Ceiling(screenDirty.Height * z);
+        var worldDirtyForView = new Rectangle(wx, wy, ww, wh);
+
+        for (int i = 0; i < scene.CountOfVisibleLayers; i++)
         {
-            var cam = v.Camera;
-            var vp = v.Viewport;
-            float z = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
-
-            // Screen -> World
-            int wx = (int)Math.Floor(cam.PositionPx.X + (screenDirty.Left - vp.TargetRectPx.Left - vp.ScreenOffsetPx.X) * z);
-            int wy = (int)Math.Floor(cam.PositionPx.Y + (screenDirty.Top - vp.TargetRectPx.Top - vp.ScreenOffsetPx.Y) * z);
-            int ww = (int)Math.Ceiling(screenDirty.Width * z);
-            int wh = (int)Math.Ceiling(screenDirty.Height * z);
-            var worldDirtyForView = new Rectangle(wx, wy, ww, wh);
-
-            for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
-            {
-                Scene.VisibleSceneLayers[i]
-                     .RefreshQueue
-                     .AddPixelRangeToRefreshQueue(worldDirtyForView, cascadeToOtherRefreshQueues: true);
-            }
+            scene.VisibleSceneLayers[i]
+                 .RefreshQueue
+                 .AddPixelRangeToRefreshQueue(worldDirtyForView, cascadeToOtherRefreshQueues: true);
         }
     }
 
@@ -280,87 +297,20 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         // Union of all view dirty regions in ADAPTER/SCREEN space
         Rectangle adapterDirty = Rectangle.Empty;
+        var scene = Scene!;
 
-        // For each view (camera + viewport)
         for (int v = 0; v < ViewRenderer.Views.Count; v++)
         {
             var view = ViewRenderer.Views[v];
-            var camera = view.Camera;
-            var viewport = view.Viewport;
 
-            float zoom = (viewport.Zoom <= 0f) ? 1e-6f : viewport.Zoom;
-            float inverseZoom = 1f / zoom;
+            // Delegate per-view work to helper (unit-testable)
+            var viewDirty = RenderSurfaceHostHelpers.ComputeViewDirtyRectangle(view, scene);
 
-            // Union of all tiles for this view
-            Rectangle viewDirty = Rectangle.Empty;
-
-            // For each visible layer in the scene
-            for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
-            {
-                var layer = Scene.VisibleSceneLayers[i];
-                float parallax = layer.Parallax;              // per-layer parallax
-                var tiles = layer.RefreshQueue.Tiles;
-
-                for (int t = 0; t < tiles.Count; t++)
-                {
-                    var tile = tiles[t];
-
-                    if (tile.DrawLocationRefresh is not null &&
-                        tile.DrawLocationRefresh.Count > 0)
-                    {
-                        for (int r = 0; r < tile.DrawLocationRefresh.Count; r++)
-                        {
-                            var rr = tile.DrawLocationRefresh[r]; // WORLD px
-                            AccumulateDirtyRectForWorldRect(rr, parallax);
-                        }
-                    }
-                    else
-                    {
-                        var rr = tile.DrawLocation; // WORLD px
-                        AccumulateDirtyRectForWorldRect(rr, parallax);
-                    }
-                }
-            }
-
-            // Clip to viewport and union into adapter dirty
             if (!viewDirty.IsEmpty)
             {
-                viewDirty.Intersect(viewport.TargetRectPx);
-                if (!viewDirty.IsEmpty)
-                    adapterDirty = adapterDirty.IsEmpty
-                        ? viewDirty
-                        : Rectangle.Union(adapterDirty, viewDirty);
-            }
-
-            // --- local helper: project WORLD rect -> SCREEN rect for this view ---
-            void AccumulateDirtyRectForWorldRect(Rectangle rr, float parallax)
-            {
-                // Render path per layer is:
-                // screen = viewportOffset + (world - camera * parallax) / zoom
-
-                float localX = rr.Left - camera.PositionPx.X * parallax;
-                float localY = rr.Top - camera.PositionPx.Y * parallax;
-
-                float screenX = viewport.TargetRectPx.Left + viewport.ScreenOffsetPx.X
-                              + localX * inverseZoom;
-                float screenY = viewport.TargetRectPx.Top + viewport.ScreenOffsetPx.Y
-                              + localY * inverseZoom;
-
-                int sx = (int)Math.Floor(screenX);
-                int sy = (int)Math.Floor(screenY);
-
-                int sw = (int)Math.Ceiling(rr.Width * inverseZoom);
-                int sh = (int)Math.Ceiling(rr.Height * inverseZoom);
-
-                var scr = new Rectangle(sx, sy, sw, sh);
-
-                // 🔧 Safety: inflate by 1px to eat rounding seams
-                scr.Inflate(1, 1);
-
-                if (!scr.IsEmpty)
-                    viewDirty = viewDirty.IsEmpty
-                        ? scr
-                        : Rectangle.Union(viewDirty, scr);
+                adapterDirty = adapterDirty.IsEmpty
+                    ? viewDirty
+                    : Rectangle.Union(adapterDirty, viewDirty);
             }
         }
 
