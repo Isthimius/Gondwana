@@ -126,9 +126,9 @@ public sealed class ViewRenderer
         }
         else
         {
-            foreach (var v in _views)
+            foreach (var view in _views)
             {
-                v.Camera.WorldBoundsPx = worldBoundsPx;
+                view.Camera.WorldBoundsPx = worldBoundsPx;
             }
         }
     }

@@ -87,7 +87,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
         else
             Canvas.DrawBitmap(bmp, dst);
 
-        AddToDirtyRectangle(tile.DrawLocation);
+        //AddToDirtyRectangle(tile.DrawLocation);
     }
 
     // Producer copies out an immutable image for the adapter/UI thread

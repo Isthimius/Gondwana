@@ -218,9 +218,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // B) Project screen->world per view and enqueue to layer queues...
         var scene = Scene!;
-        foreach (var v in ViewRenderer.Views)
+        foreach (var view in ViewRenderer.Views)
         {
-            EnqueueOverlayToLayersForView(v, scene, screenDirty);
+            EnqueueOverlayToLayersForView(view, scene, screenDirty);
         }
     }
 
@@ -238,20 +238,34 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         var cam = v.Camera;
         var vp = v.Viewport;
-        float z = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
+        float zoom = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
 
-        // Screen -> World (integer conservative bounds)
-        int wx = (int)Math.Floor(cam.PositionPx.X + (screenDirty.Left - vp.TargetRectPx.Left - vp.ScreenOffsetPx.X) * z);
-        int wy = (int)Math.Floor(cam.PositionPx.Y + (screenDirty.Top - vp.TargetRectPx.Top - vp.ScreenOffsetPx.Y) * z);
-        int ww = (int)Math.Ceiling(screenDirty.Width * z);
-        int wh = (int)Math.Ceiling(screenDirty.Height * z);
-        var worldDirtyForView = new Rectangle(wx, wy, ww, wh);
+        float offsetX = vp.TargetRectPx.Left + vp.ScreenOffsetPx.X;
+        float offsetY = vp.TargetRectPx.Top + vp.ScreenOffsetPx.Y;
+
+        // screen -> local (per view)
+        float localLeft = screenDirty.Left - offsetX;
+        float localTop = screenDirty.Top - offsetY;
+        float localWidth = screenDirty.Width;
+        float localHeight = screenDirty.Height;
 
         for (int i = 0; i < scene.CountOfVisibleLayers; i++)
         {
-            scene.VisibleSceneLayers[i]
-                 .RefreshQueue
-                 .AddPixelRangeToRefreshQueue(worldDirtyForView, cascadeToOtherRefreshQueues: true);
+            var layer = scene.VisibleSceneLayers[i];
+            float parallax = layer.Parallax;
+
+            // world = camera * p + local * zoom
+            float worldLeft = cam.PositionPx.X * parallax + localLeft * zoom;
+            float worldTop = cam.PositionPx.Y * parallax + localTop * zoom;
+            float worldWidth = localWidth * zoom;
+            float worldHeight = localHeight * zoom;
+
+            var worldDirtyForView = Rectangle.Round(
+                new RectangleF(worldLeft, worldTop, worldWidth, worldHeight));
+
+            layer.RefreshQueue.AddPixelRangeToRefreshQueue(
+                worldDirtyForView,
+                cascadeToOtherRefreshQueues: true);
         }
     }
 
@@ -265,9 +279,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Rectangle adapterDirty = Rectangle.Empty;
         var scene = Scene!;
 
-        for (int v = 0; v < ViewRenderer.Views.Count; v++)
+        for (int vIdx = 0; vIdx < ViewRenderer.Views.Count; vIdx++)
         {
-            var view = ViewRenderer.Views[v];
+            var view = ViewRenderer.Views[vIdx];
 
             // Delegate per-view work to helper (unit-testable)
             var viewDirty = RenderSurfaceHostHelpers.ComputeViewDirtyRectangle(view, scene);

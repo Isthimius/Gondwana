@@ -71,6 +71,9 @@ public abstract class BackbufferBase : IDisposable
         SizeChanged?.Invoke(width, height);
     }
 
+    /// <summary>
+    /// ***** IMPORTANT: DirtyRectangle is ALWAYS in adapter/control SCREEN pixels. *****
+    /// </summary>
     protected internal Rectangle DirtyRectangle { get; private set; }
 
     private SKColor _clearColor = SKColors.Black;
@@ -120,7 +123,8 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
-    /// Runs as part of DoBackgroundTasks()
+    /// Runs as part of DoBackgroundTasks().
+    /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
     /// </summary>
     protected internal void AddToDirtyRectangle(Rectangle area)
     {
