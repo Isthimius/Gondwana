@@ -73,20 +73,20 @@ public sealed class Viewport
     {
         canvas.Save();
 
-        var r = TargetRectPx;
+        var targetRect = TargetRectPx;
 
         // Clip to viewport rect
-        canvas.ClipRect(new SKRect(r.Left, r.Top, r.Right, r.Bottom));
+        canvas.ClipRect(new SKRect(targetRect.Left, targetRect.Top, targetRect.Right, targetRect.Bottom));
 
         float zoom = Math.Max(Zoom, 1e-6f);
-        float s = 1f / zoom;
+        float scale = 1f / zoom;
 
         // 1) Move origin to viewport top-left in screen space
-        canvas.Translate(r.Left + ScreenOffsetPx.X,
-                         r.Top + ScreenOffsetPx.Y);
+        canvas.Translate(targetRect.Left + ScreenOffsetPx.X,
+                         targetRect.Top + ScreenOffsetPx.Y);
 
         // 2) Apply zoom (world → screen)
-        canvas.Scale(s, s);
+        canvas.Scale(scale, scale);
     }
 
     internal void End(SKCanvas canvas) => canvas.Restore();

@@ -10,8 +10,11 @@ internal static class RenderSurfaceHostHelpers
 {
     public static Rectangle ComputeViewDirtyRectangle(View view, Scene scene)
     {
-        if (view is null) throw new ArgumentNullException(nameof(view));
-        if (scene is null) throw new ArgumentNullException(nameof(scene));
+        if (view is null)
+            throw new ArgumentNullException(nameof(view));
+
+        if (scene is null)
+            throw new ArgumentNullException(nameof(scene));
 
         var camera = view.Camera;
         var viewport = view.Viewport;

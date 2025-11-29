@@ -116,7 +116,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 4) If overlays dirtied the SCREEN, project that dirty into WORLD per view and enqueue to layers
         ProcessOverlayScreenDirty();
 
-        // 5) Render all views. Draw layers back -> front (ascending Z).
+        // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         ViewRenderer.Render(Backbuffer.Canvas, deltaSeconds, Scene!, (view, layer) =>
         {
             Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
@@ -329,7 +329,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// backbuffer is prepared for the next frame.</remarks>
     internal override void RenderBackbufferToAdapter()
     {
-        if (RenderSurfaceAdapter is null) return;
+        if (RenderSurfaceAdapter is null)
+            return;
 
         Backbuffer!.EndFrame();
 
@@ -338,7 +339,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         else
             RenderBackbufferAll();
 
-        Backbuffer.DirtyRectangle = Rectangle.Empty;
+        Backbuffer.ClearDirtyRectangle();
         Backbuffer.BeginFrame();
     }
 

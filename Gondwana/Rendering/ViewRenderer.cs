@@ -27,7 +27,6 @@ public sealed class ViewRenderer
 
             var cam = new Camera(_renderSurfaceHost.Scene)
             {
-                // TODO: this should be world pixel size, not adapter size
                 // clamp camera to Scene pixel bounds
                 //WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
                 WorldBoundsPx = worldBoundsPx.Value,
@@ -85,12 +84,12 @@ public sealed class ViewRenderer
         Scene scene,
         Action<View, SceneLayer> drawLayer)
     {
-        foreach (var v in _views.OrderBy(v => v.ZOrder))
+        foreach (var view in _views.OrderBy(v => v.ZOrder))
         {
-            v.Camera.Update(dtSeconds);
-            v.Viewport.Begin(canvas);
+            view.Camera.Update(dtSeconds);
+            view.Viewport.Begin(canvas);
 
-            var cam = v.Camera;
+            var cam = view.Camera;
 
             int countOfVisibleLayers = scene?.CountOfVisibleLayers ?? 0;
             for (int i = 0; i < countOfVisibleLayers; i++)
@@ -107,12 +106,12 @@ public sealed class ViewRenderer
                     -cam.PositionPx.Y * p);
 
                 // Let the caller draw this layer (in world coords)
-                drawLayer(v, layer);
+                drawLayer(view, layer);
 
                 canvas.Restore();
             }
 
-            v.Viewport.End(canvas);
+            view.Viewport.End(canvas);
         }
     }
 

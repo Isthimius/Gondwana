@@ -124,11 +124,22 @@ public abstract class BackbufferBase : IDisposable
     /// </summary>
     protected internal void AddToDirtyRectangle(Rectangle area)
     {
-        if (area.IsEmpty) return;
+        if (area.IsEmpty)
+            return;
 
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
+    }
+
+    protected internal void MarkFullDirty()
+    {
+        DirtyRectangle = new Rectangle(0, 0, Width, Height);
+    }
+
+    protected internal void ClearDirtyRectangle()
+    {
+        DirtyRectangle = Rectangle.Empty;
     }
 
     /// <summary>
