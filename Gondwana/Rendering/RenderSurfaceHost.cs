@@ -234,10 +234,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
-    private void EnqueueOverlayToLayersForView(View v, Scene scene, Rectangle screenDirty)
+    private void EnqueueOverlayToLayersForView(View view, Scene scene, Rectangle screenDirty)
     {
-        var cam = v.Camera;
-        var vp = v.Viewport;
+        var cam = view.Camera;
+        var vp = view.Viewport;
         float zoom = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
 
         float offsetX = vp.TargetRectPx.Left + vp.ScreenOffsetPx.X;
