@@ -98,6 +98,22 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #endregion public properties
 
+    #region internal properties
+
+    internal bool IsDirty
+    {
+        get
+        {
+            for (int i = 0; i < CountOfVisibleLayers; i++)
+                if (VisibleSceneLayers[i].RefreshQueue.Tiles.Count > 0)
+                    return true;
+
+            return false;
+        }
+    }
+
+    #endregion internal properties
+
     #region public methods
 
     public SceneLayer AddLayer(int columnCount,

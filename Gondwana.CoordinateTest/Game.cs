@@ -3,7 +3,6 @@ using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Input.Gamepad;
 using Gondwana.Logging;
-using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.WinForms;
 using Gondwana.WinForms.Rendering;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 using Microsoft.Extensions.Logging;
-using Gondwana.Drawing.Coordinates;
 
 namespace Gondwana.CoordinateTest;
 
@@ -102,21 +100,21 @@ public class Game : IDisposable
     {
         //Implementation for creating direct drawings goes here
 
-        _directRectangle = new DirectRectangle(RenderSurface.Host,
-                                               new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
-                                               Color.Wheat);
-        _directRectangle.SetFilled(true);
+        //_directRectangle = new DirectRectangle(RenderSurface.Host,
+        //                                       new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
+        //                                       Color.Wheat);
+        //_directRectangle.SetFilled(true);
 
-        _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
-        _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
+        //_textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
+        //_textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
-        Engine.Instance.CPSCalculated += (e) =>
-        {
-            _textBlockCPS.SetText(e.ToString());
-        };
+        //Engine.Instance.CPSCalculated += (e) =>
+        //{
+        //    _textBlockCPS.SetText(e.ToString());
+        //};
 
-        _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
-        _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
+        //_textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
+        //_textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         //InitializeParticles();
     }

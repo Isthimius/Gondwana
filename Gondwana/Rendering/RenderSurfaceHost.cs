@@ -82,13 +82,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     internal override void DrawRefreshQueueToBackbuffer(long tick)
     {
         // 1) If there’s no Scene (or no visible layers), clear and publish the full frame.
-        if (!HasRenderableScene())
+        if (Scene == null || Scene.CountOfVisibleLayers == 0)
         {
-            ClearBackbufferToFullFrame();
+            Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
+            Backbuffer.MarkFullDirty();
+            Scene.RefreshNeeded = SceneRefreshType.Tiles;
+
             _lastTick = tick;
             return;
         }
 
+        // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
         // Are we in a "force full redraw" situation (camera moved, zoom changed, etc.)?
@@ -100,14 +104,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             EnqueueFullSceneRefresh();
 
         // 3) Fast “no work” probe: no overlay dirty, no layer queues pending.
-        bool backbufferDirty = !Backbuffer!.DirtyRectangle.IsEmpty;
-        bool sceneDirty = HasSceneDirty();
-
-        // If we are NOT forcing a full redraw and nothing is dirty, bail out.
-        if (!forceFullRedraw
-            && Scene.RefreshNeeded == SceneRefreshType.Tiles
-            && !backbufferDirty
-            && !sceneDirty)
+        if (!forceFullRedraw && !Scene.IsDirty)
         {
             _lastTick = tick; // keep deltaSeconds sane next frame
             return;
@@ -122,26 +119,16 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
         });
 
-        // 6) Compute adapter-space dirty from the tiles we actually drew
-        var adapterDirty = ComputeAdapterDirtyRectangle();
-
         // 7) Preserve any pre-existing dirty (e.g., set earlier this frame) — union, don’t replace.
         //    If this was a full redraw, mark the entire backbuffer as dirty so the adapter blits all of it.
-        var carry = Backbuffer.DirtyRectangle;
-
         if (forceFullRedraw)
         {
-            Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
+            Backbuffer!.MarkFullDirty();
         }
         else
         {
-            Backbuffer.DirtyRectangle = adapterDirty.IsEmpty
-                ? (carry.IsEmpty
-                    ? new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height)
-                    : carry)
-                : (carry.IsEmpty
-                    ? adapterDirty
-                    : Rectangle.Union(adapterDirty, carry));
+            var backbufferDirtyRect = ComputeAdapterDirtyRectangle();
+            Backbuffer!.AddToDirtyRectangle(backbufferDirtyRect);
         }
 
         // 8) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
@@ -153,14 +140,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     }
 
     #region DrawRefreshQueueToBackbuffer helpers
-
-    private bool HasRenderableScene() => Scene is not null && Scene.CountOfVisibleLayers > 0;
-
-    private void ClearBackbufferToFullFrame()
-    {
-        Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
-        Backbuffer.DirtyRectangle = new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height);
-    }
 
     /// <summary>
     /// Clears the backbuffer and enqueues a full-surface dirty rect into each visible layer.
@@ -221,19 +200,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 worldRectInt,
                 cascadeToOtherRefreshQueues: false);
         }
-    }
-
-    private float GetZoom(Viewport vp) => (vp.Zoom <= 0f ? 1f : vp.Zoom);
-
-    private bool HasSceneDirty()
-    {
-        var scene = Scene!;
-        for (int i = 0; i < scene.CountOfVisibleLayers; i++)
-        {
-            if (scene.VisibleSceneLayers[i].RefreshQueue.Tiles.Any())
-                return true;
-        }
-        return false;
     }
 
     /// <summary>

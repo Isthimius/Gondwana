@@ -71,7 +71,7 @@ public abstract class BackbufferBase : IDisposable
         SizeChanged?.Invoke(width, height);
     }
 
-    protected internal Rectangle DirtyRectangle { get; set; }
+    protected internal Rectangle DirtyRectangle { get; private set; }
 
     private SKColor _clearColor = SKColors.Black;
     protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };

@@ -117,7 +117,7 @@ public sealed class ViewRenderer
 
     internal void BindToScene(Scene scene, bool limitCameraToWorldBoundPx)
     {
-        RectangleF worldBoundsPx = limitCameraToWorldBoundPx ? scene.GetWorldBoundsPx() : new RectangleF(0, 0, float.MaxValue, float.MaxValue);
+        RectangleF worldBoundsPx = limitCameraToWorldBoundPx ? scene.GetWorldBoundsPx() : RectangleF.Empty;
 
         // if no views exist, create a default one
         if (!_views.Any())

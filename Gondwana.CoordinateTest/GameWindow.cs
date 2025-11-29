@@ -21,7 +21,10 @@ public partial class GameWindow : Form
         this.KeyDown += (_, e) =>
         {
             if (e.KeyCode == Keys.Escape)
+            {
+                Engine.Instance.Stop();
                 this.Close();
+            }
         };
     }
 
