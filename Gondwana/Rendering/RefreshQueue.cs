@@ -17,7 +17,6 @@ namespace Gondwana.Rendering;
 /// </remarks>
 internal sealed class RefreshQueue : IDisposable
 {
-    // --- State ---
     private bool _isDirty;                       // If true, Tiles need to be recomputed from _rects.
     private readonly List<Tile> _tiles;          // Unique list of Tile objects to be redrawn.
     private readonly HashSet<Tile> _tileSet;     // O(1) membership check mirroring _tiles.
@@ -56,19 +55,19 @@ internal sealed class RefreshQueue : IDisposable
     /// Optionally cascades a notification to sibling queues (e.g., other layers).
     /// ***** IMPORTANT: should ALWAYS be in Backbuffer WORLD pixels. *****
     /// </summary>
-    internal void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherRefreshQueues)
+    internal void AddPixelRangeToRefreshQueue(Rectangle worldPixelRange, bool cascadeToOtherRefreshQueues)
     {
-        if (pixelRange.IsEmpty) return;
+        if (worldPixelRange.IsEmpty) return;
 
         // Cascade to other queues if required (before any early-outs).
         if (cascadeToOtherRefreshQueues)
-            RefreshQueueAreaAdded?.Invoke(new RefreshQueueAreaAddedEventArgs(_sceneLayer, pixelRange));
+            RefreshQueueAreaAdded?.Invoke(new RefreshQueueAreaAddedEventArgs(_sceneLayer, worldPixelRange));
 
         // Fast containment check: if any existing rect already fully contains this one, skip it.
         bool isContained = false;
         for (int i = 0; i < _rects.Count; i++)
         {
-            if (_rects[i].Contains(pixelRange))
+            if (_rects[i].Contains(worldPixelRange))
             {
                 isContained = true;
                 break;
@@ -78,7 +77,7 @@ internal sealed class RefreshQueue : IDisposable
         if (!isContained)
         {
             // New contributing area: mark dirty and store it.
-            _rects.Add(pixelRange);
+            _rects.Add(worldPixelRange);
             _isDirty = true;
         }
     }
