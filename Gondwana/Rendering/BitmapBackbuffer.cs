@@ -80,14 +80,20 @@ public sealed class BitmapBackbuffer : BackbufferBase
     protected internal override void DrawTileFrame(Tile tile)
     {
         var bmp = tile.CurrentFrame.SkBitmap;
-        var dst = tile.DrawLocation.ToSKRect();
+        var worldRect = tile.DrawLocation.ToSKRect();
 
         if (bmp is null)
-            Canvas.DrawRect(dst, _fillPaint);
+            Canvas.DrawRect(worldRect, _fillPaint);
         else
-            Canvas.DrawBitmap(bmp, dst);
+            Canvas.DrawBitmap(bmp, worldRect);
 
-        //AddToDirtyRectangle(tile.DrawLocation);
+        // Map world rect to adapter/screen using the current CTM
+        var deviceRect = Canvas.TotalMatrix.MapRect(worldRect);
+
+        // Safety: inflate 1px for filtering/rounding seams
+        deviceRect.Inflate(1, 1);
+
+        AddToDirtyRectangle(deviceRect.ToRectangle());
     }
 
     // Producer copies out an immutable image for the adapter/UI thread

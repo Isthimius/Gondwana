@@ -520,11 +520,6 @@ public sealed class Engine : IDisposable
         // check for gamepad events
         GamepadEventPoller.Instance?.PollForEvents(tick);
 
-        // TODO: camera movement handling
-        // perform any timed SceneLayer scrolling
-        //foreach (var sceneLayer in SceneLayer.GetAllSceneLayers())
-        //    sceneLayer.MoveNext(tick);
-
         // cycle Animator frames
         for (int i = 0; i < Tile.TilesAnimating.Count; i++)
             Tile.TilesAnimating[i].TileAnimator.CycleAnimation(tick);
@@ -539,9 +534,6 @@ public sealed class Engine : IDisposable
         // refresh all RenderSurfaceHost backbuffers
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.DrawRefreshQueueToBackbuffer(tick);
-
-        // all attached VisibleSurface backbuffers drawn; clear the refresh queues
-        ClearRefreshQueues();
 
         AfterBackgroundTasksExecute?.Invoke();
     }
@@ -562,7 +554,6 @@ public sealed class Engine : IDisposable
         // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
         {
-            //surface.DrawRefreshQueueToBackbuffer(tick);
             surface.RenderBackbufferToAdapter();
         }
 
@@ -574,19 +565,6 @@ public sealed class Engine : IDisposable
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);
-    }
-
-    private void ClearRefreshQueues()
-    {
-        // step through all SceneLayers objects
-        foreach (var scene in Scene.GetAllScenes())
-        {
-            // clear each queue, mark as no refresh needed
-            foreach (SceneLayer sceneLayer in scene)
-                sceneLayer.RefreshQueue.ClearRefreshQueue();
-
-            scene.RefreshNeeded = SceneRefreshType.Tiles;
-        }
     }
 
     private void CalculateCPS(long tick)

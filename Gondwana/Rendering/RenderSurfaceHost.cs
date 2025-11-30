@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using Gondwana.Scenes;
 using Gondwana.Skia;
@@ -11,7 +10,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     where TBackbuffer : BackbufferBase
 {
     private long _lastTick = HighResTimer.GetCurrentTick();
-    private long _lastViewsStateHash = 0;
 
     private TBackbuffer? _backbuffer;
     private Scene? _scene;
@@ -110,9 +108,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        // 4) If overlays dirtied the SCREEN, project that dirty into WORLD per view and enqueue to layers
-        ProcessOverlayScreenDirty();
-
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         ViewRenderer.Render(Backbuffer.Canvas, deltaSeconds, Scene!, (view, layer) =>
         {
@@ -124,11 +119,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (forceFullRedraw)
         {
             Backbuffer!.MarkFullDirty();
-        }
-        else
-        {
-            var backbufferDirtyRect = ComputeAdapterDirtyRectangle();
-            Backbuffer!.AddToDirtyRectangle(backbufferDirtyRect);
         }
 
         // 8) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
@@ -200,101 +190,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 worldRectInt,
                 cascadeToOtherRefreshQueues: false);
         }
-    }
-
-    /// <summary>
-    /// If Backbuffer.DirtyRectangle is non-empty (overlays / particles / composites),
-    /// clears that region in SCREEN space and projects it back into WORLD space per view,
-    /// enqueuing dirty rects into each layer’s RefreshQueue.
-    /// </summary>
-    private void ProcessOverlayScreenDirty()
-    {
-        Rectangle screenDirty = Backbuffer!.DirtyRectangle;
-        if (screenDirty.IsEmpty)
-            return;
-
-        // A) Erase the old overlay pixels in SCREEN space
-        EraseOverlayRegion(screenDirty);
-
-        // B) Project screen->world per view and enqueue to layer queues...
-        var scene = Scene!;
-        foreach (var view in ViewRenderer.Views)
-        {
-            EnqueueOverlayToLayersForView(view, scene, screenDirty);
-        }
-    }
-
-    private void EraseOverlayRegion(Rectangle screenDirty)
-    {
-        var sk = new SKRect(screenDirty.Left, screenDirty.Top, screenDirty.Right, screenDirty.Bottom);
-        using (new SKAutoCanvasRestore(Backbuffer!.Canvas, true))
-        {
-            Backbuffer.Canvas.ClipRect(sk);
-            Backbuffer.Canvas.Clear(Backbuffer.ClearColor);
-        }
-    }
-
-    private void EnqueueOverlayToLayersForView(View view, Scene scene, Rectangle screenDirty)
-    {
-        var cam = view.Camera;
-        var vp = view.Viewport;
-        float zoom = (vp.Zoom <= 0f) ? 1e-6f : vp.Zoom;
-
-        float offsetX = vp.TargetRectPx.Left + vp.ScreenOffsetPx.X;
-        float offsetY = vp.TargetRectPx.Top + vp.ScreenOffsetPx.Y;
-
-        // screen -> local (per view)
-        float localLeft = screenDirty.Left - offsetX;
-        float localTop = screenDirty.Top - offsetY;
-        float localWidth = screenDirty.Width;
-        float localHeight = screenDirty.Height;
-
-        for (int i = 0; i < scene.CountOfVisibleLayers; i++)
-        {
-            var layer = scene.VisibleSceneLayers[i];
-            float parallax = layer.Parallax;
-
-            // world = camera * p + local * zoom
-            float worldLeft = cam.PositionPx.X * parallax + localLeft * zoom;
-            float worldTop = cam.PositionPx.Y * parallax + localTop * zoom;
-            float worldWidth = localWidth * zoom;
-            float worldHeight = localHeight * zoom;
-
-            var worldDirtyForView = Rectangle.Round(
-                new RectangleF(worldLeft, worldTop, worldWidth, worldHeight));
-
-            layer.RefreshQueue.AddPixelRangeToRefreshQueue(
-                worldDirtyForView,
-                cascadeToOtherRefreshQueues: true);
-        }
-    }
-
-    /// <summary>
-    /// Computes the union of all tile dirty areas projected into adapter/screen space,
-    /// using the single-view fast path when possible.
-    /// </summary>
-    private Rectangle ComputeAdapterDirtyRectangle()
-    {
-        // Union of all view dirty regions in ADAPTER/SCREEN space
-        Rectangle adapterDirty = Rectangle.Empty;
-        var scene = Scene!;
-
-        for (int vIdx = 0; vIdx < ViewRenderer.Views.Count; vIdx++)
-        {
-            var view = ViewRenderer.Views[vIdx];
-
-            // Delegate per-view work to helper (unit-testable)
-            var viewDirty = RenderSurfaceHostHelpers.ComputeViewDirtyRectangle(view, scene);
-
-            if (!viewDirty.IsEmpty)
-            {
-                adapterDirty = adapterDirty.IsEmpty
-                    ? viewDirty
-                    : Rectangle.Union(adapterDirty, viewDirty);
-            }
-        }
-
-        return adapterDirty;
     }
 
     #endregion

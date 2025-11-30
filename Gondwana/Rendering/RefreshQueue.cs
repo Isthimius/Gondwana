@@ -54,6 +54,7 @@ internal sealed class RefreshQueue : IDisposable
     /// <summary>
     /// Enqueue a screen/world pixel rectangle that requires redraw.
     /// Optionally cascades a notification to sibling queues (e.g., other layers).
+    /// ***** IMPORTANT: should ALWAYS be in Backbuffer WORLD pixels. *****
     /// </summary>
     internal void AddPixelRangeToRefreshQueue(Rectangle pixelRange, bool cascadeToOtherRefreshQueues)
     {

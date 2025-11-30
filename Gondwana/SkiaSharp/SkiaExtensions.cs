@@ -5,6 +5,9 @@ namespace Gondwana.Skia;
 
 public static class SkiaExtensions
 {
+    public static Rectangle ToRectangle(this SKRect rect)
+        => Rectangle.FromLTRB((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+
     public static SKColor ToSKColor(this Color color)
         => new(color.R, color.G, color.B, color.A);
 

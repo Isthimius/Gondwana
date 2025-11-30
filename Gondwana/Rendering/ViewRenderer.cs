@@ -28,7 +28,6 @@ public sealed class ViewRenderer
             var cam = new Camera(_renderSurfaceHost.Scene)
             {
                 // clamp camera to Scene pixel bounds
-                //WorldBoundsPx = new RectangleF(0, 0, _renderSurfaceHost!.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height),
                 WorldBoundsPx = worldBoundsPx.Value,
                 FollowLerpPerSecond = 0f // snap by default
             };
@@ -66,10 +65,10 @@ public sealed class ViewRenderer
 
     public void ClearViews()
     {
-        foreach (var v in _views)
+        foreach (var view in _views)
         {
-            v.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
-            v.Viewport.ZoomChanged -= OnViewportZoomChanged;
+            view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
+            view.Viewport.ZoomChanged -= OnViewportZoomChanged;
         }
 
         _views.Clear();
