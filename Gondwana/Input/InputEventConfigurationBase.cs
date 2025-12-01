@@ -25,5 +25,5 @@ public abstract class InputEventConfigurationBase
 
     public bool IsPaused { get; set; } = false;
 
-    public bool ReadyForNextEvent(long tick) => tick - _lastEventTick >= _ticksBetweenEvents;
+    internal bool ReadyForNextEvent(long tick) => tick - _lastEventTick >= _ticksBetweenEvents;
 }
