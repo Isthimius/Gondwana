@@ -84,7 +84,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
             Backbuffer.MarkFullDirty();
-            Scene.RefreshNeeded = SceneRefreshType.Tiles;
+
+            if (Scene != null)
+                Scene.RefreshNeeded = SceneRefreshType.Tiles;
 
             _lastTick = tick;
             return;
