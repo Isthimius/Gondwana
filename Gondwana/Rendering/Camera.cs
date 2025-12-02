@@ -183,10 +183,10 @@ public sealed class Camera
         Engine.Logger.LogTrace("PanTo on camera {Id}: from {X},{Y} to {TX},{TY} speed={Speed}",
             GetHashCode(), PositionPx.X, PositionPx.Y, worldTopLeftPx.X, worldTopLeftPx.Y, speed);
 
-        // TEMP: ignore speed, just move the camera’s upper-left directly
-        SnapTo(worldTopLeftPx);
+        //// TEMP: ignore speed, just move the camera’s upper-left directly
+        //SnapTo(worldTopLeftPx);
 
-        return;
+        //return;
 
         // Cancel any center-based follow when we take direct manual control.
         _followWorldPx = null;
