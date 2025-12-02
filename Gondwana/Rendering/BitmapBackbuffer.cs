@@ -87,12 +87,13 @@ public sealed class BitmapBackbuffer : BackbufferBase
         else
             Canvas.DrawBitmap(bmp, worldRect);
 
-        // Map world rect to adapter/screen using the current CTM
+        // Map world rect to adapter/screen pixels using the current CTM
         var deviceRect = Canvas.TotalMatrix.MapRect(worldRect);
 
         // Safety: inflate 1px for filtering/rounding seams
         deviceRect.Inflate(1, 1);
 
+        // accumulate dirty region for presentation to UI adapter
         AddToDirtyRectangle(deviceRect.ToRectangle());
     }
 

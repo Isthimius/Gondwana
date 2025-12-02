@@ -196,11 +196,8 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// </summary>
     protected internal void ForceRefresh()
     {
-        var scene = RenderSurfaceHost.Scene;
-
-        if (scene?.Count > 0)
-            scene[0]!.RefreshQueue.AddPixelRangeToRefreshQueue(_bounds, true);
-
+        // _bounds is SCREEN-space
+        RenderSurfaceHost.AddOverlayScreenDirty(_bounds);
         RenderSurfaceHost.Backbuffer!.AddToDirtyRectangle(_bounds);
 
         _dirty = true;
@@ -243,12 +240,14 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         {
             float dt = HighResTimer.GetDuration(_lastTick, tick);
             _revealElapsedSec = Math.Min(_revealElapsedSec + dt, _revealDurationSec);
+
             float u = _revealElapsedSec / _revealDurationSec;
             _revealT = (_revealEasing is null ? u : _revealEasing(u));
             _revealT = _revealStart + (_revealTarget - _revealStart) * _revealT;
 
             _dirty = true;
-            if (_revealElapsedSec >= _revealDurationSec) _revealAnimating = false;
+            if (_revealElapsedSec >= _revealDurationSec)
+                _revealAnimating = false;
         }
 
         _lastTick = tick;

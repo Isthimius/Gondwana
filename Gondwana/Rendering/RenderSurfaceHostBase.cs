@@ -1,4 +1,5 @@
-﻿using Gondwana.Scenes;
+﻿using System.Drawing;
+using Gondwana.Scenes;
 
 namespace Gondwana.Rendering;
 
@@ -13,6 +14,8 @@ namespace Gondwana.Rendering;
 /// registry and cleanup during disposal.</remarks>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
+    protected Rectangle _overlayScreenDirty = Rectangle.Empty;
+
     protected RenderSurfaceHostBase() => RenderSurfaceHostRegistry.Register(this);
 
     ~RenderSurfaceHostBase() => Dispose(false);
@@ -46,6 +49,23 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// area of the backbuffer to the adapter.
     /// </summary>
     internal abstract void RenderBackbufferToAdapter();
+
+    /// <summary>
+    /// Marks a specified rectangular region of the overlay screen as dirty, called from DirectDrawing instances.
+    /// </summary>
+    /// <remarks>If the specified rectangle is empty, the method performs no action. Subsequent calls will
+    /// expand the dirty region to include the union of the previously marked region and the new rectangle.</remarks>
+    /// <param name="screenRect">The <see cref="Rectangle"/> representing the region to mark as dirty.
+    /// ***** Note: this is SCREEN PIXELS ***** </param>
+    protected internal void AddOverlayScreenDirty(Rectangle screenRect)
+    {
+        if (screenRect.IsEmpty)
+            return;
+
+        _overlayScreenDirty = _overlayScreenDirty.IsEmpty
+            ? screenRect
+            : Rectangle.Union(_overlayScreenDirty, screenRect);
+    }
 
     public void Dispose()
     {
