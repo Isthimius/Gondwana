@@ -58,6 +58,8 @@ public sealed class Engine : IDisposable
     private double _grossCPS = 0;
     private double _netFPS = 0;
 
+    private Task? _cycleTask;
+
     #endregion private fields
 
     #region events
@@ -401,7 +403,7 @@ public sealed class Engine : IDisposable
         _startTick = HighResTimer.GetCurrentTick();
         _lastCPSSamplingTick = _startTick;
 
-        Task.Run(() =>
+        _cycleTask = Task.Run(() =>
         {
             while (Instance.IsRunning)
             {
@@ -615,14 +617,24 @@ public sealed class Engine : IDisposable
             {
                 IsDisposing = true;
 
-                // Stop the loop first so handlers don't race the cycle thread
+                // stop the loop first so handlers don't race the cycle thread
                 try { Stop(); }
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Unhandled exception calling Stop()");
                 }
 
-                // Raise Disposing on UI thread if possible; otherwise inline
+                // wait for the background loop to actually exit
+                try
+                {
+                    _cycleTask?.Wait();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error waiting for engine loop to exit.");
+                }
+
+                // raise Disposing on UI thread if possible; otherwise inline
                 if (UiDispatcher is not null)
                     UiDispatcher.Post(() => SafeInvoke(Disposing));
                 else
@@ -645,7 +657,7 @@ public sealed class Engine : IDisposable
 
             if (disposing)
             {
-                // Now signal we're fully torn down
+                // now signal we're fully torn down
                 if (UiDispatcher is not null)
                     UiDispatcher.Post(() => SafeInvoke(Disposed));
                 else
