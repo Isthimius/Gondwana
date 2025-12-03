@@ -72,6 +72,7 @@ public sealed class ViewRenderer
         foreach (var view in _views)
         {
             view.Camera.Update(dtSeconds);
+            view.Viewport.UpdateZoom(dtSeconds);
         }
     }
 

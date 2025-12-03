@@ -270,15 +270,52 @@ public class Game : IDisposable
         if (pickedTile is not null)
             pickedTile.EnableFog = true;
 
-        // Zoom with scroll, unchanged
-        if (args.ScrollDelta != 0)
-            view.Viewport.Zoom += args.ScrollDelta * 0.001f;
+        ScrollWheelZoom(args, view, layer);
 
         if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
         {
             var pos = args.CurrentPosition;
             _clickEmitter.Position = new PointF(pos.X, pos.Y);
             _particleSurface.Burst(_clickEmitter, 80);
+        }
+    }
+
+    private void ScrollWheelZoom(Input.Mouse.MouseEventArgs args, Gondwana.Rendering.View view, SceneLayer layer)
+    {
+        // Zoom with scroll, unchanged
+        //if (args.ScrollDelta != 0)
+        //    view.Viewport.Zoom += args.ScrollDelta * 0.001f;
+
+        // smooth zoom
+        //if (args.ScrollDelta != 0)
+        //{
+        //    var vp = view.Viewport;
+        //    float currentZoom = vp.Zoom;
+        //    float delta = args.ScrollDelta * 0.001f;
+
+        //    float minZoom = 0.1f;
+        //    float maxZoom = 8f;
+
+        //    float targetZoom = Math.Clamp(currentZoom + delta, minZoom, maxZoom);
+
+        //    // ~0.15s feels nice; tweak as you like
+        //    vp.ZoomToOverDuration(targetZoom, 0.35f);
+        //}
+
+        //// smooth zoom around mouse position
+        if (args.ScrollDelta != 0)
+        {
+            var vp = view.Viewport;
+            float currentZoom = vp.Zoom;
+            float delta = args.ScrollDelta * 0.001f;
+
+            float minZoom = 0.1f;
+            float maxZoom = 8f;
+
+            float targetZoom = Math.Clamp(currentZoom + delta, minZoom, maxZoom);
+
+            // 0.15s – tweak to taste
+            view.ZoomAroundScreenPoint(layer, args.CurrentPosition, targetZoom, 0.75f);
         }
     }
 

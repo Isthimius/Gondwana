@@ -11,6 +11,8 @@ public sealed class Viewport
 {
     private Rectangle _targetRectPx = new Rectangle(0, 0, 1280, 720);
     private float _zoom = 1f;
+    private float? _zoomTarget;
+    private float _zoomLerpPerSecond;
 
     /// <summary>
     /// Fired whenever <see cref="TargetRectPx"/> changes (viewport resized or moved).
@@ -90,4 +92,79 @@ public sealed class Viewport
     }
 
     internal void End(SKCanvas canvas) => canvas.Restore();
+
+    #region zoom zoom
+
+    /// <summary>
+    /// Instantly sets the zoom level, raising the ZoomChanged event.
+    /// </summary>
+    public void SnapZoom(float zoom)
+    {
+        _zoomTarget = null;
+        _zoomLerpPerSecond = 0f;
+        Zoom = zoom;
+    }
+
+    /// <summary>
+    /// Smoothly animates the zoom toward a target level using an exponential
+    /// lerp rate in "per second" units. Values &lt;= 0 snap immediately.
+    /// </summary>
+    public void ZoomTo(float targetZoom, float lerpPerSecond)
+    {
+        if (lerpPerSecond <= 0f)
+        {
+            SnapZoom(targetZoom);
+            return;
+        }
+
+        _zoomTarget = targetZoom;
+        _zoomLerpPerSecond = lerpPerSecond;
+    }
+
+    /// <summary>
+    /// Smoothly animates the zoom so that it reaches ~99% of the target level
+    /// over approximately the given duration in seconds. Values &lt;= 0 snap.
+    /// </summary>
+    public void ZoomToOverDuration(float targetZoom, float durationSeconds)
+    {
+        if (durationSeconds <= 0f)
+        {
+            SnapZoom(targetZoom);
+            return;
+        }
+
+        // Same math as Camera.PanToOverDuration: exp(-k*T) = 0.01 → k = -ln(0.01) / T
+        float k = -(float)Math.Log(0.01f) / durationSeconds;
+
+        _zoomTarget = targetZoom;
+        _zoomLerpPerSecond = k;
+    }
+
+    /// <summary>
+    /// Updates any in-progress zoom animation. Should be called once per frame
+    /// with the elapsed time in seconds.
+    /// </summary>
+    internal void UpdateZoom(float dtSeconds)
+    {
+        if (_zoomTarget is null || _zoomLerpPerSecond <= 0f)
+            return;
+
+        float target = _zoomTarget.Value;
+        float current = _zoom;
+
+        float t = 1f - (float)Math.Exp(-_zoomLerpPerSecond * Math.Max(0f, dtSeconds));
+        float newZoom = current + (target - current) * t;
+
+        Zoom = newZoom; // go through property so events fire
+
+        // Close enough → snap and finish.
+        if (Math.Abs(newZoom - target) < 1e-4f)
+        {
+            Zoom = target;
+            _zoomTarget = null;
+            _zoomLerpPerSecond = 0f;
+        }
+    }
+
+    #endregion zoom zoom
 }

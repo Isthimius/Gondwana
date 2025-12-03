@@ -22,6 +22,69 @@ public sealed class View
         Camera.GetVisibleWorldSizePx = () => Viewport.VisibleWorldSizePx;
     }
 
+    /// <summary>
+    /// Smoothly zooms the view so that a given screen-space point appears to
+    /// zoom in/out around a fixed world position beneath it, similar to
+    /// map-style mouse-wheel zoom. Both the viewport zoom and camera position
+    /// are animated over the specified duration.
+    /// </summary>
+    /// <param name="layer">
+    /// Reference layer whose parallax factor is used for the world-space transform.
+    /// Typically the main gameplay layer (parallax = 1).
+    /// </param>
+    /// <param name="screenPoint">
+    /// Mouse position in adapter/screen pixels relative to the render surface.
+    /// </param>
+    /// <param name="targetZoom">
+    /// Desired zoom factor after the animation completes.
+    /// </param>
+    /// <param name="durationSeconds">
+    /// Approximate duration in seconds for the zoom + pan animation.
+    /// Values &lt;= 0 snap immediately.
+    /// </param>
+    public void ZoomAroundScreenPoint(SceneLayer layer, PointF screenPoint, float targetZoom, float durationSeconds)
+    {
+        if (layer is null) throw new ArgumentNullException(nameof(layer));
+
+        // 1) Clamp target zoom to something sane (optional – adjust to taste)
+        float minZoom = 0.1f;
+        float maxZoom = 8f;
+        targetZoom = Math.Clamp(targetZoom, minZoom, maxZoom);
+
+        // 2) Compute the world position under the cursor BEFORE zoom changes.
+        var worldUnderCursor = ScreenPxToWorldPx(layer, screenPoint);
+
+        // 3) Compute the offset used in screen-space transforms.
+        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
+        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
+
+        float parallax = layer.Parallax;
+        if (Math.Abs(parallax) < 1e-6f)
+            parallax = 1f; // safety: avoid divide-by-zero
+
+        // 4) Compute the camera position that keeps worldUnderCursor pinned
+        // at the same screenPoint when zoom = targetZoom.
+        float localX = screenPoint.X - offsetX;
+        float localY = screenPoint.Y - offsetY;
+
+        float camTargetX = (worldUnderCursor.X - localX * targetZoom) / parallax;
+        float camTargetY = (worldUnderCursor.Y - localY * targetZoom) / parallax;
+
+        var cameraTargetUL = new PointF(camTargetX, camTargetY);
+
+        // 5) Animate both zoom and camera over the same duration.
+        if (durationSeconds <= 0f)
+        {
+            Viewport.SnapZoom(targetZoom);
+            Camera.SnapTo(cameraTargetUL);
+        }
+        else
+        {
+            Viewport.ZoomToOverDuration(targetZoom, durationSeconds);
+            Camera.PanToOverDuration(cameraTargetUL, durationSeconds);
+        }
+    }
+
     #region Coordinate conversion methods
 
     public PointF ScreenPxToWorldPx(SceneLayer layer, PointF screenPx)
