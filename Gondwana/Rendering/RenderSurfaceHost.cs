@@ -14,6 +14,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private TBackbuffer? _backbuffer;
     private Scene? _scene;
 
+    private readonly SKPaint _overlayClearPaint = new()
+    {
+        IsAntialias = false,
+        BlendMode = SKBlendMode.Src
+    };
+
     private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
@@ -286,6 +292,25 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         var screenDirty = _overlayScreenDirty;
         _overlayScreenDirty = Rectangle.Empty;
+
+        if (Backbuffer is not null)
+        {
+            var canvas = Backbuffer.Canvas;
+
+            // Match whatever the backbuffer uses as its clear color
+            _overlayClearPaint.Color = Backbuffer.ClearColor;
+
+            var skRect = screenDirty.ToSKRect();
+
+            canvas.Save();
+            canvas.ClipRect(skRect);
+            canvas.DrawRect(skRect, _overlayClearPaint); // fills just this area
+            canvas.Restore();
+
+            // Make sure the adapter copies this region out AND that
+            // DirectDrawingManager sees it as dirty for overlays.
+            Backbuffer.AddToDirtyRectangle(screenDirty);
+        }
 
         var scene = Scene!;
         foreach (var view in ViewRenderer.Views)
