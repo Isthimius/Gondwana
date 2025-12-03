@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Movement;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
@@ -160,15 +161,6 @@ public sealed class Camera
     }
 
     /// <summary>
-    /// Convenience helper that smoothly pans the camera to center on a
-    /// specific grid tile in the given SceneLayer.
-    /// </summary>
-    public void PanToGrid(SceneLayer layer, int col, int row, float speed)
-    {
-        AnimateCenterOnGrid(layer, col, row, speed);
-    }
-
-    /// <summary>
     /// Smoothly pans the camera toward a world-space top-left position for the
     /// view, using the given follow speed. This interprets the input as the
     /// desired camera upper-left, not a center point.
@@ -182,16 +174,9 @@ public sealed class Camera
     /// </param>
     public void PanTo(PointF worldTopLeftPx, float speed)
     {
-        Engine.Logger.LogTrace("PanTo on camera {Id}: from {X},{Y} to {TX},{TY} speed={Speed}",
-            GetHashCode(), PositionPx.X, PositionPx.Y, worldTopLeftPx.X, worldTopLeftPx.Y, speed);
-
-        //// TEMP: ignore speed, just move the camera’s upper-left directly
-        //SnapTo(worldTopLeftPx);
-
-        //return;
-
         // Cancel any center-based follow when we take direct manual control.
         _followWorldPx = null;
+        _hardFollow = false;
 
         if (speed <= 0f)
         {
@@ -202,6 +187,130 @@ public sealed class Camera
 
         _panLerpPerSecond = speed;
         _panTargetUpperLeftPx = ClampToWorldBounds(worldTopLeftPx);
+    }
+
+    /// <summary>
+    /// Smoothly pans the camera so that the specified world-space point becomes
+    /// the visual center of the view, then stops. Unlike <see cref="PanCenterTo"/>,
+    /// this is a one-shot cinematic pan and does not continue tracking the point
+    /// after the camera arrives.
+    /// </summary>
+    /// <param name="worldCenterPx">
+    /// World-space pixel position that should end up at the center of the view.
+    /// </param>
+    /// <param name="speed">
+    /// Pan speed in lerp-units per second. Higher values feel snappier,
+    /// lower values feel more floaty. If &lt;= 0, the camera snaps immediately
+    /// to the target center.
+    /// </param>
+    public void PanCenterToOnce(PointF worldCenterPx, float speed)
+    {
+        // Compute the desired camera upper-left such that worldCenterPx
+        // ends up in the middle of the visible region.
+        var vis = GetVisibleWorldSizePx();
+
+        var desiredUpperLeft = new PointF(
+            worldCenterPx.X - vis.Width * 0.5f,
+            worldCenterPx.Y - vis.Height * 0.5f);
+
+        // Delegate to the existing pan-to-upper-left logic (which also clamps).
+        PanTo(desiredUpperLeft, speed);
+    }
+
+    /// <summary>
+    /// Smoothly pans the camera so that its upper-left pixel reaches the specified
+    /// world-space target over approximately the given duration. This uses the same
+    /// exponential smoothing model as <see cref="PanTo"/>, but computes an appropriate
+    /// lerp rate so the camera covers ~99% of the distance in the requested time.
+    /// </summary>
+    /// <param name="worldTopLeftPx">
+    /// Desired world-space pixel position for the camera's upper-left corner.
+    /// </param>
+    /// <param name="durationSeconds">
+    /// Approximate time (in seconds) for the camera to reach the target.
+    /// Values &lt;= 0 cause an immediate snap to the destination.
+    /// </param>
+    public void PanToOverDuration(PointF worldTopLeftPx, float durationSeconds)
+    {
+        if (durationSeconds <= 0f)
+        {
+            // Degenerate case — behave like SnapTo().
+            _panTargetUpperLeftPx = null;
+            SnapTo(worldTopLeftPx);
+            return;
+        }
+
+        // In an exponential smoothing system:
+        //      pos(t) = target + (pos0 - target) * exp(-k * t)
+        //
+        // To reach ~99% of target position in T seconds:
+        //      exp(-k*T) = 0.01   →   k = -ln(0.01) / T
+        //
+        // This produces a visually nice, predictable time-to-arrive.
+        float k = -(float)Math.Log(0.01f) / durationSeconds;
+
+        // Cancel following and start a timed pan using your existing machinery.
+        _followWorldPx = null;
+        _hardFollow = false;
+
+        _panLerpPerSecond = k;
+        _panTargetUpperLeftPx = ClampToWorldBounds(worldTopLeftPx);
+    }
+
+    /// <summary>
+    /// Smoothly pans the camera so that the specified world-space point becomes
+    /// the visual center of the view over approximately the given duration,
+    /// then stops. Unlike <see cref="PanCenterTo"/>, this is a one-shot
+    /// cinematic pan and does not continue tracking the point afterward.
+    /// </summary>
+    /// <param name="worldCenterPx">
+    /// World-space pixel position that should end up at the center of the view.
+    /// </param>
+    /// <param name="durationSeconds">
+    /// Approximate time (in seconds) for the camera to reach the target center.
+    /// Values &lt;= 0 cause an immediate snap to the destination.
+    /// </param>
+    public void PanCenterToOverDuration(PointF worldCenterPx, float durationSeconds)
+    {
+        // Compute the desired camera upper-left such that worldCenterPx
+        // ends up in the middle of the visible region.
+        var vis = GetVisibleWorldSizePx();
+
+        var desiredUpperLeft = new PointF(
+            worldCenterPx.X - vis.Width * 0.5f,
+            worldCenterPx.Y - vis.Height * 0.5f);
+
+        // Delegate to the duration-based UL pan logic.
+        PanToOverDuration(desiredUpperLeft, durationSeconds);
+    }
+
+    /// <summary>
+    /// Smoothly pans the camera so that the specified grid tile becomes the
+    /// visual center of the view over approximately the given duration.
+    /// This is a one-shot cinematic pan to a tile, not a continuous follow.
+    /// </summary>
+    /// <param name="layer">
+    /// Scene layer the grid position belongs to.
+    /// </param>
+    /// <param name="col">Grid column of the tile to center on.</param>
+    /// <param name="row">Grid row of the tile to center on.</param>
+    /// <param name="durationSeconds">
+    /// Approximate time (in seconds) for the camera to reach the target cell.
+    /// Values &lt;= 0 cause an immediate snap to the destination.
+    /// </param>
+    public void PanToGridOverDuration(SceneLayer layer, int col, int row, float durationSeconds)
+    {
+        if (layer is null) throw new ArgumentNullException(nameof(layer));
+
+        // Same pattern as AnimateCenterOnGrid: get the tile's world-space anchor
+        // (top-left), then offset by half the tile size to get its visual center.
+        var anchor = layer.GridToWorldPx(new PointF(col, row));
+        float tileCenterX = anchor.X + layer.SceneLayerTileWidth * 0.5f;
+        float tileCenterY = anchor.Y + layer.SceneLayerTileHeight * 0.5f;
+
+        // Then pan so that tile center ends up at the center of the view
+        // over the requested duration.
+        PanCenterToOverDuration(new PointF(tileCenterX, tileCenterY), durationSeconds);
     }
 
     /// <summary>
@@ -360,6 +469,7 @@ public sealed class Camera
     {
         _followWorldPx = null;
         _panTargetUpperLeftPx = null;
+        _hardFollow = false;
     }
 
     #endregion Camera movement methods
