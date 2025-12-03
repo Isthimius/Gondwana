@@ -51,18 +51,6 @@ public sealed class ViewRenderer
         }
     }
 
-    private void OnViewportZoomChanged(ViewportZoomChangedEventArgs args)
-    {
-        if (_renderSurfaceHost.Scene is not null)
-            _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
-    }
-
-    private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
-    {
-        if (_renderSurfaceHost.Scene is not null)
-            _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
-    }
-
     public void ClearViews()
     {
         foreach (var view in _views)
@@ -77,6 +65,16 @@ public sealed class ViewRenderer
             _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
     }
 
+    #region internal methods
+
+    internal void UpdateCameras(float dtSeconds)
+    {
+        foreach (var view in _views)
+        {
+            view.Camera.Update(dtSeconds);
+        }
+    }
+
     internal void Render(
         SKCanvas canvas,
         float dtSeconds,
@@ -85,7 +83,7 @@ public sealed class ViewRenderer
     {
         foreach (var view in _views.OrderBy(v => v.ZOrder))
         {
-            view.Camera.Update(dtSeconds);
+            // Camera already updated earlier this frame.
             view.Viewport.Begin(canvas);
 
             var cam = view.Camera;
@@ -99,12 +97,10 @@ public sealed class ViewRenderer
 
                 float p = layer.Parallax;
 
-                // camera + parallax applied HERE, per view + per layer
                 canvas.Translate(
                     -cam.PositionPx.X * p,
                     -cam.PositionPx.Y * p);
 
-                // Let the caller draw this layer (in world coords)
                 drawLayer(view, layer);
 
                 canvas.Restore();
@@ -131,4 +127,22 @@ public sealed class ViewRenderer
             }
         }
     }
+
+    #endregion internal methods
+
+    #region private methods
+
+    private void OnViewportZoomChanged(ViewportZoomChangedEventArgs args)
+    {
+        if (_renderSurfaceHost.Scene is not null)
+            _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
+    }
+
+    private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
+    {
+        if (_renderSurfaceHost.Scene is not null)
+            _renderSurfaceHost.Scene.RefreshNeeded = SceneRefreshType.All;
+    }
+
+    #endregion private methods
 }

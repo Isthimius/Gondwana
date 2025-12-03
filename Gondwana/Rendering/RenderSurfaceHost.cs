@@ -95,6 +95,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
+        // 0) First, update cameras so any movement can mark RefreshNeeded = All.
+        ViewRenderer.UpdateCameras(deltaSeconds);
+
         // Are we in a "force full redraw" situation (camera moved, zoom changed, etc.)?
         bool forceFullRedraw = Scene!.RefreshNeeded == SceneRefreshType.All;
 

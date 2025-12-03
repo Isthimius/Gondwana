@@ -241,28 +241,6 @@ public class Game : IDisposable
         var dx = screenFromGrid.X - screenPos.X;
         var dy = screenFromGrid.Y - screenPos.Y;
 
-        Engine.Logger.LogTrace(
-            "ROUNDTRIP: ΔSCR = ({0:F3}, {1:F3})  " +
-            "SCR={2:F1},{3:F1}  SCR(grid)={4:F1},{5:F1}",
-            dx, dy,
-            screenPos.X, screenPos.Y,
-            screenFromGrid.X, screenFromGrid.Y
-        );
-
-        Engine.Logger.LogTrace(
-            "PICK DEBUG: " +
-            "SCR={0,6:F1},{1,6:F1}  " +
-            "W(scr)={2,7:F1},{3,7:F1}  " +
-            "GRID={4,5:F2},{5,5:F2}  " +
-            "W(grid)={6,7:F1},{7,7:F1}  " +
-            "SCR(grid)={8,6:F1},{9,6:F1}",
-            screenPos.X, screenPos.Y,
-            worldFromScreen.X, worldFromScreen.Y,
-            gridFromScreen.X, gridFromScreen.Y,
-            worldFromGrid.X, worldFromGrid.Y,
-            screenFromGrid.X, screenFromGrid.Y
-        );
-
         // Existing HUD text
         var cameraPos = view.Camera.PositionPx;
         var message =

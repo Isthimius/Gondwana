@@ -37,7 +37,9 @@ public sealed class Camera
             if (_positionPx != value)
             {
                 _positionPx = value;
-                _scene.RefreshNeeded = SceneRefreshType.All;
+
+                if (_scene is not null)
+                    _scene.RefreshNeeded = SceneRefreshType.All;
             }
         }
     }
@@ -364,17 +366,9 @@ public sealed class Camera
 
     internal void Update(float dtSeconds)
     {
-        Engine.Logger.LogTrace(
-    "Camera {Id} tick at time {t}: {X}, {Y}",
-    GetHashCode(), dtSeconds, PositionPx.X, PositionPx.Y);
-
         // 1) Explicit pan-to-UL (PanTo) takes priority over center-follow.
         if (_panTargetUpperLeftPx is { } panTarget)
         {
-            Engine.Logger.LogTrace(
-        "Camera {Id} pan-update: current={X},{Y} target={TX},{TY} lerp={Lerp}",
-        GetHashCode(), PositionPx.X, PositionPx.Y, panTarget.X, panTarget.Y, _panLerpPerSecond);
-
             var clamped = ClampToWorldBounds(panTarget);
 
             if (_hardFollow || _panLerpPerSecond <= 0f)
