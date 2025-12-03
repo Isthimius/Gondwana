@@ -147,6 +147,23 @@ public class Game : IDisposable
             Color = SKColors.OrangeRed,
             MaxVelocity = 400f,   // optional, keeps them from going insane
         };
+
+        _particleSurface.Emitters.Add(GetSmoke(bounds.Width, bounds.Height));
+    }
+
+    private ParticleEmitter GetSmoke(float width, float height)
+    {
+        return new ParticleEmitter
+        {
+            Position = new PointF(width / 2, height),
+            EmitRate = 120,
+            LifeRange = (2.5f, 4.0f),
+            VelocityRangeX = (-40f, 40f),
+            VelocityRangeY = (-120f, -60f),
+            SizeRange = (8f, 16f),
+            Color = new SKColor(80, 80, 80, 200),
+            GravityY = -20f // slight upward drift
+        };
     }
 
     #endregion load and init game content
@@ -154,8 +171,8 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.HexFlatTop);
-        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.HexFlatTop);
+        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.SqaureIso);
+        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
 
         sceneLayer1.ShowGridLines = true;
         sceneLayer2.ShowGridLines = true;
@@ -180,8 +197,6 @@ public class Game : IDisposable
         var camera = RenderSurface.Host.ViewRenderer.Views[0].Camera;
         var curPos = camera.PositionPx;
 
-        Engine.Logger.LogTrace("Key={Key} BEFORE pan: {X}, {Y}", args.KeyConfig.Key, curPos.X, curPos.Y);
-
         // Parse the received key string into the Keys enum (case-insensitive)
         if (!Enum.TryParse<Keys>(args.KeyConfig.Key, ignoreCase: true, out var key))
         {
@@ -192,20 +207,17 @@ public class Game : IDisposable
         switch (key)
         {
             case Keys.W:
-                Engine.Logger.LogTrace("W key pressed");
-                camera.PanTo(new PointF(curPos.X, curPos.Y - 10), 10f);
+                //camera.PanTo(new PointF(curPos.X, curPos.Y - 50), 15f);
+                camera.PanToOverDuration(new PointF(curPos.X, curPos.Y - 100), 1.5f);
                 break;
             case Keys.A:
-                Engine.Logger.LogTrace("A key pressed");
-                camera.PanTo(new PointF(curPos.X - 10, curPos.Y), 10f);
+                camera.PanToOverDuration(new PointF(curPos.X - 100, curPos.Y), 1.5f);
                 break;
             case Keys.S:
-                Engine.Logger.LogTrace("S key pressed");
-                camera.PanTo(new PointF(curPos.X, curPos.Y + 10), 10f);
+                camera.PanToOverDuration(new PointF(curPos.X, curPos.Y + 100), 1.5f);
                 break;
             case Keys.D:
-                Engine.Logger.LogTrace("D key pressed");
-                camera.PanTo(new PointF(curPos.X + 10, curPos.Y), 10f);
+                camera.PanToOverDuration(new PointF(curPos.X + 100, curPos.Y), 1.5f);
                 break;
             default:
                 break;

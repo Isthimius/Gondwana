@@ -69,7 +69,7 @@ namespace Gondwana.Drawing.Direct.Particles;
 ///
 /// </code>
 /// </example>
-public sealed partial class ParticleSurface : DirectDrawingMovableBase
+public sealed class ParticleSurface : DirectDrawingMovableBase
 {
     private readonly Particle[] _particles;
     private readonly Random _rng = new();

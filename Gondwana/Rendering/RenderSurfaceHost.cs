@@ -79,7 +79,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     internal override void DrawRefreshQueueToBackbuffer(long tick)
     {
-        // 1) If there’s no Scene (or no visible layers), clear and publish the full frame.
+        // 0) If there’s no Scene (or no visible layers), clear and publish the full frame.
         if (Scene == null || Scene.CountOfVisibleLayers == 0)
         {
             Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
@@ -95,7 +95,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
-        // 0) First, update cameras so any movement can mark RefreshNeeded = All.
+        // 1) First, update cameras so any movement can mark RefreshNeeded = All.
         ViewRenderer.UpdateCameras(deltaSeconds);
 
         // Are we in a "force full redraw" situation (camera moved, zoom changed, etc.)?
@@ -313,7 +313,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var layer = scene.VisibleSceneLayers[i];
             float p = layer.Parallax;
 
-            // invert your render path:
+            // invert the render path:
             // screen = offset + (world - cam*p) / zoom
             // world  = cam*p + (screen - offset) * zoom
             float worldLeft = cam.PositionPx.X * p + localLeft * zoom;
@@ -327,7 +327,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             layer.RefreshQueue.AddPixelRangeToRefreshQueue(worldRect, cascadeToOtherRefreshQueues: true);
         }
     }
-
 
     private void RenderBackbufferAll()
     {

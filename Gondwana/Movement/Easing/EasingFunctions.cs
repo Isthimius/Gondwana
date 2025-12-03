@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Gondwana.Movement.Easing;
+﻿namespace Gondwana.Movement.Easing;
 
 /// <summary>
 /// Common easing functions for scripted/tweened movement.
@@ -88,9 +86,6 @@ public static class EasingFunctions
 
     /// <summary>Smootherstep; stronger smoothing (C2 continuous).</summary>
     public static float SmootherStep(float t) => t * t * t * (t * (t * 6f - 15f) + 10f);
-
-    /// <summary>Clamp helper to keep t in [0,1].</summary>
-    public static float Clamp01(float t) => t < 0f ? 0f : (t > 1f ? 1f : t);
 
     /// <summary>Map an <see cref="EasingKind"/> to its function.</summary>
     public static Func<float, float> From(EasingKind kind)
