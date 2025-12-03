@@ -44,6 +44,19 @@ public sealed class Viewport
     }
 
     /// <summary>
+    /// Updates the viewport size while preserving its current on-screen origin.
+    /// This is a convenience around <see cref="TargetRectPx"/> that only changes
+    /// the width and height.
+    /// </summary>
+    /// <param name="width">New viewport width in pixels.</param>
+    /// <param name="height">New viewport height in pixels.</param>
+    public void Resize(int width, int height)
+    {
+        var rect = TargetRectPx;
+        TargetRectPx = new Rectangle(rect.Left, rect.Top, width, height);
+    }
+
+    /// <summary>
     /// Zoom factor applied to the world when rendering this view. Values greater
     /// than 1 zoom in, values between 0 and 1 zoom out. Used when converting
     /// between screen-space and world-space pixels.

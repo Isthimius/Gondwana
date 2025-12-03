@@ -51,6 +51,105 @@ public sealed class ViewRenderer
         }
     }
 
+    /// <summary>
+    /// Removes all existing views and creates a single full-screen view that
+    /// occupies the entire render surface adapter.
+    /// </summary>
+    /// <param name="zoom">Initial zoom level for the view.</param>
+    /// <param name="zOrder">Z-order for the view (default 0).</param>
+    public void ConfigureSingleFullView(float zoom = 1f, int zOrder = 0)
+    {
+        if (_renderSurfaceHost.RenderSurfaceAdapter is null)
+            throw new InvalidOperationException("RenderSurfaceAdapter is not available.");
+
+        ClearViews();
+
+        var adapter = _renderSurfaceHost.RenderSurfaceAdapter;
+        var bounds = new Rectangle(0, 0, adapter.Width, adapter.Height);
+
+        RectangleF worldBoundsPx = RectangleF.Empty;
+        if (_renderSurfaceHost.Scene is not null)
+            worldBoundsPx = _renderSurfaceHost.Scene.GetWorldBoundsPx();
+
+        AddView(bounds, zoom, zOrder, worldBoundsPx);
+    }
+
+    /// <summary>
+    /// Removes all existing views and creates a vertical split-screen layout:
+    /// left and right views sharing the full height of the render surface.
+    /// </summary>
+    /// <param name="leftZoom">Initial zoom for the left view.</param>
+    /// <param name="rightZoom">Initial zoom for the right view.</param>
+    public void ConfigureVerticalSplit(float leftZoom = 1f, float rightZoom = 1f)
+    {
+        if (_renderSurfaceHost.RenderSurfaceAdapter is null)
+            throw new InvalidOperationException("RenderSurfaceAdapter is not available.");
+
+        ClearViews();
+
+        var adapter = _renderSurfaceHost.RenderSurfaceAdapter;
+        int width = adapter.Width;
+        int height = adapter.Height;
+
+        int halfWidth = width / 2;
+
+        RectangleF worldBoundsPx = RectangleF.Empty;
+        if (_renderSurfaceHost.Scene is not null)
+            worldBoundsPx = _renderSurfaceHost.Scene.GetWorldBoundsPx();
+
+        // Left view
+        AddView(
+            new Rectangle(0, 0, halfWidth, height),
+            leftZoom,
+            zOrder: 0,
+            worldBoundsPx: worldBoundsPx);
+
+        // Right view
+        AddView(
+            new Rectangle(halfWidth, 0, width - halfWidth, height),
+            rightZoom,
+            zOrder: 1,
+            worldBoundsPx: worldBoundsPx);
+    }
+
+    /// <summary>
+    /// Removes all existing views and creates a horizontal split-screen layout:
+    /// top and bottom views sharing the full width of the render surface.
+    /// </summary>
+    /// <param name="topZoom">Initial zoom for the top view.</param>
+    /// <param name="bottomZoom">Initial zoom for the bottom view.</param>
+    public void ConfigureHorizontalSplit(float topZoom = 1f, float bottomZoom = 1f)
+    {
+        if (_renderSurfaceHost.RenderSurfaceAdapter is null)
+            throw new InvalidOperationException("RenderSurfaceAdapter is not available.");
+
+        ClearViews();
+
+        var adapter = _renderSurfaceHost.RenderSurfaceAdapter;
+        int width = adapter.Width;
+        int height = adapter.Height;
+
+        int halfHeight = height / 2;
+
+        RectangleF worldBoundsPx = RectangleF.Empty;
+        if (_renderSurfaceHost.Scene is not null)
+            worldBoundsPx = _renderSurfaceHost.Scene.GetWorldBoundsPx();
+
+        // Top view
+        AddView(
+            new Rectangle(0, 0, width, halfHeight),
+            topZoom,
+            zOrder: 0,
+            worldBoundsPx: worldBoundsPx);
+
+        // Bottom view
+        AddView(
+            new Rectangle(0, halfHeight, width, height - halfHeight),
+            bottomZoom,
+            zOrder: 1,
+            worldBoundsPx: worldBoundsPx);
+    }
+
     public void ClearViews()
     {
         foreach (var view in _views)
