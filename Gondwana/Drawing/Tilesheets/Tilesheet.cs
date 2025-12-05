@@ -343,6 +343,15 @@ public sealed class Tilesheet : IDisposable
         return tiles;
     }
 
+    // Inside Tilesheet
+    /// <summary>
+    /// Returns a <see cref="Frame"/> representing the tile at the given
+    /// sheet coordinates.
+    /// </summary>
+    /// <param name="x">Zero-based tile column index.</param>
+    /// <param name="y">Zero-based tile row index.</param>
+    public Frame this[int x, int y] => new Frame(this, x, y);
+
     // --- IDisposable pattern ---
     private bool _disposed;
 

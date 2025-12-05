@@ -19,15 +19,15 @@ public static class SpriteManager
 
     #region public methods
 
-    public static Sprite CreateSprite(SceneLayer matrix, Frame frame)
+    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame)
     {
-        Sprite sprite = new Sprite(matrix, frame);
+        Sprite sprite = new Sprite(sceneLayer, frame);
         return sprite;
     }
 
-    public static Sprite CreateSprite(SceneLayer matrix, Frame frame, string id)
+    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string id)
     {
-        Sprite sprite = CreateSprite(matrix, frame);
+        Sprite sprite = CreateSprite(sceneLayer, frame);
         sprite.ID = id;
 
         return sprite;

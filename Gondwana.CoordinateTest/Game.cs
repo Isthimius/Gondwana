@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 using Microsoft.Extensions.Logging;
+using Gondwana.Drawing.Tilesheets;
+using Gondwana.Drawing.Sprites;
 
 namespace Gondwana.CoordinateTest;
 
@@ -36,8 +38,6 @@ public class Game : IDisposable
         LoadAssets();
         LoadTilesheets();
         LoadAnimationCycles();
-        InitSprites();
-        InitDirectDrawings();
 
         // create initial scene here and bind to render surface
         Scene = CreateInitialScene();
@@ -50,6 +50,9 @@ public class Game : IDisposable
         RenderSurface.Host.RedrawDirtyRectangleOnly = false;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
+
+        InitSprites();
+        InitDirectDrawings();
 
         // configure input handling here
         ConfigureKeyboardInput();
@@ -78,6 +81,8 @@ public class Game : IDisposable
     private void LoadTilesheets()
     {
         // Implementation for loading tilesheets goes here
+        var tilesheet = new Tilesheet("rooster", "assets/rooster.bmp");
+        tilesheet.TileSize = new Size(50, 50);
     }
 
     private void LoadAnimationCycles()
@@ -88,6 +93,10 @@ public class Game : IDisposable
     private void InitSprites()
     {
         // Implementation for creating sprites goes here
+        var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
+        SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_1").Visible = true;
+        SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_2").Visible = true;
+        SpriteManager.GetSpriteByID("rooster_2")!.SetPosition(new System.Numerics.Vector2(5, 0));
     }
 
     private DirectRectangle? _directRectangle;
@@ -190,6 +199,7 @@ public class Game : IDisposable
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.A.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.S.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.D.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.L.ToString());
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
@@ -218,6 +228,9 @@ public class Game : IDisposable
                 break;
             case Keys.D:
                 camera.PanToOverDuration(new PointF(curPos.X + 100, curPos.Y), 1.5f);
+                break;
+            case Keys.L:
+                SpriteManager.GetSpriteByID("rooster_1")!.Movement.MoveTo(new System.Numerics.Vector2(20, 0), 7.5f);
                 break;
             default:
                 break;

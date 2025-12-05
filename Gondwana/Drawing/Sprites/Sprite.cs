@@ -277,7 +277,13 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             _sceneLayer.RefreshQueue.Tiles.Remove(this);
 
             if (_collider != null)
-                _sceneLayer.Scene.CollisionWorld.Unregister(_collider);
+            {
+                var world = _sceneLayer?.Scene?.CollisionWorld;
+                if (world != null)
+                {
+                    world.Unregister(_collider);
+                }
+            }
         }
 
         if (SpriteManager._spriteList.IndexOf(this) != -1)
