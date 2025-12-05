@@ -1,5 +1,4 @@
 ﻿using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
 
 namespace Gondwana.Collision;
 

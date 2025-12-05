@@ -65,14 +65,12 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
 
     private void HandleKeyDown(Keys keyCode)
     {
-        Engine.Logger.LogInformation("KeyDown: {KeyCode}", keyCode);
         _pressedKeys.Add(NormalizeKey(keyCode));
         RecomputeModifiers();
     }
 
     private void HandleKeyUp(Keys keyCode)
     {
-        Engine.Logger.LogInformation("KeyUp: {KeyCode}", keyCode);
         _pressedKeys.Remove(NormalizeKey(keyCode));
         RecomputeModifiers();
     }
@@ -83,8 +81,10 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
 
         if ((Control.ModifierKeys & Keys.Shift) != 0)
             _mods |= KeyboardModifierState.Shift;
+
         if ((Control.ModifierKeys & Keys.Control) != 0)
             _mods |= KeyboardModifierState.Ctrl;
+
         if ((Control.ModifierKeys & Keys.Alt) != 0)
             _mods |= KeyboardModifierState.Alt;
     }

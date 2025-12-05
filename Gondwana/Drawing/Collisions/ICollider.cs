@@ -16,7 +16,7 @@ public interface ICollider
     /// </summary>
     bool IsStatic { get; }
 
-    /// <summary>Bitmask identifying what this collider is (e.g., Player = 1, World = 2, Enemy = 4).</summary>
+    /// <summary>Bitmask identifying what this collider is (e.g., Player = 1, World = 2, Enemy = 4, etc.).</summary>
     int LayerMask { get; }
 
     /// <summary>Bitmask of what this collider collides *with*.</summary>

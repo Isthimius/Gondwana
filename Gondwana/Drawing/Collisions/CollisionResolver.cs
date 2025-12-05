@@ -11,6 +11,8 @@ namespace Gondwana.Drawing.Collisions;
 /// </summary>
 internal static class CollisionResolver
 {
+    private static readonly List<ICollider> _queryResults = new();
+
     /// <summary>
     /// Resolves collisions for all Sprites that have collision detection enabled.
     /// </summary>
@@ -39,9 +41,19 @@ internal static class CollisionResolver
         // Start from the sprite’s current collision rect in pixel space.
         Rectangle rect = sprite.CollisionArea;
 
-        // Single-pass MTV resolution against all *static* colliders on the same layer.
-        foreach (var collider in world.StaticColliders)
+        // Build AABB for broad-phase query.
+        var aabb = Aabb.FromRectangle(rect);
+
+        // For now, treat the sprite’s “layerMask” as 1 and it collides with everything (~0).
+        // Later you can pass real masks from the sprite’s collider.
+        const int spriteLayerMask = 1;
+        const int spriteCollidesWithMask = ~0;
+
+        world.QueryAabb(aabb, spriteLayerMask, spriteCollidesWithMask, _queryResults);
+
+        foreach (var collider in _queryResults)
         {
+            // Don’t collide with yourself
             if (ReferenceEquals(collider.Owner, sprite))
                 continue;
 
@@ -76,18 +88,12 @@ internal static class CollisionResolver
             if (overlap.Width < overlap.Height)
             {
                 // Push horizontally
-                if (centerX < otherCenterX)
-                    dx = -overlap.Width;    // push left
-                else
-                    dx = overlap.Width;     // push right
+                dx = (centerX < otherCenterX) ? -overlap.Width : overlap.Width;
             }
             else
             {
                 // Push vertically
-                if (centerY < otherCenterY)
-                    dy = -overlap.Height;   // push up
-                else
-                    dy = overlap.Height;    // push down
+                dy = (centerY < otherCenterY) ? -overlap.Height : overlap.Height;
             }
 
             rect.X += dx;
