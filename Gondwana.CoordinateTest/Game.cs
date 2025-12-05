@@ -12,6 +12,7 @@ using System.Drawing;
 using Microsoft.Extensions.Logging;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Sprites;
+using System.Numerics;
 
 namespace Gondwana.CoordinateTest;
 
@@ -96,7 +97,7 @@ public class Game : IDisposable
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
         SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_1").Visible = true;
         SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_2").Visible = true;
-        SpriteManager.GetSpriteByID("rooster_2")!.SetPosition(new System.Numerics.Vector2(5, 0));
+        SpriteManager.GetSpriteByID("rooster_2")!.SetPosition(new Vector2(5, 0));
     }
 
     private DirectRectangle? _directRectangle;
@@ -199,13 +200,15 @@ public class Game : IDisposable
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.A.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.S.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.D.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.L.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Left.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Right.ToString());
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
     {
         var camera = RenderSurface.Host.ViewRenderer.Views[0].Camera;
         var curPos = camera.PositionPx;
+        var sprite = SpriteManager.GetSpriteByID("rooster_1");
 
         // Parse the received key string into the Keys enum (case-insensitive)
         if (!Enum.TryParse<Keys>(args.KeyConfig.Key, ignoreCase: true, out var key))
@@ -217,7 +220,6 @@ public class Game : IDisposable
         switch (key)
         {
             case Keys.W:
-                //camera.PanTo(new PointF(curPos.X, curPos.Y - 50), 15f);
                 camera.PanToOverDuration(new PointF(curPos.X, curPos.Y - 100), 1.5f);
                 break;
             case Keys.A:
@@ -229,8 +231,21 @@ public class Game : IDisposable
             case Keys.D:
                 camera.PanToOverDuration(new PointF(curPos.X + 100, curPos.Y), 1.5f);
                 break;
-            case Keys.L:
-                SpriteManager.GetSpriteByID("rooster_1")!.Movement.MoveTo(new System.Numerics.Vector2(20, 0), 7.5f);
+            case Keys.Right:
+                if (args.KeyAction == Input.Keyboard.KeyAction.Released)
+                    sprite.Movement.SetAcceleration(new Vector2(0, 0));
+                else
+                    sprite.Movement.SetAcceleration(new Vector2(2f, 0));
+
+                sprite.Movement.SetLinearDamping(0.3f);
+
+                break;
+            case Keys.Left:
+                if (args.KeyAction == Input.Keyboard.KeyAction.Released)
+                    sprite.Movement.SetAcceleration(new Vector2(0, 0));
+                else
+                    sprite.Movement.SetAcceleration(new Vector2(-2f, 0));
+
                 break;
             default:
                 break;

@@ -4,7 +4,7 @@ public sealed class KeyDownEventArgs : EventArgs
 {
     public KeyEventConfiguration KeyConfig { get; }
     public KeyboardModifierState Modifiers { get; }
-    public KeyAction Action { get; }
+    public KeyAction KeyAction { get; }
 
     public bool IsShift => Modifiers.HasFlag(KeyboardModifierState.Shift);
     public bool IsCtrl => Modifiers.HasFlag(KeyboardModifierState.Ctrl);
@@ -14,6 +14,6 @@ public sealed class KeyDownEventArgs : EventArgs
     {
         KeyConfig = config;
         Modifiers = modifiers;
-        Action = action;
+        KeyAction = action;
     }
 }

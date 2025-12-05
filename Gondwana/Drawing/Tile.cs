@@ -98,6 +98,9 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     public virtual bool PauseAnimation { get; set; }
 
     [JsonIgnore]
+    public virtual ICollider? Collider => _collider;
+
+    [JsonIgnore]
     public virtual Rectangle CollisionArea
     {
         get

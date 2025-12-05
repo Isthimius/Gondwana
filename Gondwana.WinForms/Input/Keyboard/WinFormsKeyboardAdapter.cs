@@ -4,108 +4,102 @@ using Microsoft.Extensions.Logging;
 namespace Gondwana.WinForms.Input.Keyboard;
 
 /// <summary>
-/// Passive WinForms key state collector that feeds the KeyboardHandler.
+/// Global WinForms key state collector that feeds the KeyboardHandler.
+/// Uses IMessageFilter so it sees ALL key messages (including arrows),
+/// regardless of which control has focus or how WinForms classifies them.
 /// </summary>
-public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IDisposable
+public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, IDisposable
 {
-    private readonly Control _control;   // focusable control we were given
-    private readonly Form? _form;        // parent form, if any
-
+    private readonly Control _lifetimeOwner; // just so we know when to auto-dispose
     private readonly HashSet<string> _pressedKeys = new(StringComparer.OrdinalIgnoreCase);
     private KeyboardModifierState _mods;
+    private bool _isDisposed;
 
     public ICollection<string> PressedKeys => _pressedKeys;
 
     public KeyboardModifierState CurrentKeyboardModifiers => _mods;
 
-    internal WinFormsKeyboardAdapter(Control control)
+    internal WinFormsKeyboardAdapter(Control lifetimeOwner)
     {
-        _control = control ?? throw new ArgumentNullException(nameof(control));
+        _lifetimeOwner = lifetimeOwner ?? throw new ArgumentNullException(nameof(lifetimeOwner));
 
-        // This control is what actually has focus — it must decide which keys are "input keys".
-        _control.PreviewKeyDown += OnPreviewKeyDown;
+        // Listen to all key messages at the application level.
+        Application.AddMessageFilter(this);
+        _lifetimeOwner.Disposed += OnOwnerDisposed;
 
-        // If we have a Form, use it as the global key source with KeyPreview = true.
-        _form = control.FindForm();
-        if (_form is not null)
+        Engine.Logger.LogInformation("WinFormsKeyboardAdapter initialized. Using IMessageFilter for key polling.");
+    }
+
+    private void OnOwnerDisposed(object? sender, EventArgs e)
+    {
+        Dispose();
+    }
+
+    // IMessageFilter: called for every Windows message before normal dispatch.
+    public bool PreFilterMessage(ref Message m)
+    {
+        const int WM_KEYDOWN = 0x0100;
+        const int WM_KEYUP = 0x0101;
+        const int WM_SYSKEYDOWN = 0x0104;
+        const int WM_SYSKEYUP = 0x0105;
+
+        if (_isDisposed)
+            return false;
+
+        switch (m.Msg)
         {
-            _form.KeyPreview = true;
-            _form.KeyDown += OnKeyDown;
-            _form.KeyUp += OnKeyUp;
-            _form.FormClosed += (_, __) => Dispose();
-        }
-        else
-        {
-            // No form yet; fall back to the control itself.
-            _control.KeyDown += OnKeyDown;
-            _control.KeyUp += OnKeyUp;
-            _control.Disposed += (_, __) => Dispose();
+            case WM_KEYDOWN:
+            case WM_SYSKEYDOWN:
+                HandleKeyDown((Keys)(m.WParam.ToInt32() & 0xFFFF));
+                break;
+
+            case WM_KEYUP:
+            case WM_SYSKEYUP:
+                HandleKeyUp((Keys)(m.WParam.ToInt32() & 0xFFFF));
+                break;
         }
 
-        Engine.Logger.LogInformation("WinFormsKeyboardAdapter initialized. Starting to poll key presses.");
+        // Never eat the message; let WinForms do whatever it wants too.
+        return false;
     }
 
-    private void OnPreviewKeyDown(object? sender, PreviewKeyDownEventArgs e)
+    private void HandleKeyDown(Keys keyCode)
     {
-        // This runs on the *focused control*.
-        if (e.KeyCode is Keys.Up or Keys.Down or Keys.Left or Keys.Right)
-        {
-            // Tell WinForms: treat these as input keys so KeyDown/KeyUp fire.
-            e.IsInputKey = true;
-        }
+        Engine.Logger.LogInformation("KeyDown: {KeyCode}", keyCode);
+        _pressedKeys.Add(NormalizeKey(keyCode));
+        RecomputeModifiers();
     }
 
-    private void OnKeyDown(object? sender, KeyEventArgs e)
+    private void HandleKeyUp(Keys keyCode)
     {
-        Engine.Logger.LogInformation("KeyDown: {KeyCode}", e.KeyCode);
-        _pressedKeys.Add(NormalizeKey(e.KeyCode));
-        RecomputeModifiers(e);
+        Engine.Logger.LogInformation("KeyUp: {KeyCode}", keyCode);
+        _pressedKeys.Remove(NormalizeKey(keyCode));
+        RecomputeModifiers();
     }
 
-    private void OnKeyUp(object? sender, KeyEventArgs e)
-    {
-        Engine.Logger.LogInformation("KeyUp: {KeyCode}", e.KeyCode);
-        _pressedKeys.Remove(NormalizeKey(e.KeyCode));
-        RecomputeModifiers(e);
-    }
-
-    private void RecomputeModifiers(KeyEventArgs e)
+    private void RecomputeModifiers()
     {
         _mods = KeyboardModifierState.None;
 
-        if (e.Shift)
+        if ((Control.ModifierKeys & Keys.Shift) != 0)
             _mods |= KeyboardModifierState.Shift;
-
-        if (e.Control)
+        if ((Control.ModifierKeys & Keys.Control) != 0)
             _mods |= KeyboardModifierState.Ctrl;
-
-        if (e.Alt)
+        if ((Control.ModifierKeys & Keys.Alt) != 0)
             _mods |= KeyboardModifierState.Alt;
     }
 
-    private static string NormalizeKey(Keys keyCode) => keyCode switch
-    {
-        Keys.Up => "ArrowUp",
-        Keys.Down => "ArrowDown",
-        Keys.Left => "ArrowLeft",
-        Keys.Right => "ArrowRight",
-        _ => keyCode.ToString()
-    };
+    private static string NormalizeKey(Keys keyCode) => keyCode.ToString();
 
     public void Dispose()
     {
-        _control.PreviewKeyDown -= OnPreviewKeyDown;
+        if (_isDisposed)
+            return;
 
-        if (_form is not null)
-        {
-            _form.KeyDown -= OnKeyDown;
-            _form.KeyUp -= OnKeyUp;
-        }
-        else
-        {
-            _control.KeyDown -= OnKeyDown;
-            _control.KeyUp -= OnKeyUp;
-        }
+        _isDisposed = true;
+
+        Application.RemoveMessageFilter(this);
+        _lifetimeOwner.Disposed -= OnOwnerDisposed;
 
         Engine.Logger.LogInformation("WinFormsKeyboardAdapter disposed.");
     }

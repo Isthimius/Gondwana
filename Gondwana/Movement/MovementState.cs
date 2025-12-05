@@ -52,7 +52,7 @@ public struct MovementState
     /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
     /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
     /// coordinate space of <see cref="MovementSpace.Grid"/>.</returns>
-    public static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
+    internal static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = MovementSpace.Grid,
         LinearDamping = linearDampening
@@ -66,7 +66,7 @@ public struct MovementState
     /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
     /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
     /// coordinate space of <see cref="MovementSpace.Pixel"/>.</returns>
-    public static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
+    internal static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
     {
         MovementSpace = MovementSpace.Pixel,
         LinearDamping = linearDampening
