@@ -1,10 +1,11 @@
-using Gondwana.Drawing.Coordinates;
-using Gondwana.Rendering;
-using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Runtime.Serialization;
+using Gondwana.Collision;
+using Gondwana.Drawing.Coordinates;
+using Gondwana.Rendering;
+using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
 
@@ -45,6 +46,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     private void Init()
     {
+        CollisionWorld = new CollisionWorld();   // ensure new instance on deserialization too
+
         SetSceneLayerEventDelegates();
 
         foreach (var sceneLayer in _sceneLayers)
@@ -95,6 +98,9 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     [JsonIgnore]
     public int CountOfVisibleLayers => VisibleSceneLayers?.Count ?? 0;
+
+    [JsonIgnore]
+    public CollisionWorld CollisionWorld { get; private set; } = new();
 
     #endregion public properties
 

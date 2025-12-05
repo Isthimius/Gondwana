@@ -1,5 +1,6 @@
 using Gondwana.Configuration;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Gamepad;
@@ -7,7 +8,6 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
-using Gondwana.Scenes;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
 using Timer = Gondwana.Timers.Timer;
@@ -529,9 +529,9 @@ public sealed class Engine : IDisposable
         // advance Sprite Movement paths
         SpriteManager.MoveSprites(tick);
 
-        // TODO: this has moved to CollisionManager
-        // check for Tile collisions
-        //RaiseCollisionEvent(tick);
+        // resolve collisions after movement
+        foreach (var scene in Scenes.Scene.GetAllScenes())
+            CollisionResolver.ResolveSpriteTileCollisions(scene);
 
         // refresh all RenderSurfaceHost backbuffers
         foreach (var surface in RenderSurfaceHostRegistry.All)

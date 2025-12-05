@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.Serialization;
+using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Movement;
 using Gondwana.Scenes;
@@ -52,9 +53,10 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         zOrder = 1;
 
-        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-
         Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
+        _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
+        _sceneLayer.Scene.CollisionWorld.Register(_collider);
+        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
 
         SpriteManager._spriteList.Add(this);
     }
@@ -69,7 +71,6 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         _sceneLayer = sprite._sceneLayer;
         frame = sprite.frame;
-        DetectCollision = sprite.collisionDetection;
         horizAlign = sprite.horizAlign;
         vertAlign = sprite.vertAlign;
         nudgeX = sprite.nudgeX;
@@ -78,10 +79,10 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         ZOrder = sprite.zOrder;
         visible = sprite.visible;
         sceneLayerCoordinates = sprite.SceneLayerCoordinates;
-        AdjustCollisionArea = sprite.AdjustCollisionArea;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
-
+        _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
+        _sceneLayer.Scene.CollisionWorld.Register(_collider);
         _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
     }
 
@@ -96,10 +97,14 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         animator = new Animator(this);
         pauseAnimation = false;
 
-        if (_sceneLayer != null)
-            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-
         Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
+        _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
+        
+        if (_sceneLayer != null)
+        {
+            _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+            _sceneLayer.Scene.CollisionWorld.Register(_collider);
+        }
 
         SpriteManager._spriteList.Add(this);
     }
@@ -262,8 +267,6 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         Disposing?.Invoke(this);
 
-        base.Dispose();
-
         if (_sceneLayer != null)
         {
             _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
@@ -272,6 +275,9 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             // remove the actual Sprite from the queue since it will
             // no longer be available
             _sceneLayer.RefreshQueue.Tiles.Remove(this);
+
+            if (_collider != null)
+                _sceneLayer.Scene.CollisionWorld.Unregister(_collider);
         }
 
         if (SpriteManager._spriteList.IndexOf(this) != -1)
@@ -280,6 +286,8 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         // clear the events
         SpriteMoved = null;
         Disposing = null;
+
+        base.Dispose();
     }
 
     #endregion IDisposable Members

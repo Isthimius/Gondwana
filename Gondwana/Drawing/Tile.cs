@@ -1,4 +1,5 @@
 using System.Drawing;
+using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Scenes;
@@ -11,12 +12,10 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 {
     #region static members
 
-    public static List<Tile> TileCollisions { get; private set; }
     public static List<Tile> TilesAnimating { get; private set; }
 
     static Tile()
     {
-        TileCollisions = new List<Tile>();
         TilesAnimating = new List<Tile>();
     }
 
@@ -31,8 +30,8 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     protected internal bool enableFog = false;
     protected internal Animator? animator;
     protected bool pauseAnimation;
-    protected CollisionDetectionType collisionDetection = CollisionDetectionType.None;
-    protected CollisionDetectionAdjustment adjustCollisionArea = new CollisionDetectionAdjustment();
+
+    protected ICollider? _collider;
 
     #endregion fields
 
@@ -98,29 +97,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     [JsonIgnore]
     public virtual bool PauseAnimation { get; set; }
 
-    [JsonProperty]
-    public virtual CollisionDetectionType DetectCollision
-    {
-        get { return collisionDetection; }
-        set
-        {
-            if (value == CollisionDetectionType.None)
-            {
-                // if Tile in the collisions List, remove it
-                if (TileCollisions.IndexOf(this) != -1)
-                    TileCollisions.Remove(this);
-            }
-            else
-            {
-                // if Tile not in the collisions List, add it
-                if (TileCollisions.IndexOf(this) == -1)
-                    TileCollisions.Add(this);
-            }
-
-            collisionDetection = value;
-        }
-    }
-
     [JsonIgnore]
     public virtual Rectangle CollisionArea
     {
@@ -154,7 +130,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     public virtual Point[] OutlinePoints => SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
 
     [JsonProperty]
-    public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; }
+    public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
 
     /// <summary>
     /// if position is fixed, use top of primary (i.e., non-overhanging) area;
@@ -196,16 +172,14 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     public virtual void Dispose()
     {
-        // remove Tile from any Engine-level List<> objects
-        if (TileCollisions.IndexOf(this) != -1)
-            TileCollisions.Remove(this);
-
         if (TilesAnimating.IndexOf(this) != -1)
             TilesAnimating.Remove(this);
 
         // dispose any associate Animator instances
         if (animator != null)
             animator.Dispose();
+
+        _collider = null;
     }
 
     #endregion IDisposable Members
