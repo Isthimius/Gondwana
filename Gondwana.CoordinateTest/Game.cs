@@ -126,7 +126,7 @@ public class Game : IDisposable
         _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        InitializeParticles();
+        //InitializeParticles();
     }
 
     private void InitializeParticles()
@@ -184,7 +184,7 @@ public class Game : IDisposable
         var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.SqaureIso);
         var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
 
-        sceneLayer1.ShowGridLines = true;
+        sceneLayer1.ShowGridLines = false;
         sceneLayer2.ShowGridLines = true;
 
         return scene;
@@ -303,8 +303,8 @@ public class Game : IDisposable
         if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
         {
             var pos = args.CurrentPosition;
-            _clickEmitter.Position = new PointF(pos.X, pos.Y);
-            _particleSurface.Burst(_clickEmitter, 80);
+            //_clickEmitter.Position = new PointF(pos.X, pos.Y);
+            //_particleSurface.Burst(_clickEmitter, 80);
         }
     }
 

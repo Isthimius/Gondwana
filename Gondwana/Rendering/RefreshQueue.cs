@@ -57,7 +57,8 @@ internal sealed class RefreshQueue : IDisposable
     /// </summary>
     internal void AddPixelRangeToRefreshQueue(Rectangle worldPixelRange, bool cascadeToOtherRefreshQueues)
     {
-        if (worldPixelRange.IsEmpty) return;
+        if (worldPixelRange.IsEmpty)
+            return;
 
         // Cascade to other queues if required (before any early-outs).
         if (cascadeToOtherRefreshQueues)
