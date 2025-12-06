@@ -40,7 +40,7 @@ public static class SpriteManager
         if (newSprite.SceneLayer != sceneLayer)
         {
             newSprite._sceneLayer = sceneLayer;
-            newSprite.SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(newSprite.DrawLocation, true);
+            newSprite.QueueRefreshArea(newSprite.DrawLocation);
         }
 
         return newSprite;
