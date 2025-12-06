@@ -140,22 +140,13 @@ public class Cycle : ICloneable, IDisposable
 
     #region static members
 
-    internal static Dictionary<string, Cycle> _cycles = new Dictionary<string, Cycle>();
+    internal static readonly Dictionary<string, Cycle> _cycles = new();
 
-    public static int Count
-    {
-        get { return _cycles.Count; }
-    }
+    public static int Count => _cycles.Count;
 
-    public static List<string> GetAnimationCycleKeys()
-    {
-        return new List<string>(_cycles.Keys);
-    }
+    public static List<string> GetAnimationCycleKeys() => new List<string>(_cycles.Keys);
 
-    public static List<Cycle> GetAnimationCycles()
-    {
-        return new List<Cycle>(_cycles.Values);
-    }
+    public static List<Cycle> GetAnimationCycles() => new List<Cycle>(_cycles.Values);
 
     public static Cycle GetAnimationCycle(string cycleKey)
     {

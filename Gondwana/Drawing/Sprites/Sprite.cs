@@ -99,7 +99,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
-        
+
         if (_sceneLayer != null)
         {
             _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
@@ -119,16 +119,36 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     public void SetPosition(Vector2 pos)
     {
-        // capture the Sprite coordinates before the move
+        // old and new coordinate space positions
         PointF oldCoord = sceneLayerCoordinates;
         PointF newCoord = new PointF(pos.X, pos.Y);
 
-        // add to refresh queue before move, then move, then add to queue after move
-        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
-        sceneLayerCoordinates = newCoord;
-        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(this.DrawLocation, true);
+        // compute old/new draw rects in WORLD pixels
+        Rectangle oldDraw = SpriteManager.GetDrawLocation(this, _sceneLayer, oldCoord, renderSize);
+        Rectangle newDraw = SpriteManager.GetDrawLocation(this, _sceneLayer, newCoord, renderSize);
 
-        // raise the SpriteMoved event
+        // union of old + new = full movement envelope
+        Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
+
+        // commit the move
+        sceneLayerCoordinates = newCoord;
+
+        // enqueue ONE world-space dirty rect for the whole movement
+        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(movementWorldRect, cascadeToOtherRefreshQueues: true);
+
+        // Notify each host that is actually bound to this scene (fast, no allocations)
+        var hosts = _sceneLayer.Scene?.BoundRenderSurfaceHosts;
+        if (hosts != null)
+        {
+            // iterate without LINQ, avoid temporary allocations
+            for (int i = 0; i < hosts.Count; i++)
+            {
+                var host = hosts[i];
+                host.AddWorldDirtyForTile(_sceneLayer, movementWorldRect);
+            }
+        }
+
+        // raise the event
         SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, newCoord));
     }
 

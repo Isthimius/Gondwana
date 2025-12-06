@@ -1,8 +1,10 @@
 ﻿using System.Drawing;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using Gondwana.Scenes;
 using Gondwana.Skia;
 using Gondwana.Timers;
+using Gondwana.SkiaSharp;
 
 namespace Gondwana.Rendering;
 
@@ -63,20 +65,27 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     public void Bind(Scene? drawSource, bool limitCameraToWorldBoundPx = true)
     {
-        if (Scene != null)
-            Scene.SceneDisposing -= OnSourceDisposing;
-
-        var oldScene = Scene;
-        _scene = drawSource;
-
-        if (Scene != null)
+        // Unregister from the old scene (if any)
+        if (_scene != null)
         {
-            ViewRenderer.BindToScene(Scene, limitCameraToWorldBoundPx);
-            Scene.SceneDisposing += OnSourceDisposing;
-            Scene.RefreshNeeded = SceneRefreshType.All;
+            _scene.SceneDisposing -= OnSourceDisposing;
+            _scene.UnregisterRenderSurfaceHost(this);
         }
 
-        BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, Scene));
+        var oldScene = _scene;
+        _scene = drawSource;
+
+        if (_scene != null)
+        {
+            // Register with the new scene
+            _scene.RegisterRenderSurfaceHost(this);
+
+            ViewRenderer.BindToScene(_scene, limitCameraToWorldBoundPx);
+            _scene.SceneDisposing += OnSourceDisposing;
+            _scene.RefreshNeeded = SceneRefreshType.All;
+        }
+
+        BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, _scene));
     }
 
     /// <summary>
@@ -202,6 +211,30 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
+    // Implement the base hook so callers can mark world rects dirty and let the host handle projection.
+    protected internal override void AddWorldDirtyForTile(SceneLayer sceneLayer, Rectangle worldRect)
+    {
+        if (Scene is null || ViewRenderer is null || Backbuffer is null)
+            return;
+
+        // For each view, project the world rect into screen space and mark it dirty.
+        foreach (var view in ViewRenderer.Views)
+        {
+            // You already have similar math for picking; reuse it:
+            // this method name is illustrative – use your actual helper.
+            var screenRect = view.WorldRectToScreenRect(sceneLayer, worldRect).ToPixelAlignedRect();
+
+            if (screenRect.Width <= 0 || screenRect.Height <= 0)
+                continue;
+
+            // feed into the same overlay path that DirectDrawing instances use
+            AddOverlayScreenDirty(screenRect);
+
+            // make sure the adapter renders this patch of the backbuffer
+            Backbuffer.AddToDirtyRectangle(screenRect);
+        }
+    }
+    
     #endregion
 
     /// <summary>
@@ -246,6 +279,19 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         if (disposing)
         {
+            // If currently bound to a scene, unregister to avoid dangling references
+            if (_scene != null)
+            {
+                try
+                {
+                    _scene.UnregisterRenderSurfaceHost(this);
+                }
+                catch
+                {
+                    // ignore errors during shutdown
+                }
+            }
+
             _backbuffer = null;
         }
 
@@ -258,7 +304,20 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     #region private methods
 
-    private void OnSourceDisposing(Scene scene) => _scene = null;
+    private void OnSourceDisposing(Scene scene)
+    {
+        // Scene is being disposed — make sure we unregister and drop our reference
+        try
+        {
+            scene.UnregisterRenderSurfaceHost(this);
+        }
+        catch
+        {
+            // swallow; defensive if scene is partially torn down
+        }
+
+        _scene = null;
+    }
 
     private void OnRenderSurfaceAdapterResized(RenderSurfaceAdapterResizedEventArgs args)
     {

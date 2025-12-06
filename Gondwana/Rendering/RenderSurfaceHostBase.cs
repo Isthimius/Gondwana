@@ -7,11 +7,6 @@ namespace Gondwana.Rendering;
 /// Represents a base class for hosting a render surface, providing functionality for managing rendering operations,
 /// backbuffer access, and integration with platform-specific adapters.
 /// </summary>
-/// <remarks>This abstract class serves as the foundation for implementing render surface hosts. It provides
-/// properties for accessing the backbuffer, the source scene to be drawn, the clear color used for rendering, and the
-/// associated render surface adapter. Derived classes must implement the abstract members to define specific rendering
-/// behavior. The class also manages lifecycle operations, including registration with the render surface host
-/// registry and cleanup during disposal.</remarks>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
     protected Rectangle _overlayScreenDirty = Rectangle.Empty;
@@ -65,6 +60,19 @@ public abstract class RenderSurfaceHostBase : IDisposable
         _overlayScreenDirty = _overlayScreenDirty.IsEmpty
             ? screenRect
             : Rectangle.Union(_overlayScreenDirty, screenRect);
+    }
+
+    /// <summary>
+    /// Mark a world-space rectangle (expressed in scene/world pixels) as dirty for the specified layer.
+    /// Implementations should project that area into the host's views and mark the backbuffer/overlay dirty.
+    /// Exposed protected internal so code in this assembly (e.g. Sprite) can efficiently inform the host.
+    /// Default implementation is a no-op.
+    /// </summary>
+    /// <param name="layer">Layer owning the dirty world rect (may be needed for tile size / parallax).</param>
+    /// <param name="worldRect">World-space pixel rectangle to mark dirty.</param>
+    protected internal virtual void AddWorldDirtyForTile(SceneLayer layer, Rectangle worldRect)
+    {
+        // Default: no-op. Concrete RenderSurfaceHost<TBackbuffer> overrides this.
     }
 
     public void Dispose()
