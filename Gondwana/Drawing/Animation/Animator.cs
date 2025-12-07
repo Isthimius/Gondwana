@@ -104,7 +104,7 @@ public class Animator : IDisposable
                 Stopped(new AnimatorEventArgs(parent, this));
 
             if (CurrentCycle?.NextCycle != null)
-                this.CurrentCycle = CurrentCycle.NextCycle;
+                CurrentCycle = CurrentCycle.NextCycle;
             else if (CurrentCycle?.NextCycle.HideTileOnCycleEnd == true)
                 parent.Visible = false;
         }
@@ -136,8 +136,7 @@ public class Animator : IDisposable
             parent.CurrentFrame = CurrentCycle.Sequence.AdvanceFrame();
 
             // raise the event
-            if (Cycled != null)
-                Cycled(new AnimatorEventArgs(parent, this));
+            Cycled?.Invoke(new AnimatorEventArgs(parent, this));
 
             // if terminating cycle is done, stop the animation
             if (CurrentCycle.Sequence.CycleFinished)
