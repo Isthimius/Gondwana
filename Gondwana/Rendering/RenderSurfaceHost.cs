@@ -140,8 +140,19 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 6) Preserve any pre-existing dirty (e.g., set earlier this frame) — union, don’t replace.
         //    If this was a full redraw, mark the entire backbuffer as dirty so the adapter blits all of it.
         if (forceFullRedraw)
-        {
             Backbuffer!.MarkFullDirty();
+
+        // DEBUG: visualize the adapter dirty rect in magenta
+        if (!Backbuffer.DirtyRectangle.IsEmpty)
+        {
+            using var debugPaint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 2,
+                Color = new SKColor(255, 0, 255, 255) // magenta
+            };
+
+            Backbuffer.Canvas.DrawRect(Backbuffer.DirtyRectangle.ToSKRect(), debugPaint);
         }
 
         // 7) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
@@ -220,8 +231,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // For each view, project the world rect into screen space and mark it dirty.
         foreach (var view in ViewRenderer.Views)
         {
-            // You already have similar math for picking; reuse it:
-            // this method name is illustrative – use your actual helper.
             var screenRect = view.WorldRectToScreenRect(sceneLayer, worldRect).ToPixelAlignedRect();
 
             if (screenRect.Width <= 0 || screenRect.Height <= 0)
@@ -234,7 +243,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Backbuffer.AddToDirtyRectangle(screenRect);
         }
     }
-    
+
     #endregion
 
     /// <summary>

@@ -5,6 +5,7 @@ using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Movement;
 using Gondwana.Scenes;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Sprites;
@@ -288,6 +289,8 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             {
                 var host = hosts[i];
                 host.AddWorldDirtyForTile(_sceneLayer, worldRect);
+
+                Engine.Logger.LogTrace($"DIRTY: worldRect={worldRect}");
             }
         }
     }

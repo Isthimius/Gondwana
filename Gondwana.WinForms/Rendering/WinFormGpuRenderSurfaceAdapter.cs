@@ -17,7 +17,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     private SKRectI _sourceRect;
     private SKRect _destRect;
 
-    public SKColor ClearColor { get; set; } = SKColors.Purple;
+    public SKColor ClearColor { get; set; } = SKColors.Black;
 
     /// <summary>
     /// The GL/Skia GPU context you MUST share with your GpuBackbuffer.
