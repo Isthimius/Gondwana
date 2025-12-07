@@ -23,6 +23,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     public event Action<SceneLayer>? ShowGridLinesChanged;
 
+    public event Action<SceneLayer>? ShowCollisionBoxesChanged;
+
     public event Action<SceneLayer>? ZOrderChanged;
 
     public event Action<SceneLayer>? ParallaxChanged;
@@ -212,7 +214,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     [JsonProperty("ShowGridLines")]
-    private bool showGridLines;
+    private bool showGridLines = false;
 
     [JsonIgnore]
     public bool ShowGridLines
@@ -224,6 +226,20 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             ShowGridLinesChanged?.Invoke(this);
         }
     }
+
+    [JsonProperty("ShowCollisionBoxes")]
+    private bool showCollisionBoxes = false;
+
+    [JsonIgnore]
+    public bool ShowCollisionBoxes
+    {
+        get { return showCollisionBoxes; }
+        set
+        {
+            showCollisionBoxes = value;
+            ShowCollisionBoxesChanged?.Invoke(this);
+        }
+   }
 
     // World-space origin (in pixels) of this layer’s (0,0) tile.
     // Usually (0,0); can be shifted to move the entire layer as a block.

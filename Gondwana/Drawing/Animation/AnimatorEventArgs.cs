@@ -1,15 +1,13 @@
 ﻿namespace Gondwana.Drawing.Animation;
 
-public delegate void AnimatorEventHandler(AnimatorEventArgs e);
-
 public class AnimatorEventArgs : EventArgs
 {
-    public Tile tile;
-    public Animator animator;
+    public Tile Tile;
+    public Animator Animator;
 
-    protected internal AnimatorEventArgs(Tile _tile, Animator _animator)
+    protected internal AnimatorEventArgs(Tile tile, Animator animator)
     {
-        tile = _tile;
-        animator = _animator;
+        Tile = tile;
+        Animator = animator;
     }
 }

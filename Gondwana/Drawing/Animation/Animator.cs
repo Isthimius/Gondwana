@@ -6,11 +6,11 @@ public class Animator : IDisposable
 {
     #region events
 
-    public event AnimatorEventHandler Started;
+    public event Action<AnimatorEventArgs> Started;
 
-    public event AnimatorEventHandler Stopped;
+    public event Action<AnimatorEventArgs> Stopped;
 
-    public event AnimatorEventHandler Cycled;
+    public event Action<AnimatorEventArgs> Cycled;
 
     #endregion events
 
@@ -93,7 +93,7 @@ public class Animator : IDisposable
     public void StopAnimation()
     {
         // only perform action if actually cycling
-        if (cycling == true)
+        if (cycling)
         {
             cycling = false;
             CurrentCycle.Sequence.StopCycle();
@@ -103,15 +103,18 @@ public class Animator : IDisposable
             if (Stopped != null)
                 Stopped(new AnimatorEventArgs(parent, this));
 
-            if (CurrentCycle.NextCycle != null)
+            if (CurrentCycle?.NextCycle != null)
                 this.CurrentCycle = CurrentCycle.NextCycle;
-            else    // there is no next cycle, so make Visible = false
+            else if (CurrentCycle?.NextCycle.HideTileOnCycleEnd == true)
                 parent.Visible = false;
         }
     }
 
-    public void CycleAnimation(long currentTick)
+    internal void CycleAnimation(long currentTick)
     {
+        if (CurrentCycle is null)
+            return;
+
         // if throttle is 0, stop the animation so loop doesn't hang
         if (CurrentCycle._throttle == 0)
         {
@@ -146,6 +149,9 @@ public class Animator : IDisposable
 
     #region IDisposable Members
 
+    /// <summary>
+    /// *** DO NOT CALL DIRECTLY! ***
+    /// </summary>
     public void Dispose()
     {
         Started = null;

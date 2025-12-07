@@ -33,6 +33,17 @@ public sealed class BitmapBackbuffer : BackbufferBase
         get { lock (_gate) return _surface!.Canvas; }
     }
 
+    private readonly SKPaint _bitmapPaint = new SKPaint
+    {
+        FilterQuality = SKFilterQuality.Medium
+    };
+
+    public SKFilterQuality FilterQuality
+    {
+        get => _bitmapPaint.FilterQuality;
+        set => _bitmapPaint.FilterQuality = value;
+    }
+
     protected internal override void BeginFrame()
     {
         // if a resize was requested, do it now (render thread only)...
@@ -85,7 +96,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
         if (bmp is null)
             Canvas.DrawRect(worldRect, _fillPaint);
         else
-            Canvas.DrawBitmap(bmp, worldRect);
+            Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
 
         // Map world rect to adapter/screen pixels using the current CTM
         var deviceRect = Canvas.TotalMatrix.MapRect(worldRect);

@@ -49,6 +49,11 @@ public abstract class BackbufferBase : IDisposable
     public SKPaint GridLinePaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
 
     /// <summary>
+    /// Gets or sets the paint settings used to render collision boxes.
+    /// </summary>
+    public SKPaint CollisionBoxPaint { get; set; } = new() { Color = SKColors.Green, IsStroke = true, StrokeWidth = 1 };
+
+    /// <summary>
     /// Gets the current Backbuffer width in a thread-safe manner.
     /// </summary>
     public int Width => Volatile.Read(ref _width);
@@ -119,6 +124,9 @@ public abstract class BackbufferBase : IDisposable
 
             if (tile.SceneLayer.ShowGridLines && tile.Visible)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), GridLinePaint);
+
+            if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), CollisionBoxPaint);
         }
     }
 
@@ -168,5 +176,6 @@ public abstract class BackbufferBase : IDisposable
         _fillPaint.Dispose();
         FogPaint.Dispose();
         GridLinePaint.Dispose();
+        CollisionBoxPaint.Dispose();
     }
 }

@@ -20,18 +20,22 @@ public class Cycle : ICloneable, IDisposable
     [JsonProperty]
     public readonly string CycleKey;
 
+    [JsonProperty]
+    public readonly bool HideTileOnCycleEnd;
+
     internal long _throttle = 0;
 
     #endregion fields
 
     #region constructors / destructor
 
-    public Cycle(FrameSequence sequence, double throttleTime, string cycleKey)
+    public Cycle(FrameSequence sequence, double throttleTime, string cycleKey, bool hideTileOnCycleEnd = false)
     {
         Sequence = sequence;
         ThrottleTime = throttleTime;
         NextCycle = this;
         CycleKey = cycleKey;
+        HideTileOnCycleEnd = hideTileOnCycleEnd;
 
         if (Cycle._cycles.ContainsKey(cycleKey))
             Cycle._cycles[cycleKey] = this;
@@ -45,11 +49,6 @@ public class Cycle : ICloneable, IDisposable
         _throttle = fromCycle._throttle;
         NextCycle = this;
         CycleKey = fromCycle.CycleKey;
-    }
-
-    ~Cycle()
-    {
-        Dispose();
     }
 
     [OnDeserialized()]

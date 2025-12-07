@@ -185,6 +185,7 @@ public class Game : IDisposable
         var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
 
         sceneLayer1.ShowGridLines = false;
+        sceneLayer1.ShowCollisionBoxes = true;
         sceneLayer2.ShowGridLines = true;
 
         return scene;

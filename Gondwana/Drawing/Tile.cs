@@ -85,7 +85,8 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         get { return frame; }
         set
         {
-            // animation doesn't change Sprite size, so only add to refresh queue after
+            // animation might change Tile size, so only add to refresh queue after
+            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
             frame = value;
             SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
         }
