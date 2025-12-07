@@ -31,6 +31,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// </summary>
     public abstract RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; }
 
+    public abstract ViewRenderer? ViewRenderer { get; }
+
     /// <summary>
     /// Runs as part of DoBackgroundTasks(). Takes content of RefreshQueue
     /// - which is a queue of tiles that need to be (re)drawn -

@@ -51,7 +51,8 @@ public sealed class Engine : IDisposable
 
     private long _startTick;
     private long _lastCPSSamplingTick;
-    private long _lastTick = HighResTimer.GetCurrentTick();
+    private long _lastBackgroundTick = HighResTimer.GetCurrentTick();
+    private long _lastForegroundTick = HighResTimer.GetCurrentTick();
 
     private long _grossCyclesThisMeasure = 0;
     private long _netCyclesThisMeasure = 0;
@@ -489,12 +490,12 @@ public sealed class Engine : IDisposable
         // if TargetFPS <= 0, render to screen unbounded
         // otherwise, check if throttle time has passed since last tick...
         if ((Configuration.TargetFPS <= 0)
-            || (tick - _lastTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS)
+            || (tick - _lastForegroundTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS)
         {
             DoForegroundTasks(tick);
 
             // save time of this last tick; increment CPS counter
-            _lastTick = tick;
+            _lastForegroundTick = tick;
             _netCyclesThisMeasure++;
         }
 
@@ -533,17 +534,26 @@ public sealed class Engine : IDisposable
         foreach (var scene in Scenes.Scene.GetAllScenes())
             CollisionResolver.ResolveSpriteTileCollisions(scene);
 
-        // refresh all RenderSurfaceHost backbuffers
+        // find total real seconds passed since last background loop
+        var deltaSeconds = HighResTimer.GetDuration(_lastBackgroundTick, tick);
+
+        // update cameras so any movement can mark RefreshNeeded = All.
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.DrawRefreshQueueToBackbuffer(tick);
+            surface.ViewRenderer!.UpdateCameras(deltaSeconds);
 
         AfterBackgroundTasksExecute?.Invoke();
+
+        _lastBackgroundTick = tick;
     }
 
     private void DoForegroundTasks(long tick)
     {
         // raise event
         BeforeEngineCycle?.Invoke();
+
+        // refresh all RenderSurfaceHost backbuffers
+        foreach (var surface in RenderSurfaceHostRegistry.All)
+            surface.DrawRefreshQueueToBackbuffer(tick);
 
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);

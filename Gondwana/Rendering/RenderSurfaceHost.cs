@@ -23,6 +23,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     };
 
     private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
+    private readonly ViewRenderer? _viewRenderer;
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
@@ -31,8 +32,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
         _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
-
-        ViewRenderer = new ViewRenderer(this);
+        _viewRenderer = new ViewRenderer(this);
 
         // Recreate backbuffer on adapter resize
         RenderSurfaceAdapter!.Resized += (args) => OnRenderSurfaceAdapterResized(args);
@@ -59,7 +59,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
 
-    public ViewRenderer ViewRenderer { get; private set; }
+    public override ViewRenderer ViewRenderer => _viewRenderer;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
@@ -90,7 +90,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     /// <summary>
     /// Renders all visible scene layers for every configured view onto the backbuffer.
-    /// Called as part of DoBackgroundTasks().
+    /// Called as part of DoForegroundTasks().
     /// </summary>
     internal override void DrawRefreshQueueToBackbuffer(long tick)
     {
@@ -109,9 +109,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
-
-        // 1) First, update cameras so any movement can mark RefreshNeeded = All.
-        ViewRenderer.UpdateCameras(deltaSeconds);
 
         // Are we in a "force full redraw" situation (camera moved, zoom changed, etc.)?
         bool forceFullRedraw = Scene!.RefreshNeeded == SceneRefreshType.All;
