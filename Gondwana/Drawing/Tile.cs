@@ -51,10 +51,6 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     #endregion abstract properties
 
-    [Obsolete("Possible future use; currently not implemented")]
-    [JsonIgnore]
-    public virtual List<Rectangle> DrawLocationRefresh { get; internal set; } = new List<Rectangle>();
-
     [JsonIgnore]
     public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
 

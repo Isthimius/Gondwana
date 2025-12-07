@@ -316,7 +316,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
                 // refresh other SceneLayers; no need to do the calling one again
                 if (e.layer != otherSceneLayer)
-                    // only refresh e.tileAdded.DrawLocationRefresh rectangle; do not raise cascading events
+                    // only refresh e.area rectangle; do not raise cascading events
                     otherSceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(e.area, false);
             }
         }
