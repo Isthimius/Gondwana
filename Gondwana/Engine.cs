@@ -509,6 +509,9 @@ public sealed class Engine : IDisposable
 
     private void DoBackgroundTasks(long tick)
     {
+        // find total real seconds passed since last background loop
+        var deltaSeconds = HighResTimer.GetDuration(_lastBackgroundTick, tick);
+
         BeforeBackgroundTasksExecute?.Invoke();
 
         // raise pre-cycle timer events
@@ -533,9 +536,6 @@ public sealed class Engine : IDisposable
         // resolve collisions after movement
         foreach (var scene in Scenes.Scene.GetAllScenes())
             CollisionResolver.ResolveSpriteTileCollisions(scene);
-
-        // find total real seconds passed since last background loop
-        var deltaSeconds = HighResTimer.GetDuration(_lastBackgroundTick, tick);
 
         // update cameras so any movement can mark RefreshNeeded = All.
         foreach (var surface in RenderSurfaceHostRegistry.All)

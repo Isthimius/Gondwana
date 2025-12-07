@@ -94,7 +94,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     internal override void DrawRefreshQueueToBackbuffer(long tick)
     {
-        // 0) If there’s no Scene (or no visible layers), clear and publish the full frame.
+        // 0) If there’s no Scene (or no visible layers), just clear and publish the full frame.
         if (Scene == null || Scene.CountOfVisibleLayers == 0)
         {
             Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
@@ -107,7 +107,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        // find total real seconds passed since last background loop
+        // 1) find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
         // Are we in a "force full redraw" situation (camera moved, zoom changed, etc.)?
