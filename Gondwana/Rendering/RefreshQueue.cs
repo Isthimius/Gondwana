@@ -116,10 +116,11 @@ internal sealed class RefreshQueue : IDisposable
                 if (_tileSet.Add(gridPt))
                     _tiles.Add(gridPt);
 
+                // TODO: re-enable partial refresh tracking per-tile?
                 // Add partial refresh for this tile only if the area intersects it.
-                Rectangle tileRefresh = Rectangle.Intersect(area, gridPt.DrawLocation);
-                if (!tileRefresh.IsEmpty && gridPt.DrawLocationRefresh is not null && !gridPt.DrawLocationRefresh.Contains(tileRefresh))
-                    gridPt.DrawLocationRefresh.Add(tileRefresh);
+                //Rectangle tileRefresh = Rectangle.Intersect(area, gridPt.DrawLocation);
+                //if (!tileRefresh.IsEmpty && gridPt.DrawLocationRefresh is not null && !gridPt.DrawLocationRefresh.Contains(tileRefresh))
+                //    gridPt.DrawLocationRefresh.Add(tileRefresh);
             }
 
             // 2) Sprites within area
@@ -134,9 +135,10 @@ internal sealed class RefreshQueue : IDisposable
                 if (_tileSet.Add(sprite))
                     _tiles.Add(sprite);
 
-                Rectangle tileRefresh = Rectangle.Intersect(area, sprite.DrawLocation);
-                if (!tileRefresh.IsEmpty && sprite.DrawLocationRefresh is not null && !sprite.DrawLocationRefresh.Contains(tileRefresh))
-                    sprite.DrawLocationRefresh.Add(tileRefresh);
+                // TODO: re-enable partial refresh tracking per-sprite?
+                //Rectangle tileRefresh = Rectangle.Intersect(area, sprite.DrawLocation);
+                //if (!tileRefresh.IsEmpty && sprite.DrawLocationRefresh is not null && !sprite.DrawLocationRefresh.Contains(tileRefresh))
+                //    sprite.DrawLocationRefresh.Add(tileRefresh);
             }
         }
 
