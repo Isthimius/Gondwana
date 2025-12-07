@@ -180,7 +180,7 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
-    public void ApplyMask(SKColor? maskColor = null, byte tolerance = 0)
+    public void ApplyMask(SKColor? maskColor = null, byte tolerance = 5)
     {
         if (SkBitmap == null || SkBitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");

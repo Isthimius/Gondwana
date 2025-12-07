@@ -84,6 +84,7 @@ public class Game : IDisposable
         // Implementation for loading tilesheets goes here
         var tilesheet = new Tilesheet("rooster", "assets/rooster.bmp");
         tilesheet.TileSize = new Size(50, 50);
+        tilesheet.ApplyMask(SKColors.Black);
     }
 
     private void LoadAnimationCycles()
@@ -185,7 +186,7 @@ public class Game : IDisposable
         var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
 
         sceneLayer1.ShowGridLines = false;
-        sceneLayer1.ShowCollisionBoxes = true;
+        sceneLayer1.ShowCollisionBoxes = false;
         sceneLayer2.ShowGridLines = true;
 
         return scene;

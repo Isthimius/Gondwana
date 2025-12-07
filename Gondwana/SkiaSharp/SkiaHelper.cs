@@ -40,7 +40,7 @@ public static class SkiaHelper
         return data.ToArray();
     }
 
-    public static void ApplyAlphaMask(SKBitmap bitmap, SKColor targetColor, byte tolerance = 0)
+    public static void ApplyAlphaMask(SKBitmap bitmap, SKColor targetColor, byte tolerance = 5)
     {
         if (bitmap == null || bitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
