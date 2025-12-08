@@ -73,7 +73,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public int Count => _sceneLayers?.Count ?? 0;
 
     [JsonIgnore]
-    public SceneRefreshType RefreshNeeded { get; set; }
+    public bool FullRefreshNeeded { get; set; }
 
     [JsonIgnore]
     public ReadOnlyCollection<SceneLayer> SceneLayers => _sceneLayers.AsReadOnly();
@@ -158,7 +158,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         _sceneLayers.Add(sceneLayer);
         OnSceneLayerAdded(sceneLayer);
 
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
 
         return sceneLayer;
     }
@@ -171,7 +171,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
         _sceneLayers.Clear();
 
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
     }
 
     public void RemoveLayer(SceneLayer sceneLayer)
@@ -179,7 +179,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         _sceneLayers.Remove(sceneLayer);
         OnSceneLayerRemoved(sceneLayer);
 
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
     }
 
     public SceneLayer? GetSceneLayerByID(string id)
@@ -302,10 +302,10 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     private void _SceneLayerVisibleChanged()
     {
         _visibleSortedDirty = true;
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
     }
 
-    private void _SceneLayerTileSizeChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerTileSizeChanged() => FullRefreshNeeded = true;
 
     private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
     {
@@ -325,17 +325,17 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         }
     }
 
-    private void _SceneLayerWrappingChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerWrappingChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerGridLinesShowChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerGridLinesShowChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerShowCollisionBoxChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerShowCollisionBoxChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerZOrderChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerZOrderChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerParallaxChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerParallaxChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerZeroPixelChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerZeroPixelChanged() => FullRefreshNeeded = true;
 
     #endregion handle SceneLayer events
 

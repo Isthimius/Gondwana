@@ -70,7 +70,7 @@ public sealed class DirectDrawingManager
         {
             // if the drawing's RenderSurfaceHost's Backbuffer's DirtyRectangle intersects with the drawing's Bounds, mark as dirty
             if ((drawing.RenderSurfaceHost?.Backbuffer?.DirtyRectangle.IntersectsWith(drawing.Bounds) ?? false) ||
-                drawing.RenderSurfaceHost?.Scene?.RefreshNeeded == SceneRefreshType.All)
+                drawing.RenderSurfaceHost?.Scene?.FullRefreshNeeded == true)
             {
                 drawing._dirty = true;
             }

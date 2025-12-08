@@ -48,7 +48,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Backbuffer!.SizeChanged += (w, h) =>
             {
                 if (Scene != null)
-                    Scene.RefreshNeeded = SceneRefreshType.All; // full redraw at the new size
+                    Scene.FullRefreshNeeded = true;
             };
         }
     }
@@ -82,7 +82,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             ViewRenderer.BindToScene(_scene, limitCameraToWorldBoundPx);
             _scene.SceneDisposing += OnSourceDisposing;
-            _scene.RefreshNeeded = SceneRefreshType.All;
+            _scene.FullRefreshNeeded = true;
         }
 
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, _scene));
@@ -101,7 +101,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Backbuffer.MarkFullDirty();
 
             if (Scene != null)
-                Scene.RefreshNeeded = SceneRefreshType.Tiles;
+                Scene.FullRefreshNeeded = false;
 
             _lastTick = tick;
             return;
@@ -111,7 +111,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
         // Are we in a "force full redraw" situation (camera moved, zoom changed, etc.)?
-        bool forceFullRedraw = Scene!.RefreshNeeded == SceneRefreshType.All;
+        bool forceFullRedraw = Scene!.FullRefreshNeeded;
 
         // 2) Handle full scene refresh once: clear and mark all layers as dirty.
         //    This already clears the whole backbuffer and enqueues a full rect per layer.
@@ -185,7 +185,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
-        Scene.RefreshNeeded = SceneRefreshType.Tiles;
+        Scene.FullRefreshNeeded = false;
         _lastTick = tick;
     }
 
@@ -357,7 +357,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private void OnRenderSurfaceAdapterResized(RenderSurfaceAdapterResizedEventArgs args)
     {
         if (Scene != null)
-            Scene.RefreshNeeded = SceneRefreshType.All;                 // full redraw next frame
+            Scene.FullRefreshNeeded = true;                 // full redraw next frame
 
         _backbuffer?.RequestResize(args.NewWidth, args.NewHeight);      // UI thread → request only
 
