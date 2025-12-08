@@ -47,7 +47,7 @@ public sealed class ViewRenderer
             _views.Add(view);
 
             if (_renderSurfaceHost.Scene is not null)
-                _renderSurfaceHost.Scene.FullRefreshNeeded = SceneRefreshType.All;
+                _renderSurfaceHost.Scene.FullRefreshNeeded = true;
         }
     }
 
@@ -161,7 +161,7 @@ public sealed class ViewRenderer
         _views.Clear();
 
         if (_renderSurfaceHost.Scene is not null)
-            _renderSurfaceHost.Scene.FullRefreshNeeded = SceneRefreshType.All;
+            _renderSurfaceHost.Scene.FullRefreshNeeded = true;
     }
 
     #region internal methods
@@ -235,13 +235,13 @@ public sealed class ViewRenderer
     private void OnViewportZoomChanged(ViewportZoomChangedEventArgs args)
     {
         if (_renderSurfaceHost.Scene is not null)
-            _renderSurfaceHost.Scene.FullRefreshNeeded = SceneRefreshType.All;
+            _renderSurfaceHost.Scene.FullRefreshNeeded = true;
     }
 
     private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
     {
         if (_renderSurfaceHost.Scene is not null)
-            _renderSurfaceHost.Scene.FullRefreshNeeded = SceneRefreshType.All;
+            _renderSurfaceHost.Scene.FullRefreshNeeded = true;
     }
 
     #endregion private methods
