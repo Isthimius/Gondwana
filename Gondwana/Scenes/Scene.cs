@@ -117,12 +117,15 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         get
         {
             for (int i = 0; i < CountOfVisibleLayers; i++)
-                if (VisibleSceneLayers[i].RefreshQueue.Tiles.Count > 0)
+            {
+                if (VisibleSceneLayers[i].RefreshQueue.IsDirty)
                     return true;
+            }
 
             return false;
         }
     }
+
 
     internal void RegisterRenderSurfaceHost(RenderSurfaceHostBase host)
     {

@@ -1,136 +1,91 @@
-using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
-using Gondwana.Scenes;
 using System.Drawing;
+using Gondwana.Scenes;
 
 namespace Gondwana.Rendering;
 
 /// <summary>
 /// Represents a queue for managing refresh operations within a SceneLayer.
-/// Tracks pixel areas that need redraw and resolves them to tiles/sprites on demand.
+/// Tracks world-space pixel areas that need redraw. It does NOT resolve to
+/// tiles or sprites; that is the responsibility of SceneLayer / render code.
 /// </summary>
-/// <remarks>
-/// Optimizations:
-/// - Uses a HashSet to de-duplicate tiles (O(1) membership) instead of O(n) IndexOf.
-/// - Per-area refresh updates only the tiles hit by that area (avoids O(T) per area).
-/// - Early exit when new rect is contained by an existing rect.
-/// </remarks>
 internal sealed class RefreshQueue : IDisposable
 {
-    private bool _isDirty;                       // If true, Tiles need to be recomputed from _rects.
-    private readonly List<Tile> _tiles;          // Unique list of Tile objects to be redrawn.
-    private readonly HashSet<Tile> _tileSet;     // O(1) membership check mirroring _tiles.
-    private readonly List<Rectangle> _rects;     // Pixel areas requiring refresh.
-    private readonly SceneLayer _sceneLayer;     // Parent layer (for coords and sprite queries).
+    private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
+    private readonly SceneLayer _sceneLayer;        // Parent layer (for event context)
 
+    /// <summary>
+    /// Raised whenever a new world-space dirty rectangle is added to this queue.
+    /// Listeners (e.g., RenderSurfaceHost) can project this to screen space and
+    /// mark adapter regions dirty.
+    /// </summary>
     internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
 
     internal RefreshQueue(SceneLayer layer)
     {
-        _isDirty = false;
-        _tiles = new List<Tile>(256);
-        _tileSet = new HashSet<Tile>();
-        _rects = new List<Rectangle>(64);
-        _sceneLayer = layer;
+        _sceneLayer = layer ?? throw new ArgumentNullException(nameof(layer));
+        _worldRects = new List<Rectangle>(64);
     }
 
     ~RefreshQueue() => Dispose();
 
     /// <summary>
-    /// The tiles that must be redrawn this pass. Recomputed lazily when <see cref="_isDirty"/> is set.
+    /// True if there is at least one world-space dirty rectangle enqueued.
     /// </summary>
-    internal List<Tile> Tiles
-    {
-        get
-        {
-            if (_isDirty)
-                FindTilesInRange();
-
-            return _tiles;
-        }
-    }
+    internal bool IsDirty => _worldRects.Count > 0;
 
     /// <summary>
-    /// Enqueue a screen/world pixel rectangle that requires redraw.
-    /// Optionally cascades a notification to sibling queues (e.g., other layers).
-    /// ***** IMPORTANT: should ALWAYS be in WORLD pixels. *****
+    /// The queued world-space dirty rectangles (in pixels).
+    /// These are consumed by the render path, which is responsible for:
+    /// - Mapping them to tiles (SceneLayer / CoordinateSystem)
+    /// - Mapping them to screen-space per view (View / RenderSurfaceHost)
     /// </summary>
-    internal void AddPixelRangeToRefreshQueue(Rectangle worldPixelRange, bool cascadeToOtherRefreshQueues)
+    internal IReadOnlyList<Rectangle> WorldRects => _worldRects;
+
+    /// <summary>
+    /// Enqueue a world-space pixel rectangle that requires redraw.
+    /// Optionally cascades a notification to listeners (e.g., other hosts).
+    /// ***** IMPORTANT: must ALWAYS be in WORLD pixels. *****
+    /// </summary>
+    internal void AddWorldRect(Rectangle worldPixelRange, bool cascadeToOtherRefreshQueues)
     {
         if (worldPixelRange.IsEmpty)
             return;
 
-        // Cascade to other queues if required (before any early-outs).
+        // Normalize any negative-width/height rectangles (paranoia).
+        var normalized = Rectangle.FromLTRB(
+            worldPixelRange.Left,
+            worldPixelRange.Top,
+            worldPixelRange.Right,
+            worldPixelRange.Bottom);
+
+        // Fire event BEFORE early-out so listeners can react even if this
+        // rect is fully contained within an existing one.
         if (cascadeToOtherRefreshQueues)
-            RefreshQueueAreaAdded?.Invoke(new RefreshQueueAreaAddedEventArgs(_sceneLayer, worldPixelRange));
+            RefreshQueueAreaAdded?.Invoke(new RefreshQueueAreaAddedEventArgs(_sceneLayer, normalized));
 
-        // Fast containment check: if any existing rect already fully contains this one, skip it.
-        bool isContained = false;
-        for (int i = 0; i < _rects.Count; i++)
+        // Fast containment check: if any existing rect already fully contains this one, skip storing it.
+        for (int i = 0; i < _worldRects.Count; i++)
         {
-            if (_rects[i].Contains(worldPixelRange))
-            {
-                isContained = true;
-                break;
-            }
+            if (_worldRects[i].Contains(normalized))
+                return;
         }
 
-        if (!isContained)
-        {
-            // New contributing area: mark dirty and store it.
-            _rects.Add(worldPixelRange);
-            _isDirty = true;
-        }
+        _worldRects.Add(normalized);
     }
 
     /// <summary>
-    /// Clears all queued refresh areas and tile results.
+    /// Compatibility shim for older call sites.
+    /// Still the same semantics: the parameter is a WORLD-space pixel rectangle.
+    /// </summary>
+    internal void AddPixelRangeToRefreshQueue(Rectangle worldPixelRange, bool cascadeToOtherRefreshQueues)
+        => AddWorldRect(worldPixelRange, cascadeToOtherRefreshQueues);
+
+    /// <summary>
+    /// Clears all queued world-space refresh regions.
     /// </summary>
     internal void ClearRefreshQueue()
     {
-        _tiles.Clear();
-        _tileSet.Clear();
-        _rects.Clear();
-        _isDirty = false;
-    }
-
-    /// <summary>
-    /// Resolve queued pixel ranges to the minimal set of tiles and sprites to redraw.
-    /// </summary>
-    private void FindTilesInRange()
-    {
-        // We’ll collect tiles touched per-area, compute partial refresh per hit tile, and dedupe via _tileSet.
-        for (int r = 0; r < _rects.Count; r++)
-        {
-            Rectangle area = _rects[r];
-
-            // 1) Grid tiles within area
-            foreach (SceneLayerTile gridPt in _sceneLayer.CoordinateSystem.GetSceneLayerTilesInPixelRange(_sceneLayer, area, true))
-            {
-                if (gridPt is null) continue;
-
-                if (_tileSet.Add(gridPt))
-                    _tiles.Add(gridPt);
-            }
-
-            // 2) Sprites within area
-            foreach (Sprite sprite in SpriteManager.GetSpritesInRange(area, _sceneLayer))
-            {
-                if (sprite.SceneLayer != _sceneLayer || !sprite.Visible)
-                    continue;
-
-                if (!sprite.DrawLocation.IntersectsWith(area))
-                    continue;
-
-                if (_tileSet.Add(sprite))
-                    _tiles.Add(sprite);
-            }
-        }
-
-        _isDirty = false;
-
-        // Stable painter’s order if Tile implements IComparable; otherwise no-op.
-        _tiles.Sort();
+        _worldRects.Clear();
     }
 
     public void Dispose()

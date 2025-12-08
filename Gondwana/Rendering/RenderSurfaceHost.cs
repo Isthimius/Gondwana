@@ -131,8 +131,37 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         ViewRenderer.Render(Backbuffer!.Canvas, deltaSeconds, Scene!, (view, layer) =>
         {
-            Backbuffer.DrawTiles(layer.RefreshQueue.Tiles);
+            var rq = layer.RefreshQueue;
+
+            // If this layer has no dirty regions and we are not forcing a full redraw, skip it.
+            if (!forceFullRedraw && !rq.IsDirty)
+                return;
+
+            // When forceFullRedraw is true, EnqueueFullSceneRefresh should have
+            // already pushed a full-world rect into each layer's queue, so we can
+            // just use the rect list uniformly.
+            foreach (var worldRect in rq.WorldRects)
+            {
+                // Project the world rect into this view's screen space.
+                var screenRectF = view.WorldRectToScreenRect(layer, worldRect);
+                var screenRect = screenRectF.ToPixelAlignedRect();
+                if (screenRect.Width <= 0 || screenRect.Height <= 0)
+                    continue;
+
+                // Clip drawing to just this screen patch for perf.
+                Backbuffer.Canvas.Save();
+                Backbuffer.Canvas.ClipRect(screenRect.ToSKRect());
+
+                // Ask the layer which tiles intersect this world rect.
+                var tiles = layer.GetTilesInWorldRect(worldRect);
+
+                // Draw those tiles (and anything else your DrawTiles does) to the clipped region.
+                Backbuffer.DrawTiles(tiles);
+
+                Backbuffer.Canvas.Restore();
+            }
         });
+
 
         // 6) Preserve any pre-existing dirty (e.g., set earlier this frame) — union, don’t replace.
         //    If this was a full redraw, mark the entire backbuffer as dirty so the adapter blits all of it.

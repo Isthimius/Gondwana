@@ -290,7 +290,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
                 var host = hosts[i];
                 host.AddWorldDirtyForTile(_sceneLayer, worldRect);
 
-                Engine.Logger.LogTrace($"DIRTY: worldRect={worldRect}");
+                //Engine.Logger.LogTrace($"DIRTY: worldRect={worldRect}");
             }
         }
     }
@@ -307,16 +307,13 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         if (_sceneLayer != null)
         {
+            // Mark the last draw region as dirty so the background under this sprite is repainted.
+            // DrawLocation should already be a world-space rectangle.
             QueueRefreshArea(this.DrawLocation);
-
-            // just added Sprite and overhanging Tile objects to queue,
-            // remove the actual Sprite from the queue since it will
-            // no longer be available
-            _sceneLayer.RefreshQueue.Tiles.Remove(this);
 
             if (_collider != null)
             {
-                var world = _sceneLayer?.Scene?.CollisionWorld;
+                var world = _sceneLayer.Scene?.CollisionWorld;
                 if (world != null)
                 {
                     world.Unregister(_collider);

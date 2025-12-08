@@ -101,7 +101,7 @@ public abstract class BackbufferBase : IDisposable
     /// <summary>
     /// Runs as part of DoBackgroundTasks()
     /// </summary>
-    internal void DrawTiles(IList<Tile> tiles)
+    internal void DrawTiles(IEnumerable<Tile> tiles)
     {
         foreach (var tile in tiles)
         {

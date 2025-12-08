@@ -1,7 +1,9 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Drawing;
 using System.Runtime.Serialization;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
 
@@ -241,7 +243,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
    }
 
-    // World-space origin (in pixels) of this layer’s (0,0) tile.
+    // World-space origin (in pixels) of this layerâ€™s (0,0) tile.
     // Usually (0,0); can be shifted to move the entire layer as a block.
     [JsonProperty("OriginPx")]
     private Point _originPx = Point.Empty;
@@ -287,14 +289,14 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     /// <summary>
     /// Converts a grid coordinate (col,row) into the world-space pixel anchor
-    /// where that tile begins. This returns the tile’s top-left anchor in world
+    /// where that tile begins. This returns the tileâ€™s top-left anchor in world
     /// pixels, not the tile center.
     /// </summary>
     public PointF GridToWorldPx(PointF grid) => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
 
     /// <summary>
-    /// Converts a world-space pixel position into this layer’s grid coordinates.
-    /// This uses the layer’s active coordinate system (square, iso, hex, etc.)
+    /// Converts a world-space pixel position into this layerâ€™s grid coordinates.
+    /// This uses the layerâ€™s active coordinate system (square, iso, hex, etc.)
     /// and returns fractional grid values when the point lies between tiles.
     /// </summary>
     public PointF WorldPxToGrid(PointF worldPx) => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
@@ -317,7 +319,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     /// <summary>
-    /// Wraps a grid coordinate around the layer’s valid grid bounds using 
+    /// Wraps a grid coordinate around the layerâ€™s valid grid bounds using 
     /// toroidal wrapping (0..max). Used by movement and map designs that 
     /// loop at edges.
     /// </summary>
@@ -411,14 +413,60 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    internal IEnumerable<Tile> GetTilesInWorldRect(Rectangle worldRect)
+    {
+        // Gather into a list so we can sort it.
+        var list = new List<Tile>(64);
+        var seen = new HashSet<Tile>();
+
+        // 1) Grid tiles
+        var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
+            this,
+            worldRect,
+            includeOverhang: true);
+
+        if (sceneLayerTiles != null)
+        {
+            for (int i = 0; i < sceneLayerTiles.Count; i++)
+            {
+                var t = sceneLayerTiles[i];
+                if (t is null) continue;
+
+                if (seen.Add(t))
+                    list.Add(t);
+            }
+        }
+
+        // 2) Sprites
+        var sprites = SpriteManager.GetSpritesInRange(worldRect, this, fullEnclosures: false);
+
+        for (int i = 0; i < sprites.Count; i++)
+        {
+            var s = sprites[i];
+            if (s is null) continue;
+
+            // Defensive overlap check (cheap)
+            if (!s.DrawLocation.IntersectsWith(worldRect))
+                continue;
+
+            if (seen.Add(s))
+                list.Add(s);
+        }
+
+        // 3) Sort using Tile.CompareTo
+        list.Sort(); // â† this calls Tile.CompareTo internally
+
+        // 4) Yield in sorted order
+        for (int i = 0; i < list.Count; i++)
+            yield return list[i];
+    }
+
+
     #endregion private methods
 
     #region indexers
 
-    public SceneLayerTile? this[int x, int y]
-    {
-        get { return GetIndexer_NoWrap(x, y); }
-    }
+    public SceneLayerTile? this[int x, int y] => GetIndexer_NoWrap(x, y);
 
     public SceneLayerTile? this[Point pt] => this[pt.X, pt.Y];
 
