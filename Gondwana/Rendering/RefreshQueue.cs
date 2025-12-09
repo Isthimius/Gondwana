@@ -13,13 +13,6 @@ internal sealed class RefreshQueue : IDisposable
     private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
     private readonly SceneLayer _sceneLayer;        // Parent layer (for event context)
 
-    /// <summary>
-    /// Raised whenever a new world-space dirty rectangle is added to this queue.
-    /// Listeners (e.g., RenderSurfaceHost) can project this to screen space and
-    /// mark adapter regions dirty.
-    /// </summary>
-    internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;
-
     internal RefreshQueue(SceneLayer layer)
     {
         _sceneLayer = layer ?? throw new ArgumentNullException(nameof(layer));
@@ -46,7 +39,7 @@ internal sealed class RefreshQueue : IDisposable
     /// Optionally cascades a notification to listeners (e.g., other hosts).
     /// ***** IMPORTANT: must ALWAYS be in WORLD pixels. *****
     /// </summary>
-    internal void AddWorldRect(Rectangle worldPixelRange, bool cascadeToOtherRefreshQueues)
+    internal void AddWorldRect(Rectangle worldPixelRange)
     {
         if (worldPixelRange.IsEmpty)
             return;
@@ -57,11 +50,6 @@ internal sealed class RefreshQueue : IDisposable
             worldPixelRange.Top,
             worldPixelRange.Right,
             worldPixelRange.Bottom);
-
-        // Fire event BEFORE early-out so listeners can react even if this
-        // rect is fully contained within an existing one.
-        if (cascadeToOtherRefreshQueues)
-            RefreshQueueAreaAdded?.Invoke(new RefreshQueueAreaAddedEventArgs(_sceneLayer, normalized));
 
         // Fast containment check: if any existing rect already fully contains this one, skip storing it.
         for (int i = 0; i < _worldRects.Count; i++)
@@ -74,13 +62,6 @@ internal sealed class RefreshQueue : IDisposable
     }
 
     /// <summary>
-    /// Compatibility shim for older call sites.
-    /// Still the same semantics: the parameter is a WORLD-space pixel rectangle.
-    /// </summary>
-    internal void AddPixelRangeToRefreshQueue(Rectangle worldPixelRange, bool cascadeToOtherRefreshQueues)
-        => AddWorldRect(worldPixelRange, cascadeToOtherRefreshQueues);
-
-    /// <summary>
     /// Clears all queued world-space refresh regions.
     /// </summary>
     internal void ClearRefreshQueue()
@@ -90,7 +71,6 @@ internal sealed class RefreshQueue : IDisposable
 
     public void Dispose()
     {
-        RefreshQueueAreaAdded = null;
         GC.SuppressFinalize(this);
     }
 }

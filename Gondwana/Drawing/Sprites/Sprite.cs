@@ -278,7 +278,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     internal void QueueRefreshArea(Rectangle worldRect)
     {
         // enqueue world-space dirty rect
-        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(worldRect, cascadeToOtherRefreshQueues: true);
+        _sceneLayer.RefreshQueue.AddWorldRect(worldRect);
 
         // notify each host that is actually bound to this scene (fast, no allocations)
         var hosts = _sceneLayer.Scene?.BoundRenderSurfaceHosts;

@@ -237,7 +237,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.Disposing += sceneLayerDisposing;
         sceneLayer.VisibleChanged += visChgDel;
         sceneLayer.SceneLayerTileSizeChanged += sceneLayerTileSizeDel;
-        sceneLayer.RefreshQueueAreaAdded += refQueueDel;
         sceneLayer.WrappingChanged += wrappingDel;
         sceneLayer.ShowGridLinesChanged += gridLinesShowChanged;
         sceneLayer.ShowCollisionBoxesChanged += showCollisionBoxesChanged;
@@ -256,7 +255,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.Disposing -= sceneLayerDisposing;
         sceneLayer.VisibleChanged -= visChgDel;
         sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
-        sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
         sceneLayer.WrappingChanged -= wrappingDel;
         sceneLayer.ShowGridLinesChanged -= gridLinesShowChanged;
         sceneLayer.ShowCollisionBoxesChanged -= showCollisionBoxesChanged;
@@ -274,7 +272,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region handle SceneLayer events
 
-    private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;
     private Action<SceneLayer> sceneLayerDisposing;
     private Action<SceneLayer> visChgDel;
     private Action<SceneLayer> sceneLayerTileSizeDel;
@@ -287,7 +284,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     private void SetSceneLayerEventDelegates()
     {
-        refQueueDel = (eventArgs) => _RefreshQueueNewArea(eventArgs);
         sceneLayerDisposing = (sceneLayer) => RemoveLayer(sceneLayer);
         visChgDel = (sceneLayer) => _SceneLayerVisibleChanged();
         sceneLayerTileSizeDel = (sceneLayer) => _SceneLayerTileSizeChanged();
@@ -306,24 +302,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     }
 
     private void _SceneLayerTileSizeChanged() => FullRefreshNeeded = true;
-
-    private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
-    {
-        // if SceneLayer that added Tile to queue is visible...
-        if (e.layer.Visible)
-        {
-            // refresh all other visible SceneLayers
-            for (int i = VisibleSceneLayers.Count - 1; i >= 0; i--)
-            {
-                SceneLayer otherSceneLayer = VisibleSceneLayers[i];
-
-                // refresh other SceneLayers; no need to do the calling one again
-                if (e.layer != otherSceneLayer)
-                    // only refresh e.area rectangle; do not raise cascading events
-                    otherSceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(e.area, false);
-            }
-        }
-    }
 
     private void _SceneLayerWrappingChanged() => FullRefreshNeeded = true;
 

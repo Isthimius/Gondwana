@@ -128,19 +128,39 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
+        // 4.5) If we’re not doing a full redraw, clear only the adapter’s dirty rect.
+        //      This ensures areas with no tiles (off-grid, gaps) don’t retain old pixels.
+        if (!forceFullRedraw)
+        {
+            var adapterDirty = Backbuffer!.DirtyRectangle;
+            if (!adapterDirty.IsEmpty)
+            {
+                // Make sure our paint matches the backbuffer clear color and uses Src mode
+                _overlayClearPaint.Color = Backbuffer.ClearColor;
+                _overlayClearPaint.BlendMode = SKBlendMode.Src;
+
+                var skRect = adapterDirty.ToSKRect();
+
+                Backbuffer.Canvas.Save();
+                Backbuffer.Canvas.ClipRect(skRect);
+                Backbuffer.Canvas.DrawRect(skRect, _overlayClearPaint);
+                Backbuffer.Canvas.Restore();
+            }
+        }
+
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         ViewRenderer.Render(Backbuffer!.Canvas, deltaSeconds, Scene!, (view, layer) =>
         {
-            var rq = layer.RefreshQueue;
+            var refreshQueue = layer.RefreshQueue;
 
             // If this layer has no dirty regions and we are not forcing a full redraw, skip it.
-            if (!forceFullRedraw && !rq.IsDirty)
+            if (!forceFullRedraw && !refreshQueue.IsDirty)
                 return;
 
             // When forceFullRedraw is true, EnqueueFullSceneRefresh should have
             // already pushed a full-world rect into each layer's queue, so we can
             // just use the rect list uniformly.
-            foreach (var worldRect in rq.WorldRects)
+            foreach (var worldRect in refreshQueue.WorldRects)
             {
                 // Project the world rect into this view's screen space.
                 var screenRectF = view.WorldRectToScreenRect(layer, worldRect);
@@ -242,9 +262,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             //
             var worldRectInt = Rectangle.Round(layerWorldRect);
 
-            layer.RefreshQueue.AddPixelRangeToRefreshQueue(
-                worldRectInt,
-                cascadeToOtherRefreshQueues: false);
+            layer.RefreshQueue.AddWorldRect(worldRectInt);
         }
     }
 
@@ -443,7 +461,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var worldRect = Rectangle.Round(
                 new RectangleF(worldLeft, worldTop, worldWidth, worldHeight));
 
-            layer.RefreshQueue.AddPixelRangeToRefreshQueue(worldRect, cascadeToOtherRefreshQueues: true);
+            layer.RefreshQueue.AddWorldRect(worldRect);
         }
     }
 

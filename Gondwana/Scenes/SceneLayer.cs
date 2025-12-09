@@ -14,9 +14,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 {
     #region events
 
-    private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;     // for responding to *other* SceneLayers' RefreshQueue events
-    internal event Action<RefreshQueueAreaAddedEventArgs>? RefreshQueueAreaAdded;   // raised by *this* SceneLayer's RefreshQueue
-
     public event Action<SceneLayer>? SceneLayerTileSizeChanged;
 
     public event Action<SceneLayer>? VisibleChanged;
@@ -262,22 +259,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #endregion properties
 
-    #region raise events
-
-    internal virtual void OnRefreshQueueAreaAdded(RefreshQueueAreaAddedEventArgs e)
-    {
-        // just pass the event up
-        RefreshQueueAreaAdded?.Invoke(e);
-    }
-
-    private void RefreshQueueNewTile(RefreshQueueAreaAddedEventArgs e)
-    {
-        // pass the event up to any containing SceneLayers
-        OnRefreshQueueAreaAdded(e);
-    }
-
-    #endregion raise events
-
     #region public methods
 
     public void SetTileSize(int newWidth, int newHeight)
@@ -396,8 +377,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
         RefreshQueue = new RefreshQueue(this);
-        refQueueDel = RefreshQueueNewTile;
-        RefreshQueue.RefreshQueueAreaAdded += refQueueDel;
     }
 
     private void SaveGridCoordinatesToSceneLayerTiles()
@@ -510,9 +489,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         Disposing?.Invoke(this);
 
-        // unsubscribe from events
-        RefreshQueue.RefreshQueueAreaAdded -= refQueueDel;
-
         // dispose child objects
         RefreshQueue.Dispose();
 
@@ -522,7 +498,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // cancel all subscriptions to this object
         SceneLayerTileSizeChanged = null;
         VisibleChanged = null;
-        RefreshQueueAreaAdded = null;
         WrappingChanged = null;
         Disposing = null;
     }
