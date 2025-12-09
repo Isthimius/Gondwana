@@ -279,20 +279,6 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     {
         // enqueue world-space dirty rect
         _sceneLayer.RefreshQueue.AddWorldRect(worldRect);
-
-        // notify each host that is actually bound to this scene (fast, no allocations)
-        var hosts = _sceneLayer.Scene?.BoundRenderSurfaceHosts;
-        if (hosts != null)
-        {
-            // iterate without LINQ, avoid temporary allocations
-            for (int i = 0; i < hosts.Count; i++)
-            {
-                var host = hosts[i];
-                host.AddWorldDirtyForTile(_sceneLayer, worldRect);
-
-                //Engine.Logger.LogTrace($"DIRTY: worldRect={worldRect}");
-            }
-        }
     }
 
     #endregion private methods

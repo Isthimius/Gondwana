@@ -103,9 +103,6 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
         // Safety: inflate 1px for filtering/rounding seams
         deviceRect.Inflate(1, 1);
-
-        // accumulate dirty region for presentation to UI adapter
-        AddToDirtyRectangle(deviceRect.ToRectangle());
     }
 
     // Producer copies out an immutable image for the adapter/UI thread

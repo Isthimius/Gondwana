@@ -128,26 +128,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        // 4.5) If we’re not doing a full redraw, clear only the adapter’s dirty rect.
-        //      This ensures areas with no tiles (off-grid, gaps) don’t retain old pixels.
-        if (!forceFullRedraw)
-        {
-            var adapterDirty = Backbuffer!.DirtyRectangle;
-            if (!adapterDirty.IsEmpty)
-            {
-                // Make sure our paint matches the backbuffer clear color and uses Src mode
-                _overlayClearPaint.Color = Backbuffer.ClearColor;
-                _overlayClearPaint.BlendMode = SKBlendMode.Src;
-
-                var skRect = adapterDirty.ToSKRect();
-
-                Backbuffer.Canvas.Save();
-                Backbuffer.Canvas.ClipRect(skRect);
-                Backbuffer.Canvas.DrawRect(skRect, _overlayClearPaint);
-                Backbuffer.Canvas.Restore();
-            }
-        }
-
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         ViewRenderer.Render(Backbuffer!.Canvas, deltaSeconds, Scene!, (view, layer) =>
         {
@@ -162,20 +142,22 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             // just use the rect list uniformly.
             foreach (var worldRect in refreshQueue.WorldRects)
             {
-                // Project the world rect into this view's screen space.
+                // 1) Project world → screen for this view/layer
                 var screenRectF = view.WorldRectToScreenRect(layer, worldRect);
                 var screenRect = screenRectF.ToPixelAlignedRect();
+
                 if (screenRect.Width <= 0 || screenRect.Height <= 0)
                     continue;
 
-                // Clip drawing to just this screen patch for perf.
+                // 2) Tell the backbuffer / adapter that this screen patch is dirty.
+                Backbuffer.AddToDirtyRectangle(screenRect);
+
+                // 3) Clip for perf and redraw just the tiles that intersect this world rect.
                 Backbuffer.Canvas.Save();
                 Backbuffer.Canvas.ClipRect(screenRect.ToSKRect());
 
-                // Ask the layer which tiles intersect this world rect.
                 var tiles = layer.GetTilesInWorldRect(worldRect);
 
-                // Draw those tiles (and anything else your DrawTiles does) to the clipped region.
                 Backbuffer.DrawTiles(tiles);
 
                 Backbuffer.Canvas.Restore();
@@ -263,28 +245,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var worldRectInt = Rectangle.Round(layerWorldRect);
 
             layer.RefreshQueue.AddWorldRect(worldRectInt);
-        }
-    }
-
-    // Implement the base hook so callers can mark world rects dirty and let the host handle projection.
-    protected internal override void AddWorldDirtyForTile(SceneLayer sceneLayer, Rectangle worldRect)
-    {
-        if (Scene is null || ViewRenderer is null || Backbuffer is null)
-            return;
-
-        // For each view, project the world rect into screen space and mark it dirty.
-        foreach (var view in ViewRenderer.Views)
-        {
-            var screenRect = view.WorldRectToScreenRect(sceneLayer, worldRect).ToPixelAlignedRect();
-
-            if (screenRect.Width <= 0 || screenRect.Height <= 0)
-                continue;
-
-            // feed into the same overlay path that DirectDrawing instances use
-            AddOverlayScreenDirty(screenRect);
-
-            // make sure the adapter renders this patch of the backbuffer
-            Backbuffer.AddToDirtyRectangle(screenRect);
         }
     }
 

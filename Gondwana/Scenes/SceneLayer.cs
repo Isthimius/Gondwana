@@ -290,16 +290,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public SceneLayerTile? GetAdjacentTile(SceneLayerTile tile, CardinalDirections direction) => CoordinateSystem.GetAdjacentSceneLayerTile(tile, direction);
 
     /// <summary>
-    /// Returns all tiles in this layer that overlap the given world-space pixel 
-    /// rectangle. This is used for picking, refresh queues, visibility checks, 
-    /// and collision queries. Includes polygon overhang when requested.
-    /// </summary>
-    public IReadOnlyList<SceneLayerTile> GetTilesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
-    {
-        return CoordinateSystem.GetSceneLayerTilesInPixelRange(this, worldRect, includeOverhang);
-    }
-
-    /// <summary>
     /// Wraps a grid coordinate around the layer’s valid grid bounds using 
     /// toroidal wrapping (0..max). Used by movement and map designs that 
     /// loop at edges.
@@ -392,7 +382,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    internal IEnumerable<Tile> GetTilesInWorldRect(Rectangle worldRect)
+    internal IEnumerable<Tile> GetTilesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
     {
         // Gather into a list so we can sort it.
         var list = new List<Tile>(64);
@@ -402,7 +392,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
             this,
             worldRect,
-            includeOverhang: true);
+            includeOverhang: includeOverhang);
 
         if (sceneLayerTiles != null)
         {
@@ -439,7 +429,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         for (int i = 0; i < list.Count; i++)
             yield return list[i];
     }
-
 
     #endregion private methods
 

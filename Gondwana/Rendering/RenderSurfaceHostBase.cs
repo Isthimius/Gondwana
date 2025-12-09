@@ -64,19 +64,6 @@ public abstract class RenderSurfaceHostBase : IDisposable
             : Rectangle.Union(_overlayScreenDirty, screenRect);
     }
 
-    /// <summary>
-    /// Mark a world-space rectangle (expressed in scene/world pixels) as dirty for the specified layer.
-    /// Implementations should project that area into the host's views and mark the backbuffer/overlay dirty.
-    /// Exposed protected internal so code in this assembly (e.g. Sprite) can efficiently inform the host.
-    /// Default implementation is a no-op.
-    /// </summary>
-    /// <param name="layer">Layer owning the dirty world rect (may be needed for tile size / parallax).</param>
-    /// <param name="worldRect">World-space pixel rectangle to mark dirty.</param>
-    protected internal virtual void AddWorldDirtyForTile(SceneLayer layer, Rectangle worldRect)
-    {
-        // Default: no-op. Concrete RenderSurfaceHost<TBackbuffer> overrides this.
-    }
-
     public void Dispose()
     {
         Dispose(true);
