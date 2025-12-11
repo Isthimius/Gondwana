@@ -45,9 +45,9 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
+        //RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
         RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
         RenderSurface.Host.RedrawDirtyRectangleOnly = false;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
@@ -183,11 +183,11 @@ public class Game : IDisposable
     {
         var scene = new Scene();
         var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.SqaureIso);
-        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
+        //var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
 
         sceneLayer1.ShowGridLines = true;
         sceneLayer1.ShowCollisionBoxes = false;
-        sceneLayer2.ShowGridLines = true;
+        //sceneLayer2.ShowGridLines = true;
 
         return scene;
     }
