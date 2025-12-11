@@ -84,7 +84,7 @@ public class Game : IDisposable
         // Implementation for loading tilesheets goes here
         var tilesheet = new Tilesheet("rooster", "assets/rooster.bmp");
         tilesheet.TileSize = new Size(50, 50);
-        //tilesheet.ApplyMask(SKColors.Black);
+        tilesheet.ApplyMask(SKColors.Black);
     }
 
     private void LoadAnimationCycles()

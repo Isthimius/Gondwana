@@ -170,17 +170,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Backbuffer!.MarkFullDirty();
 
         // DEBUG: visualize the adapter dirty rect in magenta
-        if (!Backbuffer.DirtyRectangle.IsEmpty)
-        {
-            using var debugPaint = new SKPaint
-            {
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = 2,
-                Color = new SKColor(255, 0, 255, 255) // magenta
-            };
+        //if (!Backbuffer.DirtyRectangle.IsEmpty)
+        //{
+        //    using var debugPaint = new SKPaint
+        //    {
+        //        Style = SKPaintStyle.Stroke,
+        //        StrokeWidth = 2,
+        //        Color = new SKColor(255, 0, 255, 255) // magenta
+        //    };
 
-            Backbuffer.Canvas.DrawRect(Backbuffer.DirtyRectangle.ToSKRect(), debugPaint);
-        }
+        //    Backbuffer.Canvas.DrawRect(Backbuffer.DirtyRectangle.ToSKRect(), debugPaint);
+        //}
 
         // 7) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
