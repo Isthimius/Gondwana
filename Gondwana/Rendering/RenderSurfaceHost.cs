@@ -23,16 +23,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     };
 
     private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
-    private readonly ViewRenderer? _viewRenderer;
+    private readonly ViewRenderer _viewRenderer;
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
-    private RenderSurfaceHost() : base() { }
+    private RenderSurfaceHost() : base() => _viewRenderer = new ViewRenderer(this);
 
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
         _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
-        _viewRenderer = new ViewRenderer(this);
 
         // Recreate backbuffer on adapter resize
         RenderSurfaceAdapter!.Resized += (args) => OnRenderSurfaceAdapterResized(args);
