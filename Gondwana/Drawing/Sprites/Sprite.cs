@@ -130,6 +130,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         // union of old + new = full movement envelope
         Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
+        movementWorldRect.Inflate(new Size(1, 1));
 
         // commit the move
         sceneLayerCoordinates = newCoord;

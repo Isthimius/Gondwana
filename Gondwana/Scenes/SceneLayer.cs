@@ -366,7 +366,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
-        RefreshQueue = new RefreshQueue(this);
+        RefreshQueue = new RefreshQueue();
     }
 
     private void SaveGridCoordinatesToSceneLayerTiles()

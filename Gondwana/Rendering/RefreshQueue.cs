@@ -11,11 +11,9 @@ namespace Gondwana.Rendering;
 internal sealed class RefreshQueue : IDisposable
 {
     private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
-    private readonly SceneLayer _sceneLayer;        // Parent layer (for event context)
 
-    internal RefreshQueue(SceneLayer layer)
+    internal RefreshQueue()
     {
-        _sceneLayer = layer ?? throw new ArgumentNullException(nameof(layer));
         _worldRects = new List<Rectangle>(64);
     }
 
