@@ -49,7 +49,7 @@ public class Game : IDisposable
         //RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
         //RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
         //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
-        RenderSurface.Host.RedrawDirtyRectangleOnly = true;
+        RenderSurface.Host.RedrawDirtyRectangleOnly = false;
 
         //RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
 
@@ -75,7 +75,7 @@ public class Game : IDisposable
 
         // load standalone image files
 
-        // load standalone video viles
+        // load standalone video files
 
         // load standalone cursor files
     }

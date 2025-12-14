@@ -174,7 +174,7 @@ public struct FrameSequence : IEnumerable<Frame>
                 break;
 
             default:
-                throw new Exception("Invalid CycleType: " + SequenceCycleType.ToString());
+                throw new InvalidOperationException("Invalid CycleType: " + SequenceCycleType.ToString());
         }
 
         return frameList[currentFrameIdx];
