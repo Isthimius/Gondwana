@@ -54,7 +54,7 @@ public class Game : IDisposable
         //RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
 
         InitSprites();
-        //InitDirectDrawings();
+        InitDirectDrawings();
 
         // configure input handling here
         ConfigureKeyboardInput();
@@ -122,10 +122,13 @@ public class Game : IDisposable
     {
         //Implementation for creating direct drawings goes here
 
+        var bounds1 = new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150);
+        var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
+
         _directRectangle = new DirectRectangle(RenderSurface.Host,
-                                               new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
+                                               bounds1,
                                                Color.Wheat);
-        _directRectangle.SetFilled(true);
+        _directRectangle.SetFilled(true).SetAlpha(128);
 
         _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
@@ -135,7 +138,7 @@ public class Game : IDisposable
             _textBlockCPS.SetText(e.ToString());
         };
 
-        _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
+        _textBlockMouse = new TextBlock(RenderSurface.Host, bounds2);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         //InitializeParticles();
