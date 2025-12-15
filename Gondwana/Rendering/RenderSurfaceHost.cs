@@ -153,7 +153,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 // 3) Clip for perf and redraw just the tiles that intersect this world rect.
                 Backbuffer.Canvas.Save();
-                Backbuffer.Canvas.ClipRect(screenRect.ToSKRect());
+                Backbuffer.Canvas.ClipRect(worldRect.ToSKRect());
 
                 var tiles = layer.GetTilesInWorldRect(worldRect);
 
@@ -442,6 +442,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var dirty = Backbuffer!.DirtyRectangle;
         if (dirty.IsEmpty)
             return;
+
+        //Engine.Logger.LogTrace("RenderBackbufferRect: DirtyRectangle={DirtyRectangle}", Backbuffer.DirtyRectangle);
 
         var img = Backbuffer.Snapshot();
 
