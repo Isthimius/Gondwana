@@ -1,21 +1,12 @@
 using System.Drawing;
-using Gondwana.Scenes;
 
 namespace Gondwana.Rendering;
 
-/// <summary>
-/// Represents a queue for managing refresh operations within a SceneLayer.
-/// Tracks world-space pixel areas that need redraw. It does NOT resolve to
-/// tiles or sprites; that is the responsibility of SceneLayer / render code.
-/// </summary>
 internal sealed class RefreshQueue : IDisposable
 {
     private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
 
-    internal RefreshQueue()
-    {
-        _worldRects = new List<Rectangle>(64);
-    }
+    internal RefreshQueue() => _worldRects = new List<Rectangle>(64);
 
     ~RefreshQueue() => Dispose();
 
@@ -42,33 +33,17 @@ internal sealed class RefreshQueue : IDisposable
         if (worldPixelRange.IsEmpty)
             return;
 
-        // Normalize any negative-width/height rectangles (paranoia).
-        var normalized = Rectangle.FromLTRB(
-            worldPixelRange.Left,
-            worldPixelRange.Top,
-            worldPixelRange.Right,
-            worldPixelRange.Bottom);
-
         // Fast containment check: if any existing rect already fully contains this one, skip storing it.
         for (int i = 0; i < _worldRects.Count; i++)
         {
-            if (_worldRects[i].Contains(normalized))
+            if (_worldRects[i].Contains(worldPixelRange))
                 return;
         }
 
-        _worldRects.Add(normalized);
+        _worldRects.Add(worldPixelRange);
     }
 
-    /// <summary>
-    /// Clears all queued world-space refresh regions.
-    /// </summary>
-    internal void ClearRefreshQueue()
-    {
-        _worldRects.Clear();
-    }
+    internal void ClearRefreshQueue() => _worldRects.Clear();
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() => GC.SuppressFinalize(this);
 }

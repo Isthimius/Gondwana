@@ -83,7 +83,13 @@ public abstract class BackbufferBase : IDisposable
     protected internal Rectangle DirtyRectangle { get; private set; }
 
     private SKColor _clearColor = SKColors.Black;
-    protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };
+    protected readonly SKPaint _fillPaint = new()
+    {
+        IsAntialias = false,
+        BlendMode = SKBlendMode.Src,
+        Style = SKPaintStyle.Fill,
+        FilterQuality = SKFilterQuality.None,
+    };
 
     /// <summary>
     /// Gets or sets the color used to clear the drawing surface.
@@ -96,6 +102,17 @@ public abstract class BackbufferBase : IDisposable
             _clearColor = value;
             _fillPaint.Color = value;
         }
+    }
+
+    internal void ClearRect(Rectangle rectPx)
+    {
+        if (rectPx.IsEmpty)
+            return;
+
+        _fillPaint.Color = ClearColor;
+
+        // Rect is expected to be in the current canvas coordinate space.
+        Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
     }
 
     /// <summary>

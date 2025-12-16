@@ -70,8 +70,5 @@ public abstract class RenderSurfaceHostBase : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        RenderSurfaceHostRegistry.Unregister(this);
-    }
+    protected virtual void Dispose(bool disposing) => RenderSurfaceHostRegistry.Unregister(this);
 }

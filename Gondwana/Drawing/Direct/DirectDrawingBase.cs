@@ -198,7 +198,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     {
         // _bounds is SCREEN-space
         RenderSurfaceHost.AddOverlayScreenDirty(_bounds);
-        RenderSurfaceHost.Backbuffer!.AddToDirtyRectangle(_bounds);
+        //RenderSurfaceHost.Backbuffer!.AddToDirtyRectangle(_bounds);
 
         _dirty = true;
     }
