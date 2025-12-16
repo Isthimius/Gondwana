@@ -83,7 +83,13 @@ public abstract class BackbufferBase : IDisposable
     protected internal Rectangle DirtyRectangle { get; private set; }
 
     private SKColor _clearColor = SKColors.Black;
-    protected readonly SKPaint _fillPaint = new() { IsAntialias = false, BlendMode = SKBlendMode.Src };
+    protected readonly SKPaint _fillPaint = new()
+    {
+        IsAntialias = false,
+        BlendMode = SKBlendMode.Src,
+        Style = SKPaintStyle.Fill,
+        FilterQuality = SKFilterQuality.None,
+    };
 
     /// <summary>
     /// Gets or sets the color used to clear the drawing surface.
@@ -98,10 +104,21 @@ public abstract class BackbufferBase : IDisposable
         }
     }
 
+    internal void ClearRect(Rectangle rectPx)
+    {
+        if (rectPx.IsEmpty)
+            return;
+
+        _fillPaint.Color = ClearColor;
+
+        // Rect is expected to be in the current canvas coordinate space.
+        Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
+    }
+
     /// <summary>
     /// Runs as part of DoBackgroundTasks()
     /// </summary>
-    internal void DrawTiles(IList<Tile> tiles)
+    internal void DrawTiles(IEnumerable<Tile> tiles)
     {
         foreach (var tile in tiles)
         {
@@ -143,20 +160,16 @@ public abstract class BackbufferBase : IDisposable
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
-
-        //Engine.Logger.LogDebug("AddToDirtyRectangle: {DirtyRectangle}", DirtyRectangle);
     }
 
     protected internal void MarkFullDirty()
     {
         DirtyRectangle = new Rectangle(0, 0, Width, Height);
-        //Engine.Logger.LogDebug("MarkFullDirty: {DirtyRectangle}", DirtyRectangle);
     }
 
     protected internal void ClearDirtyRectangle()
     {
         DirtyRectangle = Rectangle.Empty;
-        //Engine.Logger.LogDebug("ClearDirtyRectangle: {DirtyRectangle}", DirtyRectangle);
     }
 
     /// <summary>

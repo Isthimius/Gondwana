@@ -73,7 +73,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public int Count => _sceneLayers?.Count ?? 0;
 
     [JsonIgnore]
-    public SceneRefreshType RefreshNeeded { get; set; }
+    public bool FullRefreshNeeded { get; set; }
 
     [JsonIgnore]
     public ReadOnlyCollection<SceneLayer> SceneLayers => _sceneLayers.AsReadOnly();
@@ -117,12 +117,15 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         get
         {
             for (int i = 0; i < CountOfVisibleLayers; i++)
-                if (VisibleSceneLayers[i].RefreshQueue.Tiles.Count > 0)
+            {
+                if (VisibleSceneLayers[i].RefreshQueue.IsDirty)
                     return true;
+            }
 
             return false;
         }
     }
+
 
     internal void RegisterRenderSurfaceHost(RenderSurfaceHostBase host)
     {
@@ -155,7 +158,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         _sceneLayers.Add(sceneLayer);
         OnSceneLayerAdded(sceneLayer);
 
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
 
         return sceneLayer;
     }
@@ -168,7 +171,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
         _sceneLayers.Clear();
 
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
     }
 
     public void RemoveLayer(SceneLayer sceneLayer)
@@ -176,7 +179,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         _sceneLayers.Remove(sceneLayer);
         OnSceneLayerRemoved(sceneLayer);
 
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
     }
 
     public SceneLayer? GetSceneLayerByID(string id)
@@ -234,7 +237,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.Disposing += sceneLayerDisposing;
         sceneLayer.VisibleChanged += visChgDel;
         sceneLayer.SceneLayerTileSizeChanged += sceneLayerTileSizeDel;
-        sceneLayer.RefreshQueueAreaAdded += refQueueDel;
         sceneLayer.WrappingChanged += wrappingDel;
         sceneLayer.ShowGridLinesChanged += gridLinesShowChanged;
         sceneLayer.ShowCollisionBoxesChanged += showCollisionBoxesChanged;
@@ -253,7 +255,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.Disposing -= sceneLayerDisposing;
         sceneLayer.VisibleChanged -= visChgDel;
         sceneLayer.SceneLayerTileSizeChanged -= sceneLayerTileSizeDel;
-        sceneLayer.RefreshQueueAreaAdded -= refQueueDel;
         sceneLayer.WrappingChanged -= wrappingDel;
         sceneLayer.ShowGridLinesChanged -= gridLinesShowChanged;
         sceneLayer.ShowCollisionBoxesChanged -= showCollisionBoxesChanged;
@@ -271,7 +272,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region handle SceneLayer events
 
-    private Action<RefreshQueueAreaAddedEventArgs> refQueueDel;
     private Action<SceneLayer> sceneLayerDisposing;
     private Action<SceneLayer> visChgDel;
     private Action<SceneLayer> sceneLayerTileSizeDel;
@@ -284,7 +284,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     private void SetSceneLayerEventDelegates()
     {
-        refQueueDel = (eventArgs) => _RefreshQueueNewArea(eventArgs);
         sceneLayerDisposing = (sceneLayer) => RemoveLayer(sceneLayer);
         visChgDel = (sceneLayer) => _SceneLayerVisibleChanged();
         sceneLayerTileSizeDel = (sceneLayer) => _SceneLayerTileSizeChanged();
@@ -299,40 +298,22 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     private void _SceneLayerVisibleChanged()
     {
         _visibleSortedDirty = true;
-        RefreshNeeded = SceneRefreshType.All;
+        FullRefreshNeeded = true;
     }
 
-    private void _SceneLayerTileSizeChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerTileSizeChanged() => FullRefreshNeeded = true;
 
-    private void _RefreshQueueNewArea(RefreshQueueAreaAddedEventArgs e)
-    {
-        // if SceneLayer that added Tile to queue is visible...
-        if (e.layer.Visible)
-        {
-            // refresh all other visible SceneLayers
-            for (int i = VisibleSceneLayers.Count - 1; i >= 0; i--)
-            {
-                SceneLayer otherSceneLayer = VisibleSceneLayers[i];
+    private void _SceneLayerWrappingChanged() => FullRefreshNeeded = true;
 
-                // refresh other SceneLayers; no need to do the calling one again
-                if (e.layer != otherSceneLayer)
-                    // only refresh e.area rectangle; do not raise cascading events
-                    otherSceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(e.area, false);
-            }
-        }
-    }
+    private void _SceneLayerGridLinesShowChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerWrappingChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerShowCollisionBoxChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerGridLinesShowChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerZOrderChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerShowCollisionBoxChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerParallaxChanged() => FullRefreshNeeded = true;
 
-    private void _SceneLayerZOrderChanged() => RefreshNeeded = SceneRefreshType.All;
-
-    private void _SceneLayerParallaxChanged() => RefreshNeeded = SceneRefreshType.All;
-
-    private void _SceneLayerZeroPixelChanged() => RefreshNeeded = SceneRefreshType.All;
+    private void _SceneLayerZeroPixelChanged() => FullRefreshNeeded = true;
 
     #endregion handle SceneLayer events
 

@@ -114,13 +114,13 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer grid, bool fullEnclosures = false)
+    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer sceneLayer, bool fullEnclosures = false)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
         foreach (Sprite sprite in _spriteList)
         {
-            if (sprite.SceneLayer == grid)
+            if (sprite.SceneLayer == sceneLayer)
             {
                 // check if sprite in range
                 if (fullEnclosures)
@@ -153,14 +153,14 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPixel(Point pxlPt, SceneLayer grid)
+    public static List<Sprite> GetSpritesAtPixel(Point pxlPt, SceneLayer sceneLayer)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
         foreach (Sprite sprite in _spriteList)
         {
             // check if sprite at Point
-            if ((sprite.SceneLayer == grid) && (sprite.DrawLocation.Contains(pxlPt)))
+            if ((sprite.SceneLayer == sceneLayer) && (sprite.DrawLocation.Contains(pxlPt)))
                 retSprites.Add(sprite);
         }
 

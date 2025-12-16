@@ -130,6 +130,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         // union of old + new = full movement envelope
         Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
+        movementWorldRect.Inflate(new Size(1, 1));
 
         // commit the move
         sceneLayerCoordinates = newCoord;
@@ -278,21 +279,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     internal void QueueRefreshArea(Rectangle worldRect)
     {
         // enqueue world-space dirty rect
-        _sceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(worldRect, cascadeToOtherRefreshQueues: true);
-
-        // notify each host that is actually bound to this scene (fast, no allocations)
-        var hosts = _sceneLayer.Scene?.BoundRenderSurfaceHosts;
-        if (hosts != null)
-        {
-            // iterate without LINQ, avoid temporary allocations
-            for (int i = 0; i < hosts.Count; i++)
-            {
-                var host = hosts[i];
-                host.AddWorldDirtyForTile(_sceneLayer, worldRect);
-
-                Engine.Logger.LogTrace($"DIRTY: worldRect={worldRect}");
-            }
-        }
+        _sceneLayer.RefreshQueue.AddWorldRect(worldRect);
     }
 
     #endregion private methods
@@ -307,16 +294,13 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         if (_sceneLayer != null)
         {
+            // Mark the last draw region as dirty so the background under this sprite is repainted.
+            // DrawLocation should already be a world-space rectangle.
             QueueRefreshArea(this.DrawLocation);
-
-            // just added Sprite and overhanging Tile objects to queue,
-            // remove the actual Sprite from the queue since it will
-            // no longer be available
-            _sceneLayer.RefreshQueue.Tiles.Remove(this);
 
             if (_collider != null)
             {
-                var world = _sceneLayer?.Scene?.CollisionWorld;
+                var world = _sceneLayer.Scene?.CollisionWorld;
                 if (world != null)
                 {
                     world.Unregister(_collider);

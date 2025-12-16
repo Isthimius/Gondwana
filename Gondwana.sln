@@ -40,6 +40,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C
 		docs\World-Screen.puml = docs\World-Screen.puml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "licenses", "licenses", "{3B510C60-8DE3-4B61-A934-5FAB2A699657}"
+	ProjectSection(SolutionItems) = preProject
+		gondwana.txt = gondwana.txt
+		skia.txt = skia.txt
+		skiasharp.txt = skiasharp.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +180,7 @@ Global
 		{60F1BC4C-B57B-4E89-BC20-1C3EBB5FA0CF} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{96925DE4-23FD-4438-A79C-77E2A2D97136} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
+		{3B510C60-8DE3-4B61-A934-5FAB2A699657} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}

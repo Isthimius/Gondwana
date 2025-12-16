@@ -40,7 +40,7 @@ public sealed class Camera
                 _positionPx = value;
 
                 if (_scene is not null)
-                    _scene.RefreshNeeded = SceneRefreshType.All;
+                    _scene.FullRefreshNeeded = true;
             }
         }
     }

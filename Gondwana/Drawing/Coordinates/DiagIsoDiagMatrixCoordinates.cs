@@ -43,7 +43,6 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         float dy = (b - a) / 2f;
 
         return new PointF(dx, dy);
-
     }
 
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle pixelRange, bool includeOverhang)

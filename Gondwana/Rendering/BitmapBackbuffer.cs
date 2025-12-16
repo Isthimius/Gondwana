@@ -1,5 +1,7 @@
 ﻿using Gondwana.Drawing;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Skia;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
@@ -35,7 +37,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
 
     private readonly SKPaint _bitmapPaint = new SKPaint
     {
-        FilterQuality = SKFilterQuality.Medium
+        FilterQuality = SKFilterQuality.None,
+        BlendMode = SKBlendMode.SrcOver
     };
 
     public SKFilterQuality FilterQuality
@@ -97,15 +100,6 @@ public sealed class BitmapBackbuffer : BackbufferBase
             Canvas.DrawRect(worldRect, _fillPaint);
         else
             Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
-
-        // Map world rect to adapter/screen pixels using the current CTM
-        var deviceRect = Canvas.TotalMatrix.MapRect(worldRect);
-
-        // Safety: inflate 1px for filtering/rounding seams
-        deviceRect.Inflate(1, 1);
-
-        // accumulate dirty region for presentation to UI adapter
-        AddToDirtyRectangle(deviceRect.ToRectangle());
     }
 
     // Producer copies out an immutable image for the adapter/UI thread

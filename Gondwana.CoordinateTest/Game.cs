@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Sprites;
 using System.Numerics;
+using Gondwana.Drawing.Animation;
 
 namespace Gondwana.CoordinateTest;
 
@@ -45,15 +46,15 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
-        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
-        RenderSurface.Host.RedrawDirtyRectangleOnly = false;
+        //RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 900), 1f);
+        //RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
+        //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        RenderSurface.Host.RedrawDirtyRectangleOnly = true;
 
-        RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
+        //RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
 
         InitSprites();
-        //InitDirectDrawings();
+        InitDirectDrawings();
 
         // configure input handling here
         ConfigureKeyboardInput();
@@ -74,7 +75,7 @@ public class Game : IDisposable
 
         // load standalone image files
 
-        // load standalone video viles
+        // load standalone video files
 
         // load standalone cursor files
     }
@@ -96,9 +97,19 @@ public class Game : IDisposable
     {
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
-        SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_1").Visible = true;
+        var sprite1 = SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_1");
         SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_2").Visible = true;
         SpriteManager.GetSpriteByID("rooster_2")!.SetPosition(new Vector2(5, 0));
+
+        sprite1.Visible = true;
+        FrameSequence frameSequence = new FrameSequence();
+        frameSequence.AddFrame(tilesheet, 0, 0);
+        frameSequence.AddFrame(tilesheet, 1, 0);
+        frameSequence.AddFrame(tilesheet, 2, 0);
+        frameSequence.AddFrame(tilesheet, 3, 0);
+        frameSequence.SequenceCycleType = CycleType.PingPong;
+        sprite1.TileAnimator.CurrentCycle = new Cycle(frameSequence, 0.05f, "ani");
+        sprite1.TileAnimator.StartAnimation();
     }
 
     private DirectRectangle? _directRectangle;
@@ -111,10 +122,13 @@ public class Game : IDisposable
     {
         //Implementation for creating direct drawings goes here
 
+        var bounds1 = new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150);
+        var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
+
         _directRectangle = new DirectRectangle(RenderSurface.Host,
-                                               new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150),
+                                               bounds1,
                                                Color.Wheat);
-        _directRectangle.SetFilled(true);
+        _directRectangle.SetFilled(true).SetAlpha(128);
 
         _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
@@ -124,7 +138,7 @@ public class Game : IDisposable
             _textBlockCPS.SetText(e.ToString());
         };
 
-        _textBlockMouse = new TextBlock(RenderSurface.Host, new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150));
+        _textBlockMouse = new TextBlock(RenderSurface.Host, bounds2);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         //InitializeParticles();
@@ -183,11 +197,11 @@ public class Game : IDisposable
     {
         var scene = new Scene();
         var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.SqaureIso);
-        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
+        //var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SqaureIso);
 
         sceneLayer1.ShowGridLines = true;
         sceneLayer1.ShowCollisionBoxes = false;
-        sceneLayer2.ShowGridLines = true;
+        //sceneLayer2.ShowGridLines = true;
 
         return scene;
     }
@@ -204,6 +218,8 @@ public class Game : IDisposable
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.D.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Left.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Right.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Up.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Down.ToString());
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
@@ -247,6 +263,22 @@ public class Game : IDisposable
                     sprite.Movement.SetAcceleration(new Vector2(0, 0));
                 else
                     sprite.Movement.SetAcceleration(new Vector2(-2f, 0));
+
+                break;
+            case Keys.Up:
+                if (args.KeyAction == Input.Keyboard.KeyAction.Released)
+                    sprite.Movement.SetAcceleration(new Vector2(0, 0));
+                else
+                    sprite.Movement.SetAcceleration(new Vector2(0, -2f));
+
+                sprite.Movement.SetLinearDamping(0.3f);
+
+                break;
+            case Keys.Down:
+                if (args.KeyAction == Input.Keyboard.KeyAction.Released)
+                    sprite.Movement.SetAcceleration(new Vector2(0, 0));
+                else
+                    sprite.Movement.SetAcceleration(new Vector2(0, 2f));
 
                 break;
             default:

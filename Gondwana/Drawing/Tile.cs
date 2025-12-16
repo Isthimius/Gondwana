@@ -61,7 +61,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             zOrder = value;
-            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
         }
     }
 
@@ -72,7 +72,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             visible = value;
-            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
         }
     }
 
@@ -82,10 +82,10 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         get { return frame; }
         set
         {
-            // animation might change Tile size, so only add to refresh queue after
-            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            // animation might change Tile size, so add before and after
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
             frame = value;
-            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
         }
     }
 
@@ -119,7 +119,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             enableFog = value;
-            SceneLayer.RefreshQueue.AddPixelRangeToRefreshQueue(DrawLocation, true);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
         }
     }
 

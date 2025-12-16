@@ -16,7 +16,7 @@ public class Animator : IDisposable
 
     #region private/internal fields
 
-    private Tile parent;
+    private readonly Tile parent;
     private bool cycling = false;
     private long LastTick = HighResTimer.GetCurrentTick();
 
