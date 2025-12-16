@@ -100,17 +100,6 @@ public sealed class BitmapBackbuffer : BackbufferBase
             Canvas.DrawRect(worldRect, _fillPaint);
         else
             Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
-
-        // Map world rect to adapter/screen pixels using the current CTM
-        var deviceRect = Canvas.TotalMatrix.MapRect(worldRect);
-
-        if (tile.IsPositionFixed == false)
-        {
-            Engine.Logger.LogDebug("Drawing sprite {Id} -- worldRect: {DrawLocation} -- deviceRect {deviceRect}", ((Sprite)tile).ID, worldRect, deviceRect);
-        }
-
-        // Safety: inflate 1px for filtering/rounding seams
-        deviceRect.Inflate(1, 1);
     }
 
     // Producer copies out an immutable image for the adapter/UI thread

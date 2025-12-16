@@ -100,7 +100,7 @@ public sealed class AssetsFile : IDisposable
 
         try
         {
-            Engine.Logger.LogDebug("Loading assets file: {FilePath}", FilePath);
+            Engine.Logger.LogInformation("Loading assets file: {FilePath}", FilePath);
 
             _zipFile?.Close();
             _zipFile = new ZipFile(File.OpenRead(FilePath));

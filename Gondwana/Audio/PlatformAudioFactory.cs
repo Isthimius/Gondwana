@@ -16,7 +16,7 @@ public static class PlatformAudioFactory
 
     public static void Register(string extension, Func<Stream, WaveStream> readerFactory, bool requiresFile = false)
     {
-        Engine.Logger.LogDebug("Registering audio reader for extension: {Extension}", extension);
+        Engine.Logger.LogInformation("Registering audio reader for extension: {Extension}", extension);
         _readers[NormalizeExt(extension)] = (readerFactory, requiresFile);
     }
 

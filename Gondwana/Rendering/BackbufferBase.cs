@@ -160,20 +160,16 @@ public abstract class BackbufferBase : IDisposable
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
-
-        //Engine.Logger.LogDebug("AddToDirtyRectangle: {DirtyRectangle}", DirtyRectangle);
     }
 
     protected internal void MarkFullDirty()
     {
         DirtyRectangle = new Rectangle(0, 0, Width, Height);
-        //Engine.Logger.LogDebug("MarkFullDirty: {DirtyRectangle}", DirtyRectangle);
     }
 
     protected internal void ClearDirtyRectangle()
     {
         DirtyRectangle = Rectangle.Empty;
-        //Engine.Logger.LogDebug("ClearDirtyRectangle: {DirtyRectangle}", DirtyRectangle);
     }
 
     /// <summary>

@@ -238,7 +238,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private List<Rectangle> CollectDirtyScreenArea()
     {
-        var dirtyScreenRects = new List<Rectangle>(64);
+        var dirty = new List<Rectangle>(64);
 
         foreach (var view in ViewRenderer.Views)
         {
@@ -253,30 +253,43 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 foreach (var worldRect in refreshQueue.WorldRects)
                 {
                     var screenRectF = view.WorldRectToScreenRect(sceneLayer, worldRect);
-                    var screenRect = screenRectF.ToPixelAlignedRect();
+                    var rect = Rectangle.Intersect(
+                        screenRectF.ToPixelAlignedRect(),
+                        viewportRect);
 
-                    screenRect = Rectangle.Intersect(screenRect, viewportRect);
-                    if (!screenRect.IsEmpty)
-                        dirtyScreenRects.Add(screenRect);
+                    if (rect.IsEmpty)
+                        continue;
+
+                    AddDeduped(rect, dirty);
                 }
             }
         }
 
-        return dirtyScreenRects;
+        return dirty;
     }
 
-    private void ResetCanvasToFullBackbuffer(SKCanvas canvas)
+    private static void AddDeduped(Rectangle rect, List<Rectangle> list)
     {
-        // Unwind any Save() calls that forgot to Restore()
-        while (canvas.SaveCount > 1)
-            canvas.Restore();
+        // If an existing rect fully contains this one, skip it
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].Contains(rect))
+                return;
+        }
 
-        // Clear any transforms (camera/zoom/etc.)
-        canvas.ResetMatrix();
+        // Merge with any overlapping rects
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            if (rect.IntersectsWith(list[i]))
+            {
+                rect = Rectangle.Union(rect, list[i]);
+                list.RemoveAt(i);
+            }
+        }
 
-        // Force a known, full-surface clip (removes "tiny leftover clip" issues)
-        canvas.ClipRect(new SKRect(0, 0, Backbuffer!.Width, Backbuffer!.Height));
+        list.Add(rect);
     }
+
 
     private void PreclearScreenAreas(List<Rectangle> screenRects)
     {
@@ -293,9 +306,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             if (r.IsEmpty || r.Width <= 0 || r.Height <= 0)
                 continue;
-
-            // Optional debug
-            Engine.Logger.LogDebug("Pre-clearing backbuffer area: {Rect}", r);
 
             // Clear just this patch (overwrite with Backbuffer.ClearColor)
             Backbuffer.ClearRect(r);
@@ -473,10 +483,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var clamped = Rectangle.Intersect(dirty, bounds);
         if (clamped.IsEmpty)
             return;
-
-        Engine.Logger.LogDebug("BLIT captured dirty={Rect}", clamped);
-
-        //Engine.Logger.LogTrace("RenderBackbufferRect: DirtyRectangle={DirtyRectangle}", Backbuffer.DirtyRectangle);
 
         var img = Backbuffer.Snapshot();
 

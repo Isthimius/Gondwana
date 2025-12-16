@@ -548,8 +548,6 @@ public sealed class Engine : IDisposable
 
     private void DoForegroundTasks(long tick)
     {
-        Logger.LogDebug("Engine Foreground Cycle at tick {Tick}", tick);
-
         // raise event
         BeforeEngineCycle?.Invoke();
 
