@@ -129,3 +129,6 @@ Contributions are welcome!
 ## 📜 License
 
 MIT License — see [LICENSE](LICENSE) for details.  
+
+**Third-Party Libraries**
+Gondwana uses **Skia** (© Google) via **SkiaSharp** (© Microsoft and contributors), licensed under the BSD 3-Clause license.
