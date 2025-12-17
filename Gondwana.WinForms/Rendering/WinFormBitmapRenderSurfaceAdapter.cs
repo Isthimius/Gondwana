@@ -98,16 +98,15 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             srcI.Left + dx + clippedDestI.Width,
             srcI.Top + dy + clippedDestI.Height);
 
-        // ✅ 1) Clear the destination patch (overwrite)
+        // clear the destination patch (overwrite)
         canvas.DrawRect(clippedDestI, _clearPaint);
 
-        // ✅ 2) Blit the updated patch (overwrite)
+        // blit the updated patch (overwrite)
         canvas.DrawImage(img, clippedSrcI, clippedDestI, _presentPaint);
 
         while (_toDispose.Count > 0)
             _toDispose.Dequeue().Dispose();
     }
-
 
     public void Dispose()
     {

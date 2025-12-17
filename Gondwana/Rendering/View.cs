@@ -5,6 +5,7 @@ namespace Gondwana.Rendering;
 
 public sealed class View
 {
+    public Guid Id { get; } = Guid.NewGuid();
     public Camera Camera { get; }
     public Viewport Viewport { get; }
 

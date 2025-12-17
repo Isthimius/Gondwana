@@ -45,6 +45,7 @@ public sealed class ViewRenderer
             view.Viewport.ZoomChanged += OnViewportZoomChanged;
 
             _views.Add(view);
+            SortViews();
 
             if (_renderSurfaceHost.Scene is not null)
                 _renderSurfaceHost.Scene.FullRefreshNeeded = true;
@@ -181,7 +182,7 @@ public sealed class ViewRenderer
         Scene scene,
         Action<View, SceneLayer> drawLayer)
     {
-        foreach (var view in _views.OrderBy(v => v.ZOrder))
+        foreach (var view in _views)
         {
             // Camera already updated earlier this frame.
             view.Viewport.Begin(canvas);
@@ -242,6 +243,18 @@ public sealed class ViewRenderer
     {
         if (_renderSurfaceHost.Scene is not null)
             _renderSurfaceHost.Scene.FullRefreshNeeded = true;
+    }
+
+    private void SortViews()
+    {
+        _views.Sort(static (a, b) =>
+        {
+            int cmp = a.ZOrder.CompareTo(b.ZOrder);
+            if (cmp != 0) return cmp;
+
+            // deterministic tie-breaker
+            return a.Id.CompareTo(b.Id);
+        });
     }
 
     #endregion private methods

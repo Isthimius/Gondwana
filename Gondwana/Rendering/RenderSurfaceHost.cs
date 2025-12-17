@@ -128,12 +128,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        // TODO: add pre-clear here
         // 4.5) if doing a partial redraw, identify and clear any rects dirty from DirectDrawing overlays or dirty Tiles
         if (!forceFullRedraw)
         {
-            //ResetCanvasToFullBackbuffer(Backbuffer!.Canvas);
-
             var dirtyScreenRects = CollectDirtyScreenArea();
             PreclearScreenAreas(dirtyScreenRects);
         }
@@ -146,19 +143,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         //    If this was a full redraw, mark the entire backbuffer as dirty so the adapter blits all of it.
         if (forceFullRedraw)
             Backbuffer!.MarkFullDirty();
-
-        // DEBUG: visualize the adapter dirty rect in magenta
-        //if (!Backbuffer.DirtyRectangle.IsEmpty)
-        //{
-        //    using var debugPaint = new SKPaint
-        //    {
-        //        Style = SKPaintStyle.Stroke,
-        //        StrokeWidth = 2,
-        //        Color = new SKColor(255, 0, 255, 255) // magenta
-        //    };
-
-        //    Backbuffer.Canvas.DrawRect(Backbuffer.DirtyRectangle.ToSKRect(), debugPaint);
-        //}
 
         // 7) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
@@ -198,7 +182,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 layerWorldRect.Inflate(expandX, expandY);
 
                 // 3) Round to ints and enqueue
-                var worldRectInt = Rectangle.Round(layerWorldRect);
+                var worldRectInt = layerWorldRect.ToPixelAlignedRect();
 
                 layer.RefreshQueue.AddWorldRect(worldRectInt);
             }
@@ -224,9 +208,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 // use the canonical conversion logic in View to find WORLD rect
                 var worldRectF = view.ScreenRectToWorldRect(layer, screenRect);
+                worldRectF.Inflate(1, 1);
 
                 // round back to int rect
-                var worldRect = Rectangle.Round(worldRectF);
+                var worldRect = worldRectF.ToPixelAlignedRect();
 
                 // add the affected tiles to the layer's refresh queue
                 layer.RefreshQueue.AddWorldRect(worldRect);
@@ -289,7 +274,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         list.Add(rect);
     }
-
 
     private void PreclearScreenAreas(List<Rectangle> screenRects)
     {

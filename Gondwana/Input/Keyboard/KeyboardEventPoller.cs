@@ -55,6 +55,9 @@ public sealed class KeyboardEventPoller
             var key = kvp.Key;
             var config = kvp.Value;
 
+            if (Adapter.PressedKeys == null)
+                return;
+
             bool currentlyPressed = Adapter.PressedKeys.Contains(key);
             bool previouslyPressed = _previousPressed.TryGetValue(key, out var prev) && prev;
 
