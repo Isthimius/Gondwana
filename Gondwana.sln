@@ -36,6 +36,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		docs\gondwana-core-diagrams.puml = docs\gondwana-core-diagrams.puml
+		docs\Gondwana_Activity_Diagrams_PlantUML.zip = docs\Gondwana_Activity_Diagrams_PlantUML.zip
+		docs\Gondwana_Sequence_Diagrams_PlantUML.zip = docs\Gondwana_Sequence_Diagrams_PlantUML.zip
+		docs\Gondwana_UML_PlantUML.zip = docs\Gondwana_UML_PlantUML.zip
 		docs\Screen-World-Grid.puml = docs\Screen-World-Grid.puml
 		docs\World-Screen.puml = docs\World-Screen.puml
 	EndProjectSection
