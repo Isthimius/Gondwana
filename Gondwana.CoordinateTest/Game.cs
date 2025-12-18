@@ -86,6 +86,13 @@ public class Game : IDisposable
         var tilesheet = new Tilesheet("rooster", "assets/rooster.bmp");
         tilesheet.TileSize = new Size(50, 50);
         tilesheet.ApplyMask(SKColors.Black);
+
+        var tilesheet2 = new Tilesheet("tiles", "assets/original.bmp");
+        tilesheet2.TileSize = new Size(64, 32);
+        tilesheet2.InitialOffsetX = 1;
+        tilesheet2.InitialOffsetY = 1;
+        tilesheet2.XPixelsBetweenTiles = 1;
+        tilesheet2.YPixelsBetweenTiles = 1;
     }
 
     private void LoadAnimationCycles()
@@ -202,6 +209,17 @@ public class Game : IDisposable
         sceneLayer1.ShowGridLines = true;
         sceneLayer1.ShowCollisionBoxes = false;
         sceneLayer2.ShowGridLines = true;
+
+        var sourceTilesheet = TilesheetRegistry.Instance.GetAll()["tiles"];
+        sceneLayer1[0, 0].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[1, 0].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[2, 0].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[0, 1].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[1, 1].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[2, 1].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[0, 2].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[1, 2].CurrentFrame = sourceTilesheet[4, 4];
+        sceneLayer1[2, 2].CurrentFrame = sourceTilesheet[4, 4];
 
         return scene;
     }
