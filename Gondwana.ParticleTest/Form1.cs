@@ -69,8 +69,8 @@ public partial class Form1 : Form
             .SetStrokeWidth(6f)
             .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside)
             .PulseBorder(Color.Lime, Color.Red, 2.0f)
-            .SetBlendMode(SKBlendMode.Screen);
-            //.PulseFill(Color.Blue, Color.Purple, 1.25f);
+            .SetBlendMode(SKBlendMode.Screen)
+            .PulseFill(Color.Blue, Color.Purple, 1.25f);
 
         glowBox.ZOrder = 1;
 

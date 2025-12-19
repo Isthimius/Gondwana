@@ -401,6 +401,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 var t = sceneLayerTiles[i];
                 if (t is null) continue;
 
+                // Defensive overlap check (same idea as sprites)
+                if (!t.DrawLocation.IntersectsWith(worldRect))
+                    continue;
+
                 if (seen.Add(t))
                     list.Add(t);
             }
