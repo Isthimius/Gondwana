@@ -195,34 +195,35 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void ProcessOverlayScreenDirty()
     {
-        if (_overlayScreenDirty.IsEmpty)
+        if (_overlayScreenDirty.Count == 0)
             return;
 
-        Backbuffer?.AddToDirtyRectangle(_overlayScreenDirty);
-
-        // the dirty region is SCREEN rect
-        RectangleF screenRect = _overlayScreenDirty;
-
-        // find all SceneLayerTiles affected by the overlay dirty region
-        foreach (var view in ViewRenderer.Views)
+        foreach (var r in _overlayScreenDirty)
         {
-            for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
+            if (r.IsEmpty)
+                continue;
+
+            // Mark adapter dirty (SCREEN pixels)
+            Backbuffer?.AddToDirtyRectangle(r);
+
+            // Convert SCREEN dirty → WORLD dirty (queues)
+            var screenRectF = new RectangleF(r.Left, r.Top, r.Width, r.Height);
+
+            foreach (var view in ViewRenderer.Views)
             {
-                var layer = Scene.VisibleSceneLayers[i];
+                for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
+                {
+                    var layer = Scene.VisibleSceneLayers[i];
 
-                // use the canonical conversion logic in View to find WORLD rect
-                var worldRectF = view.ScreenRectToWorldRect(layer, screenRect);
-                worldRectF.Inflate(1, 1);
+                    var worldRectF = view.ScreenRectToWorldRect(layer, screenRectF);
+                    worldRectF.Inflate(1, 1);
 
-                // round back to int rect
-                var worldRect = worldRectF.ToPixelAlignedRect();
-
-                // add the affected tiles to the layer's refresh queue
-                layer.RefreshQueue.AddWorldRect(worldRect);
+                    layer.RefreshQueue.AddWorldRect(worldRectF.ToPixelAlignedRect());
+                }
             }
         }
 
-        _overlayScreenDirty = Rectangle.Empty;
+        _overlayScreenDirty.Clear();
     }
 
     private List<Rectangle> CollectDirtyScreenArea()
