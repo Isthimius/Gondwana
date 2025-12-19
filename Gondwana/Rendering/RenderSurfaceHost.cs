@@ -132,6 +132,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (!forceFullRedraw)
         {
             var dirtyScreenRects = CollectDirtyScreenArea();
+
+            // NEW: ensure overlay views get redrawn anywhere the screen is being repainted
+            PropagateScreenDirtyToAllViews(dirtyScreenRects);
+
             PreclearScreenAreas(dirtyScreenRects);
         }
 
@@ -275,6 +279,39 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         list.Add(rect);
     }
 
+    // NEW: if base view dirties pixels under an overlay view, force overlay to redraw those pixels
+    private void PropagateScreenDirtyToAllViews(List<Rectangle> dirtyScreenRects)
+    {
+        if (dirtyScreenRects == null || dirtyScreenRects.Count == 0 || Scene is null)
+            return;
+
+        foreach (var view in ViewRenderer.Views)
+        {
+            var vp = view.Viewport.TargetRectPx;
+
+            foreach (var r in dirtyScreenRects)
+            {
+                if (!r.IntersectsWith(vp))
+                    continue;
+
+                // Overlay view? repaint the whole viewport
+                var repaintRect = (view.ZOrder > 0)
+                    ? vp
+                    : Rectangle.Intersect(r, vp);
+
+                var screenRectF = new RectangleF(repaintRect.Left, repaintRect.Top, repaintRect.Width, repaintRect.Height);
+
+                for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+                {
+                    var layer = Scene.VisibleSceneLayers[i];
+                    var worldRectF = view.ScreenRectToWorldRect(layer, screenRectF);
+                    worldRectF.Inflate(1, 1);
+                    layer.RefreshQueue.AddWorldRect(worldRectF.ToPixelAlignedRect());
+                }
+            }
+        }
+    }
+
     private void PreclearScreenAreas(List<Rectangle> screenRects)
     {
         if (Backbuffer is null || screenRects is null || screenRects.Count == 0)
@@ -313,8 +350,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         foreach (var worldRect in refreshQueue.WorldRects)
         {
             // 1) project world → screen for adapter dirty
-            var screenRectF = view.WorldRectToScreenRect(layer, worldRect);
-            var screenRect = screenRectF.ToPixelAlignedRect();
+            var screenRect = Rectangle.Intersect(
+                view.WorldRectToScreenRect(layer, worldRect).ToPixelAlignedRect(),
+                view.Viewport.TargetRectPx);
 
             if (screenRect.Width <= 0 || screenRect.Height <= 0)
                 continue;
