@@ -56,9 +56,8 @@ public static class SkiaHelper
 
                 if (IsColorClose(color, targetColor, tolerance))
                 {
-                    // Make this pixel fully transparent
-                    var newColor = new SKColor(color.Red, color.Green, color.Blue, 0);
-                    bitmap.SetPixel(x, y, newColor);
+                    // Fully transparent should also have RGB = 0 for premul correctness.
+                    bitmap.SetPixel(x, y, new SKColor(0, 0, 0, 0));
                 }
             }
         }
@@ -71,10 +70,10 @@ public static class SkiaHelper
         if (bitmap == null || bitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
 
-        if (bitmap.AlphaType == SKAlphaType.Premul && bitmap.ColorType == SKColorType.Rgba8888)
-            return bitmap; // Already premultiplied, and in correct colortype
+        if (bitmap.AlphaType == SKAlphaType.Premul)
+            return bitmap;
 
-        var info = new SKImageInfo(bitmap.Width, bitmap.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+        var info = new SKImageInfo(bitmap.Width, bitmap.Height, bitmap.ColorType, SKAlphaType.Premul);
         var premulBitmap = new SKBitmap(info);
 
         int width = bitmap.Width;
@@ -84,12 +83,12 @@ public static class SkiaHelper
         {
             for (int x = 0; x < width; x++)
             {
-                var color = bitmap.GetPixel(x, y);
+                var c = bitmap.GetPixel(x, y);
+                byte a = c.Alpha;
 
-                byte a = color.Alpha;
-                byte r = (byte)(color.Red * a / 255);
-                byte g = (byte)(color.Green * a / 255);
-                byte b = (byte)(color.Blue * a / 255);
+                byte r = (byte)((c.Red * a + 127) / 255);
+                byte g = (byte)((c.Green * a + 127) / 255);
+                byte b = (byte)((c.Blue * a + 127) / 255);
 
                 premulBitmap.SetPixel(x, y, new SKColor(r, g, b, a));
             }

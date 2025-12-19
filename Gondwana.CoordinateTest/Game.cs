@@ -85,7 +85,7 @@ public class Game : IDisposable
         // Implementation for loading tilesheets goes here
         var tilesheet = new Tilesheet("rooster", "assets/rooster.bmp");
         tilesheet.TileSize = new Size(50, 50);
-        tilesheet.ApplyMask(SKColors.Black);
+        tilesheet.ApplyMask(SKColors.Black, 60);
 
         var tilesheet2 = new Tilesheet("tiles", "assets/original.bmp");
         tilesheet2.TileSize = new Size(64, 32);
@@ -220,6 +220,16 @@ public class Game : IDisposable
         sceneLayer1[0, 2].CurrentFrame = sourceTilesheet[4, 4];
         sceneLayer1[1, 2].CurrentFrame = sourceTilesheet[4, 4];
         sceneLayer1[2, 2].CurrentFrame = sourceTilesheet[4, 4];
+
+        sceneLayer2[0, 0].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[1, 0].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[2, 0].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[0, 1].CurrentFrame = sourceTilesheet[4, 3];
+        sceneLayer2[1, 1].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[2, 1].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[0, 2].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[1, 2].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[2, 2].CurrentFrame = sourceTilesheet[3, 3];
 
         return scene;
     }

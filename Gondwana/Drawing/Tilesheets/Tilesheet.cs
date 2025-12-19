@@ -187,8 +187,33 @@ public sealed class Tilesheet : IDisposable
 
         var targetColor = maskColor ?? SKColors.White;
 
+        // ensure the bitmap actually supports alpha
+        if (SkBitmap.Info.AlphaType == SKAlphaType.Opaque)
+        {
+            var info = new SKImageInfo(
+                SkBitmap.Width,
+                SkBitmap.Height,
+                SkBitmap.Info.ColorType,
+                SKAlphaType.Premul
+            );
+
+            var withAlpha = new SKBitmap(info);
+            using (var canvas = new SKCanvas(withAlpha))
+            {
+                canvas.DrawBitmap(SkBitmap, 0, 0);
+            }
+
+            SkBitmap.Dispose();
+            SkBitmap = withAlpha;
+        }
+
         SkBitmapOriginal = SkBitmap.Copy();
+
         SkiaHelper.ApplyAlphaMask(SkBitmap, targetColor, tolerance);
+
+        // Optional but correct
+        SkBitmap = SkiaHelper.PremultiplyAlpha(SkBitmap);
+
         BuildTileCache();
     }
 
@@ -237,11 +262,29 @@ public sealed class Tilesheet : IDisposable
                 if (!SkBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
                     continue;
 
-                var bmp = new SKBitmap(_tileSize.Width, _tileSize.Height);
+                var srcInfo = SkBitmap.Info;
+
+                // IMPORTANT: preserve alpha + color type from the masked tilesheet bitmap
+                var sliceInfo = new SKImageInfo(
+                    _tileSize.Width,
+                    _tileSize.Height,
+                    srcInfo.ColorType,
+                    srcInfo.AlphaType
+                );
+
+                var bmp = new SKBitmap(sliceInfo);
+
+                // Optional but nice: ensure any untouched pixels are transparent
+                bmp.Erase(SKColors.Transparent);
+
                 if (SkBitmap.ExtractSubset(bmp, srcRect.ToSKRectI()))
                 {
                     var img = SKImage.FromBitmap(bmp);
                     _tileCache[x, y] = new TilesheetSlice(bmp, img);
+                }
+                else
+                {
+                    bmp.Dispose();
                 }
             }
         }
