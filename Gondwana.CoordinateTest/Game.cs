@@ -46,9 +46,9 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
+        //RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
         RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
         RenderSurface.Host.RedrawDirtyRectangleOnly = true;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
@@ -230,6 +230,15 @@ public class Game : IDisposable
         sceneLayer2[0, 2].CurrentFrame = sourceTilesheet[3, 3];
         sceneLayer2[1, 2].CurrentFrame = sourceTilesheet[3, 3];
         sceneLayer2[2, 2].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[10, 0].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[11, 0].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[12, 0].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[10, 1].CurrentFrame = sourceTilesheet[4, 3];
+        sceneLayer2[11, 1].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[12, 1].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[10, 2].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[11, 2].CurrentFrame = sourceTilesheet[3, 3];
+        sceneLayer2[12, 2].CurrentFrame = sourceTilesheet[3, 3];
 
         return scene;
     }

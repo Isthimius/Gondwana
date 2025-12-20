@@ -96,9 +96,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
         var bmp = tile.CurrentFrame.SkBitmap;
         var worldRect = tile.DrawLocation.ToSKRect();
 
-        if (bmp is null)
-            Canvas.DrawRect(worldRect, _fillPaint);
-        else
+        if (bmp is not null)
             Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
     }
 
