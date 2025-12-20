@@ -59,7 +59,7 @@ namespace Slider
             adjustedSize = new Size(adjWidth, adjHeight);
 
             matrixes = new Scene();
-            matrixes.AddLayer(numColumns, numRows, tileWidth, tileHeight, 0, 1, CoordinateSystemTypes.SqaureIso);
+            matrixes.AddLayer(numColumns, numRows, tileWidth, tileHeight, 0, 1, CoordinateSystemTypes.SquareIso);
 
             //surface = new VisibleSurface(size.Width, size.Height, matrixes);
             //surface = new VisibleSurface(size.Width, size.Height);

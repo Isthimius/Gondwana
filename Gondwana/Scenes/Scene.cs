@@ -150,7 +150,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
                                int height = 32,
                                int zOrder = 0,
                                float parallax = 1f,
-                               CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SqaureIso)
+                               CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SquareIso)
     {
         var sceneLayer = new SceneLayer(columnCount, rowCount, width, height, parallax, coordinateSystem);
         sceneLayer.ZOrder = zOrder;

@@ -49,7 +49,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                         int width = 32,
                         int height = 32,
                         float parallax = 1,
-                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SqaureIso)
+                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SquareIso)
     {
         var tileArray = new SceneLayerTile[columnCount, rowCount];
 
@@ -82,7 +82,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             return CoordinateSystem switch
             {
-                SquareIsoCoordinates => CoordinateSystemTypes.SqaureIso,
+                SquareIsoCoordinates => CoordinateSystemTypes.SquareIso,
                 DiagIsoDiagMatrixCoordinates => CoordinateSystemTypes.DiagIso_DiagMatrix,
                 DiagIsoSquareMatrixCoordinates => CoordinateSystemTypes.DiagIso_SquareMatrix,
                 HexagonalFlatTopCoordinates => CoordinateSystemTypes.HexFlatTop,
@@ -94,7 +94,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             CoordinateSystem = value switch
             {
-                CoordinateSystemTypes.SqaureIso => new SquareIsoCoordinates(),
+                CoordinateSystemTypes.SquareIso => new SquareIsoCoordinates(),
                 CoordinateSystemTypes.DiagIso_DiagMatrix => new DiagIsoDiagMatrixCoordinates(),
                 CoordinateSystemTypes.DiagIso_SquareMatrix => new DiagIsoSquareMatrixCoordinates(),
                 CoordinateSystemTypes.HexFlatTop => new HexagonalFlatTopCoordinates(),

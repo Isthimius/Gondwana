@@ -11,7 +11,7 @@ public enum CoordinateSystemTypes
     /// <summary>
     /// Square tiles laid out in a simple row/column grid.
     /// </summary>
-    SqaureIso = 0,
+    SquareIso = 0,
 
     /// <summary>
     /// Diamond-shaped isometric grid (axis-aligned diamonds).
