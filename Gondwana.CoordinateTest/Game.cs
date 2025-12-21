@@ -148,7 +148,7 @@ public class Game : IDisposable
         _textBlockMouse = new TextBlock(RenderSurface.Host, bounds2);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        //InitializeParticles();
+        InitializeParticles();
     }
 
     private void InitializeParticles()
@@ -382,8 +382,8 @@ public class Game : IDisposable
         if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
         {
             var pos = args.CurrentPosition;
-            //_clickEmitter.Position = new PointF(pos.X, pos.Y);
-            //_particleSurface.Burst(_clickEmitter, 80);
+            _clickEmitter.Position = new PointF(pos.X, pos.Y);
+            _particleSurface.Burst(_clickEmitter, 80);
         }
     }
 
