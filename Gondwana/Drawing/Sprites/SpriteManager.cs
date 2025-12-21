@@ -307,6 +307,7 @@ public static class SpriteManager
         foreach (var sprite in _spriteList)
         {
             sprite.Movement.AdvanceMovement(duration);
+            sprite.AdvanceResize(duration);
         }
 
         _lastTick = tick;

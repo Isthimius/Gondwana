@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Gondwana.Drawing.Sprites;
 
 [JsonObject(IsReference = true)]
-public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
+public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 {
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
 
@@ -130,7 +130,7 @@ public class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         // union of old + new = full movement envelope
         Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
-        movementWorldRect.Inflate(new Size(1, 1));
+        movementWorldRect.Inflate(new Size(5, 5));
 
         // commit the move
         sceneLayerCoordinates = newCoord;

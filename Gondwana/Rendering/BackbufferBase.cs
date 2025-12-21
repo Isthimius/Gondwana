@@ -140,7 +140,7 @@ public abstract class BackbufferBase : IDisposable
                 Canvas.DrawPath(path, FogPaint);
             }
 
-            if (tile.SceneLayer.ShowGridLines && tile.Visible)
+            if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
                 Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), GridLinePaint);
 
             if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)

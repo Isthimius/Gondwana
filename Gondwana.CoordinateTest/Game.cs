@@ -257,6 +257,8 @@ public class Game : IDisposable
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Right.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Up.ToString());
         Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Down.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.PageUp.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.PageDown.ToString());
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
@@ -317,6 +319,12 @@ public class Game : IDisposable
                 else
                     sprite.Movement.SetAcceleration(new Vector2(0, 2f));
 
+                break;
+            case Keys.PageUp:
+                sprite.ScaleBy(1.1f, 0.15f);
+                break;
+            case Keys.PageDown:
+                sprite.ScaleBy(0.9f, 0.15f);
                 break;
             default:
                 break;
