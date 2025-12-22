@@ -178,9 +178,23 @@ public class Game : IDisposable
 
             Color = SKColors.OrangeRed,
             MaxVelocity = 400f,   // optional, keeps them from going insane
+
+            JitterX = 40,
+            JitterY = 40,
+
+            // Perfect round “boom”
+            //SpawnDistribution = ParticleSpawnDistribution.Ellipse,
+
+            // Shockwave ring
+            //SpawnDistribution = ParticleSpawnDistribution.Ring,
+            //RingInnerRadius01 = 0.92f,
+
+            // Smoky / magical puff
+            SpawnDistribution = ParticleSpawnDistribution.Gaussian,
+            GaussianStdDev01 = 0.45f
         };
 
-        _particleSurface.Emitters.Add(GetSmoke(bounds.Width, bounds.Height));
+        //_particleSurface.Emitters.Add(GetSmoke(bounds.Width, bounds.Height));
     }
 
     private ParticleEmitter GetSmoke(float width, float height)
@@ -379,7 +393,7 @@ public class Game : IDisposable
 
         ScrollWheelZoom(args, view, layer);
 
-        if (args.ButtonStates[Input.Mouse.MouseButton.Left].IsDown)
+        if (args.ButtonStates[Input.Mouse.MouseButton.Left].JustPressed)
         {
             var pos = args.CurrentPosition;
             _clickEmitter.Position = new PointF(pos.X, pos.Y);

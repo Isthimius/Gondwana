@@ -69,7 +69,7 @@ namespace Gondwana.Drawing.Direct.Particles;
 ///
 /// </code>
 /// </example>
-public sealed class ParticleSurface : DirectDrawingMovableBase
+public sealed partial class ParticleSurface : DirectDrawingMovableBase
 {
     private readonly Particle[] _particles;
     private readonly Random _rng = new();
@@ -378,8 +378,17 @@ public sealed class ParticleSurface : DirectDrawingMovableBase
             ref var p = ref _particles[_alive++];
 
             // Position
-            p.X = em.Position.X + NextRange(-em.JitterX, em.JitterX);
-            p.Y = em.Position.Y + NextRange(-em.JitterY, em.JitterY);
+            if (em.JitterX == 0f && em.JitterY == 0f)
+            {
+                p.X = em.Position.X;
+                p.Y = em.Position.Y;
+            }
+            else
+            {
+                (float dx, float dy) = SampleSpawnOffset(em);
+                p.X = em.Position.X + dx;
+                p.Y = em.Position.Y + dy;
+            }
 
             // Velocity
             p.VX = NextRange(em.VelocityRangeX.Min, em.VelocityRangeX.Max);
@@ -413,6 +422,78 @@ public sealed class ParticleSurface : DirectDrawingMovableBase
     }
 
     private float NextRange(float min, float max) => (float)(_rng.NextDouble() * (max - min) + min);
+
+    private (float dx, float dy) SampleSpawnOffset(ParticleEmitter em)
+    {
+        float jx = MathF.Abs(em.JitterX);
+        float jy = MathF.Abs(em.JitterY);
+
+        // Handle "line" cases cleanly (one axis zero)
+        if (jx == 0f) return (0f, NextRange(-jy, jy));
+        if (jy == 0f) return (NextRange(-jx, jx), 0f);
+
+        switch (em.SpawnDistribution)
+        {
+            default:
+            case ParticleSpawnDistribution.Rectangle:
+                return (NextRange(-jx, jx), NextRange(-jy, jy));
+
+            case ParticleSpawnDistribution.Ellipse:
+                {
+                    // Uniform over area of ellipse
+                    float a = NextRange(0f, MathF.Tau);
+                    float r = MathF.Sqrt(NextRange(0f, 1f)); // sqrt => uniform area
+                    return (MathF.Cos(a) * r * jx, MathF.Sin(a) * r * jy);
+                }
+
+            case ParticleSpawnDistribution.Ring:
+                {
+                    // Uniform over area of annulus (ellipse-scaled)
+                    float inner = Math.Clamp(em.RingInnerRadius01, 0f, 1f);
+                    float a = NextRange(0f, MathF.Tau);
+
+                    // area-uniform annulus: r = sqrt(inner^2 + u*(1-inner^2))
+                    float u = NextRange(0f, 1f);
+                    float r = MathF.Sqrt(inner * inner + u * (1f - inner * inner));
+
+                    return (MathF.Cos(a) * r * jx, MathF.Sin(a) * r * jy);
+                }
+
+            case ParticleSpawnDistribution.Gaussian:
+                {
+                    // Center-weighted, then clamped to ellipse boundary
+                    float sd = Math.Clamp(em.GaussianStdDev01, 1e-4f, 10f);
+
+                    float dx = NextGaussian() * (jx * sd);
+                    float dy = NextGaussian() * (jy * sd);
+
+                    // Clamp to ellipse: (dx/jx)^2 + (dy/jy)^2 <= 1
+                    float nx = dx / jx;
+                    float ny = dy / jy;
+                    float q = nx * nx + ny * ny;
+
+                    if (q > 1f)
+                    {
+                        float s = 1f / MathF.Sqrt(q);
+                        dx *= s;
+                        dy *= s;
+                    }
+
+                    return (dx, dy);
+                }
+        }
+    }
+
+    private float NextGaussian()
+    {
+        // Box–Muller transform (standard normal)
+        // Guard u1 from 0 to avoid log(0)
+        double u1 = 1.0 - _rng.NextDouble();
+        double u2 = 1.0 - _rng.NextDouble();
+        double mag = Math.Sqrt(-2.0 * Math.Log(u1));
+        double z0 = mag * Math.Cos(Math.Tau * u2);
+        return (float)z0;
+    }
 
     // Fast, branch-free tint (multiplies RGB by tint)
     // alpha = lifeAlpha * globalAlpha). Assumes particle base alpha = 255.

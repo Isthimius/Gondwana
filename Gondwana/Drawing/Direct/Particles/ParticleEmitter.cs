@@ -156,6 +156,23 @@ public sealed class ParticleEmitter
     /// </summary>
     public float? MaxVelocity { get; set; }
 
+    /// <summary>
+    /// Controls the random spawn distribution used by JitterX/JitterY.
+    /// </summary>
+    public ParticleSpawnDistribution SpawnDistribution { get; set; } = ParticleSpawnDistribution.Rectangle;
+
+    /// <summary>
+    /// For Ring distribution: inner radius as a fraction of the outer radius [0..1].
+    /// 0 = filled disk, 0.8 = thin-ish ring, 0.95 = very thin ring.
+    /// </summary>
+    public float RingInnerRadius01 { get; set; } = 0.85f;
+
+    /// <summary>
+    /// For Gaussian distribution: standard deviation as a fraction of outer radius.
+    /// Typical values: 0.25 to 0.5. Higher spreads wider.
+    /// </summary>
+    public float GaussianStdDev01 { get; set; } = 0.33f;
+
     /// <summary>Optional per-particle customization hook (e.g., perlin drift, hue jitter).</summary>
     public ParticleSpawnHandler? OnSpawn { get; set; }
 
