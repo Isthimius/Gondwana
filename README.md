@@ -37,7 +37,54 @@ It is not intended to replace Unity or Unreal, but to serve as a flexible founda
 
 ## 📂 Project Structure
 
-At runtime, Gondwana is driven by a central Engine loop that advances time, polls platform-specific input, updates game state, and renders only what has changed. Each cycle begins by processing timers and input events, which may move sprites, advance animations, or otherwise modify scene state. These changes enqueue world-space dirty regions into each SceneLayer’s RefreshQueue. During rendering, the ViewRenderer iterates views in Z-order, applies camera and viewport transforms, and asks each visible layer to redraw only the affected regions into a backbuffer. Sprites and tiles are drawn from cached tilesheets, animations advance frame-by-frame, and the composed result is finally presented by the platform host (WinForms, Web, etc.). This dirty-region, view-centric design keeps rendering efficient while allowing multiple views and cameras to share the same core engine logic.
+At runtime, Gondwana is driven by a central `Engine` loop responsible for advancing time, polling platform-specific input, updating game state, and rendering only what has changed. The engine is built around a world-space, view-centric rendering model designed to minimize redraw work while supporting multiple cameras, layers, and platforms.
+
+### Runtime Flow
+
+Each engine cycle proceeds through the following stages:
+
+1. **Timers and input polling**  
+   High-resolution timers advance simulation time while input adapters poll keyboard, mouse, and gamepad state. These events may move sprites, advance animations, or otherwise modify scene state.
+
+2. **World-space change tracking**  
+   Any state changes enqueue world-space dirty regions into the owning `SceneLayer`’s `RefreshQueue`. This allows the engine to track *what* changed and *where*, without relying on full-frame redraws.
+
+3. **View-based rendering**  
+   During rendering, the `ViewRenderer` iterates active `View` instances in deterministic Z-order. Each view applies its camera and viewport transforms, then asks visible scene layers to redraw only the affected regions into a backbuffer.
+
+4. **Composition and presentation**  
+   Sprites and tiles are drawn from cached tilesheets, animations advance frame-by-frame, and the composed backbuffer is finally presented by the platform host (WinForms, Web, etc.).
+
+This dirty-region, view-centric design allows Gondwana to efficiently render complex scenes with multiple layers and cameras while keeping the core engine logic platform-agnostic. By separating world updates from presentation concerns, the engine remains predictable, debuggable, and scalable as projects grow.
+
+### Core Namespaces (High-Level)
+
+- **Gondwana**  
+  Core engine loop, lifecycle management, configuration, and global services.
+
+- **Gondwana.Drawing**  
+  Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables.
+
+- **Gondwana.Input**  
+  Unified input polling for keyboard, mouse, and gamepad devices.
+
+- **Gondwana.Movement**  
+  Sprite movement controllers, easing functions, and scripted motion paths.
+
+- **Gondwana.Rendering**  
+  Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.
+
+- **Gondwana.Scenes**  
+  Scene and SceneLayer composition, visibility, and layer-level refresh tracking.
+
+- **Gondwana.Timers**  
+  High-resolution timing, scheduled callbacks, and engine-cycle events.
+
+- **Gondwana.Audio / Video**  
+  Audio playback, mixing, MIDI support, and experimental video integration.
+
+- **Gondwana.WinForms / Web**  
+  Platform adapters responsible for hosting render surfaces and wiring input.
 
 ---
 
