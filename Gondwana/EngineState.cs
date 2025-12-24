@@ -23,9 +23,6 @@ public class EngineState
         };
 
     [JsonProperty]
-    public Dictionary<string, string> ValueBag { get; set; } = new();
-
-    [JsonProperty]
     public IEnumerable<AssetsFile> AssetsFiles => AssetsFile.AllAssetsFiles;
 
     [JsonProperty]
@@ -43,15 +40,18 @@ public class EngineState
     [JsonProperty]
     public Dictionary<string, AudioResource> SoundResources => AudioResourceManager.Instance.GetAll();
 
+    [JsonProperty]
+    public Dictionary<string, string> ValueBag { get; set; } = new();
+
     internal void Clear()
     {
-        ValueBag.Clear();
         AssetsFile.ClearAll();
         TilesheetRegistry.Instance.Clear();
         Cycle.ClearAllAnimationCycles();
         Scene.ClearAllScenes();
         SpriteManager.Clear();
         AudioResourceManager.Instance.Dispose();
+        ValueBag.Clear();
     }
 
     public void SaveToFile(string path, bool compress = false)
@@ -89,7 +89,6 @@ public class EngineState
 
         var result = JsonConvert.DeserializeObject<EngineState>(json, JsonSerializerSettings) ?? new EngineState();
         var engineState = new EngineState();
-        engineState.ValueBag = result.ValueBag ?? new();
 
         // TODO: step through and load all the things...!!!
         // TODO: load audio files not in Resource file
@@ -98,6 +97,8 @@ public class EngineState
         //
         //
         //
+
+        engineState.ValueBag = result.ValueBag ?? new();
 
         return engineState;
     }

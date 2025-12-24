@@ -27,6 +27,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     private int nudgeX;
     private int nudgeY;
     private Size renderSize;
+
+    [JsonProperty("SceneLayerCoordinates")]
     private PointF sceneLayerCoordinates;
 
     #endregion private / internal fields

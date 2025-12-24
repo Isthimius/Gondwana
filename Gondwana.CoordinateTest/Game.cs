@@ -470,6 +470,8 @@ public class Game : IDisposable
         {
             if (disposing)
             {
+                Engine.Instance.State.SaveToFile("game.json");
+
                 Engine.KeyboardEventPoller!.KeyDown -= KeyboardEventPoller_KeyDown;
                 Engine.MouseEventPoller!.MouseEvent -= MouseEventPoller_MouseEvent;
                 Engine.GamepadEventPoller!.ButtonDown -= GamepadEventPoller_ButtonDown;
