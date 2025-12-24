@@ -1,5 +1,5 @@
 using Gondwana.Rendering;
-using Gondwana.Skia;
+using Gondwana.SkiaSharp;
 using SkiaSharp;
 using System.Drawing;
 
