@@ -1,14 +1,24 @@
-# Gondwana
+# Gondwana Game Engine
 <img src="https://github.com/user-attachments/assets/64372678-7d38-47f8-b01a-511c3ef407cc"
      alt="Gondwana" align="left" width="40%" />
 
-**Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8, supporting scene parallax, z-ordering, pixel overhang, collision detection, and a particle system. The framework is built with SkiaSharp for graphics, NAudio for sound, and includes hooks for in-app video playback. It modernizes legacy Win32/GDI patterns into a modular, high-performance framework that runs on desktop, mobile, and web.
+**Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.
 
-The engine supports both bitmap- and GPU-based rendering back-ends and maintains a clean, extensible draw pipeline designed for compositing, layering, and post-processing effects. Input handling is unified across keyboard, mouse, and gamepad devices through a common event-polling interface.
-
-Under the hood, Gondwana employs a double-buffered rendering system, fine-grained timing controls, and thread-safe managers for resource caching of tilesheets, audio, and video. Its architecture is built using modern .NET, allowing developers to quickly create games with code that’s both performant and maintainable.
+Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers can own their game loop and rendering flow end-to-end when needed, while still benefiting from sensible defaults that allow simpler games, simulations, and tools to come together quickly. This approach modernizes classic Win32/GDI-era rendering patterns into a clean, modular architecture with explicit control over draw order, dirty-region updates, and timing—yielding a predictable, debuggable engine that works out of the box but does not get in the way as projects grow.
 
 <br clear="left" />
+
+---
+
+## 🎯 Who Gondwana Is For
+
+Gondwana is designed for developers who want:
+- Fine-grained control over rendering and timing
+- Deterministic, debuggable draw pipelines
+- A code-first engine without editor lock-in
+- A modern .NET engine that respects classic rendering principles
+
+It is not intended to replace Unity or Unreal, but to serve as a flexible foundation for custom 2D and 2.5D games, tools, and simulations.
 
 ---
 
@@ -21,7 +31,7 @@ Under the hood, Gondwana employs a double-buffered rendering system, fine-graine
 - **High-resolution timing** (`HighResTimer`) for smooth frame updates  
 - **Thread-safe rendering manager** (`DirectDrawingManager`) with Z-order sorting  
 - **Extensible resource pipeline** for tilesheets, sprites, and audio  
-- **Experimental video & audio integration** (`LibVLCSharp`, `NAudio`)  
+- **Experimental video & audio integration** (`LibVLCSharp`, `NAudio`)
 
 ---
 
@@ -29,13 +39,15 @@ Under the hood, Gondwana employs a double-buffered rendering system, fine-graine
 
 At runtime, Gondwana is driven by a central Engine loop that advances time, polls platform-specific input, updates game state, and renders only what has changed. Each cycle begins by processing timers and input events, which may move sprites, advance animations, or otherwise modify scene state. These changes enqueue world-space dirty regions into each SceneLayer’s RefreshQueue. During rendering, the ViewRenderer iterates views in Z-order, applies camera and viewport transforms, and asks each visible layer to redraw only the affected regions into a backbuffer. Sprites and tiles are drawn from cached tilesheets, animations advance frame-by-frame, and the composed result is finally presented by the platform host (WinForms, Web, etc.). This dirty-region, view-centric design keeps rendering efficient while allowing multiple views and cameras to share the same core engine logic.
 
-**Key Design Principles**
-- Dirty-region rendering (RefreshQueue): The engine tracks what changed and redraws only those world-space regions, instead of repainting the whole screen every frame.
-- World-space first: The engine reasons in world pixels; views/cameras/viewport transforms convert world → screen at render time. This keeps logic consistent and avoids “screen math” leaking into gameplay code.
-- Layered scenes: A Scene is composed of SceneLayers (often with parallax). Each layer maintains its own refresh tracking and draw path.
-- View-centric rendering: Rendering flows through View / ViewRenderer so multiple cameras/viewports (or future split views) are natural, not bolted on.
-- Adapters at the edges: Platform projects (WinForms/Web) host the render surface and input wiring, while the core engine stays platform-agnostic.
-- Deterministic ordering: Where ordering matters (views, layers, drawables), the engine uses stable sort rules so rendering remains predictable and debuggable.
+---
+
+## 🧭 Key Design Principles
+- **Dirty-region rendering (`RefreshQueue`)**: The engine tracks what changed and redraws only those world-space regions, instead of repainting the whole screen every frame.
+- **World-space first**: The engine reasons in world pixels; views/cameras/viewport transforms convert world → screen at render time. This keeps logic consistent and avoids “screen math” leaking into gameplay code.
+- **Layered scenes**: A Scene is composed of SceneLayers (often with parallax). Each layer maintains its own refresh tracking and draw path.
+- **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports (or multiplayer split views) are natural, not bolted on.
+- **Adapters at the edges**: Platform projects (WinForms/Web) host the render surface and input wiring, while the core engine stays platform-agnostic.
+- **Deterministic ordering**: Where ordering matters (views, layers, drawables), the engine uses stable sort rules so rendering remains predictable and debuggable.
 
 ---
 
@@ -55,59 +67,17 @@ The Gondwana Core library depends on the following NuGet packages:
 - **SkiaSharp.HarfBuzz** (3.119.1) — advanced text shaping/rendering
 
 
-## 🏃‍♂️ Build & Run
-```bash
-git clone https://github.com/yourusername/gondwana.git
-cd gondwana
-dotnet build
-```
+## 🔧 Development & Build Tooling
 
-Run one of the examples:
-```bash
-cd Examples/HelloWorld
-dotnet run
-```
+The following packages are required only when building Gondwana from source:
 
----
-
-## 🎮 Example: Particle System
-
-```csharp
-var particles = new DirectParticles(renderHost, 
-    new Rectangle(0, 0, viewportW, viewportH));
-
-// Sparks
-var sparks = new ParticleEmitter
-{
-    Position = new PointF(400, 550),
-    EmitRate = 400,
-    LifeRange = (0.5f, 1.0f),
-    VelocityRangeX = (-150f, 150f),
-    VelocityRangeY = (-300f, -200f),
-    SizeRange = (2f, 4f),
-    Color = SKColors.OrangeRed
-};
-
-// Smoke
-var smoke = new ParticleEmitter
-{
-    Position = new PointF(400, 540),
-    EmitRate = 120,
-    LifeRange = (2.5f, 4.0f),
-    VelocityRangeX = (-40f, 40f),
-    VelocityRangeY = (-120f, -60f),
-    SizeRange = (8f, 16f),
-    Color = new SKColor(80, 80, 80, 200)
-};
-
-particles.Emitters.Add(sparks);
-particles.Emitters.Add(smoke);
-directDrawingManager.AddOrReplace(particles);
-```
+- Nerdbank.GitVersioning (3.9.50) — deterministic versioning based on Git history
 
 ---
 
 ## 🛠 Roadmap
+
+_Gondwana is actively evolving, with a focus on strengthening core simulation and tooling rather than chasing engine sprawl._
 
 - [ ] Physics integration (collisions, rigid bodies)  
 - [ ] Scene system for complex game flow  
