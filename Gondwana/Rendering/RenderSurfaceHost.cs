@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using Gondwana.Scenes;
-using Gondwana.Skia;
+using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.SkiaSharp;
 

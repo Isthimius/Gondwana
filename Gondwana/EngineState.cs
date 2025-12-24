@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace Gondwana;
 
 [JsonObject(IsReference = true)]
-public class EngineState
+public sealed class EngineState
 {
     public static JsonSerializerSettings JsonSerializerSettings { get; set; }
         = new JsonSerializerSettings
@@ -40,8 +40,37 @@ public class EngineState
     [JsonProperty]
     public Dictionary<string, AudioResource> SoundResources => AudioResourceManager.Instance.GetAll();
 
+    /// <summary>
+    /// Stores extensible, project-specific state data associated with this engine state.
+    /// <para>
+    /// The value bag allows games or engine extensions to persist arbitrary structured data
+    /// (such as NPC state, quest progress, or custom subsystem data) without modifying the
+    /// core <see cref="EngineState"/> schema.
+    /// </para>
+    /// <para>
+    /// Values are accessed using strongly-typed <see cref="ValueKey{T}"/> instances to ensure
+    /// compile-time safety while preserving a flexible serialized representation.
+    /// </para>
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// // Define keys once (typically in a static class)
+    /// static readonly ValueKey&lt;Dictionary&lt;string, int&gt;&gt; NpcHitPoints =
+    ///     new("npc.hitpoints");
+    ///
+    /// // Store values
+    /// engineState.ValueBag.Set(NpcHitPoints, new Dictionary&lt;string, int&gt;
+    /// {
+    ///     ["npc.guard"] = 12,
+    ///     ["npc.merchant"] = 8
+    /// });
+    ///
+    /// // Retrieve values
+    /// var hp = engineState.ValueBag.Get(NpcHitPoints, new Dictionary&lt;string, int&gt;());
+    /// </code>
+    /// </example>
     [JsonProperty]
-    public Dictionary<string, string> ValueBag { get; set; } = new();
+    public TypedValueBag ValueBag { get; set; } = new();
 
     internal void Clear()
     {

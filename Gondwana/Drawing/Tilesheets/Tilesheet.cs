@@ -1,6 +1,6 @@
 using System.Drawing;
 using Gondwana.Assets;
-using Gondwana.Skia;
+using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SkiaSharp;

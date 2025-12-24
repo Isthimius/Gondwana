@@ -1,6 +1,6 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Skia;
+using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 

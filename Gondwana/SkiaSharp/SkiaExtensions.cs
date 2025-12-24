@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using SkiaSharp;
 
-namespace Gondwana.Skia;
+namespace Gondwana.SkiaSharp;
 
 public static class SkiaExtensions
 {

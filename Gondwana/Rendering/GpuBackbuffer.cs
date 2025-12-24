@@ -1,5 +1,5 @@
 ﻿using Gondwana.Drawing;
-using Gondwana.Skia;
+using Gondwana.SkiaSharp;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
