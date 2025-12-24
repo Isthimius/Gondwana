@@ -37,125 +37,22 @@ At runtime, Gondwana is driven by a central Engine loop that advances time, poll
 - Adapters at the edges: Platform projects (WinForms/Web) host the render surface and input wiring, while the core engine stays platform-agnostic.
 - Deterministic ordering: Where ordering matters (views, layers, drawables), the engine uses stable sort rules so rendering remains predictable and debuggable.
 
-```
-Gondwana
-├── Gondwana
-│   ├── Gondwana.Engine              # Core runtime loop and timing orchestration
-│   │   ├── Engine                   # Central coordinator: cycle, timing, background tasks
-│   │   ├── Game                     # Game-facing entry point and lifecycle wrapper
-│   │   └── EngineTimer              # High-resolution timing and tick management
-│   │
-│   ├── Gondwana.Scene               # World organization and visibility
-│   │   ├── Scene                    # Root container for layers and world state
-│   │   ├── SceneLayer               # Logical/renderable layer with parallax and refresh tracking
-│   │   └── SceneLayerCollection     # Ordered management of visible layers
-│   │
-│   ├── Gondwana.Refresh             # Dirty-region tracking and redraw coordination
-│   │   └── RefreshQueue             # World-pixel dirty rectangle accumulator
-│   │
-│   ├── Gondwana.Sprites             # Dynamic drawable entities
-│   │   ├── Sprite                   # Movable, animatable visual entity
-│   │   ├── SpriteManager            # Global sprite registration and spatial queries
-│   │   └── SpriteDrawInfo           # Precomputed draw metadata for rendering passes
-│   │
-│   ├── Gondwana.Tiles               # Tile-based rendering infrastructure
-│   │   ├── Tile                     # Individual tile instance in world space
-│   │   ├── Tilesheet                # Source bitmap and tile slicing logic
-│   │   └── TileCache                # Cached tile bitmaps for fast redraw
-│   │
-│   ├── Gondwana.Animation           # Time-based visual state changes
-│   │   ├── Animation                # High-level animation controller
-│   │   ├── AnimationCycle           # Ordered sequence of animation frames
-│   │   └── AnimationFrame           # Single frame definition and duration
-│   │
-│   ├── Gondwana.Movement            # Position and velocity updates
-│   │   ├── MovementController       # Applies movement logic to sprites
-│   │   └── Velocity                 # Directional and scalar movement data
-│   │
-│   ├── Gondwana.Collision           # Spatial interaction and resolution
-│   │   ├── Collider                 # Collision bounds and masks
-│   │   └── CollisionResolver        # Collision detection and response logic
-│   │
-│   ├── Gondwana.Input               # Engine-facing input abstraction
-│   │   ├── KeyboardEventPoller      # Keyboard state polling and event dispatch
-│   │   ├── MouseEventPoller         # Mouse state polling and event dispatch
-│   │   └── GamepadEventPoller       # Gamepad polling with throttling
-│   │
-│   ├── Gondwana.Math                # Shared math and geometry helpers
-│   │   ├── Vector                   # Basic vector math
-│   │   ├── RectangleExtensions      # Geometry helpers and conversions
-│   │   └── CoordinateHelpers        # World/screen coordinate utilities
-│   │
-│   └── Gondwana.Util                # Cross-cutting utilities
-│       ├── Logger                   # Centralized logging and tracing
-│       └── DisposableBase           # Lifetime and disposal helpers
-│
-├── Gondwana.Rendering
-│   ├── Gondwana.Rendering.View      # View and render orchestration
-│   │   ├── View                     # Camera + viewport pairing
-│   │   ├── ViewRenderer             # Ordered rendering across views
-│   │   └── ViewCollection           # Deterministic view management
-│   │
-│   ├── Gondwana.Rendering.Camera    # World-to-view transformations
-│   │   ├── Camera                   # Position, zoom, and parallax anchor
-│   │   └── CameraPanMode            # Camera movement semantics
-│   │
-│   ├── Gondwana.Rendering.Viewport  # Screen-space mapping
-│   │   ├── Viewport                 # Screen rectangle and zoom configuration
-│   │   └── ViewportTransform        # Coordinate conversion logic
-│   │
-│   ├── Gondwana.Rendering.Backbuffer    # Offscreen render targets
-│   │   ├── IBackbuffer              # Backbuffer abstraction
-│   │   ├── BitmapBackbuffer         # CPU-backed Skia bitmap buffer
-│   │   └── GpuBackbuffer            # GPU-backed render buffer (when enabled)
-│   │
-│   ├── Gondwana.Rendering.Drawing   # Immediate-mode drawing system
-│   │   ├── DirectDrawingBase        # Base drawable primitive
-│   │   ├── DirectComposite          # Composite drawable with child elements
-│   │   └── DirectDrawingManager     # Registration and draw ordering
-│   │
-│   └── Gondwana.Rendering.Skia      # SkiaSharp integration details
-│       ├── SkiaHelper               # Bitmap and paint helpers
-│       └── SkiaPaintCache           # Reusable paint objects for performance
-│
-├── Gondwana.Audio
-│   ├── Gondwana.Audio.Core          # Audio asset management
-│   │   ├── MediaFile                # Audio asset loading and lifetime
-│   │   └── AudioManager             # Playback coordination
-│   │
-│   └── Gondwana.Audio.Playback      # Runtime playback instances
-│       ├── AudioInstance            # Individual sound playback handle
-│       └── PlaybackCompletedEventArgs    # Notification payload for completed sounds
-│
-├── Gondwana.WinForms
-    ├── Gondwana.WinForms.Host       # Desktop hosting infrastructure
-    │   ├── RenderSurfaceHost        # Bridge between engine and WinForms surface
-    │   └── GameWindow               # Application window and lifecycle
-    │
-    ├── Gondwana.WinForms.Rendering  # WinForms rendering surface
-    │   └── SkiaRenderSurface        # SKControl-backed render target
-    │
-    └── Gondwana.WinForms.Input      # Platform input adapters
-        ├── WinFormsKeyboardAdapter  # Keyboard adapter for engine input
-        └── WinFormsMouseAdapter     # Mouse adapter for engine input
-```
-
 ---
 
 ## 📦 Prerequisites
 
 The Gondwana Core library depends on the following NuGet packages:
 
-- **Microsoft.Extensions.Configuration** (9.0.8)  
-- **Microsoft.Extensions.Configuration.Binder** (9.0.8)  
-- **Microsoft.Extensions.Configuration.Json** (9.0.8)  
-- **Microsoft.Extensions.Logging.Console** (9.0.8)  
-- **Microsoft.Extensions.Logging.Debug** (9.0.8)  
+- **Microsoft.Extensions.Configuration** (10.0.1)  
+- **Microsoft.Extensions.Configuration.Binder** (10.0.1)  
+- **Microsoft.Extensions.Configuration.Json** (10.0.1)  
+- **Microsoft.Extensions.Logging.Console** (10.0.1)  
+- **Microsoft.Extensions.Logging.Debug** (10.0.1)  
 - **NAudio** (2.2.1) — audio playback and mixing  
-- **Newtonsoft.Json** (13.0.3) — JSON serialization  
+- **Newtonsoft.Json** (13.0.4) — JSON serialization  
 - **SharpZipLib** (1.4.2) — archive and compression support  
-- **SkiaSharp** (3.119.0) — 2D rendering backend  
-- **SkiaSharp.HarfBuzz** (3.119.0) — advanced text shaping/rendering
+- **SkiaSharp** (3.119.1) — 2D rendering backend  
+- **SkiaSharp.HarfBuzz** (3.119.1) — advanced text shaping/rendering
 
 
 ## 🏃‍♂️ Build & Run
