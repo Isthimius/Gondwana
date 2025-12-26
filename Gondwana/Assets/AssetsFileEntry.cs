@@ -74,8 +74,5 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
 
     public override bool Equals(object? obj) => Equals(obj as AssetsFileEntry);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(AssetType, AssetName.ToLowerInvariant());
-    }
+    public override int GetHashCode() => HashCode.Combine(AssetType, AssetName.ToLowerInvariant());
 }

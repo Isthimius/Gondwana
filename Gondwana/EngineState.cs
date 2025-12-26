@@ -1,10 +1,10 @@
 ﻿using System.IO.Compression;
 using System.Text.Json;
+using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Assets;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -116,20 +116,58 @@ public sealed class EngineState
             json = File.ReadAllText(path);
         }
 
-        var result = JsonConvert.DeserializeObject<EngineState>(json, JsonSerializerSettings) ?? new EngineState();
+        // Important: EngineState's collections are mostly getter-only proxies over registries,
+        // so deserialize into a snapshot DTO with setters.
+        var snapshot =
+            JsonConvert.DeserializeObject<EngineStateSnapshot>(json, JsonSerializerSettings)
+            ?? new EngineStateSnapshot();
+
+        // Create a fresh engine state and clear global registries.
         var engineState = new EngineState();
+        engineState.Clear(); // clears scenes/sprites/cycles/tilesheets/sounds
 
-        // TODO: step through and load all the things...!!!
-        // TODO: load audio files not in Resource file
-        LoadResourceFiles(result.AssetsFiles);
-        //
-        //
-        //
-        //
+        // 1) Load all asset files first (images/audio may be referenced by identifier).
+        LoadResourceFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
 
-        engineState.ValueBag = result.ValueBag ?? new();
+        // bulk-load audio from asset packs first
+        if (snapshot.AssetsFiles is not null)
+        {
+            foreach (var af in snapshot.AssetsFiles)
+                AudioResourceManager.Instance.LoadFromEngineResourceFile(af);
+        }
+
+        // rehydrate “saved audio specs” (loose-file + any per-key settings)
+        if (snapshot.SoundResources is not null)
+        {
+            foreach (var spec in snapshot.SoundResources.Values)
+                spec.ReloadIntoManager();
+        }
+
+        // 2) Restore tilesheets (rehydrate image bytes via AssetsFile or file path).
+        RestoreTilesheets(snapshot.Tilesheets);
+
+        // 3) Restore cycles/scenes/sprites.
+        RestoreCycles(snapshot.Cycles);
+        RestoreScenes(snapshot.Scenes);
+        RestoreSprites(snapshot.Sprites);
+
+        // 4) Restore extensible save data
+        engineState.ValueBag = snapshot.ValueBag ?? new();
 
         return engineState;
+    }
+
+    #region deserialization helpers
+
+    private sealed class EngineStateSnapshot
+    {
+        [JsonProperty] public List<AssetsFile>? AssetsFiles { get; set; }
+        [JsonProperty] public Dictionary<string, Tilesheet>? Tilesheets { get; set; }
+        [JsonProperty] public Dictionary<string, Cycle>? Cycles { get; set; }
+        [JsonProperty] public List<Scene>? Scenes { get; set; }
+        [JsonProperty] public List<Sprite>? Sprites { get; set; }
+        [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
+        [JsonProperty] public TypedValueBag? ValueBag { get; set; }
     }
 
     private static void LoadResourceFiles(IEnumerable<AssetsFile> resourceFiles)
@@ -151,4 +189,91 @@ public sealed class EngineState
             }
         }
     }
+
+    private static void RestoreTilesheets(Dictionary<string, Tilesheet>? tilesheets)
+    {
+        TilesheetRegistry.Instance.Clear();
+        if (tilesheets is null || tilesheets.Count == 0)
+            return;
+
+        foreach (var (key, saved) in tilesheets)
+        {
+            Tilesheet rebuilt;
+
+            // 1) Rehydrate bitmap from AssetsFile entry (preferred) or file path (fallback)
+            if (saved.AssetIdentifier is not null && saved.AssetIdentifier.IsValid)
+            {
+                var id = saved.AssetIdentifier;
+                rebuilt = new Tilesheet(id.AssetsFile, id.AssetName);
+            }
+            else if (!string.IsNullOrWhiteSpace(saved.ImageFilePath) && File.Exists(saved.ImageFilePath))
+            {
+                rebuilt = new Tilesheet(saved.Name, saved.ImageFilePath);
+            }
+            else
+            {
+                Engine.Logger.LogWarning(
+                    "EngineState.LoadFromFile: Skipping tilesheet '{Key}' because it has no valid AssetIdentifier and no ImageFilePath.",
+                    key);
+                continue;
+            }
+
+            // 2) Restore metadata (these trigger cache rebuild as needed)
+            rebuilt.Name = saved.Name;
+            rebuilt.TileSize = saved.TileSize;
+            rebuilt.InitialOffsetX = saved.InitialOffsetX;
+            rebuilt.InitialOffsetY = saved.InitialOffsetY;
+            rebuilt.XPixelsBetweenTiles = saved.XPixelsBetweenTiles;
+            rebuilt.YPixelsBetweenTiles = saved.YPixelsBetweenTiles;
+            rebuilt.OverhangPixels = saved.OverhangPixels;
+
+            // 3) Restore extensible tilesheet metadata
+            rebuilt.ValueBag = new Dictionary<string, string>(saved.ValueBag);
+
+            // 4) Reapply bitmap transforms recorded in the save.
+            //
+            // IMPORTANT: SkBitmap is not serialized, so these operations must be replayed here.
+            // ApplyMask() also premultiplies alpha internally in your implementation.
+            if (saved.MaskColor is not null)
+            {
+                rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
+            }
+            else if (saved.Premultiplied)
+            {
+                // ApplyMask also premultiplies alpha internally,
+                // so only call if Premultiplied and no MaskColor
+                rebuilt.ApplyPremultiplyAlpha();
+            }
+        }
+    }
+
+    private static void RestoreCycles(Dictionary<string, Cycle>? cycles)
+    {
+        Cycle.ClearAllAnimationCycles();
+        if (cycles is null || cycles.Count == 0) return;
+
+        Cycle._cycles.Clear();
+        foreach (var kvp in cycles)
+            Cycle._cycles[kvp.Key] = kvp.Value;
+    }
+
+    private static void RestoreScenes(List<Scene>? scenes)
+    {
+        Scene.ClearAllScenes();
+        if (scenes is null || scenes.Count == 0) return;
+
+        Scene._allScenes.Clear();
+        Scene._allScenes.AddRange(scenes);
+    }
+
+    private static void RestoreSprites(List<Sprite>? sprites)
+    {
+        SpriteManager.Clear();
+        if (sprites is null || sprites.Count == 0) return;
+
+        SpriteManager._spriteList.Clear();
+        SpriteManager._spriteList.AddRange(sprites);
+    }
+
+    #endregion deserialization helpers
 }

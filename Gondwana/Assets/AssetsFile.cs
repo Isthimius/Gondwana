@@ -180,7 +180,12 @@ public sealed class AssetsFile : IDisposable
     /// <param name="filePath">The full path to the asset file. Must not be null or empty.</param>
     public void Add(AssetTypes type, string filePath)
     {
-        var name = Path.GetFileNameWithoutExtension(filePath);
+        // Audio assets must retain their extension so the correct decoder can be selected.
+        var name =
+            type == AssetTypes.Audio
+                ? Path.GetFileName(filePath)                 // keep file extension
+                : Path.GetFileNameWithoutExtension(filePath);
+
         Add(type, name, () => File.OpenRead(filePath));
     }
 

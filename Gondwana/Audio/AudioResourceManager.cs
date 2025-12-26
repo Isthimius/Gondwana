@@ -110,7 +110,7 @@ public sealed class AudioResourceManager : IDisposable
             return null;
         }
 
-        if (string.IsNullOrEmpty(original.soundResource.Extension))
+        if (string.IsNullOrEmpty(original.soundResource.SourceExtension))
         {
             Engine.Logger.LogWarning("Cannot clone AudioResource '{Key}' – missing original extension.", key);
             return null;
@@ -119,7 +119,7 @@ public sealed class AudioResourceManager : IDisposable
         return LoadFromStream(
             newKey,
             new MemoryStream(original.soundResource.OriginalBytes),
-            original.soundResource.Extension,
+            original.soundResource.SourceExtension,
             volume ?? original.soundResource.Volume,
             pan ?? original.soundResource.Pan
         );
@@ -128,6 +128,15 @@ public sealed class AudioResourceManager : IDisposable
     private AudioResource LoadFromBytes(string key, byte[] bytes, string fileHint, float volume, float pan)
     {
         string ext = Path.GetExtension(fileHint);
+
+        if (string.IsNullOrWhiteSpace(ext))
+        {
+            throw new InvalidOperationException(
+                $"Audio asset '{key}' has no file extension. " +
+                "Ensure audio AssetsFile entries retain their extension."
+            );
+        }
+
         var (readerFactory, requiresFile) = PlatformAudioFactory.GetReaderFactory(ext);
 
         Stream streamForReader;

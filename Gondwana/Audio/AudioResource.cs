@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Gondwana.Assets;
+using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Newtonsoft.Json;
@@ -20,6 +21,8 @@ public class AudioResource : IDisposable
     private VolumeSampleProvider? volumeProvider;           // final stage
     private bool disposed;
 
+    #region events
+
     /// <summary>
     /// Event that is raised when playback completes.
     /// Will not be raised if the audio is looping.
@@ -37,6 +40,11 @@ public class AudioResource : IDisposable
     /// </summary>
     public event EventHandler Disposed;
 
+    #endregion events
+
+    #region constructor
+
+    [JsonConstructor]
     private AudioResource()
     { }
 
@@ -47,16 +55,25 @@ public class AudioResource : IDisposable
         float pan = 0.0f,
         string? filePathOrExt = null,
         byte[]? rawBytes = null,
-        string? tempFilePath = null)
+        string? tempFilePath = null,
+        AssetsFileIdentifier? assetIdentifier = null)
     {
         Key = key;
         waveStream = audioStream;
         outputDevice = new WaveOutEvent();
         outputDevice.Init(BuildAudioGraph(waveStream, volume, pan));
         outputDevice.PlaybackStopped += OnPlaybackStopped;
-        FilePathOrExtension = filePathOrExt;
+
+        // Persisted rehydration info
+        AssetIdentifier = assetIdentifier;
+        SourceFilePath = (assetIdentifier is null && !string.IsNullOrWhiteSpace(filePathOrExt) && File.Exists(filePathOrExt))
+            ? filePathOrExt
+            : null;
+
         var ext = Path.GetExtension(filePathOrExt ?? string.Empty);
-        Extension = string.IsNullOrEmpty(ext) ? null : NormalizeExt(ext);
+        SourceExtension = string.IsNullOrEmpty(ext) ? null : NormalizeExt(ext);
+
+        // Runtime-only
         OriginalBytes = rawBytes;
         TempFilePath = tempFilePath;
     }
@@ -124,6 +141,10 @@ public class AudioResource : IDisposable
         return volumeProvider;
     }
 
+    #endregion constructor
+
+    #region public properties
+
     /// <summary>
     /// Gets the unique key associated with this audio resource.
     /// </summary>
@@ -136,17 +157,24 @@ public class AudioResource : IDisposable
     public byte[]? OriginalBytes { get; private set; }
 
     /// <summary>
-    /// Gets the file extension associated with the object, if available.
+    /// Original file path when the sound was loaded from disk (loose file).
+    /// Null when loaded from an AssetsFile.
     /// </summary>
-    [JsonIgnore]
-    public string? Extension { get; private set; }
+    [JsonProperty]
+    public string? SourceFilePath { get; private set; }
 
     /// <summary>
-    /// Gets the file path associated with the current object.
+    /// Asset identifier when the sound was loaded from an AssetsFile.
+    /// Null when loaded from a loose file.
     /// </summary>
-    /// <remarks>If passing an extension, it must begin with "."</remarks>
-    [JsonIgnore]
-    public string? FilePathOrExtension { get; }
+    [JsonProperty]
+    public AssetsFileIdentifier? AssetIdentifier { get; private set; }
+
+    /// <summary>
+    /// Normalized file extension (".wav", ".mp3", etc) used to select the reader.
+    /// </summary>
+    [JsonProperty]
+    public string? SourceExtension { get; private set; }
 
     /// <summary>
     /// Gets or sets the temporary file path used for WaveReaders that require a file on disk.
@@ -193,20 +221,25 @@ public class AudioResource : IDisposable
     /// </summary>
     public bool IsLooping { get; set; }
 
+    [JsonProperty]
+    private float _volume = 1.0f;
+
     /// <summary>
     /// Gets or sets the volume of the audio output.
     /// 0.0 is silent, 1.0 is full volume.
     /// </summary>
     public float Volume
     {
-        get => volumeProvider?.Volume ?? 1.0f;
+        get => _volume;
         set
         {
+            _volume = Math.Clamp(value, 0f, 1f);
             if (volumeProvider != null)
-                volumeProvider.Volume = Math.Clamp(value, 0.0f, 1.0f);
+                volumeProvider.Volume = _volume;
         }
     }
 
+    [JsonProperty]
     private float _pan;
 
     /// <summary>
@@ -226,6 +259,10 @@ public class AudioResource : IDisposable
                 ApplyStereoPan(stereoPanProvider, _pan);
         }
     }
+
+    #endregion public properties
+
+    #region public methods
 
     /// <summary>
     /// Starts playback of the audio stream.
@@ -300,6 +337,34 @@ public class AudioResource : IDisposable
     /// </summary>
     public void Stop() => outputDevice.Stop();
 
+    /// <summary>
+    /// Recreates (loads) this audio resource into <see cref="AudioResourceManager"/> from its persisted source.
+    /// </summary>
+    public void ReloadIntoManager()
+    {
+        if (AssetIdentifier is not null && AssetIdentifier.IsValid)
+        {
+            using var s = AssetIdentifier.Data;
+            if (s is null) throw new InvalidOperationException($"Missing asset data for {Key}.");
+            AudioResourceManager.Instance.LoadFromStream(Key, s, SourceExtension ?? ".wav", Volume, Pan);
+        }
+        else if (!string.IsNullOrWhiteSpace(SourceFilePath))
+        {
+            AudioResourceManager.Instance.LoadFromFile(Key, SourceFilePath, Volume, Pan);
+        }
+        else
+        {
+            throw new InvalidOperationException($"AudioResource '{Key}' has no persisted source.");
+        }
+
+        if (AudioResourceManager.Instance.TryGet(Key, out var loaded) && loaded is not null)
+            loaded.IsLooping = IsLooping;
+    }
+
+    #endregion public methods
+
+    #region private methods
+
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
         if (e.Exception != null)
@@ -355,6 +420,10 @@ public class AudioResource : IDisposable
         s.RightVolume = MathF.Sin(angle);
     }
 
+    #endregion private methods
+
+    #region IDisposable members
+
     public void Dispose()
     {
         Dispose(true);
@@ -400,4 +469,6 @@ public class AudioResource : IDisposable
         disposed = true;
         Disposed?.Invoke(this, EventArgs.Empty);
     }
+
+    #endregion IDisposable members
 }

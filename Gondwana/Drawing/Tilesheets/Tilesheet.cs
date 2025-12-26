@@ -51,9 +51,29 @@ public sealed class Tilesheet : IDisposable
 
     public Tilesheet(AssetsFile resFile, string entryName)
     {
+        if (resFile is null)
+            throw new ArgumentNullException(nameof(resFile));
+
+        if (string.IsNullOrWhiteSpace(entryName))
+            throw new ArgumentException("Asset entry name must be a non-empty string.", nameof(entryName));
+
         AssetIdentifier = new AssetsFileIdentifier(resFile, AssetTypes.Image, entryName);
+
+        using var assetStream = AssetIdentifier.Data
+            ?? throw new InvalidOperationException(
+                $"Tilesheet asset '{entryName}' could not be loaded from AssetsFile '{resFile.FilePath}'. " +
+                "The asset entry does not exist or returned a null data stream."
+            );
+
+        SkBitmap = SKBitmap.Decode(assetStream)
+            ?? throw new ArgumentException(
+                $"Failed to decode tilesheet bitmap from asset '{entryName}' in AssetsFile '{resFile.FilePath}'. " +
+                "The asset data is corrupt or not a supported image format."
+            );
+
         _name = entryName;
-        SkBitmap = SKBitmap.Decode(AssetIdentifier.Data);
+
+        // Register AFTER successful decode so the registry never contains a half-constructed tilesheet
         TilesheetRegistry.Instance.Register(this);
     }
 
@@ -180,10 +200,23 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
+    [JsonProperty]
+    public SKColor? MaskColor { get; private set; } = null;
+
+    [JsonProperty]
+    public byte MaskTolerance { get; private set; } = 5;
+
+    [JsonProperty]
+    public bool Premultiplied { get; private set; } = false;
+
     public void ApplyMask(SKColor? maskColor = null, byte tolerance = 5)
     {
         if (SkBitmap == null || SkBitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
+
+        MaskColor = maskColor;
+        MaskTolerance = tolerance;
+        Premultiplied = true;
 
         var targetColor = maskColor ?? SKColors.White;
 
@@ -210,8 +243,6 @@ public sealed class Tilesheet : IDisposable
         SkBitmapOriginal = SkBitmap.Copy();
 
         SkiaHelper.ApplyAlphaMask(SkBitmap, targetColor, tolerance);
-
-        // Optional but correct
         SkBitmap = SkiaHelper.PremultiplyAlpha(SkBitmap);
 
         BuildTileCache();
@@ -221,6 +252,8 @@ public sealed class Tilesheet : IDisposable
     {
         if (SkBitmap == null || SkBitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
+
+        Premultiplied = true;
 
         SkBitmapOriginal = SkBitmap.Copy();
         SkBitmap = SkiaHelper.PremultiplyAlpha(SkBitmap);
