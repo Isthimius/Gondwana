@@ -127,7 +127,7 @@ public sealed class EngineState
         engineState.Clear(); // clears scenes/sprites/cycles/tilesheets/sounds
 
         // 1) Load all asset files first (images/audio may be referenced by identifier).
-        LoadResourceFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
+        LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
 
         // bulk-load audio from asset packs first
         if (snapshot.AssetsFiles is not null)
@@ -170,7 +170,7 @@ public sealed class EngineState
         [JsonProperty] public TypedValueBag? ValueBag { get; set; }
     }
 
-    private static void LoadResourceFiles(IEnumerable<AssetsFile> resourceFiles)
+    private static void LoadAssetsFiles(IEnumerable<AssetsFile> resourceFiles)
     {
         // Replace raw deserialized resource files with proper loaded instances
         if (resourceFiles.Any())

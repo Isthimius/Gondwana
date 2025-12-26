@@ -340,7 +340,7 @@ public class AudioResource : IDisposable
     /// <summary>
     /// Recreates (loads) this audio resource into <see cref="AudioResourceManager"/> from its persisted source.
     /// </summary>
-    public void ReloadIntoManager()
+    internal void ReloadIntoManager()
     {
         if (AssetIdentifier is not null && AssetIdentifier.IsValid)
         {
