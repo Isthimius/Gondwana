@@ -57,34 +57,20 @@ Each engine cycle proceeds through the following stages:
 
 This dirty-region, view-centric design allows Gondwana to efficiently render complex scenes with multiple layers and cameras while keeping the core engine logic platform-agnostic. By separating world updates from presentation concerns, the engine remains predictable, debuggable, and scalable as projects grow.
 
-### Core Namespaces (High-Level)
+### Core Namespaces (high level)
 
-- **Gondwana**  
-  Core engine loop, lifecycle management, configuration, and global services.
+| Namespace                   | Responsibility                                                                                 |
+| --------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Gondwana**                | Core engine loop, lifecycle management, configuration, and global services.                    |
+| **Gondwana.Drawing**        | Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables. |
+| **Gondwana.Input**          | Unified input polling for keyboard, mouse, and gamepad devices.                                |
+| **Gondwana.Movement**       | Sprite movement controllers, easing functions, and scripted motion paths.                      |
+| **Gondwana.Rendering**      | Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.             |
+| **Gondwana.Scenes**         | Scene and SceneLayer composition, visibility, and layer-level refresh tracking.                |
+| **Gondwana.Timers**         | High-resolution timing, scheduled callbacks, and engine-cycle events.                          |
+| **Gondwana.Audio / Video**  | Audio playback, mixing, MIDI support, and experimental video integration.                      |
+| **Gondwana.WinForms / Web** | Platform adapters responsible for hosting render surfaces and wiring input.                    |
 
-- **Gondwana.Drawing**  
-  Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables.
-
-- **Gondwana.Input**  
-  Unified input polling for keyboard, mouse, and gamepad devices.
-
-- **Gondwana.Movement**  
-  Sprite movement controllers, easing functions, and scripted motion paths.
-
-- **Gondwana.Rendering**  
-  Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.
-
-- **Gondwana.Scenes**  
-  Scene and SceneLayer composition, visibility, and layer-level refresh tracking.
-
-- **Gondwana.Timers**  
-  High-resolution timing, scheduled callbacks, and engine-cycle events.
-
-- **Gondwana.Audio / Video**  
-  Audio playback, mixing, MIDI support, and experimental video integration.
-
-- **Gondwana.WinForms / Web**  
-  Platform adapters responsible for hosting render surfaces and wiring input.
 
 ---
 
