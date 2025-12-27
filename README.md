@@ -43,17 +43,17 @@ At runtime, Gondwana is driven by a central `Engine` loop responsible for advanc
 
 Each engine cycle proceeds through the following stages:
 
-1. **Timers and input polling**  
-   High-resolution timers advance simulation time while input adapters poll keyboard, mouse, and gamepad state. These events may move sprites, advance animations, or otherwise modify scene state.
-
-2. **World-space change tracking**  
+1. **World-space change tracking**  
    Any state changes enqueue world-space dirty regions into the owning `SceneLayer`’s `RefreshQueue`. This allows the engine to track *what* changed and *where*, without relying on full-frame redraws.
 
-3. **View-based rendering**  
+2. **View-based rendering**  
    During rendering, the `ViewRenderer` iterates active `View` instances in deterministic Z-order. Each view applies its camera and viewport transforms, then asks visible scene layers to redraw only the affected regions into a backbuffer.
 
-4. **Composition and presentation**  
+3. **Composition and presentation**  
    Sprites and tiles are drawn from cached tilesheets, animations advance frame-by-frame, and the composed backbuffer is finally presented by the platform host (WinForms, Web, etc.).
+
+4. **Timers and input polling**  
+   High-resolution timers advance simulation time while input adapters poll keyboard, mouse, and gamepad state. These events may move sprites, advance animations, or otherwise modify scene state.
 
 This dirty-region, view-centric design allows Gondwana to efficiently render complex scenes with multiple layers and cameras while keeping the core engine logic platform-agnostic. By separating world updates from presentation concerns, the engine remains predictable, debuggable, and scalable as projects grow.
 
