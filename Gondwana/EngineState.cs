@@ -146,6 +146,18 @@ public sealed class EngineState
         [JsonProperty] public TypedValueBag? ValueBag { get; set; }
     }
 
+    private static EngineStateParts NormalizeParts(EngineStateParts parts)
+    {
+        // Tilesheets and Audio may depend on AssetsFiles for AssetIdentifier.Data
+        if (parts.HasFlag(EngineStateParts.Tilesheets) ||
+            parts.HasFlag(EngineStateParts.Audio))
+        {
+            parts |= EngineStateParts.AssetsFiles;
+        }
+
+        return parts;
+    }
+
     private EngineStateSnapshot BuildSnapshot(EngineStateParts parts)
     {
         return new EngineStateSnapshot
@@ -206,11 +218,11 @@ public sealed class EngineState
         bool overwriteExisting,
         EngineStateParts parts)
     {
+        parts = NormalizeParts(parts);
+
+        // clear only what we're about to load.
         if (clearExisting)
-        {
-            // Clear only what we're about to load.
             ClearSelected(target, parts);
-        }
 
         if (parts.HasFlag(EngineStateParts.AssetsFiles))
             LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
