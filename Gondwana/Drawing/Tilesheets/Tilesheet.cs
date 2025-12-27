@@ -192,7 +192,7 @@ public sealed class Tilesheet : IDisposable
     }
 
     [JsonProperty]
-    public Dictionary<string, string> ValueBag = new();
+    public TypedValueBag ValueBag { get; set; } = new();
 
     [JsonProperty]
     public AssetsFileIdentifier? AssetIdentifier { get; private set; }

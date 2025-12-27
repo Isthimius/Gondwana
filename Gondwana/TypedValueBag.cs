@@ -29,7 +29,7 @@ public readonly record struct ValueKey<T>(string Name);
 /// without modifying core engine state.
 /// </para>
 /// </summary>
-public sealed class TypedValueBag
+public sealed class TypedValueBag : ICloneable
 {
     /// <summary>
     /// Internal storage for all values in the bag.
@@ -70,6 +70,35 @@ public sealed class TypedValueBag
     public TypedValueBag(JsonSerializer serializer)
     {
         _serializer = serializer;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypedValueBag"/> class by performing
+    /// a deep copy of another <see cref="TypedValueBag"/>.
+    /// </summary>
+    /// <param name="other">
+    /// The source value bag to copy from.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="other"/> is <c>null</c>.
+    /// </exception>
+    /// <remarks>
+    /// All values are cloned at the underlying JSON token level, ensuring that the
+    /// newly created bag does not share mutable state with the source instance.
+    /// <para>
+    /// This constructor is intended for scenarios such as engine state cloning,
+    /// snapshot restoration, or asset duplication where isolation between value bags
+    /// is required.
+    /// </para>
+    /// </remarks>
+    public TypedValueBag(TypedValueBag other)
+        : this(other?._serializer ?? throw new ArgumentNullException(nameof(other)))
+    {
+        if (other is null)
+            throw new ArgumentNullException(nameof(other));
+
+        foreach (var (key, token) in other._data)
+            _data[key] = token.DeepClone();
     }
 
     /// <summary>
@@ -172,4 +201,42 @@ public sealed class TypedValueBag
     {
         _data.Clear();
     }
+
+    /// <summary>
+    /// Merges values from another <see cref="TypedValueBag"/> into this instance.
+    /// </summary>
+    /// <param name="incoming">
+    /// The source bag whose values will be copied into this bag.
+    /// If <c>null</c>, the method performs no action.
+    /// </param>
+    /// <param name="overwriteExisting">
+    /// If <c>true</c>, values in this bag will be replaced when the same key
+    /// exists in <paramref name="incoming"/>. If <c>false</c>, existing values
+    /// are preserved and only missing keys are added.
+    /// </param>
+    /// <remarks>
+    /// Values are merged at the underlying token level and cloned before insertion,
+    /// ensuring the two bags do not share mutable state.
+    /// </remarks>
+    public void MergeFrom(TypedValueBag? incoming, bool overwriteExisting = false)
+    {
+        if (incoming is null)
+            return;
+
+        foreach (var (key, token) in incoming._data)
+        {
+            if (!overwriteExisting && _data.ContainsKey(key))
+                continue;
+
+            _data[key] = token.DeepClone();
+        }
+    }
+
+    /// <summary>
+    /// Creates a deep copy of this <see cref="TypedValueBag"/> (tokens are cloned).
+    /// </summary>
+    public TypedValueBag Clone() => new(this);
+
+    // Explicit interface impl, because ICloneable returns object
+    object ICloneable.Clone() => Clone();
 }

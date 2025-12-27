@@ -116,8 +116,7 @@ public sealed class EngineState
             ?? new EngineStateSnapshot();
 
         // Merge into the live engine state (registries)
-        var target = Engine.Instance.State;
-        ApplySnapshot(target, snapshot, clearExisting: true, overwriteExisting: true, parts);
+        ApplySnapshot(snapshot, clearExisting: true, overwriteExisting: true, parts);
     }
 
     public static void MergeFromFile(string path, bool compressed = false, bool overwriteExisting = false, EngineStateParts parts = EngineStateParts.All)
@@ -129,8 +128,7 @@ public sealed class EngineState
             ?? new EngineStateSnapshot();
 
         // Merge into the live engine state (registries)
-        var target = Engine.Instance.State;
-        ApplySnapshot(target, snapshot, clearExisting: false, overwriteExisting: overwriteExisting, parts);
+        ApplySnapshot(snapshot, clearExisting: false, overwriteExisting: overwriteExisting, parts);
     }
 
     #region deserialization helpers
@@ -212,7 +210,6 @@ public sealed class EngineState
     /// DRY: reads snapshot, loads assets, then merges/rehydrates everything in a consistent order.
     /// </summary>
     private static void ApplySnapshot(
-        EngineState target,
         EngineStateSnapshot snapshot,
         bool clearExisting,
         bool overwriteExisting,
@@ -222,7 +219,7 @@ public sealed class EngineState
 
         // clear only what we're about to load.
         if (clearExisting)
-            ClearSelected(target, parts);
+            ClearSelected(parts);
 
         if (parts.HasFlag(EngineStateParts.AssetsFiles))
             LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
@@ -243,15 +240,10 @@ public sealed class EngineState
             MergeSprites(snapshot.Sprites, overwriteExisting);
 
         if (parts.HasFlag(EngineStateParts.ValueBag))
-        {
-            if (clearExisting)
-                target.ValueBag = snapshot.ValueBag ?? new();
-            else
-                MergeValueBag(target.ValueBag, snapshot.ValueBag, overwriteExisting);
-        }
+            Engine.Instance.State.ValueBag.MergeFrom(snapshot.ValueBag, overwriteExisting);
     }
 
-    private static void ClearSelected(EngineState target, EngineStateParts parts)
+    private static void ClearSelected(EngineStateParts parts)
     {
         if (parts.HasFlag(EngineStateParts.AssetsFiles))
             AssetsFile.ClearAll();
@@ -272,7 +264,7 @@ public sealed class EngineState
             AudioResourceManager.Instance.Dispose();
 
         if (parts.HasFlag(EngineStateParts.ValueBag))
-            target.ValueBag.Clear();
+            Engine.Instance.State.ValueBag.Clear();
     }
 
     private static void LoadAssetsFiles(IEnumerable<AssetsFile> resourceFiles)
@@ -327,12 +319,12 @@ public sealed class EngineState
         rebuilt.OverhangPixels = saved.OverhangPixels;
 
         // 3) Restore extensible tilesheet metadata
-        rebuilt.ValueBag = new Dictionary<string, string>(saved.ValueBag);
+        rebuilt.ValueBag = saved.ValueBag.Clone();
 
         // 4) Reapply bitmap transforms recorded in the save.
         //
         // IMPORTANT: SkBitmap is not serialized, so these operations must be replayed here.
-        // ApplyMask() also premultiplies alpha internally in your implementation.
+        // ApplyMask() also premultiplies alpha internally in the implementation.
         if (saved.MaskColor is not null)
         {
             rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
@@ -522,37 +514,6 @@ public sealed class EngineState
                 existingIndexById[incoming.ID] = SpriteManager._spriteList.Count;
                 SpriteManager._spriteList.Add(incoming);
             }
-        }
-    }
-
-    private static void MergeValueBag(
-        TypedValueBag target,
-        TypedValueBag? incoming,
-        bool overwriteExisting)
-    {
-        if (incoming is null)
-            return;
-
-        // TypedValueBag stores data in a private Dictionary<string, JToken> named "_data".
-        // We merge at the token level to preserve arbitrary structured values.
-        static Dictionary<string, JToken> GetDataDict(TypedValueBag bag)
-        {
-            var field = typeof(TypedValueBag).GetField("_data", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (field?.GetValue(bag) is not Dictionary<string, JToken> dict)
-                throw new InvalidOperationException("TypedValueBag internal storage field '_data' was not found or had an unexpected type.");
-
-            return dict;
-        }
-
-        var targetData = GetDataDict(target);
-        var incomingData = GetDataDict(incoming);
-
-        foreach (var (key, token) in incomingData)
-        {
-            if (!overwriteExisting && targetData.ContainsKey(key))
-                continue;
-
-            targetData[key] = token.DeepClone();
         }
     }
 
