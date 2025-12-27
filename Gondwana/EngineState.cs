@@ -86,9 +86,11 @@ public sealed class EngineState
         ValueBag.Clear();
     }
 
-    public void SaveToFile(string path, bool compress = false)
+    public void SaveToFile(string path, bool compress = false, EngineStateParts parts = EngineStateParts.All)
     {
-        var json = JsonConvert.SerializeObject(this, JsonSerializerSettings);
+        var snapshot = BuildSnapshot(parts);
+
+        var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
         if (compress)
         {
@@ -103,7 +105,7 @@ public sealed class EngineState
         }
     }
 
-    public static EngineState LoadFromFile(string path, bool compressed = false)
+    public static void LoadFromFile(string path, bool compressed = false, EngineStateParts parts = EngineStateParts.All)
     {
         string json = ReadJsonFile(path, compressed);
 
@@ -113,17 +115,12 @@ public sealed class EngineState
             JsonConvert.DeserializeObject<EngineStateSnapshot>(json, JsonSerializerSettings)
             ?? new EngineStateSnapshot();
 
-        // Create a fresh engine state and clear global registries.
-        var engineState = new EngineState();
-        ApplySnapshot(engineState, snapshot, clearExisting: true, overwriteExisting: true);
-
-        return engineState;
+        // Merge into the live engine state (registries)
+        var target = Engine.Instance.State;
+        ApplySnapshot(target, snapshot, clearExisting: true, overwriteExisting: true, parts);
     }
 
-    public static void MergeFromFile(
-        string path,
-        bool compressed = false,
-        bool overwriteExisting = false)
+    public static void MergeFromFile(string path, bool compressed = false, bool overwriteExisting = false, EngineStateParts parts = EngineStateParts.All)
     {
         string json = ReadJsonFile(path, compressed);
 
@@ -133,7 +130,7 @@ public sealed class EngineState
 
         // Merge into the live engine state (registries)
         var target = Engine.Instance.State;
-        ApplySnapshot(target, snapshot, clearExisting: false, overwriteExisting: overwriteExisting);
+        ApplySnapshot(target, snapshot, clearExisting: false, overwriteExisting: overwriteExisting, parts);
     }
 
     #region deserialization helpers
@@ -147,6 +144,40 @@ public sealed class EngineState
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
         [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
         [JsonProperty] public TypedValueBag? ValueBag { get; set; }
+    }
+
+    private EngineStateSnapshot BuildSnapshot(EngineStateParts parts)
+    {
+        return new EngineStateSnapshot
+        {
+            AssetsFiles = parts.HasFlag(EngineStateParts.AssetsFiles)
+                ? AssetsFiles.ToList()
+                : null,
+
+            Tilesheets = parts.HasFlag(EngineStateParts.Tilesheets)
+                ? Tilesheets.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+                : null,
+
+            Cycles = parts.HasFlag(EngineStateParts.Cycles)
+                ? Cycles
+                : null,
+
+            Scenes = parts.HasFlag(EngineStateParts.Scenes)
+                ? Scenes
+                : null,
+
+            Sprites = parts.HasFlag(EngineStateParts.Sprites)
+                ? Sprites
+                : null,
+
+            SoundResources = parts.HasFlag(EngineStateParts.Audio)
+                ? SoundResources
+                : null,
+
+            ValueBag = parts.HasFlag(EngineStateParts.ValueBag)
+                ? ValueBag
+                : null
+        };
     }
 
     private static string ReadJsonFile(string path, bool compressed)
@@ -172,36 +203,64 @@ public sealed class EngineState
         EngineState target,
         EngineStateSnapshot snapshot,
         bool clearExisting,
-        bool overwriteExisting)
+        bool overwriteExisting,
+        EngineStateParts parts)
     {
         if (clearExisting)
-            target.Clear(); // clears scenes/sprites/cycles/tilesheets/sounds (+ ValueBag)
-
-        // 1) Load all asset files first (images/audio may be referenced by identifier).
-        LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
-
-        // 2) Audio: bulk-load packs first, then apply/rehydrate loose-file specs + per-key settings.
-        MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
-
-        // 3) Tilesheets (rehydrate image bytes via AssetsFile or file path).
-        MergeTilesheets(snapshot.Tilesheets, overwriteExisting);
-
-        // 4) Cycles/scenes/sprites.
-        MergeCycles(snapshot.Cycles, overwriteExisting);
-        MergeScenes(snapshot.Scenes);
-        MergeSprites(snapshot.Sprites);
-
-        // 5) Extensible save data
-        if (clearExisting)
         {
-            // For a clean load, replace the bag wholesale.
-            target.ValueBag = snapshot.ValueBag ?? new();
+            // Clear only what we're about to load.
+            ClearSelected(target, parts);
         }
-        else
+
+        if (parts.HasFlag(EngineStateParts.AssetsFiles))
+            LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
+
+        if (parts.HasFlag(EngineStateParts.Audio))
+            MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
+
+        if (parts.HasFlag(EngineStateParts.Tilesheets))
+            MergeTilesheets(snapshot.Tilesheets, overwriteExisting);
+
+        if (parts.HasFlag(EngineStateParts.Cycles))
+            MergeCycles(snapshot.Cycles, overwriteExisting);
+
+        if (parts.HasFlag(EngineStateParts.Scenes))
+            MergeScenes(snapshot.Scenes, overwriteExisting);
+
+        if (parts.HasFlag(EngineStateParts.Sprites))
+            MergeSprites(snapshot.Sprites, overwriteExisting);
+
+        if (parts.HasFlag(EngineStateParts.ValueBag))
         {
-            // For a merge, merge keys into the existing bag.
-            MergeValueBag(target.ValueBag, snapshot.ValueBag, overwriteExisting);
+            if (clearExisting)
+                target.ValueBag = snapshot.ValueBag ?? new();
+            else
+                MergeValueBag(target.ValueBag, snapshot.ValueBag, overwriteExisting);
         }
+    }
+
+    private static void ClearSelected(EngineState target, EngineStateParts parts)
+    {
+        if (parts.HasFlag(EngineStateParts.AssetsFiles))
+            AssetsFile.ClearAll();
+
+        if (parts.HasFlag(EngineStateParts.Tilesheets))
+            TilesheetRegistry.Instance.Clear();
+
+        if (parts.HasFlag(EngineStateParts.Cycles))
+            Cycle.ClearAllAnimationCycles();
+
+        if (parts.HasFlag(EngineStateParts.Scenes))
+            Scene.ClearAllScenes();
+
+        if (parts.HasFlag(EngineStateParts.Sprites))
+            SpriteManager.Clear();
+
+        if (parts.HasFlag(EngineStateParts.Audio))
+            AudioResourceManager.Instance.Dispose();
+
+        if (parts.HasFlag(EngineStateParts.ValueBag))
+            target.ValueBag.Clear();
     }
 
     private static void LoadAssetsFiles(IEnumerable<AssetsFile> resourceFiles)
@@ -361,20 +420,97 @@ public sealed class EngineState
         }
     }
 
-    private static void MergeScenes(List<Scene>? scenes)
+    private static void MergeScenes(List<Scene>? scenes, bool overwriteExisting)
     {
         if (scenes is null || scenes.Count == 0)
             return;
 
-        Scene._allScenes.AddRange(scenes);
+        // Index existing scenes by ID (case-sensitive; change if you prefer)
+        var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (int i = 0; i < Scene._allScenes.Count; i++)
+        {
+            var id = Scene._allScenes[i].ID;
+            if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
+                existingIndexById.Add(id, i);
+        }
+
+        // Avoid duplicating the same incoming ID twice (keeps last one)
+        var seenIncoming = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var incoming in scenes)
+        {
+            if (incoming is null)
+                continue;
+
+            // Ensure ID exists (important if something created scenes without IDs)
+            if (string.IsNullOrWhiteSpace(incoming.ID))
+                incoming.ID = Guid.NewGuid().ToString();
+
+            // If the incoming list contains the same ID multiple times, last one wins.
+            if (!seenIncoming.Add(incoming.ID))
+            {
+                // Replace the previously added/replaced incoming with this one:
+                // easiest way: treat it as overwriteExisting=true for that ID
+                overwriteExisting = true;
+            }
+
+            if (existingIndexById.TryGetValue(incoming.ID, out int existingIndex))
+            {
+                if (!overwriteExisting)
+                    continue;
+
+                Scene._allScenes[existingIndex] = incoming;
+            }
+            else
+            {
+                existingIndexById[incoming.ID] = Scene._allScenes.Count;
+                Scene._allScenes.Add(incoming);
+            }
+        }
     }
 
-    private static void MergeSprites(List<Sprite>? sprites)
+    private static void MergeSprites(List<Sprite>? sprites, bool overwriteExisting)
     {
         if (sprites is null || sprites.Count == 0)
             return;
 
-        SpriteManager._spriteList.AddRange(sprites);
+        var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (int i = 0; i < SpriteManager._spriteList.Count; i++)
+        {
+            var id = SpriteManager._spriteList[i].ID;
+            if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
+                existingIndexById.Add(id, i);
+        }
+
+        var seenIncoming = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var incoming in sprites)
+        {
+            if (incoming is null)
+                continue;
+
+            if (string.IsNullOrWhiteSpace(incoming.ID))
+                incoming.ID = Guid.NewGuid().ToString();
+
+            if (!seenIncoming.Add(incoming.ID))
+            {
+                // Same-ID appears again in the incoming list: last one wins.
+                overwriteExisting = true;
+            }
+
+            if (existingIndexById.TryGetValue(incoming.ID, out int existingIndex))
+            {
+                if (!overwriteExisting)
+                    continue;
+
+                SpriteManager._spriteList[existingIndex] = incoming;
+            }
+            else
+            {
+                existingIndexById[incoming.ID] = SpriteManager._spriteList.Count;
+                SpriteManager._spriteList.Add(incoming);
+            }
+        }
     }
 
     private static void MergeValueBag(
