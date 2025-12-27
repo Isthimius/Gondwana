@@ -8,6 +8,7 @@ using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Gondwana;
 
@@ -157,6 +158,43 @@ public sealed class EngineState
         return engineState;
     }
 
+    public static void MergeFromFile(
+        EngineState target,
+        string path,
+        bool compressed = false,
+        bool overwriteExisting = false)
+    {
+        if (target is null)
+            throw new ArgumentNullException(nameof(target));
+
+        string json;
+        if (compressed)
+        {
+            using var file = File.OpenRead(path);
+            using var zip = new GZipStream(file, CompressionMode.Decompress);
+            using var reader = new StreamReader(zip);
+            json = reader.ReadToEnd();
+        }
+        else
+        {
+            json = File.ReadAllText(path);
+        }
+
+        var snapshot =
+            JsonConvert.DeserializeObject<EngineStateSnapshot>(json, JsonSerializerSettings)
+            ?? new EngineStateSnapshot();
+
+        LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
+
+        MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
+        MergeTilesheets(snapshot.Tilesheets, overwriteExisting);
+        MergeCycles(snapshot.Cycles, overwriteExisting);
+        MergeScenes(snapshot.Scenes);
+        MergeSprites(snapshot.Sprites);
+        MergeValueBag(target.ValueBag, snapshot.ValueBag, overwriteExisting);
+    }
+
+
     #region deserialization helpers
 
     private sealed class EngineStateSnapshot
@@ -274,6 +312,175 @@ public sealed class EngineState
         SpriteManager._spriteList.Clear();
         SpriteManager._spriteList.AddRange(sprites);
     }
+
+    private static void MergeAudio(
+        List<AssetsFile>? assetsFiles,
+        Dictionary<string, AudioResource>? soundSpecs,
+        bool overwriteExisting)
+    {
+        // 1) Load from asset packs
+        if (assetsFiles is not null)
+        {
+            foreach (var af in assetsFiles)
+            {
+                if (overwriteExisting)
+                {
+                    foreach (var entry in af.GetAllEntries())
+                    {
+                        if (entry.AssetType == AssetTypes.Audio)
+                            AudioResourceManager.Instance.Unload(entry.AssetName);
+                    }
+                }
+
+                AudioResourceManager.Instance.LoadFromEngineResourceFile(af);
+            }
+        }
+
+        // 2) Apply loose-file specs / overrides
+        if (soundSpecs is null)
+            return;
+
+        foreach (var (key, spec) in soundSpecs)
+        {
+            if (AudioResourceManager.Instance.Contains(key))
+            {
+                if (!overwriteExisting)
+                {
+                    var existing = AudioResourceManager.Instance.Get(key);
+                    if (existing is not null)
+                    {
+                        existing.Volume = spec.Volume;
+                        existing.Pan = spec.Pan;
+                        existing.IsLooping = spec.IsLooping;
+                    }
+                    continue;
+                }
+
+                AudioResourceManager.Instance.Unload(key);
+            }
+
+            spec.ReloadIntoManager();
+        }
+    }
+
+    private static void MergeTilesheets(
+        Dictionary<string, Tilesheet>? tilesheets,
+        bool overwriteExisting)
+    {
+        if (tilesheets is null || tilesheets.Count == 0)
+            return;
+
+        var registry = TilesheetRegistry.Instance.GetAll();
+
+        foreach (var (key, saved) in tilesheets)
+        {
+            if (!overwriteExisting && registry.ContainsKey(key))
+                continue;
+
+            Tilesheet rebuilt;
+
+            if (saved.AssetIdentifier is not null && saved.AssetIdentifier.IsValid)
+            {
+                rebuilt = new Tilesheet(
+                    saved.AssetIdentifier.AssetsFile,
+                    saved.AssetIdentifier.AssetName
+                );
+            }
+            else if (!string.IsNullOrWhiteSpace(saved.ImageFilePath) &&
+                     File.Exists(saved.ImageFilePath))
+            {
+                rebuilt = new Tilesheet(saved.Name, saved.ImageFilePath);
+            }
+            else
+            {
+                Engine.Logger.LogWarning(
+                    "MergeFromFile: Skipping tilesheet '{Key}' (no valid source).",
+                    key);
+                continue;
+            }
+
+            // Restore metadata
+            rebuilt.Name = saved.Name;
+            rebuilt.TileSize = saved.TileSize;
+            rebuilt.InitialOffsetX = saved.InitialOffsetX;
+            rebuilt.InitialOffsetY = saved.InitialOffsetY;
+            rebuilt.XPixelsBetweenTiles = saved.XPixelsBetweenTiles;
+            rebuilt.YPixelsBetweenTiles = saved.YPixelsBetweenTiles;
+            rebuilt.OverhangPixels = saved.OverhangPixels;
+
+            rebuilt.ValueBag = new Dictionary<string, string>(saved.ValueBag);
+
+            // Replay transforms
+            if (saved.MaskColor is not null)
+                rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
+            else if (saved.Premultiplied)
+                rebuilt.ApplyPremultiplyAlpha();
+        }
+    }
+
+    private static void MergeCycles(Dictionary<string, Cycle>? cycles, bool overwriteExisting)
+    {
+        if (cycles is null || cycles.Count == 0)
+            return;
+
+        foreach (var (key, cycle) in cycles)
+        {
+            if (!overwriteExisting && Cycle._cycles.ContainsKey(key))
+                continue;
+
+            Cycle._cycles[key] = cycle;
+        }
+    }
+
+    private static void MergeScenes(List<Scene>? scenes)
+    {
+        if (scenes is null || scenes.Count == 0)
+            return;
+
+        Scene._allScenes.AddRange(scenes);
+    }
+
+    private static void MergeSprites(List<Sprite>? sprites)
+    {
+        if (sprites is null || sprites.Count == 0)
+            return;
+
+        SpriteManager._spriteList.AddRange(sprites);
+    }
+
+    private static void MergeValueBag(
+        TypedValueBag target,
+        TypedValueBag? incoming,
+        bool overwriteExisting)
+    {
+        if (incoming is null)
+            return;
+
+        // Serialize incoming bag to JObject so we can enumerate keys
+        var incomingObj = JObject.FromObject(incoming, Newtonsoft.Json.JsonSerializer.CreateDefault());
+
+        if (!incomingObj.TryGetValue("_data", out var dataToken) || dataToken is not JObject data)
+            return;
+
+        foreach (var prop in data.Properties())
+        {
+            if (!overwriteExisting)
+            {
+                // If target already has this key, skip
+                var hasKey = JObject.FromObject(target)
+                    .SelectToken($"_data.{prop.Name}") is not null;
+
+                if (hasKey)
+                    continue;
+            }
+
+            // Inject / overwrite via JSON
+            ((JObject)JObject.FromObject(target)["_data"]!)
+                .Add(prop.Name, prop.Value.DeepClone());
+        }
+    }
+
+
 
     #endregion deserialization helpers
 }
