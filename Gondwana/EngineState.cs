@@ -10,6 +10,7 @@ using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace Gondwana;
 
@@ -114,35 +115,7 @@ public sealed class EngineState
 
         // Create a fresh engine state and clear global registries.
         var engineState = new EngineState();
-        engineState.Clear(); // clears scenes/sprites/cycles/tilesheets/sounds
-
-        // 1) Load all asset files first (images/audio may be referenced by identifier).
-        LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
-
-        // bulk-load audio from asset packs first
-        if (snapshot.AssetsFiles is not null)
-        {
-            foreach (var af in snapshot.AssetsFiles)
-                AudioResourceManager.Instance.LoadFromEngineResourceFile(af);
-        }
-
-        // rehydrate “saved audio specs” (loose-file + any per-key settings)
-        if (snapshot.SoundResources is not null)
-        {
-            foreach (var spec in snapshot.SoundResources.Values)
-                spec.ReloadIntoManager();
-        }
-
-        // 2) Restore tilesheets (rehydrate image bytes via AssetsFile or file path).
-        RestoreTilesheets(snapshot.Tilesheets);
-
-        // 3) Restore cycles/scenes/sprites.
-        RestoreCycles(snapshot.Cycles);
-        RestoreScenes(snapshot.Scenes);
-        RestoreSprites(snapshot.Sprites);
-
-        // 4) Restore extensible save data
-        engineState.ValueBag = snapshot.ValueBag ?? new();
+        ApplySnapshot(engineState, snapshot, clearExisting: true, overwriteExisting: true);
 
         return engineState;
     }
@@ -158,14 +131,9 @@ public sealed class EngineState
             JsonConvert.DeserializeObject<EngineStateSnapshot>(json, JsonSerializerSettings)
             ?? new EngineStateSnapshot();
 
-        LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
-
-        MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
-        MergeTilesheets(snapshot.Tilesheets, overwriteExisting);
-        MergeCycles(snapshot.Cycles, overwriteExisting);
-        MergeScenes(snapshot.Scenes);
-        MergeSprites(snapshot.Sprites);
-        MergeValueBag(Engine.Instance.State.ValueBag, snapshot.ValueBag, overwriteExisting);
+        // Merge into the live engine state (registries)
+        var target = Engine.Instance.State;
+        ApplySnapshot(target, snapshot, clearExisting: false, overwriteExisting: overwriteExisting);
     }
 
     #region deserialization helpers
@@ -193,6 +161,46 @@ public sealed class EngineState
         else
         {
             return File.ReadAllText(path);
+        }
+    }
+
+    /// <summary>
+    /// Single “apply” path used by both LoadFromFile and MergeFromFile.
+    /// DRY: reads snapshot, loads assets, then merges/rehydrates everything in a consistent order.
+    /// </summary>
+    private static void ApplySnapshot(
+        EngineState target,
+        EngineStateSnapshot snapshot,
+        bool clearExisting,
+        bool overwriteExisting)
+    {
+        if (clearExisting)
+            target.Clear(); // clears scenes/sprites/cycles/tilesheets/sounds (+ ValueBag)
+
+        // 1) Load all asset files first (images/audio may be referenced by identifier).
+        LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
+
+        // 2) Audio: bulk-load packs first, then apply/rehydrate loose-file specs + per-key settings.
+        MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
+
+        // 3) Tilesheets (rehydrate image bytes via AssetsFile or file path).
+        MergeTilesheets(snapshot.Tilesheets, overwriteExisting);
+
+        // 4) Cycles/scenes/sprites.
+        MergeCycles(snapshot.Cycles, overwriteExisting);
+        MergeScenes(snapshot.Scenes);
+        MergeSprites(snapshot.Sprites);
+
+        // 5) Extensible save data
+        if (clearExisting)
+        {
+            // For a clean load, replace the bag wholesale.
+            target.ValueBag = snapshot.ValueBag ?? new();
+        }
+        else
+        {
+            // For a merge, merge keys into the existing bag.
+            MergeValueBag(target.ValueBag, snapshot.ValueBag, overwriteExisting);
         }
     }
 
@@ -266,48 +274,6 @@ public sealed class EngineState
         }
 
         return rebuilt;
-    }
-
-    private static void RestoreTilesheets(Dictionary<string, Tilesheet>? tilesheets)
-    {
-        TilesheetRegistry.Instance.Clear();
-        if (tilesheets is null || tilesheets.Count == 0)
-            return;
-
-        foreach (var (key, saved) in tilesheets)
-        {
-            var rebuilt = RebuildTilesheetFromSaved(key, saved);
-            if (rebuilt is null) continue;
-            // ctor / registry side-effects already register the tilesheet
-        }
-    }
-
-    private static void RestoreCycles(Dictionary<string, Cycle>? cycles)
-    {
-        Cycle.ClearAllAnimationCycles();
-        if (cycles is null || cycles.Count == 0) return;
-
-        Cycle._cycles.Clear();
-        foreach (var kvp in cycles)
-            Cycle._cycles[kvp.Key] = kvp.Value;
-    }
-
-    private static void RestoreScenes(List<Scene>? scenes)
-    {
-        Scene.ClearAllScenes();
-        if (scenes is null || scenes.Count == 0) return;
-
-        Scene._allScenes.Clear();
-        Scene._allScenes.AddRange(scenes);
-    }
-
-    private static void RestoreSprites(List<Sprite>? sprites)
-    {
-        SpriteManager.Clear();
-        if (sprites is null || sprites.Count == 0) return;
-
-        SpriteManager._spriteList.Clear();
-        SpriteManager._spriteList.AddRange(sprites);
     }
 
     private static void MergeAudio(
@@ -419,27 +385,26 @@ public sealed class EngineState
         if (incoming is null)
             return;
 
-        // Serialize incoming bag to JObject so we can enumerate keys
-        var incomingObj = JObject.FromObject(incoming, Newtonsoft.Json.JsonSerializer.CreateDefault());
-
-        if (!incomingObj.TryGetValue("_data", out var dataToken) || dataToken is not JObject data)
-            return;
-
-        foreach (var prop in data.Properties())
+        // TypedValueBag stores data in a private Dictionary<string, JToken> named "_data".
+        // We merge at the token level to preserve arbitrary structured values.
+        static Dictionary<string, JToken> GetDataDict(TypedValueBag bag)
         {
-            if (!overwriteExisting)
-            {
-                // If target already has this key, skip
-                var hasKey = JObject.FromObject(target)
-                    .SelectToken($"_data.{prop.Name}") is not null;
+            var field = typeof(TypedValueBag).GetField("_data", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field?.GetValue(bag) is not Dictionary<string, JToken> dict)
+                throw new InvalidOperationException("TypedValueBag internal storage field '_data' was not found or had an unexpected type.");
 
-                if (hasKey)
-                    continue;
-            }
+            return dict;
+        }
 
-            // Inject / overwrite via JSON
-            ((JObject)JObject.FromObject(target)["_data"]!)
-                .Add(prop.Name, prop.Value.DeepClone());
+        var targetData = GetDataDict(target);
+        var incomingData = GetDataDict(incoming);
+
+        foreach (var (key, token) in incomingData)
+        {
+            if (!overwriteExisting && targetData.ContainsKey(key))
+                continue;
+
+            targetData[key] = token.DeepClone();
         }
     }
 

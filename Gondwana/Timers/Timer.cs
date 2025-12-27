@@ -143,7 +143,7 @@ public sealed class Timer : IDisposable
     /// </summary>
     public static string[] TimerIDs => _timers.Keys.ToArray();
 
-    internal static void ClearAll()
+    public static void ClearAll()
     {
         foreach (var key in _timers.Keys.ToArray())
             Remove(key);
