@@ -65,5 +65,5 @@ public partial class EngineConfiguration
     /// <summary>
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.
     /// </summary>
-    public List<string>? StateFiles { get; set; }
+    public List<StateFileMount>? StateFiles { get; set; }
 }
