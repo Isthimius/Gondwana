@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
 using System.Text.Json;
+using System.Linq;
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Animation;
@@ -103,19 +104,7 @@ public sealed class EngineState
 
     public static EngineState LoadFromFile(string path, bool compressed = false)
     {
-        string json;
-
-        if (compressed)
-        {
-            using var file = File.OpenRead(path);
-            using var zip = new GZipStream(file, CompressionMode.Decompress);
-            using var reader = new StreamReader(zip);
-            json = reader.ReadToEnd();
-        }
-        else
-        {
-            json = File.ReadAllText(path);
-        }
+        string json = ReadJsonFile(path, compressed);
 
         // Important: EngineState's collections are mostly getter-only proxies over registries,
         // so deserialize into a snapshot DTO with setters.
@@ -159,26 +148,11 @@ public sealed class EngineState
     }
 
     public static void MergeFromFile(
-        EngineState target,
         string path,
         bool compressed = false,
         bool overwriteExisting = false)
     {
-        if (target is null)
-            throw new ArgumentNullException(nameof(target));
-
-        string json;
-        if (compressed)
-        {
-            using var file = File.OpenRead(path);
-            using var zip = new GZipStream(file, CompressionMode.Decompress);
-            using var reader = new StreamReader(zip);
-            json = reader.ReadToEnd();
-        }
-        else
-        {
-            json = File.ReadAllText(path);
-        }
+        string json = ReadJsonFile(path, compressed);
 
         var snapshot =
             JsonConvert.DeserializeObject<EngineStateSnapshot>(json, JsonSerializerSettings)
@@ -191,9 +165,8 @@ public sealed class EngineState
         MergeCycles(snapshot.Cycles, overwriteExisting);
         MergeScenes(snapshot.Scenes);
         MergeSprites(snapshot.Sprites);
-        MergeValueBag(target.ValueBag, snapshot.ValueBag, overwriteExisting);
+        MergeValueBag(Engine.Instance.State.ValueBag, snapshot.ValueBag, overwriteExisting);
     }
-
 
     #region deserialization helpers
 
@@ -206,6 +179,21 @@ public sealed class EngineState
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
         [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
         [JsonProperty] public TypedValueBag? ValueBag { get; set; }
+    }
+
+    private static string ReadJsonFile(string path, bool compressed)
+    {
+        if (compressed)
+        {
+            using var file = File.OpenRead(path);
+            using var zip = new GZipStream(file, CompressionMode.Decompress);
+            using var reader = new StreamReader(zip);
+            return reader.ReadToEnd();
+        }
+        else
+        {
+            return File.ReadAllText(path);
+        }
     }
 
     private static void LoadAssetsFiles(IEnumerable<AssetsFile> resourceFiles)
@@ -228,6 +216,58 @@ public sealed class EngineState
         }
     }
 
+    private static Tilesheet? RebuildTilesheetFromSaved(string key, Tilesheet saved)
+    {
+        Tilesheet rebuilt;
+
+        // 1) Rehydrate bitmap from AssetsFile entry (preferred) or file path (fallback)
+        if (saved.AssetIdentifier is not null && saved.AssetIdentifier.IsValid)
+        {
+            var id = saved.AssetIdentifier;
+            rebuilt = new Tilesheet(id.AssetsFile, id.AssetName);
+        }
+        else if (!string.IsNullOrWhiteSpace(saved.ImageFilePath) && File.Exists(saved.ImageFilePath))
+        {
+            rebuilt = new Tilesheet(saved.Name, saved.ImageFilePath);
+        }
+        else
+        {
+            Engine.Logger.LogWarning(
+                "EngineState: Skipping tilesheet '{Key}' because it has no valid AssetIdentifier and no ImageFilePath.",
+                key);
+            return null;
+        }
+
+        // 2) Restore metadata (these trigger cache rebuild as needed)
+        rebuilt.Name = saved.Name;
+        rebuilt.TileSize = saved.TileSize;
+        rebuilt.InitialOffsetX = saved.InitialOffsetX;
+        rebuilt.InitialOffsetY = saved.InitialOffsetY;
+        rebuilt.XPixelsBetweenTiles = saved.XPixelsBetweenTiles;
+        rebuilt.YPixelsBetweenTiles = saved.YPixelsBetweenTiles;
+        rebuilt.OverhangPixels = saved.OverhangPixels;
+
+        // 3) Restore extensible tilesheet metadata
+        rebuilt.ValueBag = new Dictionary<string, string>(saved.ValueBag);
+
+        // 4) Reapply bitmap transforms recorded in the save.
+        //
+        // IMPORTANT: SkBitmap is not serialized, so these operations must be replayed here.
+        // ApplyMask() also premultiplies alpha internally in your implementation.
+        if (saved.MaskColor is not null)
+        {
+            rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
+        }
+        else if (saved.Premultiplied)
+        {
+            // ApplyMask also premultiplies alpha internally,
+            // so only call if Premultiplied and no MaskColor
+            rebuilt.ApplyPremultiplyAlpha();
+        }
+
+        return rebuilt;
+    }
+
     private static void RestoreTilesheets(Dictionary<string, Tilesheet>? tilesheets)
     {
         TilesheetRegistry.Instance.Clear();
@@ -236,52 +276,9 @@ public sealed class EngineState
 
         foreach (var (key, saved) in tilesheets)
         {
-            Tilesheet rebuilt;
-
-            // 1) Rehydrate bitmap from AssetsFile entry (preferred) or file path (fallback)
-            if (saved.AssetIdentifier is not null && saved.AssetIdentifier.IsValid)
-            {
-                var id = saved.AssetIdentifier;
-                rebuilt = new Tilesheet(id.AssetsFile, id.AssetName);
-            }
-            else if (!string.IsNullOrWhiteSpace(saved.ImageFilePath) && File.Exists(saved.ImageFilePath))
-            {
-                rebuilt = new Tilesheet(saved.Name, saved.ImageFilePath);
-            }
-            else
-            {
-                Engine.Logger.LogWarning(
-                    "EngineState.LoadFromFile: Skipping tilesheet '{Key}' because it has no valid AssetIdentifier and no ImageFilePath.",
-                    key);
-                continue;
-            }
-
-            // 2) Restore metadata (these trigger cache rebuild as needed)
-            rebuilt.Name = saved.Name;
-            rebuilt.TileSize = saved.TileSize;
-            rebuilt.InitialOffsetX = saved.InitialOffsetX;
-            rebuilt.InitialOffsetY = saved.InitialOffsetY;
-            rebuilt.XPixelsBetweenTiles = saved.XPixelsBetweenTiles;
-            rebuilt.YPixelsBetweenTiles = saved.YPixelsBetweenTiles;
-            rebuilt.OverhangPixels = saved.OverhangPixels;
-
-            // 3) Restore extensible tilesheet metadata
-            rebuilt.ValueBag = new Dictionary<string, string>(saved.ValueBag);
-
-            // 4) Reapply bitmap transforms recorded in the save.
-            //
-            // IMPORTANT: SkBitmap is not serialized, so these operations must be replayed here.
-            // ApplyMask() also premultiplies alpha internally in your implementation.
-            if (saved.MaskColor is not null)
-            {
-                rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
-            }
-            else if (saved.Premultiplied)
-            {
-                // ApplyMask also premultiplies alpha internally,
-                // so only call if Premultiplied and no MaskColor
-                rebuilt.ApplyPremultiplyAlpha();
-            }
+            var rebuilt = RebuildTilesheetFromSaved(key, saved);
+            if (rebuilt is null) continue;
+            // ctor / registry side-effects already register the tilesheet
         }
     }
 
@@ -359,6 +356,7 @@ public sealed class EngineState
                 AudioResourceManager.Instance.Unload(key);
             }
 
+            // Ensure the audio spec is (re)created/registered in the manager.
             spec.ReloadIntoManager();
         }
     }
@@ -377,44 +375,9 @@ public sealed class EngineState
             if (!overwriteExisting && registry.ContainsKey(key))
                 continue;
 
-            Tilesheet rebuilt;
-
-            if (saved.AssetIdentifier is not null && saved.AssetIdentifier.IsValid)
-            {
-                rebuilt = new Tilesheet(
-                    saved.AssetIdentifier.AssetsFile,
-                    saved.AssetIdentifier.AssetName
-                );
-            }
-            else if (!string.IsNullOrWhiteSpace(saved.ImageFilePath) &&
-                     File.Exists(saved.ImageFilePath))
-            {
-                rebuilt = new Tilesheet(saved.Name, saved.ImageFilePath);
-            }
-            else
-            {
-                Engine.Logger.LogWarning(
-                    "MergeFromFile: Skipping tilesheet '{Key}' (no valid source).",
-                    key);
-                continue;
-            }
-
-            // Restore metadata
-            rebuilt.Name = saved.Name;
-            rebuilt.TileSize = saved.TileSize;
-            rebuilt.InitialOffsetX = saved.InitialOffsetX;
-            rebuilt.InitialOffsetY = saved.InitialOffsetY;
-            rebuilt.XPixelsBetweenTiles = saved.XPixelsBetweenTiles;
-            rebuilt.YPixelsBetweenTiles = saved.YPixelsBetweenTiles;
-            rebuilt.OverhangPixels = saved.OverhangPixels;
-
-            rebuilt.ValueBag = new Dictionary<string, string>(saved.ValueBag);
-
-            // Replay transforms
-            if (saved.MaskColor is not null)
-                rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
-            else if (saved.Premultiplied)
-                rebuilt.ApplyPremultiplyAlpha();
+            var rebuilt = RebuildTilesheetFromSaved(key, saved);
+            if (rebuilt is null) continue;
+            // ctor / registry side-effects already register the tilesheet
         }
     }
 
@@ -479,8 +442,6 @@ public sealed class EngineState
                 .Add(prop.Name, prop.Value.DeepClone());
         }
     }
-
-
 
     #endregion deserialization helpers
 }

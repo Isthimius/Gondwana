@@ -338,26 +338,52 @@ public class AudioResource : IDisposable
     public void Stop() => outputDevice.Stop();
 
     /// <summary>
-    /// Recreates (loads) this audio resource into <see cref="AudioResourceManager"/> from its persisted source.
+    /// Ensures this audio resource is loaded into <see cref="AudioResourceManager"/> from its persisted source.
+    /// If the resource is already loaded, this method will not reload it (idempotent); it will only re-apply
+    /// runtime settings like Volume/Pan/IsLooping.
     /// </summary>
-    internal void ReloadIntoManager()
+    /// <param name="forceReload">
+    /// If true, unloads and reloads the resource even if it is already present in the manager.
+    /// </param>
+    internal void ReloadIntoManager(bool forceReload = false)
     {
+        if (string.IsNullOrWhiteSpace(Key))
+            throw new InvalidOperationException("AudioResource has no Key and cannot be reloaded.");
+
+        var mgr = AudioResourceManager.Instance;
+
+        // If already loaded, just apply settings and bail (idempotent).
+        if (!forceReload && mgr.TryGet(Key, out var existing) && existing is not null)
+        {
+            existing.Volume = Volume;
+            existing.Pan = Pan;
+            existing.IsLooping = IsLooping;
+            return;
+        }
+
+        if (forceReload && mgr.Contains(Key))
+            mgr.Unload(Key); // safe: manager owns the live instance :contentReference[oaicite:2]{index=2}
+
+        // Load from persisted source
         if (AssetIdentifier is not null && AssetIdentifier.IsValid)
         {
             using var s = AssetIdentifier.Data;
-            if (s is null) throw new InvalidOperationException($"Missing asset data for {Key}.");
-            AudioResourceManager.Instance.LoadFromStream(Key, s, SourceExtension ?? ".wav", Volume, Pan);
+            if (s is null)
+                throw new InvalidOperationException($"Missing asset data for {Key}.");
+
+            mgr.LoadFromStream(Key, s, SourceExtension ?? ".wav", Volume, Pan);
         }
         else if (!string.IsNullOrWhiteSpace(SourceFilePath))
         {
-            AudioResourceManager.Instance.LoadFromFile(Key, SourceFilePath, Volume, Pan);
+            mgr.LoadFromFile(Key, SourceFilePath, Volume, Pan);
         }
         else
         {
             throw new InvalidOperationException($"AudioResource '{Key}' has no persisted source.");
         }
 
-        if (AudioResourceManager.Instance.TryGet(Key, out var loaded) && loaded is not null)
+        // Apply looping after load (LoadFromStream/File sets volume/pan during graph creation)
+        if (mgr.TryGet(Key, out var loaded) && loaded is not null)
             loaded.IsLooping = IsLooping;
     }
 
