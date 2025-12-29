@@ -69,7 +69,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (_scene != null)
         {
             _scene.SceneDisposing -= OnSourceDisposing;
-            _scene.UnregisterRenderSurfaceHost(this);
         }
 
         var oldScene = _scene;
@@ -77,9 +76,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         if (_scene != null)
         {
-            // Register with the new scene
-            _scene.RegisterRenderSurfaceHost(this);
-
             ViewRenderer.BindToScene(_scene, limitCameraToWorldBoundPx);
             _scene.SceneDisposing += OnSourceDisposing;
             _scene.FullRefreshNeeded = true;
@@ -418,19 +414,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         if (disposing)
         {
-            // If currently bound to a scene, unregister to avoid dangling references
-            if (_scene != null)
-            {
-                try
-                {
-                    _scene.UnregisterRenderSurfaceHost(this);
-                }
-                catch
-                {
-                    // ignore errors during shutdown
-                }
-            }
-
             _backbuffer = null;
         }
 
@@ -445,16 +428,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void OnSourceDisposing(Scene scene)
     {
-        // Scene is being disposed — make sure we unregister and drop our reference
-        try
-        {
-            scene.UnregisterRenderSurfaceHost(this);
-        }
-        catch
-        {
-            // swallow; defensive if scene is partially torn down
-        }
-
         _scene = null;
     }
 

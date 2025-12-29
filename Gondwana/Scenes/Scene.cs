@@ -15,9 +15,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     [JsonProperty]
     private readonly List<SceneLayer> _sceneLayers = [];
     
-    [JsonIgnore]
-    private readonly List<RenderSurfaceHostBase> _boundRenderSurfaceHosts = new();
-
     #region Scene events
 
     public event Action<SceneLayer>? SceneLayerAdded;
@@ -109,9 +106,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region internal properties and methods
 
-    [JsonIgnore]
-    internal IReadOnlyList<RenderSurfaceHostBase> BoundRenderSurfaceHosts => _boundRenderSurfaceHosts;
-
     internal bool IsDirty
     {
         get
@@ -124,20 +118,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
             return false;
         }
-    }
-
-
-    internal void RegisterRenderSurfaceHost(RenderSurfaceHostBase host)
-    {
-        if (host is null) return;
-        if (!_boundRenderSurfaceHosts.Contains(host))
-            _boundRenderSurfaceHosts.Add(host);
-    }
-
-    internal void UnregisterRenderSurfaceHost(RenderSurfaceHostBase host)
-    {
-        if (host is null) return;
-        _boundRenderSurfaceHosts.Remove(host);
     }
 
     #endregion internal properties and methods

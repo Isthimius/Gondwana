@@ -280,7 +280,7 @@ public sealed class Engine : IDisposable
         {
             foreach (var stateFile in Configuration.StateFiles)
             {
-                EngineState.LoadFromFile(stateFile);
+                EngineState.MergeFromFile(stateFile.File, stateFile.IsCompressed, stateFile.OverwriteExisting, stateFile.EngineStateParts);
             }
         }
 
