@@ -86,6 +86,22 @@ public sealed class EngineState
         ValueBag.Clear();
     }
 
+    /// <summary>
+    /// Serializes the current engine state (or a selected subset of it) to disk as JSON.
+    /// </summary>
+    /// <param name="path">
+    /// Destination file path for the saved engine state.
+    /// </param>
+    /// <param name="compress">
+    /// If <c>true</c>, the JSON payload is written using GZip compression; otherwise it is written as plain text.
+    /// </param>
+    /// <param name="parts">
+    /// Specifies which portions of the engine state should be included in the snapshot.
+    /// </param>
+    /// <remarks>
+    /// This method captures a snapshot of the live engine registries and persists it in a format
+    /// suitable for later restoration or merging.
+    /// </remarks>
     public void SaveToFile(string path, bool compress = false, EngineStateParts parts = EngineStateParts.All)
     {
         var snapshot = BuildSnapshot(parts);
@@ -105,6 +121,22 @@ public sealed class EngineState
         }
     }
 
+    /// <summary>
+    /// Loads an engine state snapshot from disk and replaces the current live engine state.
+    /// </summary>
+    /// <param name="path">
+    /// Path to the engine state file to load.
+    /// </param>
+    /// <param name="compressed">
+    /// Indicates whether the file is stored in compressed (GZip) form.
+    /// </param>
+    /// <param name="parts">
+    /// Specifies which portions of the engine state should be applied from the snapshot.
+    /// </param>
+    /// <remarks>
+    /// Existing engine state data is cleared before the snapshot is applied.
+    /// This operation is destructive and should typically be used during startup or full resets.
+    /// </remarks>
     public static void LoadFromFile(string path, bool compressed = false, EngineStateParts parts = EngineStateParts.All)
     {
         string json = ReadJsonFile(path, compressed);
@@ -119,6 +151,26 @@ public sealed class EngineState
         ApplySnapshot(snapshot, clearExisting: true, overwriteExisting: true, parts);
     }
 
+    /// <summary>
+    /// Loads an engine state snapshot from disk and merges it into the current live engine state.
+    /// </summary>
+    /// <param name="path">
+    /// Path to the engine state file to merge.
+    /// </param>
+    /// <param name="compressed">
+    /// Indicates whether the file is stored in compressed (GZip) form.
+    /// </param>
+    /// <param name="overwriteExisting">
+    /// If <c>true</c>, existing entries in the engine state may be replaced by values from the snapshot.
+    /// </param>
+    /// <param name="parts">
+    /// Specifies which portions of the engine state should be merged.
+    /// </param>
+    /// <remarks>
+    /// Unlike <see cref="LoadFromFile"/>, this method preserves existing engine state data
+    /// unless explicitly overwritten. It is intended for incremental updates, mod loading,
+    /// or layered state composition.
+    /// </remarks>
     public static void MergeFromFile(string path, bool compressed = false, bool overwriteExisting = false, EngineStateParts parts = EngineStateParts.All)
     {
         string json = ReadJsonFile(path, compressed);
