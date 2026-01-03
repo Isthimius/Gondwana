@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.Video;
 using SkiaSharp;
 
@@ -117,13 +118,16 @@ public sealed class DirectVideo : DirectDrawingBase
     /// <summary>
     /// Use this when you already have an IVideoPlayer instance (e.g., resolved via DI).
     /// </summary>
-    public DirectVideo(
-        RenderSurfaceHostBase surface,
-        DirectDrawingMode mode,
-        Rectangle bounds,
-        IVideoPlayer player,
-        Uri source)
-        : base(surface, mode, bounds)
+    public DirectVideo(IVideoPlayer player,
+                       Uri source,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       DirectDrawingMode mode,
+                       SceneLayer? sceneLayer,
+                       View? view,
+                       Rectangle? screenBounds,
+                       Rectangle? worldBounds,
+                       string? name = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
     {
         _player = player ?? throw new ArgumentNullException(nameof(player));
         HookPlayer();
@@ -135,12 +139,16 @@ public sealed class DirectVideo : DirectDrawingBase
     /// Use this when you have a factory that abstracts platform differences.
     /// e.g., desktop/mobile -> VLC impl, web -> HTML5/WebCodecs impl.
     /// </summary>
-    public DirectVideo(RenderSurfaceHost<BitmapBackbuffer> surface,
+    public DirectVideo(Func<IVideoPlayer> playerFactory,
+                       Uri source,
+                       RenderSurfaceHostBase renderSurfaceHost,
                        DirectDrawingMode mode,
-                       Rectangle bounds,
-                       Func<IVideoPlayer> playerFactory,
-                       Uri source)
-        : base(surface, mode, bounds)
+                       SceneLayer? sceneLayer,
+                       View? view,
+                       Rectangle? screenBounds,
+                       Rectangle? worldBounds,
+                       string? name = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
     {
         if (playerFactory is null) throw new ArgumentNullException(nameof(playerFactory));
         _player = playerFactory();

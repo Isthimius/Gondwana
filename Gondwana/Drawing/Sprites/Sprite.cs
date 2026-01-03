@@ -273,6 +273,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     #endregion public properties
 
+    public override void Draw()
+    {
+        throw new NotImplementedException();
+    }
+
     #region internal methods
 
     internal void QueueRefreshArea(Rectangle worldRect)
