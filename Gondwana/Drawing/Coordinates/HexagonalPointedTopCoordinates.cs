@@ -58,25 +58,25 @@ internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         return new PointF(best.X, best.Y);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
 
-        int minRow = (int)Math.Floor((pixelRange.Top - sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
-        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
+        int minRow = (int)Math.Floor((worldPixelRange.Top - sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
+        int maxRow = (int)Math.Ceiling((worldPixelRange.Bottom - sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
 
         for (int row = minRow; row <= maxRow; row++)
         {
             int xOffset = ((row & 1) == 0 ? 0 : W / 2);
-            int minCol = (int)Math.Floor((pixelRange.Left - sceneLayer.OriginPx.X - xOffset) / (float)W) - 2;
-            int maxCol = (int)Math.Ceiling((pixelRange.Right - sceneLayer.OriginPx.X - xOffset) / (float)W) + 2;
+            int minCol = (int)Math.Floor((worldPixelRange.Left - sceneLayer.OriginPx.X - xOffset) / (float)W) - 2;
+            int maxCol = (int)Math.Ceiling((worldPixelRange.Right - sceneLayer.OriginPx.X - xOffset) / (float)W) + 2;
 
             for (int col = minCol; col <= maxCol; col++)
             {
                 var gp = sceneLayer[col, row]; if (gp == null) continue;
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(pixelRange)) result.Add(gp);
+                if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
         return result;

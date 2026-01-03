@@ -45,13 +45,13 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         return new PointF(dx, dy);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        var ul = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Left, pixelRange.Top));
-        var ur = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Right, pixelRange.Top));
-        var ll = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Left, pixelRange.Bottom));
-        var lr = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Right, pixelRange.Bottom));
+        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
+        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Top));
+        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Bottom));
+        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Bottom));
 
         int minX = (int)Math.Floor(new[] { ul.X, ur.X, ll.X, lr.X }.Min()) - 1;
         int maxX = (int)Math.Ceiling(new[] { ul.X, ur.X, ll.X, lr.X }.Max()) + 1;
@@ -65,7 +65,7 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
                 var gp =  sceneLayer[x, y];
                 if (gp == null) continue;
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(pixelRange)) result.Add(gp);
+                if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
         return result;

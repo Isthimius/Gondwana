@@ -33,13 +33,13 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
     }
 
     // Updated to properly consider overhang in all directions
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var retVal = new List<SceneLayerTile>();
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
-        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Left, pixelRange.Top));
-        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Right - 1, pixelRange.Bottom - 1));
+        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
+        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right - 1, worldPixelRange.Bottom - 1));
 
         int minY = (int)Math.Floor(ptUL.Y) - 1;
         int maxY = (int)Math.Ceiling(ptBR.Y) + 1;
@@ -56,7 +56,7 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
 
                 // Overhang-aware pixel rect
                 var rect = GetPixelRangeForTile(gPt, includeOverhang);
-                if (rect.IntersectsWith(pixelRange))
+                if (rect.IntersectsWith(worldPixelRange))
                     retVal.Add(gPt);
             }
         }

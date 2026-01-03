@@ -67,7 +67,7 @@ public sealed class DirectDrawingManager
         if (drawing is null)
             throw new ArgumentNullException(nameof(drawing));
 
-        var name = drawing.Nickname;
+        var name = drawing.Id.ToString();
 
         _directDrawings.AddOrUpdate(
             name,

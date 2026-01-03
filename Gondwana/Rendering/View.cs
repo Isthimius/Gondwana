@@ -132,8 +132,8 @@ public sealed class View
     /// <returns>The grid coordinate (column/row or axial) under the screen pixel.</returns>
     public PointF ScreenPxToGrid(SceneLayer layer, PointF screenPx)
     {
-        var world = ScreenPxToWorldPx(layer, screenPx);
-        return layer.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(layer, world);
+        var worldPx = ScreenPxToWorldPx(layer, screenPx);
+        return layer.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(layer, worldPx);
     }
 
     /// <summary>
