@@ -1,4 +1,5 @@
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.Timers;
 using SkiaSharp;
 using System.Drawing;
@@ -11,9 +12,10 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     public event EventHandler<DirectDrawingBase>? FadeToCompleted;
 
     protected readonly RenderSurfaceHostBase _renderSurfaceHost;
-    protected Rectangle _bounds;
+    protected Rectangle _screenBounds;
+    protected Rectangle _worldBounds;
     protected int _zOrder;
-    protected bool _isVisible;
+    protected bool _visible;
     protected internal bool _dirty = true;
     protected long _lastTick = HighResTimer.GetCurrentTick();
 
@@ -42,13 +44,48 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// </summary>
     protected internal abstract void Draw();
 
-    protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds, string? name = null)
+    protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost,
+                                DirectDrawingMode mode,
+                                SceneLayer? sceneLayer,
+                                View? view,
+                                Rectangle? screenBounds,
+                                Rectangle? worldBounds,
+                                string? nickname = null)
     {
+        if (renderSurfaceHost is null)
+            throw new ArgumentNullException(nameof(renderSurfaceHost));
+
+        if (mode == DirectDrawingMode.SceneLayer && sceneLayer is null)
+            throw new ArgumentException("SceneLayer cannot be null when using DirectDrawingMode.SceneLayer", nameof(sceneLayer));
+
+        if (mode == DirectDrawingMode.View && view is null)
+            throw new ArgumentException("View cannot be null when using DirectDrawingMode.View", nameof(view));
+
+        if (mode == DirectDrawingMode.SceneLayer && worldBounds is null)
+            throw new ArgumentException("worldBounds cannot be null when using DirectDrawingMode.SceneLayer", nameof(worldBounds));
+
+        if (mode == DirectDrawingMode.View && screenBounds is null)
+            throw new ArgumentException("screenBounds cannot be null when using DirectDrawingMode.View", nameof(screenBounds));
+
         _renderSurfaceHost = renderSurfaceHost;
-        _bounds = bounds;
+
+        if (mode == DirectDrawingMode.SceneLayer)
+        {
+            _worldBounds = worldBounds!.Value;
+            _screenBounds = Rectangle.Empty;
+        }
+        else // View
+        {
+            _worldBounds = Rectangle.Empty;
+            _screenBounds = screenBounds!.Value;
+        }
+
         _zOrder = 0;
-        _isVisible = true;
-        Name = name ?? Guid.NewGuid().ToString();
+        _visible = true;
+        Mode = mode;
+        SceneLayer = sceneLayer;
+        View = view;
+        Nickname = nickname;
 
         DirectDrawingManager.Instance.AddOrReplace(this);
         ForceRefresh();
@@ -58,18 +95,39 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
     public RenderSurfaceHostBase RenderSurfaceHost => _renderSurfaceHost;
 
-    public string Name { get; private set; }
+    public DirectDrawingMode Mode { get; }
 
-    public Rectangle Bounds
+    public SceneLayer? SceneLayer { get; private set; }
+
+    public View? View { get; private set; }
+
+    public Rectangle ScreenBounds
     {
-        get => _bounds;
+        get => _screenBounds;
         set
         {
             ForceRefresh();
-            _bounds = value;
+            _screenBounds = value;
             ForceRefresh();
         }
     }
+
+    public Rectangle WorldBounds
+    {
+        get => _worldBounds;
+        set
+        {
+            ForceRefresh();
+            _worldBounds = value;
+            ForceRefresh();
+        }
+    }
+
+    #region IDrawable members
+
+    public Guid Id { get; private set; }
+
+    public string? Nickname { get; private set; }
 
     public int ZOrder
     {
@@ -84,18 +142,20 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         }
     }
 
-    public bool IsVisible
+    public bool Visible
     {
-        get => _isVisible;
+        get => _visible;
         set
         {
-            if (_isVisible != value)
+            if (_visible != value)
             {
-                _isVisible = value;
+                _visible = value;
                 ForceRefresh();
             }
         }
     }
+
+    #endregion IDrawable members
 
     /// <summary>Gets/sets the current opacity (0..1). Setting marks dirty.</summary>
     public float Opacity
@@ -110,9 +170,9 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             _opacity = clamped;
 
             if (HideWhenFullyTransparent && _opacity <= 0f)
-                IsVisible = false;
+                Visible = false;
             else if
-                (_opacity > 0f) IsVisible = true;
+                (_opacity > 0f) Visible = true;
 
             ForceRefresh();
         }
@@ -135,7 +195,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         _isFading = true;
 
         if (_fadeTo > 0f)
-            IsVisible = true; // ensure we draw during fade-in
+            Visible = true; // ensure we draw during fade-in
 
         ForceRefresh();
 
@@ -190,15 +250,18 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         return this;
     }
 
-    /// <summary>
-    /// Mark the current DirectDrawing as dirty, forcing a redraw on the next RenderAll().
-    /// Also adds overlapping area on the <see cref="RenderSurfaceHost.DrawSource" /> to the RefreshQueue.
-    /// </summary>
     protected internal void ForceRefresh()
     {
-        // _bounds is SCREEN-space
-        RenderSurfaceHost.AddOverlayScreenDirty(_bounds);
-        //RenderSurfaceHost.Backbuffer!.AddToDirtyRectangle(_bounds);
+        if (Mode == DirectDrawingMode.SceneLayer)
+        {
+            // bounds is WORLD-space
+            SceneLayer!.RefreshQueue.AddWorldRect(_worldBounds);
+        }
+        else if (Mode == DirectDrawingMode.View)
+        {
+            // bounds is SCREEN-space
+            RenderSurfaceHost.AddViewOverlayScreenDirty(View!, _screenBounds);
+        }
 
         _dirty = true;
     }
@@ -224,7 +287,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             _opacity = _fadeFrom + (_fadeTo - _fadeFrom) * timeElapsed;
 
             if (HideWhenFullyTransparent)
-                IsVisible = _opacity > 0f; // hides when hit zero
+                Visible = _opacity > 0f; // hides when hit zero
 
             _dirty = true;
 
@@ -253,9 +316,13 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         _lastTick = tick;
     }
 
-    protected internal virtual void Render()
+    protected internal virtual void RenderViewPass()
     {
-        if (!IsVisible)
+        // this method should only be called for Mode == View
+        if (Mode != DirectDrawingMode.View)
+            return;
+
+        if (!Visible)
             return;
 
         var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
@@ -266,7 +333,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
         if (useClip)
         {
-            var r = new SKRect(_bounds.Left, _bounds.Top, _bounds.Right, _bounds.Bottom);
+            var r = new SKRect(_screenBounds.Left, _screenBounds.Top, _screenBounds.Right, _screenBounds.Bottom);
             SKRect clipRect = _revealDir switch
             {
                 RevealDirection.LeftToRight => new SKRect(r.Left, r.Top, r.Left + r.Width * _revealT, r.Bottom),
@@ -300,6 +367,26 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             canvas.Restore(); // end Clip Save
     }
 
+    protected internal void RenderLayerPass()
+    {
+        if (!Visible)
+            return;
+
+        // no reveal clip here (until world bounds exist)
+        if (_opacity >= 0.999f)
+        {
+            Draw();
+        }
+        else
+        {
+            var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
+            using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
+            canvas.SaveLayer(layerPaint);
+            Draw();
+            canvas.Restore();
+        }
+    }
+
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
 
     public void Dispose()
@@ -327,7 +414,12 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
     public override bool Equals(object? obj) => ReferenceEquals(this, obj);
 
-    public override int GetHashCode() => HashCode.Combine(Name);
+    public override int GetHashCode() => HashCode.Combine(Nickname);
+
+    void IDrawable.Draw()
+    {
+        Draw();
+    }
 
     public static bool operator ==(DirectDrawingBase? left, DirectDrawingBase? right) =>
         ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);

@@ -1,9 +1,10 @@
-﻿using Gondwana.Rendering;
+﻿using System.Drawing;
+using System.Runtime.CompilerServices;
+using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using SkiaSharp;
-using System.Drawing;
-using System.Runtime.CompilerServices;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -72,11 +73,15 @@ public class DirectRectangle : DirectDrawingMovableBase
     private long _pulseLastTick = 0;
     private float _timeSec; // accumulated seconds
 
-    public DirectRectangle(
-        RenderSurfaceHostBase renderSurfaceHost,
-        Rectangle bounds,
-        Color color)
-        : base(renderSurfaceHost, bounds)
+    public DirectRectangle(Color color,
+                           RenderSurfaceHostBase renderSurfaceHost,
+                           DirectDrawingMode mode,
+                           SceneLayer? sceneLayer,
+                           View? view,
+                           Rectangle? screenBounds,
+                           Rectangle? worldBounds,
+                           string? nickname = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         // initialize with defaults; actual paints built lazily
         _fillPaint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill };
@@ -357,7 +362,7 @@ public class DirectRectangle : DirectDrawingMovableBase
         if (_needsRebuildPaints)
             RebuildPaints();
 
-        var fillRect = Bounds.ToSKRect();
+        var fillRect = ScreenBounds.ToSKRect();
         var strokeRect = fillRect;
 
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;

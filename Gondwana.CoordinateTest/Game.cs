@@ -132,12 +132,21 @@ public class Game : IDisposable
         var bounds1 = new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150);
         var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
 
-        _directRectangle = new DirectRectangle(RenderSurface.Host,
+        _directRectangle = new DirectRectangle(Color.Wheat,
+                                               RenderSurface.Host,
+                                               DirectDrawingMode.View,
+                                               null,
+                                               RenderSurface.Host.ViewRenderer.Views[0],
                                                bounds1,
-                                               Color.Wheat);
+                                               null);
         _directRectangle.SetFilled(true).SetAlpha(128);
 
-        _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
+        _textBlockCPS = new TextBlock(RenderSurface.Host,
+                                               DirectDrawingMode.View,
+                                               null,
+                                               RenderSurface.Host.ViewRenderer.Views[0],
+                                               bounds1,
+                                               null);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
         Engine.Instance.CPSCalculated += (e) =>
@@ -145,7 +154,12 @@ public class Game : IDisposable
             _textBlockCPS.SetText(e.ToString());
         };
 
-        _textBlockMouse = new TextBlock(RenderSurface.Host, bounds2);
+        _textBlockMouse = new TextBlock(RenderSurface.Host,
+                                               DirectDrawingMode.View,
+                                               null,
+                                               RenderSurface.Host.ViewRenderer.Views[0],
+                                               bounds2,
+                                               null);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         InitializeParticles();
@@ -161,7 +175,12 @@ public class Game : IDisposable
             RenderSurface.Host.RenderSurfaceAdapter!.Height);
 
         // Particle system registered like any other DirectDrawing
-        _particleSurface = new ParticleSurface(RenderSurface.Host, bounds);
+        _particleSurface = new ParticleSurface(RenderSurface.Host,
+                                               DirectDrawingMode.View,
+                                               null,
+                                               RenderSurface.Host.ViewRenderer.Views[0],
+                                               bounds,
+                                               null);
 
         // Tweak gravity if you want more “floaty” bursts
         _particleSurface.GravityY = 0f;

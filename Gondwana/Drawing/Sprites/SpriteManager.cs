@@ -28,7 +28,7 @@ public static class SpriteManager
     public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string id)
     {
         Sprite sprite = CreateSprite(sceneLayer, frame);
-        sprite.ID = id;
+        sprite.Nickname = id;
 
         return sprite;
     }
@@ -80,7 +80,7 @@ public static class SpriteManager
     {
         foreach (Sprite sprite in _spriteList)
         {
-            if (sprite.ID == ID)
+            if (sprite.Nickname == ID)
                 return sprite;
         }
 

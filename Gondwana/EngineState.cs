@@ -481,7 +481,7 @@ public sealed class EngineState
         var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
         for (int i = 0; i < SpriteManager._spriteList.Count; i++)
         {
-            var id = SpriteManager._spriteList[i].ID;
+            var id = SpriteManager._spriteList[i].Nickname;
             if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
                 existingIndexById.Add(id, i);
         }
@@ -493,16 +493,16 @@ public sealed class EngineState
             if (incoming is null)
                 continue;
 
-            if (string.IsNullOrWhiteSpace(incoming.ID))
-                incoming.ID = Guid.NewGuid().ToString();
+            if (string.IsNullOrWhiteSpace(incoming.Nickname))
+                incoming.Nickname = Guid.NewGuid().ToString();
 
-            if (!seenIncoming.Add(incoming.ID))
+            if (!seenIncoming.Add(incoming.Nickname))
             {
                 // Same-ID appears again in the incoming list: last one wins.
                 overwriteExisting = true;
             }
 
-            if (existingIndexById.TryGetValue(incoming.ID, out int existingIndex))
+            if (existingIndexById.TryGetValue(incoming.Nickname, out int existingIndex))
             {
                 if (!overwriteExisting)
                     continue;
@@ -511,7 +511,7 @@ public sealed class EngineState
             }
             else
             {
-                existingIndexById[incoming.ID] = SpriteManager._spriteList.Count;
+                existingIndexById[incoming.Nickname] = SpriteManager._spriteList.Count;
                 SpriteManager._spriteList.Add(incoming);
             }
         }

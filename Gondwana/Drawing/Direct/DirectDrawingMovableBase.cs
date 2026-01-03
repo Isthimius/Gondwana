@@ -2,6 +2,7 @@
 using System.Numerics;
 using Gondwana.Movement;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Direct;
@@ -13,9 +14,17 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     private const float _fixedDt = 1f / 240f;
     private const int _maxSubsteps = 8;
 
-    protected DirectDrawingMovableBase(RenderSurfaceHostBase host, Rectangle bounds)
-        : base(host, bounds)
+    protected DirectDrawingMovableBase(RenderSurfaceHostBase renderSurfaceHost,
+                                       DirectDrawingMode mode,
+                                       SceneLayer? sceneLayer,
+                                       View? view,
+                                       Rectangle? screenBounds,
+                                       Rectangle? worldBounds,
+                                       string? name = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
     {
+        Rectangle bounds = (mode == DirectDrawingMode.SceneLayer ? worldBounds : screenBounds)!.Value;
+
         var movementState = MovementState.ForPixel(new Vector2(bounds.X, bounds.Y));
         Movement = new MovementController(this, movementState);
     }
@@ -24,15 +33,15 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
 
     public MovementSpace PositionSpace => MovementSpace.Pixel;
 
-    public Vector2 GetPosition() => new Vector2((float)Bounds.Location.X, (float)Bounds.Location.Y);
+    public Vector2 GetPosition() => new Vector2((float)ScreenBounds.Location.X, (float)ScreenBounds.Location.Y);
 
     public void SetPosition(Vector2 p)
     {
-        Bounds = new Rectangle(
+        ScreenBounds = new Rectangle(
             (int)Math.Round(p.X),
             (int)Math.Round(p.Y),
-            Bounds.Width,
-            Bounds.Height);
+            ScreenBounds.Width,
+            ScreenBounds.Height);
 
         ForceRefresh();
     }

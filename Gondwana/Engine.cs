@@ -558,11 +558,6 @@ public sealed class Engine : IDisposable
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 
-        // render all DirectDrawing instances.
-        // this will add to the DirtyRects of any Backbuffers,
-        // to be picked up next DoBackgroundTasks()
-        DirectDrawingManager.Instance.RenderAll();
-
         // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderBackbufferToAdapter();

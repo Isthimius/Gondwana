@@ -1,7 +1,9 @@
+using System.Drawing;
+using System.Xml.Linq;
 using Gondwana.Rendering;
+using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -47,14 +49,28 @@ public sealed class DirectImage : DirectDrawingMovableBase
     // normalized anchor (0..1) where 0,0 = top-left of dest rect
     private float _anchorX = 0.5f, _anchorY = 0.5f;
 
-    public DirectImage(RenderSurfaceHostBase host, Rectangle bounds, SKBitmap bitmap)
-        : base(host, bounds)
+    public DirectImage(SKBitmap bitmap,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       DirectDrawingMode mode,
+                       SceneLayer? sceneLayer,
+                       View? view,
+                       Rectangle? screenBounds,
+                       Rectangle? worldBounds,
+                       string? name = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
     {
         SetBitmap(bitmap);
     }
 
-    public DirectImage(RenderSurfaceHostBase host, Rectangle bounds, SKImage image)
-        : base(host, bounds)
+    public DirectImage(SKImage image,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       DirectDrawingMode mode,
+                       SceneLayer? sceneLayer,
+                       View? view,
+                       Rectangle? screenBounds,
+                       Rectangle? worldBounds,
+                       string? nickname = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         SetImage(image);
     }
@@ -166,7 +182,7 @@ public sealed class DirectImage : DirectDrawingMovableBase
         SKRect src = _src ?? new SKRect(0, 0, img.Width, img.Height);
 
         // destination rect (screen space), computed by scale mode
-        SKRect dst = ComputeDestRect(Bounds, src, _scale);
+        SKRect dst = ComputeDestRect(ScreenBounds, src, _scale);
 
         // apply tint/opacity via color filter
         // combine tint with opacity (multiply in linear-ish sRGB)

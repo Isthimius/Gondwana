@@ -1,10 +1,11 @@
 ﻿using System.Drawing;
-using Microsoft.Extensions.Logging;
-using SkiaSharp;
+using Gondwana.Drawing.Direct;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
-using Gondwana.Timers;
 using Gondwana.SkiaSharp;
+using Gondwana.Timers;
+using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
@@ -106,38 +107,56 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 1) find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
 
-        // Are we in a "force full redraw" situation (camera moved, zoom changed, etc.)?
+        // 2) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
+        //    This already clears the whole backbuffer and enqueues a full rect per layer.
         bool forceFullRedraw = Scene!.FullRefreshNeeded;
 
-        // 2) Handle full scene refresh once: clear and mark all layers as dirty.
-        //    This already clears the whole backbuffer and enqueues a full rect per layer.
         if (forceFullRedraw)
             EnqueueFullSceneRefresh();
 
-        // 3) Convert overlay (aka DirectDrawing) SCREEN dirty → WORLD dirty (queues)
-        ProcessOverlayScreenDirty();
-
-        // 4) Fast “no work” probe: no overlay dirty, no layer queues pending.
-        if (!forceFullRedraw && !Scene.IsDirty)
+        // 3) Fast “no work” probe
+        if (!forceFullRedraw && !Scene.IsDirty && !IsAnyViewOverlayDirty)
         {
             _lastTick = tick; // keep deltaSeconds sane next frame
             return;
         }
 
+        // 4) Convert overlay SCREEN dirty → WORLD dirty (queues)
+        ProcessOverlayScreenDirty();
+
         // 4.5) if doing a partial redraw, identify and clear any rects dirty from DirectDrawing overlays or dirty Tiles
         if (!forceFullRedraw)
         {
             var dirtyScreenRects = CollectDirtyScreenArea();
-
-            // NEW: ensure overlay views get redrawn anywhere the screen is being repainted
-            PropagateScreenDirtyToAllViews(dirtyScreenRects);
-
             PreclearScreenAreas(dirtyScreenRects);
         }
 
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         ViewRenderer.Render(Backbuffer!.Canvas, deltaSeconds, Scene!,
             (view, layer) => RenderLayerDirtyRegions(view, layer, forceFullRedraw));
+
+        // 5.5) View-mode DirectDrawings pass (screen-space, on top of everything)
+        //      IMPORTANT: View-mode assumes origin is screen (0,0), so reset any camera/parallax transforms.
+        var canvas = Backbuffer!.Canvas;
+
+        canvas.Save();
+        canvas.ResetMatrix();
+
+        foreach (var view in ViewRenderer.Views)
+        {
+            var vp = view.Viewport.TargetRectPx;
+
+            canvas.Save();
+            canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
+
+            var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+            for (int i = 0; i < overlays.Count; i++)
+                overlays[i].RenderViewPass();
+
+            canvas.Restore();
+        }
+
+        canvas.Restore();
 
         // 6) Preserve any pre-existing dirty (e.g., set earlier this frame) — union, don’t replace.
         //    If this was a full redraw, mark the entire backbuffer as dirty so the adapter blits all of it.
@@ -191,23 +210,38 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void ProcessOverlayScreenDirty()
     {
-        if (_overlayScreenDirty.Count == 0)
+        if (Backbuffer is null || Scene is null)
             return;
 
-        foreach (var r in _overlayScreenDirty)
+        // Consume per-view overlay dirty rects (SCREEN pixels) and enqueue underlying WORLD dirty per view.
+        foreach (var view in ViewRenderer.Views)
         {
-            if (r.IsEmpty)
+            if (!_viewOverlayScreenDirty.TryGetValue(view.Id, out var rects) || rects.Count == 0)
                 continue;
 
-            // Mark adapter dirty (SCREEN pixels)
-            Backbuffer?.AddToDirtyRectangle(r);
+            var viewportPx = view.Viewport.TargetRectPx;
 
-            // Convert SCREEN dirty → WORLD dirty (queues)
-            var screenRectF = new RectangleF(r.Left, r.Top, r.Width, r.Height);
-
-            foreach (var view in ViewRenderer.Views)
+            foreach (var r in rects)
             {
-                for (int i = 0; i < Scene!.CountOfVisibleLayers; i++)
+                if (r.IsEmpty)
+                    continue;
+
+                // Clamp to this view's viewport
+                var repaintRect = Rectangle.Intersect(r, viewportPx);
+                if (repaintRect.IsEmpty)
+                    continue;
+
+                // Mark adapter/backbuffer dirty (SCREEN pixels)
+                Backbuffer.AddToDirtyRectangle(repaintRect);
+
+                // Convert SCREEN dirty -> WORLD dirty for THIS view only
+                var screenRectF = new RectangleF(
+                    repaintRect.Left,
+                    repaintRect.Top,
+                    repaintRect.Width,
+                    repaintRect.Height);
+
+                for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
                 {
                     var layer = Scene.VisibleSceneLayers[i];
 
@@ -217,9 +251,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     layer.RefreshQueue.AddWorldRect(worldRectF.ToPixelAlignedRect());
                 }
             }
-        }
 
-        _overlayScreenDirty.Clear();
+            // Clear (reuse list capacity; avoids churn)
+            rects.Clear();
+        }
     }
 
     private List<Rectangle> CollectDirtyScreenArea()
@@ -274,39 +309,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         list.Add(rect);
-    }
-
-    // NEW: if base view dirties pixels under an overlay view, force overlay to redraw those pixels
-    private void PropagateScreenDirtyToAllViews(List<Rectangle> dirtyScreenRects)
-    {
-        if (dirtyScreenRects == null || dirtyScreenRects.Count == 0 || Scene is null)
-            return;
-
-        foreach (var view in ViewRenderer.Views)
-        {
-            var vp = view.Viewport.TargetRectPx;
-
-            foreach (var r in dirtyScreenRects)
-            {
-                if (!r.IntersectsWith(vp))
-                    continue;
-
-                // Overlay view? repaint the whole viewport
-                var repaintRect = (view.ZOrder > 0)
-                    ? vp
-                    : Rectangle.Intersect(r, vp);
-
-                var screenRectF = new RectangleF(repaintRect.Left, repaintRect.Top, repaintRect.Width, repaintRect.Height);
-
-                for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
-                {
-                    var layer = Scene.VisibleSceneLayers[i];
-                    var worldRectF = view.ScreenRectToWorldRect(layer, screenRectF);
-                    worldRectF.Inflate(1, 1);
-                    layer.RefreshQueue.AddWorldRect(worldRectF.ToPixelAlignedRect());
-                }
-            }
-        }
     }
 
     private void PreclearScreenAreas(List<Rectangle> screenRects)

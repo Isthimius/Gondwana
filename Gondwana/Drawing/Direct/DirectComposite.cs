@@ -18,12 +18,13 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     public event EventHandler<IDirectDrawable>? Disposing;
 
-    public DirectComposite(RenderSurfaceHostBase renderSurfaceHost, PointF anchor = default, string? name = null)
+    public DirectComposite(RenderSurfaceHostBase renderSurfaceHost, DirectDrawingMode mode, PointF anchor = default, string? nickname = null)
     {
         RenderSurfaceHost = renderSurfaceHost;
+        Mode = mode;
         _anchor = anchor;
         Children = new ReadOnlyCollection<DirectDrawingMovableBase>(_children);
-        Name = name ?? Guid.NewGuid().ToString();
+        Nickname = nickname;
 
         Movement = new MovementController(this, MovementState.ForPixel(new Vector2(_anchor.X, _anchor.Y)));
         DirectDrawingManager.Instance.AddOrReplace(this);
@@ -53,7 +54,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         child.Disposing += OnChildDisposing;
 
         Vector2 offset = keepCurrentOffset
-            ? new Vector2(child.Bounds.X - _anchor.X, child.Bounds.Y - _anchor.Y)
+            ? new Vector2(child.ScreenBounds.X - _anchor.X, child.ScreenBounds.Y - _anchor.Y)
             : (explicitLocalOffsetPx ?? Vector2.Zero);
 
         _localOffsetPx[child] = offset;
@@ -117,6 +118,8 @@ public class DirectComposite : IDirectDrawable, IMovable
         return this;
     }
 
+    #region IMovable members
+
     // IMovable (pixel space only)
     public MovementSpace PositionSpace => MovementSpace.Pixel;
     
@@ -124,8 +127,10 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     public void SetPosition(Vector2 pos) => SetPosition(pos.X, pos.Y);
 
+    #endregion IMovable members
+
     // Bounding box = union of visible children (unchanged)
-    public Rectangle Bounds
+    public Rectangle ScreenBounds
     {
         get
         {
@@ -137,10 +142,10 @@ public class DirectComposite : IDirectDrawable, IMovable
 
             foreach (var child in _children)
             {
-                if (!child.IsVisible)
+                if (!child.Visible)
                     continue;
 
-                var b = child.Bounds;
+                var b = child.ScreenBounds;
 
                 if (b == Rectangle.Empty)
                     continue;
@@ -167,9 +172,42 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
     }
 
-    public string Name { get; private set; }
+    public string? Nickname { get; private set; }
 
     public int ZOrder => 0;
+
+    public DirectDrawingMode Mode { get; }
+
+    /// <summary>
+    /// Returns true if any child is visible; setting this sets all children's Visible to the same value.
+    /// </summary>
+    public bool Visible
+    {
+        get
+        {
+            foreach (var c in _children)
+            {
+                if (c.Visible)
+                    return true;
+            }
+
+            return false;
+        }
+        set
+        {
+            foreach (var c in _children)
+            {
+                c.Visible = value;
+            }
+        }
+    }
+
+    public Guid Id { get; private set; }
+
+    public void Draw()
+    {
+        throw new NotImplementedException();
+    }
 
     public void Update(long tick)
     {
@@ -178,7 +216,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     }
 
     // Group ops passthroughs
-    public DirectComposite SetZOrder(int z)
+    public DirectComposite SetGroupZOrder(int z)
     {
         foreach (var c in _children)
             c.ZOrder = z;
@@ -221,7 +259,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     public DirectComposite SetIsVisible(bool visible)
     {
         foreach (var c in _children)
-            c.IsVisible = visible;
+            c.Visible = visible;
 
         return this;
     }

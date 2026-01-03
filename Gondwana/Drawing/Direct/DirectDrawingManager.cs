@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using Gondwana.Movement;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Direct;
@@ -58,34 +59,6 @@ public sealed class DirectDrawingManager
     }
 
     /// <summary>
-    /// Draws all registered drawables in Z-order to their associated Backbuffer.
-    /// </summary>
-    internal void RenderAll()
-    {
-        // Snapshot to avoid races while iterating.
-        var snapshot = _directDrawings.Values.OfType<DirectDrawingBase>().ToArray();
-        Array.Sort(snapshot, _defaultComparer);
-
-        foreach (var drawing in snapshot)
-        {
-            // if the drawing's RenderSurfaceHost's Backbuffer's DirtyRectangle intersects with the drawing's Bounds, mark as dirty
-            if ((drawing.RenderSurfaceHost?.Backbuffer?.DirtyRectangle.IntersectsWith(drawing.Bounds) ?? false) ||
-                drawing.RenderSurfaceHost?.Scene?.FullRefreshNeeded == true)
-            {
-                drawing._dirty = true;
-            }
-
-            if (drawing._dirty)
-            {
-                if (drawing.IsVisible)
-                    drawing.Render();
-
-                drawing._dirty = false;
-            }
-        }
-    }
-
-    /// <summary>
     /// Adds a drawing by its Name. If a drawing with the same Name already exists,
     /// it is disposed and replaced by the new one. Automatically removes on Dispose.
     /// </summary>
@@ -94,7 +67,7 @@ public sealed class DirectDrawingManager
         if (drawing is null)
             throw new ArgumentNullException(nameof(drawing));
 
-        var name = drawing.Name;
+        var name = drawing.Nickname;
 
         _directDrawings.AddOrUpdate(
             name,
@@ -120,7 +93,7 @@ public sealed class DirectDrawingManager
     }
 
     private static readonly IComparer<DirectDrawingBase> _defaultComparer =
-        Comparer<DirectDrawingBase>.Create((a, b) =>
+        Comparer<DirectDrawingBase>.Create((Comparison<DirectDrawingBase>)((a, b) =>
         {
             if (a == null && b == null) return 0;
             if (a == null) return -1;
@@ -131,12 +104,69 @@ public sealed class DirectDrawingManager
             if (z != 0) return z;
 
             // If ZOrder equal, fall back to Name
-            return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
-        });
+            return string.Compare((string)a.Nickname, (string)b.Nickname, StringComparison.Ordinal);
+        }));
 
     private void OnDrawingDisposing(object? sender, IDirectDrawable drawing)
     {
-        _directDrawings.TryRemove(drawing.Name, out _);
+        _directDrawings.TryRemove(drawing.Nickname, out _);
         drawing.Disposing -= OnDrawingDisposing;
     }
+
+    #region helper methods
+
+    /// <summary>
+    /// Returns direct drawings associated with a specific SceneLayer instance (reference equality),
+    /// ordered by ZOrder then Name.
+    /// </summary>
+    public IReadOnlyList<DirectDrawingBase> GetDrawingsForLayer(SceneLayer layer)
+    {
+        if (layer is null)
+            return Array.Empty<DirectDrawingBase>();
+
+        // Snapshot to avoid races while iterating (consistent with UpdateAll / Render patterns).
+        var snapshot = _directDrawings.Values.ToArray();
+
+        var result = snapshot
+            .OfType<DirectDrawingBase>()
+            .Where(d =>
+                d.Mode == DirectDrawingMode.SceneLayer &&
+                ReferenceEquals(d.SceneLayer, layer))
+            .ToList();
+
+        result.Sort(_defaultComparer);
+        return result;
+    }
+
+    /// <summary>
+    /// Returns direct drawings associated with a specific View instance (reference equality),
+    /// ordered by ZOrder then Name.
+    /// </summary>
+    public IReadOnlyList<DirectDrawingBase> GetDrawingsForView(View view)
+    {
+        if (view is null)
+            return Array.Empty<DirectDrawingBase>();
+
+        var snapshot = _directDrawings.Values.ToArray();
+
+        var result = snapshot
+            .OfType<DirectDrawingBase>()
+            .Where(d =>
+                d.Mode == DirectDrawingMode.View &&
+                ReferenceEquals(d.View, view))
+            .ToList();
+
+        result.Sort(_defaultComparer);
+        return result;
+    }
+
+    public bool HasAnyForLayer(SceneLayer layer) =>
+        layer != null && _directDrawings.Values.OfType<DirectDrawingBase>()
+            .Any(d => d.Mode == DirectDrawingMode.SceneLayer && ReferenceEquals(d.SceneLayer, layer));
+
+    public bool HasAnyForView(View view) =>
+        view != null && _directDrawings.Values.OfType<DirectDrawingBase>()
+            .Any(d => d.Mode == DirectDrawingMode.View && ReferenceEquals(d.View, view));
+
+    #endregion helper methods
 }

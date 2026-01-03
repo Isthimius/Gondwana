@@ -143,7 +143,7 @@ namespace Slider
                 {
                     Point spriteLoc = new Point((int)sprite.SceneLayerCoordinates.X, (int)sprite.SceneLayerCoordinates.Y);
 
-                    if (spriteLoc == ParseSpriteCoordID(sprite.ID))
+                    if (spriteLoc == ParseSpriteCoordID(sprite.Nickname))
                         totalCorrect++;
                 }
 

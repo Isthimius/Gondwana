@@ -9,8 +9,6 @@ namespace Gondwana.Rendering;
 /// </summary>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
-    protected readonly List<Rectangle> _overlayScreenDirty = new(16);
-
     protected RenderSurfaceHostBase() => RenderSurfaceHostRegistry.Register(this);
 
     ~RenderSurfaceHostBase() => Dispose(false);
@@ -26,7 +24,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public abstract Scene? Scene { get; }
 
     /// <summary>
-    /// Gets the platform-specific <see cref="RenderSurfaceAdapterBase"> responsible
+    /// Gets the platform-specific <see cref="RenderSurfaceAdapterBase"/> responsible
     /// for rendering the image from the <see cref="Backbuffer"/>.
     /// </summary>
     public abstract RenderSurfaceAdapterBase? RenderSurfaceAdapter { get; }
@@ -47,45 +45,80 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// </summary>
     internal abstract void RenderBackbufferToAdapter();
 
+    protected readonly Dictionary<Guid, List<Rectangle>> _viewOverlayScreenDirty = new();
+
     /// <summary>
-    /// Marks a specified rectangular region of the overlay screen as dirty, called from DirectDrawing instances.
+    /// Marks a specified rectangular region of the overlay screen as dirty for a specific view,
+    /// called from DirectDrawing instances.
     /// ***** Note: this is SCREEN PIXELS *****
     /// </summary>
-    protected internal void AddOverlayScreenDirty(Rectangle screenRect)
+    protected internal void AddViewOverlayScreenDirty(View view, Rectangle screenRect)
     {
+        if (view is null)
+            throw new ArgumentNullException(nameof(view));
+
         if (screenRect.IsEmpty)
             return;
 
-        // If an existing rect fully contains this one, skip
-        for (int i = 0; i < _overlayScreenDirty.Count; i++)
+        var viewId = view.Id;
+
+        if (!_viewOverlayScreenDirty.TryGetValue(viewId, out var list))
         {
-            if (_overlayScreenDirty[i].Contains(screenRect))
+            list = new List<Rectangle>(16);
+            _viewOverlayScreenDirty[viewId] = list;
+        }
+
+        // If an existing rect fully contains this one, skip
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].Contains(screenRect))
                 return;
         }
 
         // Merge any overlaps into one rect (and remove the overlapped ones)
-        for (int i = _overlayScreenDirty.Count - 1; i >= 0; i--)
+        for (int i = list.Count - 1; i >= 0; i--)
         {
-            var existing = _overlayScreenDirty[i];
+            var existing = list[i];
             if (screenRect.IntersectsWith(existing))
             {
                 screenRect = Rectangle.Union(screenRect, existing);
-                _overlayScreenDirty.RemoveAt(i);
+                list.RemoveAt(i);
             }
         }
 
-        _overlayScreenDirty.Add(screenRect);
+        list.Add(screenRect);
 
         // Safety valve: if a lot of tiny invalidations happen, collapse to one big rect.
         const int MaxRects = 32;
-        if (_overlayScreenDirty.Count > MaxRects)
+        if (list.Count > MaxRects)
         {
-            var union = _overlayScreenDirty[0];
-            for (int i = 1; i < _overlayScreenDirty.Count; i++)
-                union = Rectangle.Union(union, _overlayScreenDirty[i]);
+            var union = list[0];
+            for (int i = 1; i < list.Count; i++)
+                union = Rectangle.Union(union, list[i]);
 
-            _overlayScreenDirty.Clear();
-            _overlayScreenDirty.Add(union);
+            list.Clear();
+            list.Add(union);
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether any <see cref="View"/> has pending overlay invalidations.
+    /// </summary>
+    /// <remarks>
+    /// Overlay invalidations are tracked per view in screen-pixel space via <see cref="AddViewOverlayScreenDirty(View, Rectangle)"/>.
+    /// This is typically used as a fast “no work” probe to avoid skipping a frame when only view-based overlays are animating.
+    /// </remarks>
+    protected internal bool IsAnyViewOverlayDirty
+    {
+        get
+        {
+            foreach (var kvp in _viewOverlayScreenDirty)
+            {
+                if (kvp.Value.Count > 0)
+                    return true;
+            }
+
+            return false;
         }
     }
 

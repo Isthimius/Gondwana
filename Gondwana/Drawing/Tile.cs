@@ -8,16 +8,11 @@ using Newtonsoft.Json;
 namespace Gondwana.Drawing;
 
 [JsonObject(IsReference = true)]
-public abstract class Tile : IComparable<Tile>, IDisposable
+public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
 {
     #region static members
 
-    public static List<Tile> TilesAnimating { get; private set; }
-
-    static Tile()
-    {
-        TilesAnimating = new List<Tile>();
-    }
+    public static List<Tile> TilesAnimating { get; } = new();
 
     #endregion static members
 
@@ -35,24 +30,36 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     #endregion fields
 
-    #region public fields
-
-    [JsonProperty]
-    public object Tag;
-
-    #endregion public fields
-
     #region abstract properties
 
     public abstract bool IsPositionFixed { get; }
+
     public abstract Rectangle DrawLocation { get; }
+    
     public abstract PointF SceneLayerCoordinates { get; }
+    
     public abstract SceneLayer SceneLayer { get; }
 
     #endregion abstract properties
 
-    [JsonIgnore]
-    public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
+    #region IDrawable members
+
+    [JsonProperty]
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
+    [JsonProperty]
+    public string? Nickname { get; set; }
+
+    [JsonProperty]
+    public virtual bool Visible
+    {
+        get { return visible; }
+        set
+        {
+            visible = value;
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+        }
+    }
 
     [JsonProperty]
     public virtual int ZOrder
@@ -65,16 +72,12 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         }
     }
 
-    [JsonProperty]
-    public virtual bool Visible
-    {
-        get { return visible; }
-        set
-        {
-            visible = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
-        }
-    }
+    public abstract void Draw();
+
+    #endregion IDrawable members
+
+    [JsonIgnore]
+    public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
 
     [JsonProperty]
     public virtual Frame CurrentFrame
@@ -132,6 +135,9 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     [JsonProperty]
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
+
+    [JsonProperty]
+    public TypedValueBag ValueBag { get; } = new();
 
     /// <summary>
     /// if position is fixed, use top of primary (i.e., non-overhanging) area;

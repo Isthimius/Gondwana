@@ -119,10 +119,11 @@ public sealed class DirectVideo : DirectDrawingBase
     /// </summary>
     public DirectVideo(
         RenderSurfaceHostBase surface,
+        DirectDrawingMode mode,
         Rectangle bounds,
         IVideoPlayer player,
         Uri source)
-        : base(surface, bounds)
+        : base(surface, mode, bounds)
     {
         _player = player ?? throw new ArgumentNullException(nameof(player));
         HookPlayer();
@@ -135,10 +136,11 @@ public sealed class DirectVideo : DirectDrawingBase
     /// e.g., desktop/mobile -> VLC impl, web -> HTML5/WebCodecs impl.
     /// </summary>
     public DirectVideo(RenderSurfaceHost<BitmapBackbuffer> surface,
+                       DirectDrawingMode mode,
                        Rectangle bounds,
                        Func<IVideoPlayer> playerFactory,
                        Uri source)
-        : base(surface, bounds)
+        : base(surface, mode, bounds)
     {
         if (playerFactory is null) throw new ArgumentNullException(nameof(playerFactory));
         _player = playerFactory();
@@ -160,7 +162,7 @@ public sealed class DirectVideo : DirectDrawingBase
         if (bmp is null) return;
 
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
-        var dest = ComputeDestRect(Bounds, bmp.Width, bmp.Height, Stretch);
+        var dest = ComputeDestRect(ScreenBounds, bmp.Width, bmp.Height, Stretch);
 
         using var paint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(Opacity * 255)) };
         canvas.DrawBitmap(bmp, dest, paint);

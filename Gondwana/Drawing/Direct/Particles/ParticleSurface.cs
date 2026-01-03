@@ -1,9 +1,10 @@
-﻿using Gondwana.Rendering;
-using Gondwana.Timers;
-using SkiaSharp;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using Gondwana.Rendering;
+using Gondwana.Scenes;
+using Gondwana.Timers;
+using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct.Particles;
 
@@ -179,8 +180,16 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// </summary>
     public float CullingMarginY { get; set; } = 32f;
 
-    public ParticleSurface(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
-        : base(host, bounds)
+    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
+                           DirectDrawingMode mode,
+                           SceneLayer? sceneLayer,
+                           View? view,
+                           Rectangle? screenBounds,
+                           Rectangle? worldBounds,
+                           string? nickname = null,
+                           int maxParticles = 2000,
+                           SKBitmap? particleSprite = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);
         _particleSprite = particleSprite;
@@ -287,10 +296,10 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             p.Life -= dt;
 
             // cull if out of bounds (with margin)
-            bool isInView = p.X >= Bounds.Left - CullingMarginX
-                         && p.X <= Bounds.Right + CullingMarginX
-                         && p.Y >= Bounds.Top - CullingMarginY
-                         && p.Y <= Bounds.Bottom + CullingMarginY;
+            bool isInView = p.X >= ScreenBounds.Left - CullingMarginX
+                         && p.X <= ScreenBounds.Right + CullingMarginX
+                         && p.Y >= ScreenBounds.Top - CullingMarginY
+                         && p.Y <= ScreenBounds.Bottom + CullingMarginY;
 
             if (p.Life > 0 && isInView)
                 _particles[write++] = p;

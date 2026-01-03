@@ -1,11 +1,12 @@
 using System;
-using Gondwana.Rendering;
-using Gondwana.SkiaSharp;
-using Gondwana.Timers;
-using SkiaSharp;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Gondwana.Rendering;
+using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
+using Gondwana.Timers;
+using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -129,8 +130,14 @@ public class TextBlock : DirectDrawingMovableBase
     /// </summary>
     /// <param name="renderSurfaceHost">The target render surface host responsible for drawing.</param>
     /// <param name="bounds">The outer bounds (in pixels) where the text will be laid out and rendered.</param>
-    public TextBlock(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
-        : base(renderSurfaceHost, bounds)
+    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
+                     DirectDrawingMode mode,
+                     SceneLayer? sceneLayer,
+                     View? view,
+                     Rectangle? screenBounds,
+                     Rectangle? worldBounds,
+                     string? nickname = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         _resolvedForeColor = _foreColor;
     }
@@ -625,7 +632,7 @@ public class TextBlock : DirectDrawingMovableBase
     protected internal override void Draw()
     {
         var canvas = RenderSurfaceHost.Backbuffer.Canvas;
-        var rect = Bounds.ToSKRect();
+        var rect = ScreenBounds.ToSKRect();
 
         // Background
         if (_backColor.Alpha != 0)

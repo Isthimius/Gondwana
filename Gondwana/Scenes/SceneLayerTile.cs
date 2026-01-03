@@ -82,4 +82,9 @@ public class SceneLayerTile : Tile
     }
 
     #endregion public properties
+
+    public override void Draw()
+    {
+        throw new NotImplementedException();
+    }
 }

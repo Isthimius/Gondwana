@@ -148,9 +148,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     #region public properties
 
-    [JsonProperty]
-    public string ID { get; set; } = Guid.NewGuid().ToString();
-
     [JsonIgnore]
     public MovementController Movement { get; private set; }
 
