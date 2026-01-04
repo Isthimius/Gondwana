@@ -70,8 +70,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region properties
 
-    [JsonIgnore]
-    public object? Tag { get; set; }
+    [JsonProperty]
+    public TypedValueBag ValueBag { get; } = new();
 
     [JsonIgnore]
     internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new SquareIsoCoordinates();

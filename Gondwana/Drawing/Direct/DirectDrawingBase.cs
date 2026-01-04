@@ -3,6 +3,7 @@ using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct;
@@ -124,9 +125,11 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         }
     }
 
+    public TypedValueBag ValueBag { get; } = new();
+
     #region IDrawable members
 
-    public Guid Id { get; private set; }
+    public Guid Id { get; } = Guid.NewGuid();
 
     public string? Nickname { get; private set; }
 

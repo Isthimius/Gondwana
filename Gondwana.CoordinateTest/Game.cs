@@ -162,7 +162,7 @@ public class Game : IDisposable
                                                null);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        InitializeParticles();
+        //InitializeParticles();
     }
 
     private void InitializeParticles()

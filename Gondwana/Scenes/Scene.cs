@@ -60,8 +60,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region public properties
 
-    [JsonIgnore]
-    public object? Tag { get; set; }
+    [JsonProperty]
+    public TypedValueBag ValueBag { get; } = new();
 
     [JsonProperty]
     public string ID { get; protected internal set; } = Guid.NewGuid().ToString();
