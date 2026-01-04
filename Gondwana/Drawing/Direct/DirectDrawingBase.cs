@@ -1,8 +1,9 @@
+using System.Drawing;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -42,7 +43,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// <summary>
     /// Render the drawable to the current backbuffer.
     /// </summary>
-    protected internal abstract void Draw();
+    protected internal abstract void Draw(BackbufferBase backbuffer);
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost,
                                 DirectDrawingMode mode,
@@ -153,6 +154,14 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
                 ForceRefresh();
             }
         }
+    }
+
+    void IDrawable.Draw(BackbufferBase backbuffer)
+    {
+        if (Mode == DirectDrawingMode.View)
+            RenderViewPass();
+        else
+            RenderLayerPass();
     }
 
     #endregion IDrawable members
@@ -316,6 +325,10 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         _lastTick = tick;
     }
 
+    /// <summary>
+    /// Render the DirectDrawing in the the view pass in SCREEN pixels;
+    /// called for Mode == View direct drawings.
+    /// </summary>
     protected internal virtual void RenderViewPass()
     {
         // this method should only be called for Mode == View
@@ -353,13 +366,13 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
         if (_opacity >= 0.999f)
         {
-            Draw();
+            Draw(RenderSurfaceHost.Backbuffer!);
         }
         else
         {
             using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
             canvas.SaveLayer(layerPaint);
-            Draw();
+            Draw(RenderSurfaceHost.Backbuffer);
             canvas.Restore(); // end SaveLayer
         }
 
@@ -367,6 +380,10 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             canvas.Restore(); // end Clip Save
     }
 
+    /// <summary>
+    /// Render the DirectDrawing in the the scene layer pass in WORLD pixels;
+    /// called for Mode == SceneLayer direct drawings.
+    /// </summary>
     protected internal void RenderLayerPass()
     {
         if (!Visible)
@@ -375,17 +392,21 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         // no reveal clip here (until world bounds exist)
         if (_opacity >= 0.999f)
         {
-            Draw();
+            Draw(RenderSurfaceHost.Backbuffer!);
         }
         else
         {
             var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
             using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
             canvas.SaveLayer(layerPaint);
-            Draw();
+            Draw(RenderSurfaceHost.Backbuffer);
             canvas.Restore();
         }
     }
+
+    protected Rectangle ActiveBounds => Mode == DirectDrawingMode.SceneLayer ? _worldBounds : _screenBounds;
+
+    protected SKRect ActiveBoundsSk => ActiveBounds.ToSKRect();
 
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
 
@@ -415,11 +436,6 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     public override bool Equals(object? obj) => ReferenceEquals(this, obj);
 
     public override int GetHashCode() => HashCode.Combine(Nickname);
-
-    void IDrawable.Draw()
-    {
-        Draw();
-    }
 
     public static bool operator ==(DirectDrawingBase? left, DirectDrawingBase? right) =>
         ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);

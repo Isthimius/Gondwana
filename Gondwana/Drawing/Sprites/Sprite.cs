@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Movement;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -272,11 +273,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     }
 
     #endregion public properties
-
-    public override void Draw()
-    {
-        throw new NotImplementedException();
-    }
 
     #region internal methods
 

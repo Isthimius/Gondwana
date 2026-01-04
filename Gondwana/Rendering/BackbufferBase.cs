@@ -11,7 +11,7 @@ namespace Gondwana.Rendering;
 /// rendering operations are performed before being presented to the display.
 /// </summary>
 /// <remarks>This abstract class serves as the foundation for backbuffer implementations, offering methods and
-/// properties to facilitate rendering operations, manage graphical state, and interact with graphical  elements such as
+/// properties to facilitate rendering operations, manage graphical state, and interact with graphical elements such as
 /// tiles. Derived classes must implement the <see cref="Canvas"/>, <see cref="DrawTileFrame(Tile)"/>, and <see
 /// cref="Snapshot"/> members to define specific rendering behavior.</remarks>
 public abstract class BackbufferBase : IDisposable
@@ -42,17 +42,31 @@ public abstract class BackbufferBase : IDisposable
     /// <summary>
     /// Gets or sets the paint object used to render fog effects.
     /// </summary>
-    public SKPaint FogPaint { get; set; } = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
+    public SKPaint FogPaint { get; set; } = new()
+    {
+        Color = new SKColor(0, 0, 0, 128),
+        IsAntialias = true
+    };
 
     /// <summary>
     /// Gets or sets the paint settings used to render grid lines.
     /// </summary>
-    public SKPaint GridLinePaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
+    public SKPaint GridLinePaint { get; set; } = new()
+    {
+        Color = SKColors.White,
+        IsStroke = true,
+        StrokeWidth = 1
+    };
 
     /// <summary>
     /// Gets or sets the paint settings used to render collision boxes.
     /// </summary>
-    public SKPaint CollisionBoxPaint { get; set; } = new() { Color = SKColors.Green, IsStroke = true, StrokeWidth = 1 };
+    public SKPaint CollisionBoxPaint { get; set; } = new()
+    {
+        Color = SKColors.Green,
+        IsStroke = true,
+        StrokeWidth = 1
+    };
 
     /// <summary>
     /// Gets the current Backbuffer width in a thread-safe manner.
@@ -115,19 +129,26 @@ public abstract class BackbufferBase : IDisposable
         Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
     }
 
-    /// <summary>
-    /// Runs as part of DoBackgroundTasks()
-    /// </summary>
-    internal void DrawTiles(IEnumerable<Tile> tiles)
+    internal void DrawDrawables(IEnumerable<IDrawable> drawables)
     {
-        foreach (var tile in tiles)
+        var tiles = new List<Tile>();
+
+        foreach (var drawable in drawables)
         {
-            if (!tile.Visible)
+            if (!drawable.Visible)
                 continue;
 
-            DrawTileFrame(tile);
+            drawable.Draw(this);
+
+            if (drawable is Tile tile)
+                tiles.Add(tile);
         }
 
+        PostDrawTiles(tiles);
+    }
+
+    private void PostDrawTiles(IEnumerable<Tile> tiles)
+    {
         foreach (var tile in tiles)
         {
             if (tile.EnableFog)

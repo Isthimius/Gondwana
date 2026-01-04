@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
@@ -382,11 +383,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    internal IEnumerable<Tile> GetTilesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
+    internal IEnumerable<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
     {
         // Gather into a list so we can sort it.
-        var list = new List<Tile>(64);
-        var seen = new HashSet<Tile>();
+        var list = new List<IDrawable>(64);
+        var seen = new HashSet<IDrawable>();
 
         // 1) Grid tiles
         var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
@@ -426,12 +427,46 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 list.Add(s);
         }
 
-        // 3) Sort using Tile.CompareTo
-        list.Sort(); // ← this calls Tile.CompareTo internally
+        // 3) DirectDrawing instances
+        var drawings = DirectDrawingManager.Instance.GetDrawingsForLayer(this); // or whatever method you have
 
-        // 4) Yield in sorted order
+        for (int i = 0; i < drawings.Count; i++)
+        {
+            var drawing = drawings[i];
+            if (!drawing.Visible)
+                continue;
+
+            // Must be SceneLayer-mode by definition if it's "for layer", but be defensive:
+            if (drawing.Mode != DirectDrawingMode.SceneLayer)
+                continue;
+
+            // Only include if it intersects this dirty rect
+            if (!drawing.WorldBounds.IntersectsWith(worldRect))
+                continue;
+
+            if (seen.Add(drawing))
+                list.Add(drawing);
+        }
+
+        // 4) Sort using Tile.CompareTo
+        list.Sort(CompareDrawables); // ← this calls Tile.CompareTo internally
+
+        // 5) Yield in sorted order
         for (int i = 0; i < list.Count; i++)
             yield return list[i];
+    }
+
+    private static int CompareDrawables(IDrawable a, IDrawable b)
+    {
+        int z = a.ZOrder.CompareTo(b.ZOrder);
+        if (z != 0) return z;
+
+        // Preserve legacy ordering for tiles/sprites when Z ties
+        if (a is Tile ta && b is Tile tb)
+            return ta.CompareTo(tb);
+
+        // Stable tie-breaker (avoid flicker)
+        return StringComparer.Ordinal.Compare(a.Id.ToString(), b.Id.ToString());
     }
 
     #endregion private methods

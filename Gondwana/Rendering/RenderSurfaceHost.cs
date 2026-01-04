@@ -365,8 +365,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             canvas.Save();
             canvas.ClipRect(worldRect.ToSKRect());
 
-            var tiles = layer.GetTilesInWorldRect(worldRect);
-            Backbuffer.DrawTiles(tiles);
+            var drawables = layer.GetDrawablesInWorldRect(worldRect);
+            Backbuffer.DrawDrawables(drawables);
 
             canvas.Restore();
         }

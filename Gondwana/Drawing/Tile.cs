@@ -2,6 +2,7 @@ using System.Drawing;
 using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 
@@ -72,7 +73,10 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         }
     }
 
-    public abstract void Draw();
+    public virtual void Draw(BackbufferBase backbuffer)
+    {
+        backbuffer.DrawTileFrame(this);
+    }
 
     #endregion IDrawable members
 
@@ -139,18 +143,6 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
     [JsonProperty]
     public TypedValueBag ValueBag { get; } = new();
 
-    /// <summary>
-    /// if position is fixed, use top of primary (i.e., non-overhanging) area;
-    /// otherwise, use bottom of location for comparison
-    /// </summary>
-    private static float GetTileLocForCompare(Tile tile)
-    {
-        if (!tile.IsPositionFixed)
-            return tile.DrawLocation.Bottom - tile.OverhangPixels.Bottom - 1;
-        else
-            return tile.DrawLocation.Top + tile.OverhangPixels.Top;
-    }
-
     #region IComparable<Tile> Members
 
     public int CompareTo(Tile? tile)
@@ -171,6 +163,18 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         // Use tuple comparison for the rest (Y, Z, X)
         return (thisLoc, zOrder, SceneLayerCoordinates.X)
              .CompareTo((tileLoc, tile.zOrder, tile.SceneLayerCoordinates.X));
+    }
+
+    /// <summary>
+    /// if position is fixed, use top of primary (i.e., non-overhanging) area;
+    /// otherwise, use bottom of location for comparison
+    /// </summary>
+    private static float GetTileLocForCompare(Tile tile)
+    {
+        if (!tile.IsPositionFixed)
+            return tile.DrawLocation.Bottom - tile.OverhangPixels.Bottom - 1;
+        else
+            return tile.DrawLocation.Top + tile.OverhangPixels.Top;
     }
 
     #endregion IComparable<Tile> Members

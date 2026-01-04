@@ -169,9 +169,9 @@ public sealed class DirectImage : DirectDrawingMovableBase
         return this;
     }
 
-    protected internal override void Draw()
+    protected internal override void Draw(BackbufferBase backbuffer)
     {
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = backbuffer.Canvas;
 
         // get SKImage to draw
         var img = _image ?? (_bitmap != null ? SKImage.FromBitmap(_bitmap) : null);

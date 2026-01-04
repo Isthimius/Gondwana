@@ -338,9 +338,9 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// particles.Invalidate();       // mark dirty so the manager re-renders
     /// </code>
     /// </example>
-    protected internal override void Draw()
+    protected internal override void Draw(BackbufferBase backbuffer)
     {
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = backbuffer.Canvas;
 
         // e.g., default blend; you may switch per-emitter later if you add BlendMode there
         _paint.BlendMode = SKBlendMode.Plus;

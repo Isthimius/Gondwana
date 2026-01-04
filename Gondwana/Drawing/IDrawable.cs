@@ -1,4 +1,6 @@
-﻿namespace Gondwana.Drawing;
+﻿using Gondwana.Rendering;
+
+namespace Gondwana.Drawing;
 
 /// <summary>
 /// Represents an object that can be drawn on a visual surface, with properties for visibility and stacking order.
@@ -32,5 +34,5 @@ public interface IDrawable
     /// <summary>
     /// Draws the object on the specified surface.
     /// </summary>
-    void Draw();
+    void Draw(BackbufferBase backbuffer);
 }

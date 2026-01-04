@@ -88,9 +88,6 @@ public sealed class BitmapBackbuffer : BackbufferBase
         }
     }
 
-    /// <summary>
-    /// Runs as part of DoBackgroundTasks()
-    /// </summary>
     protected internal override void DrawTileFrame(Tile tile)
     {
         var bmp = tile.CurrentFrame.SkBitmap;

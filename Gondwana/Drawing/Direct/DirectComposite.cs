@@ -202,11 +202,12 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
     }
 
-    public Guid Id { get; private set; }
+    public Guid Id { get; } = Guid.NewGuid();
 
-    public void Draw()
+    public void Draw(BackbufferBase backbuffer)
     {
-        throw new NotImplementedException();
+        // Intentionally no-op.
+        // Composite is a grouping/controller object; children are responsible for rendering.
     }
 
     public void Update(long tick)

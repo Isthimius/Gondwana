@@ -1,6 +1,7 @@
 using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
+using Gondwana.Rendering;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -82,9 +83,4 @@ public class SceneLayerTile : Tile
     }
 
     #endregion public properties
-
-    public override void Draw()
-    {
-        throw new NotImplementedException();
-    }
 }
