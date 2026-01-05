@@ -48,7 +48,8 @@ public sealed class KeyboardEventPoller
     /// <param name="tick">Current global tick</param>
     internal void PollForEvents(long tick)
     {
-        if (PauseAllKeyEvents || Adapter is null) return;
+        if (PauseAllKeyEvents || Adapter is null)
+            return;
 
         foreach (var kvp in _keyConfigs.ToList())
         {

@@ -125,6 +125,8 @@ public class Game : IDisposable
     private ParticleSurface? _particleSurface;
     private ParticleEmitter? _clickEmitter;
 
+    private TextBlock? _spriteNameTag;
+
     private void InitDirectDrawings()
     {
         //Implementation for creating direct drawings goes here
@@ -163,6 +165,15 @@ public class Game : IDisposable
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         //InitializeParticles();
+
+        _spriteNameTag = new TextBlock(RenderSurface.Host,
+                                               DirectDrawingMode.SceneLayer,
+                                               Scene![0],
+                                               null,
+                                               null,
+                                               new Rectangle(0, 0, 100, 30));
+        _spriteNameTag.SetColors(Color.Blue, Color.White).ZOrder = 20;
+        _spriteNameTag.Movement.FollowTileSoft(SpriteManager.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
     }
 
     private void InitializeParticles()

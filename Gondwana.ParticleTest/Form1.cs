@@ -33,6 +33,8 @@ public partial class Form1 : Form
         var renderSurface = winFormBitmapRenderSurfaceControl1.Host;
         var adapter = renderSurface.RenderSurfaceAdapter;
 
+        renderSurface.ViewRenderer.ConfigureSingleFullView();
+
         //var scene = new Scene();
         //scene.AddLayer(1, 1, adapter!.Width, adapter.Height, 1, CoordinateSystemTypes.SqaureIso);
 

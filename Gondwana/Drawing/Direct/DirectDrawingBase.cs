@@ -341,15 +341,16 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         if (!Visible)
             return;
 
-        var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
+        var backbuffer = RenderSurfaceHost.Backbuffer!;
+        var canvas = backbuffer.Canvas;
 
-        // Compute reveal clip rect (in pixel space) from Bounds
-        // If fully revealed, skip the whole clip branch.
+        // Compute reveal clip rect (screen pixel space) from bounds
         bool useClip = _revealT < 0.999f;
 
         if (useClip)
         {
             var r = new SKRect(_screenBounds.Left, _screenBounds.Top, _screenBounds.Right, _screenBounds.Bottom);
+
             SKRect clipRect = _revealDir switch
             {
                 RevealDirection.LeftToRight => new SKRect(r.Left, r.Top, r.Left + r.Width * _revealT, r.Bottom),
@@ -359,28 +360,41 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
                 _ => r
             };
 
-            // Early-out: if clip is empty, no need to draw at all.
+            // Early-out if reveal window is empty
             if (clipRect.Width <= 0f || clipRect.Height <= 0f)
                 return;
 
+            // Outer save owns the clip lifetime
             canvas.Save();
+
+            // Capture current matrix
+            var m = canvas.TotalMatrix;
+
+            canvas.ResetMatrix();
             canvas.ClipRect(clipRect, SKClipOperation.Intersect, antialias: false);
+
+            // Put the prior matrix back so Draw() sees the same transform state
+            canvas.SetMatrix(m);
         }
 
         if (_opacity >= 0.999f)
         {
-            Draw(RenderSurfaceHost.Backbuffer!);
+            Draw(backbuffer);
         }
         else
         {
-            using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
+            using var layerPaint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, (byte)(_opacity * 255))
+            };
+
             canvas.SaveLayer(layerPaint);
-            Draw(RenderSurfaceHost.Backbuffer);
+            Draw(backbuffer);
             canvas.Restore(); // end SaveLayer
         }
 
         if (useClip)
-            canvas.Restore(); // end Clip Save
+            canvas.Restore(); // end outer clip Save
     }
 
     /// <summary>
