@@ -2,7 +2,6 @@
 using Gondwana.Drawing.Direct;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
-using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;

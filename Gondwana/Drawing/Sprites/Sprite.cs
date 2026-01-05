@@ -4,9 +4,7 @@ using System.Runtime.Serialization;
 using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Movement;
-using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Sprites;
