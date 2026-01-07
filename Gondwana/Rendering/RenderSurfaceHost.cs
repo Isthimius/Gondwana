@@ -298,7 +298,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 continue;
 
             // 2) mark adapter dirty (screen-space)
-            Backbuffer!.AddToDirtyRectangle(screenRect);
+            Backbuffer.AddToDirtyRectangle(screenRect);
 
             // 3) clip and redraw tiles (world-space)
             var canvas = Backbuffer.Canvas;

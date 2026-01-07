@@ -170,7 +170,6 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
-    /// Runs as part of DoBackgroundTasks().
     /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
     /// </summary>
     protected internal void AddToDirtyRectangle(Rectangle area)
