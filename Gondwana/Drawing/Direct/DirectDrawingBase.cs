@@ -267,15 +267,18 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         if (Mode == DirectDrawingMode.SceneLayer)
         {
             // bounds is WORLD-space
+            // there will only be one SceneLayer per DirectDrawing in this mode
             SceneLayer!.RefreshQueue.AddWorldRect(_worldBounds);
         }
         else if (Mode == DirectDrawingMode.View)
         {
             // bounds is SCREEN-space
-            RenderSurfaceHost.AddViewOverlayScreenDirty(View!, _screenBounds);
+            // need to cycle through all SceneLayers for the View to which this DirectDrawing belongs
+            foreach (var sceneLayer in RenderSurfaceHost.Scene.SceneLayers)
+            {
+                sceneLayer.RefreshQueue.AddViewScreenRect(View!, sceneLayer, _screenBounds);
+            }
         }
-
-        //_dirty = true;
     }
 
     /// <summary>

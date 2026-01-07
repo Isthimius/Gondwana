@@ -239,7 +239,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             showCollisionBoxes = value;
             ShowCollisionBoxesChanged?.Invoke(this);
         }
-   }
+    }
 
     // World-space origin (in pixels) of this layer’s (0,0) tile.
     // Usually (0,0); can be shifted to move the entire layer as a block.
@@ -310,7 +310,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// extreme grid tiles. Works for square, iso, hex, and any other supported
     /// projection.
     /// </summary>
-    public RectangleF GetLayerBoundsPx()
+    public virtual RectangleF GetLayerBoundsPx()
     {
         if (GridColumnCount == 0 || GridRowCount == 0)
             return RectangleF.Empty;
@@ -383,7 +383,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    internal IEnumerable<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
+    internal virtual IEnumerable<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
     {
         // Gather into a list so we can sort it.
         var list = new List<IDrawable>(64);
@@ -511,7 +511,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region IDisposable Members
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         GC.SuppressFinalize(this);
 
@@ -531,4 +531,35 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     #endregion IDisposable Members
+
+    #region empty SceneLayer
+
+    public static SceneLayer Empty { get; } = new EmptySceneLayer();
+
+    private sealed class EmptySceneLayer : SceneLayer
+    {
+        internal EmptySceneLayer()
+            : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
+        {
+            Visible = false;
+            ZOrder = int.MinValue;
+            Parallax = 1f;
+        }
+
+        public override RectangleF GetLayerBoundsPx() => RectangleF.Empty;
+
+        internal override IEnumerable<IDrawable> GetDrawablesInWorldRect(
+            Rectangle worldRect,
+            bool includeOverhang = true)
+        {
+            yield break;
+        }
+
+        public override void Dispose()
+        {
+            // Intentionally empty — singleton
+        }
+    }
+
+    #endregion empty SceneLayer
 }

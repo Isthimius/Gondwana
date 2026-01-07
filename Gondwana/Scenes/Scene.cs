@@ -53,7 +53,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         foreach (var sceneLayer in _sceneLayers)
             OnSceneLayerAdded(sceneLayer);
 
-        _allScenes.Add(this);
+        if (!ReferenceEquals(this, Empty))
+            _allScenes.Add(this);
     }
 
     #endregion constructors / finalizer
@@ -321,7 +322,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region IDisposable Members
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         GC.SuppressFinalize(this);
 
@@ -357,4 +358,37 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     }
 
     #endregion static helpers
+
+    #region empty Scene
+
+    public static Scene Empty { get; } = new EmptyScene();
+
+    private sealed class EmptyScene : Scene
+    {
+        internal EmptyScene()
+        {
+            _sceneLayers.Clear();
+
+            // Attach the singleton empty layer
+            _sceneLayers.Add(SceneLayer.Empty);
+            SceneLayer.Empty.Scene = this;
+
+            FullRefreshNeeded = false;
+        }
+
+        protected override void OnSceneLayerAdded(SceneLayer sceneLayer)
+            => throw new InvalidOperationException("Cannot add layers to Scene.Empty");
+
+        protected override void OnSceneLayerRemoved(SceneLayer sceneLayer)
+        {
+            // no-op
+        }
+
+        public override void Dispose()
+        {
+            // Intentionally empty — singleton
+        }
+    }
+
+    #endregion empty Scene
 }

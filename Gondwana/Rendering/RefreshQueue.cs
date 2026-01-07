@@ -1,4 +1,6 @@
 using System.Drawing;
+using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
 
 namespace Gondwana.Rendering;
 
@@ -41,6 +43,25 @@ internal sealed class RefreshQueue : IDisposable
         }
 
         _worldRects.Add(worldPixelRange);
+    }
+
+    internal void AddViewScreenRect(View view, SceneLayer sceneLayer, Rectangle screenPixelRange)
+    {
+        if (screenPixelRange.IsEmpty)
+            return;
+        
+        if (view is null)
+            throw new ArgumentNullException(nameof(view));
+        
+        if (sceneLayer is null)
+            throw new ArgumentNullException(nameof(sceneLayer));
+
+        // clamp screenPixelRange to view's viewport
+        screenPixelRange.Intersect(view.Viewport.TargetRectPx);
+
+        var worldRect = view.ScreenRectToWorldRect(sceneLayer, screenPixelRange);
+        worldRect.Inflate(1, 1); // Expand by 1 pixel in all directions to account for rounding errors.
+        AddWorldRect(worldRect.ToPixelAlignedRect());
     }
 
     internal void ClearRefreshQueue() => _worldRects.Clear();

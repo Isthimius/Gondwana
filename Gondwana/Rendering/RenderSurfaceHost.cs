@@ -13,17 +13,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 {
     private long _lastTick = HighResTimer.GetCurrentTick();
 
-    private TBackbuffer? _backbuffer;
-    private Scene? _scene;
+    private TBackbuffer _backbuffer;
+    private Scene _scene = Scene.Empty;
 
-    private readonly SKPaint _preClearPaint = new()
-    {
-        IsAntialias = false,
-        BlendMode = SKBlendMode.Src,
-        FilterQuality = SKFilterQuality.None
-    };
-
-    private readonly RenderSurfaceAdapterBase? _renderSurfaceAdapter;
+    private readonly RenderSurfaceAdapterBase _renderSurfaceAdapter;
     private readonly ViewRenderer _viewRenderer;
 
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
@@ -35,36 +28,38 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
 
         // Recreate backbuffer on adapter resize
-        RenderSurfaceAdapter!.Resized += (args) => OnRenderSurfaceAdapterResized(args);
+        RenderSurfaceAdapter.Resized += (args) => OnRenderSurfaceAdapterResized(args);
 
-        var w = RenderSurfaceAdapter!.Width;
-        var h = RenderSurfaceAdapter!.Height;
+        var w = RenderSurfaceAdapter.Width;
+        var h = RenderSurfaceAdapter.Height;
 
         if (w > 0 || h > 0)
         {
             _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
             Backbuffer!.BeginFrame();
 
-            Backbuffer!.SizeChanged += (w, h) =>
-            {
-                if (Scene != null)
-                    Scene.FullRefreshNeeded = true;
-            };
+            Backbuffer!.SizeChanged += (w, h) => Scene.FullRefreshNeeded = true;
         }
     }
 
-    public override BackbufferBase? Backbuffer => _backbuffer;
+    public override BackbufferBase Backbuffer => _backbuffer;
 
-    public override Scene? Scene => _scene;
+    public override Scene Scene => _scene;
 
-    public override RenderSurfaceAdapterBase? RenderSurfaceAdapter => _renderSurfaceAdapter;
+    public override RenderSurfaceAdapterBase RenderSurfaceAdapter => _renderSurfaceAdapter;
 
     public override ViewRenderer ViewRenderer => _viewRenderer;
 
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
-    public void Bind(Scene? drawSource, bool limitCameraToWorldBoundPx = true)
+    public void Bind(Scene newScene, bool limitCameraToWorldBoundPx = true)
     {
+        if (newScene == null)
+            throw new ArgumentNullException(nameof(newScene), "Cannot bind to null Scene.");
+
+        if (newScene == _scene)
+            return;
+
         // Unregister from the old scene (if any)
         if (_scene != null)
         {
@@ -72,14 +67,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         var oldScene = _scene;
-        _scene = drawSource;
+        _scene = newScene;
 
-        if (_scene != null)
-        {
-            ViewRenderer.BindToScene(_scene, limitCameraToWorldBoundPx);
-            _scene.SceneDisposing += OnSourceDisposing;
-            _scene.FullRefreshNeeded = true;
-        }
+        ViewRenderer.BindToScene(_scene, limitCameraToWorldBoundPx);
+        _scene.SceneDisposing += OnSourceDisposing;
+        _scene.FullRefreshNeeded = true;
 
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, _scene));
     }
@@ -90,14 +82,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     internal override void DrawRefreshQueueToBackbuffer(long tick)
     {
-        // 0) If there’s no Scene (or no visible layers), just clear and publish the full frame.
-        if (Scene == null || Scene.CountOfVisibleLayers == 0)
+        // 0) If there are no visible SceneLayers, just clear and publish the full frame.
+        if (Scene.CountOfVisibleLayers == 0)
         {
             Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
             Backbuffer.MarkFullDirty();
 
-            if (Scene != null)
-                Scene.FullRefreshNeeded = false;
+            Scene.FullRefreshNeeded = false;
 
             _lastTick = tick;
             return;
@@ -108,20 +99,20 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // 2) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
         //    This already clears the whole backbuffer and enqueues a full rect per layer.
-        bool forceFullRedraw = Scene!.FullRefreshNeeded;
+        bool forceFullRedraw = Scene.FullRefreshNeeded;
 
         if (forceFullRedraw)
             EnqueueFullSceneRefresh();
 
         // 3) Fast “no work” probe
-        if (!forceFullRedraw && !Scene.IsDirty && !IsAnyViewOverlayDirty)
+        if (!forceFullRedraw && !Scene.IsDirty)
         {
             _lastTick = tick; // keep deltaSeconds sane next frame
             return;
         }
 
         // 4) Convert overlay SCREEN dirty → WORLD dirty (queues)
-        ProcessOverlayScreenDirty();
+        //ProcessOverlayScreenDirty();
 
         // 4.5) if doing a partial redraw, identify and clear any rects dirty from DirectDrawing overlays or dirty Tiles
         if (!forceFullRedraw)
@@ -131,7 +122,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
-        ViewRenderer.Render(Backbuffer!.Canvas, deltaSeconds, Scene!,
+        ViewRenderer.Render(Backbuffer!.Canvas, deltaSeconds, Scene,
             (view, layer) => RenderLayerDirtyRegions(view, layer, forceFullRedraw));
 
         // 5.5) View-mode DirectDrawings pass (screen-space, on top of everything)
@@ -160,7 +151,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 6) Preserve any pre-existing dirty (e.g., set earlier this frame) — union, don’t replace.
         //    If this was a full redraw, mark the entire backbuffer as dirty so the adapter blits all of it.
         if (forceFullRedraw)
-            Backbuffer!.MarkFullDirty();
+            Backbuffer.MarkFullDirty();
 
         // 7) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
@@ -174,7 +165,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void EnqueueFullSceneRefresh()
     {
-        if (Backbuffer is null || Scene is null)
+        if (Backbuffer is null)
             return;
 
         Backbuffer.Canvas.Clear(Backbuffer.ClearColor);
@@ -207,55 +198,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
-    private void ProcessOverlayScreenDirty()
-    {
-        if (Backbuffer is null || Scene is null)
-            return;
-
-        // Consume per-view overlay dirty rects (SCREEN pixels) and enqueue underlying WORLD dirty per view.
-        foreach (var view in ViewRenderer.Views)
-        {
-            if (!_viewOverlayScreenDirty.TryGetValue(view.Id, out var rects) || rects.Count == 0)
-                continue;
-
-            var viewportPx = view.Viewport.TargetRectPx;
-
-            foreach (var r in rects)
-            {
-                if (r.IsEmpty)
-                    continue;
-
-                // Clamp to this view's viewport
-                var repaintRect = Rectangle.Intersect(r, viewportPx);
-                if (repaintRect.IsEmpty)
-                    continue;
-
-                // Mark adapter/backbuffer dirty (SCREEN pixels)
-                Backbuffer.AddToDirtyRectangle(repaintRect);
-
-                // Convert SCREEN dirty -> WORLD dirty for THIS view only
-                var screenRectF = new RectangleF(
-                    repaintRect.Left,
-                    repaintRect.Top,
-                    repaintRect.Width,
-                    repaintRect.Height);
-
-                for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
-                {
-                    var layer = Scene.VisibleSceneLayers[i];
-
-                    var worldRectF = view.ScreenRectToWorldRect(layer, screenRectF);
-                    worldRectF.Inflate(1, 1);
-
-                    layer.RefreshQueue.AddWorldRect(worldRectF.ToPixelAlignedRect());
-                }
-            }
-
-            // Clear (reuse list capacity; avoids churn)
-            rects.Clear();
-        }
-    }
-
     private List<Rectangle> CollectDirtyScreenArea()
     {
         var dirty = new List<Rectangle>(64);
@@ -264,7 +206,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             var viewportRect = view.Viewport.TargetRectPx;
 
-            foreach (var sceneLayer in Scene!.VisibleSceneLayers)
+            foreach (var sceneLayer in Scene.VisibleSceneLayers)
             {
                 var refreshQueue = sceneLayer.RefreshQueue;
                 if (!refreshQueue.IsDirty)

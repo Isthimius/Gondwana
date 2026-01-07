@@ -175,7 +175,7 @@ public class Game : IDisposable
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
         var view = RenderSurface.Host.ViewRenderer.Views[0];
-        var layer = Scene!.SceneLayers[0];
+        var layer = Scene.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
 

@@ -21,7 +21,7 @@ public class Game : IDisposable
 {
     public WinFormBitmapRenderSurfaceControl RenderSurface { get; private set; }
 
-    public Scene? Scene { get; private set; }
+    public Scene Scene { get; private set; }
 
     public Game(WinFormBitmapRenderSurfaceControl renderSurface)
     {
@@ -104,8 +104,8 @@ public class Game : IDisposable
     {
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
-        var sprite1 = SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_1");
-        SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_2").Visible = true;
+        var sprite1 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
+        SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2").Visible = true;
         SpriteManager.GetSpriteByID("rooster_2")!.SetPosition(new Vector2(5, 0));
 
         sprite1.Visible = true;
@@ -168,7 +168,7 @@ public class Game : IDisposable
 
         _spriteNameTag = new TextBlock(RenderSurface.Host,
                                                DirectDrawingMode.SceneLayer,
-                                               Scene![0],
+                                               Scene[0],
                                                null,
                                                null,
                                                new Rectangle(0, 0, 100, 30));
@@ -385,7 +385,7 @@ public class Game : IDisposable
     private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
     {
         var view = RenderSurface.Host.ViewRenderer.Views[0];
-        var layer = Scene!.SceneLayers[0];
+        var layer = Scene.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
 
