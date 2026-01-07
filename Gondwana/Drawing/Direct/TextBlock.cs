@@ -566,7 +566,6 @@ public class TextBlock : DirectDrawingMovableBase
                         _revealAccum -= PauseFor(_text[i]);
 
                     // Mark dirty + redraw
-                    _dirty = true;
                     ForceRefresh();
 
                     // Fire TextRevealed with the cumulative revealed text
@@ -605,7 +604,6 @@ public class TextBlock : DirectDrawingMovableBase
                     if (_revealCharCount > 0)
                         _revealAccum -= PauseFor(_text[_revealCharCount - 1]);
 
-                    _dirty = true;
                     ForceRefresh();
 
                     // Fire TextRevealed with the cumulative revealed text

@@ -18,7 +18,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     protected Rectangle _worldBounds;
     protected int _zOrder;
     protected bool _visible;
-    protected internal bool _dirty = true;
+    //protected internal bool _dirty = true;
     protected long _lastTick = HighResTimer.GetCurrentTick();
 
     private bool _disposed = false;
@@ -275,7 +275,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             RenderSurfaceHost.AddViewOverlayScreenDirty(View!, _screenBounds);
         }
 
-        _dirty = true;
+        //_dirty = true;
     }
 
     /// <summary>
@@ -301,7 +301,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             if (HideWhenFullyTransparent)
                 Visible = _opacity > 0f; // hides when hit zero
 
-            _dirty = true;
+            ForceRefresh();
 
             if (timeElapsed >= 1f)
             {
@@ -320,7 +320,8 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             _revealT = (_revealEasing is null ? u : _revealEasing(u));
             _revealT = _revealStart + (_revealTarget - _revealStart) * _revealT;
 
-            _dirty = true;
+            ForceRefresh();
+
             if (_revealElapsedSec >= _revealDurationSec)
                 _revealAnimating = false;
         }
