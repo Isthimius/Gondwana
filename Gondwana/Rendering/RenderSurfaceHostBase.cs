@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Gondwana.Scenes;
+﻿using Gondwana.Scenes;
 
 namespace Gondwana.Rendering;
 
@@ -16,7 +15,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// <summary>
     /// Gets the in-memory <see cref="BackbufferBase"/> associated with the current rendering context.
     /// </summary>
-    public abstract BackbufferBase? Backbuffer { get; }
+    public abstract BackbufferBase Backbuffer { get; }
 
     /// <summary>
     /// Gets the source <see cref="Scenes.Scene"/> used for rendering operations.

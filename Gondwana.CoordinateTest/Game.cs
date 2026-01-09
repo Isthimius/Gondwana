@@ -46,9 +46,9 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
-        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        //RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
+        //RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
+        //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
         RenderSurface.Host.RedrawDirtyRectangleOnly = true;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
@@ -388,6 +388,11 @@ public class Game : IDisposable
         var layer = Scene.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
+
+
+        var w = view.ScreenPxToWorldPx(layer, screenPos);
+        var s = view.WorldPxToScreenPx(layer, w);
+        Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
 
         // 1) screen → world (via View)
         var worldFromScreen = view.ScreenPxToWorldPx(layer, screenPos);

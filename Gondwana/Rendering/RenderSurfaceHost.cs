@@ -33,13 +33,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var w = RenderSurfaceAdapter.Width;
         var h = RenderSurfaceAdapter.Height;
 
-        if (w > 0 || h > 0)
-        {
-            _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
-            Backbuffer!.BeginFrame();
+        if (w <= 0 || h <= 0)
+            throw new InvalidOperationException("RenderSurfaceAdapter has non-positive dimensions.");
 
-            Backbuffer!.SizeChanged += (w, h) => Scene.FullRefreshNeeded = true;
-        }
+        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
+        Backbuffer.BeginFrame();
+
+        Backbuffer.SizeChanged += (w, h) => Scene.FullRefreshNeeded = true;
     }
 
     public override BackbufferBase Backbuffer => _backbuffer;
@@ -85,7 +85,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)
         {
-            Backbuffer!.Canvas.Clear(Backbuffer.ClearColor);
+            Backbuffer.Canvas.Clear(Backbuffer.ClearColor);
             Backbuffer.MarkFullDirty();
 
             Scene.FullRefreshNeeded = false;
@@ -111,9 +111,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        // 4) Convert overlay SCREEN dirty → WORLD dirty (queues)
-        //ProcessOverlayScreenDirty();
-
         // 4.5) if doing a partial redraw, identify and clear any rects dirty from DirectDrawing overlays or dirty Tiles
         if (!forceFullRedraw)
         {
@@ -122,12 +119,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
-        ViewRenderer.Render(Backbuffer!.Canvas, deltaSeconds, Scene,
+        ViewRenderer.Render(Backbuffer.Canvas, deltaSeconds, Scene,
             (view, layer) => RenderLayerDirtyRegions(view, layer, forceFullRedraw));
 
         // 5.5) View-mode DirectDrawings pass (screen-space, on top of everything)
         //      IMPORTANT: View-mode assumes origin is screen (0,0), so reset any camera/parallax transforms.
-        var canvas = Backbuffer!.Canvas;
+        var canvas = Backbuffer.Canvas;
 
         canvas.Save();
         canvas.ResetMatrix();
@@ -307,7 +304,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             canvas.ClipRect(worldRect.ToSKRect());
 
             var drawables = layer.GetDrawablesInWorldRect(worldRect);
-            Backbuffer.DrawDrawables(drawables);
+            Backbuffer.DrawDrawables(view, drawables);
 
             canvas.Restore();
         }
@@ -328,7 +325,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (RenderSurfaceAdapter is null)
             return;
 
-        Backbuffer!.EndFrame();
+        Backbuffer.EndFrame();
 
         if (RedrawDirtyRectangleOnly)
             RenderBackbufferRect();
@@ -401,7 +398,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void RenderBackbufferAll()
     {
-        var img = Backbuffer!.Snapshot();
+        var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
 

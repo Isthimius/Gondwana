@@ -274,7 +274,7 @@ namespace Slider
             foreach (SceneLayerTile gPt in adjGridPts)
             {
                 if (gPt != null)
-                    adjSprites.AddRange(SpriteManager.GetSpritesInRange(gPt.DrawLocation));
+                    adjSprites.AddRange(SpriteManager.GetSpritesInRange(gPt.DrawLocationWorld));
             }
 
             return adjSprites;

@@ -40,7 +40,7 @@ public static class SpriteManager
         if (newSprite.SceneLayer != sceneLayer)
         {
             newSprite._sceneLayer = sceneLayer;
-            newSprite.QueueRefreshArea(newSprite.DrawLocation);
+            newSprite._sceneLayer.RefreshQueue.AddWorldRect(newSprite.DrawLocationWorld);
         }
 
         return newSprite;
@@ -101,12 +101,12 @@ public static class SpriteManager
             // check if sprite in range
             if (fullEnclosures)
             {
-                if (range.Contains(sprite.DrawLocation))
+                if (range.Contains(sprite.DrawLocationWorld))
                     retSprites.Add(sprite);
             }
             else
             {
-                if (sprite.DrawLocation.IntersectsWith(range))
+                if (sprite.DrawLocationWorld.IntersectsWith(range))
                     retSprites.Add(sprite);
             }
         }
@@ -125,12 +125,12 @@ public static class SpriteManager
                 // check if sprite in range
                 if (fullEnclosures)
                 {
-                    if (range.Contains(sprite.DrawLocation))
+                    if (range.Contains(sprite.DrawLocationWorld))
                         retSprites.Add(sprite);
                 }
                 else
                 {
-                    if (sprite.DrawLocation.IntersectsWith(range))
+                    if (sprite.DrawLocationWorld.IntersectsWith(range))
                         retSprites.Add(sprite);
                 }
             }
@@ -146,7 +146,7 @@ public static class SpriteManager
         foreach (Sprite sprite in _spriteList)
         {
             // check if sprite at Point
-            if (sprite.DrawLocation.Contains(pxlPt))
+            if (sprite.DrawLocationWorld.Contains(pxlPt))
                 retSprites.Add(sprite);
         }
 
@@ -160,7 +160,7 @@ public static class SpriteManager
         foreach (Sprite sprite in _spriteList)
         {
             // check if sprite at Point
-            if ((sprite.SceneLayer == sceneLayer) && (sprite.DrawLocation.Contains(pxlPt)))
+            if ((sprite.SceneLayer == sceneLayer) && (sprite.DrawLocationWorld.Contains(pxlPt)))
                 retSprites.Add(sprite);
         }
 

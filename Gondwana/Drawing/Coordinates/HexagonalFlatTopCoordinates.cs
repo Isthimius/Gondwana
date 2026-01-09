@@ -17,8 +17,8 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         int row = (int)Math.Round(gp.Y);
 
         var origin = sceneLayer.OriginPx;
-        int x = (int)Math.Floor(origin.X + col * (W * 0.75f));
-        int y = (int)Math.Floor((double)(origin.Y + row * H + ((col & 1) == 0 ? 0 : H / 2)));
+        int x = (int)Math.Floor(-origin.X + col * (W * 0.75f));
+        int y = (int)Math.Floor((double)(-origin.Y + row * H + ((col & 1) == 0 ? 0 : H / 2)));
 
         return new Point(x, y);
     }
@@ -34,7 +34,7 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         // --- 1) Coarse column estimate using centers, not box top-left ---
 
         // Center of column 0 is at originX + W/2
-        float dxFromCol0Center = pixelPt.X - (originX + W * 0.5f);
+        float dxFromCol0Center = pixelPt.X - (-originX + W * 0.5f);
 
         // Columns advance by 0.75 * W horizontally
         float colF = dxFromCol0Center / (W * 0.75f);
@@ -46,7 +46,7 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         //   even col: originY + H/2
         //   odd  col: originY + H/2 + H/2 = originY + H
         float baseCenterY =
-            originY + H * 0.5f
+            -originY + H * 0.5f
             + ((approxCol & 1) == 0 ? 0f : H * 0.5f);
 
         float dyFromRow0Center = pixelPt.Y - baseCenterY;
@@ -67,8 +67,8 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
                 return new PointF(cand.X, cand.Y);
 
             // Center of candidate hex
-            float cx = originX + cand.X * (W * 0.75f) + W / 2f;
-            float cy = originY + cand.Y * H
+            float cx = -originX + cand.X * (W * 0.75f) + W / 2f;
+            float cy = -originY + cand.Y * H
                        + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
 
             float dx = cx - pixelPt.X;
@@ -94,14 +94,14 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        int minCol = (int)Math.Floor((worldPixelRange.Left - originX) / (W * 0.75f)) - 2;
-        int maxCol = (int)Math.Ceiling((worldPixelRange.Right - originX) / (W * 0.75f)) + 2;
+        int minCol = (int)Math.Floor((worldPixelRange.Left + originX) / (W * 0.75f)) - 2;
+        int maxCol = (int)Math.Ceiling((worldPixelRange.Right + originX) / (W * 0.75f)) + 2;
 
         for (int col = minCol; col <= maxCol; col++)
         {
             int yOffset = ((col & 1) == 0 ? 0 : H / 2);
-            int minRow = (int)Math.Floor((worldPixelRange.Top - originY - yOffset) / (float)H) - 2;
-            int maxRow = (int)Math.Ceiling((worldPixelRange.Bottom - originY - yOffset) / (float)H) + 2;
+            int minRow = (int)Math.Floor((worldPixelRange.Top + originY - yOffset) / (float)H) - 2;
+            int maxRow = (int)Math.Ceiling((worldPixelRange.Bottom + originY - yOffset) / (float)H) + 2;
 
             for (int row = minRow; row <= maxRow; row++)
             {
@@ -192,8 +192,8 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
         int originY = sceneLayer.OriginPx.Y;
 
         var p = new Point(
-            originX + (int)Math.Floor(col * (W * 0.75f)),
-            originY + row * H + ((col & 1) == 0 ? 0 : H / 2));
+            -originX + (int)Math.Floor(col * (W * 0.75f)),
+            -originY + row * H + ((col & 1) == 0 ? 0 : H / 2));
 
         var rect = new Rectangle(p.X, p.Y, W, H);
         var ohRect = TileBounds.ApplyOverhang(
@@ -215,7 +215,6 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
             new Point(x,          y + H/2)
         };
     }
-
 
     private static bool PointInPolygon(Point[] poly, Point p)
     {

@@ -35,7 +35,7 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
 
     public abstract bool IsPositionFixed { get; }
 
-    public abstract Rectangle DrawLocation { get; }
+    public abstract Rectangle DrawLocationWorld { get; }
     
     public abstract PointF SceneLayerCoordinates { get; }
     
@@ -58,7 +58,7 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         set
         {
             visible = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 
@@ -69,7 +69,7 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         set
         {
             zOrder = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 
@@ -90,9 +90,9 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         set
         {
             // animation might change Tile size, so add before and after
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
             frame = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 
@@ -110,7 +110,7 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
     {
         get
         {
-            Rectangle rect = DrawLocation;
+            Rectangle rect = DrawLocationWorld;
             rect.Y += AdjustCollisionArea.Top;
             rect.X += AdjustCollisionArea.Left;
             rect.Height += AdjustCollisionArea.Bottom - AdjustCollisionArea.Top;
@@ -126,7 +126,7 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         set
         {
             enableFog = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 
@@ -135,7 +135,7 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
     /// Override this property in a derived class to define custom areas for these effects.
     /// </summary>
     [JsonIgnore]
-    public virtual Point[] OutlinePoints => SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
+    public virtual Point[] OutlinePointsWorld => SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
 
     [JsonProperty]
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
@@ -172,9 +172,9 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
     private static float GetTileLocForCompare(Tile tile)
     {
         if (!tile.IsPositionFixed)
-            return tile.DrawLocation.Bottom - tile.OverhangPixels.Bottom - 1;
+            return tile.DrawLocationWorld.Bottom - tile.OverhangPixels.Bottom - 1;
         else
-            return tile.DrawLocation.Top + tile.OverhangPixels.Top;
+            return tile.DrawLocationWorld.Top + tile.OverhangPixels.Top;
     }
 
     #endregion IComparable<Tile> Members

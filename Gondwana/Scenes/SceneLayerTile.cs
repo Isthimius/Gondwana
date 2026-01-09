@@ -49,7 +49,7 @@ public class SceneLayerTile : Tile
     public virtual new int ZOrder => zOrder;
 
     [JsonIgnore]
-    public override Rectangle DrawLocation => parentSceneLayer.CoordinateSystem.GetPixelRangeForTile(this, true);
+    public override Rectangle DrawLocationWorld => parentSceneLayer.CoordinateSystem.GetPixelRangeForTile(this, true);
 
     [JsonIgnore]
     public override bool IsPositionFixed => true;

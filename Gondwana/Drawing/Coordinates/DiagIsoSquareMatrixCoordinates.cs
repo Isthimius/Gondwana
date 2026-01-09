@@ -34,8 +34,8 @@ internal sealed class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         float gy = gp.Y;
 
         // STEP BY FULL TILE SIZE (W, H)
-        float px = originX + gx * W;
-        float py = originY + gy * H;
+        float px = -originX + gx * W;
+        float py = -originY + gy * H;
 
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
@@ -48,8 +48,8 @@ internal sealed class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         int originY = sceneLayer.OriginPx.Y;
 
         // Inverse for full-tile stepping
-        float gxF = (pixelPt.X - originX) / W;
-        float gyF = (pixelPt.Y - originY) / H;
+        float gxF = (pixelPt.X + originX) / W;
+        float gyF = (pixelPt.Y + originY) / H;
 
         return new PointF(gxF, gyF);
     }

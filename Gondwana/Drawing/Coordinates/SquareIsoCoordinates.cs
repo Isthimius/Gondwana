@@ -12,8 +12,8 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
 
         var origin = sceneLayer.OriginPx;
 
-        int x = origin.X + (int)(W * layerPoint.X);
-        int y = origin.Y + (int)(H * layerPoint.Y);
+        int x = (int)(W * layerPoint.X) - origin.X;
+        int y = (int)(H * layerPoint.Y) - origin.Y;
 
         return new Point(x, y);
     }
@@ -26,8 +26,8 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        float gx = (pixelPt.X - originX) / W;
-        float gy = (pixelPt.Y - originY) / H;
+        float gx = (pixelPt.X + originX) / W;
+        float gy = (pixelPt.Y + originY) / H;
 
         return new PointF(gx, gy);
     }
@@ -75,8 +75,8 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
 
         var baseRect = new Rectangle
         {
-            X = originX + (int)(W * tile.SceneLayerCoordinates.X),
-            Y = originY + (int)(H * tile.SceneLayerCoordinates.Y),
+            X = (int)(W * tile.SceneLayerCoordinates.X) - originX,
+            Y = (int)(H * tile.SceneLayerCoordinates.Y) - originY,
             Width = W,
             Height = H
         };

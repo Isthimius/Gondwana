@@ -403,7 +403,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 if (t is null) continue;
 
                 // Defensive overlap check (same idea as sprites)
-                if (!t.DrawLocation.IntersectsWith(worldRect))
+                if (!t.DrawLocationWorld.IntersectsWith(worldRect))
                     continue;
 
                 if (seen.Add(t))
@@ -420,7 +420,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             if (s is null) continue;
 
             // Defensive overlap check (cheap)
-            if (!s.DrawLocation.IntersectsWith(worldRect))
+            if (!s.DrawLocationWorld.IntersectsWith(worldRect))
                 continue;
 
             if (seen.Add(s))

@@ -129,7 +129,7 @@ public abstract class BackbufferBase : IDisposable
         Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
     }
 
-    internal void DrawDrawables(IEnumerable<IDrawable> drawables)
+    internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables)
     {
         var tiles = new List<Tile>();
 
@@ -144,33 +144,47 @@ public abstract class BackbufferBase : IDisposable
                 tiles.Add(tile);
         }
 
-        PostDrawTiles(tiles);
+        PostDrawTiles(view, tiles);
     }
 
-    private void PostDrawTiles(IEnumerable<Tile> tiles)
+    private void PostDrawTiles(View view, IEnumerable<Tile> tiles)
     {
         foreach (var tile in tiles)
         {
+            // WORLD -> SCREEN conversion
+            var ptsScreen = tile.OutlinePointsWorld
+                .Select(p => view.WorldPxToScreenPx(tile.SceneLayer, new PointF(p.X, p.Y)))
+                .Select(sp => new SKPoint(sp.X, sp.Y))
+                .ToArray();
+
+            // close polygon when needed
+            static SKPoint[] Enclose(SKPoint[] pts)
+            {
+                if (pts.Length == 0) return pts;
+                var arr = new SKPoint[pts.Length + 1];
+                Array.Copy(pts, arr, pts.Length);
+                arr[^1] = pts[0];
+                return arr;
+            }
+
             if (tile.EnableFog)
             {
                 using var path = new SKPath();
-                var pts = tile.OutlinePoints.ToSKPoints(enclose: true);
-
-                path.AddPoly(pts, close: true);
-
+                path.AddPoly(Enclose(ptsScreen), close: true);
                 Canvas.DrawPath(path, FogPaint);
             }
 
             if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), GridLinePaint);
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePointsWorld.ToSKPoints(enclose: true), GridLinePaint);
 
             if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), CollisionBoxPaint);
+                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePointsWorld.ToSKPoints(enclose: true), CollisionBoxPaint);
         }
     }
 
     /// <summary>
     /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
+    /// This is used to signal to the UI adapter what needs to be repainted.
     /// </summary>
     protected internal void AddToDirtyRectangle(Rectangle area)
     {

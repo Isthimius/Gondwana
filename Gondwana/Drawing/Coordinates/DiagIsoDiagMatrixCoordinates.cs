@@ -22,8 +22,8 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         float dx = gp.X;
         float dy = gp.Y;
 
-        float px = originX + (dx - dy) * (W / 2f);
-        float py = originY + (dx + dy) * (H / 2f);
+        float px = (dx - dy) * (W / 2f) - originX;
+        float py = (dx + dy) * (H / 2f) - originY;
 
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
@@ -36,8 +36,8 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        float a = (pixelPt.X - originX) / (W / 2f);
-        float b = (pixelPt.Y - originY) / (H / 2f);
+        float a = (pixelPt.X + originX) / (W / 2f);
+        float b = (pixelPt.Y + originY) / (H / 2f);
 
         float dx = (a + b) / 2f;
         float dy = (b - a) / 2f;

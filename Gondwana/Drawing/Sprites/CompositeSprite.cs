@@ -78,7 +78,7 @@ public class CompositeSprite
 
             foreach (var sprite in _children)
             {
-                var drawLoc = sprite.DrawLocation;
+                var drawLoc = sprite.DrawLocationWorld;
 
                 if (drawLoc.Left < minX)
                     minX = drawLoc.Left;

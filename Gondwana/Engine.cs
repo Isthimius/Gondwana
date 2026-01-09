@@ -406,6 +406,8 @@ public sealed class Engine : IDisposable
 
         _cycleTask = Task.Run(() =>
         {
+            EngineDispatcher.BindToCurrentThread();
+
             while (Instance.IsRunning)
             {
                 Instance.Cycle();
@@ -449,6 +451,8 @@ public sealed class Engine : IDisposable
 
     public IUiDispatcher? UiDispatcher { get; private set; }
 
+    public IEngineDispatcher EngineDispatcher { get; } = new EngineDispatcher();
+
     public bool IsInitialized => _isInitialized;
 
     public bool IsInitializing => _isInitializing;
@@ -483,6 +487,8 @@ public sealed class Engine : IDisposable
 
     private void Cycle()
     {
+        EngineDispatcher.Drain();
+
         long tick = HighResTimer.GetCurrentTick();
 
         DoBackgroundTasks(tick);

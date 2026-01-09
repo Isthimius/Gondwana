@@ -58,7 +58,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
         _sceneLayer.Scene.CollisionWorld.Register(_collider);
-        QueueRefreshArea(this.DrawLocation);
+        _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
         SpriteManager._spriteList.Add(this);
     }
@@ -85,7 +85,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         Movement = new MovementController(this, MovementState.ForSceneLayer(this.GetPosition()), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
         _sceneLayer.Scene.CollisionWorld.Register(_collider);
-        QueueRefreshArea(this.DrawLocation);
+        _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
     }
 
     ~Sprite()
@@ -104,7 +104,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         if (_sceneLayer != null)
         {
-            QueueRefreshArea(this.DrawLocation);
+            _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
             _sceneLayer.Scene.CollisionWorld.Register(_collider);
         }
 
@@ -137,7 +137,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         sceneLayerCoordinates = newCoord;
 
         // enqueue ONE world-space dirty rect for the whole movement
-        QueueRefreshArea(movementWorldRect);
+        _sceneLayer.RefreshQueue.AddWorldRect(movementWorldRect);
 
         // raise the event
         SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, newCoord));
@@ -159,10 +159,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
-                var oldRect = this.DrawLocation;
+                var oldRect = this.DrawLocationWorld;
                 horizAlign = value;
-                var newRect = this.DrawLocation;
-                QueueRefreshArea(Rectangle.Union(oldRect, newRect));
+                var newRect = this.DrawLocationWorld;
+                _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
                 horizAlign = value;
@@ -178,10 +178,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
-                var oldRect = this.DrawLocation;
+                var oldRect = this.DrawLocationWorld;
                 vertAlign = value;
-                var newRect = this.DrawLocation;
-                QueueRefreshArea(Rectangle.Union(oldRect, newRect));
+                var newRect = this.DrawLocationWorld;
+                _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
                 vertAlign = value;
@@ -197,10 +197,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
-                var oldRect = this.DrawLocation;
+                var oldRect = this.DrawLocationWorld;
                 nudgeX = value;
-                var newRect = this.DrawLocation;
-                QueueRefreshArea(Rectangle.Union(oldRect, newRect));
+                var newRect = this.DrawLocationWorld;
+                _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
                 nudgeX = value;
@@ -216,10 +216,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
-                var oldRect = this.DrawLocation;
+                var oldRect = this.DrawLocationWorld;
                 nudgeY = value;
-                var newRect = this.DrawLocation;
-                QueueRefreshArea(Rectangle.Union(oldRect, newRect));
+                var newRect = this.DrawLocationWorld;
+                _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
                 nudgeY = value;
@@ -235,10 +235,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
-                var oldRect = this.DrawLocation;
+                var oldRect = this.DrawLocationWorld;
                 renderSize = value;
-                var newRect = this.DrawLocation;
-                QueueRefreshArea(Rectangle.Union(oldRect, newRect));
+                var newRect = this.DrawLocationWorld;
+                _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
                 renderSize = value;
@@ -246,7 +246,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     }
 
     [JsonIgnore]
-    public override Rectangle DrawLocation => SpriteManager.GetDrawLocation(this, _sceneLayer, sceneLayerCoordinates, renderSize);
+    public override Rectangle DrawLocationWorld => SpriteManager.GetDrawLocation(this, _sceneLayer, sceneLayerCoordinates, renderSize);
 
     [JsonIgnore]
     public override bool IsPositionFixed => false;
@@ -272,16 +272,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     #endregion public properties
 
-    #region internal methods
-
-    internal void QueueRefreshArea(Rectangle worldRect)
-    {
-        // enqueue world-space dirty rect
-        _sceneLayer.RefreshQueue.AddWorldRect(worldRect);
-    }
-
-    #endregion private methods
-
     #region IDisposable Members
 
     public override void Dispose()
@@ -294,7 +284,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         {
             // Mark the last draw region as dirty so the background under this sprite is repainted.
             // DrawLocation should already be a world-space rectangle.
-            QueueRefreshArea(this.DrawLocation);
+            _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
             if (_collider != null)
             {

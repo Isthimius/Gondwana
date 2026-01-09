@@ -35,6 +35,14 @@ internal sealed class RefreshQueue : IDisposable
         if (worldPixelRange.IsEmpty)
             return;
 
+        // ensure we're on the engine thread
+        var engine = Engine.Instance;
+        if (!engine.EngineDispatcher.IsOnEngineThread)
+        {
+            engine.EngineDispatcher.Post(() => AddWorldRect(worldPixelRange));
+            return;
+        }
+
         // Fast containment check: if any existing rect already fully contains this one, skip storing it.
         for (int i = 0; i < _worldRects.Count; i++)
         {
@@ -56,6 +64,14 @@ internal sealed class RefreshQueue : IDisposable
         if (sceneLayer is null)
             throw new ArgumentNullException(nameof(sceneLayer));
 
+        // ensure we're on the engine thread
+        var engine = Engine.Instance;
+        if (!engine.EngineDispatcher.IsOnEngineThread)
+        {
+            engine.EngineDispatcher.Post(() => AddViewScreenRect(view, sceneLayer, screenPixelRange));
+            return;
+        }
+
         // clamp screenPixelRange to view's viewport
         screenPixelRange.Intersect(view.Viewport.TargetRectPx);
 
@@ -64,7 +80,18 @@ internal sealed class RefreshQueue : IDisposable
         AddWorldRect(worldRect.ToPixelAlignedRect());
     }
 
-    internal void ClearRefreshQueue() => _worldRects.Clear();
+    internal void ClearRefreshQueue()
+    {
+        // ensure we're on the engine thread
+        var engine = Engine.Instance;
+        if (!engine.EngineDispatcher.IsOnEngineThread)
+        {
+            engine.EngineDispatcher.Post(() => ClearRefreshQueue());
+            return;
+        }
+
+        _worldRects.Clear();
+    }
 
     public void Dispose() => GC.SuppressFinalize(this);
 }

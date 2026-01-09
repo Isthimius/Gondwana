@@ -51,7 +51,7 @@ public class GpuBackbuffer : BackbufferBase
     {
         var image = tile.CurrentFrame.SkImage;
         if (image != null)
-            Canvas.DrawImage(image, tile.DrawLocation.ToSKRect());
+            Canvas.DrawImage(image, tile.DrawLocationWorld.ToSKRect());
     }
 
     protected internal override SKImage Snapshot() => _surface.Snapshot();
