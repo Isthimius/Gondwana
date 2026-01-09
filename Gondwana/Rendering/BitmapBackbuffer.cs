@@ -91,10 +91,14 @@ public sealed class BitmapBackbuffer : BackbufferBase
     protected internal override void DrawTileFrame(Tile tile)
     {
         var bmp = tile.CurrentFrame.SkBitmap;
-        var worldRect = tile.DrawLocationWorld.ToSKRect();
 
-        if (bmp is not null)
-            Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
+        if (bmp is null)
+            return;
+
+        //Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
+
+        //var screenRect = tile.GetDrawLocationScreen(Backbuffer.View);
+        //Canvas.DrawBitmap(bmp, screenRect.ToSKRect(), _bitmapPaint);
     }
 
     // Producer copies out an immutable image for the adapter/UI thread
