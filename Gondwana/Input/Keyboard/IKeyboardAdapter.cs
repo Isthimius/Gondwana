@@ -8,12 +8,15 @@
 public interface IKeyboardAdapter
 {
     /// <summary>
-    /// Gets the collection of keys that are currently pressed.
+    /// Returns true if the specified platform-agnostic key code is currently down.
+    /// Key codes should be stable integers agreed upon by the adapter and the engine.
+    /// For WinForms, this should be the Windows Virtual-Key code (0..255).
     /// </summary>
-    ICollection<string> PressedKeys { get; }
+    bool IsDown(int keyCode);
 
     /// <summary>
     /// Gets the current state of modifier keys, such as Shift, Ctrl, and Alt.
+    /// Must be safe to read from the Engine thread at high frequency.
     /// </summary>
-    public KeyboardModifierState CurrentKeyboardModifiers { get; }
+    KeyboardModifierState CurrentKeyboardModifiers { get; }
 }

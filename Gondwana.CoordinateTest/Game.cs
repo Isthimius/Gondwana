@@ -293,16 +293,16 @@ public class Game : IDisposable
     {
         Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
         Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.W.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.A.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.S.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.D.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Left.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Right.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Up.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Down.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.PageUp.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.PageDown.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.W);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.A);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.S);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.D);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown);
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
