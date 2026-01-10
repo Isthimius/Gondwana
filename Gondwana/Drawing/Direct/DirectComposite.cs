@@ -113,7 +113,7 @@ public class DirectComposite : IDirectDrawable, IMovable
             c.SetPosition(anchorV + off);
         }
 
-        Engine.Logger.LogTrace("Composite moved to {X},{Y}", x, y);
+        //Engine.Logger.LogTrace("Composite moved to {X},{Y}", x, y);
 
         return this;
     }

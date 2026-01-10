@@ -293,16 +293,16 @@ public class Game : IDisposable
     {
         Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
         Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.W);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.A);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.S);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.D);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp);
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown);
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.W, "W");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.A, "A");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.S, "S");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.D, "D");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left, "Left");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right, "Right");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up, "Up");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down, "Down");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp, "PageUp");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown, "PageDown");
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
@@ -392,7 +392,7 @@ public class Game : IDisposable
 
         var w = view.ScreenPxToWorldPx(layer, screenPos);
         var s = view.WorldPxToScreenPx(layer, w);
-        Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
+        //Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
 
         // 1) screen → world (via View)
         var worldFromScreen = view.ScreenPxToWorldPx(layer, screenPos);
