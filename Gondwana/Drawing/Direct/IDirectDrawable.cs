@@ -4,7 +4,7 @@ using System.Drawing;
 namespace Gondwana.Drawing.Direct;
 
 /// <summary>
-/// Represents any drawable object (movable or static) that can render to a surface,
+/// Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,
 /// report its position and bounds, and optionally support movement or composition.
 /// </summary>
 public interface IDirectDrawable : IDrawable, IDisposable
@@ -44,9 +44,14 @@ public interface IDirectDrawable : IDrawable, IDisposable
     DirectDrawingMode Mode { get; }
 
     /// <summary>
-    /// The bounding rectangle of this drawable in pixel space.
+    /// The bounding rectangle of this drawable in SCREEN space.
     /// </summary>
     Rectangle ScreenBounds { get; }
+
+    /// <summary>
+    /// The bounding rectangle of this drawable in WORLD space.
+    /// </summary>
+    Rectangle WorldBounds { get; }
 
     /// <summary>
     /// Updates the state of the object based on the specified tick value.

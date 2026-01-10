@@ -127,7 +127,7 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     #endregion IMovable members
 
-    // Bounding box = union of visible children (unchanged)
+    // Bounding box = union of visible children
     public Rectangle ScreenBounds
     {
         get
@@ -162,6 +162,50 @@ public class DirectComposite : IDirectDrawable, IMovable
             }
 
             if (minX == float.MaxValue) return Rectangle.Empty;
+            return Rectangle.FromLTRB(
+                (int)Math.Floor(minX),
+                (int)Math.Floor(minY),
+                (int)Math.Ceiling(maxX),
+                (int)Math.Ceiling(maxY));
+        }
+    }
+
+    public Rectangle WorldBounds
+    {
+        get
+        {
+            if (_children.Count == 0)
+                return Rectangle.Empty;
+            
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+            
+            foreach (var child in _children)
+            {
+                if (!child.Visible)
+                    continue;
+            
+                var b = child.WorldBounds;
+                
+                if (b == Rectangle.Empty)
+                    continue;
+                
+                if (b.Left < minX)
+                    minX = b.Left;
+                
+                if (b.Top < minY)
+                    minY = b.Top;
+                
+                if (b.Right > maxX)
+                    maxX = b.Right;
+                
+                if (b.Bottom > maxY)
+                    maxY = b.Bottom;
+            }
+
+            if (minX == float.MaxValue)
+                return Rectangle.Empty;
+
             return Rectangle.FromLTRB(
                 (int)Math.Floor(minX),
                 (int)Math.Floor(minY),

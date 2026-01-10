@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Xml.Linq;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
@@ -169,7 +168,7 @@ public sealed class DirectImage : DirectDrawingMovableBase
         return this;
     }
 
-    protected internal override void Draw(BackbufferBase backbuffer)
+    protected internal override void Draw(BackbufferBase backbuffer, Rectangle destRectScreen)
     {
         var canvas = backbuffer.Canvas;
 
@@ -182,7 +181,7 @@ public sealed class DirectImage : DirectDrawingMovableBase
         SKRect src = _src ?? new SKRect(0, 0, img.Width, img.Height);
 
         // destination rect (screen space), computed by scale mode
-        SKRect dst = ComputeDestRect(ScreenBounds, src, _scale);
+        SKRect dst = ComputeDestRect(destRectScreen, src, _scale);
 
         // apply tint/opacity via color filter
         // combine tint with opacity (multiply in linear-ish sRGB)

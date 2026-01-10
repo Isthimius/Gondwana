@@ -163,14 +163,14 @@ public sealed class DirectVideo : DirectDrawingBase
         _player.Ended += (_, __) => { /* engine could fire a scene event here if needed */ };
     }
 
-    protected override void Draw(BackbufferBase backbuffer)
+    protected override void Draw(BackbufferBase backbuffer, Rectangle destRectScreen)
     {
         SKBitmap? bmp;
         lock (_frameLock) bmp = _frame;
         if (bmp is null) return;
 
         var canvas = backbuffer.Canvas;
-        var dest = ComputeDestRect(ScreenBounds, bmp.Width, bmp.Height, Stretch);
+        var dest = ComputeDestRect(destRectScreen, bmp.Width, bmp.Height, Stretch);
 
         using var paint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(Opacity * 255)) };
         canvas.DrawBitmap(bmp, dest, paint);

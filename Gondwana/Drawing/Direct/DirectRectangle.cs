@@ -355,14 +355,14 @@ public class DirectRectangle : DirectDrawingMovableBase
         base.Update(tick);
     }
 
-    protected internal override void Draw(BackbufferBase backbuffer)
+    protected internal override void Draw(BackbufferBase backbuffer, Rectangle destRectScreen)
     {
         var canvas = backbuffer.Canvas;
 
         if (_needsRebuildPaints)
             RebuildPaints();
 
-        var fillRect = ScreenBounds.ToSKRect();
+        var fillRect = destRectScreen.ToSKRect();
         var strokeRect = fillRect;
 
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
@@ -371,8 +371,10 @@ public class DirectRectangle : DirectDrawingMovableBase
         // 1) APPLY STROKE ALIGNMENT (use HALF the width; path is centered)
         if (willDrawStroke && _strokeAlign != StrokeAlign.Center)
         {
-            if (_strokeAlign == StrokeAlign.Inside) strokeRect.Inflate(-half, -half);
-            else if (_strokeAlign == StrokeAlign.Outside) strokeRect.Inflate(half, half);
+            if (_strokeAlign == StrokeAlign.Inside)
+                strokeRect.Inflate(-half, -half);
+            else if (_strokeAlign == StrokeAlign.Outside)
+                strokeRect.Inflate(half, half);
         }
 
         // 1.5) corner radius for the stroke path, adjusted to keep the inner/outer arcs aligned to the fill

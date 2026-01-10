@@ -338,7 +338,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// particles.Invalidate();       // mark dirty so the manager re-renders
     /// </code>
     /// </example>
-    protected internal override void Draw(BackbufferBase backbuffer)
+    protected internal override void Draw(BackbufferBase backbuffer, Rectangle destRectScreen)
     {
         var canvas = backbuffer.Canvas;
 

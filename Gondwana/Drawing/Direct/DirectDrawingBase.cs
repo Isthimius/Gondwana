@@ -41,9 +41,9 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     private float _revealStart = 1f, _revealTarget = 1f;
 
     /// <summary>
-    /// Render the drawable to the current backbuffer.
+    /// Render the drawable to the current backbuffer at the screen location specified.
     /// </summary>
-    protected internal abstract void Draw(BackbufferBase backbuffer, RectangleF destRectScreen);
+    protected internal abstract void Draw(BackbufferBase backbuffer, Rectangle destRectScreen);
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost,
                                 DirectDrawingMode mode,
@@ -397,7 +397,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
         if (_opacity >= 0.999f)
         {
-            Draw(backbuffer);
+            Draw(backbuffer, _screenBounds);
         }
         else
         {
@@ -407,7 +407,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             };
 
             canvas.SaveLayer(layerPaint);
-            Draw(backbuffer);
+            Draw(backbuffer, _screenBounds);
             canvas.Restore(); // end SaveLayer
         }
 
@@ -427,21 +427,21 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         // no reveal clip here (until world bounds exist)
         if (_opacity >= 0.999f)
         {
-            Draw(RenderSurfaceHost.Backbuffer);
+            Draw(RenderSurfaceHost.Backbuffer, _worldBounds);
         }
         else
         {
             var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
             using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
             canvas.SaveLayer(layerPaint);
-            Draw(RenderSurfaceHost.Backbuffer);
+            Draw(RenderSurfaceHost.Backbuffer, _worldBounds);
             canvas.Restore();
         }
     }
 
-    protected Rectangle ActiveBounds => Mode == DirectDrawingMode.SceneLayer ? _worldBounds : _screenBounds;
+    //protected Rectangle ActiveBounds => Mode == DirectDrawingMode.SceneLayer ? _worldBounds : _screenBounds;
 
-    protected SKRect ActiveBoundsSk => ActiveBounds.ToSKRect();
+    //protected SKRect ActiveBoundsSk => ActiveBounds.ToSKRect();
 
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
 
