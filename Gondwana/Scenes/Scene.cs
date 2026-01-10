@@ -223,7 +223,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowCollisionBoxesChanged += showCollisionBoxesChanged;
         sceneLayer.ZOrderChanged += zOrderChangedDel;
         sceneLayer.ParallaxChanged += parallaxChangedDel;
-        sceneLayer.OriginPxChanged += zeroPixelChangedDel;
+        sceneLayer.OriginPxChanged += originPxChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerAdded?.Invoke(sceneLayer);
@@ -241,7 +241,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowCollisionBoxesChanged -= showCollisionBoxesChanged;
         sceneLayer.ZOrderChanged -= zOrderChangedDel;
         sceneLayer.ParallaxChanged -= parallaxChangedDel;
-        sceneLayer.OriginPxChanged -= zeroPixelChangedDel;
+        sceneLayer.OriginPxChanged -= originPxChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerRemoved?.Invoke(sceneLayer);
@@ -261,7 +261,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     private Action<SceneLayer> showCollisionBoxesChanged;
     private Action<SceneLayer> zOrderChangedDel;
     private Action<SceneLayer> parallaxChangedDel;
-    private Action<SceneLayer> zeroPixelChangedDel;
+    private Action<SceneLayer> originPxChangedDel;
 
     private void SetSceneLayerEventDelegates()
     {
@@ -273,7 +273,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         showCollisionBoxesChanged = (sceneLayer) => _SceneLayerShowCollisionBoxChanged();
         zOrderChangedDel = (sceneLayer) => _SceneLayerZOrderChanged();
         parallaxChangedDel = (sceneLayer) => _SceneLayerParallaxChanged();
-        zeroPixelChangedDel = (sceneLayer) => _SceneLayerZeroPixelChanged();
+        originPxChangedDel = (sceneLayer) => _SceneLayerZeroPixelChanged();
     }
 
     private void _SceneLayerVisibleChanged()
