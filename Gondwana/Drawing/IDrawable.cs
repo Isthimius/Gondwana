@@ -1,4 +1,5 @@
-﻿using Gondwana.Rendering;
+﻿using System.Drawing;
+using Gondwana.Rendering;
 
 namespace Gondwana.Drawing;
 
@@ -30,9 +31,30 @@ public interface IDrawable
     /// Higher z-order values are drawn on top of lower ones.
     /// </summary>
     int ZOrder { get; }
-    
+
     /// <summary>
-    /// Draws the object on the specified surface.
+    /// Computes the object's destination rectangle in SCREEN pixels for rendering
+    /// on the Backbuffer, using the provided View to project from world-space.
     /// </summary>
-    void Draw(BackbufferBase backbuffer);
+    /// <param name="view">
+    /// The View providing camera, zoom, parallax, and viewport offsets used to
+    /// convert the object's world-space bounds into screen-space.
+    /// </param>
+    /// <returns>
+    /// A rectangle in absolute SCREEN pixel coordinates on the Backbuffer.
+    /// </returns>
+    RectangleF GetDrawLocationScreen(View view);
+
+    /// <summary>
+    /// Draws the object to the Backbuffer using the provided SCREEN-space destination
+    /// rectangle. The rectangle is assumed to already be projected into screen-space;
+    /// no world-to-screen conversion should occur within this method.
+    /// </summary>
+    /// <param name="backbuffer">
+    /// The Backbuffer to draw onto.
+    /// </param>
+    /// <param name="destRectScreen">
+    /// The destination rectangle in absolute SCREEN pixel coordinates on the Backbuffer.
+    /// </param>
+    void Draw(BackbufferBase backbuffer, RectangleF destRectScreen);
 }

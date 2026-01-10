@@ -43,11 +43,6 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
 
     #endregion abstract properties
 
-    public virtual RectangleF GetDrawLocationScreen(View view)
-    {
-        return view.WorldRectToScreenRect(SceneLayer, DrawLocationWorld);
-    }
-
     #region IDrawable members
 
     [JsonProperty]
@@ -78,7 +73,12 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         }
     }
 
-    public virtual void Draw(BackbufferBase backbuffer) => backbuffer.DrawTileFrame(this);
+    public virtual RectangleF GetDrawLocationScreen(View view)
+    {
+        return view.WorldRectToScreenRect(SceneLayer, DrawLocationWorld);
+    }
+
+    public virtual void Draw(BackbufferBase backbuffer, RectangleF destRectScreen) => backbuffer.DrawTileFrame(this, destRectScreen);
 
     #endregion IDrawable members
 

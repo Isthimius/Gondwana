@@ -35,7 +35,7 @@ public abstract class BackbufferBase : IDisposable
 
     protected internal abstract void BeginFrame();
 
-    protected internal abstract void DrawTileFrame(Tile tile);
+    protected internal abstract void DrawTileFrame(Tile tile, RectangleF destRectScreen);
 
     protected internal abstract void EndFrame();
 
@@ -138,7 +138,8 @@ public abstract class BackbufferBase : IDisposable
             if (!drawable.Visible)
                 continue;
 
-            drawable.Draw(this);
+            var destRectScreen = drawable.GetDrawLocationScreen(view);
+            drawable.Draw(this, destRectScreen);
 
             if (drawable is Tile tile)
                 tiles.Add(tile);

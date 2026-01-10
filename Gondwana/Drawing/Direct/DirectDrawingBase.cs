@@ -18,7 +18,6 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     protected Rectangle _worldBounds;
     protected int _zOrder;
     protected bool _visible;
-    //protected internal bool _dirty = true;
     protected long _lastTick = HighResTimer.GetCurrentTick();
 
     private bool _disposed = false;
@@ -44,7 +43,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// <summary>
     /// Render the drawable to the current backbuffer.
     /// </summary>
-    protected internal abstract void Draw(BackbufferBase backbuffer);
+    protected internal abstract void Draw(BackbufferBase backbuffer, RectangleF destRectScreen);
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost,
                                 DirectDrawingMode mode,
@@ -70,6 +69,12 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             throw new ArgumentException("screenBounds cannot be null when using DirectDrawingMode.View", nameof(screenBounds));
 
         _renderSurfaceHost = renderSurfaceHost;
+        _zOrder = 0;
+        _visible = true;
+        Mode = mode;
+        SceneLayer = sceneLayer;
+        View = view;
+        Nickname = nickname;
 
         if (mode == DirectDrawingMode.SceneLayer)
         {
@@ -80,14 +85,8 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         {
             _worldBounds = Rectangle.Empty;
             _screenBounds = screenBounds!.Value;
+            _screenBounds.Intersect(view!.Viewport.TargetRectPx);
         }
-
-        _zOrder = 0;
-        _visible = true;
-        Mode = mode;
-        SceneLayer = sceneLayer;
-        View = view;
-        Nickname = nickname;
 
         DirectDrawingManager.Instance.AddOrReplace(this);
         ForceRefresh();
@@ -108,6 +107,9 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         get => _screenBounds;
         set
         {
+            if (Mode != DirectDrawingMode.View)
+                return;
+
             ForceRefresh();
             _screenBounds = value;
             ForceRefresh();
@@ -119,6 +121,9 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         get => _worldBounds;
         set
         {
+            if (Mode != DirectDrawingMode.SceneLayer)
+                return;
+
             ForceRefresh();
             _worldBounds = value;
             ForceRefresh();
@@ -159,7 +164,16 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         }
     }
 
-    void IDrawable.Draw(BackbufferBase backbuffer)
+    public RectangleF GetDrawLocationScreen(View view)
+    {
+        // View mode already returns _screenBounds
+        if (Mode == DirectDrawingMode.View)
+            return _screenBounds;
+
+        return view.WorldRectToScreenRect(SceneLayer!, _worldBounds);
+    }
+
+    void IDrawable.Draw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         if (Mode == DirectDrawingMode.View)
             RenderViewPass();
@@ -413,7 +427,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         // no reveal clip here (until world bounds exist)
         if (_opacity >= 0.999f)
         {
-            Draw(RenderSurfaceHost.Backbuffer!);
+            Draw(RenderSurfaceHost.Backbuffer);
         }
         else
         {
@@ -430,6 +444,8 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     protected SKRect ActiveBoundsSk => ActiveBounds.ToSKRect();
 
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
+
+    #region IDisposable members
 
     public void Dispose()
     {
@@ -451,6 +467,8 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
         _disposed = true;
     }
+
+    #endregion IDisposable members
 
     #region Equality & Operators
 

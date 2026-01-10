@@ -1,4 +1,5 @@
-﻿using Gondwana.Drawing;
+﻿using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
 
@@ -47,7 +48,7 @@ public class GpuBackbuffer : BackbufferBase
         _grContext.Submit(true);
     }
 
-    protected internal override void DrawTileFrame(Tile tile)
+    protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
         if (image != null)

@@ -26,7 +26,7 @@ public sealed class Viewport
     public event Action<ViewportZoomChangedEventArgs>? ZoomChanged;
 
     /// <summary>
-    /// Screen-space rectangle (in RenderSurface pixels) where this view is drawn.
+    /// Screen-space rectangle (in SCREEN / RenderSurface pixels) where this view is drawn.
     /// This defines the on-screen position and size of the viewport for this view.
     /// </summary>
     public Rectangle TargetRectPx

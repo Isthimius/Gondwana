@@ -113,8 +113,6 @@ public class DirectComposite : IDirectDrawable, IMovable
             c.SetPosition(anchorV + off);
         }
 
-        //Engine.Logger.LogTrace("Composite moved to {X},{Y}", x, y);
-
         return this;
     }
 
@@ -204,7 +202,7 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     public Guid Id { get; } = Guid.NewGuid();
 
-    public void Draw(BackbufferBase backbuffer)
+    public void Draw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         // Intentionally no-op.
         // Composite is a grouping/controller object; children are responsible for rendering.
@@ -274,5 +272,10 @@ public class DirectComposite : IDirectDrawable, IMovable
 
         _children.Clear();
         _localOffsetPx.Clear();
+    }
+
+    public RectangleF GetDrawLocationScreen(View view)
+    {
+        throw new NotImplementedException();
     }
 }

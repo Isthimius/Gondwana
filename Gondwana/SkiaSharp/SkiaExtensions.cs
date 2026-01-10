@@ -14,6 +14,9 @@ public static class SkiaExtensions
     public static SKRect ToSKRect(this Rectangle rect)
         => new(rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
 
+    public static SKRect ToSKRect(this RectangleF rect)
+        => new(rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
+
     public static SKRectI ToSKRectI(this Rectangle rect)
         => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
 

@@ -1,4 +1,5 @@
-﻿using Gondwana.Drawing;
+﻿using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
@@ -88,17 +89,14 @@ public sealed class BitmapBackbuffer : BackbufferBase
         }
     }
 
-    protected internal override void DrawTileFrame(Tile tile)
+    protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var bmp = tile.CurrentFrame.SkBitmap;
 
         if (bmp is null)
             return;
 
-        //Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
-
-        //var screenRect = tile.GetDrawLocationScreen(Backbuffer.View);
-        //Canvas.DrawBitmap(bmp, screenRect.ToSKRect(), _bitmapPaint);
+        Canvas.DrawBitmap(bmp, destRectScreen.ToSKRect(), _bitmapPaint);
     }
 
     // Producer copies out an immutable image for the adapter/UI thread
