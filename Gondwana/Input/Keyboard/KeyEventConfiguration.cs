@@ -13,6 +13,6 @@ public class KeyEventConfiguration : InputEventConfigurationBase
 
     public override string ToString()
     {
-        return $"KeyEventConfiguration: Key={Key}, TimeBetweenEvents={TimeBetweenEvents}, IsPaused={IsPaused}, ReadyForNextEvent={ReadyForNextEvent}";
+        return $"KeyEventConfiguration: Key={Key}, TimeBetweenEvents={TimeBetweenEvents}, IsPaused={IsPaused}";
     }
 }
