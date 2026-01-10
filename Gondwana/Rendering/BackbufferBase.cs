@@ -171,15 +171,15 @@ public abstract class BackbufferBase : IDisposable
             if (tile.EnableFog)
             {
                 using var path = new SKPath();
-                path.AddPoly(Enclose(ptsScreen), close: true);
+                path.AddPoly(ptsScreen, close: true);
                 Canvas.DrawPath(path, FogPaint);
             }
 
             if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePointsWorld.ToSKPoints(enclose: true), GridLinePaint);
+                Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), GridLinePaint);
 
             if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePointsWorld.ToSKPoints(enclose: true), CollisionBoxPaint);
+                Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), CollisionBoxPaint);
         }
     }
 
