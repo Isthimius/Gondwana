@@ -185,7 +185,7 @@ public sealed class ViewRenderer
         foreach (var view in _views)
         {
             // Camera already updated earlier this frame.
-            view.Viewport.Begin(canvas);
+            //view.Viewport.Begin(canvas);
 
             var cam = view.Camera;
 
@@ -207,7 +207,7 @@ public sealed class ViewRenderer
                 canvas.Restore();
             }
 
-            view.Viewport.End(canvas);
+            //view.Viewport.End(canvas);
         }
     }
 
