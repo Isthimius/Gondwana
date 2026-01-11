@@ -389,10 +389,10 @@ public class Game : IDisposable
 
         var screenPos = args.CurrentPosition;
 
-
-        var w = view.ScreenPxToWorldPx(layer, screenPos);
-        var s = view.WorldPxToScreenPx(layer, w);
+        var worldPx = view.ScreenPxToWorldPx(layer, screenPos);
+        var screenPx = view.WorldPxToScreenPx(layer, worldPx);
         //Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
+        Engine.Logger.LogTrace($"\r\nscreen1 = {screenPos} \r\nworld   = {worldPx} \r\nscreen2 = {screenPx}\r\n");
 
         // 1) screen → world (via View)
         var worldFromScreen = view.ScreenPxToWorldPx(layer, screenPos);
