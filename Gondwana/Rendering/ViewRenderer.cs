@@ -194,17 +194,17 @@ public sealed class ViewRenderer
             {
                 var layer = scene.VisibleSceneLayers[i];
 
-                canvas.Save();
+                //canvas.Save();
 
-                float p = layer.Parallax;
+                //float p = layer.Parallax;
 
-                canvas.Translate(
-                    -cam.PositionPx.X * p,
-                    -cam.PositionPx.Y * p);
+                //canvas.Translate(
+                //    -cam.PositionPx.X * p,
+                //    -cam.PositionPx.Y * p);
 
                 drawLayer(view, layer);
 
-                canvas.Restore();
+                //canvas.Restore();
             }
 
             //view.Viewport.End(canvas);
