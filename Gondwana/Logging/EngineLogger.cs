@@ -23,11 +23,21 @@ public static partial class EngineLogger
         get => _mode;
         set
         {
-            _mode = value;
+            lock (_asyncGate)
+            {
+                if (_mode == value)
+                {
+                    return;
+                }
 
-            // If switching to async, ensure worker exists.
-            if (_mode == EngineLoggingMode.Asynchronous)
-                EnsureAsyncStarted();
+                _mode = value;
+
+                // If switching to async, ensure worker exists.
+                if (_mode == EngineLoggingMode.Asynchronous)
+                {
+                    EnsureAsyncStarted();
+                }
+            }
         }
     }
 
