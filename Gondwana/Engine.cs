@@ -276,6 +276,13 @@ public sealed class Engine : IDisposable
 
         Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig).EngineConfig;
 
+        EngineLogger.Mode = Configuration.LoggingMode;
+
+        if (Configuration.LoggingMode == EngineLoggingMode.Asynchronous)
+        {
+            EngineLogger.StartAsyncLogging(Configuration.LoggingQueueCapacity);
+        }
+
         if (Configuration.StateFiles?.Any() ?? false)
         {
             foreach (var stateFile in Configuration.StateFiles)
@@ -655,6 +662,9 @@ public sealed class Engine : IDisposable
                 if (GamepadManager is not null)
                     foreach (var gamepadAdapter in GamepadManager.ConnectedAdapters)
                         GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
+
+                if (Configuration.LoggingMode == EngineLoggingMode.Asynchronous && Configuration.FlushAsyncLogsOnShutdown)
+                    EngineLogger.StopAsyncLogging(flush: true);
 
                 Timer.ClearAll();
                 State.Clear();
