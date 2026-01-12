@@ -144,11 +144,10 @@ public static partial class EngineLogger
 
     private static void EnsureAsyncStarted(bool forceRestart = false)
     {
-        if (_mode != EngineLoggingMode.Asynchronous)
-            return;
-
         lock (_asyncGate)
         {
+            if (_mode != EngineLoggingMode.Asynchronous)
+                return;
             if (!forceRestart && _worker != null)
                 return;
 
