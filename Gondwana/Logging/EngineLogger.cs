@@ -231,9 +231,13 @@ public static partial class EngineLogger
                 }
             }
         }
+        catch (System.OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            // Normal cancellation: no action required.
+        }
         catch
         {
-            // Swallow cancellation and any channel exceptions.
+            // Swallow any channel or unexpected exceptions.
         }
     }
 }
