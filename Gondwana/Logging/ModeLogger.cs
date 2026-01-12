@@ -41,8 +41,8 @@ public static partial class EngineLogger
             }
 
             // Async: queue and drop if full. No sync fallback.
-            Func<object?, Exception?, string> boxedFormatter = (s, e) =>
-                formatter((TState)s!, e);
+            Func<object?, Exception?, string> boxedFormatter = (_, e) =>
+                formatter(state, e);
 
             var ev = new LogEvent(CategoryName, logLevel, eventId, state, exception, boxedFormatter);
 
