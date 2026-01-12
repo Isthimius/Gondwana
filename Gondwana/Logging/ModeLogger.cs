@@ -40,7 +40,7 @@ public static partial class EngineLogger
                 return;
             }
 
-            // Async: queue and drop if full. No sync fallback (per requirement).
+            // Async: queue and drop if full. No sync fallback.
             Func<object?, Exception?, string> boxedFormatter = (s, e) =>
                 formatter((TState)s!, e);
 
