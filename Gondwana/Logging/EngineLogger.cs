@@ -172,17 +172,20 @@ public static partial class EngineLogger
 
     private static bool TryEnqueue(in LogEvent ev)
     {
-        if (_mode != EngineLoggingMode.Asynchronous)
-            return false;
+        lock (_asyncGate)
+        {
+            if (_mode != EngineLoggingMode.Asynchronous)
+                return false;
 
-        EnsureAsyncStarted(forceRestart: false);
+            EnsureAsyncStarted(forceRestart: false);
 
-        var ch = _channel;
-        if (ch == null)
-            return false;
+            var ch = _channel;
+            if (ch == null)
+                return false;
 
-        // Fire-and-forget: never block, drop if full
-        return ch.Writer.TryWrite(ev);
+            // Fire-and-forget: never block, drop if full
+            return ch.Writer.TryWrite(ev);
+        }
     }
 
     private static async Task WorkerLoop(CancellationToken ct)
