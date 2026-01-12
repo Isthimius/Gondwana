@@ -416,7 +416,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     }
 
     /// <summary>
-    /// Render the DirectDrawing in the the scene layer pass in WORLD pixels;
+    /// Render the DirectDrawing in the scene layer pass in WORLD pixels;
     /// called for Mode == SceneLayer direct drawings.
     /// </summary>
     protected internal void RenderLayerPass()
