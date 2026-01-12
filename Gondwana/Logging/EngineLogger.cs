@@ -34,7 +34,7 @@ public static partial class EngineLogger
     // Async pipeline
     private static readonly object _asyncGate = new();
     private static Channel<LogEvent>? _channel;
-    private static Task? _worker;
+    private static volatile Task? _worker;
     private static CancellationTokenSource? _cts;
 
     // Defaults: bounded + drop on full (fire-and-forget)
