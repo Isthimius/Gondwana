@@ -37,7 +37,7 @@ It is not intended to replace Unity or Unreal, but to serve as a flexible founda
 
 ## 📂 Project Structure
 
-At runtime, Gondwana is driven by a central `Engine` loop responsible for advancing time, polling platform-specific input, updating game state, and rendering only what has changed. The engine is built around a world-space, view-centric rendering model designed to minimize redraw work while supporting multiple cameras, layers, and platforms.
+At runtime, Gondwana is driven by a central `Engine` loop responsible for advancing time, polling platform-specific input, updating game state, and rendering only what has changed. The engine is built around a world-space, view-centric rendering model designed to minimize redraw work while supporting multiple cameras and scene layers.
 
 ### Runtime Flow
 
