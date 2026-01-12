@@ -160,13 +160,5 @@ public sealed class DirectDrawingManager
         return result;
     }
 
-    public bool HasAnyForLayer(SceneLayer layer) =>
-        layer != null && _directDrawings.Values.OfType<DirectDrawingBase>()
-            .Any(d => d.Mode == DirectDrawingMode.SceneLayer && ReferenceEquals(d.SceneLayer, layer));
-
-    public bool HasAnyForView(View view) =>
-        view != null && _directDrawings.Values.OfType<DirectDrawingBase>()
-            .Any(d => d.Mode == DirectDrawingMode.View && ReferenceEquals(d.View, view));
-
     #endregion helper methods
 }

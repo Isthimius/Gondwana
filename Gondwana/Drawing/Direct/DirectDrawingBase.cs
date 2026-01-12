@@ -439,10 +439,6 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         }
     }
 
-    //protected Rectangle ActiveBounds => Mode == DirectDrawingMode.SceneLayer ? _worldBounds : _screenBounds;
-
-    //protected SKRect ActiveBoundsSk => ActiveBounds.ToSKRect();
-
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);
 
     #region IDisposable members
