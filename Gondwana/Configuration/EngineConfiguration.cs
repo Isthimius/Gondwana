@@ -88,10 +88,18 @@ public partial class EngineConfiguration
     /// When full, log events are dropped (fire-and-forget).
     /// Default is 8192.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when attempting to set a value less than or equal to 0.
+    /// </exception>
     public int LoggingQueueCapacity
     {
         get => _loggingQueueCapacity;
-        set => _loggingQueueCapacity = value <= 0 ? 1 : value;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "Capacity must be > 0.");
+            _loggingQueueCapacity = value;
+        }
     }
 
     /// <summary>
