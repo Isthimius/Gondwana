@@ -139,7 +139,7 @@ public sealed class DirectDrawingManager
     }
 
     /// <summary>
-    /// Returns direct drawings associated with a specific View instance (reference equality),
+    /// Returns direct drawings associated with a specific View instance,
     /// ordered by ZOrder then Name.
     /// </summary>
     public IReadOnlyList<DirectDrawingBase> GetDrawingsForView(View view)
