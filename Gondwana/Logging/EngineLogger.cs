@@ -25,8 +25,8 @@ public static partial class EngineLogger
         {
             _mode = value;
 
-            // If switching to async, ensure worker exists.
-            if (_mode == EngineLoggingMode.Asynchronous)
+            // If switching to async, ensure worker exists (only if not already running).
+            if (_mode == EngineLoggingMode.Asynchronous && _worker == null)
                 EnsureAsyncStarted(forceRestart: false);
         }
     }
