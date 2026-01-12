@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
+    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 
 </Project>
