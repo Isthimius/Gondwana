@@ -466,7 +466,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             return ta.CompareTo(tb);
 
         // Stable tie-breaker (avoid flicker)
-        return StringComparer.Ordinal.Compare(a.Id.ToString(), b.Id.ToString());
+        return a.Id.CompareTo(b.Id);
     }
 
     #endregion private methods
