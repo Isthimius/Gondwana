@@ -50,7 +50,7 @@ internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
             var pInt = new Point((int)Math.Round(pixelPt.X), (int)Math.Round(pixelPt.Y));
             if (PointInPolygon(poly, pInt)) return new PointF(cand.X, cand.Y);
 
-            float cx = -sceneLayer.OriginPx.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
+            float cx = -sceneLayer.OriginPx.X + cand.X * (float)W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
             float cy = -sceneLayer.OriginPx.Y + cand.Y * (H * 0.75f) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
             if (d < bestDist) { bestDist = d; best = cand; }
