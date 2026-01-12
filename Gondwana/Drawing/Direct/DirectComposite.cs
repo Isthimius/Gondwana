@@ -84,8 +84,8 @@ public class DirectComposite : IDirectDrawable, IMovable
     // In Clear(), unsubscribe correctly:
     public DirectComposite Clear()
     {
-        foreach (var c in _children)
-            c.Disposing -= OnChildDisposing;
+        foreach (var child in _children)
+            child.Disposing -= OnChildDisposing;
 
         _children.Clear();
         _localOffsetPx.Clear();
@@ -120,14 +120,94 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     // IMovable (pixel space only)
     public MovementSpace PositionSpace => MovementSpace.Pixel;
-    
+
     public Vector2 GetPosition() => new(_anchor.X, _anchor.Y);
 
     public void SetPosition(Vector2 pos) => SetPosition(pos.X, pos.Y);
 
     #endregion IMovable members
 
-    // Bounding box = union of visible children
+    #region IDirectDrawable members
+
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public string? Nickname { get; private set; }
+
+    /// <summary>
+    /// Returns true if any child is visible; setting this sets all children's Visible to the same value.
+    /// </summary>
+    public bool Visible
+    {
+        get
+        {
+            foreach (var c in _children)
+            {
+                if (c.Visible)
+                    return true;
+            }
+
+            return false;
+        }
+        set
+        {
+            foreach (var c in _children)
+            {
+                c.Visible = value;
+            }
+        }
+    }
+
+    public int ZOrder => 0;
+
+    public RectangleF GetDrawLocationScreen(View view)
+    {
+        if (_children.Count == 0)
+            return RectangleF.Empty;
+
+        float minX = float.MaxValue, minY = float.MaxValue;
+        float maxX = float.MinValue, maxY = float.MinValue;
+
+        foreach (var child in _children)
+        {
+            if (!child.Visible)
+                continue;
+
+            var b = child.GetDrawLocationScreen(view);
+
+            if (b == RectangleF.Empty)
+                continue;
+
+            if (b.Left < minX)
+                minX = b.Left;
+
+            if (b.Top < minY)
+                minY = b.Top;
+
+            if (b.Right > maxX)
+                maxX = b.Right;
+
+            if (b.Bottom > maxY)
+                maxY = b.Bottom;
+        }
+
+        if (minX == float.MaxValue)
+            return RectangleF.Empty;
+
+        return RectangleF.FromLTRB(
+            (int)Math.Floor(minX),
+            (int)Math.Floor(minY),
+            (int)Math.Ceiling(maxX),
+            (int)Math.Ceiling(maxY));
+    }
+
+    public void Draw(BackbufferBase backbuffer, RectangleF destRectScreen)
+    {
+        // Intentionally no-op.
+        // Composite is a grouping/controller object; children are responsible for rendering.
+    }
+
+    #endregion IDirectDrawable members
+
     public Rectangle ScreenBounds
     {
         get
@@ -161,7 +241,9 @@ public class DirectComposite : IDirectDrawable, IMovable
                     maxY = b.Bottom;
             }
 
-            if (minX == float.MaxValue) return Rectangle.Empty;
+            if (minX == float.MaxValue)
+                return Rectangle.Empty;
+
             return Rectangle.FromLTRB(
                 (int)Math.Floor(minX),
                 (int)Math.Floor(minY),
@@ -176,29 +258,29 @@ public class DirectComposite : IDirectDrawable, IMovable
         {
             if (_children.Count == 0)
                 return Rectangle.Empty;
-            
+
             float minX = float.MaxValue, minY = float.MaxValue;
             float maxX = float.MinValue, maxY = float.MinValue;
-            
+
             foreach (var child in _children)
             {
                 if (!child.Visible)
                     continue;
-            
+
                 var b = child.WorldBounds;
-                
+
                 if (b == Rectangle.Empty)
                     continue;
-                
+
                 if (b.Left < minX)
                     minX = b.Left;
-                
+
                 if (b.Top < minY)
                     minY = b.Top;
-                
+
                 if (b.Right > maxX)
                     maxX = b.Right;
-                
+
                 if (b.Bottom > maxY)
                     maxY = b.Bottom;
             }
@@ -214,43 +296,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
     }
 
-    public string? Nickname { get; private set; }
-
-    public int ZOrder => 0;
-
     public DirectDrawingMode Mode { get; }
-
-    /// <summary>
-    /// Returns true if any child is visible; setting this sets all children's Visible to the same value.
-    /// </summary>
-    public bool Visible
-    {
-        get
-        {
-            foreach (var c in _children)
-            {
-                if (c.Visible)
-                    return true;
-            }
-
-            return false;
-        }
-        set
-        {
-            foreach (var c in _children)
-            {
-                c.Visible = value;
-            }
-        }
-    }
-
-    public Guid Id { get; } = Guid.NewGuid();
-
-    public void Draw(BackbufferBase backbuffer, RectangleF destRectScreen)
-    {
-        // Intentionally no-op.
-        // Composite is a grouping/controller object; children are responsible for rendering.
-    }
 
     public void Update(long tick)
     {
@@ -263,7 +309,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
         foreach (var c in _children)
             c.ZOrder = z;
-        
+
         return this;
     }
 
@@ -271,7 +317,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
         foreach (var c in _children)
             c.Opacity = opacity;
-        
+
         return this;
     }
 
@@ -279,7 +325,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
         foreach (var c in _children)
             c.FadeTo(targetOpacity, durationSec);
-        
+
         return this;
     }
 
@@ -287,7 +333,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
         foreach (var c in _children)
             c.FadeIn(durationSec);
-        
+
         return this;
     }
 
@@ -295,7 +341,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
         foreach (var c in _children)
             c.FadeOut(durationSec);
-        
+
         return this;
     }
 
@@ -316,10 +362,5 @@ public class DirectComposite : IDirectDrawable, IMovable
 
         _children.Clear();
         _localOffsetPx.Clear();
-    }
-
-    public RectangleF GetDrawLocationScreen(View view)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -119,7 +119,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         // 5) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
-        ViewRenderer.Render(Backbuffer.Canvas, deltaSeconds, Scene,
+        ViewRenderer.Render(deltaSeconds, Scene,
             (view, layer) => RenderLayerDirtyRegions(view, layer, forceFullRedraw));
 
         // 5.5) View-mode DirectDrawings pass (screen-space, on top of everything)
@@ -310,7 +310,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
-    #endregion
+    #endregion DrawRefreshQueueToBackbuffer helpers
 
     /// <summary>
     /// Renders the contents of the backbuffer to the associated UI adapter.

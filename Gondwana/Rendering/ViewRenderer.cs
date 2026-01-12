@@ -177,37 +177,19 @@ public sealed class ViewRenderer
     }
 
     internal void Render(
-        SKCanvas canvas,
+        //SKCanvas canvas,
         float dtSeconds,
         Scene scene,
         Action<View, SceneLayer> drawLayer)
     {
         foreach (var view in _views)
         {
-            // Camera already updated earlier this frame.
-            //view.Viewport.Begin(canvas);
-
-            //var cam = view.Camera;
-
             int countOfVisibleLayers = scene?.CountOfVisibleLayers ?? 0;
             for (int i = 0; i < countOfVisibleLayers; i++)
             {
                 var layer = scene!.VisibleSceneLayers[i];
-
-                //canvas.Save();
-
-                //float p = layer.Parallax;
-
-                //canvas.Translate(
-                //    -cam.PositionPx.X * p,
-                //    -cam.PositionPx.Y * p);
-
                 drawLayer(view, layer);
-
-                //canvas.Restore();
             }
-
-            //view.Viewport.End(canvas);
         }
     }
 

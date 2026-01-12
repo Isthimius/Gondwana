@@ -51,7 +51,7 @@ public class Game : IDisposable
         //RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
         RenderSurface.Host.RedrawDirtyRectangleOnly = true;
 
-        RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
+        RenderSurface.Host.Scene[0].OriginPx = new Point(-100, -100);
 
         InitSprites();
         InitDirectDrawings();
