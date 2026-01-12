@@ -23,21 +23,11 @@ public static partial class EngineLogger
         get => _mode;
         set
         {
-            lock (_asyncGate)
-            {
-                if (_mode == value)
-                {
-                    return;
-                }
+            _mode = value;
 
-                _mode = value;
-
-                // If switching to async, ensure worker exists.
-                if (_mode == EngineLoggingMode.Asynchronous)
-                {
-                    EnsureAsyncStarted();
-                }
-            }
+            // If switching to async, ensure worker exists.
+            if (_mode == EngineLoggingMode.Asynchronous)
+                EnsureAsyncStarted(forceRestart: false);
         }
     }
 
@@ -59,7 +49,11 @@ public static partial class EngineLogger
         if (capacity <= 0)
             throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be > 0.");
 
-        _capacity = capacity;
+        lock (_asyncGate)
+        {
+            _capacity = capacity;
+        }
+
         EnsureAsyncStarted(forceRestart: false);
     }
 
@@ -82,12 +76,12 @@ public static partial class EngineLogger
                 return;
 
             // Completing the writer lets the worker drain then exit.
-            ch.Writer.TryComplete();
+            try { ch.Writer.TryComplete(); } catch { /* ignore */ }
 
-            // Clear shared references so no other thread can operate on this instance.
-            _cts = null;
-            _worker = null;
+            // Clear shared references so other threads can't enqueue on this instance.
             _channel = null;
+            _worker = null;
+            _cts = null;
         }
 
         try { cts?.Cancel(); } catch { /* never crash */ }
@@ -117,14 +111,18 @@ public static partial class EngineLogger
     /// </summary>
     public static void SwitchToAsync(int? capacity = null)
     {
-        if (capacity is not null)
+        lock (_asyncGate)
         {
-            if (capacity.Value <= 0)
-                throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be > 0.");
-            _capacity = capacity.Value;
+            if (capacity is not null)
+            {
+                if (capacity.Value <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be > 0.");
+                _capacity = capacity.Value;
+            }
+
+            _mode = EngineLoggingMode.Asynchronous;
         }
 
-        _mode = EngineLoggingMode.Asynchronous;
         EnsureAsyncStarted(forceRestart: false);
     }
 
@@ -132,8 +130,6 @@ public static partial class EngineLogger
     {
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         _loggerCache.Clear(); // refresh wrappers
-
-        // Worker continues; it uses _loggerFactory dynamically.
     }
 
     public static ILoggerFactory EngineLoggerFactory => _loggerFactory;
@@ -153,32 +149,47 @@ public static partial class EngineLogger
         _loggerCache.Clear(); // refresh wrappers
     }
 
-    private static void EnsureAsyncStarted(bool forceRestart = false)
+    private static void EnsureAsyncStarted(bool forceRestart)
     {
         lock (_asyncGate)
         {
-            if (_mode != EngineLoggingMode.Asynchronous)
-                return;
-            if (!forceRestart && _worker != null)
-                return;
-
-            if (forceRestart && _worker != null)
-            {
-                // best-effort stop without flush; caller controls flush via StopAsyncLogging.
-                try { _channel?.Writer.TryComplete(); } catch { /* ignore */ }
-            }
-
-            _channel = Channel.CreateBounded<LogEvent>(new BoundedChannelOptions(_capacity)
-            {
-                SingleReader = true,
-                SingleWriter = false,
-                FullMode = BoundedChannelFullMode.DropWrite // <-- your requirement
-            });
-
-            _cts?.Dispose();
-            _cts = new CancellationTokenSource();
-            _worker = Task.Run(() => WorkerLoop(_cts.Token));
+            EnsureAsyncStarted_NoLock(forceRestart);
         }
+    }
+
+    // Must be called under _asyncGate.
+    private static void EnsureAsyncStarted_NoLock(bool forceRestart)
+    {
+        if (_mode != EngineLoggingMode.Asynchronous)
+            return;
+
+        if (!forceRestart && _worker != null)
+            return;
+
+        if (forceRestart && _channel != null)
+        {
+            // Best-effort stop without flush; caller controls flush via StopAsyncLogging.
+            try { _channel.Writer.TryComplete(); } catch { /* ignore */ }
+        }
+
+        int capacityLocal = _capacity;
+
+        var channel = Channel.CreateBounded<LogEvent>(new BoundedChannelOptions(capacityLocal)
+        {
+            SingleReader = true,
+            SingleWriter = false,
+            FullMode = BoundedChannelFullMode.DropWrite // fire-and-forget; drop if full
+        });
+
+        _channel = channel;
+
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
+
+        // Pass reader so WorkerLoop never dereferences static _channel (avoids races with Stop).
+        var reader = channel.Reader;
+        var token = _cts.Token;
+        _worker = Task.Run(() => WorkerLoop(reader, token));
     }
 
     private static bool TryEnqueue(in LogEvent ev)
@@ -188,7 +199,7 @@ public static partial class EngineLogger
             if (_mode != EngineLoggingMode.Asynchronous)
                 return false;
 
-            EnsureAsyncStarted(forceRestart: false);
+            EnsureAsyncStarted_NoLock(forceRestart: false);
 
             var ch = _channel;
             if (ch == null)
@@ -199,10 +210,8 @@ public static partial class EngineLogger
         }
     }
 
-    private static async Task WorkerLoop(CancellationToken ct)
+    private static async Task WorkerLoop(ChannelReader<LogEvent> reader, CancellationToken ct)
     {
-        var reader = _channel!.Reader;
-
         try
         {
             while (await reader.WaitToReadAsync(ct).ConfigureAwait(false))
