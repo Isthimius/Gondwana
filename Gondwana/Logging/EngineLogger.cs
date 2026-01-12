@@ -70,34 +70,35 @@ public static partial class EngineLogger
     {
         Channel<LogEvent>? ch;
         Task? worker;
+        CancellationTokenSource? cts;
 
         lock (_asyncGate)
         {
             ch = _channel;
             worker = _worker;
+            cts = _cts;
 
             if (ch == null || worker == null)
                 return;
 
             // Completing the writer lets the worker drain then exit.
             ch.Writer.TryComplete();
-        }
 
-        if (flush)
-        {
-            var timeout = flushTimeout ?? TimeSpan.FromSeconds(2);
-            try { worker.Wait(timeout); } catch { /* never crash */ }
-        }
-
-        lock (_asyncGate)
-        {
-            try { _cts?.Cancel(); } catch { /* ignore */ }
-            _cts?.Dispose();
-
+            // Clear shared references so no other thread can operate on this instance.
             _cts = null;
             _worker = null;
             _channel = null;
         }
+
+        try { cts?.Cancel(); } catch { /* never crash */ }
+
+        if (flush)
+        {
+            var timeout = flushTimeout ?? TimeSpan.FromSeconds(2);
+            try { worker!.Wait(timeout); } catch { /* never crash */ }
+        }
+
+        try { cts?.Dispose(); } catch { /* ignore */ }
     }
 
     /// <summary>
