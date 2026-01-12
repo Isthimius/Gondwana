@@ -18,7 +18,7 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 
         var origin = sceneLayer.OriginPx;
         int x = (int)Math.Floor(-origin.X + col * (W * 0.75f));
-        int y = (int)Math.Floor((double)(-origin.Y + row * H + ((col & 1) == 0 ? 0 : H / 2)));
+        int y = (int)Math.Floor(-origin.Y + row * (double)H + ((col & 1) == 0 ? 0 : H / 2));
 
         return new Point(x, y);
     }
