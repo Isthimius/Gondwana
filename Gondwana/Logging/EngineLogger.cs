@@ -278,8 +278,8 @@ public sealed class LoggingErrorEventArgs : EventArgs
 
     internal LoggingErrorEventArgs(Exception exception, string categoryName, LogLevel logLevel)
     {
-        Exception = exception;
-        CategoryName = categoryName;
+        Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+        CategoryName = categoryName ?? throw new ArgumentNullException(nameof(categoryName));
         LogLevel = logLevel;
     }
 }
