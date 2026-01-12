@@ -25,8 +25,9 @@ public static partial class EngineLogger
         {
             _mode = value;
 
-            // If switching to async, ensure worker exists (only if not already running).
-            if (_mode == EngineLoggingMode.Asynchronous && _worker == null)
+            // If switching to async, ensure worker exists.
+            // EnsureAsyncStarted is idempotent and safely handles repeated calls.
+            if (_mode == EngineLoggingMode.Asynchronous)
                 EnsureAsyncStarted(forceRestart: false);
         }
     }
@@ -34,7 +35,7 @@ public static partial class EngineLogger
     // Async pipeline
     private static readonly object _asyncGate = new();
     private static Channel<LogEvent>? _channel;
-    private static volatile Task? _worker;
+    private static Task? _worker;
     private static CancellationTokenSource? _cts;
 
     // Defaults: bounded + drop on full (fire-and-forget)
