@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +18,12 @@ public static partial class EngineLogger
 
     // Mode (default async)
     private static volatile EngineLoggingMode _mode = EngineLoggingMode.Asynchronous;
+
+    /// <summary>
+    /// Raised when an exception occurs in the logging infrastructure.
+    /// Allows applications to monitor logging failures for diagnostics.
+    /// </summary>
+    public static event EventHandler<LoggingErrorEventArgs>? LoggingError;
 
     public static EngineLoggingMode Mode
     {
@@ -224,9 +231,20 @@ public static partial class EngineLogger
                         var logger = _loggerFactory.CreateLogger(ev.CategoryName);
                         logger.Log(ev.LogLevel, ev.EventId, ev.State, ev.Exception, ev.Formatter);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Never let logging crash the engine.
+                        // Fallback: write to debug output to aid diagnostics without crashing.
+                        Debug.WriteLine($"[EngineLogger] Logging failed: {ex.GetType().Name}: {ex.Message}");
+                        
+                        // Raise event for applications that want to monitor logging failures.
+                        try
+                        {
+                            LoggingError?.Invoke(null, new LoggingErrorEventArgs(ex, ev.CategoryName, ev.LogLevel));
+                        }
+                        catch
+                        {
+                            // Never let event handlers crash the logging infrastructure.
+                        }
                     }
                 }
             }
@@ -235,5 +253,33 @@ public static partial class EngineLogger
         {
             // Swallow cancellation and any channel exceptions.
         }
+    }
+}
+
+/// <summary>
+/// Provides data for the LoggingError event.
+/// </summary>
+public sealed class LoggingErrorEventArgs : EventArgs
+{
+    /// <summary>
+    /// Gets the exception that occurred during logging.
+    /// </summary>
+    public Exception Exception { get; }
+    
+    /// <summary>
+    /// Gets the category name of the logger that failed.
+    /// </summary>
+    public string CategoryName { get; }
+    
+    /// <summary>
+    /// Gets the log level of the message that failed to log.
+    /// </summary>
+    public LogLevel LogLevel { get; }
+
+    internal LoggingErrorEventArgs(Exception exception, string categoryName, LogLevel logLevel)
+    {
+        Exception = exception;
+        CategoryName = categoryName;
+        LogLevel = logLevel;
     }
 }
