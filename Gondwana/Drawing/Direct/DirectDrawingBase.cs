@@ -270,7 +270,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         _revealElapsedSec = 0f;
         _revealDurationSec = Math.Max(0.0001f, durationSec);
         _revealEasing = easing;
-        // target is t01; we’ll lerp in Update
+        // target is t01; weâ€™ll lerp in Update
         _revealTarget = Math.Clamp(t01, 0f, 1f);
         _revealStart = _revealT;
         return this;
@@ -347,7 +347,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     }
 
     /// <summary>
-    /// Render the DirectDrawing in the the view pass in SCREEN pixels;
+    /// Render the DirectDrawing in the view pass in SCREEN pixels;
     /// called for Mode == View direct drawings.
     /// </summary>
     protected internal virtual void RenderViewPass()
