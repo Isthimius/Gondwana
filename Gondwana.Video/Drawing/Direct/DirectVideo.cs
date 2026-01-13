@@ -163,7 +163,7 @@ public sealed class DirectVideo : DirectDrawingBase
         _player.Ended += (_, __) => { /* engine could fire a scene event here if needed */ };
     }
 
-    protected override void Draw(BackbufferBase backbuffer, Rectangle destRectScreen)
+    protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         SKBitmap? bmp;
         lock (_frameLock) bmp = _frame;
@@ -176,7 +176,7 @@ public sealed class DirectVideo : DirectDrawingBase
         canvas.DrawBitmap(bmp, dest, paint);
     }
 
-    private static SKRect ComputeDestRect(Rectangle bounds, int srcW, int srcH, StretchMode mode)
+    private static SKRect ComputeDestRect(RectangleF bounds, int srcW, int srcH, StretchMode mode)
     {
         var b = bounds;
         var dst = new SKRect(b.Left, b.Top, b.Right, b.Bottom);

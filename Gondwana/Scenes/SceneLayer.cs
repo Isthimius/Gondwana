@@ -439,7 +439,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             // Must be SceneLayer-mode by definition if it's "for layer", but be defensive:
             if (drawing.Mode != DirectDrawingMode.SceneLayer)
                 continue;
-
+            
             // Only include if it intersects this dirty rect
             if (!drawing.WorldBounds.IntersectsWith(worldRect))
                 continue;

@@ -171,8 +171,8 @@ public class Game : IDisposable
                                                Scene[0],
                                                null,
                                                null,
-                                               new Rectangle(0, 0, 100, 30));
-        _spriteNameTag.SetColors(Color.Blue, Color.White).ZOrder = 20;
+                                               new Rectangle(0, 0, 150, 30));
+        _spriteNameTag.SetColors(Color.Blue, Color.White).SetText("Mister Rooster").ZOrder = 20;
         _spriteNameTag.Movement.FollowTileSoft(SpriteManager.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
     }
 

@@ -41,9 +41,15 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     private float _revealStart = 1f, _revealTarget = 1f;
 
     /// <summary>
-    /// Render the drawable to the current backbuffer at the screen location specified.
+    /// Performs the concrete drawing for this DirectDrawing to the Backbuffer.
+    /// Called by the engine after routing, visibility, opacity,
+    /// and reveal logic have been applied.
     /// </summary>
-    protected internal abstract void Draw(BackbufferBase backbuffer, Rectangle destRectScreen);
+    /// <remarks>
+    /// Override this method in derived classes.
+    /// Do not call it directly; the engine calls <see cref="Draw"/>.
+    /// </remarks>
+    protected abstract void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen);
 
     protected DirectDrawingBase(RenderSurfaceHostBase renderSurfaceHost,
                                 DirectDrawingMode mode,
@@ -170,15 +176,20 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         if (Mode == DirectDrawingMode.View)
             return _screenBounds;
 
+        // translate world bounds to screen via view transform
         return view.WorldRectToScreenRect(SceneLayer!, _worldBounds);
     }
 
-    void IDrawable.Draw(BackbufferBase backbuffer, RectangleF destRectScreen)
+    /// <summary>
+    /// Engine entry point for drawing. Routes to the appropriate render pass
+    /// (View vs SceneLayer) and applies engine-level behavior.
+    /// </summary>
+    public void Draw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         if (Mode == DirectDrawingMode.View)
             RenderViewPass();
         else
-            RenderLayerPass();
+            RenderLayerPass(destRectScreen);
     }
 
     #endregion IDrawable members
@@ -397,7 +408,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
         if (_opacity >= 0.999f)
         {
-            Draw(backbuffer, _screenBounds);
+            OnDraw(backbuffer, _screenBounds);
         }
         else
         {
@@ -407,7 +418,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             };
 
             canvas.SaveLayer(layerPaint);
-            Draw(backbuffer, _screenBounds);
+            OnDraw(backbuffer, _screenBounds);
             canvas.Restore(); // end SaveLayer
         }
 
@@ -419,22 +430,34 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// Render the DirectDrawing in the the scene layer pass in WORLD pixels;
     /// called for Mode == SceneLayer direct drawings.
     /// </summary>
-    protected internal void RenderLayerPass()
+    protected internal void RenderLayerPass(RectangleF destRectScreen)
     {
         if (!Visible)
             return;
 
-        // no reveal clip here (until world bounds exist)
+        var backbuffer = RenderSurfaceHost.Backbuffer!;
+
         if (_opacity >= 0.999f)
         {
-            Draw(RenderSurfaceHost.Backbuffer, _worldBounds);
+            OnDraw(backbuffer, destRectScreen);
         }
         else
         {
-            var canvas = RenderSurfaceHost.Backbuffer!.Canvas;
-            using var layerPaint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
-            canvas.SaveLayer(layerPaint);
-            Draw(RenderSurfaceHost.Backbuffer, _worldBounds);
+            var canvas = backbuffer.Canvas;
+            using var layerPaint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, (byte)(_opacity * 255))
+            };
+
+            // Bound the offscreen layer to this drawable's screen rect
+            var bounds = new SKRect(
+                destRectScreen.Left,
+                destRectScreen.Top,
+                destRectScreen.Right,
+                destRectScreen.Bottom);
+
+            canvas.SaveLayer(bounds, layerPaint);
+            OnDraw(backbuffer, destRectScreen);
             canvas.Restore();
         }
     }

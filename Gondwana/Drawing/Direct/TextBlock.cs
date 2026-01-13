@@ -627,7 +627,7 @@ public class TextBlock : DirectDrawingMovableBase
         base.Update(tick);
     }
 
-    protected internal override void Draw(BackbufferBase backbuffer, Rectangle destRectScreen)
+    protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         var canvas = backbuffer.Canvas;
         var rect = destRectScreen.ToSKRect();
