@@ -68,7 +68,7 @@ internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
 
             // Center of candidate hex
             float cx = -originX + cand.X * (W * 0.75f) + W / 2f;
-            float cy = -originY + cand.Y * H
+            float cy = -originY + cand.Y * (float)H
                        + ((cand.X & 1) == 0 ? 0 : H / 2) + H / 2f;
 
             float dx = cx - pixelPt.X;
