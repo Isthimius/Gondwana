@@ -136,19 +136,15 @@ public class Game : IDisposable
 
         _directRectangle = new DirectRectangle(Color.Wheat,
                                                RenderSurface.Host,
-                                               DirectDrawingMode.View,
-                                               null,
                                                RenderSurface.Host.ViewRenderer.Views[0],
                                                bounds1,
                                                null);
         _directRectangle.SetFilled(true).SetAlpha(128);
 
         _textBlockCPS = new TextBlock(RenderSurface.Host,
-                                               DirectDrawingMode.View,
-                                               null,
-                                               RenderSurface.Host.ViewRenderer.Views[0],
-                                               bounds1,
-                                               null);
+                                      RenderSurface.Host.ViewRenderer.Views[0],
+                                      bounds1,
+                                      null);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
         Engine.Instance.CPSCalculated += (e) =>
@@ -157,21 +153,17 @@ public class Game : IDisposable
         };
 
         _textBlockMouse = new TextBlock(RenderSurface.Host,
-                                               DirectDrawingMode.View,
-                                               null,
-                                               RenderSurface.Host.ViewRenderer.Views[0],
-                                               bounds2,
-                                               null);
+                                        RenderSurface.Host.ViewRenderer.Views[0],
+                                        bounds2,
+                                        null);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
         //InitializeParticles();
 
         _spriteNameTag = new TextBlock(RenderSurface.Host,
-                                               DirectDrawingMode.SceneLayer,
-                                               Scene[0],
-                                               null,
-                                               null,
-                                               new Rectangle(0, 0, 150, 30));
+                                                       Scene[0],
+                                                       null,
+                                                       new Rectangle(0, 0, 150, 30));
         _spriteNameTag.SetColors(Color.Blue, Color.White).SetText("Mister Rooster").ZOrder = 20;
         _spriteNameTag.Movement.FollowTileSoft(SpriteManager.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
     }
@@ -187,8 +179,6 @@ public class Game : IDisposable
 
         // Particle system registered like any other DirectDrawing
         _particleSurface = new ParticleSurface(RenderSurface.Host,
-                                               DirectDrawingMode.View,
-                                               null,
                                                RenderSurface.Host.ViewRenderer.Views[0],
                                                bounds,
                                                null);

@@ -48,7 +48,7 @@ public sealed class DirectImage : DirectDrawingMovableBase
     // normalized anchor (0..1) where 0,0 = top-left of dest rect
     private float _anchorX = 0.5f, _anchorY = 0.5f;
 
-    public DirectImage(SKBitmap bitmap,
+    private DirectImage(SKBitmap bitmap,
                        RenderSurfaceHostBase renderSurfaceHost,
                        DirectDrawingMode mode,
                        SceneLayer? sceneLayer,
@@ -61,18 +61,42 @@ public sealed class DirectImage : DirectDrawingMovableBase
         SetBitmap(bitmap);
     }
 
-    public DirectImage(SKImage image,
-                       RenderSurfaceHostBase renderSurfaceHost,
-                       DirectDrawingMode mode,
-                       SceneLayer? sceneLayer,
-                       View? view,
-                       Rectangle? screenBounds,
-                       Rectangle? worldBounds,
-                       string? nickname = null)
+    private DirectImage(SKImage image,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        DirectDrawingMode mode,
+                        SceneLayer? sceneLayer,
+                        View? view,
+                        Rectangle? screenBounds,
+                        Rectangle? worldBounds,
+                        string? nickname = null)
         : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         SetImage(image);
     }
+
+    public DirectImage (SKBitmap bitmap,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        SceneLayer sceneLayer,
+                        Rectangle worldBounds,
+                        string? nickname = null) : this(bitmap, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
+
+    public DirectImage (SKBitmap bitmap,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        View view,
+                        Rectangle screenBounds,
+                        string? nickname = null) : this(bitmap, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
+
+    public DirectImage(SKImage image,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       SceneLayer sceneLayer,
+                       Rectangle worldBounds,
+                       string? nickname = null) : this(image, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
+
+    public DirectImage(SKImage image,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        View view,
+                        Rectangle screenBounds,
+                        string? nickname = null) : this(image, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
 
     /// <summary>Replace the backing bitmap (converts to SKImage on draw if needed).</summary>
     public DirectImage SetBitmap(SKBitmap bitmap)

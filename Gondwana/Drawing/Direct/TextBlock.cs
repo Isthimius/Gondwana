@@ -130,7 +130,7 @@ public class TextBlock : DirectDrawingMovableBase
     /// </summary>
     /// <param name="renderSurfaceHost">The target render surface host responsible for drawing.</param>
     /// <param name="bounds">The outer bounds (in pixels) where the text will be laid out and rendered.</param>
-    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
+    private TextBlock(RenderSurfaceHostBase renderSurfaceHost,
                      DirectDrawingMode mode,
                      SceneLayer? sceneLayer,
                      View? view,
@@ -141,6 +141,31 @@ public class TextBlock : DirectDrawingMovableBase
     {
         _resolvedForeColor = _foreColor;
     }
+
+    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
+                     SceneLayer sceneLayer,
+                     View? view,
+                     Rectangle worldBounds,
+                     string? nickname = null)
+        : this(renderSurfaceHost,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer,
+               view,
+               screenBounds: null,
+               worldBounds: worldBounds,
+               nickname: nickname) { }
+
+    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
+                     View view,
+                     Rectangle screenBounds,
+                     string? nickname = null)
+        : this(renderSurfaceHost,
+                         DirectDrawingMode.View,
+                         sceneLayer: null,
+                         view: view,
+                         screenBounds: screenBounds,
+                         worldBounds: null,
+                         nickname: nickname) { }
 
     /// <summary>
     /// Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing).

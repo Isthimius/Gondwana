@@ -180,7 +180,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// </summary>
     public float CullingMarginY { get; set; } = 32f;
 
-    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
+    private ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
                            DirectDrawingMode mode,
                            SceneLayer? sceneLayer,
                            View? view,
@@ -194,6 +194,38 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);
         _particleSprite = particleSprite;
     }
+
+    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
+                           SceneLayer sceneLayer,
+                           Rectangle? worldBounds,
+                           string? nickname = null,
+                           int maxParticles = 2000,
+                           SKBitmap? particleSprite = null)
+        : this(renderSurfaceHost,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer,
+               null,
+               null,
+               worldBounds,
+               nickname,
+               maxParticles,
+               particleSprite) { }
+
+    public ParticleSurface (RenderSurfaceHostBase renderSurfaceHost,
+                            View view,
+                            Rectangle? screenBounds,
+                            string? nickname = null,
+                            int maxParticles = 2000,
+                            SKBitmap? particleSprite = null)
+        : this(renderSurfaceHost,
+              DirectDrawingMode.View,
+              null,
+              view,
+              screenBounds,
+              null,
+              nickname,
+              maxParticles,
+              particleSprite) { }
 
     /// <summary>
     /// Immediately spawns a fixed number of particles from the given emitter.

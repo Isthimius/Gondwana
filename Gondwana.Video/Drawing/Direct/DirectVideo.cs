@@ -118,7 +118,7 @@ public sealed class DirectVideo : DirectDrawingBase
     /// <summary>
     /// Use this when you already have an IVideoPlayer instance (e.g., resolved via DI).
     /// </summary>
-    public DirectVideo(IVideoPlayer player,
+    private DirectVideo(IVideoPlayer player,
                        Uri source,
                        RenderSurfaceHostBase renderSurfaceHost,
                        DirectDrawingMode mode,
@@ -135,11 +135,33 @@ public sealed class DirectVideo : DirectDrawingBase
         _player.Play();
     }
 
+    public DirectVideo(IVideoPlayer player,
+                       Uri source,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       SceneLayer sceneLayer,
+                       Rectangle? worldBounds,
+                       string? name = null)
+        : this(player, source, renderSurfaceHost,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer, null,
+               null, worldBounds, name) { }
+
+    public DirectVideo(IVideoPlayer player,
+                      Uri source,
+                      RenderSurfaceHostBase renderSurfaceHost,
+                      View view,
+                      Rectangle? screenBounds,
+                      string? name = null)
+        : this(player, source, renderSurfaceHost,
+                DirectDrawingMode.View,
+                null, view,
+                screenBounds, null, name) { }
+
     /// <summary>
     /// Use this when you have a factory that abstracts platform differences.
     /// e.g., desktop/mobile -> VLC impl, web -> HTML5/WebCodecs impl.
     /// </summary>
-    public DirectVideo(Func<IVideoPlayer> playerFactory,
+    private DirectVideo(Func<IVideoPlayer> playerFactory,
                        Uri source,
                        RenderSurfaceHostBase renderSurfaceHost,
                        DirectDrawingMode mode,
@@ -156,6 +178,28 @@ public sealed class DirectVideo : DirectDrawingBase
         _player.Open(source);
         _player.Play();
     }
+
+    public DirectVideo(Func<IVideoPlayer> playerFactory,
+                       Uri source,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       SceneLayer sceneLayer,
+                       Rectangle? worldBounds,
+                       string? name = null)
+        : this(playerFactory, source, renderSurfaceHost,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer, null,
+               null, worldBounds, name) { }
+
+    public DirectVideo(Func<IVideoPlayer> playerFactory,
+                       Uri source,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       View view,
+                       Rectangle? screenBounds,
+                       string? name = null)
+        : this(playerFactory, source, renderSurfaceHost,
+                DirectDrawingMode.View,
+                null, view,
+                screenBounds, null, name) { }
 
     private void HookPlayer()
     {

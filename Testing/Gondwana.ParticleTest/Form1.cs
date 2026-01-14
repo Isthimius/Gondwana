@@ -53,7 +53,7 @@ public partial class Form1 : Form
         Engine.Instance.Start();
         Engine.Instance.Configuration.TargetFPS = 60;
 
-        _particleSurface = new ParticleSurface(renderSurface, DirectDrawingMode.View, null, renderSurface.ViewRenderer.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, null, 10000);
+        _particleSurface = new ParticleSurface(renderSurface,renderSurface.ViewRenderer.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
         _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         _particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
         _particleSurface.Emitters.Add(GetRain(adapter.Width));
@@ -63,7 +63,7 @@ public partial class Form1 : Form
         //_particleSurface.FadeOut(15f);
         //_particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
 
-        var glowBox = new DirectRectangle(Color.Blue, renderSurface, DirectDrawingMode.View, null, renderSurface.ViewRenderer.Views[0], new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), null, null)
+        var glowBox = new DirectRectangle(Color.Blue, renderSurface, renderSurface.ViewRenderer.Views[0], new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), null)
             .SetAlpha(128)
             .SetCornerRadius(6f)
             .SetBorderColor(Color.White)
@@ -76,7 +76,7 @@ public partial class Form1 : Form
 
         glowBox.ZOrder = 1;
 
-        _textBlock = new TextBlock(renderSurface, DirectDrawingMode.View, null, renderSurface.ViewRenderer.Views[0], new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), null, null)
+        _textBlock = new TextBlock(renderSurface, renderSurface.ViewRenderer.Views[0], new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), null)
             .SetFont(SKTypeface.FromFamilyName("Papyrus"), 14f, minSize: 14f)
             .SetColors(Color.White, Color.Transparent)
             .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)

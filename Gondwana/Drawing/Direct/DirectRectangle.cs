@@ -73,7 +73,7 @@ public class DirectRectangle : DirectDrawingMovableBase
     private long _pulseLastTick = 0;
     private float _timeSec; // accumulated seconds
 
-    public DirectRectangle(Color color,
+    private DirectRectangle(Color color,
                            RenderSurfaceHostBase renderSurfaceHost,
                            DirectDrawingMode mode,
                            SceneLayer? sceneLayer,
@@ -90,6 +90,20 @@ public class DirectRectangle : DirectDrawingMovableBase
         SetBlendMode(SKBlendMode.SrcOver);
         SetFilled(false);
     }
+
+    public DirectRectangle(Color color,
+                           RenderSurfaceHostBase renderSurfaceHost,
+                           SceneLayer sceneLayer,
+                           Rectangle worldBounds,
+                           string? nickname = null)
+        : this(color, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, worldBounds, null, nickname) { }
+
+    public DirectRectangle(Color color,
+                           RenderSurfaceHostBase renderSurfaceHost,
+                           View view,
+                           Rectangle screenBounds,
+                           string? nickname = null)
+        : this(color, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
 
     /// <summary>Sets the base color (used for fill and/or outline if no border color is specified).</summary>
     public DirectRectangle SetColor(Color color)
