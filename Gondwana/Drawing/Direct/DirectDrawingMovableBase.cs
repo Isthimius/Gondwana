@@ -33,15 +33,30 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
 
     public MovementSpace PositionSpace => MovementSpace.Pixel;
 
-    public Vector2 GetPosition() => new Vector2((float)ScreenBounds.Location.X, (float)ScreenBounds.Location.Y);
+    public Vector2 GetPosition()
+    {
+        Rectangle r = (Mode == DirectDrawingMode.SceneLayer)
+            ? WorldBounds
+            : ScreenBounds;
+
+        return new Vector2(r.X, r.Y);
+    }
 
     public void SetPosition(Vector2 p)
     {
-        ScreenBounds = new Rectangle(
-            (int)Math.Round(p.X),
-            (int)Math.Round(p.Y),
-            ScreenBounds.Width,
-            ScreenBounds.Height);
+        int x = (int)Math.Round(p.X);
+        int y = (int)Math.Round(p.Y);
+
+        if (Mode == DirectDrawingMode.SceneLayer)
+        {
+            var r = WorldBounds;
+            WorldBounds = new Rectangle(x, y, r.Width, r.Height);
+        }
+        else
+        {
+            var r = ScreenBounds;
+            ScreenBounds = new Rectangle(x, y, r.Width, r.Height);
+        }
 
         ForceRefresh();
     }
