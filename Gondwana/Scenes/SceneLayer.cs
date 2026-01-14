@@ -50,7 +50,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                         int width = 32,
                         int height = 32,
                         float parallax = 1,
-                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SquareIso)
+                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthographic)
     {
         var tileArray = new SceneLayerTile[columnCount, rowCount];
 
@@ -74,7 +74,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public TypedValueBag ValueBag { get; } = new();
 
     [JsonIgnore]
-    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new SquareIsoCoordinates();
+    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new OrthographicCoordinates();
 
     [JsonProperty]
     public CoordinateSystemTypes CoordinateSystemType
@@ -83,7 +83,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             return CoordinateSystem switch
             {
-                SquareIsoCoordinates => CoordinateSystemTypes.SquareIso,
+                OrthographicCoordinates => CoordinateSystemTypes.Orthographic,
                 DiagIsoDiagMatrixCoordinates => CoordinateSystemTypes.DiagIso_DiagMatrix,
                 DiagIsoSquareMatrixCoordinates => CoordinateSystemTypes.DiagIso_SquareMatrix,
                 HexagonalFlatTopCoordinates => CoordinateSystemTypes.HexFlatTop,
@@ -95,7 +95,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             CoordinateSystem = value switch
             {
-                CoordinateSystemTypes.SquareIso => new SquareIsoCoordinates(),
+                CoordinateSystemTypes.Orthographic => new OrthographicCoordinates(),
                 CoordinateSystemTypes.DiagIso_DiagMatrix => new DiagIsoDiagMatrixCoordinates(),
                 CoordinateSystemTypes.DiagIso_SquareMatrix => new DiagIsoSquareMatrixCoordinates(),
                 CoordinateSystemTypes.HexFlatTop => new HexagonalFlatTopCoordinates(),
