@@ -4,13 +4,11 @@ using Gondwana.SkiaSharp;
 
 namespace Gondwana.Rendering;
 
-internal sealed class RefreshQueue : IDisposable
+internal sealed class RefreshQueue
 {
     private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
 
     internal RefreshQueue() => _worldRects = new List<Rectangle>(64);
-
-    ~RefreshQueue() => Dispose();
 
     /// <summary>
     /// True if there is at least one world-space dirty rectangle enqueued.
@@ -92,6 +90,4 @@ internal sealed class RefreshQueue : IDisposable
 
         _worldRects.Clear();
     }
-
-    public void Dispose() => GC.SuppressFinalize(this);
 }

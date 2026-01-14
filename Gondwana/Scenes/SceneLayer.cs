@@ -321,11 +321,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // Corner tiles
         var corners = new[]
         {
-        this[0, 0],
-        this[maxCol, 0],
-        this[0, maxRow],
-        this[maxCol, maxRow]
-    };
+            this[0, 0],
+            this[maxCol, 0],
+            this[0, maxRow],
+            this[maxCol, maxRow]
+        };
 
         RectangleF result = RectangleF.Empty;
         bool hasBounds = false;
@@ -439,7 +439,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             // Must be SceneLayer-mode by definition if it's "for layer", but be defensive:
             if (drawing.Mode != DirectDrawingMode.SceneLayer)
                 continue;
-            
+
             // Only include if it intersects this dirty rect
             if (!drawing.WorldBounds.IntersectsWith(worldRect))
                 continue;
@@ -516,9 +516,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         GC.SuppressFinalize(this);
 
         Disposing?.Invoke(this);
-
-        // dispose child objects
-        RefreshQueue.Dispose();
 
         foreach (SceneLayerTile gridPt in this)
             gridPt.Dispose();
