@@ -122,7 +122,7 @@ public sealed class Engine : IDisposable
     /// <remarks>
     /// <para>
     /// Use this event to inject custom background logic such as diagnostics, AI updates,
-    /// or subsystem polling prior to the engine’s own background operations.
+    /// or subsystem polling prior to the engineâ€™s own background operations.
     /// </para>
     /// </remarks>
     public event Action? BeforeBackgroundTasksExecute;
@@ -276,6 +276,8 @@ public sealed class Engine : IDisposable
 
         Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig).EngineConfig;
 
+        EngineLogger.Mode = Configuration.LoggingMode;
+
         if (Configuration.StateFiles?.Any() ?? false)
         {
             foreach (var stateFile in Configuration.StateFiles)
@@ -310,7 +312,7 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>
-    /// Starts the <see cref="Engine"/> using the current thread’s <see cref="SynchronizationContext"/>.
+    /// Starts the <see cref="Engine"/> using the current threadâ€™s <see cref="SynchronizationContext"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -363,7 +365,7 @@ public sealed class Engine : IDisposable
     /// Threading behavior:
     /// </para>
     /// <list type="bullet">
-    ///   <item><description>The engine’s main loop runs on a background task, not the UI thread.</description></item>
+    ///   <item><description>The engineâ€™s main loop runs on a background task, not the UI thread.</description></item>
     ///   <item><description>All rendering and timing operations are controlled through <see cref="Cycle"/>.</description></item>
     ///   <item><description>The <see cref="UiDispatcher"/> guarantees that event notifications 
     ///   targeting the UI are executed safely on the originating thread.</description></item>
@@ -391,11 +393,11 @@ public sealed class Engine : IDisposable
         {
             if (IsInitializing)
             {
-                _initDone.Wait();        // someone else is initializing—wait for it
+                _initDone.Wait();        // someone else is initializingâ€”wait for it
             }
             else
             {
-                Initialize();            // we're the initializer—do it now
+                Initialize();            // we're the initializerâ€”do it now
             }
         }
 
@@ -421,13 +423,13 @@ public sealed class Engine : IDisposable
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method cleanly terminates the engine’s background execution cycle started by 
+    /// This method cleanly terminates the engineâ€™s background execution cycle started by 
     /// <see cref="Start(SynchronizationContext)"/>. It sets <see cref="IsRunning"/> to <c>false</c>,
     /// signaling the loop in <see cref="Cycle"/> to exit on the next iteration.
     /// </para>
     /// <para>
     /// <b>Stop()</b> does not immediately dispose of resources or clear state. It simply halts
-    /// ongoing updates and rendering, allowing the engine’s subsystems (timers, surfaces, 
+    /// ongoing updates and rendering, allowing the engineâ€™s subsystems (timers, surfaces, 
     /// input pollers, etc.) to remain intact for later reuse or inspection.
     /// </para>
     /// <para>
@@ -593,7 +595,7 @@ public sealed class Engine : IDisposable
         double grossCps = grossCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
         double netCps = netCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
 
-        // Build immutable args NOW (so lambda doesn’t read changing fields later)
+        // Build immutable args NOW (so lambda doesnâ€™t read changing fields later)
         var args = new CyclesPerSecondCalculatedEventArgs(
             grossCycles,
             netCycles,
@@ -656,6 +658,9 @@ public sealed class Engine : IDisposable
                 if (GamepadManager is not null)
                     foreach (var gamepadAdapter in GamepadManager.ConnectedAdapters)
                         GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
+
+                if (Configuration.LoggingMode == EngineLoggingMode.Asynchronous && Configuration.FlushAsyncLogsOnShutdown)
+                    EngineLogger.StopAsyncLogging(flush: true);
 
                 Timer.ClearAll();
                 State.Clear();
