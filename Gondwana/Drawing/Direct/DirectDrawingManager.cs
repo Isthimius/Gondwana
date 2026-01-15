@@ -104,7 +104,7 @@ public sealed class DirectDrawingManager
             if (z != 0) return z;
 
             // If ZOrder equal, fall back to Name
-            return string.Compare((string)a.Nickname, (string)b.Nickname, StringComparison.Ordinal);
+            return string.Compare(a.Nickname, b.Nickname, StringComparison.Ordinal);
         }));
 
     private void OnDrawingDisposing(object? sender, IDirectDrawable drawing)
