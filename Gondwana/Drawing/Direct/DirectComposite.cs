@@ -305,7 +305,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     }
 
     // Group ops passthroughs
-    public DirectComposite SetGroupZOrder(int z)
+    public DirectComposite SetZOrder(int z)
     {
         foreach (var c in _children)
             c.ZOrder = z;
