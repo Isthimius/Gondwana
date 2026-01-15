@@ -26,6 +26,7 @@ public static partial class EngineLogger
             _mode = value;
 
             // If switching to async, ensure worker exists.
+            // EnsureAsyncStarted is idempotent and safely handles repeated calls.
             if (_mode == EngineLoggingMode.Asynchronous)
                 EnsureAsyncStarted(forceRestart: false);
         }
