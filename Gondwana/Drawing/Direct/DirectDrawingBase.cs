@@ -3,7 +3,6 @@ using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
-using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct;
@@ -342,20 +341,25 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
 
     protected internal void ForceRefresh()
     {
-        if (Mode == DirectDrawingMode.SceneLayer)
+        switch (Mode)
         {
-            // bounds is WORLD-space
-            // there will only be one SceneLayer per DirectDrawing in this mode
-            SceneLayer!.RefreshQueue.AddWorldRect(_worldBounds);
-        }
-        else if (Mode == DirectDrawingMode.View)
-        {
-            // bounds is SCREEN-space
-            // need to cycle through all SceneLayers for the View to which this DirectDrawing belongs
-            foreach (var sceneLayer in RenderSurfaceHost.Scene.SceneLayers)
-            {
-                sceneLayer.RefreshQueue.AddViewScreenRect(View!, sceneLayer, _screenBounds);
-            }
+            case DirectDrawingMode.SceneLayer:
+                // bounds is WORLD-space
+                // there will only be one SceneLayer per DirectDrawing in this mode
+                SceneLayer!.RefreshQueue.AddWorldRect(_worldBounds);
+                break;
+
+            case DirectDrawingMode.View:
+                // bounds is SCREEN-space
+                // need to cycle through all SceneLayers for the View to which this DirectDrawing belongs
+                foreach (var sceneLayer in RenderSurfaceHost.Scene.SceneLayers)
+                {
+                    sceneLayer.RefreshQueue.AddViewScreenRect(View!, sceneLayer, _screenBounds);
+                }
+                break;
+
+            default:
+                break;
         }
     }
 

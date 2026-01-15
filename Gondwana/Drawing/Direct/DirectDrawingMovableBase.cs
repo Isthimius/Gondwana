@@ -44,6 +44,8 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
 
     public void SetPosition(Vector2 p)
     {
+        ForceRefresh();
+
         int x = (int)Math.Round(p.X);
         int y = (int)Math.Round(p.Y);
 
