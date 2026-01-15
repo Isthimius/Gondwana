@@ -92,7 +92,8 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
-    /// ***** IMPORTANT: DirtyRectangle is ALWAYS in adapter/control SCREEN pixels. *****
+    /// Union of all rectangle areas redrawn on the current frame, to be rendered to the UI adapter.
+    /// <para />***** IMPORTANT: DirtyRectangle is ALWAYS in adapter/control SCREEN pixels. *****
     /// </summary>
     protected internal Rectangle DirtyRectangle { get; private set; }
 

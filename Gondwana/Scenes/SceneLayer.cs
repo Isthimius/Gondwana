@@ -383,11 +383,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    internal virtual IEnumerable<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
+    internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
     {
         // Gather into a list so we can sort it.
         var list = new List<IDrawable>(64);
-        var seen = new HashSet<IDrawable>();
 
         // 1) Grid tiles
         var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
@@ -399,15 +398,19 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             for (int i = 0; i < sceneLayerTiles.Count; i++)
             {
-                var t = sceneLayerTiles[i];
-                if (t is null) continue;
+                var tile = sceneLayerTiles[i];
 
-                // Defensive overlap check (same idea as sprites)
-                if (!t.DrawLocationWorld.IntersectsWith(worldRect))
+                if (tile is null)
                     continue;
 
-                if (seen.Add(t))
-                    list.Add(t);
+                if (!tile.Visible)
+                    continue;
+
+                // Defensive overlap check (same idea as sprites)
+                if (!tile.DrawLocationWorld.IntersectsWith(worldRect))
+                    continue;
+
+                list.Add(tile);
             }
         }
 
@@ -416,23 +419,25 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         for (int i = 0; i < sprites.Count; i++)
         {
-            var s = sprites[i];
-            if (s is null) continue;
+            var sprite = sprites[i];
 
-            // Defensive overlap check (cheap)
-            if (!s.DrawLocationWorld.IntersectsWith(worldRect))
+            if (sprite is null)
                 continue;
 
-            if (seen.Add(s))
-                list.Add(s);
+            // Defensive overlap check (cheap)
+            if (!sprite.DrawLocationWorld.IntersectsWith(worldRect))
+                continue;
+
+            list.Add(sprite);
         }
 
         // 3) DirectDrawing instances
-        var drawings = DirectDrawingManager.Instance.GetDrawingsForLayer(this); // or whatever method you have
+        var drawings = DirectDrawingManager.Instance.GetDrawingsForLayer(this);
 
         for (int i = 0; i < drawings.Count; i++)
         {
             var drawing = drawings[i];
+
             if (!drawing.Visible)
                 continue;
 
@@ -444,22 +449,19 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             if (!drawing.WorldBounds.IntersectsWith(worldRect))
                 continue;
 
-            if (seen.Add(drawing))
-                list.Add(drawing);
+            list.Add(drawing);
         }
 
         // 4) Sort using Tile.CompareTo
         list.Sort(CompareDrawables); // ← this calls Tile.CompareTo internally
-
-        // 5) Yield in sorted order
-        for (int i = 0; i < list.Count; i++)
-            yield return list[i];
+        return list;
     }
 
     private static int CompareDrawables(IDrawable a, IDrawable b)
     {
         int z = a.ZOrder.CompareTo(b.ZOrder);
-        if (z != 0) return z;
+        if (z != 0)
+            return z;
 
         // Preserve legacy ordering for tiles/sprites when Z ties
         if (a is Tile ta && b is Tile tb)
@@ -541,20 +543,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             Visible = false;
             ZOrder = int.MinValue;
             Parallax = 1f;
-        }
-
-        public override RectangleF GetLayerBoundsPx() => RectangleF.Empty;
-
-        internal override IEnumerable<IDrawable> GetDrawablesInWorldRect(
-            Rectangle worldRect,
-            bool includeOverhang = true)
-        {
-            yield break;
-        }
-
-        public override void Dispose()
-        {
-            // Intentionally empty — singleton
         }
     }
 

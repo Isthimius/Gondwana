@@ -114,7 +114,7 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer sceneLayer, bool fullEnclosures = false)
+    public static List<Sprite> GetSpritesInRange(Rectangle worldRect, SceneLayer sceneLayer, bool fullEnclosures = false)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
@@ -125,12 +125,12 @@ public static class SpriteManager
                 // check if sprite in range
                 if (fullEnclosures)
                 {
-                    if (range.Contains(sprite.DrawLocationWorld))
+                    if (worldRect.Contains(sprite.DrawLocationWorld))
                         retSprites.Add(sprite);
                 }
                 else
                 {
-                    if (sprite.DrawLocationWorld.IntersectsWith(range))
+                    if (sprite.DrawLocationWorld.IntersectsWith(worldRect))
                         retSprites.Add(sprite);
                 }
             }
