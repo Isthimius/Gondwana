@@ -181,15 +181,68 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     }
 
     /// <summary>
-    /// Engine entry point for drawing. Routes to the appropriate render pass
-    /// (View vs SceneLayer) and applies engine-level behavior.
+    /// Engine entry point for drawing. destRectScreen must be in SCREEN pixels.
+    /// This method handles opacity and reveal clipping before calling OnDraw(),
+    /// which draws the actual Canvas.
     /// </summary>
     public void Draw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        if (Mode == DirectDrawingMode.View)
-            RenderViewPass();
+        if (!Visible)
+            return;
+
+        var canvas = backbuffer.Canvas;
+
+        // Compute reveal clip rect (screen pixel space) from bounds
+        bool useClip = _revealT < 0.999f;
+
+        if (useClip)
+        {
+            var r = new SKRect(destRectScreen.Left, destRectScreen.Top, destRectScreen.Right, destRectScreen.Bottom);
+
+            SKRect clipRect = _revealDir switch
+            {
+                RevealDirection.LeftToRight => new SKRect(r.Left, r.Top, r.Left + r.Width * _revealT, r.Bottom),
+                RevealDirection.RightToLeft => new SKRect(r.Right - r.Width * _revealT, r.Top, r.Right, r.Bottom),
+                RevealDirection.TopToBottom => new SKRect(r.Left, r.Top, r.Right, r.Top + r.Height * _revealT),
+                RevealDirection.BottomToTop => new SKRect(r.Left, r.Bottom - r.Height * _revealT, r.Right, r.Bottom),
+                _ => r
+            };
+
+            // Early-out if reveal window is empty
+            if (clipRect.Width <= 0f || clipRect.Height <= 0f)
+                return;
+
+            // Outer save owns the clip lifetime
+            canvas.Save();
+
+            // Capture current matrix
+            var m = canvas.TotalMatrix;
+
+            canvas.ResetMatrix();
+            canvas.ClipRect(clipRect, SKClipOperation.Intersect, antialias: false);
+
+            // Put the prior matrix back so Draw() sees the same transform state
+            canvas.SetMatrix(m);
+        }
+
+        if (_opacity >= 0.999f)
+        {
+            OnDraw(backbuffer, destRectScreen);
+        }
         else
-            RenderLayerPass(destRectScreen);
+        {
+            using var layerPaint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, (byte)(_opacity * 255))
+            };
+
+            canvas.SaveLayer(destRectScreen.ToSKRect(), layerPaint);
+            OnDraw(backbuffer, destRectScreen);
+            canvas.Restore(); // end SaveLayer
+        }
+
+        if (useClip)
+            canvas.Restore(); // end outer clip Save
     }
 
     #endregion IDrawable members
@@ -355,111 +408,6 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         }
 
         _lastTick = tick;
-    }
-
-    /// <summary>
-    /// Render the DirectDrawing in the view pass in SCREEN pixels;
-    /// called for Mode == View direct drawings.
-    /// </summary>
-    protected internal virtual void RenderViewPass()
-    {
-        // this method should only be called for Mode == View
-        if (Mode != DirectDrawingMode.View)
-            return;
-
-        if (!Visible)
-            return;
-
-        var backbuffer = RenderSurfaceHost.Backbuffer!;
-        var canvas = backbuffer.Canvas;
-
-        // Compute reveal clip rect (screen pixel space) from bounds
-        bool useClip = _revealT < 0.999f;
-
-        if (useClip)
-        {
-            var r = new SKRect(_screenBounds.Left, _screenBounds.Top, _screenBounds.Right, _screenBounds.Bottom);
-
-            SKRect clipRect = _revealDir switch
-            {
-                RevealDirection.LeftToRight => new SKRect(r.Left, r.Top, r.Left + r.Width * _revealT, r.Bottom),
-                RevealDirection.RightToLeft => new SKRect(r.Right - r.Width * _revealT, r.Top, r.Right, r.Bottom),
-                RevealDirection.TopToBottom => new SKRect(r.Left, r.Top, r.Right, r.Top + r.Height * _revealT),
-                RevealDirection.BottomToTop => new SKRect(r.Left, r.Bottom - r.Height * _revealT, r.Right, r.Bottom),
-                _ => r
-            };
-
-            // Early-out if reveal window is empty
-            if (clipRect.Width <= 0f || clipRect.Height <= 0f)
-                return;
-
-            // Outer save owns the clip lifetime
-            canvas.Save();
-
-            // Capture current matrix
-            var m = canvas.TotalMatrix;
-
-            canvas.ResetMatrix();
-            canvas.ClipRect(clipRect, SKClipOperation.Intersect, antialias: false);
-
-            // Put the prior matrix back so Draw() sees the same transform state
-            canvas.SetMatrix(m);
-        }
-
-        if (_opacity >= 0.999f)
-        {
-            OnDraw(backbuffer, _screenBounds);
-        }
-        else
-        {
-            using var layerPaint = new SKPaint
-            {
-                Color = new SKColor(255, 255, 255, (byte)(_opacity * 255))
-            };
-
-            canvas.SaveLayer(layerPaint);
-            OnDraw(backbuffer, _screenBounds);
-            canvas.Restore(); // end SaveLayer
-        }
-
-        if (useClip)
-            canvas.Restore(); // end outer clip Save
-    }
-
-    /// <summary>
-    /// Render the DirectDrawing in the scene layer pass in WORLD pixels;
-    /// called for Mode == SceneLayer direct drawings.
-    /// </summary>
-    protected internal void RenderLayerPass(RectangleF destRectScreen)
-    {
-        if (!Visible)
-            return;
-
-        var backbuffer = RenderSurfaceHost.Backbuffer!;
-
-        if (_opacity >= 0.999f)
-        {
-            OnDraw(backbuffer, destRectScreen);
-        }
-        else
-        {
-            var canvas = backbuffer.Canvas;
-            using var layerPaint = new SKPaint
-            {
-                Color = new SKColor(255, 255, 255, (byte)(_opacity * 255))
-            };
-
-            // Bound the offscreen layer to this drawable's screen rect
-            var bounds = new SKRect(
-                destRectScreen.Left,
-                destRectScreen.Top,
-                destRectScreen.Right,
-                destRectScreen.Bottom);
-
-            canvas.SaveLayer(bounds, layerPaint);
-            OnDraw(backbuffer, destRectScreen);
-            canvas.Restore();
-        }
     }
 
     public int CompareTo(DirectDrawingBase? other) => _zOrder.CompareTo(other?._zOrder ?? 0);

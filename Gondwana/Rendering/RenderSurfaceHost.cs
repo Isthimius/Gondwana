@@ -138,7 +138,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
             for (int i = 0; i < overlays.Count; i++)
-                overlays[i].RenderViewPass();
+                overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
 
             canvas.Restore();
         }
