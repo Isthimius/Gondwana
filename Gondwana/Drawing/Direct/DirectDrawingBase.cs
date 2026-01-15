@@ -47,7 +47,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// </summary>
     /// <remarks>
     /// Override this method in derived classes.
-    /// Do not call it directly; the engine calls <see cref="Draw"/>.
+    /// Do not call it directly; the engine calls it via <see cref="Draw"/>.
     /// </remarks>
     protected abstract void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen);
 
