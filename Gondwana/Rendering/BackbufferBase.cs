@@ -149,7 +149,7 @@ public abstract class BackbufferBase : IDisposable
         PostDrawTiles(view, tiles);
     }
 
-    private void PostDrawTiles(View view, IEnumerable<Tile> tiles)
+    private void PostDrawTiles(View view, List<Tile> tiles)
     {
         foreach (var tile in tiles)
         {

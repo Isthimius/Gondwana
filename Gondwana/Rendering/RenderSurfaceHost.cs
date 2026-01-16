@@ -301,7 +301,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var canvas = Backbuffer.Canvas;
 
             canvas.Save();
-            canvas.ClipRect(worldRect.ToSKRect());
+            canvas.ClipRect(screenRect.ToSKRect());
 
             var drawables = layer.GetDrawablesInWorldRect(worldRect);
             Backbuffer.DrawDrawables(view, drawables);
@@ -398,6 +398,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void RenderBackbufferAll()
     {
+        if (Backbuffer == null)
+            return;
+
         var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
         var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
