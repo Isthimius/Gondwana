@@ -260,17 +260,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         canvas.Save();
         canvas.ResetMatrix();
 
-        foreach (var r in screenRects)
+        foreach (var screenRect in screenRects)
         {
-            if (r.IsEmpty || r.Width <= 0 || r.Height <= 0)
+            if (screenRect.IsEmpty || screenRect.Width <= 0 || screenRect.Height <= 0)
                 continue;
 
             // Clear just this patch (overwrite with Backbuffer.ClearColor)
-            Backbuffer.ClearRect(r);
+            Backbuffer.ClearRect(screenRect);
 
-            // Ensure adapter blits it
-            r.Inflate(1, 1);
-            Backbuffer.AddToDirtyRectangle(r);
+            // Ensure adapter blits it; mark Backbuffer dirty
+            screenRect.Inflate(1, 1);
+            Backbuffer.AddToDirtyRectangle(screenRect);
         }
 
         canvas.Restore();
