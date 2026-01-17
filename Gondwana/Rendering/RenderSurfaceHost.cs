@@ -224,6 +224,23 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             }
         }
 
+        // HACK: re-add dirty rectangles to all RefreshQueues
+        foreach (var rect in dirty)
+        {
+            foreach (var view in ViewRenderer.Views)
+            {
+                var viewportRect = view.Viewport.TargetRectPx;
+                if (!viewportRect.IntersectsWith(rect))
+                    continue;
+                foreach (var sceneLayer in Scene.VisibleSceneLayers)
+                {
+                    var worldRectF = view.ScreenRectToWorldRect(sceneLayer, rect);
+                    var worldRect = worldRectF.ToPixelAlignedRect();
+                    sceneLayer.RefreshQueue.AddWorldRect(worldRect);
+                }
+            }
+        }
+
         return dirty;
     }
 
