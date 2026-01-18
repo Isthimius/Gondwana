@@ -657,6 +657,22 @@ public class TextBlock : DirectDrawingMovableBase
         var canvas = backbuffer.Canvas;
         var rect = destRectScreen.ToSKRect();
 
+        // TODO: fix where it's getting the zoom from
+        // HACK: it's updating the wrong TextBlocks!!!
+        // Determine zoom scaling for text (defaults to 1.0).
+        // NOTE: This assumes destRectScreen is already in SCREEN pixel space.
+        var zoom = View?.Viewport?.Zoom is null ? 1f : (1f / View.Viewport.Zoom);
+        if (zoom <= 0f)
+            zoom = 1f;
+
+        // Scale "pixel-like" adornments with zoom so text behaves like other world-space drawables.
+        float hPad = HorizontalPadding * zoom;
+        float vPad = VerticalPadding * zoom;
+        float shadowDx = _shadowDx * zoom;
+        float shadowDy = _shadowDy * zoom;
+        float shadowBlur = _shadowBlurSigma * zoom;
+        float outlineWidth = 1.5f * zoom;
+
         // Background
         if (_backColor.Alpha != 0)
         {
@@ -667,11 +683,11 @@ public class TextBlock : DirectDrawingMovableBase
         // Ensure typeface
         _typeface ??= SKTypeface.Default;
 
-        // Build a paint we can reuse for layout + draw
+        // Build a paint we can reuse for layout + draw (TEXT SIZE IS IN SCREEN PIXELS)
         using var paint = new SKPaint
         {
             Typeface = _typeface ?? SKTypeface.Default,
-            TextSize = _fontSize,
+            TextSize = _fontSize * zoom,
             Color = _resolvedForeColor,   // resolved (pulsed) color
             IsAntialias = true,
             IsStroke = false,
@@ -679,21 +695,26 @@ public class TextBlock : DirectDrawingMovableBase
         };
 
         // Auto-shrink: reflow until it fits height (if min size provided)
-        float fontSize = _fontSize;
-        float innerW = Math.Max(0, rect.Width - HorizontalPadding * 2f);
-        float innerH = Math.Max(0, rect.Height - VerticalPadding * 2f);
+        float fontSize = _fontSize * zoom;
+        float minFontSize = _minFontSize.HasValue ? _minFontSize.Value * zoom : 0f;
+
+        float innerW = Math.Max(0, rect.Width - hPad * 2f);
+        float innerH = Math.Max(0, rect.Height - vPad * 2f);
 
         while (true)
         {
             paint.TextSize = fontSize;
-            if (_layoutDirty) RebuildLayout(paint, innerW);
+
+            // Rebuild when flagged, and also whenever zoom is in play so wrap/line-height stay correct.
+            if (_layoutDirty || zoom != 1f)
+                RebuildLayout(paint, innerW);
 
             int drawableLines = _maxLines.HasValue ? Math.Min(_lines.Count, _maxLines.Value) : _lines.Count;
             float totalH = drawableLines * _lineHeight;
 
-            if (_minFontSize.HasValue && totalH > innerH && fontSize > _minFontSize.Value)
+            if (_minFontSize.HasValue && totalH > innerH && fontSize > minFontSize)
             {
-                fontSize -= 1f;                 // step down and retry
+                fontSize -= 1f;                 // step down and retry (in screen-px units)
                 _layoutDirty = true;
                 continue;
             }
@@ -745,15 +766,15 @@ public class TextBlock : DirectDrawingMovableBase
         float contentH = linesToDraw * _lineHeight;
         float yStart = _vAlign switch
         {
-            VerticalAlign.Center => rect.Top + VerticalPadding + Math.Max(0, (innerH - contentH) * 0.5f),
-            VerticalAlign.Bottom => rect.Bottom - VerticalPadding - contentH,
-            _ => rect.Top + VerticalPadding
+            VerticalAlign.Center => rect.Top + vPad + Math.Max(0, (innerH - contentH) * 0.5f),
+            VerticalAlign.Bottom => rect.Bottom - vPad - contentH,
+            _ => rect.Top + vPad
         };
 
         // Horizontal anchor per line
-        float xAnchorLeft = rect.Left + HorizontalPadding;
+        float xAnchorLeft = rect.Left + hPad;
         float xAnchorCenter = rect.MidX;
-        float xAnchorRight = rect.Right - HorizontalPadding;
+        float xAnchorRight = rect.Right - hPad;
 
         float y = yStart;
         for (int i = 0; i < linesToDraw; i++)
@@ -770,18 +791,20 @@ public class TextBlock : DirectDrawingMovableBase
             {
                 using var shadow = paint.Clone();
                 shadow.IsStroke = false;
-                shadow.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, _shadowBlurSigma);
+                shadow.MaskFilter = shadowBlur > 0f
+                    ? SKMaskFilter.CreateBlur(SKBlurStyle.Normal, shadowBlur)
+                    : null;
                 shadow.Color = new SKColor(0, 0, 0, _shadowAlpha);
 
                 // manually offset
-                canvas.DrawText(line, x + _shadowDx, y + baselineShift + _shadowDy, shadow);
+                canvas.DrawText(line, x + shadowDx, y + baselineShift + shadowDy, shadow);
             }
 
             if (_useOutline)
             {
                 using var outline = paint.Clone();
                 outline.IsStroke = true;
-                outline.StrokeWidth = 1.5f;
+                outline.StrokeWidth = outlineWidth;
                 outline.Color = SKColors.Black;
                 canvas.DrawText(line, x, y + baselineShift, outline);
             }
