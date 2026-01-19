@@ -83,7 +83,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             return CoordinateSystem switch
             {
-                OrthogonalCoordinates => CoordinateSystemTypes.Orthographic,
+                OrthogonalCoordinates => CoordinateSystemTypes.Orthogonal,
                 IsometricRhombicCoordinates => CoordinateSystemTypes.IsometricRhombic,
                 IsometricAxialCoordinates => CoordinateSystemTypes.IsometricAxial,
                 HexAxialFlatTopCoordinates => CoordinateSystemTypes.HexAxialFlatTop,
@@ -95,7 +95,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             CoordinateSystem = value switch
             {
-                CoordinateSystemTypes.Orthographic => new OrthogonalCoordinates(),
+                CoordinateSystemTypes.Orthogonal => new OrthogonalCoordinates(),
                 CoordinateSystemTypes.IsometricRhombic => new IsometricRhombicCoordinates(),
                 CoordinateSystemTypes.IsometricAxial => new IsometricAxialCoordinates(),
                 CoordinateSystemTypes.HexAxialFlatTop => new HexAxialFlatTopCoordinates(),
