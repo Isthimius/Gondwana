@@ -7,7 +7,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// Hexagonal – Flat-Top layout (even-q vertical layout)
 /// Bounding rectangle is (W x H). Centers advance by (0.75*W, H/2 per column parity)
 /// </summary>
-internal sealed class HexagonalFlatTopCoordinates : ISceneLayerCoordinates
+internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {

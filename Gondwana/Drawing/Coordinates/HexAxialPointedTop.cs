@@ -7,7 +7,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// Hexagonal – Pointed-Top layout (even-r horizontal layout)
 /// Bounding rectangle is (W x H). Centers advance by (W/2 per row parity, 0.75*H vertically)
 /// </summary>
-internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
+internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {

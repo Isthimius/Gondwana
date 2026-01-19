@@ -11,7 +11,7 @@ namespace Gondwana.Drawing.Coordinates;
 ///   (i.e., tight diamond packing without rotating the world axes)
 /// Pixel anchor = TOP vertex of the diamond
 /// </summary>
-internal sealed class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
+internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
 {
     // Precompute half sizes repeatedly used
     private static void WH(SceneLayer m, out int W, out int H, out float halfW, out float halfH)

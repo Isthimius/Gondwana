@@ -8,7 +8,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// but kept separate for alternative adjacency/rounding if needed.
 /// Uses identical math for now (clean, predictable behavior).
 /// </summary>
-internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
+internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {

@@ -50,7 +50,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                         int width = 32,
                         int height = 32,
                         float parallax = 1,
-                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthographic)
+                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
     {
         var tileArray = new SceneLayerTile[columnCount, rowCount];
 
@@ -74,7 +74,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public TypedValueBag ValueBag { get; } = new();
 
     [JsonIgnore]
-    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new OrthographicCoordinates();
+    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new OrthogonalCoordinates();
 
     [JsonProperty]
     public CoordinateSystemTypes CoordinateSystemType
@@ -83,11 +83,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             return CoordinateSystem switch
             {
-                OrthographicCoordinates => CoordinateSystemTypes.Orthographic,
-                DiagIsoDiagMatrixCoordinates => CoordinateSystemTypes.DiagIso_DiagMatrix,
-                DiagIsoSquareMatrixCoordinates => CoordinateSystemTypes.DiagIso_SquareMatrix,
-                HexagonalFlatTopCoordinates => CoordinateSystemTypes.HexFlatTop,
-                HexagonalPointedTopCoordinates => CoordinateSystemTypes.HexPointedTop,
+                OrthogonalCoordinates => CoordinateSystemTypes.Orthographic,
+                IsometricRhombicCoordinates => CoordinateSystemTypes.IsometricRhombic,
+                IsometricAxialCoordinates => CoordinateSystemTypes.IsometricAxial,
+                HexAxialFlatTopCoordinates => CoordinateSystemTypes.HexAxialFlatTop,
+                HexAxialPointedTop => CoordinateSystemTypes.HexAxialPointedTop,
                 _ => throw new InvalidOperationException($"Unknown coordinate system type: {CoordinateSystem.GetType().Name}")
             };
         }
@@ -95,11 +95,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             CoordinateSystem = value switch
             {
-                CoordinateSystemTypes.Orthographic => new OrthographicCoordinates(),
-                CoordinateSystemTypes.DiagIso_DiagMatrix => new DiagIsoDiagMatrixCoordinates(),
-                CoordinateSystemTypes.DiagIso_SquareMatrix => new DiagIsoSquareMatrixCoordinates(),
-                CoordinateSystemTypes.HexFlatTop => new HexagonalFlatTopCoordinates(),
-                CoordinateSystemTypes.HexPointedTop => new HexagonalPointedTopCoordinates(),
+                CoordinateSystemTypes.Orthographic => new OrthogonalCoordinates(),
+                CoordinateSystemTypes.IsometricRhombic => new IsometricRhombicCoordinates(),
+                CoordinateSystemTypes.IsometricAxial => new IsometricAxialCoordinates(),
+                CoordinateSystemTypes.HexAxialFlatTop => new HexAxialFlatTopCoordinates(),
+                CoordinateSystemTypes.HexAxialPointedTop => new HexAxialPointedTop(),
                 _ => throw new ArgumentOutOfRangeException(nameof(value), $"Unknown coordinate system type: {value}")
             };
         }
