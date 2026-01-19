@@ -10,6 +10,13 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 ---
 
+## 📚 Documentation
+
+- 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
+- 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
+
+---
+
 ## 🎯 Who Gondwana Is For
 
 Gondwana is designed for developers who want:
