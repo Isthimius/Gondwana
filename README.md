@@ -19,7 +19,7 @@ Gondwana is designed for developers who want:
 - A code-first engine without editor lock-in
 - A modern .NET engine that respects classic rendering principles
 
-It is not intended to replace Unity or Unreal, but to serve as a flexible foundation for custom 2D and 2.5D games, tools, and simulations.
+It is intended to serve as a flexible foundation for custom 2D and 2.5D games, tools, and simulations.
 
 ---
 
