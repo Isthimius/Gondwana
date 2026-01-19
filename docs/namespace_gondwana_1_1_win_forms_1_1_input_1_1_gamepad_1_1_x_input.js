@@ -1,0 +1,5 @@
+var namespace_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input =
+[
+    [ "XInputGamepadAdapter", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter" ],
+    [ "XInputGamepadManager", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager" ]
+];

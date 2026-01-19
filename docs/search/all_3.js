@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['backbuffer_0',['Backbuffer',['../class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html#af1e9cce6010aec7aa21ce64a35d768d9',1,'Gondwana.Rendering.RenderSurfaceHost-1-g.Backbuffer'],['../class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#aa5cd6f2a3441111e38acdff4b721512a',1,'Gondwana.Rendering.RenderSurfaceHostBase.Backbuffer']]],
+  ['backbufferbase_1',['BackbufferBase',['../class_gondwana_1_1_rendering_1_1_backbuffer_base.html',1,'Gondwana.Rendering.BackbufferBase'],['../class_gondwana_1_1_rendering_1_1_backbuffer_base.html#a301adda988acf9267a7c32775b42c102',1,'Gondwana.Rendering.BackbufferBase.BackbufferBase()']]],
+  ['backbufferbase_2ecs_2',['BackbufferBase.cs',['../_backbuffer_base_8cs.html',1,'']]],
+  ['backcolor_3',['BackColor',['../class_gondwana_1_1_design_1_1_forms_1_1_bitmap_change_color_pop_up.html#a2884b91d084a35f50bcdfb5323bf2006',1,'Gondwana.Design.Forms.BitmapChangeColorPopUp.BackColor'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a84b9a77cfc142c30f1a24b0abfbb03a3',1,'Gondwana.Drawing.Direct.TextBlock.BackColor']]],
+  ['basetilesize_4',['BaseTileSize',['../struct_gondwana_1_1_drawing_1_1_frame.html#a391d57f5a81ea3dcc5158867801e8595',1,'Gondwana::Drawing::Frame']]],
+  ['beforebackgroundtasksexecute_5',['BeforeBackgroundTasksExecute',['../class_gondwana_1_1_engine.html#aba0ee0f4107548ebf257a4eb8a013bc0',1,'Gondwana::Engine']]],
+  ['beforeenginecycle_6',['BeforeEngineCycle',['../class_gondwana_1_1_engine.html#ab9f3dc8928010614f210f36c0a85e6ac',1,'Gondwana::Engine']]],
+  ['bind_7',['Bind',['../class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html#ad2eee4bd5139d89c515b2d79463f2f03',1,'Gondwana::Rendering::RenderSurfaceHost-1-g']]],
+  ['bindtocurrentthread_8',['BindToCurrentThread',['../class_gondwana_1_1_engine_dispatcher.html#a57b51f4ccd998b7732f3bb16a597ae83',1,'Gondwana.EngineDispatcher.BindToCurrentThread()'],['../interface_gondwana_1_1_i_engine_dispatcher.html#adc32403a8ca107dd098d32075507256b',1,'Gondwana.IEngineDispatcher.BindToCurrentThread()']]],
+  ['bindtoscene_9',['BindToScene',['../class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html#af8bbb7657b2a182575fabb206ea4d974',1,'Gondwana::Rendering::RenderSurfaceHost-1-g']]],
+  ['bitmapbackbuffer_10',['BitmapBackbuffer',['../class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html',1,'Gondwana.Rendering.BitmapBackbuffer'],['../class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html#a26ac1817d1dc7effb3f34413636a5be2',1,'Gondwana.Rendering.BitmapBackbuffer.BitmapBackbuffer()']]],
+  ['bitmapbackbuffer_2ecs_11',['BitmapBackbuffer.cs',['../_bitmap_backbuffer_8cs.html',1,'']]],
+  ['bitmapchangecolorpopup_12',['BitmapChangeColorPopUp',['../class_gondwana_1_1_design_1_1_forms_1_1_bitmap_change_color_pop_up.html',1,'Gondwana::Design::Forms']]],
+  ['bitmapchangecolorpopup_2ecs_13',['BitmapChangeColorPopUp.cs',['../_bitmap_change_color_pop_up_8cs.html',1,'']]],
+  ['bitmapchangecolorpopup_2edesigner_2ecs_14',['BitmapChangeColorPopUp.Designer.cs',['../_bitmap_change_color_pop_up_8_designer_8cs.html',1,'']]],
+  ['bottom_15',['Bottom',['../struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html#a76a421949d4233f6f3d70662fc3d0863',1,'Gondwana.Drawing.Collisions.CollisionDetectionAdjustment.Bottom'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a82f5089eaccee407c611cde6e92cf28aa2ad9d63b69c4a10a5cc9cad923133bc4',1,'Gondwana.Drawing.Direct.TextBlock.Bottom'],['../namespace_gondwana_1_1_drawing_1_1_sprites.html#aaea16d478d36b47862f55443c2ac3587a2ad9d63b69c4a10a5cc9cad923133bc4',1,'Gondwana.Drawing.Sprites.Bottom']]],
+  ['bottomtotop_16',['BottomToTop',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a',1,'Gondwana::Drawing::Direct::DirectDrawingBase']]],
+  ['boundsworldpx_17',['BoundsWorldPx',['../interface_gondwana_1_1_collision_1_1_i_collider.html#a66e475bec788e2ae651610cc196a8cac',1,'Gondwana.Collision.ICollider.BoundsWorldPx'],['../class_gondwana_1_1_collision_1_1_tile_collider.html#abe33165e33ef74445b165f8c8bb88fcb',1,'Gondwana.Collision.TileCollider.BoundsWorldPx']]],
+  ['build_20tooling_18',['🔧 Development &amp;amp; Build Tooling',['../X:/github/isthimius/Gondwana/README.md#autotoc_md13',1,'']]],
+  ['burst_19',['Burst',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a47d4eed4bc338e884bacd36843cad999',1,'Gondwana::Drawing::Direct::Particles::ParticleSurface']]],
+  ['button_20',['Button',['../class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration.html#a23551251c63d2857c93050ee6151c1af',1,'Gondwana::Input::Gamepad::GamepadButtonEventConfiguration']]],
+  ['buttondown_21',['ButtonDown',['../class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html#a31fdf8c47ede5aa3c31983891733c856',1,'Gondwana::Input::Gamepad::GamepadEventPoller']]],
+  ['buttonstates_22',['ButtonStates',['../class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html#ab7c71aab970e6467b1c3962277f896ad',1,'Gondwana.Input.Mouse.MouseEventArgs.ButtonStates'],['../class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html#aaaa1d580ca13527978b4108f1cf2129d',1,'Gondwana.Input.Mouse.MouseEventPoller.ButtonStates']]]
+];

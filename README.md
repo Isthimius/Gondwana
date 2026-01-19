@@ -6,7 +6,8 @@
 
 Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers can own their game loop and rendering flow end-to-end when needed, while still benefiting from sensible defaults that allow simpler games, simulations, and tools to come together quickly. This approach modernizes classic Win32/GDI-era rendering patterns into a clean, modular architecture with explicit control over draw order, dirty-region updates, and timing—yielding a predictable, debuggable engine that works out of the box but does not get in the way as projects grow.
 
-<br clear="left" />
+- 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
+- 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
 
 ---
 
@@ -18,7 +19,7 @@ Gondwana is designed for developers who want:
 - A code-first engine without editor lock-in
 - A modern .NET engine that respects classic rendering principles
 
-It is not intended to replace Unity or Unreal, but to serve as a flexible foundation for custom 2D and 2.5D games, tools, and simulations.
+It is intended to serve as a flexible foundation for custom 2D and 2.5D games, tools, and simulations.
 
 ---
 
