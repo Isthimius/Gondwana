@@ -8,9 +8,7 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 <br clear="left" />
 
----
-
-## 📚 Documentation
+<p />
 
 - 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
 - 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
