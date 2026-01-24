@@ -55,7 +55,7 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         SetDestinationSize(sz.Width, sz.Height);          // ← base will invoke Resized
     }
 
-    public override void Render(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
+    public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
         // No UI target — dispose immediately to avoid leak
         if (_control.IsDisposed || !_control.IsHandleCreated)

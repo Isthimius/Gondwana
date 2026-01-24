@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Views;
 
 /// <summary>
 /// A rectangular window on the render target with its own zoom and placement.

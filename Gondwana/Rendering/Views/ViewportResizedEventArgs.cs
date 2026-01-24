@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Views;
 
 public class ViewportResizedEventArgs
 {

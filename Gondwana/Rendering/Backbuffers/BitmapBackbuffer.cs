@@ -5,7 +5,7 @@ using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Backbuffers;
 
 public sealed class BitmapBackbuffer : BackbufferBase
 {

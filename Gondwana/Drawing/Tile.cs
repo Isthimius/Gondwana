@@ -2,7 +2,8 @@ using System.Drawing;
 using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
-using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 

@@ -5,7 +5,7 @@ using Gondwana.Movement;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Views;
 
 /// <summary>
 /// Represents a world-space camera for a Scene. The camera tracks a
@@ -549,16 +549,16 @@ public sealed class Camera
         float newY = PositionPx.Y;
 
         if (targetWorldPx.X < dzWorld.Left)
-            newX -= (dzWorld.Left - targetWorldPx.X);
+            newX -= dzWorld.Left - targetWorldPx.X;
 
         if (targetWorldPx.X > dzWorld.Right)
-            newX += (targetWorldPx.X - dzWorld.Right);
+            newX += targetWorldPx.X - dzWorld.Right;
 
         if (targetWorldPx.Y < dzWorld.Top)
-            newY -= (dzWorld.Top - targetWorldPx.Y);
+            newY -= dzWorld.Top - targetWorldPx.Y;
 
         if (targetWorldPx.Y > dzWorld.Bottom)
-            newY += (targetWorldPx.Y - dzWorld.Bottom);
+            newY += targetWorldPx.Y - dzWorld.Bottom;
 
         return new PointF(newX, newY);
     }

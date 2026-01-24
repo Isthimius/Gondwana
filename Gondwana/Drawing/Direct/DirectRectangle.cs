@@ -1,6 +1,8 @@
 ﻿using System.Drawing;
 using System.Runtime.CompilerServices;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;

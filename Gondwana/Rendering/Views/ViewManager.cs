@@ -2,16 +2,18 @@
 using SkiaSharp;
 using System.Drawing;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Views;
 
-public sealed class ViewRenderer
+public sealed class ViewManager
 {
     private readonly RenderSurfaceHostBase _renderSurfaceHost;
     private readonly List<View> _views = new();
 
-    private ViewRenderer() { }
+    // TODO: add events for view added/removed/changed
 
-    internal ViewRenderer(RenderSurfaceHostBase renderSurfaceHost)
+    private ViewManager() { }
+
+    internal ViewManager(RenderSurfaceHostBase renderSurfaceHost)
     {
         _renderSurfaceHost = renderSurfaceHost;
     }
@@ -153,7 +155,7 @@ public sealed class ViewRenderer
 
     public void ClearViews()
     {
-        foreach (var view in _views)
+        foreach (var view in _views!)
         {
             view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
             view.Viewport.ZoomChanged -= OnViewportZoomChanged;
@@ -173,23 +175,6 @@ public sealed class ViewRenderer
         {
             view.Camera.Update(dtSeconds);
             view.Viewport.UpdateZoom(dtSeconds);
-        }
-    }
-
-    internal void Render(
-        //SKCanvas canvas,
-        float dtSeconds,
-        Scene scene,
-        Action<View, SceneLayer> drawLayer)
-    {
-        foreach (var view in _views)
-        {
-            int countOfVisibleLayers = scene?.CountOfVisibleLayers ?? 0;
-            for (int i = 0; i < countOfVisibleLayers; i++)
-            {
-                var layer = scene!.VisibleSceneLayers[i];
-                drawLayer(view, layer);
-            }
         }
     }
 

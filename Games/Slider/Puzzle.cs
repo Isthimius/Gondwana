@@ -6,6 +6,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Movement.Scripted;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using System;
 using System.Collections.Generic;
@@ -216,7 +217,7 @@ namespace Slider
 
         public PointF GetGridCoordinates(int pxlX, int pxlY)
         {
-            var view = _renderSurfaceHost.ViewRenderer.Views[0];
+            var view = _renderSurfaceHost.ViewManager.Views[0];
             var worldPx = view.ScreenPxToWorldPx(matrixes[0], new PointF(pxlX, pxlY));
             return matrixes[0].WorldPxToGrid(worldPx);
         }

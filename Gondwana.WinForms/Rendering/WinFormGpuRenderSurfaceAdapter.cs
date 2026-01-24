@@ -42,7 +42,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// <summary>
     /// Render gets an SKImage from your GpuBackbuffer (ideally texture-backed off the same GRContext).
     /// </summary>
-    public override void Render(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
+    public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
         // If the control can't paint, dispose immediately to avoid a leak.
         if (_glControl.IsDisposed || !_glControl.IsHandleCreated)

@@ -3,7 +3,7 @@ using Gondwana.Logging;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Views;
 
 public sealed class View
 {
@@ -70,8 +70,8 @@ public sealed class View
 
         // screen = offset + (world - camera*p) / zoom
         // camera = (world - local*zoom) / p
-        float camTargetX = (worldUnderCursor.X - (localX * targetZoom)) / parallax;
-        float camTargetY = (worldUnderCursor.Y - (localY * targetZoom)) / parallax;
+        float camTargetX = (worldUnderCursor.X - localX * targetZoom) / parallax;
+        float camTargetY = (worldUnderCursor.Y - localY * targetZoom) / parallax;
 
         var cameraTargetUL = new PointF(camTargetX, camTargetY);
 
@@ -91,29 +91,29 @@ public sealed class View
 
     public PointF ScreenPxToWorldPx(SceneLayer layer, PointF screenPx)
     {
-        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
         float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
         float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
         float parallax = layer.Parallax;
 
-        float worldX = (Camera.PositionPx.X * parallax)
-                     + ((screenPx.X - offsetX) * zoom);
+        float worldX = Camera.PositionPx.X * parallax
+                     + (screenPx.X - offsetX) * zoom;
 
-        float worldY = (Camera.PositionPx.Y * parallax)
-                     + ((screenPx.Y - offsetY) * zoom);
+        float worldY = Camera.PositionPx.Y * parallax
+                     + (screenPx.Y - offsetY) * zoom;
 
         return new PointF(worldX, worldY);
     }
 
     public PointF WorldPxToScreenPx(SceneLayer layer, PointF worldPx)
     {
-        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
         float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
         float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
         float parallax = layer.Parallax;
 
-        float screenX = offsetX + (worldPx.X - (Camera.PositionPx.X * parallax)) / zoom;
-        float screenY = offsetY + (worldPx.Y - (Camera.PositionPx.Y * parallax)) / zoom;
+        float screenX = offsetX + (worldPx.X - Camera.PositionPx.X * parallax) / zoom;
+        float screenY = offsetY + (worldPx.Y - Camera.PositionPx.Y * parallax) / zoom;
 
         return new PointF(screenX, screenY);
     }
@@ -147,7 +147,7 @@ public sealed class View
         if (layer is null)
             throw new ArgumentNullException(nameof(layer));
 
-        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
         float inverseZoom = 1f / zoom;
 
         float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
@@ -156,8 +156,8 @@ public sealed class View
         float parallax = layer.Parallax;
 
         // screen = offset + (world - camera * p) / zoom
-        float localLeft = worldRect.Left - (Camera.PositionPx.X * parallax);
-        float localTop = worldRect.Top - (Camera.PositionPx.Y * parallax);
+        float localLeft = worldRect.Left - Camera.PositionPx.X * parallax;
+        float localTop = worldRect.Top - Camera.PositionPx.Y * parallax;
 
         float scaledLeft = localLeft * inverseZoom;
         float scaledTop = localTop * inverseZoom;
@@ -183,7 +183,7 @@ public sealed class View
         if (layer is null)
             throw new ArgumentNullException(nameof(layer));
 
-        float zoom = (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
 
         float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
         float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
@@ -195,8 +195,8 @@ public sealed class View
         float localTop = screenRect.Top - offsetY;
 
         // world = camera*parallax + local * zoom
-        float worldLeft = (Camera.PositionPx.X * parallax) + (localLeft * zoom);
-        float worldTop = (Camera.PositionPx.Y * parallax) + (localTop * zoom);
+        float worldLeft = Camera.PositionPx.X * parallax + localLeft * zoom;
+        float worldTop = Camera.PositionPx.Y * parallax + localTop * zoom;
 
         float worldWidth = screenRect.Width * zoom;
         float worldHeight = screenRect.Height * zoom;

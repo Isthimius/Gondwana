@@ -1,10 +1,11 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Backbuffers;
 
 /// <summary>
 /// Represents a base class for managing a graphical backbuffer, and is the in-memory surface where
@@ -128,6 +129,9 @@ public abstract class BackbufferBase : IDisposable
 
         // Rect is expected to be in the current canvas coordinate space.
         Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
+
+        // mark area as dirty so it gets presented to the UI adapter
+        AddToBackbufferDirtyRectangle(rectPx);
     }
 
     internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables)
@@ -188,7 +192,7 @@ public abstract class BackbufferBase : IDisposable
     /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
     /// This is used to signal to the UI adapter what needs to be repainted.
     /// </summary>
-    protected internal void AddToDirtyRectangle(Rectangle area)
+    protected internal void AddToBackbufferDirtyRectangle(Rectangle area)
     {
         if (area.IsEmpty)
             return;

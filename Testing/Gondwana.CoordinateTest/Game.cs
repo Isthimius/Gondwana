@@ -46,9 +46,9 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
-        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        RenderSurface.Host.ViewManager.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
+        RenderSurface.Host.ViewManager.Views[0].Camera.SnapTo(new PointF(-800, -100));
+        RenderSurface.Host.ViewManager.Views[1].Camera.SnapTo(new PointF(100, 100));
         RenderSurface.Host.RedrawDirtyRectangleOnly = true;
 
         RenderSurface.Host.Scene[0].OriginPx = new Point(-100, -100);
@@ -136,13 +136,13 @@ public class Game : IDisposable
 
         _directRectangle = new DirectRectangle(Color.Wheat,
                                                RenderSurface.Host,
-                                               RenderSurface.Host.ViewRenderer.Views[0],
+                                               RenderSurface.Host.ViewManager.Views[0],
                                                bounds1,
                                                null);
         _directRectangle.SetFilled(true).SetAlpha(128);
 
         _textBlockCPS = new TextBlock(RenderSurface.Host,
-                                      RenderSurface.Host.ViewRenderer.Views[0],
+                                      RenderSurface.Host.ViewManager.Views[0],
                                       bounds1,
                                       null);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
@@ -153,7 +153,7 @@ public class Game : IDisposable
         };
 
         _textBlockMouse = new TextBlock(RenderSurface.Host,
-                                        RenderSurface.Host.ViewRenderer.Views[0],
+                                        RenderSurface.Host.ViewManager.Views[0],
                                         bounds2,
                                         null);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
@@ -179,7 +179,7 @@ public class Game : IDisposable
 
         // Particle system registered like any other DirectDrawing
         _particleSurface = new ParticleSurface(RenderSurface.Host,
-                                               RenderSurface.Host.ViewRenderer.Views[0],
+                                               RenderSurface.Host.ViewManager.Views[0],
                                                bounds,
                                                null);
 
@@ -297,7 +297,7 @@ public class Game : IDisposable
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
     {
-        var camera = RenderSurface.Host.ViewRenderer.Views[0].Camera;
+        var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
         var curPos = camera.PositionPx;
         var sprite = SpriteManager.GetSpriteByID("rooster_1");
 
@@ -374,7 +374,7 @@ public class Game : IDisposable
 
     private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
     {
-        var view = RenderSurface.Host.ViewRenderer.Views[0];
+        var view = RenderSurface.Host.ViewManager.Views[0];
         var layer = Scene.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
@@ -426,7 +426,7 @@ public class Game : IDisposable
         }
     }
 
-    private void ScrollWheelZoom(Input.Mouse.MouseEventArgs args, Gondwana.Rendering.View view, SceneLayer layer)
+    private void ScrollWheelZoom(Input.Mouse.MouseEventArgs args, Rendering.Views.View view, SceneLayer layer)
     {
         // Zoom with scroll, unchanged
         //if (args.ScrollDelta != 0)

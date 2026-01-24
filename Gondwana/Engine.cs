@@ -547,7 +547,7 @@ public sealed class Engine : IDisposable
 
         // update cameras so any movement can mark RefreshNeeded = All.
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.ViewRenderer!.UpdateCameras(deltaSeconds);
+            surface.ViewManager.UpdateCameras(deltaSeconds);
 
         AfterBackgroundTasksExecute?.Invoke();
 
@@ -561,14 +561,14 @@ public sealed class Engine : IDisposable
 
         // refresh all RenderSurfaceHost backbuffers
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.DrawRefreshQueueToBackbuffer(tick);
+            surface.RenderToBackbuffer(tick);
 
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 
         // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.RenderBackbufferToAdapter();
+            surface.PresentBackbufferToAdapter();
 
         // update state of gamepad(s)
         GamepadManager?.Update();

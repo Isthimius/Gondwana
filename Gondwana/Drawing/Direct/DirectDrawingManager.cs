@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using Gondwana.Movement;
-using Gondwana.Rendering;
+using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Direct;

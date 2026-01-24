@@ -3,7 +3,7 @@ using Gondwana.Drawing;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Backbuffers;
 
 public class GpuBackbuffer : BackbufferBase
 {
