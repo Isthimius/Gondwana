@@ -559,12 +559,12 @@ public sealed class Engine : IDisposable
         // raise event
         BeforeEngineCycle?.Invoke();
 
+        // update the DirectDrawing instances' states
+        DirectDrawingManager.Instance.UpdateAll(tick);
+
         // refresh all RenderSurfaceHost backbuffers
         foreach (var surface in RenderSurfaceHostRegistry.All)
             surface.RenderToBackbuffer(tick);
-
-        // update the DirectDrawing instances' states
-        DirectDrawingManager.Instance.UpdateAll(tick);
 
         // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
