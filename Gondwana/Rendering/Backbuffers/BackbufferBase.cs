@@ -134,8 +134,11 @@ public abstract class BackbufferBase : IDisposable
         AddToBackbufferDirtyRectangle(rectPx);
     }
 
-    internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables)
+    internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables, Rectangle clipRect)
     {
+        Canvas.Save();
+        Canvas.ClipRect(clipRect.ToSKRect());
+
         var tiles = new List<Tile>();
 
         foreach (var drawable in drawables)
@@ -146,11 +149,15 @@ public abstract class BackbufferBase : IDisposable
             var destRectScreen = drawable.GetDrawLocationScreen(view);
             drawable.Draw(this, destRectScreen);
 
+            AddToBackbufferDirtyRectangle(destRectScreen.ToPixelAlignedRect());
+
             if (drawable is Tile tile)
                 tiles.Add(tile);
         }
 
         PostDrawTiles(view, tiles);
+
+        Canvas.Restore();
     }
 
     private void PostDrawTiles(View view, List<Tile> tiles)
@@ -200,11 +207,6 @@ public abstract class BackbufferBase : IDisposable
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
-    }
-
-    protected internal void MarkFullDirty()
-    {
-        DirtyRectangle = new Rectangle(0, 0, Width, Height);
     }
 
     protected internal void ClearDirtyRectangle()

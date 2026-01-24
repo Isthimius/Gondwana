@@ -87,8 +87,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)
         {
-            Backbuffer.Canvas.Clear(Backbuffer.ClearColor);
-            Backbuffer.MarkFullDirty();
+            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
 
             Scene.FullRefreshNeeded = false;
 
@@ -263,10 +262,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             // Clear just this patch (overwrite with Backbuffer.ClearColor)
             Backbuffer.ClearRect(screenRectViewport);
-
-            // Ensure adapter blits it; mark Backbuffer dirty
-            screenRectViewport.Inflate(1, 1);
-            Backbuffer.AddToBackbufferDirtyRectangle(screenRectViewport);
         }
 
         canvas.Restore();
@@ -282,27 +277,19 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         foreach (var worldRect in refreshQueue.WorldRects)
         {
-            // 1) project world → screen for adapter dirty
-            var screenRect = Rectangle.Intersect(
-                view.WorldRectToScreenRect(layer, worldRect).ToPixelAlignedRect(),
-                view.Viewport.TargetRectPx);
+            // project world → screen for adapter dirty
+            var screenRect = view.WorldRectToScreenRect(layer, worldRect).ToPixelAlignedRect();
 
+            // clip to viewport
+            var clipRect = Rectangle.Intersect(screenRect, view.Viewport.TargetRectPx);
+
+            // exit it out of clip
             if (screenRect.Width <= 0 || screenRect.Height <= 0)
                 continue;
 
-            // 2) mark adapter dirty (screen-space)
-            Backbuffer.AddToBackbufferDirtyRectangle(screenRect);
-
-            // 3) clip and redraw tiles (world-space)
-            var canvas = Backbuffer.Canvas;
-
-            canvas.Save();
-            canvas.ClipRect(screenRect.ToSKRect());
-
+            // draw tiles/sprites/direct drawings in this world rect
             var drawables = layer.GetDrawablesInWorldRect(worldRect);
-            Backbuffer.DrawDrawables(view, drawables);
-
-            canvas.Restore();
+            Backbuffer.DrawDrawables(view, drawables, clipRect);
         }
     }
 

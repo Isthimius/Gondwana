@@ -104,7 +104,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
     {
         lock (_gate)
         {
-            if (_disposed || _surface is null) throw new ObjectDisposedException(nameof(BitmapBackbuffer));
+            if (_disposed || _surface is null)
+                throw new ObjectDisposedException(nameof(BitmapBackbuffer));
+
             return _surface.Snapshot(); // immutable; safe to use on UI thread
         }
     }
