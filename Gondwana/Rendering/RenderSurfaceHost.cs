@@ -124,7 +124,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             // 4.1) Clip to this view’s viewport
             var vp = view.Viewport.TargetRectPx;
+
             Backbuffer.Canvas.Save();
+            Backbuffer.Canvas.ResetMatrix();
             Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
 
             // TODO: var ctx = new RenderContext(view); ???
