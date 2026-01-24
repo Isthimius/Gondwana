@@ -78,7 +78,7 @@ public sealed class Viewport
     /// <summary>Optional per-view HUD/safe-area offset in screen pixels.</summary>
     public PointF ScreenOffsetPx { get; set; } = PointF.Empty;
 
-    /// <summary>World size visible through this viewport (useful for Camera clamping).</summary>
+    /// <summary>World size visible through this viewport (used for Camera clamping).</summary>
     public SizeF VisibleWorldSizePx => new SizeF(TargetRectPx.Width / Zoom, TargetRectPx.Height / Zoom);
 
     #region zoom zoom

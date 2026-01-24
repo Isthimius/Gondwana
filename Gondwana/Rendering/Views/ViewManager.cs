@@ -22,36 +22,32 @@ public sealed class ViewManager
 
     public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0, RectangleF? worldBoundsPx = null)
     {
-        if (_renderSurfaceHost.Scene is not null)
+        if (worldBoundsPx is null)
+            worldBoundsPx = RectangleF.Empty;
+
+        var cam = new Camera(_renderSurfaceHost.Scene)
         {
-            if (worldBoundsPx is null)
-                worldBoundsPx = RectangleF.Empty;
+            // clamp camera to Scene pixel bounds
+            WorldBoundsPx = worldBoundsPx.Value,
+            FollowLerpPerSecond = 0f // snap by default
+        };
 
-            var cam = new Camera(_renderSurfaceHost.Scene)
-            {
-                // clamp camera to Scene pixel bounds
-                WorldBoundsPx = worldBoundsPx.Value,
-                FollowLerpPerSecond = 0f // snap by default
-            };
+        cam.SnapTo(new PointF(0, 0));
 
-            cam.SnapTo(new PointF(0, 0));
+        var vp = new Viewport
+        {
+            TargetRectPx = targetRectPx,
+            Zoom = zoom
+        };
 
-            var vp = new Viewport
-            {
-                TargetRectPx = targetRectPx,
-                Zoom = zoom
-            };
+        var view = new View(cam, vp) { ZOrder = zOrder };
+        view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
+        view.Viewport.ZoomChanged += OnViewportZoomChanged;
 
-            var view = new View(cam, vp) { ZOrder = zOrder };
-            view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
-            view.Viewport.ZoomChanged += OnViewportZoomChanged;
+        _views.Add(view);
+        _renderSurfaceHost.Scene.FullRefreshNeeded = true;
 
-            _views.Add(view);
-            SortViews();
-
-            if (_renderSurfaceHost.Scene is not null)
-                _renderSurfaceHost.Scene.FullRefreshNeeded = true;
-        }
+        SortViews();
     }
 
     /// <summary>
@@ -217,7 +213,9 @@ public sealed class ViewManager
         _views.Sort(static (a, b) =>
         {
             int cmp = a.ZOrder.CompareTo(b.ZOrder);
-            if (cmp != 0) return cmp;
+
+            if (cmp != 0)
+                return cmp;
 
             // deterministic tie-breaker
             return a.Id.CompareTo(b.Id);
