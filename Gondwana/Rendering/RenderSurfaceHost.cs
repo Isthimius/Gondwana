@@ -10,6 +10,16 @@ using SkiaSharp;
 
 namespace Gondwana.Rendering;
 
+/// <summary>
+/// Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type. Provides coordination
+/// between the scene, views, and the underlying UI adapter for efficient rendering and presentation.
+/// </summary>
+/// <remarks>RenderSurfaceHost<TBackbuffer> is responsible for managing the lifecycle of the backbuffer, handling
+/// scene binding, and coordinating redraws based on scene and view changes. It supports partial or full redraws
+/// depending on the state of the scene and the RedrawDirtyRectangleOnly property. Thread safety
+/// is not guaranteed; all interactions should occur on the UI thread associated with the render surface
+/// adapter.</remarks>
+/// <typeparam name="TBackbuffer">The type of backbuffer used for rendering. Must inherit from BackbufferBase.</typeparam>
 public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     where TBackbuffer : BackbufferBase
 {
@@ -95,10 +105,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        // 1) find total real seconds passed since last background loop
-        var deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
-
-        // 2) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
+        // 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
         //    This already clears the whole backbuffer and enqueues a full rect per layer.
         if (Scene.FullRefreshNeeded)
         {
@@ -115,13 +122,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             }
         }
 
-        // 3) identify dirty screen SCREEN areas across all views and layers
+        // 2) identify dirty screen SCREEN areas across all views and layers
         var dirtyScreenRects = CollectDirtyScreenArea();
 
-        // 4) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
+        // 3) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         foreach (var view in ViewManager.Views)
         {
-            // 4.1) Clip to this view’s viewport
+            // 3.1) Clip to this view’s viewport
             var vp = view.Viewport.TargetRectPx;
 
             Backbuffer.Canvas.Save();
@@ -130,10 +137,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             // TODO: var ctx = new RenderContext(view); ???
 
-            // 4.2) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
+            // 3.2) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
             PreclearScreenAreas(view, dirtyScreenRects);
 
-            // 4.3) Render each visible layer’s dirty regions for this view
+            // 3.3) Render each visible layer’s dirty regions for this view
             //      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings
             var sceneLayers = Scene.VisibleSceneLayers;
 
@@ -143,17 +150,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 RenderLayerDirtyRegions(view, layer);
             }
 
-            // 4.4) draw all View-based DirectDrawings for this view
+            // 3.4) draw all View-based DirectDrawings for this view
             // TODO: limit this to dirty areas only
             var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
             for (int i = 0; i < overlays.Count; i++)
                 overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
 
-            // 4.5) Restore from viewport clip
+            // 3.5) Restore from viewport clip
             Backbuffer.Canvas.Restore();
         }
 
-        // 5) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
+        // 4) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
