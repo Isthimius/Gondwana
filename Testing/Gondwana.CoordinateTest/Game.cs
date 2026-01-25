@@ -54,7 +54,7 @@ public class Game : IDisposable
         RenderSurface.Host.Scene[0].OriginPx = new Point(-100, -100);
 
         InitSprites();
-        InitDirectDrawings();
+        //InitDirectDrawings();
 
         // configure input handling here
         ConfigureKeyboardInput();

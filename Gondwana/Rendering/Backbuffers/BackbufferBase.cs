@@ -127,11 +127,17 @@ public abstract class BackbufferBase : IDisposable
 
         _fillPaint.Color = ClearColor;
 
+        // Screen-pixel space
+        Canvas.Save();
+        Canvas.ResetMatrix();
+
         // Rect is expected to be in the current canvas coordinate space.
         Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
 
         // mark area as dirty so it gets presented to the UI adapter
         AddToBackbufferDirtyRectangle(rectPx);
+
+        Canvas.Restore();
     }
 
     internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables, Rectangle clipRect)

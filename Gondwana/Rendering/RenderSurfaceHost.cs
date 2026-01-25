@@ -1,12 +1,10 @@
-﻿using System.Drawing;
-using Gondwana.Drawing.Direct;
+﻿using Gondwana.Drawing.Direct;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
-using Gondwana.Timers;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.Rendering;
 
@@ -23,8 +21,6 @@ namespace Gondwana.Rendering;
 public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     where TBackbuffer : BackbufferBase
 {
-    private long _lastTick = HighResTimer.GetCurrentTick();
-
     private TBackbuffer _backbuffer;
     private Scene _scene = Scene.Empty;
 
@@ -98,10 +94,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (Scene.CountOfVisibleLayers == 0)
         {
             Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
-
             Scene.FullRefreshNeeded = false;
 
-            _lastTick = tick;
             return;
         }
 
@@ -114,12 +108,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
         else
         {
+            // scene is not dirty, this frame is done...
             if (!Scene.IsDirty)
-            {
-                // scene is not dirty, this frame is done...
-                _lastTick = tick;
                 return;
-            }
         }
 
         // 2) identify dirty screen SCREEN areas across all views and layers
@@ -165,7 +156,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
         Scene.FullRefreshNeeded = false;
-        _lastTick = tick;
     }
 
     #region DrawRefreshQueueToBackbuffer helpers
@@ -254,12 +244,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (Backbuffer is null || screenRects is null || screenRects.Count == 0)
             return;
 
-        var canvas = Backbuffer.Canvas;
-
-        // Screen-pixel space
-        canvas.Save();
-        canvas.ResetMatrix();
-
         foreach (var screenRect in screenRects)
         {
             var screenRectViewport = Rectangle.Intersect(screenRect, view.Viewport.TargetRectPx);
@@ -270,8 +254,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             // Clear just this patch (overwrite with Backbuffer.ClearColor)
             Backbuffer.ClearRect(screenRectViewport);
         }
-
-        canvas.Restore();
     }
 
     private void RenderLayerDirtyRegions(View view, SceneLayer layer)
@@ -291,7 +273,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             var clipRect = Rectangle.Intersect(screenRect, view.Viewport.TargetRectPx);
 
             // exit it out of clip
-            if (screenRect.Width <= 0 || screenRect.Height <= 0)
+            if (clipRect.Width <= 0 || clipRect.Height <= 0)
                 continue;
 
             // draw tiles/sprites/direct drawings in this world rect
