@@ -116,10 +116,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // 3) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         foreach (var view in ViewManager.Views)
         {
-            var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
-            foreach (var overlay in overlays)
+            var allDirectDrawings = DirectDrawingManager.Instance.DirectDrawings;
+            foreach (var overlay in allDirectDrawings)
             {
-                overlay.ForceRefresh();
+                ((DirectDrawingBase)overlay).ForceRefresh();
             }
 
             // 3.1) Clip to this view’s viewport
@@ -147,7 +147,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             // 3.4) draw all View-based DirectDrawings for this view
             // TODO: limit this to dirty areas only
-            //var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+            var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
             for (int i = 0; i < overlays.Count; i++)
                 overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
 
