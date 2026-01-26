@@ -1,5 +1,5 @@
 ﻿using Gondwana.Scenes;
-using SkiaSharp;
+using System.Collections.ObjectModel;
 using System.Drawing;
 
 namespace Gondwana.Rendering.Views;
@@ -18,7 +18,7 @@ public sealed class ViewManager
         _renderSurfaceHost = renderSurfaceHost;
     }
 
-    public IReadOnlyList<View> Views => _views;
+    public ReadOnlyCollection<View> Views => _views.AsReadOnly();
 
     public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0, RectangleF? worldBoundsPx = null)
     {

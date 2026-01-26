@@ -54,7 +54,7 @@ public class Game : IDisposable
         RenderSurface.Host.Scene[0].OriginPx = new Point(-100, -100);
 
         InitSprites();
-        //InitDirectDrawings();
+        InitDirectDrawings();
 
         // configure input handling here
         ConfigureKeyboardInput();
@@ -382,7 +382,7 @@ public class Game : IDisposable
         var worldPx = view.ScreenPxToWorldPx(layer, screenPos);
         var screenPx = view.WorldPxToScreenPx(layer, worldPx);
         //Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
-        Engine.Logger.LogTrace($"\r\nscreen1 = {screenPos} \r\nworld   = {worldPx} \r\nscreen2 = {screenPx}\r\n");
+        //Engine.Logger.LogTrace($"\r\nscreen1 = {screenPos} \r\nworld   = {worldPx} \r\nscreen2 = {screenPx}\r\n");
 
         // 1) screen → world (via View)
         var worldFromScreen = view.ScreenPxToWorldPx(layer, screenPos);

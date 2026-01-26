@@ -113,12 +113,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 return;
         }
 
-        // 2) identify dirty screen SCREEN areas across all views and layers
-        var dirtyScreenRects = CollectDirtyScreenArea();
-
         // 3) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         foreach (var view in ViewManager.Views)
         {
+            var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+            foreach (var overlay in overlays)
+            {
+                overlay.ForceRefresh();
+            }
+
             // 3.1) Clip to this view’s viewport
             var vp = view.Viewport.TargetRectPx;
 
@@ -126,7 +129,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Backbuffer.Canvas.ResetMatrix();
             Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
 
-            // TODO: var ctx = new RenderContext(view); ???
+            // 2) identify dirty screen SCREEN areas across all views and layers
+            var dirtyScreenRects = CollectDirtyScreenArea(view);
 
             // 3.2) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
             PreclearScreenAreas(view, dirtyScreenRects);
@@ -143,7 +147,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             // 3.4) draw all View-based DirectDrawings for this view
             // TODO: limit this to dirty areas only
-            var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+            //var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
             for (int i = 0; i < overlays.Count; i++)
                 overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
 
@@ -190,49 +194,28 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
-    private List<Rectangle> CollectDirtyScreenArea()
+    private List<Rectangle> CollectDirtyScreenArea(View view)
     {
         var dirty = new List<Rectangle>(64);
+        var viewportRect = view.Viewport.TargetRectPx;
 
-        foreach (var view in ViewManager.Views)
+        foreach (var sceneLayer in Scene.VisibleSceneLayers)
         {
-            var viewportRect = view.Viewport.TargetRectPx;
+            var refreshQueue = sceneLayer.RefreshQueue;
+            if (!refreshQueue.IsDirty)
+                continue;
 
-            foreach (var sceneLayer in Scene.VisibleSceneLayers)
+            foreach (var worldRect in refreshQueue.WorldRects)
             {
-                var refreshQueue = sceneLayer.RefreshQueue;
-                if (!refreshQueue.IsDirty)
+                var screenRectF = view.WorldRectToScreenRect(sceneLayer, worldRect);
+                var rect = Rectangle.Intersect(
+                    screenRectF.ToPixelAlignedRect(),
+                    viewportRect);
+
+                if (rect.IsEmpty)
                     continue;
 
-                foreach (var worldRect in refreshQueue.WorldRects)
-                {
-                    var screenRectF = view.WorldRectToScreenRect(sceneLayer, worldRect);
-                    var rect = Rectangle.Intersect(
-                        screenRectF.ToPixelAlignedRect(),
-                        viewportRect);
-
-                    if (rect.IsEmpty)
-                        continue;
-
-                    dirty.AddDeduped(rect);
-                }
-            }
-        }
-
-        // HACK: re-add dirty rectangles to all RefreshQueues
-        foreach (var rect in dirty)
-        {
-            foreach (var view in ViewManager.Views)
-            {
-                var viewportRect = view.Viewport.TargetRectPx;
-                if (!viewportRect.IntersectsWith(rect))
-                    continue;
-                foreach (var sceneLayer in Scene.VisibleSceneLayers)
-                {
-                    var worldRectF = view.ScreenRectToWorldRect(sceneLayer, rect);
-                    var worldRect = worldRectF.ToPixelAlignedRect();
-                    sceneLayer.RefreshQueue.AddWorldRect(worldRect);
-                }
+                dirty.AddDeduped(rect);
             }
         }
 
@@ -253,6 +236,33 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             // Clear just this patch (overwrite with Backbuffer.ClearColor)
             Backbuffer.ClearRect(screenRectViewport);
+
+            EnqueueForOverlappingViewsAtOrAbove(view, screenRectViewport);
+        }
+    }
+
+    private void EnqueueForOverlappingViewsAtOrAbove(View sourceView, Rectangle clearedScreenRect)
+    {
+        var views = ViewManager.Views; // Z-ordered
+        int srcIndex = ViewManager.Views.IndexOf(sourceView);
+        if (srcIndex < 0)
+            return;
+
+        for (int j = srcIndex; j < views.Count; j++)
+        {
+            var v = views[j];
+            var overlap = Rectangle.Intersect(clearedScreenRect, v.Viewport.TargetRectPx);
+            if (overlap.IsEmpty)
+                continue;
+
+            foreach (var sceneLayer in Scene.VisibleSceneLayers)
+            {
+                var worldRectF = v.ScreenRectToWorldRect(sceneLayer, overlap);
+                var worldRect = worldRectF.ToPixelAlignedRect();
+
+                if (!worldRect.IsEmpty)
+                    sceneLayer.RefreshQueue.AddWorldRect(worldRect);
+            }
         }
     }
 
