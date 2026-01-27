@@ -178,12 +178,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
             return _screenBounds;
 
         // translate world bounds to screen via view transform
-        var screenRect = view.WorldRectToScreenRect(SceneLayer!, _worldBounds);
-
-        // clip to view viewport
-        screenRect.Intersect(view.Viewport.TargetRectPx);
-
-        return view.WorldRectToScreenRect(SceneLayer!, screenRect);
+        return view.WorldRectToScreenRect(SceneLayer!, _worldBounds);
     }
 
     /// <summary>
