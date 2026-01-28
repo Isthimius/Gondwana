@@ -385,6 +385,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
     {
+        // Make selection rect covering so we never miss the edge tile.
+        // Drawing is still clipped later, so over-selecting is safe.
+        var queryRect = worldRect;
+        queryRect.Inflate(SceneLayerTileWidth, SceneLayerTileHeight); // <- KEY (tile-sized)
+        queryRect.Inflate(1, 1); // optional boundary insurance
+
         // Gather into a list so we can sort it.
         var list = new List<IDrawable>(64);
 
@@ -407,7 +413,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                     continue;
 
                 // Defensive overlap check (same idea as sprites)
-                if (!tile.DrawLocationWorld.IntersectsWith(worldRect))
+                if (!tile.DrawLocationWorld.IntersectsWith(queryRect))
                     continue;
 
                 list.Add(tile);
@@ -415,7 +421,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
 
         // 2) Sprites
-        var sprites = SpriteManager.GetSpritesInRange(worldRect, this, fullEnclosures: false);
+        var sprites = SpriteManager.GetSpritesInRange(queryRect, this, fullEnclosures: false);
 
         for (int i = 0; i < sprites.Count; i++)
         {
@@ -425,7 +431,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 continue;
 
             // Defensive overlap check (cheap)
-            if (!sprite.DrawLocationWorld.IntersectsWith(worldRect))
+            if (!sprite.DrawLocationWorld.IntersectsWith(queryRect))
                 continue;
 
             list.Add(sprite);
