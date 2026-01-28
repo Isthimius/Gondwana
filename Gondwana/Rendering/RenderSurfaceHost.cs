@@ -113,30 +113,39 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 return;
         }
 
-        // 3) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
+        // 2) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         foreach (var view in ViewManager.Views)
         {
-            // 3.1) Force-refresh all DirectDrawings that overlay this view
+            // 2.1) Force-refresh all DirectDrawings that overlay this view
             var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
             foreach (var overlay in overlays)
             {
                 overlay.ForceRefresh();
             }
 
-            // 3.1) Clip to this view’s viewport
+            // 2.2) identify dirty SCREEN areas across all layers for this view
+            var dirtyScreenRects = CollectDirtyScreenArea(view);
+
+            // 2.3) Clip to this view’s viewport
             var vp = view.Viewport.TargetRectPx;
 
+            // clip inclusive to current viewport
             Backbuffer.Canvas.Save();
             Backbuffer.Canvas.ResetMatrix();
             Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
 
-            // 2) identify dirty screen SCREEN areas across all views and layers
-            var dirtyScreenRects = CollectDirtyScreenArea(view);
+            // clip exclusive to higher Z-order views
+            foreach (var blocker in ViewManager.GetViewsAbove(view))
+            {
+                var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
+                if (!overlap.IsEmpty)
+                    Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
+            }
 
-            // 3.2) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
+            // 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
             PreclearScreenAreas(view, dirtyScreenRects);
 
-            // 3.3) Render each visible layer’s dirty regions for this view
+            // 2.5) Render each visible layer’s dirty regions for this view
             //      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings
             var sceneLayers = Scene.VisibleSceneLayers;
 
@@ -146,17 +155,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 RenderLayerDirtyRegions(view, layer);
             }
 
-            // 3.4) draw all View-based DirectDrawings for this view
-            // TODO: limit this to dirty areas only
-            //var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+            // 2.6) draw all View-based DirectDrawings for this view
             for (int i = 0; i < overlays.Count; i++)
                 overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
 
-            // 3.5) Restore from viewport clip
+            // 2.7) Restore from viewport clip
             Backbuffer.Canvas.Restore();
         }
 
-        // 4) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
+        // 3) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
@@ -238,32 +245,24 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             // Clear just this patch (overwrite with Backbuffer.ClearColor)
             Backbuffer.ClearRect(screenRectViewport);
 
-            EnqueueForOverlappingViewsAtOrAbove(view, screenRectViewport);
+            EnqueueForOverlappingSceneLayers(view, screenRectViewport);
         }
     }
 
-    private void EnqueueForOverlappingViewsAtOrAbove(View sourceView, Rectangle clearedScreenRect)
+    private void EnqueueForOverlappingSceneLayers(View sourceView, Rectangle clearedScreenRect)
     {
-        var views = ViewManager.Views; // Z-ordered
-        int srcIndex = ViewManager.Views.IndexOf(sourceView);
-        if (srcIndex < 0)
+        var overlap = Rectangle.Intersect(clearedScreenRect, sourceView.Viewport.TargetRectPx);
+
+        if (overlap.IsEmpty)
             return;
 
-        for (int j = srcIndex; j < views.Count; j++)
+        foreach (var sceneLayer in Scene.VisibleSceneLayers)
         {
-            var v = views[j];
-            var overlap = Rectangle.Intersect(clearedScreenRect, v.Viewport.TargetRectPx);
-            if (overlap.IsEmpty)
-                continue;
+            var worldRectF = sourceView.ScreenRectToWorldRect(sceneLayer, overlap);
+            var worldRect = worldRectF.ToPixelAlignedRect();
 
-            foreach (var sceneLayer in Scene.VisibleSceneLayers)
-            {
-                var worldRectF = v.ScreenRectToWorldRect(sceneLayer, overlap);
-                var worldRect = worldRectF.ToPixelAlignedRect();
-
-                if (!worldRect.IsEmpty)
-                    sceneLayer.RefreshQueue.AddWorldRect(worldRect);
-            }
+            if (!worldRect.IsEmpty)
+                sceneLayer.RefreshQueue.AddWorldRect(worldRect);
         }
     }
 
@@ -277,19 +276,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         foreach (var worldRect in refreshQueue.WorldRects)
         {
+            // draw tiles/sprites/direct drawings in this world rect
+            var drawables = layer.GetDrawablesInWorldRect(worldRect);
+
             // project world → screen for adapter dirty
             var screenRect = view.WorldRectToScreenRect(layer, worldRect).ToPixelAlignedRect();
 
-            // clip to viewport
-            var clipRect = Rectangle.Intersect(screenRect, view.Viewport.TargetRectPx);
-
-            // exit it out of clip
-            if (clipRect.Width <= 0 || clipRect.Height <= 0)
-                continue;
-
-            // draw tiles/sprites/direct drawings in this world rect
-            var drawables = layer.GetDrawablesInWorldRect(worldRect);
-            Backbuffer.DrawDrawables(view, drawables, clipRect);
+            Backbuffer.DrawDrawables(view, drawables, screenRect);
         }
     }
 

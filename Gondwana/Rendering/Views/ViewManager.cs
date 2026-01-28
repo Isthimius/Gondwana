@@ -163,6 +163,26 @@ public sealed class ViewManager
             _renderSurfaceHost.Scene.FullRefreshNeeded = true;
     }
 
+    public IReadOnlyList<View> GetViewsBelow(View view)
+    {
+        int idx = _views.IndexOf(view);
+        if (idx <= 0)
+            return Array.Empty<View>();
+
+        // views with lower Z (earlier in sorted list)
+        return _views.GetRange(0, idx);
+    }
+
+    public IReadOnlyList<View> GetViewsAbove(View view)
+    {
+        int idx = _views.IndexOf(view);
+        if (idx < 0 || idx >= _views.Count - 1)
+            return Array.Empty<View>();
+
+        // views with higher Z (later in sorted list)
+        return _views.GetRange(idx + 1, _views.Count - (idx + 1));
+    }
+
     #region internal methods
 
     internal void UpdateCameras(float dtSeconds)

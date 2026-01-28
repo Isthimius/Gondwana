@@ -75,7 +75,7 @@ internal sealed class RefreshQueue
         screenPixelRange.Intersect(view.Viewport.TargetRectPx);
 
         var worldRect = view.ScreenRectToWorldRect(sceneLayer, screenPixelRange);
-        worldRect.Inflate(1, 1); // Expand by 1 pixel in all directions to account for rounding errors.
+        worldRect.Inflate(3, 3); // Expand by 1 pixel in all directions to account for rounding errors.
         AddWorldRect(worldRect.ToPixelAlignedRect());
     }
 
