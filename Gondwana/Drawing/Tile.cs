@@ -79,6 +79,11 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         return view.WorldRectToScreenRect(SceneLayer, DrawLocationWorld);
     }
 
+    public virtual RectangleF GetCollisionAreaScreen(View view)
+    {
+        return view.WorldRectToScreenRect(SceneLayer, CollisionArea);
+    }
+
     public virtual void Draw(BackbufferBase backbuffer, RectangleF destRectScreen) => backbuffer.DrawTileFrame(this, destRectScreen);
 
     #endregion IDrawable members

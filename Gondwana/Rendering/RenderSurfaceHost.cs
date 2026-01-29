@@ -27,6 +27,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private readonly RenderSurfaceAdapterBase _renderSurfaceAdapter;
     private readonly ViewManager _viewManager;
 
+    /// <summary>
+    /// Occurs when a scene is bound to or unbound from this render surface host.
+    /// </summary>
+    /// <remarks>
+    /// This event fires after the scene binding operation completes. Event handlers receive information
+    /// about the previously bound scene (if any) and the newly bound scene. Use this event to respond
+    /// to scene changes, such as updating UI elements or resetting state that depends on the active scene.
+    /// </remarks>
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
     private RenderSurfaceHost() : base() => _viewManager = new ViewManager(this);
@@ -50,16 +58,92 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Backbuffer.SizeChanged += (w, h) => Scene.FullRefreshNeeded = true;
     }
 
+    /// <summary>
+    /// Gets the backbuffer used for off-screen rendering before presentation to the adapter.
+    /// </summary>
+    /// <value>
+    /// The <see cref="BackbufferBase"/> instance managing the render target canvas and dirty-rectangle tracking.
+    /// </value>
+    /// <remarks>
+    /// The backbuffer holds the rendered frame content and tracks which regions have changed since the last
+    /// presentation. All rendering operations are performed on the backbuffer's canvas before being
+    /// copied to the UI adapter during presentation.
+    /// </remarks>
     public override BackbufferBase Backbuffer => _backbuffer;
 
+    /// <summary>
+    /// Gets the scene currently bound to this render surface host.
+    /// </summary>
+    /// <value>
+    /// The <see cref="Scene"/> instance being rendered, or <see cref="Scene.Empty"/> if no scene is bound.
+    /// </value>
+    /// <remarks>
+    /// The scene contains all layers, sprites, and direct drawings that are rendered each frame.
+    /// Use <see cref="Bind"/> to change the active scene.
+    /// </remarks>
     public override Scene Scene => _scene;
 
+    /// <summary>
+    /// Gets the platform-specific adapter that provides the underlying rendering surface.
+    /// </summary>
+    /// <value>
+    /// The <see cref="RenderSurfaceAdapterBase"/> instance representing the UI control or window
+    /// where rendered content is displayed.
+    /// </value>
+    /// <remarks>
+    /// The adapter handles platform-specific presentation details and provides size/resize notifications.
+    /// The backbuffer dimensions are synchronized with the adapter's size.
+    /// </remarks>
     public override RenderSurfaceAdapterBase RenderSurfaceAdapter => _renderSurfaceAdapter;
 
+    /// <summary>
+    /// Gets the view manager that controls camera positions, viewports, and multi-view rendering.
+    /// </summary>
+    /// <value>
+    /// The <see cref="ViewManager"/> instance managing all views associated with this render surface host.
+    /// </value>
+    /// <remarks>
+    /// Use the view manager to create, configure, and remove views. Each view defines a viewport
+    /// rectangle on the backbuffer, a camera position in the scene, and zoom/parallax settings.
+    /// Views enable split-screen, picture-in-picture, and minimap rendering.
+    /// </remarks>
     public override ViewManager ViewManager => _viewManager;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether only the dirty (changed) regions of the backbuffer
+    /// are presented to the adapter each frame.
+    /// </summary>
+    /// <value>
+    /// <see langword="true"/> to present only dirty regions (default); <see langword="false"/> to
+    /// present the entire backbuffer every frame.
+    /// </value>
+    /// <remarks>
+    /// Enabling dirty-rectangle-only presentation improves performance by reducing the amount of
+    /// data transferred to the UI adapter. Disable this when troubleshooting rendering issues or
+    /// when the adapter does not support partial updates.
+    /// </remarks>
     public bool RedrawDirtyRectangleOnly { get; set; } = true;
 
+    /// <summary>
+    /// Binds a scene to this render surface host, replacing any previously bound scene.
+    /// </summary>
+    /// <param name="newScene">The scene to bind. Must not be <see langword="null"/>.</param>
+    /// <param name="limitCameraToWorldBoundPx">
+    /// <see langword="true"/> to constrain all view cameras to the scene's world bounds;
+    /// <see langword="false"/> to allow cameras to move freely beyond the scene boundaries.
+    /// </param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="newScene"/> is <see langword="null"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// Binding a scene unregisters event handlers from the previous scene (if any), registers handlers
+    /// with the new scene, and triggers a full refresh on the next frame. The <see cref="BindToScene"/>
+    /// event fires after the binding operation completes.
+    /// </para>
+    /// <para>
+    /// If the specified scene is already bound, this method returns immediately without performing
+    /// any operations.
+    /// </para>
+    /// </remarks>
     public void Bind(Scene newScene, bool limitCameraToWorldBoundPx = true)
     {
         if (newScene == null)
@@ -126,7 +210,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             // 2.2) identify dirty SCREEN areas across all layers for this view
             var dirtyScreenRects = CollectDirtyScreenArea(view);
 
-            // 2.3) Clip to this view’s viewport
+            // 2.3) Clip to this view's viewport
             var vp = view.Viewport.TargetRectPx;
 
             // clip inclusive to current viewport
@@ -145,7 +229,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             // 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
             PreclearScreenAreas(view, dirtyScreenRects);
 
-            // 2.5) Render each visible layer’s dirty regions for this view
+            // 2.5) Render each visible layer's dirty regions for this view
             //      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings
             var sceneLayers = Scene.VisibleSceneLayers;
 
@@ -163,7 +247,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Backbuffer.Canvas.Restore();
         }
 
-        // 3) Clear layer queues now that we’ve consumed them (avoids re-drawing same tiles next frame)
+        // 3) Clear layer queues now that we've consumed them (avoids re-drawing same tiles next frame)
         for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
@@ -316,12 +400,36 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private bool _disposed;
 
+    /// <summary>
+    /// Releases all resources used by this <see cref="RenderSurfaceHost{TBackbuffer}"/> instance.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method releases managed resources including the backbuffer. It does not unregister
+    /// from the scene; that should be handled by the scene's disposal logic.
+    /// </para>
+    /// <para>
+    /// After calling <see cref="Dispose()"/>, this instance should not be used. Calling
+    /// <see cref="Dispose()"/> multiple times is safe and has no additional effect.
+    /// </para>
+    /// </remarks>
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Releases resources used by this <see cref="RenderSurfaceHost{TBackbuffer}"/> instance.
+    /// </summary>
+    /// <param name="disposing">
+    /// <see langword="true"/> to release both managed and unmanaged resources;
+    /// <see langword="false"/> to release only unmanaged resources (called from finalizer).
+    /// </param>
+    /// <remarks>
+    /// When <paramref name="disposing"/> is <see langword="true"/>, this method releases the backbuffer
+    /// and clears the reference. Derived classes should override this method to release additional resources.
+    /// </remarks>
     public void Dispose(bool disposing)
     {
         if (_disposed) return;

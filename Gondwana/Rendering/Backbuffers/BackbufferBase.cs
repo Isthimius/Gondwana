@@ -171,10 +171,19 @@ public abstract class BackbufferBase : IDisposable
         foreach (var tile in tiles)
         {
             // WORLD -> SCREEN conversion
-            var ptsScreen = tile.OutlinePointsWorld
-                .Select(p => view.WorldPxToScreenPx(tile.SceneLayer, new PointF(p.X, p.Y)))
-                .Select(sp => new SKPoint(sp.X, sp.Y))
-                .ToArray();
+            var worldPts = tile.OutlinePointsWorld;
+            var ptsScreen = new SKPoint[worldPts.Length];
+
+            for (int i = 0; i < worldPts.Length; i++)
+            {
+                var p = worldPts[i];
+                var sp = view.WorldPxToScreenPx(
+                    tile.SceneLayer,
+                    new PointF(p.X, p.Y)
+                );
+
+                ptsScreen[i] = new SKPoint(sp.X, sp.Y);
+            }
 
             // close polygon when needed
             static SKPoint[] Enclose(SKPoint[] pts)
