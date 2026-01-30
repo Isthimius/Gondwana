@@ -162,12 +162,12 @@ public class TextBlock : DirectDrawingMovableBase
                      Rectangle screenBounds,
                      string? nickname = null)
         : this(renderSurfaceHost,
-                         DirectDrawingMode.View,
-                         sceneLayer: null,
-                         view: view,
-                         screenBounds: screenBounds,
-                         worldBounds: null,
-                         nickname: nickname) { }
+               DirectDrawingMode.View,
+               sceneLayer: null,
+               view: view,
+               screenBounds: screenBounds,
+               worldBounds: null,
+               nickname: nickname) { }
 
     /// <summary>
     /// Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing).
@@ -659,13 +659,21 @@ public class TextBlock : DirectDrawingMovableBase
         var canvas = backbuffer.Canvas;
         var rect = destRectScreen.ToSKRect();
 
-        // TODO: fix where it's getting the zoom from
-        // HACK: it's updating the wrong TextBlocks!!!
-        // Determine zoom scaling for text (defaults to 1.0).
-        // NOTE: This assumes destRectScreen is already in SCREEN pixel space.
-        var zoom = View?.Viewport?.Zoom is null ? 1f : (1f / View.Viewport.Zoom);
-        if (zoom <= 0f)
+        float zoom;
+
+        if (Mode == DirectDrawingMode.SceneLayer)
+        {
+            // SceneLayer-mode has View == null by design; use the ambient render context.
+            var contextZoom = RenderContext.Current?.ViewportZoom ?? 1f;
+            zoom = (contextZoom > 0f)
+                ? (1f / contextZoom)
+                : 1f;
+        }
+        else
+        {
+            // View-mode is screen/UI; do not compensate for camera zoom.
             zoom = 1f;
+        }
 
         // Scale "pixel-like" adornments with zoom so text behaves like other world-space drawables.
         float hPad = HorizontalPadding * zoom;
