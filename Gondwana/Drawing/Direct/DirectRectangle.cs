@@ -11,26 +11,45 @@ using SkiaSharp;
 namespace Gondwana.Drawing.Direct;
 
 /// <summary>
-/// A retained-mode, configurable rectangle overlay that supports fill and/or border,
-/// independent border color, stroke width and alignment, rounded corners, dash patterns,
-/// blend modes, and optional color pulsing — all rendered via the bound RenderSurfaceHost.
+/// Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,
+/// color pulsing, and pattern fills.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Designed for UI and 2D overlay work, <c>DirectRectangle</c> caches its fill/stroke paints
-/// and rebuilds them only when properties change (reducing GC/native churn). It respects
-/// stroke alignment (inside/center/outside), optional dash patterns, and can animate fill
-/// or border colors over time via <c>PulseFill</c>/<c>PulseBorder</c>.
+/// DirectRectangle provides a high-performance, retained-mode rectangle rendering solution with extensive
+/// customization options. It supports both world-space (scene-layer mode) and screen-space (view mode)
+/// positioning, making it suitable for both in-game UI elements and world-space markers.
 /// </para>
 /// <para>
-/// Typical usage is to construct, configure via the fluent setters, and rely on the engine
-/// to call <c>Update</c>/<c>Draw</c> when dirty. Setters mark paints dirty so the next frame
-/// re-renders with the new appearance.
+/// Key features:
+/// <list type="bullet">
+/// <item><description>Configurable fill color and optional distinct border color with independent alpha channels.</description></item>
+/// <item><description>Stroke width and alignment control (inside, outside, or centered on the rectangle boundary).</description></item>
+/// <item><description>Rounded corners with configurable radius.</description></item>
+/// <item><description>Dash patterns for creating dashed or dotted borders.</description></item>
+/// <item><description>Color pulsing animations for fill and/or border (sine or triangle wave).</description></item>
+/// <item><description>Pattern fills using tiled bitmaps with configurable tiling modes and scaling.</description></item>
+/// <item><description>Blend mode support for advanced compositing effects (screen, multiply, additive, etc.).</description></item>
+/// <item><description>Physics-based movement via inherited <see cref="DirectDrawingMovableBase"/> capabilities.</description></item>
+/// </list>
+/// </para>
+/// <para>
+/// Performance characteristics: DirectRectangle caches <see cref="SKPaint"/> instances and rebuilds them
+/// only when properties change, minimizing GC pressure and native interop overhead. Stroke alignment and
+/// dash patterns are computed per-frame but use efficient math operations.
+/// </para>
+/// <para>
+/// All setter methods return <c>this</c> to enable fluent-style method chaining. Each setter automatically
+/// marks the affected screen regions as dirty to trigger rerendering on the next frame.
+/// </para>
+/// <para>
+/// Thread safety: This class is not thread-safe. All operations should be performed on the UI thread.
 /// </para>
 /// </remarks>
 /// <example>
+/// <code>
 /// // Filled panel with a distinct border and rounded corners
-/// var panel = new DirectRectangle(surface, new Rectangle(80, 80, 220, 120), Color.SteelBlue)
+/// var panel = new DirectRectangle(Color.SteelBlue, renderSurfaceHost, view, screenBounds)
 ///     .SetFilled(true)
 ///     .SetBorderColor(Color.Navy)
 ///     .SetStrokeWidth(4f)
@@ -38,12 +57,13 @@ namespace Gondwana.Drawing.Direct;
 ///     .SetDashPattern(8f, 4f); // dashed outline
 ///
 /// // Soft glow using blend mode
-/// var glow = new DirectRectangle(surface, new Rectangle(320, 90, 180, 100), Color.FromArgb(64, 255, 200, 0))
+/// var glow = new DirectRectangle(Color.FromArgb(64, 255, 200, 0), renderSurfaceHost, view, screenBounds2)
 ///     .SetFilled(true)
 ///     .SetBlendMode(SKBlendMode.Screen);
 ///
 /// // Pulsing alert border
 /// glow.PulseBorder(Color.FromArgb(255, 255, 64, 64), Color.FromArgb(80, 255, 0, 0), 1.2f);
+/// </code>
 /// </example>
 public class DirectRectangle : DirectDrawingMovableBase
 {
@@ -93,6 +113,26 @@ public class DirectRectangle : DirectDrawingMovableBase
         SetFilled(false);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DirectRectangle"/> class for scene-layer (world-space) rendering.
+    /// </summary>
+    /// <param name="color">The base color used for fill and/or stroke (if no distinct border color is set).</param>
+    /// <param name="renderSurfaceHost">The render surface host that manages rendering for this rectangle. Must not be <see langword="null"/>.</param>
+    /// <param name="sceneLayer">The scene layer to which this rectangle is attached. The rectangle will be positioned in world coordinates relative to this layer.</param>
+    /// <param name="worldBounds">The world-space bounds in pixels defining the rectangle's position and size.</param>
+    /// <param name="nickname">An optional human-readable name for this rectangle, useful for debugging and identification.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurfaceHost"/> is <see langword="null"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This constructor creates a rectangle positioned in world coordinates that moves with the camera and is
+    /// affected by the scene layer's parallax factor. Use this for in-game UI elements, selection markers,
+    /// health bars, and other world-space visuals.
+    /// </para>
+    /// <para>
+    /// By default, the rectangle is created unfilled (outline only) with a 1-pixel stroke width. Use
+    /// <see cref="SetFilled"/> and <see cref="SetStrokeWidth"/> to customize the appearance.
+    /// </para>
+    /// </remarks>
     public DirectRectangle(Color color,
                            RenderSurfaceHostBase renderSurfaceHost,
                            SceneLayer sceneLayer,
@@ -100,6 +140,26 @@ public class DirectRectangle : DirectDrawingMovableBase
                            string? nickname = null)
         : this(color, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, worldBounds, null, nickname) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DirectRectangle"/> class for view (screen-space) rendering.
+    /// </summary>
+    /// <param name="color">The base color used for fill and/or stroke (if no distinct border color is set).</param>
+    /// <param name="renderSurfaceHost">The render surface host that manages rendering for this rectangle. Must not be <see langword="null"/>.</param>
+    /// <param name="view">The view to which this rectangle is attached. The rectangle will be positioned in screen coordinates relative to this view's viewport.</param>
+    /// <param name="screenBounds">The screen-space bounds in pixels defining the rectangle's position and size within the viewport.</param>
+    /// <param name="nickname">An optional human-readable name for this rectangle, useful for debugging and identification.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurfaceHost"/> is <see langword="null"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This constructor creates a rectangle positioned in screen coordinates that remains fixed on screen
+    /// regardless of camera movement. Use this for HUD panels, buttons, borders, focus indicators, and other
+    /// screen-space UI elements.
+    /// </para>
+    /// <para>
+    /// By default, the rectangle is created unfilled (outline only) with a 1-pixel stroke width. Use
+    /// <see cref="SetFilled"/> and <see cref="SetStrokeWidth"/> to customize the appearance.
+    /// </para>
+    /// </remarks>
     public DirectRectangle(Color color,
                            RenderSurfaceHostBase renderSurfaceHost,
                            View view,
@@ -107,7 +167,22 @@ public class DirectRectangle : DirectDrawingMovableBase
                            string? nickname = null)
         : this(color, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
 
-    /// <summary>Sets the base color (used for fill and/or outline if no border color is specified).</summary>
+    /// <summary>
+    /// Sets the base color used for both fill and stroke (unless a distinct border color is specified).
+    /// </summary>
+    /// <param name="color">The new base color.</param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// This color is used for the fill when <see cref="SetFilled"/> is true, and for the stroke (border)
+    /// unless a distinct border color has been set via <see cref="SetBorderColor"/>.
+    /// </para>
+    /// <para>
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// If color pulsing is active, calling this method will not affect the pulsing animation until
+    /// <see cref="StopPulses"/> is called.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetColor(Color color)
     {
         // store as stroke/ fill base via rebuild
@@ -119,7 +194,28 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
-    /// <summary>Sets a distinct border color (stroke). If not set, stroke uses the base color.</summary>
+    /// <summary>
+    /// Sets a distinct border (stroke) color, independent of the fill color.
+    /// </summary>
+    /// <param name="color">The border color to apply.</param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// When a border color is set, the stroke uses this color instead of the base color set by
+    /// <see cref="SetColor"/>. This allows for rectangles with different fill and outline colors,
+    /// such as a white panel with a dark border.
+    /// </para>
+    /// <para>
+    /// The border color has its own alpha channel, independent of the fill's alpha. To remove the
+    /// distinct border color and revert to using the base color, call <see cref="SetColor"/> again
+    /// without setting a border color, or set the border color to match the base color.
+    /// </para>
+    /// <para>
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// If border pulsing is active, calling this method will not affect the pulsing animation until
+    /// <see cref="StopPulses"/> is called.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetBorderColor(Color color)
     {
         _borderColor = color.ToSKColor();
@@ -127,19 +223,58 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
-    /// <summary>Sets the alpha channel (0–255) for the base color. Border keeps its own alpha if set.</summary>
+    /// <summary>
+    /// Sets the alpha (transparency) channel of the base color.
+    /// </summary>
+    /// <param name="alpha">The alpha value from 0 (fully transparent) to 255 (fully opaque).</param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method modifies only the alpha channel of the base color, preserving the RGB components.
+    /// It affects the fill transparency and, if no distinct border color is set, also affects the
+    /// stroke transparency.
+    /// </para>
+    /// <para>
+    /// If a distinct border color has been set via <see cref="SetBorderColor"/>, its alpha remains
+    /// unchanged by this method. To modify the border alpha independently, call <see cref="SetBorderColor"/>
+    /// with a color containing the desired alpha value.
+    /// </para>
+    /// <para>
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetAlpha(int alpha)
     {
         var c = _fillPaint.Color;
         var withA = new SKColor(c.Red, c.Green, c.Blue, (byte)alpha);
         _fillPaint.Color = withA;
-        // Only change stroke when it’s not using a distinct border color
+        // Only change stroke when it's not using a distinct border color
         if (_borderColor is null)
             _strokePaint.Color = withA;
         _needsRebuildPaints = true;
         return this;
     }
 
+    /// <summary>
+    /// Sets whether the rectangle interior is filled with the base color (or pattern).
+    /// </summary>
+    /// <param name="isFilled">
+    /// <see langword="true"/> to fill the rectangle interior; <see langword="false"/> to draw only the outline (stroke).
+    /// </param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// When filled, the rectangle's interior is drawn using the fill paint (base color or pattern).
+    /// When not filled, only the stroke (outline) is visible if <see cref="SetStrokeWidth"/> is greater than zero.
+    /// </para>
+    /// <para>
+    /// You can combine fill and stroke to create rectangles with both a filled interior and a visible border,
+    /// which is common for UI panels and buttons.
+    /// </para>
+    /// <para>
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetFilled(bool isFilled)
     {
         _isFilled = isFilled;
@@ -147,6 +282,25 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Sets the width (thickness) of the rectangle's stroke (outline) in pixels.
+    /// </summary>
+    /// <param name="width">The stroke width in pixels. A value of 0 results in no visible stroke.</param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// The stroke width determines how thick the rectangle's outline appears. Combined with
+    /// <see cref="SetStrokeAlign"/>, you can control whether the stroke is drawn inside, outside,
+    /// or centered on the rectangle boundary.
+    /// </para>
+    /// <para>
+    /// For pixel-perfect rendering at 1-pixel width, consider disabling antialiasing or using
+    /// integer coordinates for the rectangle bounds.
+    /// </para>
+    /// <para>
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetStrokeWidth(float width)
     {
         _strokePaint.StrokeWidth = width;
@@ -154,6 +308,30 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Sets the radius for rounded corners in pixels.
+    /// </summary>
+    /// <param name="radius">
+    /// The corner radius in pixels. A value of 0 produces sharp (90-degree) corners.
+    /// Larger values create more rounded corners.
+    /// </param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Rounded corners are applied uniformly to all four corners of the rectangle. The radius specifies
+    /// how far from the corner the curve begins. If the radius is larger than half the rectangle's width
+    /// or height, the corners may overlap, producing unexpected results.
+    /// </para>
+    /// <para>
+    /// Rounded corners work with both filled and outlined rectangles, as well as with stroke alignment
+    /// modes. The corner radius is adjusted internally based on stroke alignment to maintain visual
+    /// consistency.
+    /// </para>
+    /// <para>
+    /// No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the
+    /// next render pass if the rectangle is already dirty from other property changes.
+    /// </para>
+    /// </remarks>
     public DirectRectangle SetCornerRadius(float radius)
     {
         _cornerRadius = radius;
@@ -165,14 +343,22 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// </summary>
     /// <param name="dashLength">Length of each visible dash, in pixels.</param>
     /// <param name="gapLength">Length of the transparent gap between dashes, in pixels.</param>
-    /// <returns>This rectangle for fluent chaining.</returns>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
     /// <remarks>
     /// <para>
-    /// This is a shorthand for <see cref="SetDashPattern(float[])"/> that
-    /// produces a repeating [dash, gap] pattern (e.g., <c>(8, 4)</c> for 8 px dash, 4 px gap).
+    /// This is a shorthand for creating a repeating [dash, gap] pattern (e.g., <c>(8, 4)</c> for 8 px dash, 4 px gap).
+    /// The pattern is applied to the stroke (outline) only and has no effect on filled rectangles without a stroke.
     /// </para>
     /// <para>
-    /// To remove the dash pattern, call <see cref="ClearDashPattern"/>.
+    /// Dash patterns are useful for creating dashed borders, focus indicators, or selection outlines.
+    /// The pattern repeats continuously around the rectangle's perimeter.
+    /// </para>
+    /// <para>
+    /// To remove the dash pattern and revert to a solid stroke, call <see cref="ClearDashPattern"/>.
+    /// </para>
+    /// <para>
+    /// No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the
+    /// next render pass if the rectangle is already dirty from other property changes.
     /// </para>
     /// </remarks>
     public DirectRectangle SetDashPattern(float dashLength, float gapLength)
@@ -185,6 +371,17 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// <summary>
     /// Removes any existing dash pattern, reverting to a solid stroke.
     /// </summary>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// After calling this method, the rectangle's stroke will be drawn as a solid, continuous line
+    /// instead of a dashed pattern.
+    /// </para>
+    /// <para>
+    /// No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the
+    /// next render pass if the rectangle is already dirty from other property changes.
+    /// </para>
+    /// </remarks>
     public DirectRectangle ClearDashPattern()
     {
         _dashPattern = null;
@@ -194,9 +391,11 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// <summary>
     /// Sets the blend mode used when rendering this rectangle onto the canvas.
     /// </summary>
+    /// <param name="mode">The blend mode to apply. See <see cref="SKBlendMode"/> for available options.</param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
     /// <remarks>
     /// <para>
-    /// Blend modes determine how the rectangle’s pixels combine with the existing
+    /// Blend modes determine how the rectangle's pixels combine with the existing
     /// pixels on the render surface. For example:
     /// </para>
     /// <list type="bullet">
@@ -209,6 +408,10 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// This mode applies to both the fill and stroke paints. Changing it affects how
     /// the rectangle visually interacts with whatever was previously drawn.
     /// </para>
+    /// <para>
+    /// No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the
+    /// next render pass if the rectangle is already dirty from other property changes.
+    /// </para>
     /// </remarks>
     public DirectRectangle SetBlendMode(SKBlendMode mode)
     {
@@ -220,21 +423,23 @@ public class DirectRectangle : DirectDrawingMovableBase
     }
 
     /// <summary>
-    /// Sets how the rectangle’s stroke is positioned relative to its bounds.
+    /// Sets how the rectangle's stroke is positioned relative to its bounds.
     /// </summary>
+    /// <param name="align">The stroke alignment mode. See <see cref="StrokeAlign"/> for available options.</param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
     /// <remarks>
     /// <para>
     /// Determines whether the stroke (outline) is drawn inside, outside, or centered
-    /// on the rectangle’s boundary:
+    /// on the rectangle's boundary:
     /// </para>
     /// <list type="bullet">
     ///   <item>
     ///     <term><see cref="StrokeAlign.Inside"/></term>
-    ///     <description>Draws the stroke entirely inside the rectangle’s bounds.</description>
+    ///     <description>Draws the stroke entirely inside the rectangle's bounds.</description>
     ///   </item>
     ///   <item>
     ///     <term><see cref="StrokeAlign.Outside"/></term>
-    ///     <description>Draws the stroke entirely outside the rectangle’s bounds, increasing its visual size.</description>
+    ///     <description>Draws the stroke entirely outside the rectangle's bounds, increasing its visual size.</description>
     ///   </item>
     ///   <item>
     ///     <term><see cref="StrokeAlign.Center"/></term>
@@ -245,6 +450,10 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// This only affects visible strokes (outlined or bordered rectangles). Filled rectangles
     /// are not impacted by stroke alignment.
     /// </para>
+    /// <para>
+    /// No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the
+    /// next render pass if the rectangle is already dirty from other property changes.
+    /// </para>
     /// </remarks>
     public DirectRectangle SetStrokeAlign(StrokeAlign align)
     {
@@ -252,7 +461,36 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
-    /// <summary>Animate the fill color between <paramref name="from"/> and <paramref name="to"/> over <paramref name="periodSec"/> seconds.</summary>
+    /// <summary>
+    /// Initiates an animated color transition (pulse) for the rectangle's fill between two colors.
+    /// </summary>
+    /// <param name="from">The starting color of the pulse animation.</param>
+    /// <param name="to">The ending color of the pulse animation.</param>
+    /// <param name="periodSec">The duration of one complete pulse cycle in seconds. Minimum value is 0.0001 seconds.</param>
+    /// <param name="enabled">
+    /// <see langword="true"/> to enable the pulse animation (default); <see langword="false"/> to disable it.
+    /// </param>
+    /// <param name="triangle">
+    /// <see langword="true"/> to use a triangle wave (linear ramp up then down); <see langword="false"/> to use
+    /// a sine wave (smooth ease in/out, default).
+    /// </param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// The fill pulse creates a smooth color transition that repeats continuously. The color interpolates
+    /// from <paramref name="from"/> to <paramref name="to"/> and back, creating an attention-grabbing
+    /// effect useful for alerts, health indicators, or animated UI elements.
+    /// </para>
+    /// <para>
+    /// The animation is updated each frame via <see cref="Update"/> and uses high-resolution timing
+    /// for smooth, consistent animation regardless of frame rate.
+    /// </para>
+    /// <para>
+    /// To stop all pulsing (fill and border), call <see cref="StopPulses"/>. Disabling via
+    /// <paramref name="enabled"/> = <see langword="false"/> stops the animation but preserves the settings
+    /// for later re-enabling.
+    /// </para>
+    /// </remarks>
     public DirectRectangle PulseFill(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
     {
         _pulseFillEnabled = enabled;
@@ -263,7 +501,36 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
-    /// <summary>Animate the border color between <paramref name="from"/> and <paramref name="to"/> over <paramref name="periodSec"/> seconds.</summary>
+    /// <summary>
+    /// Initiates an animated color transition (pulse) for the rectangle's border between two colors.
+    /// </summary>
+    /// <param name="from">The starting color of the pulse animation.</param>
+    /// <param name="to">The ending color of the pulse animation.</param>
+    /// <param name="periodSec">The duration of one complete pulse cycle in seconds. Minimum value is 0.0001 seconds.</param>
+    /// <param name="enabled">
+    /// <see langword="true"/> to enable the pulse animation (default); <see langword="false"/> to disable it.
+    /// </param>
+    /// <param name="triangle">
+    /// <see langword="true"/> to use a triangle wave (linear ramp up then down); <see langword="false"/> to use
+    /// a sine wave (smooth ease in/out, default).
+    /// </param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// The border pulse creates a smooth color transition that repeats continuously. The color interpolates
+    /// from <paramref name="from"/> to <paramref name="to"/> and back, creating an attention-grabbing
+    /// effect useful for selection indicators, focus outlines, or warning borders.
+    /// </para>
+    /// <para>
+    /// The animation is updated each frame via <see cref="Update"/> and uses high-resolution timing
+    /// for smooth, consistent animation regardless of frame rate.
+    /// </para>
+    /// <para>
+    /// To stop all pulsing (fill and border), call <see cref="StopPulses"/>. Disabling via
+    /// <paramref name="enabled"/> = <see langword="false"/> stops the animation but preserves the settings
+    /// for later re-enabling.
+    /// </para>
+    /// </remarks>
     public DirectRectangle PulseBorder(Color from, Color to, float periodSec, bool enabled = true, bool triangle = false)
     {
         _pulseBorderEnabled = enabled;
@@ -274,7 +541,21 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
-    /// <summary>Disable all color pulsing.</summary>
+    /// <summary>
+    /// Stops all active color pulsing animations (fill and border), reverting to static colors.
+    /// </summary>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// After calling this method, the rectangle's fill and border colors are restored to the values
+    /// set by <see cref="SetColor"/> and <see cref="SetBorderColor"/>. The pulse animation state
+    /// (period, wave type, colors) is preserved but disabled, so you can re-enable it later by
+    /// calling <see cref="PulseFill"/> or <see cref="PulseBorder"/> again.
+    /// </para>
+    /// <para>
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// </para>
+    /// </remarks>
     public DirectRectangle StopPulses()
     {
         _pulseFillEnabled = _pulseBorderEnabled = false;
@@ -283,15 +564,42 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
-    /// <summary>Fill with a tiled image pattern instead of a solid color.</summary>
-    /// <param name="bitmap">The source bitmap to tile.</param>
-    /// <param name="tileX">Horizontal tiling mode (Repeat, Mirror, Clamp).</param>
-    /// <param name="tileY">Vertical tiling mode (Repeat, Mirror, Clamp).</param>
-    /// <param name="scale">Optional scale applied to the bitmap (1 = native size).</param>
-    /// <param name="offsetPx">Optional offset of the pattern origin in pixels.</param>
+    /// <summary>
+    /// Sets the rectangle's fill to use a tiled bitmap pattern instead of a solid color.
+    /// </summary>
+    /// <param name="bitmap">The source bitmap to tile across the rectangle's interior.</param>
+    /// <param name="tileX">The horizontal tiling mode (Repeat, Mirror, or Clamp). Default is Repeat.</param>
+    /// <param name="tileY">The vertical tiling mode (Repeat, Mirror, or Clamp). Default is Repeat.</param>
+    /// <param name="scale">Optional uniform scale factor applied to the bitmap. 1.0 = native size (default).</param>
+    /// <param name="offsetPx">Optional offset in pixels to shift the pattern origin. Null = no offset (default).</param>
+    /// <param name="filterQuality">The filter quality to use when scaling the pattern. Default is None (nearest-neighbor).</param>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
     /// <remarks>
-    /// The shader uses the mover's current pixel space. Paint color tints the pattern; set it to white to keep original colors.
-    /// To control overall opacity, adjust <see cref="SetAlpha(int)"/>.
+    /// <para>
+    /// Pattern fills replace the solid color fill with a repeating texture. The bitmap is tiled according
+    /// to the specified tile modes and scaled/offset as configured. This is useful for textured panels,
+    /// patterned backgrounds, or decorative UI elements.
+    /// </para>
+    /// <para>
+    /// The base color set by <see cref="SetColor"/> tints the pattern multiplicatively. Set it to white
+    /// to preserve the pattern's original colors, or use another color to apply a tint.
+    /// </para>
+    /// <para>
+    /// The pattern uses the rectangle's current coordinate space (world or screen). The <paramref name="scale"/>
+    /// parameter affects the pattern's size, while <paramref name="offsetPx"/> shifts the pattern's origin,
+    /// allowing for animated or scrolling textures.
+    /// </para>
+    /// <para>
+    /// The bitmap is not owned by this DirectRectangle; the caller must manage its lifetime and ensure
+    /// it remains valid while in use.
+    /// </para>
+    /// <para>
+    /// This method automatically enables filled mode (<see cref="SetFilled"/>(true)) to make the pattern visible.
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// </para>
+    /// <para>
+    /// To remove the pattern and return to solid color fill, call <see cref="ClearFillPattern"/>.
+    /// </para>
     /// </remarks>
     public DirectRectangle SetFillPattern(SKBitmap bitmap,
                                           SKShaderTileMode tileX = SKShaderTileMode.Repeat,
@@ -308,13 +616,25 @@ public class DirectRectangle : DirectDrawingMovableBase
         _fillPaint.Shader = _fillShader;
         _fillPaint.FilterQuality = filterQuality; // or Low/Medium/High
 
-        // Ensure we’re in filled mode for visibility
+        // Ensure we're in filled mode for visibility
         _isFilled = true;
         ForceRefresh();
         return this;
     }
 
-    /// <summary>Remove the pattern fill and return to solid color.</summary>
+    /// <summary>
+    /// Removes the current pattern fill and reverts to solid color rendering.
+    /// </summary>
+    /// <returns>This <see cref="DirectRectangle"/> instance for method chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// After calling this method, the rectangle's fill will use the solid color set by <see cref="SetColor"/>
+    /// instead of the tiled bitmap pattern. The pattern shader is disposed to free resources.
+    /// </para>
+    /// <para>
+    /// The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame.
+    /// </para>
+    /// </remarks>
     public DirectRectangle ClearFillPattern()
     {
         _fillShader?.Dispose();
@@ -324,6 +644,33 @@ public class DirectRectangle : DirectDrawingMovableBase
         return this;
     }
 
+    /// <summary>
+    /// Performs per-frame update logic, including pulse animation advancement and physics integration.
+    /// </summary>
+    /// <param name="tick">The current engine tick value from <see cref="HighResTimer"/>.</param>
+    /// <remarks>
+    /// <para>
+    /// This method overrides <see cref="DirectDrawingMovableBase.Update"/> to add color pulsing animation
+    /// support. It performs the following operations:
+    /// <list type="number">
+    /// <item><description>Calculates elapsed time since the last update using high-resolution timing.</description></item>
+    /// <item><description>Advances the pulse time accumulator for sine/triangle wave generation.</description></item>
+    /// <item><description>Updates the fill color if fill pulsing is enabled, interpolating between the pulse colors.</description></item>
+    /// <item><description>Updates the border color if border pulsing is enabled, interpolating between the pulse colors.</description></item>
+    /// <item><description>Marks affected regions as dirty if color changes occurred.</description></item>
+    /// <item><description>Calls <c>base.Update(tick)</c> to perform physics integration and fade/reveal animations.</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// The pulse animation uses a continuous time accumulator that wraps around the specified period,
+    /// ensuring smooth, consistent animation. Color interpolation is performed in RGB space with linear
+    /// blending (including alpha channel).
+    /// </para>
+    /// <para>
+    /// Override this method in derived classes to add custom per-frame logic. Always call
+    /// <c>base.Update(tick)</c> to preserve pulsing, movement, and fade/reveal functionality.
+    /// </para>
+    /// </remarks>
     public override void Update(long tick)
     {
         if (tick <= _lastTick)
@@ -371,6 +718,33 @@ public class DirectRectangle : DirectDrawingMovableBase
         base.Update(tick);
     }
 
+    /// <summary>
+    /// Renders the rectangle to the backbuffer with all configured properties and effects applied.
+    /// </summary>
+    /// <param name="backbuffer">The backbuffer providing the canvas and rendering context.</param>
+    /// <param name="destRectScreen">The destination rectangle in screen pixel coordinates where the rectangle should be rendered.</param>
+    /// <remarks>
+    /// <para>
+    /// This method is called automatically by the rendering pipeline. It performs the following operations:
+    /// <list type="number">
+    /// <item><description>Rebuilds paint objects if properties have changed since the last draw.</description></item>
+    /// <item><description>Calculates stroke rectangle based on alignment mode (inside, outside, center).</description></item>
+    /// <item><description>Adjusts corner radius based on stroke alignment to maintain visual consistency.</description></item>
+    /// <item><description>Applies dash pattern to the stroke paint if configured.</description></item>
+    /// <item><description>Draws the filled rectangle if <see cref="SetFilled"/> is true (using color or pattern).</description></item>
+    /// <item><description>Draws the stroke (border) with opaque rendering to avoid blend artifacts.</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// The stroke is rendered using <see cref="SKBlendMode.Src"/> (source replace) mode with full opacity
+    /// to ensure crisp borders without color blending artifacts, regardless of the configured blend mode.
+    /// This is restored after the stroke is drawn.
+    /// </para>
+    /// <para>
+    /// Do not call this method directly from game code. To trigger a redraw, call <see cref="DirectDrawingBase.ForceRefresh"/>
+    /// or modify properties that affect appearance.
+    /// </para>
+    /// </remarks>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         var canvas = backbuffer.Canvas;
@@ -483,10 +857,31 @@ public class DirectRectangle : DirectDrawingMovableBase
         }
     }
 
+    /// <summary>
+    /// Defines how the stroke (outline) is positioned relative to the rectangle's boundary.
+    /// </summary>
+    /// <remarks>
+    /// Stroke alignment determines whether the stroke width expands inward, outward, or is
+    /// centered on the rectangle's edge.
+    /// </remarks>
     public enum StrokeAlign
     {
+        /// <summary>
+        /// Draws the stroke entirely inside the rectangle's bounds. The outer edge of the
+        /// stroke aligns with the rectangle boundary.
+        /// </summary>
         Inside,
+
+        /// <summary>
+        /// Draws the stroke entirely outside the rectangle's bounds. The inner edge of the
+        /// stroke aligns with the rectangle boundary, increasing the visual size.
+        /// </summary>
         Outside,
+
+        /// <summary>
+        /// Centers the stroke on the rectangle's boundary. Half the stroke width is drawn
+        /// inside and half outside (default Skia behavior).
+        /// </summary>
         Center
     }
 
