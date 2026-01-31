@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Drawing.Direct.Particles.Particle Struct Reference</title>
+<title>Gondwana Game Engine: Gondwana.Drawing.Direct.Particles.Particle Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -129,8 +130,6 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a single particle instance in the particle system. </p>
 <p>A particle is a lightweight struct that holds its position, velocity, life span, size, color, and rotation. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html">Particles</a> are typically short-lived objects that are spawned and updated each frame by one or more <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html" title="Configures how particles are spawned over time at a given location.">ParticleEmitter</a>s inside a <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a> system. </p>
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00014">14</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a66406cf643202c7241c9918faa2393ef" name="a66406cf643202c7241c9918faa2393ef"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a66406cf643202c7241c9918faa2393ef">&#9670;&#160;</a></span>AngularVel</h2>
@@ -145,8 +144,6 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The angular velocity of the particle, in degrees per second. </p>
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00064">64</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 
 </div>
 </div>
@@ -164,8 +161,6 @@ Public Attributes</h2></td></tr>
 
 <p>The acceleration vector (AX, AY) applied to the particle each update step. (px/s²) Optional, can be zero. </p>
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00031">31</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <a id="a24febb21f2566fe4b575595ffbc0e135" name="a24febb21f2566fe4b575595ffbc0e135"></a>
@@ -179,8 +174,6 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00031">31</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 
 </div>
 </div>
@@ -198,8 +191,6 @@ Public Attributes</h2></td></tr>
 
 <p>The base color of the particle. The alpha channel is often modified as the particle ages. </p>
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00054">54</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <a id="a173f4cab10e283e789d44f96154c11bf" name="a173f4cab10e283e789d44f96154c11bf"></a>
@@ -215,8 +206,6 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The remaining lifetime of the particle, in seconds. Decreases each update until it reaches zero or below. </p>
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00037">37</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 
 </div>
 </div>
@@ -234,8 +223,6 @@ Public Attributes</h2></td></tr>
 
 <p>The initial lifetime of the particle, in seconds. Used together with <a class="el" href="#a173f4cab10e283e789d44f96154c11bf" title="The remaining lifetime of the particle, in seconds. Decreases each update until it reaches zero or be...">Life</a> to calculate normalized age. </p>
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00043">43</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <a id="afdd93a418c2576292c14e75bbf214180" name="afdd93a418c2576292c14e75bbf214180"></a>
@@ -251,8 +238,6 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Per-particle speed cap (px/s). MaxVelocity &lt;= 0 means no cap. </p>
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00080">80</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 
 </div>
 </div>
@@ -270,8 +255,6 @@ Public Attributes</h2></td></tr>
 
 <p>The sprite to render for this particle (if any). Null means render as a primitive (e.g., circle). </p>
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00070">70</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <a id="ac943addfd1e0fa2c9a363485fa1a5ebf" name="ac943addfd1e0fa2c9a363485fa1a5ebf"></a>
@@ -287,8 +270,6 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The current rotation angle of the particle, in degrees. </p>
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00059">59</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 
 </div>
 </div>
@@ -306,8 +287,6 @@ Public Attributes</h2></td></tr>
 
 <p>The current radius or size of the particle when rendered. </p>
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00048">48</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <a id="a9c652a4af04dd75aa76121bc2a440478" name="a9c652a4af04dd75aa76121bc2a440478"></a>
@@ -323,8 +302,6 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Per-particle tint. If <code>null</code>, use the system GlobalColorTint at render time. </p>
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00075">75</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 
 </div>
 </div>
@@ -342,8 +319,6 @@ Public Attributes</h2></td></tr>
 
 <p>The velocity vector (VX, VY) applied to the particle each update step. (px/s) </p>
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00025">25</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <a id="afd5b512bb2081bca87998318d89e3bca" name="afd5b512bb2081bca87998318d89e3bca"></a>
@@ -357,8 +332,6 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00025">25</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
 
 </div>
 </div>
@@ -376,8 +349,6 @@ Public Attributes</h2></td></tr>
 
 <p>The current X and Y pixel coordinates of the particle in world space. </p>
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00019">19</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <a id="a4e30e9b80ac7db8b6a85ffca1f225d1d" name="a4e30e9b80ac7db8b6a85ffca1f225d1d"></a>
@@ -392,12 +363,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_particle_8cs_source.html#l00019">19</a> of file <a class="el" href="_particle_8cs_source.html">Particle.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/Direct/Particles/<a class="el" href="_particle_8cs_source.html">Particle.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/Direct/Particles/<a class="el" href="_particle_8cs.html">Particle.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

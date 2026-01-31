@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Drawing.Direct.DirectRectangle Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Drawing.Direct.DirectRectangle Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -93,7 +94,7 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_direct_1_1_direct_recta
 </div><!--header-->
 <div class="contents">
 
-<p>A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border color, stroke width and alignment, rounded corners, dash patterns, blend modes, and optional color pulsing — all rendered via the bound RenderSurfaceHost.  
+<p>Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns, color pulsing, and pattern fills.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Direct.DirectRectangle:</div>
@@ -101,8 +102,8 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectRectangle:</div>
  <div class="center">
   <img src="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.png" usemap="#Gondwana_2EDrawing_2EDirect_2EDirectRectangle_map" alt=""/>
   <map id="Gondwana_2EDrawing_2EDirect_2EDirectRectangle_map" name="Gondwana_2EDrawing_2EDirect_2EDirectRectangle_map">
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,168,822,192"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" alt="Gondwana.Drawing.Direct.DirectDrawingBase" shape="rect" coords="333,112,656,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,168,822,192"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi..." alt="Gondwana.Drawing.Direct.DirectDrawingBase" shape="rect" coords="333,112,656,136"/>
 <area href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space." alt="Gondwana.Movement.IMovable" shape="rect" coords="666,112,989,136"/>
 <area href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="166,56,489,80"/>
 <area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,323,24"/>
@@ -115,26 +116,33 @@ Public Types</h2></td></tr>
 , <a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4">Outside</a>
 , <a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd">Center</a>
  }</td></tr>
+<tr class="memdesc:a539cd00ff56cd777ffea4ab41303bc1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines how the stroke (outline) is positioned relative to the rectangle's boundary.  <a href="#a539cd00ff56cd777ffea4ab41303bc1e">More...</a><br /></td></tr>
 <tr class="inherit_header pub_types_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:adac29c23b9e8e0590930df0a3957d141 inherit pub_types_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_adac29c23b9e8e0590930df0a3957d141"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141">RevealDirection</a> { <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c">LeftToRight</a>
 , <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141ab7b0ea3028791689ea070674776855e2">RightToLeft</a>
 , <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141af2b1a19a8d0f523d042f9ede79a80804">TopToBottom</a>
 , <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a">BottomToTop</a>
  }</td></tr>
+<tr class="memdesc:adac29c23b9e8e0590930df0a3957d141"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the direction from which a reveal animation progressively displays the direct drawing.  <a href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7b4450fd0728c0c50e35519a03584224" id="r_a7b4450fd0728c0c50e35519a03584224"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b4450fd0728c0c50e35519a03584224">DirectRectangle</a> (Color color, <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> sceneLayer, Rectangle worldBounds, string? nickname=null)</td></tr>
-<tr class="memitem:acf4a2ff6040e82f45563929a218e2f17" id="r_acf4a2ff6040e82f45563929a218e2f17"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf4a2ff6040e82f45563929a218e2f17">DirectRectangle</a> (Color color, <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> view, Rectangle screenBounds, string? nickname=null)</td></tr>
+<tr class="memdesc:a7b4450fd0728c0c50e35519a03584224"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> class for scene-layer (world-space) rendering.  <br /></td></tr>
+<tr class="memitem:acf4a2ff6040e82f45563929a218e2f17" id="r_acf4a2ff6040e82f45563929a218e2f17"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf4a2ff6040e82f45563929a218e2f17">DirectRectangle</a> (Color color, <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view, Rectangle screenBounds, string? nickname=null)</td></tr>
+<tr class="memdesc:acf4a2ff6040e82f45563929a218e2f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> class for view (screen-space) rendering.  <br /></td></tr>
 <tr class="memitem:a577cf46c75069fe87bad6c68a95f227f" id="r_a577cf46c75069fe87bad6c68a95f227f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a577cf46c75069fe87bad6c68a95f227f">SetColor</a> (Color color)</td></tr>
-<tr class="memdesc:a577cf46c75069fe87bad6c68a95f227f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the base color (used for fill and/or outline if no border color is specified).  <br /></td></tr>
+<tr class="memdesc:a577cf46c75069fe87bad6c68a95f227f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the base color used for both fill and stroke (unless a distinct border color is specified).  <br /></td></tr>
 <tr class="memitem:a476370d59eb61805c4431a509d494ee9" id="r_a476370d59eb61805c4431a509d494ee9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a476370d59eb61805c4431a509d494ee9">SetBorderColor</a> (Color color)</td></tr>
-<tr class="memdesc:a476370d59eb61805c4431a509d494ee9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a distinct border color (stroke). If not set, stroke uses the base color.  <br /></td></tr>
+<tr class="memdesc:a476370d59eb61805c4431a509d494ee9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a distinct border (stroke) color, independent of the fill color.  <br /></td></tr>
 <tr class="memitem:a6819eb1c1fd6aeea32d6a58500147ea3" id="r_a6819eb1c1fd6aeea32d6a58500147ea3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6819eb1c1fd6aeea32d6a58500147ea3">SetAlpha</a> (int alpha)</td></tr>
-<tr class="memdesc:a6819eb1c1fd6aeea32d6a58500147ea3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the alpha channel (0–255) for the base color. Border keeps its own alpha if set.  <br /></td></tr>
+<tr class="memdesc:a6819eb1c1fd6aeea32d6a58500147ea3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the alpha (transparency) channel of the base color.  <br /></td></tr>
 <tr class="memitem:a280411ef2d97d45a032015ae9d480541" id="r_a280411ef2d97d45a032015ae9d480541"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a280411ef2d97d45a032015ae9d480541">SetFilled</a> (bool isFilled)</td></tr>
+<tr class="memdesc:a280411ef2d97d45a032015ae9d480541"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether the rectangle interior is filled with the base color (or pattern).  <br /></td></tr>
 <tr class="memitem:a6450dd2544dc00adcebb45a84ef81f20" id="r_a6450dd2544dc00adcebb45a84ef81f20"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6450dd2544dc00adcebb45a84ef81f20">SetStrokeWidth</a> (float width)</td></tr>
+<tr class="memdesc:a6450dd2544dc00adcebb45a84ef81f20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the width (thickness) of the rectangle's stroke (outline) in pixels.  <br /></td></tr>
 <tr class="memitem:a7b16e32a441c1836ad9c5489404df1df" id="r_a7b16e32a441c1836ad9c5489404df1df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b16e32a441c1836ad9c5489404df1df">SetCornerRadius</a> (float radius)</td></tr>
+<tr class="memdesc:a7b16e32a441c1836ad9c5489404df1df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the radius for rounded corners in pixels.  <br /></td></tr>
 <tr class="memitem:a55e1d5bcd285d4e74ddd4adb3b79c006" id="r_a55e1d5bcd285d4e74ddd4adb3b79c006"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55e1d5bcd285d4e74ddd4adb3b79c006">SetDashPattern</a> (float dashLength, float gapLength)</td></tr>
 <tr class="memdesc:a55e1d5bcd285d4e74ddd4adb3b79c006"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a simple repeating dash pattern using dash and gap lengths, in pixels.  <br /></td></tr>
 <tr class="memitem:a36855013b12b50df0947f4b2e248b62f" id="r_a36855013b12b50df0947f4b2e248b62f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36855013b12b50df0947f4b2e248b62f">ClearDashPattern</a> ()</td></tr>
@@ -142,118 +150,178 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab359dcb7b9f47a80622a071b9ec519e3" id="r_ab359dcb7b9f47a80622a071b9ec519e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab359dcb7b9f47a80622a071b9ec519e3">SetBlendMode</a> (SKBlendMode mode)</td></tr>
 <tr class="memdesc:ab359dcb7b9f47a80622a071b9ec519e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the blend mode used when rendering this rectangle onto the canvas.  <br /></td></tr>
 <tr class="memitem:af803e07d9f776a2285b48bd31125b371" id="r_af803e07d9f776a2285b48bd31125b371"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af803e07d9f776a2285b48bd31125b371">SetStrokeAlign</a> (<a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1e">StrokeAlign</a> align)</td></tr>
-<tr class="memdesc:af803e07d9f776a2285b48bd31125b371"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets how the rectangle’s stroke is positioned relative to its bounds.  <br /></td></tr>
+<tr class="memdesc:af803e07d9f776a2285b48bd31125b371"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets how the rectangle's stroke is positioned relative to its bounds.  <br /></td></tr>
 <tr class="memitem:aa160982417cd8c658e820211741f0030" id="r_aa160982417cd8c658e820211741f0030"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa160982417cd8c658e820211741f0030">PulseFill</a> (Color from, Color to, float periodSec, bool enabled=true, bool triangle=false)</td></tr>
-<tr class="memdesc:aa160982417cd8c658e820211741f0030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Animate the fill color between <em>from</em>  and <em>to</em>  over <em>periodSec</em>  seconds.  <br /></td></tr>
+<tr class="memdesc:aa160982417cd8c658e820211741f0030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates an animated color transition (pulse) for the rectangle's fill between two colors.  <br /></td></tr>
 <tr class="memitem:adeb285a1ff90fd5c7ba970f1c6c26813" id="r_adeb285a1ff90fd5c7ba970f1c6c26813"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adeb285a1ff90fd5c7ba970f1c6c26813">PulseBorder</a> (Color from, Color to, float periodSec, bool enabled=true, bool triangle=false)</td></tr>
-<tr class="memdesc:adeb285a1ff90fd5c7ba970f1c6c26813"><td class="mdescLeft">&#160;</td><td class="mdescRight">Animate the border color between <em>from</em>  and <em>to</em>  over <em>periodSec</em>  seconds.  <br /></td></tr>
+<tr class="memdesc:adeb285a1ff90fd5c7ba970f1c6c26813"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates an animated color transition (pulse) for the rectangle's border between two colors.  <br /></td></tr>
 <tr class="memitem:a311c1cda35145755c37eb74c627fecc5" id="r_a311c1cda35145755c37eb74c627fecc5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a311c1cda35145755c37eb74c627fecc5">StopPulses</a> ()</td></tr>
-<tr class="memdesc:a311c1cda35145755c37eb74c627fecc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable all color pulsing.  <br /></td></tr>
+<tr class="memdesc:a311c1cda35145755c37eb74c627fecc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops all active color pulsing animations (fill and border), reverting to static colors.  <br /></td></tr>
 <tr class="memitem:a669165cb610647b5a58d5a189119a4b4" id="r_a669165cb610647b5a58d5a189119a4b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a669165cb610647b5a58d5a189119a4b4">SetFillPattern</a> (SKBitmap bitmap, SKShaderTileMode tileX=SKShaderTileMode.Repeat, SKShaderTileMode tileY=SKShaderTileMode.Repeat, float scale=1f, SKPoint? offsetPx=null, SKFilterQuality filterQuality=SKFilterQuality.None)</td></tr>
-<tr class="memdesc:a669165cb610647b5a58d5a189119a4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill with a tiled image pattern instead of a solid color.  <br /></td></tr>
+<tr class="memdesc:a669165cb610647b5a58d5a189119a4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the rectangle's fill to use a tiled bitmap pattern instead of a solid color.  <br /></td></tr>
 <tr class="memitem:ae15c4f69e1706ba944838f4ab16715ad" id="r_ae15c4f69e1706ba944838f4ab16715ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae15c4f69e1706ba944838f4ab16715ad">ClearFillPattern</a> ()</td></tr>
-<tr class="memdesc:ae15c4f69e1706ba944838f4ab16715ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the pattern fill and return to solid color.  <br /></td></tr>
+<tr class="memdesc:ae15c4f69e1706ba944838f4ab16715ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the current pattern fill and reverts to solid color rendering.  <br /></td></tr>
 <tr class="memitem:a801c259d59c101239fd5947109e542f1" id="r_a801c259d59c101239fd5947109e542f1"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a801c259d59c101239fd5947109e542f1">Update</a> (long tick)</td></tr>
-<tr class="memdesc:a801c259d59c101239fd5947109e542f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-frame update hook. Default: advance scrolling only. Called from DirectDrawingManager.UpdateAll(long).  <br /></td></tr>
+<tr class="memdesc:a801c259d59c101239fd5947109e542f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs per-frame update logic, including pulse animation advancement and physics integration.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a></td></tr>
 <tr class="memitem:a05d6b05bc6b2cb97a6ff38964f17e3bd inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base" id="r_a05d6b05bc6b2cb97a6ff38964f17e3bd"><td class="memItemLeft" align="right" valign="top">Vector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a05d6b05bc6b2cb97a6ff38964f17e3bd">GetPosition</a> ()</td></tr>
-<tr class="memdesc:a05d6b05bc6b2cb97a6ff38964f17e3bd inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current position in the mover's <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a7bf07b6c0b52e8bb2fd86252d8aae953" title="Which unit system this mover uses for its position.">PositionSpace</a>.  <br /></td></tr>
+<tr class="memdesc:a05d6b05bc6b2cb97a6ff38964f17e3bd inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of this direct drawing in pixel coordinates.  <br /></td></tr>
 <tr class="memitem:a82b50eb005624abf9f6bcf63bfcc727e inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base" id="r_a82b50eb005624abf9f6bcf63bfcc727e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a82b50eb005624abf9f6bcf63bfcc727e">SetPosition</a> (Vector2 p)</td></tr>
-<tr class="memdesc:a82b50eb005624abf9f6bcf63bfcc727e inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the position in the mover's <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a7bf07b6c0b52e8bb2fd86252d8aae953" title="Which unit system this mover uses for its position.">PositionSpace</a>.  <br /></td></tr>
+<tr class="memdesc:a82b50eb005624abf9f6bcf63bfcc727e inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the position of this direct drawing to the specified pixel coordinates.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
-<tr class="memitem:a5b34671e7d7598452fff9d87a97bf53c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a5b34671e7d7598452fff9d87a97bf53c"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a5b34671e7d7598452fff9d87a97bf53c">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> view)</td></tr>
-<tr class="memdesc:a5b34671e7d7598452fff9d87a97bf53c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided View to project from world-space.  <br /></td></tr>
-<tr class="memitem:ac75161f710a54c4fc90ebcd172b2903c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_ac75161f710a54c4fc90ebcd172b2903c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ac75161f710a54c4fc90ebcd172b2903c">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
-<tr class="memdesc:ac75161f710a54c4fc90ebcd172b2903c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_gondwana_1_1_engine.html">Engine</a> entry point for drawing. destRectScreen must be in SCREEN pixels. This method handles opacity and reveal clipping before calling <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this DirectDrawing to the Backbuffer. Called by the engine after ro...">OnDraw()</a>, which draws the actual Canvas.  <br /></td></tr>
+<tr class="memitem:a5b34671e7d7598452fff9d87a97bf53c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a5b34671e7d7598452fff9d87a97bf53c"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a5b34671e7d7598452fff9d87a97bf53c">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
+<tr class="memdesc:a5b34671e7d7598452fff9d87a97bf53c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the screen-space drawing location for this direct drawing as seen from the specified view.  <br /></td></tr>
+<tr class="memitem:ac75161f710a54c4fc90ebcd172b2903c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_ac75161f710a54c4fc90ebcd172b2903c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ac75161f710a54c4fc90ebcd172b2903c">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memdesc:ac75161f710a54c4fc90ebcd172b2903c inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders this direct drawing to the backbuffer at the specified screen location.  <br /></td></tr>
 <tr class="memitem:ae959d8a569f2f225afce49860a7ea618 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_ae959d8a569f2f225afce49860a7ea618"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ae959d8a569f2f225afce49860a7ea618">SetOpacity</a> (float opacity)</td></tr>
-<tr class="memdesc:ae959d8a569f2f225afce49860a7ea618 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly jump to the given opacity (0..1).  <br /></td></tr>
+<tr class="memdesc:ae959d8a569f2f225afce49860a7ea618 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly sets the opacity to the specified value without animation.  <br /></td></tr>
 <tr class="memitem:a7d590a5c40e61c145c9cfdde85b145e9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a7d590a5c40e61c145c9cfdde85b145e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a7d590a5c40e61c145c9cfdde85b145e9">FadeTo</a> (float targetOpacity, float durationSec)</td></tr>
-<tr class="memdesc:a7d590a5c40e61c145c9cfdde85b145e9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fade to target opacity over duration (seconds). Returns this for chaining.  <br /></td></tr>
+<tr class="memdesc:a7d590a5c40e61c145c9cfdde85b145e9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates a smooth fade transition to the specified target opacity over the given duration.  <br /></td></tr>
 <tr class="memitem:aa9d915bb297d19580548340b4f4e9f3f inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_aa9d915bb297d19580548340b4f4e9f3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aa9d915bb297d19580548340b4f4e9f3f">FadeIn</a> (float durationSec)</td></tr>
-<tr class="memdesc:aa9d915bb297d19580548340b4f4e9f3f inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: fade in from 0 to 1 over duration.  <br /></td></tr>
+<tr class="memdesc:aa9d915bb297d19580548340b4f4e9f3f inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fades this direct drawing from its current opacity to fully opaque over the specified duration.  <br /></td></tr>
 <tr class="memitem:a29317bb9883c2d4b47a464b5d9284700 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a29317bb9883c2d4b47a464b5d9284700"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a29317bb9883c2d4b47a464b5d9284700">FadeOut</a> (float durationSec)</td></tr>
-<tr class="memdesc:a29317bb9883c2d4b47a464b5d9284700 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: fade out from current to 0 over duration.  <br /></td></tr>
+<tr class="memdesc:a29317bb9883c2d4b47a464b5d9284700 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fades this direct drawing from its current opacity to fully transparent over the specified duration.  <br /></td></tr>
 <tr class="memitem:abbc8721e4dec41025c7c55aa1855b3ce inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_abbc8721e4dec41025c7c55aa1855b3ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#abbc8721e4dec41025c7c55aa1855b3ce">CancelFade</a> ()</td></tr>
-<tr class="memdesc:abbc8721e4dec41025c7c55aa1855b3ce inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel any active fade (keeps current opacity).  <br /></td></tr>
+<tr class="memdesc:abbc8721e4dec41025c7c55aa1855b3ce inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels any active fade transition, leaving the opacity at its current value.  <br /></td></tr>
 <tr class="memitem:a931ae7b2c189e54436619f99702620ae inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a931ae7b2c189e54436619f99702620ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a931ae7b2c189e54436619f99702620ae">SetReveal</a> (float t01)</td></tr>
+<tr class="memdesc:a931ae7b2c189e54436619f99702620ae inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly sets the reveal progress to the specified value without animation.  <br /></td></tr>
 <tr class="memitem:a07fbf01c483da1f18dc5efa30299c3f1 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a07fbf01c483da1f18dc5efa30299c3f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a07fbf01c483da1f18dc5efa30299c3f1">SetRevealDirection</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141">RevealDirection</a> dir)</td></tr>
+<tr class="memdesc:a07fbf01c483da1f18dc5efa30299c3f1 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the direction from which the reveal animation progresses.  <br /></td></tr>
 <tr class="memitem:a15fd13ea5e88a25cfd4dc2130765852d inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a15fd13ea5e88a25cfd4dc2130765852d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a15fd13ea5e88a25cfd4dc2130765852d">RevealTo</a> (float t01, float durationSec, Func&lt; float, float &gt;? easing=null)</td></tr>
+<tr class="memdesc:a15fd13ea5e88a25cfd4dc2130765852d inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates a smooth reveal animation to the specified target progress over the given duration, optionally using a custom easing function.  <br /></td></tr>
 <tr class="memitem:a5432f8b27319c8fc17a93dcbebdd6609 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a5432f8b27319c8fc17a93dcbebdd6609"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a5432f8b27319c8fc17a93dcbebdd6609">CompareTo</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? other)</td></tr>
+<tr class="memdesc:a5432f8b27319c8fc17a93dcbebdd6609 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares this direct drawing to another for sorting by <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a0ff816d3ac12017ee6caff6e522e8cea" title="Gets or sets the Z-order (depth) used for sorting this direct drawing relative to other drawables.">ZOrder</a>.  <br /></td></tr>
 <tr class="memitem:a397f33126e99162c868cc5195529f2d7 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a397f33126e99162c868cc5195529f2d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a397f33126e99162c868cc5195529f2d7">Dispose</a> ()</td></tr>
+<tr class="memdesc:a397f33126e99162c868cc5195529f2d7 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance.  <br /></td></tr>
 <tr class="memitem:aa3708fe5956d7eedb4bef2ed9befda3a inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_aa3708fe5956d7eedb4bef2ed9befda3a"><td class="memItemLeft" align="right" valign="top">override bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aa3708fe5956d7eedb4bef2ed9befda3a">Equals</a> (object? obj)</td></tr>
+<tr class="memdesc:aa3708fe5956d7eedb4bef2ed9befda3a inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the specified object is equal to the current direct drawing.  <br /></td></tr>
 <tr class="memitem:a4471bb0951bdc229324127f0b545bfb2 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a4471bb0951bdc229324127f0b545bfb2"><td class="memItemLeft" align="right" valign="top">override int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a4471bb0951bdc229324127f0b545bfb2">GetHashCode</a> ()</td></tr>
+<tr class="memdesc:a4471bb0951bdc229324127f0b545bfb2 inherit pub_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a hash code for this direct drawing.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a265f814e017a8e9659cfcceaed953cce" id="r_a265f814e017a8e9659cfcceaed953cce"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a265f814e017a8e9659cfcceaed953cce">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memitem:a265f814e017a8e9659cfcceaed953cce" id="r_a265f814e017a8e9659cfcceaed953cce"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a265f814e017a8e9659cfcceaed953cce">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memdesc:a265f814e017a8e9659cfcceaed953cce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders the rectangle to the backbuffer with all configured properties and effects applied.  <br /></td></tr>
 <tr class="inherit_header pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a></td></tr>
-<tr class="memitem:a4d10b2bba4ecae5961ae1e39dc2f3c0e inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base" id="r_a4d10b2bba4ecae5961ae1e39dc2f3c0e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a4d10b2bba4ecae5961ae1e39dc2f3c0e">DirectDrawingMovableBase</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>? sceneLayer, <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a>? view, Rectangle? screenBounds, Rectangle? worldBounds, string? name=null)</td></tr>
+<tr class="memitem:a4d10b2bba4ecae5961ae1e39dc2f3c0e inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base" id="r_a4d10b2bba4ecae5961ae1e39dc2f3c0e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a4d10b2bba4ecae5961ae1e39dc2f3c0e">DirectDrawingMovableBase</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>? sceneLayer, <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>? view, Rectangle? screenBounds, Rectangle? worldBounds, string? name=null)</td></tr>
+<tr class="memdesc:a4d10b2bba4ecae5961ae1e39dc2f3c0e inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement.">DirectDrawingMovableBase</a> class with integrated movement capabilities.  <br /></td></tr>
 <tr class="inherit_header pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
-<tr class="memitem:a06db448ba75f0d6cf236f3a2a71ea8e4 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a06db448ba75f0d6cf236f3a2a71ea8e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a06db448ba75f0d6cf236f3a2a71ea8e4">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
-<tr class="memdesc:a06db448ba75f0d6cf236f3a2a71ea8e4 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the concrete drawing for this DirectDrawing to the Backbuffer. Called by the engine after routing, visibility, opacity, and reveal logic have been applied.  <br /></td></tr>
-<tr class="memitem:aec900d8f5d092b35565e658a0b845560 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_aec900d8f5d092b35565e658a0b845560"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aec900d8f5d092b35565e658a0b845560">DirectDrawingBase</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>? sceneLayer, <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a>? view, Rectangle? screenBounds, Rectangle? worldBounds, string? nickname=null)</td></tr>
+<tr class="memitem:a06db448ba75f0d6cf236f3a2a71ea8e4 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a06db448ba75f0d6cf236f3a2a71ea8e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a06db448ba75f0d6cf236f3a2a71ea8e4">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memdesc:a06db448ba75f0d6cf236f3a2a71ea8e4 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the concrete drawing for this direct drawing to the backbuffer.  <br /></td></tr>
+<tr class="memitem:aec900d8f5d092b35565e658a0b845560 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_aec900d8f5d092b35565e658a0b845560"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aec900d8f5d092b35565e658a0b845560">DirectDrawingBase</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>? sceneLayer, <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>? view, Rectangle? screenBounds, Rectangle? worldBounds, string? nickname=null)</td></tr>
+<tr class="memdesc:aec900d8f5d092b35565e658a0b845560 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> class.  <br /></td></tr>
 <tr class="memitem:ad239dc0e99d67621d35385086d91e98f inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_ad239dc0e99d67621d35385086d91e98f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ad239dc0e99d67621d35385086d91e98f">Dispose</a> (bool disposing)</td></tr>
+<tr class="memdesc:ad239dc0e99d67621d35385086d91e98f inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:a262e5df1552858e0fbe162685e5c3020 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a262e5df1552858e0fbe162685e5c3020"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a262e5df1552858e0fbe162685e5c3020">operator==</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a262e5df1552858e0fbe162685e5c3020 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether two direct drawing instances are equal using reference equality.  <br /></td></tr>
 <tr class="memitem:a76829a2d9008b28f90fd498119d70366 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a76829a2d9008b28f90fd498119d70366"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a76829a2d9008b28f90fd498119d70366">operator!=</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a76829a2d9008b28f90fd498119d70366 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether two direct drawing instances are not equal using reference equality.  <br /></td></tr>
 <tr class="memitem:a81033b742678c972859f6ff6284d1285 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a81033b742678c972859f6ff6284d1285"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a81033b742678c972859f6ff6284d1285">operator&lt;</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a81033b742678c972859f6ff6284d1285 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is less than the right.  <br /></td></tr>
 <tr class="memitem:ab75c7d4be26e4cdc6750b46060ba70bf inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_ab75c7d4be26e4cdc6750b46060ba70bf"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ab75c7d4be26e4cdc6750b46060ba70bf">operator&lt;=</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:ab75c7d4be26e4cdc6750b46060ba70bf inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is less than or equal to the right.  <br /></td></tr>
 <tr class="memitem:a1171b1097232c7778431e1b0c0415195 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a1171b1097232c7778431e1b0c0415195"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a1171b1097232c7778431e1b0c0415195">operator&gt;</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a1171b1097232c7778431e1b0c0415195 inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is greater than the right.  <br /></td></tr>
 <tr class="memitem:a6e74ad9dc76b60051ce501b48a36cb8e inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a6e74ad9dc76b60051ce501b48a36cb8e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a6e74ad9dc76b60051ce501b48a36cb8e">operator&gt;=</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a6e74ad9dc76b60051ce501b48a36cb8e inherit pub_static_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is greater than or equal to the right.  <br /></td></tr>
 <tr class="inherit_header pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:a832738f21474bf7f3e6df3f62be90f4f inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a832738f21474bf7f3e6df3f62be90f4f"><td class="memItemLeft" align="right" valign="top">readonly <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a832738f21474bf7f3e6df3f62be90f4f">_renderSurfaceHost</a></td></tr>
+<tr class="memdesc:a832738f21474bf7f3e6df3f62be90f4f inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The render surface host that manages this direct drawing's rendering pipeline.  <br /></td></tr>
 <tr class="memitem:abb7c98bc7e9410d012caa4a0d0fa8dae inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_abb7c98bc7e9410d012caa4a0d0fa8dae"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#abb7c98bc7e9410d012caa4a0d0fa8dae">_screenBounds</a></td></tr>
+<tr class="memdesc:abb7c98bc7e9410d012caa4a0d0fa8dae inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current screen-space bounds for view-mode direct drawings, in pixels.  <br /></td></tr>
 <tr class="memitem:aad8b047473298e7e9661f1b76553af5c inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_aad8b047473298e7e9661f1b76553af5c"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aad8b047473298e7e9661f1b76553af5c">_worldBounds</a></td></tr>
+<tr class="memdesc:aad8b047473298e7e9661f1b76553af5c inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current world-space bounds for scene-layer-mode direct drawings, in pixels.  <br /></td></tr>
 <tr class="memitem:a237b8677ab14b6efe4bc7aa3b3257032 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a237b8677ab14b6efe4bc7aa3b3257032"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a237b8677ab14b6efe4bc7aa3b3257032">_zOrder</a></td></tr>
+<tr class="memdesc:a237b8677ab14b6efe4bc7aa3b3257032 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Z-order used for draw sorting. Higher values draw later (on top).  <br /></td></tr>
 <tr class="memitem:a4de2014d25d69ade262b1cd77feb33da inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a4de2014d25d69ade262b1cd77feb33da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a4de2014d25d69ade262b1cd77feb33da">_visible</a></td></tr>
+<tr class="memdesc:a4de2014d25d69ade262b1cd77feb33da inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates whether this direct drawing is currently visible and should be rendered.  <br /></td></tr>
 <tr class="memitem:a4599d3cd99c7ec5ede8d1bf0c3155068 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a4599d3cd99c7ec5ede8d1bf0c3155068"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a4599d3cd99c7ec5ede8d1bf0c3155068">_lastTick</a> = HighResTimer.GetCurrentTick()</td></tr>
+<tr class="memdesc:a4599d3cd99c7ec5ede8d1bf0c3155068 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The last engine tick value used for delta-time calculations in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a52ae59743dbd89bda3f0c721321939f0" title="Performs per-frame update logic for this direct drawing, including fade and reveal animations.">Update</a>.  <br /></td></tr>
 <tr class="inherit_header properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a></td></tr>
 <tr class="memitem:a863598c04cfc8878e31fe0ee0be28504 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base" id="r_a863598c04cfc8878e31fe0ee0be28504"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_movement_1_1_movement_controller.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a863598c04cfc8878e31fe0ee0be28504">Movement</a><code> [get]</code></td></tr>
+<tr class="memdesc:a863598c04cfc8878e31fe0ee0be28504 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement controller that manages physics-based position, velocity, and forces for this direct drawing.  <br /></td></tr>
 <tr class="memitem:a7bf07b6c0b52e8bb2fd86252d8aae953 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base" id="r_a7bf07b6c0b52e8bb2fd86252d8aae953"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_movement.html#a49b5fa80f99283d647bd189725d7341d">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a7bf07b6c0b52e8bb2fd86252d8aae953">PositionSpace</a><code> [get]</code></td></tr>
-<tr class="memdesc:a7bf07b6c0b52e8bb2fd86252d8aae953 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which unit system this mover uses for its position.  <br /></td></tr>
+<tr class="memdesc:a7bf07b6c0b52e8bb2fd86252d8aae953 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinate space in which this movable object's position is expressed.  <br /></td></tr>
 <tr class="inherit_header properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:a3a1c304b55d725c4f002a15556ab79cc inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a3a1c304b55d725c4f002a15556ab79cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a3a1c304b55d725c4f002a15556ab79cc">HideWhenFullyTransparent</a> = true<code> [get, set]</code></td></tr>
+<tr class="memdesc:a3a1c304b55d725c4f002a15556ab79cc inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this direct drawing should be automatically hidden when its opacity reaches zero during fade transitions.  <br /></td></tr>
 <tr class="memitem:a9b2f37ddc3934b796eb6ea593abd08f4 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a9b2f37ddc3934b796eb6ea593abd08f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a9b2f37ddc3934b796eb6ea593abd08f4">RenderSurfaceHost</a><code> [get]</code></td></tr>
-<tr class="memdesc:a9b2f37ddc3934b796eb6ea593abd08f4 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rendering surface to which this drawable belongs.  <br /></td></tr>
+<tr class="memdesc:a9b2f37ddc3934b796eb6ea593abd08f4 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the render surface host that manages this direct drawing's rendering pipeline.  <br /></td></tr>
 <tr class="memitem:abfcad8df441dd7d68d712adcf6ba7217 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_abfcad8df441dd7d68d712adcf6ba7217"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#abfcad8df441dd7d68d712adcf6ba7217">Mode</a><code> [get]</code></td></tr>
-<tr class="memdesc:abfcad8df441dd7d68d712adcf6ba7217 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the drawing mode that determines where and how this drawable is rendered.  <br /></td></tr>
+<tr class="memdesc:abfcad8df441dd7d68d712adcf6ba7217 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the drawing mode that determines how this direct drawing is positioned and transformed.  <br /></td></tr>
 <tr class="memitem:ab464e191526e772a9cf74077c7f36f55 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_ab464e191526e772a9cf74077c7f36f55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ab464e191526e772a9cf74077c7f36f55">SceneLayer</a><code> [get]</code></td></tr>
-<tr class="memitem:a45228a4aba8bc2629472cb6560b8d554 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a45228a4aba8bc2629472cb6560b8d554"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a45228a4aba8bc2629472cb6560b8d554">View</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab464e191526e772a9cf74077c7f36f55 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer to which this direct drawing is attached, or <code>null</code> if the drawing is in view mode.  <br /></td></tr>
+<tr class="memitem:a45228a4aba8bc2629472cb6560b8d554 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a45228a4aba8bc2629472cb6560b8d554"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a45228a4aba8bc2629472cb6560b8d554">View</a><code> [get]</code></td></tr>
+<tr class="memdesc:a45228a4aba8bc2629472cb6560b8d554 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the view to which this direct drawing is attached, or <code>null</code> if the drawing is in scene-layer mode.  <br /></td></tr>
 <tr class="memitem:af8fc16eb9e7312c25471f9f0c1dd8bb2 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_af8fc16eb9e7312c25471f9f0c1dd8bb2"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#af8fc16eb9e7312c25471f9f0c1dd8bb2">ScreenBounds</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:af8fc16eb9e7312c25471f9f0c1dd8bb2 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The bounding rectangle of this drawable in SCREEN space.  <br /></td></tr>
+<tr class="memdesc:af8fc16eb9e7312c25471f9f0c1dd8bb2 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the screen-space bounds of this direct drawing in pixels.  <br /></td></tr>
 <tr class="memitem:abe9d1f20a5271daf8d6a926fe41b10ec inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_abe9d1f20a5271daf8d6a926fe41b10ec"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#abe9d1f20a5271daf8d6a926fe41b10ec">WorldBounds</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:abe9d1f20a5271daf8d6a926fe41b10ec inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">The bounding rectangle of this drawable in WORLD space.  <br /></td></tr>
+<tr class="memdesc:abe9d1f20a5271daf8d6a926fe41b10ec inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the world-space bounds of this direct drawing in pixels.  <br /></td></tr>
 <tr class="memitem:a46bc48e23fdf660435d5d969efa73092 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a46bc48e23fdf660435d5d969efa73092"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a46bc48e23fdf660435d5d969efa73092">ValueBag</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a46bc48e23fdf660435d5d969efa73092 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the extensible value bag for storing arbitrary key-value data associated with this direct drawing.  <br /></td></tr>
 <tr class="memitem:a978ca1ca043adc8dd5e7b129a876f778 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a978ca1ca043adc8dd5e7b129a876f778"><td class="memItemLeft" align="right" valign="top">Guid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a978ca1ca043adc8dd5e7b129a876f778">Id</a> = Guid.NewGuid()<code> [get]</code></td></tr>
-<tr class="memdesc:a978ca1ca043adc8dd5e7b129a876f778 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto-assigned unique identifier for the object.  <br /></td></tr>
+<tr class="memdesc:a978ca1ca043adc8dd5e7b129a876f778 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier for this direct drawing.  <br /></td></tr>
 <tr class="memitem:a83e823bebb8dd1b4e77e0686afda2319 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a83e823bebb8dd1b4e77e0686afda2319"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a83e823bebb8dd1b4e77e0686afda2319">Nickname</a><code> [get]</code></td></tr>
-<tr class="memdesc:a83e823bebb8dd1b4e77e0686afda2319 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional human-readable name associated with the object.  <br /></td></tr>
+<tr class="memdesc:a83e823bebb8dd1b4e77e0686afda2319 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the optional human-readable name for this direct drawing.  <br /></td></tr>
 <tr class="memitem:a0ff816d3ac12017ee6caff6e522e8cea inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a0ff816d3ac12017ee6caff6e522e8cea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a0ff816d3ac12017ee6caff6e522e8cea">ZOrder</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a0ff816d3ac12017ee6caff6e522e8cea inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones.  <br /></td></tr>
+<tr class="memdesc:a0ff816d3ac12017ee6caff6e522e8cea inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the Z-order (depth) used for sorting this direct drawing relative to other drawables.  <br /></td></tr>
 <tr class="memitem:a547a165d0ea6d4a8e2c2214d390adc67 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a547a165d0ea6d4a8e2c2214d390adc67"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a547a165d0ea6d4a8e2c2214d390adc67">Visible</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a547a165d0ea6d4a8e2c2214d390adc67 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the object is visible.  <br /></td></tr>
+<tr class="memdesc:a547a165d0ea6d4a8e2c2214d390adc67 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this direct drawing is visible and should be rendered.  <br /></td></tr>
 <tr class="memitem:a69c6a77b634d2e70f4b7a4e724ee0596 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a69c6a77b634d2e70f4b7a4e724ee0596"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a69c6a77b634d2e70f4b7a4e724ee0596">Opacity</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a69c6a77b634d2e70f4b7a4e724ee0596 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets/sets the current opacity (0..1). Setting marks dirty.  <br /></td></tr>
+<tr class="memdesc:a69c6a77b634d2e70f4b7a4e724ee0596 inherit properties_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current opacity of this direct drawing.  <br /></td></tr>
 <tr class="inherit_header events_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('events_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Events inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:a911321b64ad973d2ed9d3e9b39f2fc4d inherit events_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a911321b64ad973d2ed9d3e9b39f2fc4d"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html">IDirectDrawable</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a911321b64ad973d2ed9d3e9b39f2fc4d">Disposing</a></td></tr>
+<tr class="memdesc:a911321b64ad973d2ed9d3e9b39f2fc4d inherit events_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when this direct drawing is being disposed.  <br /></td></tr>
 <tr class="memitem:ae8aa5e0085dabebdd9bcd900f69f533b inherit events_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_ae8aa5e0085dabebdd9bcd900f69f533b"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ae8aa5e0085dabebdd9bcd900f69f533b">FadeToCompleted</a></td></tr>
+<tr class="memdesc:ae8aa5e0085dabebdd9bcd900f69f533b inherit events_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a fade transition initiated by <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a7d590a5c40e61c145c9cfdde85b145e9" title="Initiates a smooth fade transition to the specified target opacity over the given duration.">FadeTo</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aa9d915bb297d19580548340b4f4e9f3f" title="Fades this direct drawing from its current opacity to fully opaque over the specified duration.">FadeIn</a>, or <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a> completes.  <br /></td></tr>
 <tr class="inherit_header events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Events inherited from <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html">Gondwana.Drawing.Direct.IDirectDrawable</a></td></tr>
 <tr class="memitem:af6121c7773fe8333043c8f4c74f8e97b inherit events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable" id="r_af6121c7773fe8333043c8f4c74f8e97b"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html">IDirectDrawable</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#af6121c7773fe8333043c8f4c74f8e97b">Disposing</a></td></tr>
 <tr class="memdesc:af6121c7773fe8333043c8f4c74f8e97b inherit events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the object is being disposed.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border color, stroke width and alignment, rounded corners, dash patterns, blend modes, and optional color pulsing — all rendered via the bound RenderSurfaceHost. </p>
-<p>Designed for UI and 2D overlay work, <code><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border ...">DirectRectangle</a></code> caches its fill/stroke paints and rebuilds them only when properties change (reducing GC/native churn). It respects stroke alignment (inside/center/outside), optional dash patterns, and can animate fill or border colors over time via <code>PulseFill</code>/<code>PulseBorder</code>. </p>
-<p>Typical usage is to construct, configure via the fluent setters, and rely on the engine to call <code>Update</code>/<code>Draw</code> when dirty. Setters mark paints dirty so the next frame re-renders with the new appearance. </p>
-<p>// Filled panel with a distinct border and rounded corners var panel = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border ...">DirectRectangle</a>(surface, new Rectangle(80, 80, 220, 120), Color.SteelBlue) .SetFilled(true) .SetBorderColor(Color.Navy) .SetStrokeWidth(4f) .SetCornerRadius(12f) .SetDashPattern(8f, 4f); // dashed outline</p>
-<p>// Soft glow using blend mode var glow = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border ...">DirectRectangle</a>(surface, new Rectangle(320, 90, 180, 100), Color.FromArgb(64, 255, 200, 0)) .SetFilled(true) .SetBlendMode(SKBlendMode.Screen);</p>
-<p>// Pulsing alert border glow.PulseBorder(Color.FromArgb(255, 255, 64, 64), Color.FromArgb(80, 255, 0, 0), 1.2f); </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00046">46</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
-</div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
+<div class="textblock"><p>Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns, color pulsing, and pattern fills. </p>
+<p><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> provides a high-performance, retained-mode rectangle rendering solution with extensive customization options. It supports both world-space (scene-layer mode) and screen-space (view mode) positioning, making it suitable for both in-game UI elements and world-space markers. </p>
+<p>Key features: </p><ul>
+<li>
+Configurable fill color and optional distinct border color with independent alpha channels. </li>
+<li>
+Stroke width and alignment control (inside, outside, or centered on the rectangle boundary). </li>
+<li>
+Rounded corners with configurable radius. </li>
+<li>
+Dash patterns for creating dashed or dotted borders. </li>
+<li>
+Color pulsing animations for fill and/or border (sine or triangle wave). </li>
+<li>
+Pattern fills using tiled bitmaps with configurable tiling modes and scaling. </li>
+<li>
+Blend mode support for advanced compositing effects (screen, multiply, additive, etc.). </li>
+<li>
+Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement.">DirectDrawingMovableBase</a> capabilities. </li>
+</ul>
+<p>Performance characteristics: <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> caches SKPaint instances and rebuilds them only when properties change, minimizing GC pressure and native interop overhead. Stroke alignment and dash patterns are computed per-frame but use efficient math operations. </p>
+<p>All setter methods return <code>this</code> to enable fluent-style method chaining. Each setter automatically marks the affected screen regions as dirty to trigger rerendering on the next frame. </p>
+<p>Thread safety: This class is not thread-safe. All operations should be performed on the UI thread. </p>
+<div class="fragment"><div class="line"><span class="comment">// Filled panel with a distinct border and rounded corners</span></div>
+<div class="line">var panel = <span class="keyword">new</span> DirectRectangle(Color.SteelBlue, renderSurfaceHost, view, screenBounds)</div>
+<div class="line">    .SetFilled(<span class="keyword">true</span>)</div>
+<div class="line">    .SetBorderColor(Color.Navy)</div>
+<div class="line">    .SetStrokeWidth(4f)</div>
+<div class="line">    .SetCornerRadius(12f)</div>
+<div class="line">    .SetDashPattern(8f, 4f); <span class="comment">// dashed outline</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Soft glow using blend mode</span></div>
+<div class="line">var glow = <span class="keyword">new</span> DirectRectangle(Color.FromArgb(64, 255, 200, 0), renderSurfaceHost, view, screenBounds2)</div>
+<div class="line">    .SetFilled(<span class="keyword">true</span>)</div>
+<div class="line">    .SetBlendMode(SKBlendMode.Screen);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Pulsing alert border</span></div>
+<div class="line">glow.PulseBorder(Color.FromArgb(255, 255, 64, 64), Color.FromArgb(80, 255, 0, 0), 1.2f);</div>
+</div><!-- fragment --> </div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="a539cd00ff56cd777ffea4ab41303bc1e" name="a539cd00ff56cd777ffea4ab41303bc1e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a539cd00ff56cd777ffea4ab41303bc1e">&#9670;&#160;</a></span>StrokeAlign</h2>
 
@@ -265,13 +333,17 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a539cd00ff56cd777ffea4ab41303bc1ea9b6d3000134648fc9f1e71094ae0847d" name="a539cd00ff56cd777ffea4ab41303bc1ea9b6d3000134648fc9f1e71094ae0847d"></a>Inside&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4" name="a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4"></a>Outside&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd" name="a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd"></a>Center&#160;</td><td class="fielddoc"></td></tr>
-</table>
 
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00484">484</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Defines how the stroke (outline) is positioned relative to the rectangle's boundary. </p>
+<p>Stroke alignment determines whether the stroke width expands inward, outward, or is centered on the rectangle's edge. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a539cd00ff56cd777ffea4ab41303bc1ea9b6d3000134648fc9f1e71094ae0847d" name="a539cd00ff56cd777ffea4ab41303bc1ea9b6d3000134648fc9f1e71094ae0847d"></a>Inside&#160;</td><td class="fielddoc"><p>Draws the stroke entirely inside the rectangle's bounds. The outer edge of the stroke aligns with the rectangle boundary. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4" name="a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4"></a>Outside&#160;</td><td class="fielddoc"><p>Draws the stroke entirely outside the rectangle's bounds. The inner edge of the stroke aligns with the rectangle boundary, increasing the visual size. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd" name="a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd"></a>Center&#160;</td><td class="fielddoc"><p>Centers the stroke on the rectangle's boundary. Half the stroke width is drawn inside and half outside (default Skia behavior). </p>
+</td></tr>
+</table>
 
 </div>
 </div>
@@ -310,7 +382,25 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00094">94</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> class for scene-layer (world-space) rendering. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>The base color used for fill and/or stroke (if no distinct border color is set).</td></tr>
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that manages rendering for this rectangle. Must not be <code>null</code>.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer to which this rectangle is attached. The rectangle will be positioned in world coordinates relative to this layer.</td></tr>
+    <tr><td class="paramname">worldBounds</td><td>The world-space bounds in pixels defining the rectangle's position and size.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional human-readable name for this rectangle, useful for debugging and identification.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>renderSurfaceHost</em>  is <code>null</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This constructor creates a rectangle positioned in world coordinates that moves with the camera and is affected by the scene layer's parallax factor. Use this for in-game UI elements, selection markers, health bars, and other world-space visuals. </p>
+<p>By default, the rectangle is created unfilled (outline only) with a 1-pixel stroke width. Use <a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a> and <a class="el" href="#a6450dd2544dc00adcebb45a84ef81f20" title="Sets the width (thickness) of the rectangle&#39;s stroke (outline) in pixels.">SetStrokeWidth</a> to customize the appearance. </p>
 
 </div>
 </div>
@@ -333,7 +423,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -348,7 +438,25 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00101">101</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> class for view (screen-space) rendering. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>The base color used for fill and/or stroke (if no distinct border color is set).</td></tr>
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that manages rendering for this rectangle. Must not be <code>null</code>.</td></tr>
+    <tr><td class="paramname">view</td><td>The view to which this rectangle is attached. The rectangle will be positioned in screen coordinates relative to this view's viewport.</td></tr>
+    <tr><td class="paramname">screenBounds</td><td>The screen-space bounds in pixels defining the rectangle's position and size within the viewport.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional human-readable name for this rectangle, useful for debugging and identification.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>renderSurfaceHost</em>  is <code>null</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This constructor creates a rectangle positioned in screen coordinates that remains fixed on screen regardless of camera movement. Use this for HUD panels, buttons, borders, focus indicators, and other screen-space UI elements. </p>
+<p>By default, the rectangle is created unfilled (outline only) with a 1-pixel stroke width. Use <a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a> and <a class="el" href="#a6450dd2544dc00adcebb45a84ef81f20" title="Sets the width (thickness) of the rectangle&#39;s stroke (outline) in pixels.">SetStrokeWidth</a> to customize the appearance. </p>
 
 </div>
 </div>
@@ -369,8 +477,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Removes any existing dash pattern, reverting to a solid stroke. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00186">186</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>After calling this method, the rectangle's stroke will be drawn as a solid, continuous line instead of a dashed pattern. </p>
+<p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
 </div>
 </div>
@@ -389,9 +498,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Remove the pattern fill and return to solid color. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00316">316</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Removes the current pattern fill and reverts to solid color rendering. </p>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>After calling this method, the rectangle's fill will use the solid color set by <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a> instead of the tiled bitmap pattern. The pattern shader is disposed to free resources. </p>
+<p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
 </div>
 </div>
@@ -407,7 +517,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">override void Gondwana.Drawing.Direct.DirectRectangle.OnDraw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -422,7 +532,30 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00372">372</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Renders the rectangle to the backbuffer with all configured properties and effects applied. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The backbuffer providing the canvas and rendering context.</td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in screen pixel coordinates where the rectangle should be rendered.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This method is called automatically by the rendering pipeline. It performs the following operations: </p><ol>
+<li>
+Rebuilds paint objects if properties have changed since the last draw. </li>
+<li>
+Calculates stroke rectangle based on alignment mode (inside, outside, center). </li>
+<li>
+Adjusts corner radius based on stroke alignment to maintain visual consistency. </li>
+<li>
+Applies dash pattern to the stroke paint if configured. </li>
+<li>
+Draws the filled rectangle if <a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a> is true (using color or pattern). </li>
+<li>
+Draws the stroke (border) with opaque rendering to avoid blend artifacts. </li>
+</ol>
+<p>The stroke is rendered using SKBlendMode.Src (source replace) mode with full opacity to ensure crisp borders without color blending artifacts, regardless of the configured blend mode. This is restored after the stroke is drawn. </p>
+<p>Do not call this method directly from game code. To trigger a redraw, call DirectDrawingBase.ForceRefresh or modify properties that affect appearance. </p>
 
 </div>
 </div>
@@ -460,9 +593,21 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Animate the border color between <em>from</em>  and <em>to</em>  over <em>periodSec</em>  seconds. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00265">265</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Initiates an animated color transition (pulse) for the rectangle's border between two colors. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from</td><td>The starting color of the pulse animation.</td></tr>
+    <tr><td class="paramname">to</td><td>The ending color of the pulse animation.</td></tr>
+    <tr><td class="paramname">periodSec</td><td>The duration of one complete pulse cycle in seconds. Minimum value is 0.0001 seconds.</td></tr>
+    <tr><td class="paramname">enabled</td><td><code>true</code> to enable the pulse animation (default); <code>false</code> to disable it. </td></tr>
+    <tr><td class="paramname">triangle</td><td><code>true</code> to use a triangle wave (linear ramp up then down); <code>false</code> to use a sine wave (smooth ease in/out, default). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>The border pulse creates a smooth color transition that repeats continuously. The color interpolates from <em>from</em>  to <em>to</em>  and back, creating an attention-grabbing effect useful for selection indicators, focus outlines, or warning borders. </p>
+<p>The animation is updated each frame via <a class="el" href="#a801c259d59c101239fd5947109e542f1" title="Performs per-frame update logic, including pulse animation advancement and physics integration.">Update</a> and uses high-resolution timing for smooth, consistent animation regardless of frame rate. </p>
+<p>To stop all pulsing (fill and border), call <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a>. Disabling via <em>enabled</em>  = <code>false</code> stops the animation but preserves the settings for later re-enabling. </p>
 
 </div>
 </div>
@@ -500,9 +645,21 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Animate the fill color between <em>from</em>  and <em>to</em>  over <em>periodSec</em>  seconds. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00254">254</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Initiates an animated color transition (pulse) for the rectangle's fill between two colors. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from</td><td>The starting color of the pulse animation.</td></tr>
+    <tr><td class="paramname">to</td><td>The ending color of the pulse animation.</td></tr>
+    <tr><td class="paramname">periodSec</td><td>The duration of one complete pulse cycle in seconds. Minimum value is 0.0001 seconds.</td></tr>
+    <tr><td class="paramname">enabled</td><td><code>true</code> to enable the pulse animation (default); <code>false</code> to disable it. </td></tr>
+    <tr><td class="paramname">triangle</td><td><code>true</code> to use a triangle wave (linear ramp up then down); <code>false</code> to use a sine wave (smooth ease in/out, default). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>The fill pulse creates a smooth color transition that repeats continuously. The color interpolates from <em>from</em>  to <em>to</em>  and back, creating an attention-grabbing effect useful for alerts, health indicators, or animated UI elements. </p>
+<p>The animation is updated each frame via <a class="el" href="#a801c259d59c101239fd5947109e542f1" title="Performs per-frame update logic, including pulse animation advancement and physics integration.">Update</a> and uses high-resolution timing for smooth, consistent animation regardless of frame rate. </p>
+<p>To stop all pulsing (fill and border), call <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a>. Disabling via <em>enabled</em>  = <code>false</code> stops the animation but preserves the settings for later re-enabling. </p>
 
 </div>
 </div>
@@ -521,9 +678,17 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the alpha channel (0–255) for the base color. Border keeps its own alpha if set. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00129">129</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Sets the alpha (transparency) channel of the base color. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>The alpha value from 0 (fully transparent) to 255 (fully opaque).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>This method modifies only the alpha channel of the base color, preserving the RGB components. It affects the fill transparency and, if no distinct border color is set, also affects the stroke transparency. </p>
+<p>If a distinct border color has been set via <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a>, its alpha remains unchanged by this method. To modify the border alpha independently, call <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a> with a color containing the desired alpha value. </p>
+<p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
 </div>
 </div>
@@ -543,7 +708,14 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the blend mode used when rendering this rectangle onto the canvas. </p>
-<p>Blend modes determine how the rectangle’s pixels combine with the existing pixels on the render surface. For example: </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>The blend mode to apply. See SKBlendMode for available options.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>Blend modes determine how the rectangle's pixels combine with the existing pixels on the render surface. For example: </p>
 <ul>
 <li>
 SKBlendMode.SrcOver – Default; draws over existing content with transparency. </li>
@@ -555,8 +727,7 @@ SKBlendMode.Multiply – Darkens overlapping colors; good for shading overlays. 
 SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 </ul>
 <p>This mode applies to both the fill and stroke paints. Changing it affects how the rectangle visually interacts with whatever was previously drawn. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00211">211</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
 </div>
 </div>
@@ -575,9 +746,17 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p>Sets a distinct border color (stroke). If not set, stroke uses the base color. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00121">121</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Sets a distinct border (stroke) color, independent of the fill color. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>The border color to apply.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>When a border color is set, the stroke uses this color instead of the base color set by <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a>. This allows for rectangles with different fill and outline colors, such as a white panel with a dark border. </p>
+<p>The border color has its own alpha channel, independent of the fill's alpha. To remove the distinct border color and revert to using the base color, call <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a> again without setting a border color, or set the border color to match the base color. </p>
+<p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. If border pulsing is active, calling this method will not affect the pulsing animation until <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a> is called. </p>
 
 </div>
 </div>
@@ -596,9 +775,16 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the base color (used for fill and/or outline if no border color is specified). </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00109">109</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Sets the base color used for both fill and stroke (unless a distinct border color is specified). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>The new base color.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>This color is used for the fill when <a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a> is true, and for the stroke (border) unless a distinct border color has been set via <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a>. </p>
+<p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. If color pulsing is active, calling this method will not affect the pulsing animation until <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a> is called. </p>
 
 </div>
 </div>
@@ -617,7 +803,17 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00155">155</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Sets the radius for rounded corners in pixels. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radius</td><td>The corner radius in pixels. A value of 0 produces sharp (90-degree) corners. Larger values create more rounded corners. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>Rounded corners are applied uniformly to all four corners of the rectangle. The radius specifies how far from the corner the curve begins. If the radius is larger than half the rectangle's width or height, the corners may overlap, producing unexpected results. </p>
+<p>Rounded corners work with both filled and outlined rectangles, as well as with stroke alignment modes. The corner radius is adjusted internally based on stroke alignment to maintain visual consistency. </p>
+<p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
 </div>
 </div>
@@ -648,11 +844,11 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This rectangle for fluent chaining.</dd></dl>
-<p>This is a shorthand for SetDashPattern(float[]) that produces a repeating [dash, gap] pattern (e.g., <code>(8, 4)</code> for 8 px dash, 4 px gap). </p>
-<p>To remove the dash pattern, call <a class="el" href="#a36855013b12b50df0947f4b2e248b62f" title="Removes any existing dash pattern, reverting to a solid stroke.">ClearDashPattern</a>. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00176">176</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>This is a shorthand for creating a repeating [dash, gap] pattern (e.g., <code>(8, 4)</code> for 8 px dash, 4 px gap). The pattern is applied to the stroke (outline) only and has no effect on filled rectangles without a stroke. </p>
+<p>Dash patterns are useful for creating dashed borders, focus indicators, or selection outlines. The pattern repeats continuously around the rectangle's perimeter. </p>
+<p>To remove the dash pattern and revert to a solid stroke, call <a class="el" href="#a36855013b12b50df0947f4b2e248b62f" title="Removes any existing dash pattern, reverting to a solid stroke.">ClearDashPattern</a>. </p>
+<p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
 </div>
 </div>
@@ -671,7 +867,17 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00141">141</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Sets whether the rectangle interior is filled with the base color (or pattern). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">isFilled</td><td><code>true</code> to fill the rectangle interior; <code>false</code> to draw only the outline (stroke). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>When filled, the rectangle's interior is drawn using the fill paint (base color or pattern). When not filled, only the stroke (outline) is visible if <a class="el" href="#a6450dd2544dc00adcebb45a84ef81f20" title="Sets the width (thickness) of the rectangle&#39;s stroke (outline) in pixels.">SetStrokeWidth</a> is greater than zero. </p>
+<p>You can combine fill and stroke to create rectangles with both a filled interior and a visible border, which is common for UI panels and buttons. </p>
+<p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
 </div>
 </div>
@@ -714,20 +920,25 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p>Fill with a tiled image pattern instead of a solid color. </p>
+<p>Sets the rectangle's fill to use a tiled bitmap pattern instead of a solid color. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">bitmap</td><td>The source bitmap to tile.</td></tr>
-    <tr><td class="paramname">tileX</td><td>Horizontal tiling mode (Repeat, Mirror, Clamp).</td></tr>
-    <tr><td class="paramname">tileY</td><td>Vertical tiling mode (Repeat, Mirror, Clamp).</td></tr>
-    <tr><td class="paramname">scale</td><td>Optional scale applied to the bitmap (1 = native size).</td></tr>
-    <tr><td class="paramname">offsetPx</td><td>Optional offset of the pattern origin in pixels.</td></tr>
+    <tr><td class="paramname">bitmap</td><td>The source bitmap to tile across the rectangle's interior.</td></tr>
+    <tr><td class="paramname">tileX</td><td>The horizontal tiling mode (Repeat, Mirror, or Clamp). Default is Repeat.</td></tr>
+    <tr><td class="paramname">tileY</td><td>The vertical tiling mode (Repeat, Mirror, or Clamp). Default is Repeat.</td></tr>
+    <tr><td class="paramname">scale</td><td>Optional uniform scale factor applied to the bitmap. 1.0 = native size (default).</td></tr>
+    <tr><td class="paramname">offsetPx</td><td>Optional offset in pixels to shift the pattern origin. Null = no offset (default).</td></tr>
+    <tr><td class="paramname">filterQuality</td><td>The filter quality to use when scaling the pattern. Default is None (nearest-neighbor).</td></tr>
   </table>
   </dd>
 </dl>
-<p>The shader uses the mover's current pixel space. Paint color tints the pattern; set it to white to keep original colors. To control overall opacity, adjust <a class="el" href="#a6819eb1c1fd6aeea32d6a58500147ea3" title="Sets the alpha channel (0–255) for the base color. Border keeps its own alpha if set.">SetAlpha(int)</a>. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00294">294</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>Pattern fills replace the solid color fill with a repeating texture. The bitmap is tiled according to the specified tile modes and scaled/offset as configured. This is useful for textured panels, patterned backgrounds, or decorative UI elements. </p>
+<p>The base color set by <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a> tints the pattern multiplicatively. Set it to white to preserve the pattern's original colors, or use another color to apply a tint. </p>
+<p>The pattern uses the rectangle's current coordinate space (world or screen). The <em>scale</em>  parameter affects the pattern's size, while <em>offsetPx</em>  shifts the pattern's origin, allowing for animated or scrolling textures. </p>
+<p>The bitmap is not owned by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a>; the caller must manage its lifetime and ensure it remains valid while in use. </p>
+<p>This method automatically enables filled mode (<a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a>(true)) to make the pattern visible. The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+<p>To remove the pattern and return to solid color fill, call <a class="el" href="#ae15c4f69e1706ba944838f4ab16715ad" title="Removes the current pattern fill and reverts to solid color rendering.">ClearFillPattern</a>. </p>
 
 </div>
 </div>
@@ -746,19 +957,25 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p>Sets how the rectangle’s stroke is positioned relative to its bounds. </p>
-<p>Determines whether the stroke (outline) is drawn inside, outside, or centered on the rectangle’s boundary: </p>
+<p>Sets how the rectangle's stroke is positioned relative to its bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">align</td><td>The stroke alignment mode. See <a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1e" title="Defines how the stroke (outline) is positioned relative to the rectangle&#39;s boundary.">StrokeAlign</a> for available options.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>Determines whether the stroke (outline) is drawn inside, outside, or centered on the rectangle's boundary: </p>
 <ul>
 <li>
-<a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea9b6d3000134648fc9f1e71094ae0847d">StrokeAlign.Inside</a> Draws the stroke entirely inside the rectangle’s bounds.  </li>
+<a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea9b6d3000134648fc9f1e71094ae0847d" title="Draws the stroke entirely inside the rectangle&#39;s bounds. The outer edge of the stroke aligns with the...">StrokeAlign.Inside</a> Draws the stroke entirely inside the rectangle's bounds.  </li>
 <li>
-<a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4">StrokeAlign.Outside</a> Draws the stroke entirely outside the rectangle’s bounds, increasing its visual size.  </li>
+<a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4" title="Draws the stroke entirely outside the rectangle&#39;s bounds. The inner edge of the stroke aligns with th...">StrokeAlign.Outside</a> Draws the stroke entirely outside the rectangle's bounds, increasing its visual size.  </li>
 <li>
-<a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd">StrokeAlign.Center</a> Centers the stroke on the boundary line (default Skia behavior).  </li>
+<a class="el" href="#a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd" title="Centers the stroke on the rectangle&#39;s boundary. Half the stroke width is drawn inside and half outsid...">StrokeAlign.Center</a> Centers the stroke on the boundary line (default Skia behavior).  </li>
 </ul>
 <p>This only affects visible strokes (outlined or bordered rectangles). Filled rectangles are not impacted by stroke alignment. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00247">247</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
 </div>
 </div>
@@ -777,7 +994,17 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00148">148</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Sets the width (thickness) of the rectangle's stroke (outline) in pixels. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>The stroke width in pixels. A value of 0 results in no visible stroke.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>The stroke width determines how thick the rectangle's outline appears. Combined with <a class="el" href="#af803e07d9f776a2285b48bd31125b371" title="Sets how the rectangle&#39;s stroke is positioned relative to its bounds.">SetStrokeAlign</a>, you can control whether the stroke is drawn inside, outside, or centered on the rectangle boundary. </p>
+<p>For pixel-perfect rendering at 1-pixel width, consider disabling antialiasing or using integer coordinates for the rectangle bounds. </p>
+<p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
 </div>
 </div>
@@ -796,9 +1023,10 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
       </table>
 </div><div class="memdoc">
 
-<p>Disable all color pulsing. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00276">276</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+<p>Stops all active color pulsing animations (fill and border), reverting to static colors. </p>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
+<p>After calling this method, the rectangle's fill and border colors are restored to the values set by <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a> and <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a>. The pulse animation state (period, wave type, colors) is preserved but disabled, so you can re-enable it later by calling <a class="el" href="#aa160982417cd8c658e820211741f0030" title="Initiates an animated color transition (pulse) for the rectangle&#39;s fill between two colors.">PulseFill</a> or <a class="el" href="#adeb285a1ff90fd5c7ba970f1c6c26813" title="Initiates an animated color transition (pulse) for the rectangle&#39;s border between two colors.">PulseBorder</a> again. </p>
+<p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
 </div>
 </div>
@@ -825,22 +1053,36 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 </table>
 </div><div class="memdoc">
 
-<p>Per-frame update hook. Default: advance scrolling only. Called from DirectDrawingManager.UpdateAll(long). </p>
+<p>Performs per-frame update logic, including pulse animation advancement and physics integration. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">tick</td><td>Current engine tick from HighResTimer.</td></tr>
+    <tr><td class="paramname">tick</td><td>The current engine tick value from HighResTimer.</td></tr>
   </table>
   </dd>
 </dl>
+<p>This method overrides <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a156e583528d8e747636d70e4972b81db" title="Performs per-frame update logic, including fixed-timestep physics integration for movement.">DirectDrawingMovableBase.Update</a> to add color pulsing animation support. It performs the following operations: </p><ol>
+<li>
+Calculates elapsed time since the last update using high-resolution timing. </li>
+<li>
+Advances the pulse time accumulator for sine/triangle wave generation. </li>
+<li>
+Updates the fill color if fill pulsing is enabled, interpolating between the pulse colors. </li>
+<li>
+Updates the border color if border pulsing is enabled, interpolating between the pulse colors. </li>
+<li>
+Marks affected regions as dirty if color changes occurred. </li>
+<li>
+Calls <code>base.Update(tick)</code> to perform physics integration and fade/reveal animations. </li>
+</ol>
+<p>The pulse animation uses a continuous time accumulator that wraps around the specified period, ensuring smooth, consistent animation. Color interpolation is performed in RGB space with linear blending (including alpha channel). </p>
+<p>Override this method in derived classes to add custom per-frame logic. Always call <code>base.Update(tick)</code> to preserve pulsing, movement, and fade/reveal functionality. </p>
 
 <p>Reimplemented from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00325">325</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/Direct/<a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/Direct/<a class="el" href="_direct_rectangle_8cs.html">DirectRectangle.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

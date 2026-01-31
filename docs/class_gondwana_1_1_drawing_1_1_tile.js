@@ -3,6 +3,7 @@ var class_gondwana_1_1_drawing_1_1_tile =
     [ "CompareTo", "class_gondwana_1_1_drawing_1_1_tile.html#a88e851955c75d87fb4077eb257b32684", null ],
     [ "Dispose", "class_gondwana_1_1_drawing_1_1_tile.html#a6ca4859d010ae75a57af442c51e83022", null ],
     [ "Draw", "class_gondwana_1_1_drawing_1_1_tile.html#a4927327e6c632c964beae3b3bcdcb69b", null ],
+    [ "GetCollisionAreaScreen", "class_gondwana_1_1_drawing_1_1_tile.html#a196e3fa81e6244609b0ca81d914d9f06", null ],
     [ "GetDrawLocationScreen", "class_gondwana_1_1_drawing_1_1_tile.html#a2c2d0e6d13d966cf1faca72bd05a85c9", null ],
     [ "_collider", "class_gondwana_1_1_drawing_1_1_tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1", null ],
     [ "pauseAnimation", "class_gondwana_1_1_drawing_1_1_tile.html#a55b7cf5594bcb95ab5893c3c43842673", null ],

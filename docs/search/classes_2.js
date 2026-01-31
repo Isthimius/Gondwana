@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['camera_0',['Camera',['../class_gondwana_1_1_rendering_1_1_camera.html',1,'Gondwana::Rendering']]],
+  ['camera_0',['Camera',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html',1,'Gondwana::Rendering::Views']]],
   ['collisiondetectionadjustment_1',['CollisionDetectionAdjustment',['../struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html',1,'Gondwana::Drawing::Collisions']]],
   ['collisionresult_2',['CollisionResult',['../struct_gondwana_1_1_collision_1_1_collision_result.html',1,'Gondwana::Collision']]],
   ['collisionworld_3',['CollisionWorld',['../class_gondwana_1_1_collision_1_1_collision_world.html',1,'Gondwana::Collision']]],

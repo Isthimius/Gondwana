@@ -8,7 +8,7 @@ var searchData=
   ['winformsmouseadapter_5',['WinFormsMouseAdapter',['../class_gondwana_1_1_win_forms_1_1_input_1_1_mouse_1_1_win_forms_mouse_adapter.html#ac2734536da49a4d7031ee5a091fed073',1,'Gondwana::WinForms::Input::Mouse::WinFormsMouseAdapter']]],
   ['withdeadzone_6',['WithDeadzone',['../struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html#a50542303651732ef842febeae7fae56b',1,'Gondwana::Input::Gamepad::GamepadStickState']]],
   ['worldpxtogrid_7',['WorldPxToGrid',['../class_gondwana_1_1_scenes_1_1_scene_layer.html#a5a32b42fedf1dcf1365878805a4eeca1',1,'Gondwana::Scenes::SceneLayer']]],
-  ['worldpxtoscreenpx_8',['WorldPxToScreenPx',['../class_gondwana_1_1_rendering_1_1_view.html#ab1b8e886ca2df589ac800090e4a07df8',1,'Gondwana::Rendering::View']]],
-  ['worldrecttoscreenrect_9',['WorldRectToScreenRect',['../class_gondwana_1_1_rendering_1_1_view.html#af51dd696e12b2613fa9296131258b0f7',1,'Gondwana::Rendering::View']]],
+  ['worldpxtoscreenpx_8',['WorldPxToScreenPx',['../class_gondwana_1_1_rendering_1_1_views_1_1_view.html#a6efebd46dd788a8587c492f2499b159d',1,'Gondwana::Rendering::Views::View']]],
+  ['worldrecttoscreenrect_9',['WorldRectToScreenRect',['../class_gondwana_1_1_rendering_1_1_views_1_1_view.html#ac33dbf74f3317abe54778791aa879865',1,'Gondwana::Rendering::Views::View']]],
   ['wrapgrid_10',['WrapGrid',['../class_gondwana_1_1_scenes_1_1_scene_layer.html#a1752ec1eb9abb1316ea8421f07f54006',1,'Gondwana::Scenes::SceneLayer']]]
 ];

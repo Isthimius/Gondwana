@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Drawing.Tile Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Drawing.Tile Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -106,9 +107,10 @@ Inheritance diagram for Gondwana.Drawing.Tile:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2c2d0e6d13d966cf1faca72bd05a85c9" id="r_a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c2d0e6d13d966cf1faca72bd05a85c9">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> view)</td></tr>
-<tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> to project from world-space.  <br /></td></tr>
-<tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memitem:a2c2d0e6d13d966cf1faca72bd05a85c9" id="r_a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c2d0e6d13d966cf1faca72bd05a85c9">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
+<tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> to project from world-space.  <br /></td></tr>
+<tr class="memitem:a196e3fa81e6244609b0ca81d914d9f06" id="r_a196e3fa81e6244609b0ca81d914d9f06"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a196e3fa81e6244609b0ca81d914d9f06">GetCollisionAreaScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
+<tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
 <tr class="memdesc:a4927327e6c632c964beae3b3bcdcb69b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.  <br /></td></tr>
 <tr class="memitem:a88e851955c75d87fb4077eb257b32684" id="r_a88e851955c75d87fb4077eb257b32684"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88e851955c75d87fb4077eb257b32684">CompareTo</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Tile</a>? tile)</td></tr>
 <tr class="memitem:a6ca4859d010ae75a57af442c51e83022" id="r_a6ca4859d010ae75a57af442c51e83022"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ca4859d010ae75a57af442c51e83022">Dispose</a> ()</td></tr>
@@ -145,10 +147,7 @@ Properties</h2></td></tr>
 <tr class="memitem:ac8f79979d79887bc43b245de84e9a052" id="r_ac8f79979d79887bc43b245de84e9a052"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8f79979d79887bc43b245de84e9a052">AdjustCollisionArea</a> = CollisionDetectionAdjustment.None<code> [get, set]</code></td></tr>
 <tr class="memitem:a809ee69a8d25e7cf843f042c9b6298b6" id="r_a809ee69a8d25e7cf843f042c9b6298b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a809ee69a8d25e7cf843f042c9b6298b6">ValueBag</a> = new()<code> [get]</code></td></tr>
 </table>
-<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00012">12</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a88e851955c75d87fb4077eb257b32684" name="a88e851955c75d87fb4077eb257b32684"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88e851955c75d87fb4077eb257b32684">&#9670;&#160;</a></span>CompareTo()</h2>
 
@@ -163,8 +162,6 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00150">150</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -193,8 +190,6 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#aa3c760f6aeae24f2a907da2f254cc84a">Gondwana.Drawing.Sprites.Sprite</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00184">184</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a4927327e6c632c964beae3b3bcdcb69b" name="a4927327e6c632c964beae3b3bcdcb69b"></a>
@@ -209,7 +204,7 @@ Properties</h2></td></tr>
         <tr>
           <td class="memname">virtual void Gondwana.Drawing.Tile.Draw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -237,6 +232,31 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="a196e3fa81e6244609b0ca81d914d9f06" name="a196e3fa81e6244609b0ca81d914d9f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a196e3fa81e6244609b0ca81d914d9f06">&#9670;&#160;</a></span>GetCollisionAreaScreen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual RectangleF Gondwana.Drawing.Tile.GetCollisionAreaScreen </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a2c2d0e6d13d966cf1faca72bd05a85c9" name="a2c2d0e6d13d966cf1faca72bd05a85c9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2c2d0e6d13d966cf1faca72bd05a85c9">&#9670;&#160;</a></span>GetDrawLocationScreen()</h2>
 
@@ -249,7 +269,7 @@ Properties</h2></td></tr>
         <tr>
           <td class="memname">virtual RectangleF Gondwana.Drawing.Tile.GetDrawLocationScreen </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -260,18 +280,16 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> to project from world-space. </p>
+<p>Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> to project from world-space. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">view</td><td>The <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> providing camera, zoom, parallax, and viewport offsets used to convert the object's world-space bounds into screen-space. </td></tr>
+    <tr><td class="paramname">view</td><td>The <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> providing camera, zoom, parallax, and viewport offsets used to convert the object's world-space bounds into screen-space. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A rectangle in absolute SCREEN pixel coordinates on the Backbuffer. </dd></dl>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a8da83689234405828f7f6ed1f2062ec3">Gondwana.Drawing.IDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00076">76</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -296,8 +314,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00030">30</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a55b7cf5594bcb95ab5893c3c43842673" name="a55b7cf5594bcb95ab5893c3c43842673"></a>
@@ -319,8 +335,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00028">28</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -345,8 +359,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00143">143</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a50bde19a832324893f058b03e14cf7f3" name="a50bde19a832324893f058b03e14cf7f3"></a>
@@ -368,8 +380,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00108">108</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -393,8 +403,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00111">111</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a1a7a5eb292031f6d4c23291f31c9aa93" name="a1a7a5eb292031f6d4c23291f31c9aa93"></a>
@@ -416,8 +424,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00089">89</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -441,8 +447,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00038">38</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a0862275089f09bfb25738641365856f6" name="a0862275089f09bfb25738641365856f6"></a>
@@ -464,8 +468,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00125">125</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -493,8 +495,6 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#ae2a09ae0aeb04bce1333130f416584fb">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00049">49</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="af2c80d03dc7693f9ea706e9d426e30b0" name="af2c80d03dc7693f9ea706e9d426e30b0"></a>
@@ -516,8 +516,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00036">36</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -545,8 +543,6 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00052">52</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a56ea85f53ad251db7f223588a341773a" name="a56ea85f53ad251db7f223588a341773a"></a>
@@ -571,8 +567,6 @@ Properties</h2></td></tr>
 
 <p>Used to determine polygonal area when drawing grid lines or fog. Override this property in a derived class to define custom areas for these effects. </p>
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00140">140</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a06b3bff9f658e13237a591b2d8ec1a69" name="a06b3bff9f658e13237a591b2d8ec1a69"></a>
@@ -594,8 +588,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00086">86</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -619,8 +611,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00105">105</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a3e4ea033721a0b7d9af2c49c2bddc385" name="a3e4ea033721a0b7d9af2c49c2bddc385"></a>
@@ -642,8 +632,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00042">42</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -667,8 +655,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00040">40</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="abe1c33a0aab3bfa09f748920e504b4ae" name="abe1c33a0aab3bfa09f748920e504b4ae"></a>
@@ -690,8 +676,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00102">102</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -715,8 +699,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00016">16</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a809ee69a8d25e7cf843f042c9b6298b6" name="a809ee69a8d25e7cf843f042c9b6298b6"></a>
@@ -738,8 +720,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00146">146</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -767,8 +747,6 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00055">55</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a6ea4696cfc6f3998c2cb0dc891a1987b" name="a6ea4696cfc6f3998c2cb0dc891a1987b"></a>
@@ -795,12 +773,10 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00066">66</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/<a class="el" href="_tile_8cs_source.html">Tile.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/<a class="el" href="_tile_8cs.html">Tile.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

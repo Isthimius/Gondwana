@@ -1,12 +1,12 @@
 var searchData=
 [
-  ['panby_0',['PanBy',['../class_gondwana_1_1_rendering_1_1_camera.html#a29a04ef011cf248b18cfd59b4a1c9b37',1,'Gondwana::Rendering::Camera']]],
-  ['pancenterto_1',['PanCenterTo',['../class_gondwana_1_1_rendering_1_1_camera.html#aef4b611ec30ecf1e8f6ca658b4dbc41d',1,'Gondwana::Rendering::Camera']]],
-  ['pancentertoonce_2',['PanCenterToOnce',['../class_gondwana_1_1_rendering_1_1_camera.html#a99ab15436fecd10b559bf1fc27abfb1b',1,'Gondwana::Rendering::Camera']]],
-  ['pancentertooverduration_3',['PanCenterToOverDuration',['../class_gondwana_1_1_rendering_1_1_camera.html#aedd2ac23dbc58c4cb0e550f5051d69f2',1,'Gondwana::Rendering::Camera']]],
-  ['panto_4',['PanTo',['../class_gondwana_1_1_rendering_1_1_camera.html#adf07292414abdeb9fafd18c332f00ea7',1,'Gondwana::Rendering::Camera']]],
-  ['pantogridoverduration_5',['PanToGridOverDuration',['../class_gondwana_1_1_rendering_1_1_camera.html#aa738b52648be2a077b3291b761a2fa6f',1,'Gondwana::Rendering::Camera']]],
-  ['pantooverduration_6',['PanToOverDuration',['../class_gondwana_1_1_rendering_1_1_camera.html#a39426116ca1b1a45079ae89dfa0b4809',1,'Gondwana::Rendering::Camera']]],
+  ['panby_0',['PanBy',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html#ae49406b652e17dd718e8b9399bcec323',1,'Gondwana::Rendering::Views::Camera']]],
+  ['pancenterto_1',['PanCenterTo',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html#a84585df672a7f457dec68523f6176b8b',1,'Gondwana::Rendering::Views::Camera']]],
+  ['pancentertoonce_2',['PanCenterToOnce',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html#a6bc4d9a3853420841d9f039081f3e098',1,'Gondwana::Rendering::Views::Camera']]],
+  ['pancentertooverduration_3',['PanCenterToOverDuration',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html#a1010242cde6d379053fa95abb85d4d0c',1,'Gondwana::Rendering::Views::Camera']]],
+  ['panto_4',['PanTo',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html#ae1f3712f1ccf72cdc5408c7a6d481f9e',1,'Gondwana::Rendering::Views::Camera']]],
+  ['pantogridoverduration_5',['PanToGridOverDuration',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html#a223c1e5bdad797c5de0bee3692f45fb5',1,'Gondwana::Rendering::Views::Camera']]],
+  ['pantooverduration_6',['PanToOverDuration',['../class_gondwana_1_1_rendering_1_1_views_1_1_camera.html#abb52e521de612f2b995cacf222c7bee9',1,'Gondwana::Rendering::Views::Camera']]],
   ['particlespawnhandler_7',['ParticleSpawnHandler',['../namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#a7071e031a1df302042454dd0d99d06f5',1,'Gondwana::Drawing::Direct::Particles']]],
   ['particlesurface_8',['ParticleSurface',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a3014d74e9496c42565d7a977ef6a9d90',1,'Gondwana.Drawing.Direct.Particles.ParticleSurface.ParticleSurface(RenderSurfaceHostBase renderSurfaceHost, SceneLayer sceneLayer, Rectangle? worldBounds, string? nickname=null, int maxParticles=2000, SKBitmap? particleSprite=null)'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a107de8a9168c91d203b3de67f4d34c43',1,'Gondwana.Drawing.Direct.Particles.ParticleSurface.ParticleSurface(RenderSurfaceHostBase renderSurfaceHost, View view, Rectangle? screenBounds, string? nickname=null, int maxParticles=2000, SKBitmap? particleSprite=null)']]],
   ['pause_9',['Pause',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html#a89f38b6c548b3bd20a402807bdc1c07e',1,'Gondwana.Drawing.Direct.DirectVideo.Pause()'],['../interface_gondwana_1_1_video_1_1_i_video_player.html#a3b76918587808d0a0acdf0fdbefcce92',1,'Gondwana.Video.IVideoPlayer.Pause()'],['../class_gondwana_1_1_video_1_1_vlc_video_player.html#aebc3d3073452d11fc8b6782909214241',1,'Gondwana.Video.VlcVideoPlayer.Pause()'],['../class_gondwana_1_1_audio_1_1_audio_resource.html#a8df6ef8ad33ddce8ce5060d64a5a65df',1,'Gondwana.Audio.AudioResource.Pause()']]],
@@ -15,10 +15,11 @@ var searchData=
   ['pollforevents_12',['PollForEvents',['../class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html#a0dccd2c6b4b2563a750a20ec6c0e9f02',1,'Gondwana::Input::Gamepad::GamepadEventPoller']]],
   ['post_13',['Post',['../class_gondwana_1_1_engine_dispatcher.html#a9036ca30da3f87de464ec76867757e23',1,'Gondwana.EngineDispatcher.Post()'],['../interface_gondwana_1_1_i_engine_dispatcher.html#a00e06df76ed9b4f7add0f560bce6e134',1,'Gondwana.IEngineDispatcher.Post()'],['../interface_gondwana_1_1_i_ui_dispatcher.html#abf90e59f92882784bb5f5c0ad03bb560',1,'Gondwana.IUiDispatcher.Post()'],['../class_gondwana_1_1_ui_dispatcher.html#a69e897d476a04ff6688a0ba931420443',1,'Gondwana.UiDispatcher.Post()']]],
   ['prefiltermessage_14',['PreFilterMessage',['../class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html#a64a2c27a73493304a4424c192ba424c1',1,'Gondwana::WinForms::Input::Keyboard::WinFormsKeyboardAdapter']]],
-  ['projectfile_15',['ProjectFile',['../class_gondwana_1_1_design_1_1_controls_1_1_project_file.html#ab646cdcf0ef29b6b29099cbc47dc3ac0',1,'Gondwana::Design::Controls::ProjectFile']]],
-  ['pulseborder_16',['PulseBorder',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#adeb285a1ff90fd5c7ba970f1c6c26813',1,'Gondwana::Drawing::Direct::DirectRectangle']]],
-  ['pulsecolor_17',['PulseColor',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#adea146bff87658bfd3b3e383664ca1f6',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['pulsefill_18',['PulseFill',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#aa160982417cd8c658e820211741f0030',1,'Gondwana::Drawing::Direct::DirectRectangle']]],
-  ['puzzle_19',['Puzzle',['../class_slider_1_1_puzzle.html#a6dea1a5b85d1386360353bddf0097ddf',1,'Slider::Puzzle']]],
-  ['puzzleform_20',['PuzzleForm',['../class_slider_1_1_puzzle_form.html#a17b770bb9ab1f0de6fd5bd72fe1ebed8',1,'Slider::PuzzleForm']]]
+  ['present_15',['Present',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_adapter.html#a411d5e802410cc48f8b197ffe25d9a57',1,'Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceAdapter.Present()'],['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_adapter.html#a45fafce8e68f0062fc454f63e9ce436c',1,'Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter.Present()'],['../class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html#a21b2cb15e86a814a070e5d68c15e4e35',1,'Gondwana.Rendering.RenderSurfaceAdapterBase.Present()']]],
+  ['projectfile_16',['ProjectFile',['../class_gondwana_1_1_design_1_1_controls_1_1_project_file.html#ab646cdcf0ef29b6b29099cbc47dc3ac0',1,'Gondwana::Design::Controls::ProjectFile']]],
+  ['pulseborder_17',['PulseBorder',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#adeb285a1ff90fd5c7ba970f1c6c26813',1,'Gondwana::Drawing::Direct::DirectRectangle']]],
+  ['pulsecolor_18',['PulseColor',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#adea146bff87658bfd3b3e383664ca1f6',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['pulsefill_19',['PulseFill',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#aa160982417cd8c658e820211741f0030',1,'Gondwana::Drawing::Direct::DirectRectangle']]],
+  ['puzzle_20',['Puzzle',['../class_slider_1_1_puzzle.html#a6dea1a5b85d1386360353bddf0097ddf',1,'Slider::Puzzle']]],
+  ['puzzleform_21',['PuzzleForm',['../class_slider_1_1_puzzle_form.html#a17b770bb9ab1f0de6fd5bd72fe1ebed8',1,'Slider::PuzzleForm']]]
 ];

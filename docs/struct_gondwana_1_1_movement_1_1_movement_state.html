@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Movement.MovementState Struct Reference</title>
+<title>Gondwana Game Engine: Gondwana.Movement.MovementState Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -108,10 +109,7 @@ Properties</h2></td></tr>
 <tr class="memitem:a79ac8898e0b3974517e26ea2c29b1c64" id="r_a79ac8898e0b3974517e26ea2c29b1c64"><td class="memItemLeft" align="right" valign="top">readonly bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79ac8898e0b3974517e26ea2c29b1c64">HasMotion</a><code> [get]</code></td></tr>
 <tr class="memdesc:a79ac8898e0b3974517e26ea2c29b1c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the object is in motion.  <br /></td></tr>
 </table>
-<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_movement_state_8cs_source.html#l00006">6</a> of file <a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a>.</p>
-</div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
 <a id="a1f29cdfa48ed17f235b82f09738a1aa7" name="a1f29cdfa48ed17f235b82f09738a1aa7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f29cdfa48ed17f235b82f09738a1aa7">&#9670;&#160;</a></span>Acceleration</h2>
 
@@ -133,8 +131,6 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Acceleration in current MotionSpace units per second^2. </p>
-
-<p class="definition">Definition at line <a class="el" href="_movement_state_8cs_source.html#l00024">24</a> of file <a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a>.</p>
 
 </div>
 </div>
@@ -160,8 +156,6 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether the object is in motion. </p>
 
-<p class="definition">Definition at line <a class="el" href="_movement_state_8cs_source.html#l00041">41</a> of file <a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a>.</p>
-
 </div>
 </div>
 <a id="a5733b4c78d9cd73c9c2fa0d066a9637d" name="a5733b4c78d9cd73c9c2fa0d066a9637d"></a>
@@ -185,8 +179,6 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Linear damping per second in [0..1]. 0 = no damping. Apply as v *= (1 - LinearDamping * dt) in the controller. Only affects integrated movement (not scripted). </p>
-
-<p class="definition">Definition at line <a class="el" href="_movement_state_8cs_source.html#l00036">36</a> of file <a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a>.</p>
 
 </div>
 </div>
@@ -212,8 +204,6 @@ Properties</h2></td></tr>
 
 <p>Max speed in current MotionSpace units per second (null = no cap). </p>
 
-<p class="definition">Definition at line <a class="el" href="_movement_state_8cs_source.html#l00029">29</a> of file <a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a>.</p>
-
 </div>
 </div>
 <a id="a857543912e24b671c21f240901e3ebc9" name="a857543912e24b671c21f240901e3ebc9"></a>
@@ -237,8 +227,6 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>What unit system these values are expressed in. Grid = tile units; Pixel = screen pixels. This may differ from the <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html#a827e9b8e9a80f237c951e6b2fe550dbf" title="Which unit system this mover uses for its position.">IMovable.PositionSpace</a> in some cases (e.g., a Pixel-based mover following Grid-based Sprite, etc.). </p>
-
-<p class="definition">Definition at line <a class="el" href="_movement_state_8cs_source.html#l00014">14</a> of file <a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a>.</p>
 
 </div>
 </div>
@@ -264,12 +252,10 @@ Properties</h2></td></tr>
 
 <p>Velocity in current MotionSpace units per second. </p>
 
-<p class="definition">Definition at line <a class="el" href="_movement_state_8cs_source.html#l00019">19</a> of file <a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Movement/<a class="el" href="_movement_state_8cs_source.html">MovementState.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Movement/<a class="el" href="_movement_state_8cs.html">MovementState.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

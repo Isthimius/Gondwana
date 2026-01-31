@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Movement.IMovable Interface Reference</title>
+<title>Gondwana Game Engine: Gondwana.Movement.IMovable Interface Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -102,10 +103,10 @@ Inheritance diagram for Gondwana.Movement.IMovable:</div>
   <img src="interface_gondwana_1_1_movement_1_1_i_movable.png" usemap="#Gondwana_2EMovement_2EIMovable_map" alt=""/>
   <map id="Gondwana_2EMovement_2EIMovable_map" name="Gondwana_2EMovement_2EIMovable_map">
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html" alt="Gondwana.Drawing.Direct.DirectComposite" shape="rect" coords="0,56,323,80"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,56,822,80"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,56,822,80"/>
 <area href="interface_gondwana_1_1_movement_1_1_i_movable_on_scene_layer.html" title="Implemented by grid-space IMovable objects that belong to a specific Scenes.SceneLayer." alt="Gondwana.Movement.IMovableOnSceneLayer" shape="rect" coords="832,56,1155,80"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Draws a bitmap/image into a rectangular region with optional scaling mode, source sub-rect,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,112,323,136"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border ..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,112,656,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,112,323,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,112,656,136"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="666,112,989,136"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="999,112,1322,136"/>
   </map>
@@ -126,8 +127,6 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines an object that can be moved within a specific coordinate space. </p>
 <p>The <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> interface provides methods to retrieve and update the position of an object in a defined <a class="el" href="namespace_gondwana_1_1_movement.html#a49b5fa80f99283d647bd189725d7341d" title="Specifies the coordinate system used for movement calculations and updates.">MovementSpace</a>. Implementations of this interface are expected to handle position-related operations consistently within the specified coordinate system.</p>
-
-<p class="definition">Definition at line <a class="el" href="_i_movable_8cs_source.html#l00011">11</a> of file <a class="el" href="_i_movable_8cs_source.html">IMovable.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a277dd28e3a5e5eb48235baba05437a65" name="a277dd28e3a5e5eb48235baba05437a65"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a277dd28e3a5e5eb48235baba05437a65">&#9670;&#160;</a></span>GetPosition()</h2>
@@ -196,12 +195,10 @@ Properties</h2></td></tr>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html#ad38e0285605825ffe181f98ba74daef8">Gondwana.Drawing.Direct.DirectComposite</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a7bf07b6c0b52e8bb2fd86252d8aae953">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_i_movable_8cs_source.html#l00014">14</a> of file <a class="el" href="_i_movable_8cs_source.html">IMovable.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this interface was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Movement/<a class="el" href="_i_movable_8cs_source.html">IMovable.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Movement/<a class="el" href="_i_movable_8cs.html">IMovable.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

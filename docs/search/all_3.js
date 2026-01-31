@@ -1,7 +1,7 @@
 var searchData=
 [
   ['backbuffer_0',['Backbuffer',['../class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html#af1e9cce6010aec7aa21ce64a35d768d9',1,'Gondwana.Rendering.RenderSurfaceHost-1-g.Backbuffer'],['../class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#aa5cd6f2a3441111e38acdff4b721512a',1,'Gondwana.Rendering.RenderSurfaceHostBase.Backbuffer']]],
-  ['backbufferbase_1',['BackbufferBase',['../class_gondwana_1_1_rendering_1_1_backbuffer_base.html',1,'Gondwana.Rendering.BackbufferBase'],['../class_gondwana_1_1_rendering_1_1_backbuffer_base.html#a301adda988acf9267a7c32775b42c102',1,'Gondwana.Rendering.BackbufferBase.BackbufferBase()']]],
+  ['backbufferbase_1',['BackbufferBase',['../class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html',1,'Gondwana.Rendering.Backbuffers.BackbufferBase'],['../class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html#a17a557c2e9c23d280ff2af975fe80f29',1,'Gondwana.Rendering.Backbuffers.BackbufferBase.BackbufferBase()']]],
   ['backbufferbase_2ecs_2',['BackbufferBase.cs',['../_backbuffer_base_8cs.html',1,'']]],
   ['backcolor_3',['BackColor',['../class_gondwana_1_1_design_1_1_forms_1_1_bitmap_change_color_pop_up.html#a2884b91d084a35f50bcdfb5323bf2006',1,'Gondwana.Design.Forms.BitmapChangeColorPopUp.BackColor'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a84b9a77cfc142c30f1a24b0abfbb03a3',1,'Gondwana.Drawing.Direct.TextBlock.BackColor']]],
   ['basetilesize_4',['BaseTileSize',['../struct_gondwana_1_1_drawing_1_1_frame.html#a391d57f5a81ea3dcc5158867801e8595',1,'Gondwana::Drawing::Frame']]],
@@ -10,7 +10,7 @@ var searchData=
   ['bind_7',['Bind',['../class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html#ad2eee4bd5139d89c515b2d79463f2f03',1,'Gondwana::Rendering::RenderSurfaceHost-1-g']]],
   ['bindtocurrentthread_8',['BindToCurrentThread',['../class_gondwana_1_1_engine_dispatcher.html#a57b51f4ccd998b7732f3bb16a597ae83',1,'Gondwana.EngineDispatcher.BindToCurrentThread()'],['../interface_gondwana_1_1_i_engine_dispatcher.html#adc32403a8ca107dd098d32075507256b',1,'Gondwana.IEngineDispatcher.BindToCurrentThread()']]],
   ['bindtoscene_9',['BindToScene',['../class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html#af8bbb7657b2a182575fabb206ea4d974',1,'Gondwana::Rendering::RenderSurfaceHost-1-g']]],
-  ['bitmapbackbuffer_10',['BitmapBackbuffer',['../class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html',1,'Gondwana.Rendering.BitmapBackbuffer'],['../class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html#a26ac1817d1dc7effb3f34413636a5be2',1,'Gondwana.Rendering.BitmapBackbuffer.BitmapBackbuffer()']]],
+  ['bitmapbackbuffer_10',['BitmapBackbuffer',['../class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html',1,'Gondwana.Rendering.Backbuffers.BitmapBackbuffer'],['../class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html#a46d0d4e0a8d498d0dafccd4901f7469a',1,'Gondwana.Rendering.Backbuffers.BitmapBackbuffer.BitmapBackbuffer()']]],
   ['bitmapbackbuffer_2ecs_11',['BitmapBackbuffer.cs',['../_bitmap_backbuffer_8cs.html',1,'']]],
   ['bitmapchangecolorpopup_12',['BitmapChangeColorPopUp',['../class_gondwana_1_1_design_1_1_forms_1_1_bitmap_change_color_pop_up.html',1,'Gondwana::Design::Forms']]],
   ['bitmapchangecolorpopup_2ecs_13',['BitmapChangeColorPopUp.cs',['../_bitmap_change_color_pop_up_8cs.html',1,'']]],

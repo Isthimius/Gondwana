@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt; Class Template Reference</title>
+<title>Gondwana Game Engine: Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -92,6 +93,9 @@ $(function(){initNavTree('class_gondwana_1_1_rendering_1_1_render_surface_host-1
   <div class="headertitle"><div class="title">Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt; Class Template Reference<span class="mlabels"><span class="mlabel sealed">sealed</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type. Provides coordination between the scene, views, and the underlying UI adapter for efficient rendering and presentation.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;:</div>
 <div class="dyncontent">
@@ -105,31 +109,47 @@ Inheritance diagram for Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6df1d4dbd2be4ad06f17518294425948" id="r_a6df1d4dbd2be4ad06f17518294425948"><td class="memItemLeft" align="right" valign="top">RenderSurfaceHost()&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6df1d4dbd2be4ad06f17518294425948">RenderSurfaceHost</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a> renderSurfaceAdapter)</td></tr>
+<tr class="memdesc:a6df1d4dbd2be4ad06f17518294425948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> class with the specified render surface adapter.  <br /></td></tr>
 <tr class="memitem:ad2eee4bd5139d89c515b2d79463f2f03" id="r_ad2eee4bd5139d89c515b2d79463f2f03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2eee4bd5139d89c515b2d79463f2f03">Bind</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a> newScene, bool limitCameraToWorldBoundPx=true)</td></tr>
+<tr class="memdesc:ad2eee4bd5139d89c515b2d79463f2f03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a scene to this render surface host, replacing any previously bound scene.  <br /></td></tr>
 <tr class="memitem:a79de0e3f5a8fa04bd21c4007576b38fb" id="r_a79de0e3f5a8fa04bd21c4007576b38fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79de0e3f5a8fa04bd21c4007576b38fb">Dispose</a> ()</td></tr>
+<tr class="memdesc:a79de0e3f5a8fa04bd21c4007576b38fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by this <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> instance.  <br /></td></tr>
 <tr class="memitem:a9529263e1140506cc65497c479b822d9" id="r_a9529263e1140506cc65497c479b822d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9529263e1140506cc65497c479b822d9">Dispose</a> (bool disposing)</td></tr>
+<tr class="memdesc:a9529263e1140506cc65497c479b822d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases resources used by this <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> instance.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_gondwana_1_1_rendering_1_1_render_surface_host_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_gondwana_1_1_rendering_1_1_render_surface_host_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">Gondwana.Rendering.RenderSurfaceHostBase</a></td></tr>
 <tr class="memitem:a9eee1fb0d47a5b75e3f6457af9148703 inherit pub_methods_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_a9eee1fb0d47a5b75e3f6457af9148703"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#a9eee1fb0d47a5b75e3f6457af9148703">Dispose</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
-<tr class="memitem:af1e9cce6010aec7aa21ce64a35d768d9" id="r_af1e9cce6010aec7aa21ce64a35d768d9"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1e9cce6010aec7aa21ce64a35d768d9">Backbuffer</a><code> [get]</code></td></tr>
+<tr class="memitem:af1e9cce6010aec7aa21ce64a35d768d9" id="r_af1e9cce6010aec7aa21ce64a35d768d9"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1e9cce6010aec7aa21ce64a35d768d9">Backbuffer</a><code> [get]</code></td></tr>
+<tr class="memdesc:af1e9cce6010aec7aa21ce64a35d768d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the backbuffer used for off-screen rendering before presentation to the adapter.  <br /></td></tr>
 <tr class="memitem:a5443506468c1f60d06d90d65d49ebee7" id="r_a5443506468c1f60d06d90d65d49ebee7"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5443506468c1f60d06d90d65d49ebee7">Scene</a><code> [get]</code></td></tr>
+<tr class="memdesc:a5443506468c1f60d06d90d65d49ebee7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene currently bound to this render surface host.  <br /></td></tr>
 <tr class="memitem:ab02a5f41d5ec6ba966313de1d4521307" id="r_ab02a5f41d5ec6ba966313de1d4521307"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab02a5f41d5ec6ba966313de1d4521307">RenderSurfaceAdapter</a><code> [get]</code></td></tr>
-<tr class="memitem:aad83ec25e8e1a29156b1f797a569186e" id="r_aad83ec25e8e1a29156b1f797a569186e"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="class_gondwana_1_1_rendering_1_1_view_renderer.html">ViewRenderer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad83ec25e8e1a29156b1f797a569186e">ViewRenderer</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab02a5f41d5ec6ba966313de1d4521307"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the platform-specific adapter that provides the underlying rendering surface.  <br /></td></tr>
+<tr class="memitem:a476c1ed70c6bd1d0683feac077a4fa73" id="r_a476c1ed70c6bd1d0683feac077a4fa73"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html">ViewManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a476c1ed70c6bd1d0683feac077a4fa73">ViewManager</a><code> [get]</code></td></tr>
+<tr class="memdesc:a476c1ed70c6bd1d0683feac077a4fa73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the view manager that controls camera positions, viewports, and multi-view rendering.  <br /></td></tr>
 <tr class="memitem:af6c088dcc08eff11fb58064e4cdaeb25" id="r_af6c088dcc08eff11fb58064e4cdaeb25"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6c088dcc08eff11fb58064e4cdaeb25">RedrawDirtyRectangleOnly</a> = true<code> [get, set]</code></td></tr>
+<tr class="memdesc:af6c088dcc08eff11fb58064e4cdaeb25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether only the dirty (changed) regions of the backbuffer are presented to the adapter each frame.  <br /></td></tr>
 <tr class="inherit_header properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">Gondwana.Rendering.RenderSurfaceHostBase</a></td></tr>
-<tr class="memitem:aa5cd6f2a3441111e38acdff4b721512a inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_aa5cd6f2a3441111e38acdff4b721512a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#aa5cd6f2a3441111e38acdff4b721512a">Backbuffer</a><code> [get]</code></td></tr>
-<tr class="memdesc:aa5cd6f2a3441111e38acdff4b721512a inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the in-memory <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> associated with the current rendering context.  <br /></td></tr>
+<tr class="memitem:aa5cd6f2a3441111e38acdff4b721512a inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_aa5cd6f2a3441111e38acdff4b721512a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#aa5cd6f2a3441111e38acdff4b721512a">Backbuffer</a><code> [get]</code></td></tr>
+<tr class="memdesc:aa5cd6f2a3441111e38acdff4b721512a inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the in-memory <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> associated with the current rendering context.  <br /></td></tr>
 <tr class="memitem:a41d56ce40e10058940fb2f73dcaec343 inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_a41d56ce40e10058940fb2f73dcaec343"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#a41d56ce40e10058940fb2f73dcaec343">Scene</a><code> [get]</code></td></tr>
 <tr class="memdesc:a41d56ce40e10058940fb2f73dcaec343 inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the source <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scenes.Scene</a> used for rendering operations.  <br /></td></tr>
 <tr class="memitem:a51fc79ef51f94b3cd16a8f8220a2c1d1 inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_a51fc79ef51f94b3cd16a8f8220a2c1d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#a51fc79ef51f94b3cd16a8f8220a2c1d1">RenderSurfaceAdapter</a><code> [get]</code></td></tr>
 <tr class="memdesc:a51fc79ef51f94b3cd16a8f8220a2c1d1 inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the platform-specific <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a> responsible for rendering the image from the <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#aa5cd6f2a3441111e38acdff4b721512a" title="Gets the in-memory BackbufferBase associated with the current rendering context.">Backbuffer</a>.  <br /></td></tr>
-<tr class="memitem:ad12bb08a5ca04df8fdd8c405b7e7088f inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_ad12bb08a5ca04df8fdd8c405b7e7088f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_view_renderer.html">ViewRenderer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#ad12bb08a5ca04df8fdd8c405b7e7088f">ViewRenderer</a><code> [get]</code></td></tr>
+<tr class="memitem:a6343c6c478d911e1ce79e67a0bb04f5a inherit properties_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_a6343c6c478d911e1ce79e67a0bb04f5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html">ViewManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#a6343c6c478d911e1ce79e67a0bb04f5a">ViewManager</a><code> [get]</code></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:af8bbb7657b2a182575fabb206ea4d974" id="r_af8bbb7657b2a182575fabb206ea4d974"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_bind_event_args.html">RenderSurfaceHostBindEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8bbb7657b2a182575fabb206ea4d974">BindToScene</a></td></tr>
+<tr class="memdesc:af8bbb7657b2a182575fabb206ea4d974"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a scene is bound to or unbound from this render surface host.  <br /></td></tr>
+<tr class="memitem:a9a38a442d771de79bad120419404b337" id="r_a9a38a442d771de79bad120419404b337"><td class="memItemLeft" align="right" valign="top">Action&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a38a442d771de79bad120419404b337">RenderBackbufferBegin</a></td></tr>
+<tr class="memdesc:a9a38a442d771de79bad120419404b337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs at the beginning of the backbuffer rendering process.  <br /></td></tr>
+<tr class="memitem:a69b35f6dc68f8f96fd6dfd553b18a90b" id="r_a69b35f6dc68f8f96fd6dfd553b18a90b"><td class="memItemLeft" align="right" valign="top">Action&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69b35f6dc68f8f96fd6dfd553b18a90b">RenderBackbufferEnd</a></td></tr>
+<tr class="memdesc:a69b35f6dc68f8f96fd6dfd553b18a90b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs at the end of the backbuffer rendering process.  <br /></td></tr>
+<tr class="memitem:af7808f96bd152d64f01df18e038e89c3" id="r_af7808f96bd152d64f01df18e038e89c3"><td class="memItemLeft" align="right" valign="top">Action&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7808f96bd152d64f01df18e038e89c3">RenderBackbufferNoOp</a></td></tr>
+<tr class="memdesc:af7808f96bd152d64f01df18e038e89c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a backbuffer render operation is skipped because the scene is not dirty.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -137,16 +157,22 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a05265ed2d40b4e9a2a40dff3573db2fe inherit pro_methods_class_gondwana_1_1_rendering_1_1_render_surface_host_base" id="r_a05265ed2d40b4e9a2a40dff3573db2fe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#a05265ed2d40b4e9a2a40dff3573db2fe">RenderSurfaceHostBase</a> ()</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="typeconstraint">
+<div class="textblock"><p>Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type. Provides coordination between the scene, views, and the underlying UI adapter for efficient rendering and presentation. </p>
+<p><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> is responsible for managing the lifecycle of the backbuffer, handling scene binding, and coordinating redraws based on scene and view changes. It supports partial or full redraws depending on the state of the scene and the RedrawDirtyRectangleOnly property. Thread safety is not guaranteed; all interactions should occur on the UI thread associated with the render surface adapter.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TBackbuffer</td><td>The type of backbuffer used for rendering. Must inherit from <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="typeconstraint">
 <dl><dt><b>Type Constraints</b></dt><dd>
 <table border="0" cellspacing="2" cellpadding="0">
-<tr><td valign="top"><em>TBackbuffer</em></td><td>&#160;:</td><td valign="top"><em><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a></em></td><td>&#160;</td></tr>
+<tr><td valign="top"><em>TBackbuffer</em></td><td>&#160;:</td><td valign="top"><em>BackbufferBase</em></td><td>&#160;</td></tr>
 </table>
 </dd>
 </dl>
 </div>
-
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00011">11</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ad2eee4bd5139d89c515b2d79463f2f03" name="ad2eee4bd5139d89c515b2d79463f2f03"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad2eee4bd5139d89c515b2d79463f2f03">&#9670;&#160;</a></span>Bind()</h2>
@@ -167,7 +193,22 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00055">55</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Binds a scene to this render surface host, replacing any previously bound scene. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newScene</td><td>The scene to bind. Must not be <code>null</code>.</td></tr>
+    <tr><td class="paramname">limitCameraToWorldBoundPx</td><td><code>true</code> to constrain all view cameras to the scene's world bounds; <code>false</code> to allow cameras to move freely beyond the scene boundaries. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>newScene</em>  is <code>null</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Binding a scene unregisters event handlers from the previous scene (if any), registers handlers with the new scene, and triggers a full refresh on the next frame. The <a class="el" href="#af8bbb7657b2a182575fabb206ea4d974" title="Occurs when a scene is bound to or unbound from this render surface host.">BindToScene</a> event fires after the binding operation completes. </p>
+<p>If the specified scene is already bound, this method returns immediately without performing any operations. </p>
 
 </div>
 </div>
@@ -186,7 +227,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00360">360</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Releases all resources used by this <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> instance. </p>
+<p>This method releases managed resources including the backbuffer. It does not unregister from the scene; that should be handled by the scene's disposal logic. </p>
+<p>After calling <a class="el" href="#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose()</a>, this instance should not be used. Calling <a class="el" href="#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose()</a> multiple times is safe and has no additional effect. </p>
 
 </div>
 </div>
@@ -213,9 +256,16 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#a32a3f463b8575f0e76057f9312c43125">Gondwana.Rendering.RenderSurfaceHostBase</a>.</p>
+<p>Releases resources used by this <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">disposing</td><td><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources (called from finalizer). </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>When <em>disposing</em>  is <code>true</code>, this method releases the backbuffer and clears the reference. Derived classes should override this method to release additional resources. </p>
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00366">366</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Reimplemented from <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#a32a3f463b8575f0e76057f9312c43125">Gondwana.Rendering.RenderSurfaceHostBase</a>.</p>
 
 </div>
 </div>
@@ -234,7 +284,20 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00026">26</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;TBackbuffer&gt;</a> class with the specified render surface adapter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceAdapter</td><td>The platform-specific adapter that provides the underlying rendering surface.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown if <em>renderSurfaceAdapter</em>  is <code>null</code>.</td></tr>
+    <tr><td class="paramname">InvalidOperationException</td><td>Thrown if the adapter has non-positive dimensions.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -249,7 +312,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">override <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.Backbuffer</td>
+          <td class="memname">override <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.Backbuffer</td>
         </tr>
       </table>
   </td>
@@ -259,7 +322,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00045">45</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Gets the backbuffer used for off-screen rendering before presentation to the adapter. </p>
+<p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> instance managing the render target canvas and dirty-rectangle tracking. </p>
+<p>The backbuffer holds the rendered frame content and tracks which regions have changed since the last presentation. All rendering operations are performed on the backbuffer's canvas before being copied to the UI adapter during presentation. </p>
 
 </div>
 </div>
@@ -283,7 +348,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00053">53</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Gets or sets a value indicating whether only the dirty (changed) regions of the backbuffer are presented to the adapter each frame. </p>
+<p><code>true</code> to present only dirty regions (default); <code>false</code> to present the entire backbuffer every frame. </p>
+<p>Enabling dirty-rectangle-only presentation improves performance by reducing the amount of data transferred to the UI adapter. Disable this when troubleshooting rendering issues or when the adapter does not support partial updates. </p>
 
 </div>
 </div>
@@ -307,7 +374,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00049">49</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Gets the platform-specific adapter that provides the underlying rendering surface. </p>
+<p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a> instance representing the UI control or window where rendered content is displayed. </p>
+<p>The adapter handles platform-specific presentation details and provides size/resize notifications. The backbuffer dimensions are synchronized with the adapter's size. </p>
 
 </div>
 </div>
@@ -331,12 +400,14 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00047">47</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Gets the scene currently bound to this render surface host. </p>
+<p>The <a class="el" href="#a5443506468c1f60d06d90d65d49ebee7" title="Gets the scene currently bound to this render surface host.">Scene</a> instance being rendered, or <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html#a98e66a9feac69e867a1a0b0ba172642f">Scene.Empty</a> if no scene is bound. </p>
+<p>The scene contains all layers, sprites, and direct drawings that are rendered each frame. Use <a class="el" href="#ad2eee4bd5139d89c515b2d79463f2f03" title="Binds a scene to this render surface host, replacing any previously bound scene.">Bind</a> to change the active scene. </p>
 
 </div>
 </div>
-<a id="aad83ec25e8e1a29156b1f797a569186e" name="aad83ec25e8e1a29156b1f797a569186e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad83ec25e8e1a29156b1f797a569186e">&#9670;&#160;</a></span>ViewRenderer</h2>
+<a id="a476c1ed70c6bd1d0683feac077a4fa73" name="a476c1ed70c6bd1d0683feac077a4fa73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a476c1ed70c6bd1d0683feac077a4fa73">&#9670;&#160;</a></span>ViewManager</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -345,7 +416,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">override <a class="el" href="class_gondwana_1_1_rendering_1_1_view_renderer.html">ViewRenderer</a> Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.<a class="el" href="class_gondwana_1_1_rendering_1_1_view_renderer.html">ViewRenderer</a></td>
+          <td class="memname">override <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html">ViewManager</a> Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html">ViewManager</a></td>
         </tr>
       </table>
   </td>
@@ -355,7 +426,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00051">51</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Gets the view manager that controls camera positions, viewports, and multi-view rendering. </p>
+<p>The <a class="el" href="#a476c1ed70c6bd1d0683feac077a4fa73" title="Gets the view manager that controls camera positions, viewports, and multi-view rendering.">ViewManager</a> instance managing all views associated with this render surface host. </p>
+<p>Use the view manager to create, configure, and remove views. Each view defines a viewport rectangle on the backbuffer, a camera position in the scene, and zoom/parallax settings. <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> enable split-screen, picture-in-picture, and minimap rendering. </p>
 
 </div>
 </div>
@@ -372,12 +445,61 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_host_8cs_source.html#l00022">22</a> of file <a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p>Occurs when a scene is bound to or unbound from this render surface host. </p>
+<p>This event fires after the scene binding operation completes. Event handlers receive information about the previously bound scene (if any) and the newly bound scene. Use this event to respond to scene changes, such as updating UI elements or resetting state that depends on the active scene. </p>
+
+</div>
+</div>
+<a id="a9a38a442d771de79bad120419404b337" name="a9a38a442d771de79bad120419404b337"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a38a442d771de79bad120419404b337">&#9670;&#160;</a></span>RenderBackbufferBegin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Action Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.RenderBackbufferBegin</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs at the beginning of the backbuffer rendering process. </p>
+
+</div>
+</div>
+<a id="a69b35f6dc68f8f96fd6dfd553b18a90b" name="a69b35f6dc68f8f96fd6dfd553b18a90b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b35f6dc68f8f96fd6dfd553b18a90b">&#9670;&#160;</a></span>RenderBackbufferEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Action Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.RenderBackbufferEnd</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs at the end of the backbuffer rendering process. </p>
+
+</div>
+</div>
+<a id="af7808f96bd152d64f01df18e038e89c3" name="af7808f96bd152d64f01df18e038e89c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7808f96bd152d64f01df18e038e89c3">&#9670;&#160;</a></span>RenderBackbufferNoOp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Action Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;.RenderBackbufferNoOp</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs when a backbuffer render operation is skipped because the scene is not dirty. </p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/<a class="el" href="_render_surface_host_8cs_source.html">RenderSurfaceHost.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/<a class="el" href="_render_surface_host_8cs.html">RenderSurfaceHost.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

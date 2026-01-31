@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Rendering Namespace Reference</title>
+<title>Gondwana Game Engine: Gondwana.Rendering Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -93,28 +94,25 @@ $(function(){initNavTree('namespace_gondwana_1_1_rendering.html','',''); });
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:Backbuffers" id="r_Backbuffers"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_rendering_1_1_backbuffers.html">Backbuffers</a></td></tr>
+<tr class="memitem:Views" id="r_Views"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:BackbufferBase" id="r_BackbufferBase"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rendering operations are performed before being presented to the display.  <a href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html#details">More...</a><br /></td></tr>
-<tr class="memitem:BitmapBackbuffer" id="r_BitmapBackbuffer"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html">BitmapBackbuffer</a></td></tr>
-<tr class="memitem:Camera" id="r_Camera"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_camera.html">Camera</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a world-space camera for a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a>. The camera tracks a world-space upper-left position in pixels and is used by Views to determine which part of the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a> is visible. It supports snapping, smooth follow, dead zones, and clamping to world bounds.  <a href="class_gondwana_1_1_rendering_1_1_camera.html#details">More...</a><br /></td></tr>
-<tr class="memitem:GpuBackbuffer" id="r_GpuBackbuffer"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_gpu_backbuffer.html">GpuBackbuffer</a></td></tr>
+<tr class="memitem:DirtyRectangleExtensions" id="r_DirtyRectangleExtensions"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>DirtyRectangleExtensions</b></td></tr>
 <tr class="memitem:RefreshQueue" id="r_RefreshQueue"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RefreshQueue</b></td></tr>
+<tr class="memitem:RenderContext" id="r_RenderContext"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderContext</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ambient per-render-pass context (per thread). Set once per <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> render pass in RenderSurfaceHost. SceneLayer-mode drawables can query this when they don't hold a <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> reference. <br /></td></tr>
 <tr class="memitem:RenderSurfaceAdapterBase" id="r_RenderSurfaceAdapterBase"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a></td></tr>
 <tr class="memitem:RenderSurfaceAdapterResizedEventArgs" id="r_RenderSurfaceAdapterResizedEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html">RenderSurfaceAdapterResizedEventArgs</a></td></tr>
 <tr class="memitem:RenderSurfaceHost_3C_20TBackbuffer_20_3E" id="r_RenderSurfaceHost_3C_20TBackbuffer_20_3E"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html">RenderSurfaceHost&lt; TBackbuffer &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type. Provides coordination between the scene, views, and the underlying UI adapter for efficient rendering and presentation.  <a href="class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html#details">More...</a><br /></td></tr>
 <tr class="memitem:RenderSurfaceHostBase" id="r_RenderSurfaceHostBase"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a base class for hosting a render surface, providing functionality for managing rendering operations, backbuffer access, and integration with platform-specific adapters.  <a href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html#details">More...</a><br /></td></tr>
 <tr class="memitem:RenderSurfaceHostBindEventArgs" id="r_RenderSurfaceHostBindEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_bind_event_args.html">RenderSurfaceHostBindEventArgs</a></td></tr>
 <tr class="memitem:RenderSurfaceHostRegistry" id="r_RenderSurfaceHostRegistry"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderSurfaceHostRegistry</b></td></tr>
-<tr class="memitem:View" id="r_View"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a></td></tr>
-<tr class="memitem:Viewport" id="r_Viewport"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_viewport.html">Viewport</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A rectangular window on the render target with its own zoom and placement. <a class="el" href="class_gondwana_1_1_rendering_1_1_viewport.html" title="A rectangular window on the render target with its own zoom and placement. Viewport never moves the w...">Viewport</a> never moves the world; it only scales and positions the drawing.  <a href="class_gondwana_1_1_rendering_1_1_viewport.html#details">More...</a><br /></td></tr>
-<tr class="memitem:ViewportResizedEventArgs" id="r_ViewportResizedEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_viewport_resized_event_args.html">ViewportResizedEventArgs</a></td></tr>
-<tr class="memitem:ViewportZoomChangedEventArgs" id="r_ViewportZoomChangedEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_viewport_zoom_changed_event_args.html">ViewportZoomChangedEventArgs</a></td></tr>
-<tr class="memitem:ViewRenderer" id="r_ViewRenderer"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_rendering_1_1_view_renderer.html">ViewRenderer</a></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

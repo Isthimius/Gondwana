@@ -1,10 +1,10 @@
 var searchData=
 [
   ['oldheight_0',['OldHeight',['../class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html#ab47d7c6afd4cbac57356fcfba571897e',1,'Gondwana::Rendering::RenderSurfaceAdapterResizedEventArgs']]],
-  ['oldrect_1',['OldRect',['../class_gondwana_1_1_rendering_1_1_viewport_resized_event_args.html#a29c683aa41c7b4de6660bb7f45b78ef0',1,'Gondwana::Rendering::ViewportResizedEventArgs']]],
+  ['oldrect_1',['OldRect',['../class_gondwana_1_1_rendering_1_1_views_1_1_viewport_resized_event_args.html#a664a1e306048d8c3241788e0aa29a81b',1,'Gondwana::Rendering::Views::ViewportResizedEventArgs']]],
   ['oldscene_2',['OldScene',['../class_gondwana_1_1_rendering_1_1_render_surface_host_bind_event_args.html#a517ca6939cf4f6bf3f7727334afc2858',1,'Gondwana::Rendering::RenderSurfaceHostBindEventArgs']]],
   ['oldwidth_3',['OldWidth',['../class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html#a78783cfbc2578e9269179221138bada4',1,'Gondwana::Rendering::RenderSurfaceAdapterResizedEventArgs']]],
-  ['oldzoom_4',['OldZoom',['../class_gondwana_1_1_rendering_1_1_viewport_zoom_changed_event_args.html#a52142306f1bfd92b29fbb1328f3e208c',1,'Gondwana::Rendering::ViewportZoomChangedEventArgs']]],
+  ['oldzoom_4',['OldZoom',['../class_gondwana_1_1_rendering_1_1_views_1_1_viewport_zoom_changed_event_args.html#a3f14f00b216687d1561cb9f39180b059',1,'Gondwana::Rendering::Views::ViewportZoomChangedEventArgs']]],
   ['onspawn_5',['OnSpawn',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#ab20099561004cbc5f3ac7a759431fcf8',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
   ['onupdate_6',['OnUpdate',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#acf35ad3a5338e3dc8b65eb28553da6d8',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
   ['opacity_7',['Opacity',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html#aae3d2e4f49c8d84902cc5bd26ce854df',1,'Gondwana.Drawing.Direct.DirectVideo.Opacity'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a69c6a77b634d2e70f4b7a4e724ee0596',1,'Gondwana.Drawing.Direct.DirectDrawingBase.Opacity']]],

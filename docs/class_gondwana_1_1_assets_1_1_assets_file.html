@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Assets.AssetsFile Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Assets.AssetsFile Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -141,8 +142,6 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a asset file used by the engine, providing functionality to load, manage, and save assets. </p>
 <p>The <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> class allows for the creation, loading, and management of asset files used by the engine. It supports encryption, asset retrieval by type and name, and saving assets to a zip file. Instances of this class are tracked globally and can be accessed via the static <a class="el" href="#aa5fec607a0437f5c00bf2188625538f9" title="Gets a read-only list of all instantiated AssetsFile instances.&quot;/&gt;">AllAssetsFiles</a> property.</p>
-
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00015">15</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aee0aaf93af833a17b1c670cbd5d05baf" name="aee0aaf93af833a17b1c670cbd5d05baf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aee0aaf93af833a17b1c670cbd5d05baf">&#9670;&#160;</a></span>Add() <span class="overload">[1/2]</span></h2>
@@ -172,8 +171,6 @@ Properties</h2></td></tr>
   </table>
   </dd>
 </dl>
-
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00181">181</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -212,8 +209,6 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00163">163</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a0060f58868c35c0db7f24e3618a72afc" name="a0060f58868c35c0db7f24e3618a72afc"></a>
@@ -242,8 +237,6 @@ Properties</h2></td></tr>
 <p>Releases all assets held by the application and clears the internal collection of asset files. </p>
 <p>This method disposes of all asset files currently tracked by the application. After calling this method, the internal collection of asset files will be empty. Ensure that no further operations are performed on the disposed assets.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00030">30</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a724db91fd9088bfdd49e7e5a4942580f" name="a724db91fd9088bfdd49e7e5a4942580f"></a>
@@ -260,8 +253,6 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00293">293</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -295,8 +286,6 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A Stream containing the asset data if the asset is found; otherwise, <code>null</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00229">229</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="af8bb8694cce3766a02ba24f6877af7d3" name="af8bb8694cce3766a02ba24f6877af7d3"></a>
@@ -317,8 +306,6 @@ Properties</h2></td></tr>
 <p>Retrieves all entries from the asset file. </p>
 <p>This method ensures that the asset file is loaded before returning the entries.</p>
 <dl class="section return"><dt>Returns</dt><dd>An IEnumerable&lt;T&gt; containing all entries in the asset file.</dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00247">247</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -371,8 +358,6 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00054">54</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="aea8fb99a8e1e98ddbe9f382d19bac6e1" name="aea8fb99a8e1e98ddbe9f382d19bac6e1"></a>
@@ -404,8 +389,6 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00199">199</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a04993d63e330991b3fc75f205156c08d" name="a04993d63e330991b3fc75f205156c08d"></a>
@@ -425,8 +408,6 @@ Properties</h2></td></tr>
 
 <p>Saves the current set of entries to a zip file at the specified file path. </p>
 <p>This method creates a zip archive containing all entries currently stored in the collection. If a password is provided, the zip file will be encrypted using AES-256 encryption. The method clears the current entries after saving and reloads the zip file to ensure consistency.</p>
-
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00259">259</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -453,8 +434,6 @@ Properties</h2></td></tr>
 
 <p>Gets a read-only list of all instantiated <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instances."/&gt; </p>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00022">22</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a213f251f4ca110270f0433a2ffb209bf" name="a213f251f4ca110270f0433a2ffb209bf"></a>
@@ -479,8 +458,6 @@ Properties</h2></td></tr>
 
 <p>Gets the file path associated with the current instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00076">76</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a3efb1643fabaa10f3c97325a2cab57f3" name="a3efb1643fabaa10f3c97325a2cab57f3"></a>
@@ -504,8 +481,6 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the password associated with the current instance. </p>
-
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00082">82</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -540,8 +515,6 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00218">218</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="ad30ad0393a0e95c6def5e3d50d5ac08e" name="ad30ad0393a0e95c6def5e3d50d5ac08e"></a>
@@ -566,12 +539,10 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether encryption is enabled for the current operation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_assets_file_8cs_source.html#l00088">88</a> of file <a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Assets/<a class="el" href="_assets_file_8cs_source.html">AssetsFile.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Assets/<a class="el" href="_assets_file_8cs.html">AssetsFile.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

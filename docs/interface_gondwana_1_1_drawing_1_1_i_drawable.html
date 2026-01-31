@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Drawing.IDrawable Interface Reference</title>
+<title>Gondwana Game Engine: Gondwana.Drawing.IDrawable Interface Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -104,13 +105,13 @@ Inheritance diagram for Gondwana.Drawing.IDrawable:</div>
 <area href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="333,56,656,80"/>
 <area href="class_gondwana_1_1_drawing_1_1_tile.html" alt="Gondwana.Drawing.Tile" shape="rect" coords="1165,56,1488,80"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html" alt="Gondwana.Drawing.Direct.DirectComposite" shape="rect" coords="0,112,323,136"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" alt="Gondwana.Drawing.Direct.DirectDrawingBase" shape="rect" coords="666,112,989,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi..." alt="Gondwana.Drawing.Direct.DirectDrawingBase" shape="rect" coords="666,112,989,136"/>
 <area href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html" alt="Gondwana.Drawing.Sprites.Sprite" shape="rect" coords="999,112,1322,136"/>
 <area href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer." alt="Gondwana.Scenes.SceneLayerTile" shape="rect" coords="1332,112,1655,136"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,168,822,192"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,168,822,192"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer..." alt="Gondwana.Drawing.Direct.DirectVideo" shape="rect" coords="832,168,1155,192"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Draws a bitmap/image into a rectangular region with optional scaling mode, source sub-rect,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,323,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border ..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,224,656,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,323,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,224,656,248"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="666,224,989,248"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="999,224,1322,248"/>
   </map>
@@ -118,9 +119,9 @@ Inheritance diagram for Gondwana.Drawing.IDrawable:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8da83689234405828f7f6ed1f2062ec3" id="r_a8da83689234405828f7f6ed1f2062ec3"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8da83689234405828f7f6ed1f2062ec3">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> view)</td></tr>
-<tr class="memdesc:a8da83689234405828f7f6ed1f2062ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> to project from world-space.  <br /></td></tr>
-<tr class="memitem:a40510f10e51009f80d0d3c9957337973" id="r_a40510f10e51009f80d0d3c9957337973"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a40510f10e51009f80d0d3c9957337973">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memitem:a8da83689234405828f7f6ed1f2062ec3" id="r_a8da83689234405828f7f6ed1f2062ec3"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8da83689234405828f7f6ed1f2062ec3">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
+<tr class="memdesc:a8da83689234405828f7f6ed1f2062ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> to project from world-space.  <br /></td></tr>
+<tr class="memitem:a40510f10e51009f80d0d3c9957337973" id="r_a40510f10e51009f80d0d3c9957337973"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a40510f10e51009f80d0d3c9957337973">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
 <tr class="memdesc:a40510f10e51009f80d0d3c9957337973"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
@@ -137,8 +138,6 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an object that can be drawn on a visual surface, with properties for visibility and stacking order. </p>
 <p>The <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki...">IDrawable</a> interface defines the contract for drawable objects, including a unique identifier, optional nickname, visibility state, and z-order for determining the drawing order. Implementations of this interface must provide a mechanism to render the object via the <a class="el" href="#a40510f10e51009f80d0d3c9957337973" title="Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle....">Draw</a> method.</p>
-
-<p class="definition">Definition at line <a class="el" href="_i_drawable_8cs_source.html#l00012">12</a> of file <a class="el" href="_i_drawable_8cs_source.html">IDrawable.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a40510f10e51009f80d0d3c9957337973" name="a40510f10e51009f80d0d3c9957337973"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a40510f10e51009f80d0d3c9957337973">&#9670;&#160;</a></span>Draw()</h2>
@@ -149,7 +148,7 @@ Properties</h2></td></tr>
         <tr>
           <td class="memname">void Gondwana.Drawing.IDrawable.Draw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -181,16 +180,16 @@ Properties</h2></td></tr>
         <tr>
           <td class="memname">RectangleF Gondwana.Drawing.IDrawable.GetDrawLocationScreen </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> to project from world-space. </p>
+<p>Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> to project from world-space. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">view</td><td>The <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> providing camera, zoom, parallax, and viewport offsets used to convert the object's world-space bounds into screen-space. </td></tr>
+    <tr><td class="paramname">view</td><td>The <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> providing camera, zoom, parallax, and viewport offsets used to convert the object's world-space bounds into screen-space. </td></tr>
   </table>
   </dd>
 </dl>
@@ -225,8 +224,6 @@ Properties</h2></td></tr>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html#a8856372ce0b37bfa7e3520340641506f">Gondwana.Drawing.Direct.DirectComposite</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a978ca1ca043adc8dd5e7b129a876f778">Gondwana.Drawing.Direct.DirectDrawingBase</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#adc5257abe94fe51485c14cb02d79bfb0">Gondwana.Drawing.Tile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_i_drawable_8cs_source.html#l00017">17</a> of file <a class="el" href="_i_drawable_8cs_source.html">IDrawable.cs</a>.</p>
-
 </div>
 </div>
 <a id="adc6a54d355d7b2a76c3dc69c4bf13a82" name="adc6a54d355d7b2a76c3dc69c4bf13a82"></a>
@@ -252,8 +249,6 @@ Properties</h2></td></tr>
 <p>Optional human-readable name associated with the object. </p>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html#a201fd617284a61d7c52438c3c3d8b9c8">Gondwana.Drawing.Direct.DirectComposite</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a83e823bebb8dd1b4e77e0686afda2319">Gondwana.Drawing.Direct.DirectDrawingBase</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a56b469d237bd7f697309ad59a7fe606c">Gondwana.Drawing.Tile</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_i_drawable_8cs_source.html#l00022">22</a> of file <a class="el" href="_i_drawable_8cs_source.html">IDrawable.cs</a>.</p>
 
 </div>
 </div>
@@ -281,8 +276,6 @@ Properties</h2></td></tr>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html#a03ac955d51635f90cce6c18395afcec4">Gondwana.Drawing.Direct.DirectComposite</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a547a165d0ea6d4a8e2c2214d390adc67">Gondwana.Drawing.Direct.DirectDrawingBase</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a10c2b2334a3f0b7324524f3990d8eb3e">Gondwana.Drawing.Tile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_i_drawable_8cs_source.html#l00027">27</a> of file <a class="el" href="_i_drawable_8cs_source.html">IDrawable.cs</a>.</p>
-
 </div>
 </div>
 <a id="afe2fb2cda22db383aa386dc3c97af76c" name="afe2fb2cda22db383aa386dc3c97af76c"></a>
@@ -309,12 +302,10 @@ Properties</h2></td></tr>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html#a9bc671772e89d1143051d73c3e88078c">Gondwana.Drawing.Direct.DirectComposite</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a0ff816d3ac12017ee6caff6e522e8cea">Gondwana.Drawing.Direct.DirectDrawingBase</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a263cdfc878e8fe4426ba3547c50ded2a">Gondwana.Drawing.Sprites.Sprite</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a6ea4696cfc6f3998c2cb0dc891a1987b">Gondwana.Drawing.Tile</a>, and <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html#a5102c481d138c818cc4f2aef5eac8e65">Gondwana.Scenes.SceneLayerTile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_i_drawable_8cs_source.html#l00033">33</a> of file <a class="el" href="_i_drawable_8cs_source.html">IDrawable.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this interface was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/<a class="el" href="_i_drawable_8cs_source.html">IDrawable.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/<a class="el" href="_i_drawable_8cs.html">IDrawable.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Rendering.RenderSurfaceAdapterBase Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Rendering.RenderSurfaceAdapterBase Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -105,8 +106,8 @@ Inheritance diagram for Gondwana.Rendering.RenderSurfaceAdapterBase:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9251bf9e2386e622d07f50e61b832d34" id="r_a9251bf9e2386e622d07f50e61b832d34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9251bf9e2386e622d07f50e61b832d34">Render</a> (SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</td></tr>
-<tr class="memdesc:a9251bf9e2386e622d07f50e61b832d34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders the specified portion of the Backbuffer image to the destination rectangle on the RenderSurfaceAdapter.  <br /></td></tr>
+<tr class="memitem:a21b2cb15e86a814a070e5d68c15e4e35" id="r_a21b2cb15e86a814a070e5d68c15e4e35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21b2cb15e86a814a070e5d68c15e4e35">Present</a> (SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</td></tr>
+<tr class="memdesc:a21b2cb15e86a814a070e5d68c15e4e35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Presents the specified portion of the Backbuffer image to the destination rectangle on the RenderSurfaceAdapter.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -122,10 +123,7 @@ Properties</h2></td></tr>
 Events</h2></td></tr>
 <tr class="memitem:aec240b322b995ec0cdf4fca485cfba47" id="r_aec240b322b995ec0cdf4fca485cfba47"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html">RenderSurfaceAdapterResizedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec240b322b995ec0cdf4fca485cfba47">Resized</a></td></tr>
 </table>
-<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00005">5</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
-</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae5ec6cc715ff40b37cad1828c0164868" name="ae5ec6cc715ff40b37cad1828c0164868"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae5ec6cc715ff40b37cad1828c0164868">&#9670;&#160;</a></span>RenderSurfaceAdapterBase()</h2>
 
@@ -153,13 +151,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00012">12</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
-
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a9251bf9e2386e622d07f50e61b832d34" name="a9251bf9e2386e622d07f50e61b832d34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9251bf9e2386e622d07f50e61b832d34">&#9670;&#160;</a></span>Render()</h2>
+<a id="a21b2cb15e86a814a070e5d68c15e4e35" name="a21b2cb15e86a814a070e5d68c15e4e35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21b2cb15e86a814a070e5d68c15e4e35">&#9670;&#160;</a></span>Present()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -168,7 +164,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Rendering.RenderSurfaceAdapterBase.Render </td>
+          <td class="memname">void Gondwana.Rendering.RenderSurfaceAdapterBase.Present </td>
           <td>(</td>
           <td class="paramtype">SKImage</td>          <td class="paramname"><span class="paramname"><em>bufferImage</em></span>, </td>
         </tr>
@@ -190,13 +186,13 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Renders the specified portion of the Backbuffer image to the destination rectangle on the RenderSurfaceAdapter. </p>
+<p>Presents the specified portion of the Backbuffer image to the destination rectangle on the RenderSurfaceAdapter. </p>
 <p>The method maps the specified region of the buffer image to the destination rectangle, scaling or transforming as necessary. Callers must ensure that the dimensions and coordinates of <em>bufferRect</em>  and <em>destRect</em>  are valid.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">bufferImage</td><td>The source image to render from. Cannot be <code>null</code>.</td></tr>
-    <tr><td class="paramname">bufferRect</td><td>The rectangular region of the buffer image to render. Coordinates are in the buffer image's space.</td></tr>
-    <tr><td class="paramname">destRect</td><td>The rectangular region in the destination space where the rendered content will be drawn.</td></tr>
+    <tr><td class="paramname">bufferImage</td><td>The source image from which to present. Cannot be <code>null</code>.</td></tr>
+    <tr><td class="paramname">bufferRect</td><td>The rectangular region of the buffer image to present. Coordinates are in the buffer image's space.</td></tr>
+    <tr><td class="paramname">destRect</td><td>The rectangular region in the destination space where the presented content will be drawn.</td></tr>
   </table>
   </dd>
 </dl>
@@ -230,8 +226,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00017">17</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
-
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -255,8 +249,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00010">10</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
-
 </div>
 </div>
 <a id="a02161b1fcf631174f0b69d7595f5e74f" name="a02161b1fcf631174f0b69d7595f5e74f"></a>
@@ -279,8 +271,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00009">9</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
-
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -296,12 +286,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00007">7</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/<a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/<a class="el" href="_render_surface_adapter_base_8cs.html">RenderSurfaceAdapterBase.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Class Members</title>
+<title>Gondwana Game Engine: Class Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -115,6 +116,7 @@ $(function(){initNavTree('functions_g.html','',''); });
 <li>GetAnimationCycleKeys()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#ad90cba5704fa7dc26e038083d4c49b43">Gondwana.Drawing.Animation.Cycle</a></li>
 <li>GetAnimationCycles()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#ad96d21acb5317fb02a48711d51af813a">Gondwana.Drawing.Animation.Cycle</a></li>
 <li>GetBitmap()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html#ad2b669582b2974a4d60e9191bd250f4b">Gondwana.Drawing.Tilesheets.Tilesheet</a></li>
+<li>GetCollisionAreaScreen()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a196e3fa81e6244609b0ca81d914d9f06">Gondwana.Drawing.Tile</a></li>
 <li>GetDirectDrawing()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html#aaac4311858b7cf4f498612801ee47597">Gondwana.Drawing.Direct.DirectDrawingManager</a></li>
 <li>GetDrawingsForLayer()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html#a9dfe290865d74c13ea157b758b67b09e">Gondwana.Drawing.Direct.DirectDrawingManager</a></li>
 <li>GetDrawingsForView()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html#a63ee55de587e376f3450e1be4623169a">Gondwana.Drawing.Direct.DirectDrawingManager</a></li>
@@ -128,17 +130,19 @@ $(function(){initNavTree('functions_g.html','',''); });
 <li>GetPosition()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html#ad0a14525a23081d4a8d7a9ac480abd04">Gondwana.Drawing.Direct.DirectComposite</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a05d6b05bc6b2cb97a6ff38964f17e3bd">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#aecb27b5190b87273097228a1aa4b5806">Gondwana.Drawing.Sprites.Sprite</a>, <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html#a277dd28e3a5e5eb48235baba05437a65">Gondwana.Movement.IMovable</a></li>
 <li>GetSceneByID()&#160;:&#160;<a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html#a3bfd84bc99318882a818cf42b412b8f7">Gondwana.Scenes.Scene</a></li>
 <li>GetSceneLayerByID()&#160;:&#160;<a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html#a0bd8ee56ed5fc05b4f5a52dc8ced7063">Gondwana.Scenes.Scene</a></li>
+<li>GetViewsAbove()&#160;:&#160;<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html#a2ec1ac278fd13f56bf21417719cad649">Gondwana.Rendering.Views.ViewManager</a></li>
+<li>GetViewsBelow()&#160;:&#160;<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html#adc9874603bc679a94f1d86f860eb0790">Gondwana.Rendering.Views.ViewManager</a></li>
 <li>GetWorldBoundsPx()&#160;:&#160;<a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html#ac7e3702793a7ffac747cb439ab50295a">Gondwana.Scenes.Scene</a></li>
 <li>GlobalColorTint&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a74becb34ff39d124023c7253c35da6f3">Gondwana.Drawing.Direct.Particles.ParticleSurface</a></li>
 <li>GlobalEmitScale&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a85f67929b08a959d9d39b1fafcc68cf4">Gondwana.Drawing.Direct.Particles.ParticleSurface</a></li>
-<li>GpuBackbuffer()&#160;:&#160;<a class="el" href="class_gondwana_1_1_rendering_1_1_gpu_backbuffer.html#a04e430b2491d8aac21072d660ea32b2b">Gondwana.Rendering.GpuBackbuffer</a></li>
+<li>GpuBackbuffer()&#160;:&#160;<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer.html#a4aec5c53e310704b6b92745c5ba51f64">Gondwana.Rendering.Backbuffers.GpuBackbuffer</a></li>
 <li>GravityX&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#acf1c7c0f3e5207da8fd6f9c819c0d7b3">Gondwana.Drawing.Direct.Particles.ParticleEmitter</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a902e6b3d20c47de94948c1e7718346ed">Gondwana.Drawing.Direct.Particles.ParticleSurface</a></li>
 <li>GravityY&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a316c9ccbea0460ac5a853ff0e1a8bc34">Gondwana.Drawing.Direct.Particles.ParticleEmitter</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a097410af3acfe301f3a15d5e4f3d2f04">Gondwana.Drawing.Direct.Particles.ParticleSurface</a></li>
 <li>GrContext&#160;:&#160;<a class="el" href="class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_adapter.html#ac6b7140e9c73ef341875f029113b98ef">Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter</a></li>
 <li>Grid()&#160;:&#160;<a class="el" href="class_gondwana_1_1_design_1_1_controls_1_1_grid.html#abdc1b13576ec44fe801b83d4d0fc51f4">Gondwana.Design.Controls.Grid</a></li>
 <li>GridColumnCount&#160;:&#160;<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html#a958ed10b48f15930d257d8d7ddb46057">Gondwana.Scenes.SceneLayer</a></li>
 <li>GridCoordinatesAbs&#160;:&#160;<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html#a142c95716894c9150af7af6d2e5665dd">Gondwana.Scenes.SceneLayerTile</a></li>
-<li>GridLinePaint&#160;:&#160;<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html#a55fef146f1d8f088f77524e273920aa0">Gondwana.Rendering.BackbufferBase</a></li>
+<li>GridLinePaint&#160;:&#160;<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html#a7359e524a27798cfad65a3bf689f072b">Gondwana.Rendering.Backbuffers.BackbufferBase</a></li>
 <li>GridRowCount&#160;:&#160;<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html#a66305751d643a83bd615591eefd480c1">Gondwana.Scenes.SceneLayer</a></li>
 <li>GridsDisplay()&#160;:&#160;<a class="el" href="class_gondwana_1_1_design_1_1_controls_1_1_grids_display.html#a547fb99940cfe21aa76fde43f54b88e1">Gondwana.Design.Controls.GridsDisplay</a></li>
 <li>GridToWorldPx()&#160;:&#160;<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html#a8e484b10fcc567050632269596c987d4">Gondwana.Scenes.SceneLayer</a></li>

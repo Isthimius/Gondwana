@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Scenes.SceneLayerTile Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Scenes.SceneLayerTile Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -145,9 +146,10 @@ Properties</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_methods_class_gondwana_1_1_drawing_1_1_tile"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_gondwana_1_1_drawing_1_1_tile')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Gondwana.Drawing.Tile</a></td></tr>
-<tr class="memitem:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a2c2d0e6d13d966cf1faca72bd05a85c9">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> view)</td></tr>
-<tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> to project from world-space.  <br /></td></tr>
-<tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memitem:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a2c2d0e6d13d966cf1faca72bd05a85c9">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
+<tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> to project from world-space.  <br /></td></tr>
+<tr class="memitem:a196e3fa81e6244609b0ca81d914d9f06 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a196e3fa81e6244609b0ca81d914d9f06"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a196e3fa81e6244609b0ca81d914d9f06">GetCollisionAreaScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
+<tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
 <tr class="memdesc:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.  <br /></td></tr>
 <tr class="memitem:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a88e851955c75d87fb4077eb257b32684"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a88e851955c75d87fb4077eb257b32684">CompareTo</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Tile</a>? tile)</td></tr>
 <tr class="memitem:a6ca4859d010ae75a57af442c51e83022 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a6ca4859d010ae75a57af442c51e83022"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a6ca4859d010ae75a57af442c51e83022">Dispose</a> ()</td></tr>
@@ -157,8 +159,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the values stored at a single location on a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>. </p>
-
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00013">13</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 </div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
 <a id="aedb6ed48475fb84d505557d259c8427a" name="aedb6ed48475fb84d505557d259c8427a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aedb6ed48475fb84d505557d259c8427a">&#9670;&#160;</a></span>DrawLocationWorld</h2>
@@ -179,8 +179,6 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00052">52</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -204,8 +202,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00067">67</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a142c95716894c9150af7af6d2e5665dd" name="a142c95716894c9150af7af6d2e5665dd"></a>
@@ -227,8 +223,6 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00061">61</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -252,8 +246,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00055">55</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
-
 </div>
 </div>
 <a id="a2ab991bb04576369fca48dfeedf2776f" name="a2ab991bb04576369fca48dfeedf2776f"></a>
@@ -276,8 +268,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00064">64</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
-
 </div>
 </div>
 <a id="abf50427cb4f1e2bb85d5583cf0cfd289" name="abf50427cb4f1e2bb85d5583cf0cfd289"></a>
@@ -299,8 +289,6 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00058">58</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -328,12 +316,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_scene_layer_tile_8cs_source.html#l00049">49</a> of file <a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Scenes/<a class="el" href="_scene_layer_tile_8cs_source.html">SceneLayerTile.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Scenes/<a class="el" href="_scene_layer_tile_8cs.html">SceneLayerTile.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

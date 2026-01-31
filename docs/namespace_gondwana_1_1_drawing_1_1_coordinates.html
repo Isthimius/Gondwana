@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Drawing.Coordinates Namespace Reference</title>
+<title>Gondwana Game Engine: Gondwana.Drawing.Coordinates Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -95,17 +96,17 @@ $(function(){initNavTree('namespace_gondwana_1_1_drawing_1_1_coordinates.html','
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:DiagIsoDiagMatrixCoordinates" id="r_DiagIsoDiagMatrixCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>DiagIsoDiagMatrixCoordinates</b></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diagonal-Isometric (Diagonal Matrix) – same diamond projection but kept separate for alternative adjacency/rounding if needed. Uses identical math for now (clean, predictable behavior). <br /></td></tr>
-<tr class="memitem:DiagIsoSquareMatrixCoordinates" id="r_DiagIsoSquareMatrixCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>DiagIsoSquareMatrixCoordinates</b></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diagonal-Isometric (Square Matrix, <b>no 45° rotation</b>) <br /></td></tr>
-<tr class="memitem:HexagonalFlatTopCoordinates" id="r_HexagonalFlatTopCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>HexagonalFlatTopCoordinates</b></td></tr>
+<tr class="memitem:HexAxialFlatTopCoordinates" id="r_HexAxialFlatTopCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>HexAxialFlatTopCoordinates</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hexagonal – Flat-Top layout (even-q vertical layout) Bounding rectangle is (W x H). Centers advance by (0.75*W, H/2 per column parity) <br /></td></tr>
-<tr class="memitem:HexagonalPointedTopCoordinates" id="r_HexagonalPointedTopCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>HexagonalPointedTopCoordinates</b></td></tr>
+<tr class="memitem:HexAxialPointedTop" id="r_HexAxialPointedTop"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>HexAxialPointedTop</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hexagonal – Pointed-Top layout (even-r horizontal layout) Bounding rectangle is (W x H). Centers advance by (W/2 per row parity, 0.75*H vertically) <br /></td></tr>
 <tr class="memitem:ISceneLayerCoordinates" id="r_ISceneLayerCoordinates"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><b>ISceneLayerCoordinates</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the coordinate transformation logic for a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>, providing conversions between grid-space layer points and pixel-space positions, as well as geometric queries such as adjacency, polygon outlines, and wrapping behavior for different coordinate systems (square, isometric, hex, etc.). <br /></td></tr>
-<tr class="memitem:OrthographicCoordinates" id="r_OrthographicCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>OrthographicCoordinates</b></td></tr>
+<tr class="memitem:IsometricAxialCoordinates" id="r_IsometricAxialCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>IsometricAxialCoordinates</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diagonal-Isometric (Square Matrix, <b>no 45° rotation</b>) <br /></td></tr>
+<tr class="memitem:IsometricRhombicCoordinates" id="r_IsometricRhombicCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>IsometricRhombicCoordinates</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diagonal-Isometric (Diagonal Matrix) – same diamond projection but kept separate for alternative adjacency/rounding if needed. Uses identical math for now (clean, predictable behavior). <br /></td></tr>
+<tr class="memitem:OrthogonalCoordinates" id="r_OrthogonalCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>OrthogonalCoordinates</b></td></tr>
 <tr class="memitem:TileBounds" id="r_TileBounds"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>TileBounds</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
@@ -123,12 +124,12 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="memitem:ab877f6c99482c3923c816533c12f9ab3" id="r_ab877f6c99482c3923c816533c12f9ab3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab877f6c99482c3923c816533c12f9ab3">CoordinateSystemTypes</a> { <br />
-&#160;&#160;<a class="el" href="#ab877f6c99482c3923c816533c12f9ab3a03424250432f2aa71de95579d2c0eaeb">Orthographic</a> = 0
-, <a class="el" href="#ab877f6c99482c3923c816533c12f9ab3afb0f3ebac90f9698f85f0f366607a742">DiagIso_DiagMatrix</a> = 1
-, <a class="el" href="#ab877f6c99482c3923c816533c12f9ab3a993a48d0fca7ee88914dcc3091e80c46">DiagIso_SquareMatrix</a> = 2
-, <a class="el" href="#ab877f6c99482c3923c816533c12f9ab3a23dbbca418c3b6fbc4c37dd5d4760002">HexFlatTop</a> = 3
+&#160;&#160;<a class="el" href="#ab877f6c99482c3923c816533c12f9ab3a7b2e80981e360c8634aef96cbcb62e57">Orthogonal</a> = 0
+, <a class="el" href="#ab877f6c99482c3923c816533c12f9ab3ae35c27bfb999cff29c164d656c28dae7">IsometricRhombic</a> = 1
+, <a class="el" href="#ab877f6c99482c3923c816533c12f9ab3ac880794af4036d579740d2e5667cc239">IsometricAxial</a> = 2
+, <a class="el" href="#ab877f6c99482c3923c816533c12f9ab3a83000019f51fd13f39b48faaa0319124">HexAxialFlatTop</a> = 3
 , <br />
-&#160;&#160;<a class="el" href="#ab877f6c99482c3923c816533c12f9ab3a6682fd75dd0730159a3610f5ff42d527">HexPointedTop</a> = 4
+&#160;&#160;<a class="el" href="#ab877f6c99482c3923c816533c12f9ab3aafcf21d2b376f26d04f8ec7022d86e8e">HexAxialPointedTop</a> = 4
 <br />
  }</td></tr>
 <tr class="memdesc:ab877f6c99482c3923c816533c12f9ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the layout and math rules used to map tiles to world pixels and world pixels back to grid coordinates. Each option defines a different tile geometry. Used by SceneLayer to choose the correct coordinate math for a given map.  <a href="#ab877f6c99482c3923c816533c12f9ab3">More...</a><br /></td></tr>
@@ -156,8 +157,6 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a7f39ac71e81132daad44925b3bdfde5a" name="aa6e576eaf3606eeb09ed97f167eba7c5a7f39ac71e81132daad44925b3bdfde5a"></a>NW&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="_cardinal_directions_8cs_source.html#l00003">3</a> of file <a class="el" href="_cardinal_directions_8cs_source.html">CardinalDirections.cs</a>.</p>
-
 </div>
 </div>
 <a id="ab877f6c99482c3923c816533c12f9ab3" name="ab877f6c99482c3923c816533c12f9ab3"></a>
@@ -174,19 +173,17 @@ Enumerations</h2></td></tr>
 
 <p>Identifies the layout and math rules used to map tiles to world pixels and world pixels back to grid coordinates. Each option defines a different tile geometry. Used by SceneLayer to choose the correct coordinate math for a given map. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3a03424250432f2aa71de95579d2c0eaeb" name="ab877f6c99482c3923c816533c12f9ab3a03424250432f2aa71de95579d2c0eaeb"></a>Orthographic&#160;</td><td class="fielddoc"><p>Square tiles laid out in a simple row/column grid. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3a7b2e80981e360c8634aef96cbcb62e57" name="ab877f6c99482c3923c816533c12f9ab3a7b2e80981e360c8634aef96cbcb62e57"></a>Orthogonal&#160;</td><td class="fielddoc"><p>Axis-aligned square grid (Cartesian lattice). </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3afb0f3ebac90f9698f85f0f366607a742" name="ab877f6c99482c3923c816533c12f9ab3afb0f3ebac90f9698f85f0f366607a742"></a>DiagIso_DiagMatrix&#160;</td><td class="fielddoc"><p>Diamond-shaped isometric grid (axis-aligned diamonds). </p>
+<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3ae35c27bfb999cff29c164d656c28dae7" name="ab877f6c99482c3923c816533c12f9ab3ae35c27bfb999cff29c164d656c28dae7"></a>IsometricRhombic&#160;</td><td class="fielddoc"><p>Isometric projection using a rhombic (diamond) lattice. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3a993a48d0fca7ee88914dcc3091e80c46" name="ab877f6c99482c3923c816533c12f9ab3a993a48d0fca7ee88914dcc3091e80c46"></a>DiagIso_SquareMatrix&#160;</td><td class="fielddoc"><p>Square-based isometric stepping (half-width diagonal steps). </p>
+<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3ac880794af4036d579740d2e5667cc239" name="ab877f6c99482c3923c816533c12f9ab3ac880794af4036d579740d2e5667cc239"></a>IsometricAxial&#160;</td><td class="fielddoc"><p>Isometric projection using an underlying square lattice with diagonal basis vectors. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3a23dbbca418c3b6fbc4c37dd5d4760002" name="ab877f6c99482c3923c816533c12f9ab3a23dbbca418c3b6fbc4c37dd5d4760002"></a>HexFlatTop&#160;</td><td class="fielddoc"><p>Hexagonal tiles with flat tops (horizontal edges). </p>
+<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3a83000019f51fd13f39b48faaa0319124" name="ab877f6c99482c3923c816533c12f9ab3a83000019f51fd13f39b48faaa0319124"></a>HexAxialFlatTop&#160;</td><td class="fielddoc"><p>Hexagonal grid using axial coordinates with flat-topped hexes. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3a6682fd75dd0730159a3610f5ff42d527" name="ab877f6c99482c3923c816533c12f9ab3a6682fd75dd0730159a3610f5ff42d527"></a>HexPointedTop&#160;</td><td class="fielddoc"><p>Hexagonal tiles with pointed tops (vertical edges). </p>
+<tr><td class="fieldname"><a id="ab877f6c99482c3923c816533c12f9ab3aafcf21d2b376f26d04f8ec7022d86e8e" name="ab877f6c99482c3923c816533c12f9ab3aafcf21d2b376f26d04f8ec7022d86e8e"></a>HexAxialPointedTop&#160;</td><td class="fielddoc"><p>Hexagonal grid using axial coordinates with pointy-topped hexes. </p>
 </td></tr>
 </table>
-
-<p class="definition">Definition at line <a class="el" href="_coordinate_system_types_8cs_source.html#l00009">9</a> of file <a class="el" href="_coordinate_system_types_8cs_source.html">CoordinateSystemTypes.cs</a>.</p>
 
 </div>
 </div>

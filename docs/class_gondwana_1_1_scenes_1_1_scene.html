@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Scenes.Scene Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Scenes.Scene Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -102,7 +103,7 @@ Inheritance diagram for Gondwana.Scenes.Scene:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a254272a432b1d3a737e48a52750cdeff" id="r_a254272a432b1d3a737e48a52750cdeff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a254272a432b1d3a737e48a52750cdeff">Scene</a> ()</td></tr>
-<tr class="memitem:abf1dfffa1bd675769fd337efecef1dd2" id="r_abf1dfffa1bd675769fd337efecef1dd2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf1dfffa1bd675769fd337efecef1dd2">AddLayer</a> (int columnCount, int rowCount, int width=32, int height=32, int zOrder=0, float parallax=1f, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3">CoordinateSystemTypes</a> coordinateSystem=CoordinateSystemTypes.Orthographic)</td></tr>
+<tr class="memitem:aad4dc2ff1930c42d3ac8dc39bf89d084" id="r_aad4dc2ff1930c42d3ac8dc39bf89d084"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad4dc2ff1930c42d3ac8dc39bf89d084">AddLayer</a> (int columnCount, int rowCount, int width=32, int height=32, int zOrder=0, float parallax=1f, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3">CoordinateSystemTypes</a> coordinateSystem=CoordinateSystemTypes.Orthogonal)</td></tr>
 <tr class="memitem:ac8e6956c491cbbf7a1197f4c378e7d7e" id="r_ac8e6956c491cbbf7a1197f4c378e7d7e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8e6956c491cbbf7a1197f4c378e7d7e">RemoveAllLayers</a> ()</td></tr>
 <tr class="memitem:ab4a8de3e48467b6a52a08ee886f578af" id="r_ab4a8de3e48467b6a52a08ee886f578af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4a8de3e48467b6a52a08ee886f578af">RemoveLayer</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> sceneLayer)</td></tr>
 <tr class="memitem:a0bd8ee56ed5fc05b4f5a52dc8ced7063" id="r_a0bd8ee56ed5fc05b4f5a52dc8ced7063"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0bd8ee56ed5fc05b4f5a52dc8ced7063">GetSceneLayerByID</a> (string id)</td></tr>
@@ -144,10 +145,7 @@ Events</h2></td></tr>
 <tr class="memitem:a270894db366b87f8a329ee484e75c7d8" id="r_a270894db366b87f8a329ee484e75c7d8"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a270894db366b87f8a329ee484e75c7d8">SceneLayerRemoved</a></td></tr>
 <tr class="memitem:abcd4c21b21ed5e394f65b9f969b0b2b0" id="r_abcd4c21b21ed5e394f65b9f969b0b2b0"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abcd4c21b21ed5e394f65b9f969b0b2b0">SceneDisposing</a></td></tr>
 </table>
-<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00013">13</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a254272a432b1d3a737e48a52750cdeff" name="a254272a432b1d3a737e48a52750cdeff"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a254272a432b1d3a737e48a52750cdeff">&#9670;&#160;</a></span>Scene()</h2>
 
@@ -163,13 +161,11 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00030">30</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="abf1dfffa1bd675769fd337efecef1dd2" name="abf1dfffa1bd675769fd337efecef1dd2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf1dfffa1bd675769fd337efecef1dd2">&#9670;&#160;</a></span>AddLayer()</h2>
+<a id="aad4dc2ff1930c42d3ac8dc39bf89d084" name="aad4dc2ff1930c42d3ac8dc39bf89d084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad4dc2ff1930c42d3ac8dc39bf89d084">&#9670;&#160;</a></span>AddLayer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -207,12 +203,10 @@ Events</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3">CoordinateSystemTypes</a></td>          <td class="paramname"><span class="paramname"><em>coordinateSystem</em></span><span class="paramdefsep"> = </span><span class="paramdefval">CoordinateSystemTypes::Orthographic</span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3">CoordinateSystemTypes</a></td>          <td class="paramname"><span class="paramname"><em>coordinateSystem</em></span><span class="paramdefsep"> = </span><span class="paramdefval">CoordinateSystemTypes::Orthogonal</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00128">128</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -239,8 +233,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00353">353</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="a835d902d5621935b14b107c41acd8da2" name="a835d902d5621935b14b107c41acd8da2"></a>
@@ -265,8 +257,6 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00325">325</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -377,8 +367,6 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00166">166</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="ac7e3702793a7ffac747cb439ab50295a" name="ac7e3702793a7ffac747cb439ab50295a"></a>
@@ -397,8 +385,6 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Computes a world-space pixel bounding rectangle that encloses all layers in the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a>. Each layer reports its own bounds via GetLayerBoundsPx(), and this method unions them together. </p>
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00182">182</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -450,8 +436,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00214">214</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="a73cca5146c3aefbf24f2a80daba37f4d" name="a73cca5146c3aefbf24f2a80daba37f4d"></a>
@@ -477,8 +461,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00232">232</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="ac8e6956c491cbbf7a1197f4c378e7d7e" name="ac8e6956c491cbbf7a1197f4c378e7d7e"></a>
@@ -496,8 +478,6 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00147">147</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="ab4a8de3e48467b6a52a08ee886f578af" name="ab4a8de3e48467b6a52a08ee886f578af"></a>
@@ -514,8 +494,6 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00158">158</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -540,8 +518,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00104">104</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="adcdad11fcc98c491f4edc90dbe32a71b" name="adcdad11fcc98c491f4edc90dbe32a71b"></a>
@@ -563,8 +539,6 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00071">71</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -588,8 +562,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00101">101</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="a98e66a9feac69e867a1a0b0ba172642f" name="a98e66a9feac69e867a1a0b0ba172642f"></a>
@@ -611,8 +583,6 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00364">364</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -636,8 +606,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00074">74</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="a7b07d735642db1f17879761d27f209d8" name="a7b07d735642db1f17879761d27f209d8"></a>
@@ -659,8 +627,6 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00068">68</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -684,8 +650,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00077">77</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="a866b0d37d88a97ac79b91a3d15bafc2f" name="a866b0d37d88a97ac79b91a3d15bafc2f"></a>
@@ -707,8 +671,6 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00303">303</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -732,8 +694,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00305">305</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="a3c07cfde0626504539b47c4015ae587c" name="a3c07cfde0626504539b47c4015ae587c"></a>
@@ -755,8 +715,6 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00065">65</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -780,8 +738,6 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00083">83</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -797,8 +753,6 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00024">24</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <a id="a5083f1d20db3d14561f55205be029d89" name="a5083f1d20db3d14561f55205be029d89"></a>
@@ -812,8 +766,6 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00020">20</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -829,12 +781,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_scene_8cs_source.html#l00022">22</a> of file <a class="el" href="_scene_8cs_source.html">Scene.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Scenes/<a class="el" href="_scene_8cs_source.html">Scene.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Scenes/<a class="el" href="_scene_8cs.html">Scene.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Slider.Puzzle Class Reference</title>
+<title>Gondwana Game Engine: Slider.Puzzle Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -101,7 +102,7 @@ Inheritance diagram for Slider.Puzzle:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6dea1a5b85d1386360353bddf0097ddf" id="r_a6dea1a5b85d1386360353bddf0097ddf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6dea1a5b85d1386360353bddf0097ddf">Puzzle</a> (RenderSurfaceHost&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html">BitmapBackbuffer</a> &gt; renderSurfaceHost, string imgFile, int columns, int rows, Size size)</td></tr>
+<tr class="memitem:a6dea1a5b85d1386360353bddf0097ddf" id="r_a6dea1a5b85d1386360353bddf0097ddf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6dea1a5b85d1386360353bddf0097ddf">Puzzle</a> (RenderSurfaceHost&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html">BitmapBackbuffer</a> &gt; renderSurfaceHost, string imgFile, int columns, int rows, Size size)</td></tr>
 <tr class="memitem:afb27dbdd558b4c3180a6b90e3c220d3b" id="r_afb27dbdd558b4c3180a6b90e3c220d3b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb27dbdd558b4c3180a6b90e3c220d3b">SlidePiece</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html">Sprite</a> sprite, float slideTime)</td></tr>
 <tr class="memitem:ac9d70f8962d72ddd35a175f30e020e61" id="r_ac9d70f8962d72ddd35a175f30e020e61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9d70f8962d72ddd35a175f30e020e61">Shuffle</a> (int totalMoves, float slideTime)</td></tr>
 <tr class="memitem:a66001a2a732d00317e649194e53b0393" id="r_a66001a2a732d00317e649194e53b0393"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66001a2a732d00317e649194e53b0393">GetGridCoordinates</a> (int pxlX, int pxlY)</td></tr>
@@ -118,10 +119,7 @@ Properties</h2></td></tr>
 <tr class="memitem:af73f9de4ab367b23ffa33407d94b5766" id="r_af73f9de4ab367b23ffa33407d94b5766"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af73f9de4ab367b23ffa33407d94b5766">TotalPieces</a><code> [get]</code></td></tr>
 <tr class="memitem:ad3835dac9ee630866f61083e6a19b796" id="r_ad3835dac9ee630866f61083e6a19b796"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad3835dac9ee630866f61083e6a19b796">TotalPiecesCorrect</a><code> [get]</code></td></tr>
 </table>
-<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00017">17</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6dea1a5b85d1386360353bddf0097ddf" name="a6dea1a5b85d1386360353bddf0097ddf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6dea1a5b85d1386360353bddf0097ddf">&#9670;&#160;</a></span>Puzzle()</h2>
 
@@ -131,7 +129,7 @@ Properties</h2></td></tr>
         <tr>
           <td class="memname">Slider.Puzzle.Puzzle </td>
           <td>(</td>
-          <td class="paramtype">RenderSurfaceHost&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html">BitmapBackbuffer</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>renderSurfaceHost</em></span>, </td>
+          <td class="paramtype">RenderSurfaceHost&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html">BitmapBackbuffer</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>renderSurfaceHost</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -156,8 +154,6 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00044">44</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -175,8 +171,6 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00306">306</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
 
 </div>
 </div>
@@ -199,8 +193,6 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00217">217</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <a id="ac9d70f8962d72ddd35a175f30e020e61" name="ac9d70f8962d72ddd35a175f30e020e61"></a>
@@ -222,8 +214,6 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00184">184</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <a id="afb27dbdd558b4c3180a6b90e3c220d3b" name="afb27dbdd558b4c3180a6b90e3c220d3b"></a>
@@ -244,8 +234,6 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00158">158</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
 
 </div>
 </div>
@@ -270,8 +258,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00115">115</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <a id="a5f922e355389e11c4d4db751082a6e7d" name="a5f922e355389e11c4d4db751082a6e7d"></a>
@@ -293,8 +279,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00100">100</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
 
 </div>
 </div>
@@ -318,8 +302,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00120">120</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <a id="ad9acce0a8f483c7d40659fc4eb59dfd7" name="ad9acce0a8f483c7d40659fc4eb59dfd7"></a>
@@ -341,8 +323,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00110">110</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
 
 </div>
 </div>
@@ -366,8 +346,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00105">105</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <a id="a02bf5f9c129874ebc573b6ab04635eaf" name="a02bf5f9c129874ebc573b6ab04635eaf"></a>
@@ -389,8 +367,6 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00125">125</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
 
 </div>
 </div>
@@ -414,8 +390,6 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00131">131</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <a id="ad3835dac9ee630866f61083e6a19b796" name="ad3835dac9ee630866f61083e6a19b796"></a>
@@ -438,12 +412,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_puzzle_8cs_source.html#l00136">136</a> of file <a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Games/Slider/<a class="el" href="_puzzle_8cs_source.html">Puzzle.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Games/Slider/<a class="el" href="_puzzle_8cs.html">Puzzle.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

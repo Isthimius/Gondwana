@@ -132,20 +132,24 @@ var annotated_dup =
         [ "Form1", "class_gondwana_1_1_particle_test_1_1_form1.html", "class_gondwana_1_1_particle_test_1_1_form1" ]
       ] ],
       [ "Rendering", "namespace_gondwana_1_1_rendering.html", [
-        [ "BackbufferBase", "class_gondwana_1_1_rendering_1_1_backbuffer_base.html", "class_gondwana_1_1_rendering_1_1_backbuffer_base" ],
-        [ "BitmapBackbuffer", "class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html", "class_gondwana_1_1_rendering_1_1_bitmap_backbuffer" ],
-        [ "Camera", "class_gondwana_1_1_rendering_1_1_camera.html", "class_gondwana_1_1_rendering_1_1_camera" ],
-        [ "GpuBackbuffer", "class_gondwana_1_1_rendering_1_1_gpu_backbuffer.html", "class_gondwana_1_1_rendering_1_1_gpu_backbuffer" ],
+        [ "Backbuffers", "namespace_gondwana_1_1_rendering_1_1_backbuffers.html", [
+          [ "BackbufferBase", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base" ],
+          [ "BitmapBackbuffer", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer" ],
+          [ "GpuBackbuffer", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer.html", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer" ]
+        ] ],
+        [ "Views", "namespace_gondwana_1_1_rendering_1_1_views.html", [
+          [ "Camera", "class_gondwana_1_1_rendering_1_1_views_1_1_camera.html", "class_gondwana_1_1_rendering_1_1_views_1_1_camera" ],
+          [ "View", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html", "class_gondwana_1_1_rendering_1_1_views_1_1_view" ],
+          [ "ViewManager", "class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html", "class_gondwana_1_1_rendering_1_1_views_1_1_view_manager" ],
+          [ "Viewport", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport" ],
+          [ "ViewportResizedEventArgs", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport_resized_event_args.html", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport_resized_event_args" ],
+          [ "ViewportZoomChangedEventArgs", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport_zoom_changed_event_args.html", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport_zoom_changed_event_args" ]
+        ] ],
         [ "RenderSurfaceAdapterBase", "class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html", "class_gondwana_1_1_rendering_1_1_render_surface_adapter_base" ],
         [ "RenderSurfaceAdapterResizedEventArgs", "class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html", "class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args" ],
         [ "RenderSurfaceHost< TBackbuffer >", "class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html", "class_gondwana_1_1_rendering_1_1_render_surface_host-1-g" ],
         [ "RenderSurfaceHostBase", "class_gondwana_1_1_rendering_1_1_render_surface_host_base.html", "class_gondwana_1_1_rendering_1_1_render_surface_host_base" ],
-        [ "RenderSurfaceHostBindEventArgs", "class_gondwana_1_1_rendering_1_1_render_surface_host_bind_event_args.html", "class_gondwana_1_1_rendering_1_1_render_surface_host_bind_event_args" ],
-        [ "View", "class_gondwana_1_1_rendering_1_1_view.html", "class_gondwana_1_1_rendering_1_1_view" ],
-        [ "Viewport", "class_gondwana_1_1_rendering_1_1_viewport.html", "class_gondwana_1_1_rendering_1_1_viewport" ],
-        [ "ViewportResizedEventArgs", "class_gondwana_1_1_rendering_1_1_viewport_resized_event_args.html", "class_gondwana_1_1_rendering_1_1_viewport_resized_event_args" ],
-        [ "ViewportZoomChangedEventArgs", "class_gondwana_1_1_rendering_1_1_viewport_zoom_changed_event_args.html", "class_gondwana_1_1_rendering_1_1_viewport_zoom_changed_event_args" ],
-        [ "ViewRenderer", "class_gondwana_1_1_rendering_1_1_view_renderer.html", "class_gondwana_1_1_rendering_1_1_view_renderer" ]
+        [ "RenderSurfaceHostBindEventArgs", "class_gondwana_1_1_rendering_1_1_render_surface_host_bind_event_args.html", "class_gondwana_1_1_rendering_1_1_render_surface_host_bind_event_args" ]
       ] ],
       [ "Scenes", "namespace_gondwana_1_1_scenes.html", [
         [ "Scene", "class_gondwana_1_1_scenes_1_1_scene.html", "class_gondwana_1_1_scenes_1_1_scene" ],

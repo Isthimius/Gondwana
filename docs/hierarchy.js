@@ -2,7 +2,7 @@ var hierarchy =
 [
     [ "Gondwana.Collision.Aabb", "struct_gondwana_1_1_collision_1_1_aabb.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "class_gondwana_1_1_assets_1_1_assets_file_identifier.html", null ],
-    [ "Gondwana.Rendering.Camera", "class_gondwana_1_1_rendering_1_1_camera.html", null ],
+    [ "Gondwana.Rendering.Views.Camera", "class_gondwana_1_1_rendering_1_1_views_1_1_camera.html", null ],
     [ "Gondwana.Drawing.Collisions.CollisionDetectionAdjustment", "struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html", null ],
     [ "Gondwana.Collision.CollisionResult", "struct_gondwana_1_1_collision_1_1_collision_result.html", null ],
     [ "Gondwana.Collision.CollisionWorld", "class_gondwana_1_1_collision_1_1_collision_world.html", null ],
@@ -76,9 +76,9 @@ var hierarchy =
       [ "Gondwana.Drawing.Tilesheets.Tilesheet", "class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html", null ],
       [ "Gondwana.Engine", "class_gondwana_1_1_engine.html", null ],
       [ "Gondwana.Movement.MovementController", "class_gondwana_1_1_movement_1_1_movement_controller.html", null ],
-      [ "Gondwana.Rendering.BackbufferBase", "class_gondwana_1_1_rendering_1_1_backbuffer_base.html", [
-        [ "Gondwana.Rendering.BitmapBackbuffer", "class_gondwana_1_1_rendering_1_1_bitmap_backbuffer.html", null ],
-        [ "Gondwana.Rendering.GpuBackbuffer", "class_gondwana_1_1_rendering_1_1_gpu_backbuffer.html", null ]
+      [ "Gondwana.Rendering.Backbuffers.BackbufferBase", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html", [
+        [ "Gondwana.Rendering.Backbuffers.BitmapBackbuffer", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html", null ],
+        [ "Gondwana.Rendering.Backbuffers.GpuBackbuffer", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer.html", null ]
       ] ],
       [ "Gondwana.Rendering.RenderSurfaceHostBase", "class_gondwana_1_1_rendering_1_1_render_surface_host_base.html", [
         [ "Gondwana.Rendering.RenderSurfaceHost< TBackbuffer >", "class_gondwana_1_1_rendering_1_1_render_surface_host-1-g.html", null ]
@@ -177,11 +177,11 @@ var hierarchy =
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl", "class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_control.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceControl", "class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_control.html", null ]
     ] ],
-    [ "Gondwana.Rendering.View", "class_gondwana_1_1_rendering_1_1_view.html", null ],
-    [ "Gondwana.Rendering.Viewport", "class_gondwana_1_1_rendering_1_1_viewport.html", null ],
-    [ "Gondwana.Rendering.ViewportResizedEventArgs", "class_gondwana_1_1_rendering_1_1_viewport_resized_event_args.html", null ],
-    [ "Gondwana.Rendering.ViewportZoomChangedEventArgs", "class_gondwana_1_1_rendering_1_1_viewport_zoom_changed_event_args.html", null ],
-    [ "Gondwana.Rendering.ViewRenderer", "class_gondwana_1_1_rendering_1_1_view_renderer.html", null ],
+    [ "Gondwana.Rendering.Views.View", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html", null ],
+    [ "Gondwana.Rendering.Views.ViewManager", "class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html", null ],
+    [ "Gondwana.Rendering.Views.Viewport", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html", null ],
+    [ "Gondwana.Rendering.Views.ViewportResizedEventArgs", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport_resized_event_args.html", null ],
+    [ "Gondwana.Rendering.Views.ViewportZoomChangedEventArgs", "class_gondwana_1_1_rendering_1_1_views_1_1_viewport_zoom_changed_event_args.html", null ],
     [ "WaveStream", null, [
       [ "Gondwana.Audio.Midi.WaveProviderToWaveStream", "class_gondwana_1_1_audio_1_1_midi_1_1_wave_provider_to_wave_stream.html", null ]
     ] ]

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Drawing.Direct.DirectDrawingBase Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Drawing.Direct.DirectDrawingBase Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -92,6 +93,9 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawi
   <div class="headertitle"><div class="title">Gondwana.Drawing.Direct.DirectDrawingBase Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides the base implementation for direct drawing objects that can be rendered to the backbuffer with support for opacity, fade transitions, reveal animations, and flexible positioning modes.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Direct.DirectDrawingBase:</div>
 <div class="dyncontent">
@@ -100,10 +104,10 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectDrawingBase:</div>
   <map id="Gondwana_2EDrawing_2EDirect_2EDirectDrawingBase_map" name="Gondwana_2EDrawing_2EDirect_2EDirectDrawingBase_map">
 <area href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="499,56,822,80"/>
 <area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="333,0,656,24"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,168,822,192"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,168,822,192"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer..." alt="Gondwana.Drawing.Direct.DirectVideo" shape="rect" coords="832,168,1155,192"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Draws a bitmap/image into a rectangular region with optional scaling mode, source sub-rect,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,323,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="A retained-mode, configurable rectangle overlay that supports fill and/or border, independent border ..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,224,656,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,323,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,224,656,248"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="666,224,989,248"/>
 <area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="999,224,1322,248"/>
   </map>
@@ -116,94 +120,130 @@ Public Types</h2></td></tr>
 , <a class="el" href="#adac29c23b9e8e0590930df0a3957d141af2b1a19a8d0f523d042f9ede79a80804">TopToBottom</a>
 , <a class="el" href="#adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a">BottomToTop</a>
  }</td></tr>
+<tr class="memdesc:adac29c23b9e8e0590930df0a3957d141"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the direction from which a reveal animation progressively displays the direct drawing.  <a href="#adac29c23b9e8e0590930df0a3957d141">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5b34671e7d7598452fff9d87a97bf53c" id="r_a5b34671e7d7598452fff9d87a97bf53c"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b34671e7d7598452fff9d87a97bf53c">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a> view)</td></tr>
-<tr class="memdesc:a5b34671e7d7598452fff9d87a97bf53c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided View to project from world-space.  <br /></td></tr>
-<tr class="memitem:ac75161f710a54c4fc90ebcd172b2903c" id="r_ac75161f710a54c4fc90ebcd172b2903c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac75161f710a54c4fc90ebcd172b2903c">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
-<tr class="memdesc:ac75161f710a54c4fc90ebcd172b2903c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_gondwana_1_1_engine.html">Engine</a> entry point for drawing. destRectScreen must be in SCREEN pixels. This method handles opacity and reveal clipping before calling <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this DirectDrawing to the Backbuffer. Called by the engine after ro...">OnDraw()</a>, which draws the actual Canvas.  <br /></td></tr>
+<tr class="memitem:a5b34671e7d7598452fff9d87a97bf53c" id="r_a5b34671e7d7598452fff9d87a97bf53c"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b34671e7d7598452fff9d87a97bf53c">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
+<tr class="memdesc:a5b34671e7d7598452fff9d87a97bf53c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the screen-space drawing location for this direct drawing as seen from the specified view.  <br /></td></tr>
+<tr class="memitem:ac75161f710a54c4fc90ebcd172b2903c" id="r_ac75161f710a54c4fc90ebcd172b2903c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac75161f710a54c4fc90ebcd172b2903c">Draw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memdesc:ac75161f710a54c4fc90ebcd172b2903c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders this direct drawing to the backbuffer at the specified screen location.  <br /></td></tr>
 <tr class="memitem:ae959d8a569f2f225afce49860a7ea618" id="r_ae959d8a569f2f225afce49860a7ea618"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae959d8a569f2f225afce49860a7ea618">SetOpacity</a> (float opacity)</td></tr>
-<tr class="memdesc:ae959d8a569f2f225afce49860a7ea618"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly jump to the given opacity (0..1).  <br /></td></tr>
+<tr class="memdesc:ae959d8a569f2f225afce49860a7ea618"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly sets the opacity to the specified value without animation.  <br /></td></tr>
 <tr class="memitem:a7d590a5c40e61c145c9cfdde85b145e9" id="r_a7d590a5c40e61c145c9cfdde85b145e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d590a5c40e61c145c9cfdde85b145e9">FadeTo</a> (float targetOpacity, float durationSec)</td></tr>
-<tr class="memdesc:a7d590a5c40e61c145c9cfdde85b145e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fade to target opacity over duration (seconds). Returns this for chaining.  <br /></td></tr>
+<tr class="memdesc:a7d590a5c40e61c145c9cfdde85b145e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates a smooth fade transition to the specified target opacity over the given duration.  <br /></td></tr>
 <tr class="memitem:aa9d915bb297d19580548340b4f4e9f3f" id="r_aa9d915bb297d19580548340b4f4e9f3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9d915bb297d19580548340b4f4e9f3f">FadeIn</a> (float durationSec)</td></tr>
-<tr class="memdesc:aa9d915bb297d19580548340b4f4e9f3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: fade in from 0 to 1 over duration.  <br /></td></tr>
+<tr class="memdesc:aa9d915bb297d19580548340b4f4e9f3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fades this direct drawing from its current opacity to fully opaque over the specified duration.  <br /></td></tr>
 <tr class="memitem:a29317bb9883c2d4b47a464b5d9284700" id="r_a29317bb9883c2d4b47a464b5d9284700"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29317bb9883c2d4b47a464b5d9284700">FadeOut</a> (float durationSec)</td></tr>
-<tr class="memdesc:a29317bb9883c2d4b47a464b5d9284700"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: fade out from current to 0 over duration.  <br /></td></tr>
+<tr class="memdesc:a29317bb9883c2d4b47a464b5d9284700"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fades this direct drawing from its current opacity to fully transparent over the specified duration.  <br /></td></tr>
 <tr class="memitem:abbc8721e4dec41025c7c55aa1855b3ce" id="r_abbc8721e4dec41025c7c55aa1855b3ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbc8721e4dec41025c7c55aa1855b3ce">CancelFade</a> ()</td></tr>
-<tr class="memdesc:abbc8721e4dec41025c7c55aa1855b3ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel any active fade (keeps current opacity).  <br /></td></tr>
+<tr class="memdesc:abbc8721e4dec41025c7c55aa1855b3ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels any active fade transition, leaving the opacity at its current value.  <br /></td></tr>
 <tr class="memitem:a931ae7b2c189e54436619f99702620ae" id="r_a931ae7b2c189e54436619f99702620ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a931ae7b2c189e54436619f99702620ae">SetReveal</a> (float t01)</td></tr>
+<tr class="memdesc:a931ae7b2c189e54436619f99702620ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly sets the reveal progress to the specified value without animation.  <br /></td></tr>
 <tr class="memitem:a07fbf01c483da1f18dc5efa30299c3f1" id="r_a07fbf01c483da1f18dc5efa30299c3f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07fbf01c483da1f18dc5efa30299c3f1">SetRevealDirection</a> (<a class="el" href="#adac29c23b9e8e0590930df0a3957d141">RevealDirection</a> dir)</td></tr>
+<tr class="memdesc:a07fbf01c483da1f18dc5efa30299c3f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the direction from which the reveal animation progresses.  <br /></td></tr>
 <tr class="memitem:a15fd13ea5e88a25cfd4dc2130765852d" id="r_a15fd13ea5e88a25cfd4dc2130765852d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15fd13ea5e88a25cfd4dc2130765852d">RevealTo</a> (float t01, float durationSec, Func&lt; float, float &gt;? easing=null)</td></tr>
+<tr class="memdesc:a15fd13ea5e88a25cfd4dc2130765852d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates a smooth reveal animation to the specified target progress over the given duration, optionally using a custom easing function.  <br /></td></tr>
 <tr class="memitem:a52ae59743dbd89bda3f0c721321939f0" id="r_a52ae59743dbd89bda3f0c721321939f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52ae59743dbd89bda3f0c721321939f0">Update</a> (long tick)</td></tr>
-<tr class="memdesc:a52ae59743dbd89bda3f0c721321939f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-frame update hook. Default: advance scrolling only. Called from DirectDrawingManager.UpdateAll(long).  <br /></td></tr>
+<tr class="memdesc:a52ae59743dbd89bda3f0c721321939f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs per-frame update logic for this direct drawing, including fade and reveal animations.  <br /></td></tr>
 <tr class="memitem:a5432f8b27319c8fc17a93dcbebdd6609" id="r_a5432f8b27319c8fc17a93dcbebdd6609"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5432f8b27319c8fc17a93dcbebdd6609">CompareTo</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? other)</td></tr>
+<tr class="memdesc:a5432f8b27319c8fc17a93dcbebdd6609"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares this direct drawing to another for sorting by <a class="el" href="#a0ff816d3ac12017ee6caff6e522e8cea" title="Gets or sets the Z-order (depth) used for sorting this direct drawing relative to other drawables.">ZOrder</a>.  <br /></td></tr>
 <tr class="memitem:a397f33126e99162c868cc5195529f2d7" id="r_a397f33126e99162c868cc5195529f2d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a397f33126e99162c868cc5195529f2d7">Dispose</a> ()</td></tr>
+<tr class="memdesc:a397f33126e99162c868cc5195529f2d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance.  <br /></td></tr>
 <tr class="memitem:aa3708fe5956d7eedb4bef2ed9befda3a" id="r_aa3708fe5956d7eedb4bef2ed9befda3a"><td class="memItemLeft" align="right" valign="top">override bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3708fe5956d7eedb4bef2ed9befda3a">Equals</a> (object? obj)</td></tr>
+<tr class="memdesc:aa3708fe5956d7eedb4bef2ed9befda3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the specified object is equal to the current direct drawing.  <br /></td></tr>
 <tr class="memitem:a4471bb0951bdc229324127f0b545bfb2" id="r_a4471bb0951bdc229324127f0b545bfb2"><td class="memItemLeft" align="right" valign="top">override int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4471bb0951bdc229324127f0b545bfb2">GetHashCode</a> ()</td></tr>
+<tr class="memdesc:a4471bb0951bdc229324127f0b545bfb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a hash code for this direct drawing.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a262e5df1552858e0fbe162685e5c3020" id="r_a262e5df1552858e0fbe162685e5c3020"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a262e5df1552858e0fbe162685e5c3020">operator==</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a262e5df1552858e0fbe162685e5c3020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether two direct drawing instances are equal using reference equality.  <br /></td></tr>
 <tr class="memitem:a76829a2d9008b28f90fd498119d70366" id="r_a76829a2d9008b28f90fd498119d70366"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76829a2d9008b28f90fd498119d70366">operator!=</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a76829a2d9008b28f90fd498119d70366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether two direct drawing instances are not equal using reference equality.  <br /></td></tr>
 <tr class="memitem:a81033b742678c972859f6ff6284d1285" id="r_a81033b742678c972859f6ff6284d1285"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81033b742678c972859f6ff6284d1285">operator&lt;</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a81033b742678c972859f6ff6284d1285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is less than the right.  <br /></td></tr>
 <tr class="memitem:ab75c7d4be26e4cdc6750b46060ba70bf" id="r_ab75c7d4be26e4cdc6750b46060ba70bf"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab75c7d4be26e4cdc6750b46060ba70bf">operator&lt;=</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:ab75c7d4be26e4cdc6750b46060ba70bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is less than or equal to the right.  <br /></td></tr>
 <tr class="memitem:a1171b1097232c7778431e1b0c0415195" id="r_a1171b1097232c7778431e1b0c0415195"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1171b1097232c7778431e1b0c0415195">operator&gt;</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a1171b1097232c7778431e1b0c0415195"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is greater than the right.  <br /></td></tr>
 <tr class="memitem:a6e74ad9dc76b60051ce501b48a36cb8e" id="r_a6e74ad9dc76b60051ce501b48a36cb8e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e74ad9dc76b60051ce501b48a36cb8e">operator&gt;=</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? left, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a>? right)</td></tr>
+<tr class="memdesc:a6e74ad9dc76b60051ce501b48a36cb8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the Z-order of the left direct drawing is greater than or equal to the right.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a06db448ba75f0d6cf236f3a2a71ea8e4" id="r_a06db448ba75f0d6cf236f3a2a71ea8e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
-<tr class="memdesc:a06db448ba75f0d6cf236f3a2a71ea8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the concrete drawing for this DirectDrawing to the Backbuffer. Called by the engine after routing, visibility, opacity, and reveal logic have been applied.  <br /></td></tr>
-<tr class="memitem:aec900d8f5d092b35565e658a0b845560" id="r_aec900d8f5d092b35565e658a0b845560"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec900d8f5d092b35565e658a0b845560">DirectDrawingBase</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>? sceneLayer, <a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a>? view, Rectangle? screenBounds, Rectangle? worldBounds, string? nickname=null)</td></tr>
+<tr class="memitem:a06db448ba75f0d6cf236f3a2a71ea8e4" id="r_a06db448ba75f0d6cf236f3a2a71ea8e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memdesc:a06db448ba75f0d6cf236f3a2a71ea8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the concrete drawing for this direct drawing to the backbuffer.  <br /></td></tr>
+<tr class="memitem:aec900d8f5d092b35565e658a0b845560" id="r_aec900d8f5d092b35565e658a0b845560"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec900d8f5d092b35565e658a0b845560">DirectDrawingBase</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>? sceneLayer, <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>? view, Rectangle? screenBounds, Rectangle? worldBounds, string? nickname=null)</td></tr>
+<tr class="memdesc:aec900d8f5d092b35565e658a0b845560"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> class.  <br /></td></tr>
 <tr class="memitem:ad239dc0e99d67621d35385086d91e98f" id="r_ad239dc0e99d67621d35385086d91e98f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad239dc0e99d67621d35385086d91e98f">Dispose</a> (bool disposing)</td></tr>
+<tr class="memdesc:ad239dc0e99d67621d35385086d91e98f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a832738f21474bf7f3e6df3f62be90f4f" id="r_a832738f21474bf7f3e6df3f62be90f4f"><td class="memItemLeft" align="right" valign="top">readonly <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a832738f21474bf7f3e6df3f62be90f4f">_renderSurfaceHost</a></td></tr>
+<tr class="memdesc:a832738f21474bf7f3e6df3f62be90f4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The render surface host that manages this direct drawing's rendering pipeline.  <br /></td></tr>
 <tr class="memitem:abb7c98bc7e9410d012caa4a0d0fa8dae" id="r_abb7c98bc7e9410d012caa4a0d0fa8dae"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb7c98bc7e9410d012caa4a0d0fa8dae">_screenBounds</a></td></tr>
+<tr class="memdesc:abb7c98bc7e9410d012caa4a0d0fa8dae"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current screen-space bounds for view-mode direct drawings, in pixels.  <br /></td></tr>
 <tr class="memitem:aad8b047473298e7e9661f1b76553af5c" id="r_aad8b047473298e7e9661f1b76553af5c"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad8b047473298e7e9661f1b76553af5c">_worldBounds</a></td></tr>
+<tr class="memdesc:aad8b047473298e7e9661f1b76553af5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current world-space bounds for scene-layer-mode direct drawings, in pixels.  <br /></td></tr>
 <tr class="memitem:a237b8677ab14b6efe4bc7aa3b3257032" id="r_a237b8677ab14b6efe4bc7aa3b3257032"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a237b8677ab14b6efe4bc7aa3b3257032">_zOrder</a></td></tr>
+<tr class="memdesc:a237b8677ab14b6efe4bc7aa3b3257032"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Z-order used for draw sorting. Higher values draw later (on top).  <br /></td></tr>
 <tr class="memitem:a4de2014d25d69ade262b1cd77feb33da" id="r_a4de2014d25d69ade262b1cd77feb33da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4de2014d25d69ade262b1cd77feb33da">_visible</a></td></tr>
+<tr class="memdesc:a4de2014d25d69ade262b1cd77feb33da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates whether this direct drawing is currently visible and should be rendered.  <br /></td></tr>
 <tr class="memitem:a4599d3cd99c7ec5ede8d1bf0c3155068" id="r_a4599d3cd99c7ec5ede8d1bf0c3155068"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4599d3cd99c7ec5ede8d1bf0c3155068">_lastTick</a> = HighResTimer.GetCurrentTick()</td></tr>
+<tr class="memdesc:a4599d3cd99c7ec5ede8d1bf0c3155068"><td class="mdescLeft">&#160;</td><td class="mdescRight">The last engine tick value used for delta-time calculations in <a class="el" href="#a52ae59743dbd89bda3f0c721321939f0" title="Performs per-frame update logic for this direct drawing, including fade and reveal animations.">Update</a>.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a3a1c304b55d725c4f002a15556ab79cc" id="r_a3a1c304b55d725c4f002a15556ab79cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a1c304b55d725c4f002a15556ab79cc">HideWhenFullyTransparent</a> = true<code> [get, set]</code></td></tr>
+<tr class="memdesc:a3a1c304b55d725c4f002a15556ab79cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this direct drawing should be automatically hidden when its opacity reaches zero during fade transitions.  <br /></td></tr>
 <tr class="memitem:a9b2f37ddc3934b796eb6ea593abd08f4" id="r_a9b2f37ddc3934b796eb6ea593abd08f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b2f37ddc3934b796eb6ea593abd08f4">RenderSurfaceHost</a><code> [get]</code></td></tr>
-<tr class="memdesc:a9b2f37ddc3934b796eb6ea593abd08f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rendering surface to which this drawable belongs.  <br /></td></tr>
+<tr class="memdesc:a9b2f37ddc3934b796eb6ea593abd08f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the render surface host that manages this direct drawing's rendering pipeline.  <br /></td></tr>
 <tr class="memitem:abfcad8df441dd7d68d712adcf6ba7217" id="r_abfcad8df441dd7d68d712adcf6ba7217"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abfcad8df441dd7d68d712adcf6ba7217">Mode</a><code> [get]</code></td></tr>
-<tr class="memdesc:abfcad8df441dd7d68d712adcf6ba7217"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the drawing mode that determines where and how this drawable is rendered.  <br /></td></tr>
+<tr class="memdesc:abfcad8df441dd7d68d712adcf6ba7217"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the drawing mode that determines how this direct drawing is positioned and transformed.  <br /></td></tr>
 <tr class="memitem:ab464e191526e772a9cf74077c7f36f55" id="r_ab464e191526e772a9cf74077c7f36f55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab464e191526e772a9cf74077c7f36f55">SceneLayer</a><code> [get]</code></td></tr>
-<tr class="memitem:a45228a4aba8bc2629472cb6560b8d554" id="r_a45228a4aba8bc2629472cb6560b8d554"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45228a4aba8bc2629472cb6560b8d554">View</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab464e191526e772a9cf74077c7f36f55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer to which this direct drawing is attached, or <code>null</code> if the drawing is in view mode.  <br /></td></tr>
+<tr class="memitem:a45228a4aba8bc2629472cb6560b8d554" id="r_a45228a4aba8bc2629472cb6560b8d554"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45228a4aba8bc2629472cb6560b8d554">View</a><code> [get]</code></td></tr>
+<tr class="memdesc:a45228a4aba8bc2629472cb6560b8d554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the view to which this direct drawing is attached, or <code>null</code> if the drawing is in scene-layer mode.  <br /></td></tr>
 <tr class="memitem:af8fc16eb9e7312c25471f9f0c1dd8bb2" id="r_af8fc16eb9e7312c25471f9f0c1dd8bb2"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8fc16eb9e7312c25471f9f0c1dd8bb2">ScreenBounds</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:af8fc16eb9e7312c25471f9f0c1dd8bb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The bounding rectangle of this drawable in SCREEN space.  <br /></td></tr>
+<tr class="memdesc:af8fc16eb9e7312c25471f9f0c1dd8bb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the screen-space bounds of this direct drawing in pixels.  <br /></td></tr>
 <tr class="memitem:abe9d1f20a5271daf8d6a926fe41b10ec" id="r_abe9d1f20a5271daf8d6a926fe41b10ec"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe9d1f20a5271daf8d6a926fe41b10ec">WorldBounds</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:abe9d1f20a5271daf8d6a926fe41b10ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">The bounding rectangle of this drawable in WORLD space.  <br /></td></tr>
+<tr class="memdesc:abe9d1f20a5271daf8d6a926fe41b10ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the world-space bounds of this direct drawing in pixels.  <br /></td></tr>
 <tr class="memitem:a46bc48e23fdf660435d5d969efa73092" id="r_a46bc48e23fdf660435d5d969efa73092"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46bc48e23fdf660435d5d969efa73092">ValueBag</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a46bc48e23fdf660435d5d969efa73092"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the extensible value bag for storing arbitrary key-value data associated with this direct drawing.  <br /></td></tr>
 <tr class="memitem:a978ca1ca043adc8dd5e7b129a876f778" id="r_a978ca1ca043adc8dd5e7b129a876f778"><td class="memItemLeft" align="right" valign="top">Guid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a978ca1ca043adc8dd5e7b129a876f778">Id</a> = Guid.NewGuid()<code> [get]</code></td></tr>
-<tr class="memdesc:a978ca1ca043adc8dd5e7b129a876f778"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto-assigned unique identifier for the object.  <br /></td></tr>
+<tr class="memdesc:a978ca1ca043adc8dd5e7b129a876f778"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier for this direct drawing.  <br /></td></tr>
 <tr class="memitem:a83e823bebb8dd1b4e77e0686afda2319" id="r_a83e823bebb8dd1b4e77e0686afda2319"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83e823bebb8dd1b4e77e0686afda2319">Nickname</a><code> [get]</code></td></tr>
-<tr class="memdesc:a83e823bebb8dd1b4e77e0686afda2319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional human-readable name associated with the object.  <br /></td></tr>
+<tr class="memdesc:a83e823bebb8dd1b4e77e0686afda2319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the optional human-readable name for this direct drawing.  <br /></td></tr>
 <tr class="memitem:a0ff816d3ac12017ee6caff6e522e8cea" id="r_a0ff816d3ac12017ee6caff6e522e8cea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ff816d3ac12017ee6caff6e522e8cea">ZOrder</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a0ff816d3ac12017ee6caff6e522e8cea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones.  <br /></td></tr>
+<tr class="memdesc:a0ff816d3ac12017ee6caff6e522e8cea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the Z-order (depth) used for sorting this direct drawing relative to other drawables.  <br /></td></tr>
 <tr class="memitem:a547a165d0ea6d4a8e2c2214d390adc67" id="r_a547a165d0ea6d4a8e2c2214d390adc67"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67">Visible</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a547a165d0ea6d4a8e2c2214d390adc67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the object is visible.  <br /></td></tr>
+<tr class="memdesc:a547a165d0ea6d4a8e2c2214d390adc67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this direct drawing is visible and should be rendered.  <br /></td></tr>
 <tr class="memitem:a69c6a77b634d2e70f4b7a4e724ee0596" id="r_a69c6a77b634d2e70f4b7a4e724ee0596"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596">Opacity</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a69c6a77b634d2e70f4b7a4e724ee0596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets/sets the current opacity (0..1). Setting marks dirty.  <br /></td></tr>
+<tr class="memdesc:a69c6a77b634d2e70f4b7a4e724ee0596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current opacity of this direct drawing.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a911321b64ad973d2ed9d3e9b39f2fc4d" id="r_a911321b64ad973d2ed9d3e9b39f2fc4d"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html">IDirectDrawable</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a911321b64ad973d2ed9d3e9b39f2fc4d">Disposing</a></td></tr>
+<tr class="memdesc:a911321b64ad973d2ed9d3e9b39f2fc4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when this direct drawing is being disposed.  <br /></td></tr>
 <tr class="memitem:ae8aa5e0085dabebdd9bcd900f69f533b" id="r_ae8aa5e0085dabebdd9bcd900f69f533b"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8aa5e0085dabebdd9bcd900f69f533b">FadeToCompleted</a></td></tr>
+<tr class="memdesc:ae8aa5e0085dabebdd9bcd900f69f533b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a fade transition initiated by <a class="el" href="#a7d590a5c40e61c145c9cfdde85b145e9" title="Initiates a smooth fade transition to the specified target opacity over the given duration.">FadeTo</a>, <a class="el" href="#aa9d915bb297d19580548340b4f4e9f3f" title="Fades this direct drawing from its current opacity to fully opaque over the specified duration.">FadeIn</a>, or <a class="el" href="#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a> completes.  <br /></td></tr>
 <tr class="inherit_header events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Events inherited from <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html">Gondwana.Drawing.Direct.IDirectDrawable</a></td></tr>
 <tr class="memitem:af6121c7773fe8333043c8f4c74f8e97b inherit events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable" id="r_af6121c7773fe8333043c8f4c74f8e97b"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html">IDirectDrawable</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#af6121c7773fe8333043c8f4c74f8e97b">Disposing</a></td></tr>
 <tr class="memdesc:af6121c7773fe8333043c8f4c74f8e97b inherit events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the object is being disposed.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00010">10</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<div class="textblock"><p>Provides the base implementation for direct drawing objects that can be rendered to the backbuffer with support for opacity, fade transitions, reveal animations, and flexible positioning modes. </p>
+<p><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> serves as the foundation for all custom drawing operations in the <a class="el" href="namespace_gondwana.html">Gondwana</a> engine. Unlike sprites and tiles which are managed by scene layers, direct drawings provide immediate control over rendering with support for advanced visual effects. </p>
+<p><a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html">Direct</a> drawings can operate in two modes: </p><ul>
+<li>
+<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c" title="Performs direct drawing within a scene layer using world-space coordinates.">DirectDrawingMode.SceneLayer</a> - Positioned in world coordinates relative to a specific scene layer, affected by camera and parallax. </li>
+<li>
+<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005" title="Performs direct drawing at the view level using screen-space coordinates.">DirectDrawingMode.View</a> - Positioned in screen coordinates relative to a view, unaffected by camera movement (ideal for UI overlays). </li>
+</ul>
+<p>This class is abstract. Derived classes must implement <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this direct drawing to the backbuffer.">OnDraw</a> to perform the actual drawing operations. The base class handles visibility, opacity, fade transitions, reveal animations, and dirty-rectangle management. </p>
+<p>Thread safety: This class is not thread-safe. All operations should be performed on the UI thread. </p>
 </div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="adac29c23b9e8e0590930df0a3957d141" name="adac29c23b9e8e0590930df0a3957d141"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adac29c23b9e8e0590930df0a3957d141">&#9670;&#160;</a></span>RevealDirection</h2>
@@ -216,14 +256,19 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c" name="adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c"></a>LeftToRight&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141ab7b0ea3028791689ea070674776855e2" name="adac29c23b9e8e0590930df0a3957d141ab7b0ea3028791689ea070674776855e2"></a>RightToLeft&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141af2b1a19a8d0f523d042f9ede79a80804" name="adac29c23b9e8e0590930df0a3957d141af2b1a19a8d0f523d042f9ede79a80804"></a>TopToBottom&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a" name="adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a"></a>BottomToTop&#160;</td><td class="fielddoc"></td></tr>
-</table>
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00469">469</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Defines the direction from which a reveal animation progressively displays the direct drawing. </p>
+<p>The reveal effect uses clipping to progressively show portions of the drawing. The direction determines which edge starts visible and how the visible region expands as the reveal progresses from 0.0 to 1.0. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c" name="adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c"></a>LeftToRight&#160;</td><td class="fielddoc"><p>Reveals the drawing from the left edge toward the right edge. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141ab7b0ea3028791689ea070674776855e2" name="adac29c23b9e8e0590930df0a3957d141ab7b0ea3028791689ea070674776855e2"></a>RightToLeft&#160;</td><td class="fielddoc"><p>Reveals the drawing from the right edge toward the left edge. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141af2b1a19a8d0f523d042f9ede79a80804" name="adac29c23b9e8e0590930df0a3957d141af2b1a19a8d0f523d042f9ede79a80804"></a>TopToBottom&#160;</td><td class="fielddoc"><p>Reveals the drawing from the top edge toward the bottom edge. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a" name="adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a"></a>BottomToTop&#160;</td><td class="fielddoc"><p>Reveals the drawing from the bottom edge toward the top edge. </p>
+</td></tr>
+</table>
 
 </div>
 </div>
@@ -255,7 +300,7 @@ Events</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a>?</td>          <td class="paramname"><span class="paramname"><em>view</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>?</td>          <td class="paramname"><span class="paramname"><em>view</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -280,7 +325,37 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00053">53</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that manages rendering for this direct drawing. Must not be <code>null</code>.</td></tr>
+    <tr><td class="paramname">mode</td><td>The drawing mode determining how this object is positioned and transformed.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer to which this drawing is attached (required if <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c" title="Performs direct drawing within a scene layer using world-space coordinates.">DirectDrawingMode.SceneLayer</a>).</td></tr>
+    <tr><td class="paramname">view</td><td>The view to which this drawing is attached (required if <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005" title="Performs direct drawing at the view level using screen-space coordinates.">DirectDrawingMode.View</a>).</td></tr>
+    <tr><td class="paramname">screenBounds</td><td>The screen-space bounds in pixels (required if <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005" title="Performs direct drawing at the view level using screen-space coordinates.">DirectDrawingMode.View</a>).</td></tr>
+    <tr><td class="paramname">worldBounds</td><td>The world-space bounds in pixels (required if <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c" title="Performs direct drawing within a scene layer using world-space coordinates.">DirectDrawingMode.SceneLayer</a>).</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional human-readable name for this direct drawing, useful for debugging and identification.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>renderSurfaceHost</em>  is <code>null</code>.</td></tr>
+    <tr><td class="paramname">ArgumentException</td><td>Thrown when: <ul>
+<li>
+<em>sceneLayer</em>  is <code>null</code> and <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c" title="Performs direct drawing within a scene layer using world-space coordinates.">DirectDrawingMode.SceneLayer</a> </li>
+<li>
+<em>view</em>  is <code>null</code> and <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005" title="Performs direct drawing at the view level using screen-space coordinates.">DirectDrawingMode.View</a> </li>
+<li>
+<em>worldBounds</em>  is <code>null</code> and <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c" title="Performs direct drawing within a scene layer using world-space coordinates.">DirectDrawingMode.SceneLayer</a> </li>
+<li>
+<em>screenBounds</em>  is <code>null</code> and <em>mode</em>  is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005" title="Performs direct drawing at the view level using screen-space coordinates.">DirectDrawingMode.View</a> </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The constructor automatically registers this direct drawing with the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a> and marks the appropriate regions as dirty to ensure the drawing appears on the next frame. </p>
 
 </div>
 </div>
@@ -300,9 +375,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Cancel any active fade (keeps current opacity). </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00310">310</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Cancels any active fade transition, leaving the opacity at its current value. </p>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>After calling this method, the fade animation stops immediately and <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> remains at its current value. The <a class="el" href="#ae8aa5e0085dabebdd9bcd900f69f533b" title="Occurs when a fade transition initiated by FadeTo, FadeIn, or FadeOut completes.">FadeToCompleted</a> event will not be raised for the cancelled fade. </p>
 
 </div>
 </div>
@@ -321,6 +396,16 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Compares this direct drawing to another for sorting by <a class="el" href="#a0ff816d3ac12017ee6caff6e522e8cea" title="Gets or sets the Z-order (depth) used for sorting this direct drawing relative to other drawables.">ZOrder</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>The other direct drawing to compare, or <code>null</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A negative value if this drawing's Z-order is less than <em>other</em> ; zero if they are equal; a positive value if this drawing's Z-order is greater. <code>null</code> is considered to have a Z-order of 0. </dd></dl>
+<p>This method is used to sort direct drawings during rendering. Higher Z-order values are drawn later and appear on top of lower values. </p>
+
 </div>
 </div>
 <a id="a397f33126e99162c868cc5195529f2d7" name="a397f33126e99162c868cc5195529f2d7"></a>
@@ -338,7 +423,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00421">421</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Releases all resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance. </p>
+<p>This method unregisters the direct drawing from the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a>, marks affected regions as dirty, and raises the <a class="el" href="#a911321b64ad973d2ed9d3e9b39f2fc4d" title="Occurs when this direct drawing is being disposed.">Disposing</a> event. After disposal, the object should not be used. </p>
+<p>Calling <a class="el" href="#a397f33126e99162c868cc5195529f2d7" title="Releases all resources used by this DirectDrawingBase instance.">Dispose()</a> multiple times is safe and has no additional effect. </p>
 
 </div>
 </div>
@@ -365,9 +452,24 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html#a30dd937e42296bdf2952a6368bd31bc5">Gondwana.Drawing.Direct.DirectVideo</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a20056eedc80de1146bb183ce93af0179">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+<p>Releases resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">disposing</td><td><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources (called from finalizer). </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>When <em>disposing</em>  is <code>true</code>, this method: </p><ul>
+<li>
+Marks affected regions as dirty by calling ForceRefresh. </li>
+<li>
+Raises the <a class="el" href="#a911321b64ad973d2ed9d3e9b39f2fc4d" title="Occurs when this direct drawing is being disposed.">Disposing</a> event. </li>
+<li>
+Clears all event handlers to prevent memory leaks. </li>
+</ul>
+<p>Override this method in derived classes to release additional resources. Always call <code>base.Dispose(disposing)</code> to ensure proper cleanup of the base class. </p>
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00427">427</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html#a30dd937e42296bdf2952a6368bd31bc5">Gondwana.Drawing.Direct.DirectVideo</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a20056eedc80de1146bb183ce93af0179">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Gondwana.Drawing.Direct.TextBlock</a>.</p>
 
 </div>
 </div>
@@ -380,7 +482,7 @@ Events</h2></td></tr>
         <tr>
           <td class="memname">void Gondwana.Drawing.Direct.DirectDrawingBase.Draw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -390,11 +492,28 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="class_gondwana_1_1_engine.html">Engine</a> entry point for drawing. destRectScreen must be in SCREEN pixels. This method handles opacity and reveal clipping before calling <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this DirectDrawing to the Backbuffer. Called by the engine after ro...">OnDraw()</a>, which draws the actual Canvas. </p>
+<p>Renders this direct drawing to the backbuffer at the specified screen location. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The backbuffer providing the canvas and rendering context.</td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in screen pixel coordinates.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This is the engine's entry point for rendering a direct drawing. It handles visibility checks, opacity blending via SKPaint with layer support, and reveal clipping before delegating to <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this direct drawing to the backbuffer.">OnDraw</a> for the actual drawing logic. </p>
+<p>Do not call this method directly from game code. The rendering pipeline invokes it automatically during the render pass. To trigger a redraw, call ForceRefresh or modify properties that affect appearance. </p>
+<p>The method applies the following operations in order: </p><ol>
+<li>
+Visibility check - returns early if <a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67" title="Gets or sets a value indicating whether this direct drawing is visible and should be rendered.">Visible</a> is <code>false</code>. </li>
+<li>
+Reveal clipping - applies directional clipping based on <a class="el" href="#a931ae7b2c189e54436619f99702620ae" title="Instantly sets the reveal progress to the specified value without animation.">SetReveal</a> and <a class="el" href="#a07fbf01c483da1f18dc5efa30299c3f1" title="Sets the direction from which the reveal animation progresses.">SetRevealDirection</a>. </li>
+<li>
+Opacity blending - applies <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> using canvas layer if less than 1.0. </li>
+<li>
+Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this direct drawing to the backbuffer.">OnDraw</a> to perform the actual rendering. </li>
+</ol>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a40510f10e51009f80d0d3c9957337973">Gondwana.Drawing.IDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00187">187</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -413,6 +532,16 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Determines whether the specified object is equal to the current direct drawing. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>The object to compare with the current instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the specified object is the same instance as this direct drawing; otherwise, <code>false</code>. </dd></dl>
+<p>This implementation uses reference equality only. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html">Direct</a> drawings are considered equal only if they are the exact same object instance. </p>
+
 </div>
 </div>
 <a id="aa9d915bb297d19580548340b4f4e9f3f" name="aa9d915bb297d19580548340b4f4e9f3f"></a>
@@ -430,9 +559,15 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Convenience: fade in from 0 to 1 over duration. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00295">295</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Fades this direct drawing from its current opacity to fully opaque over the specified duration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">durationSec</td><td>The duration of the fade-in in seconds.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>This is a convenience method equivalent to calling <code>FadeTo(1.0f, durationSec)</code>. If the current opacity is already zero or very close to zero, it is set to exactly 0 before starting the fade to ensure a clean transition from invisible to visible. </p>
 
 </div>
 </div>
@@ -451,9 +586,16 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Convenience: fade out from current to 0 over duration. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00304">304</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Fades this direct drawing from its current opacity to fully transparent over the specified duration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">durationSec</td><td>The duration of the fade-out in seconds.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>This is a convenience method equivalent to calling <code>FadeTo(0.0f, durationSec)</code>. If <a class="el" href="#a3a1c304b55d725c4f002a15556ab79cc" title="Gets or sets a value indicating whether this direct drawing should be automatically hidden when its o...">HideWhenFullyTransparent</a> is enabled, the object will be automatically hidden when the fade completes. </p>
+<p>Use this for smooth disappearance effects. Combine with the <a class="el" href="#ae8aa5e0085dabebdd9bcd900f69f533b" title="Occurs when a fade transition initiated by FadeTo, FadeIn, or FadeOut completes.">FadeToCompleted</a> event to perform cleanup or trigger subsequent logic after the fade-out finishes. </p>
 
 </div>
 </div>
@@ -476,9 +618,18 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Fade to target opacity over duration (seconds). Returns this for chaining. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00278">278</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Initiates a smooth fade transition to the specified target opacity over the given duration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">targetOpacity</td><td>The target opacity value (0.0 to 1.0).</td></tr>
+    <tr><td class="paramname">durationSec</td><td>The duration of the fade in seconds. Minimum value is 0.0001 seconds.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>The fade animation uses linear interpolation and is updated each frame by <a class="el" href="#a52ae59743dbd89bda3f0c721321939f0" title="Performs per-frame update logic for this direct drawing, including fade and reveal animations.">Update</a>. When the fade completes, the <a class="el" href="#ae8aa5e0085dabebdd9bcd900f69f533b" title="Occurs when a fade transition initiated by FadeTo, FadeIn, or FadeOut completes.">FadeToCompleted</a> event is raised. </p>
+<p>If the target opacity is greater than zero, <a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67" title="Gets or sets a value indicating whether this direct drawing is visible and should be rendered.">Visible</a> is automatically set to <code>true</code> to ensure the object is rendered during the fade. If <a class="el" href="#a3a1c304b55d725c4f002a15556ab79cc" title="Gets or sets a value indicating whether this direct drawing should be automatically hidden when its o...">HideWhenFullyTransparent</a> is enabled and the target is zero, the object will be hidden when the fade completes. </p>
+<p>Starting a new fade cancels any previous fade operation. To cancel a fade without starting a new one, call <a class="el" href="#abbc8721e4dec41025c7c55aa1855b3ce" title="Cancels any active fade transition, leaving the opacity at its current value.">CancelFade</a>. </p>
 
 </div>
 </div>
@@ -491,24 +642,23 @@ Events</h2></td></tr>
         <tr>
           <td class="memname">RectangleF Gondwana.Drawing.Direct.DirectDrawingBase.GetDrawLocationScreen </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided View to project from world-space. </p>
+<p>Gets the screen-space drawing location for this direct drawing as seen from the specified view. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">view</td><td>The View providing camera, zoom, parallax, and viewport offsets used to convert the object's world-space bounds into screen-space. </td></tr>
+    <tr><td class="paramname">view</td><td>The view from which to calculate the screen location.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A rectangle in absolute SCREEN pixel coordinates on the Backbuffer. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A RectangleF in screen pixel coordinates indicating where this drawing will be rendered. For view mode drawings, this returns <a class="el" href="#af8fc16eb9e7312c25471f9f0c1dd8bb2" title="Gets or sets the screen-space bounds of this direct drawing in pixels.">ScreenBounds</a> directly. For scene-layer mode drawings, this returns the <a class="el" href="#abe9d1f20a5271daf8d6a926fe41b10ec" title="Gets or sets the world-space bounds of this direct drawing in pixels.">WorldBounds</a> transformed to screen space using the view's camera and the layer's parallax. </dd></dl>
+<p>This method is used internally by the rendering pipeline to determine the destination rectangle for drawing operations. It accounts for camera position, zoom, and parallax for scene-layer mode drawings. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a8da83689234405828f7f6ed1f2062ec3">Gondwana.Drawing.IDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00172">172</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -527,6 +677,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns a hash code for this direct drawing. </p>
+<dl class="section return"><dt>Returns</dt><dd>A hash code based on the <a class="el" href="#a83e823bebb8dd1b4e77e0686afda2319" title="Gets the optional human-readable name for this direct drawing.">Nickname</a>.</dd></dl>
+<p>The hash code is computed using the nickname. If the nickname is <code>null</code>, it contributes 0 to the hash. This implementation is not suitable for dictionary keys unless nicknames are unique; use <a class="el" href="#a978ca1ca043adc8dd5e7b129a876f778" title="Gets the unique identifier for this direct drawing.">Id</a> for unique identification. </p>
+
 </div>
 </div>
 <a id="a06db448ba75f0d6cf236f3a2a71ea8e4" name="a06db448ba75f0d6cf236f3a2a71ea8e4"></a>
@@ -541,7 +695,7 @@ Events</h2></td></tr>
         <tr>
           <td class="memname">void Gondwana.Drawing.Direct.DirectDrawingBase.OnDraw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -556,8 +710,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Performs the concrete drawing for this DirectDrawing to the Backbuffer. Called by the engine after routing, visibility, opacity, and reveal logic have been applied. </p>
-<p>Override this method in derived classes. Do not call it directly; the engine calls it via <a class="el" href="#ac75161f710a54c4fc90ebcd172b2903c" title="Engine entry point for drawing. destRectScreen must be in SCREEN pixels. This method handles opacity ...">Draw</a>. </p>
+<p>Performs the concrete drawing for this direct drawing to the backbuffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The backbuffer providing the canvas and rendering context.</td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in screen pixel coordinates where this drawing should be rendered. For scene-layer mode, this is the world bounds transformed to screen space. For view mode, this is the screen bounds directly. </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Override this method in derived classes to implement custom drawing logic using <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a>'s SKCanvas (accessible via <code>backbuffer.Canvas</code>). </p>
+<p>Do not call this method directly. The engine calls it via <a class="el" href="#ac75161f710a54c4fc90ebcd172b2903c" title="Renders this direct drawing to the backbuffer at the specified screen location.">Draw</a> after applying visibility checks, opacity blending, and reveal clipping. The canvas state is managed by the base class; derived implementations should not call <code>Save()</code> or <code>Restore()</code> unless paired within the method. </p>
+<p>The destination rectangle provided is already transformed to screen space and clipped to the appropriate viewport or reveal region. </p>
 
 </div>
 </div>
@@ -588,6 +751,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Determines whether two direct drawing instances are not equal using reference equality. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">left</td><td>The first direct drawing to compare.</td></tr>
+    <tr><td class="paramname">right</td><td>The second direct drawing to compare.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the references do not point to the same instance; otherwise, <code>false</code>. </dd></dl>
+
 </div>
 </div>
 <a id="a81033b742678c972859f6ff6284d1285" name="a81033b742678c972859f6ff6284d1285"></a>
@@ -616,6 +789,16 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Determines whether the Z-order of the left direct drawing is less than the right. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">left</td><td>The first direct drawing to compare.</td></tr>
+    <tr><td class="paramname">right</td><td>The second direct drawing to compare.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if <em>left</em>  has a lower Z-order than <em>right</em> ; otherwise, <code>false</code>. <code>null</code> is considered to have a Z-order of 0. </dd></dl>
 
 </div>
 </div>
@@ -646,6 +829,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Determines whether the Z-order of the left direct drawing is less than or equal to the right. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">left</td><td>The first direct drawing to compare.</td></tr>
+    <tr><td class="paramname">right</td><td>The second direct drawing to compare.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if <em>left</em>  has a Z-order less than or equal to <em>right</em> ; otherwise, <code>false</code>. <code>null</code> is considered to have a Z-order of 0. </dd></dl>
+
 </div>
 </div>
 <a id="a262e5df1552858e0fbe162685e5c3020" name="a262e5df1552858e0fbe162685e5c3020"></a>
@@ -674,6 +867,16 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Determines whether two direct drawing instances are equal using reference equality. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">left</td><td>The first direct drawing to compare.</td></tr>
+    <tr><td class="paramname">right</td><td>The second direct drawing to compare.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if both references point to the same instance or are both <code>null</code>; otherwise, <code>false</code>. </dd></dl>
 
 </div>
 </div>
@@ -704,6 +907,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Determines whether the Z-order of the left direct drawing is greater than the right. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">left</td><td>The first direct drawing to compare.</td></tr>
+    <tr><td class="paramname">right</td><td>The second direct drawing to compare.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if <em>left</em>  has a higher Z-order than <em>right</em> ; otherwise, <code>false</code>. <code>null</code> is considered to have a Z-order of 0. </dd></dl>
+
 </div>
 </div>
 <a id="a6e74ad9dc76b60051ce501b48a36cb8e" name="a6e74ad9dc76b60051ce501b48a36cb8e"></a>
@@ -733,6 +946,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Determines whether the Z-order of the left direct drawing is greater than or equal to the right. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">left</td><td>The first direct drawing to compare.</td></tr>
+    <tr><td class="paramname">right</td><td>The second direct drawing to compare.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if <em>left</em>  has a Z-order greater than or equal to <em>right</em> ; otherwise, <code>false</code>. <code>null</code> is considered to have a Z-order of 0. </dd></dl>
+
 </div>
 </div>
 <a id="a15fd13ea5e88a25cfd4dc2130765852d" name="a15fd13ea5e88a25cfd4dc2130765852d"></a>
@@ -759,7 +982,18 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00330">330</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Initiates a smooth reveal animation to the specified target progress over the given duration, optionally using a custom easing function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t01</td><td>The target reveal progress from 0.0 (fully hidden) to 1.0 (fully shown).</td></tr>
+    <tr><td class="paramname">durationSec</td><td>The duration of the reveal animation in seconds. Minimum value is 0.0001 seconds.</td></tr>
+    <tr><td class="paramname">easing</td><td>An optional easing function that transforms the linear progress (0..1 input) to the desired interpolation curve (0..1 output). If <code>null</code>, linear interpolation is used. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>The reveal animation is updated each frame by <a class="el" href="#a52ae59743dbd89bda3f0c721321939f0" title="Performs per-frame update logic for this direct drawing, including fade and reveal animations.">Update</a>. The easing function, if provided, allows custom animation curves such as ease-in, ease-out, or elastic effects. </p>
+<p>Starting a new reveal animation cancels any previous reveal operation. The animation starts from the current reveal value and interpolates to the target. </p>
 
 </div>
 </div>
@@ -778,9 +1012,15 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Instantly jump to the given opacity (0..1). </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00271">271</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Instantly sets the opacity to the specified value without animation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">opacity</td><td>The target opacity value (0.0 to 1.0).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>This is equivalent to setting the <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> property directly. It is provided for fluent-style API usage and method chaining. The value is clamped to the 0..1 range. </p>
 
 </div>
 </div>
@@ -799,7 +1039,16 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00316">316</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Instantly sets the reveal progress to the specified value without animation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t01</td><td>The reveal progress from 0.0 (fully hidden) to 1.0 (fully shown).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>The reveal effect progressively clips the rendering based on the <a class="el" href="#a07fbf01c483da1f18dc5efa30299c3f1" title="Sets the direction from which the reveal animation progresses.">SetRevealDirection</a>. At 0.0, the entire drawing is clipped; at 1.0, the full drawing is visible. Values are clamped to the 0..1 range. </p>
+<p>This method sets the reveal progress immediately. For animated reveal transitions, use <a class="el" href="#a15fd13ea5e88a25cfd4dc2130765852d" title="Initiates a smooth reveal animation to the specified target progress over the given duration,...">RevealTo</a>. </p>
 
 </div>
 </div>
@@ -818,7 +1067,15 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00323">323</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Sets the direction from which the reveal animation progresses. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dir</td><td>The reveal direction (left-to-right, right-to-left, top-to-bottom, or bottom-to-top).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
+<p>The reveal direction determines how the clip rectangle grows as the reveal progresses from 0 to 1. For example, <a class="el" href="#adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c" title="Reveals the drawing from the left edge toward the right edge.">RevealDirection.LeftToRight</a> reveals the drawing from the left edge first, progressively showing more to the right as the reveal value increases. </p>
 
 </div>
 </div>
@@ -845,19 +1102,20 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Per-frame update hook. Default: advance scrolling only. Called from DirectDrawingManager.UpdateAll(long). </p>
+<p>Performs per-frame update logic for this direct drawing, including fade and reveal animations. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">tick</td><td>Current engine tick from HighResTimer.</td></tr>
+    <tr><td class="paramname">tick</td><td>The current engine tick value from HighResTimer.</td></tr>
   </table>
   </dd>
 </dl>
+<p>This method is called automatically by the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a> each frame. The base implementation advances active fade and reveal animations. Override this method in derived classes to add custom per-frame logic (such as animation or physics updates). </p>
+<p>Always call <code>base.Update(tick)</code> from overridden implementations to ensure fade and reveal animations continue to function correctly. </p>
+<p>The method calculates delta time using HighResTimer and the previous tick stored in <a class="el" href="#a4599d3cd99c7ec5ede8d1bf0c3155068" title="The last engine tick value used for delta-time calculations in Update.">_lastTick</a>. If the tick value is less than or equal to the last tick (which can occur if time is manipulated), the method returns immediately without updating state. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a5029de36d13fc531afd74430035a5133">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
 <p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#a801c259d59c101239fd5947109e542f1">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a00256efd1a1f3ba03842fe5fff21ca19">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aeeafdc57fe4de1b8b742fe4b31aa8ad7">Gondwana.Drawing.Direct.TextBlock</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00371">371</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -882,7 +1140,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00020">20</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>The last engine tick value used for delta-time calculations in <a class="el" href="#a52ae59743dbd89bda3f0c721321939f0" title="Performs per-frame update logic for this direct drawing, including fade and reveal animations.">Update</a>. </p>
 
 </div>
 </div>
@@ -906,7 +1164,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00015">15</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>The render surface host that manages this direct drawing's rendering pipeline. </p>
 
 </div>
 </div>
@@ -930,7 +1188,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00016">16</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>The current screen-space bounds for view-mode direct drawings, in pixels. </p>
 
 </div>
 </div>
@@ -954,7 +1212,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00019">19</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Indicates whether this direct drawing is currently visible and should be rendered. </p>
 
 </div>
 </div>
@@ -978,7 +1236,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00017">17</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>The current world-space bounds for scene-layer-mode direct drawings, in pixels. </p>
 
 </div>
 </div>
@@ -1002,7 +1260,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00018">18</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>The Z-order used for draw sorting. Higher values draw later (on top). </p>
 
 </div>
 </div>
@@ -1027,7 +1285,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00030">30</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Gets or sets a value indicating whether this direct drawing should be automatically hidden when its opacity reaches zero during fade transitions. </p>
+<p><code>true</code> to automatically hide when fully transparent (default); <code>false</code> to keep the object visible even at zero opacity. </p>
+<p>When enabled, setting <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> to 0 or completing a <a class="el" href="#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a> will set <a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67" title="Gets or sets a value indicating whether this direct drawing is visible and should be rendered.">Visible</a> to <code>false</code>. Conversely, increasing opacity above zero will restore visibility. </p>
 
 </div>
 </div>
@@ -1051,11 +1311,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Auto-assigned unique identifier for the object. </p>
+<p>Gets the unique identifier for this direct drawing. </p>
+<p>A Guid that uniquely identifies this instance across the application lifetime. </p>
+<p>The ID is generated during construction and remains constant throughout the object's lifetime. Use this for tracking, lookup, or equality comparisons when reference equality is not suitable. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#ae2a09ae0aeb04bce1333130f416584fb">Gondwana.Drawing.IDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00142">142</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1079,17 +1339,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the drawing mode that determines where and how this drawable is rendered. </p>
-<p>The drawing mode defines the coordinate space and rendering lifecycle: </p><ul>
-<li>
-<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c" title="Performs direct drawing within a scene layer using world-space coordinates.">DirectDrawingMode.SceneLayer</a>  Renders in world space as part of a scene layer and is affected by camera position, zoom, and parallax.   </li>
-<li>
-<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005" title="Performs direct drawing at the view level using screen-space coordinates.">DirectDrawingMode.View</a>  Renders in screen space at the view level and is independent of camera movement, making it suitable for UI, overlays, and debug visuals.   </li>
-</ul>
+<p>Gets the drawing mode that determines how this direct drawing is positioned and transformed. </p>
+<p>A <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31" title="Specifies where direct drawing operations are applied within the rendering pipeline.">DirectDrawingMode</a> value indicating whether this drawing uses world coordinates (scene-layer mode) or screen coordinates (view mode). </p>
+<p>The mode is set during construction and cannot be changed. Scene-layer mode drawings move with the camera and are affected by parallax, while view mode drawings remain fixed in screen space, ideal for UI overlays. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a3053a83e9a1aa6841bf39e90238d6fec">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00104">104</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1113,11 +1367,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Optional human-readable name associated with the object. </p>
+<p>Gets the optional human-readable name for this direct drawing. </p>
+<p>A string nickname for debugging and identification purposes, or <code>null</code> if not set. </p>
+<p>Nicknames are useful for logging, debugging, and identifying objects in diagnostic output. They are not required to be unique. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82">Gondwana.Drawing.IDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00144">144</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1141,9 +1395,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets/sets the current opacity (0..1). Setting marks dirty. </p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00250">250</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Gets or sets the current opacity of this direct drawing. </p>
+<p>A floating-point value between 0.0 (fully transparent) and 1.0 (fully opaque). Default is 1.0. </p>
+<p>Setting opacity automatically marks the affected regions as dirty. Values outside the 0..1 range are clamped. Very small changes (less than 0.0001) are ignored to avoid unnecessary redraws. </p>
+<p>If <a class="el" href="#a3a1c304b55d725c4f002a15556ab79cc" title="Gets or sets a value indicating whether this direct drawing should be automatically hidden when its o...">HideWhenFullyTransparent</a> is enabled: </p><ul>
+<li>
+Setting opacity to 0 automatically sets <a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67" title="Gets or sets a value indicating whether this direct drawing is visible and should be rendered.">Visible</a> to <code>false</code>. </li>
+<li>
+Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67" title="Gets or sets a value indicating whether this direct drawing is visible and should be rendered.">Visible</a> to <code>true</code>. </li>
+</ul>
+<p>For animated opacity transitions, use <a class="el" href="#a7d590a5c40e61c145c9cfdde85b145e9" title="Initiates a smooth fade transition to the specified target opacity over the given duration.">FadeTo</a>, <a class="el" href="#aa9d915bb297d19580548340b4f4e9f3f" title="Fades this direct drawing from its current opacity to fully opaque over the specified duration.">FadeIn</a>, or <a class="el" href="#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a>. </p>
 
 </div>
 </div>
@@ -1167,11 +1428,10 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The rendering surface to which this drawable belongs. </p>
+<p>Gets the render surface host that manages this direct drawing's rendering pipeline. </p>
+<p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html" title="Represents a base class for hosting a render surface, providing functionality for managing rendering ...">RenderSurfaceHostBase</a> instance responsible for coordinating rendering, view management, and backbuffer operations for this direct drawing. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a4deea683f9c17340cea7c22e000faaab">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00102">102</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1195,7 +1455,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00106">106</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Gets the scene layer to which this direct drawing is attached, or <code>null</code> if the drawing is in view mode. </p>
+<p>The <a class="el" href="#ab464e191526e772a9cf74077c7f36f55" title="Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...">SceneLayer</a> instance for scene-layer mode drawings; <code>null</code> for view mode drawings. </p>
+<p>Scene-layer mode drawings are positioned in the world coordinate space of the specified layer and are affected by the layer's parallax factor and the view's camera position. </p>
 
 </div>
 </div>
@@ -1219,11 +1481,12 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The bounding rectangle of this drawable in SCREEN space. </p>
+<p>Gets or sets the screen-space bounds of this direct drawing in pixels. </p>
+<p>A Rectangle defining the position and size in screen coordinates. Returns Rectangle.Empty for scene-layer mode drawings. </p>
+<p>This property is only meaningful for view mode drawings (<a class="el" href="#abfcad8df441dd7d68d712adcf6ba7217" title="Gets the drawing mode that determines how this direct drawing is positioned and transformed.">Mode</a> is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005" title="Performs direct drawing at the view level using screen-space coordinates.">DirectDrawingMode.View</a>). Setting this property for scene-layer mode drawings has no effect. </p>
+<p>When set, the affected screen regions are automatically marked as dirty to ensure the drawing is rerendered at the new position. The bounds are clipped to the view's viewport rectangle. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a227e62e198129037c15f7b2f5f30cf73">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00110">110</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1247,7 +1510,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00138">138</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Gets the extensible value bag for storing arbitrary key-value data associated with this direct drawing. </p>
+<p>A <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> instance for storing custom metadata, state, or configuration. </p>
+<p>Use the value bag to attach game-specific data to direct drawings without modifying the base class. Values are strongly typed and accessed via ValueKey&lt;T&gt; instances. </p>
 
 </div>
 </div>
@@ -1261,7 +1526,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_gondwana_1_1_rendering_1_1_view.html">View</a>? Gondwana.Drawing.Direct.DirectDrawingBase.View</td>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>? Gondwana.Drawing.Direct.DirectDrawingBase.View</td>
         </tr>
       </table>
   </td>
@@ -1271,7 +1536,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00108">108</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Gets the view to which this direct drawing is attached, or <code>null</code> if the drawing is in scene-layer mode. </p>
+<p>The <a class="el" href="#a45228a4aba8bc2629472cb6560b8d554" title="Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...">View</a> instance for view mode drawings; <code>null</code> for scene-layer mode drawings. </p>
+<p>View mode drawings are positioned in screen coordinates relative to the specified view's viewport and remain fixed on screen regardless of camera movement. </p>
 
 </div>
 </div>
@@ -1295,11 +1562,12 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a value indicating whether the object is visible. </p>
+<p>Gets or sets a value indicating whether this direct drawing is visible and should be rendered. </p>
+<p><code>true</code> if this drawing should be rendered; <code>false</code> to skip rendering. Default is <code>true</code>. </p>
+<p>When set to <code>false</code>, <a class="el" href="#ac75161f710a54c4fc90ebcd172b2903c" title="Renders this direct drawing to the backbuffer at the specified screen location.">Draw</a> returns immediately without rendering. The affected regions are marked as dirty to ensure the area is cleared on the next frame. </p>
+<p>If <a class="el" href="#a3a1c304b55d725c4f002a15556ab79cc" title="Gets or sets a value indicating whether this direct drawing should be automatically hidden when its o...">HideWhenFullyTransparent</a> is enabled, visibility may be automatically managed during fade transitions based on the <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> value. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00159">159</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1323,11 +1591,12 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The bounding rectangle of this drawable in WORLD space. </p>
+<p>Gets or sets the world-space bounds of this direct drawing in pixels. </p>
+<p>A Rectangle defining the position and size in world coordinates. Returns Rectangle.Empty for view mode drawings. </p>
+<p>This property is only meaningful for scene-layer mode drawings (<a class="el" href="#abfcad8df441dd7d68d712adcf6ba7217" title="Gets the drawing mode that determines how this direct drawing is positioned and transformed.">Mode</a> is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c" title="Performs direct drawing within a scene layer using world-space coordinates.">DirectDrawingMode.SceneLayer</a>). Setting this property for view mode drawings has no effect. </p>
+<p>When set, the affected world regions are automatically marked as dirty to ensure the drawing is rerendered at the new position. The bounds are subject to the layer's parallax factor and the view's camera transformation. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#ab802bd3152d036e9bf183858e8330d6f">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00124">124</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1351,11 +1620,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones. </p>
+<p>Gets or sets the Z-order (depth) used for sorting this direct drawing relative to other drawables. </p>
+<p>An integer Z-order value. Higher values are drawn later and appear on top of lower values. Default is 0. </p>
+<p>When multiple direct drawings overlap, Z-order determines the draw sequence. Objects with identical Z-order values are drawn in the order they were added to the manager. Changing the Z-order marks the affected regions as dirty to ensure correct layering on the next frame. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00146">146</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1372,7 +1641,8 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00012">12</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Occurs when this direct drawing is being disposed. </p>
+<p>Subscribe to this event to perform cleanup operations when the direct drawing is removed. The event is raised before the object is fully disposed. </p>
 
 </div>
 </div>
@@ -1388,12 +1658,13 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00013">13</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p>Occurs when a fade transition initiated by <a class="el" href="#a7d590a5c40e61c145c9cfdde85b145e9" title="Initiates a smooth fade transition to the specified target opacity over the given duration.">FadeTo</a>, <a class="el" href="#aa9d915bb297d19580548340b4f4e9f3f" title="Fades this direct drawing from its current opacity to fully opaque over the specified duration.">FadeIn</a>, or <a class="el" href="#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a> completes. </p>
+<p>This event is raised on the frame where the fade animation reaches its target opacity. Use this to chain animations or trigger logic after fade transitions. </p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/Direct/<a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Drawing/Direct/<a class="el" href="_direct_drawing_base_8cs.html">DirectDrawingBase.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

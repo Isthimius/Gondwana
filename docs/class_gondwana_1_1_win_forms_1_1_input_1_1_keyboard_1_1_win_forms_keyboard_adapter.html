@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -115,12 +116,10 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a3e9b6bc38dcd22f6ba500c95ec2ef56f" id="r_a3e9b6bc38dcd22f6ba500c95ec2ef56f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e9b6bc38dcd22f6ba500c95ec2ef56f">CurrentKeyboardModifiers</a><code> [get]</code></td></tr>
-<tr class="memdesc:a3e9b6bc38dcd22f6ba500c95ec2ef56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of modifier keys, such as Shift, Ctrl, and Alt. Must be safe to read from the <a class="el" href="class_gondwana_1_1_engine.html">Engine</a> thread at high frequency.  <br /></td></tr>
+<tr class="memdesc:a3e9b6bc38dcd22f6ba500c95ec2ef56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of modifier keys, such as Shift, Ctrl, and Alt. Must be safe to read from the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> thread at high frequency.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Global <a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a> key state collector that feeds the KeyboardHandler. Uses IMessageFilter so it sees ALL key messages (including arrows), regardless of which control has focus or how <a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a> classifies them. </p>
-
-<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00012">12</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a476f818b2ffab018cd1dec46870da891" name="a476f818b2ffab018cd1dec46870da891"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a476f818b2ffab018cd1dec46870da891">&#9670;&#160;</a></span>Dispose()</h2>
@@ -136,8 +135,6 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00101">101</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -160,8 +157,6 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html#ad3017d9edeed5d51a700adfa470dc045">Gondwana.Input.Keyboard.IKeyboardAdapter</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00067">67</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
-
 </div>
 </div>
 <a id="a64a2c27a73493304a4424c192ba424c1" name="a64a2c27a73493304a4424c192ba424c1"></a>
@@ -178,8 +173,6 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00040">40</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -204,16 +197,14 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the current state of modifier keys, such as Shift, Ctrl, and Alt. Must be safe to read from the <a class="el" href="class_gondwana_1_1_engine.html">Engine</a> thread at high frequency. </p>
+<p>Gets the current state of modifier keys, such as Shift, Ctrl, and Alt. Must be safe to read from the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> thread at high frequency. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html#a0c8aab115cdc36a183313a23aff78ab3">Gondwana.Input.Keyboard.IKeyboardAdapter</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00024">24</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana.WinForms/Input/Keyboard/<a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana.WinForms/Input/Keyboard/<a class="el" href="_win_forms_keyboard_adapter_8cs.html">WinFormsKeyboardAdapter.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

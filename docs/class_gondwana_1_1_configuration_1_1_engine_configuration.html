@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Engine Reference: Gondwana.Configuration.EngineConfiguration Class Reference</title>
+<title>Gondwana Game Engine: Gondwana.Configuration.EngineConfiguration Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,8 +27,9 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Engine Reference
+   <div id="projectname">Gondwana Game Engine
    </div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
  </tr>
  </tbody>
@@ -99,7 +100,7 @@ $(function(){initNavTree('class_gondwana_1_1_configuration_1_1_engine_configurat
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:aedc1761c6b8c8261ec99bd8bc1b17a33" id="r_aedc1761c6b8c8261ec99bd8bc1b17a33"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aedc1761c6b8c8261ec99bd8bc1b17a33">TargetFPS</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:aedc1761c6b8c8261ec99bd8bc1b17a33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target screen refresh rate for the <a class="el" href="class_gondwana_1_1_engine.html">Engine</a>. Setting the number lower allows more time for the processor to perform background <a class="el" href="class_gondwana_1_1_engine.html">Engine</a> tasks. Set the value to 0 for no upper limit. Default is 60 FPS.  <br /></td></tr>
+<tr class="memdesc:aedc1761c6b8c8261ec99bd8bc1b17a33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target screen refresh rate for the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a>. Setting the number lower allows more time for the processor to perform background <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> tasks. Set the value to 0 for no upper limit. Default is 60 FPS.  <br /></td></tr>
 <tr class="memitem:ac855c43adbb76108ebf60b3a4e607f37" id="r_ac855c43adbb76108ebf60b3a4e607f37"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac855c43adbb76108ebf60b3a4e607f37">SamplingTimeForCPS</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:ac855c43adbb76108ebf60b3a4e607f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1.5 seconds.  <br /></td></tr>
 <tr class="memitem:a54425e8fee2e8de5f3bb71b94fa9bcbc" id="r_a54425e8fee2e8de5f3bb71b94fa9bcbc"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54425e8fee2e8de5f3bb71b94fa9bcbc">SamplingTimeForCPSTicks</a><code> [get]</code></td></tr>
@@ -121,8 +122,6 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Settings used by the engine when cycling. </p>
-
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00011">11</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 </div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
 <a id="aeb4cba8fce3cc6bf8a4bfcf377e89a0d" name="aeb4cba8fce3cc6bf8a4bfcf377e89a0d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeb4cba8fce3cc6bf8a4bfcf377e89a0d">&#9670;&#160;</a></span>FlushAsyncLogsOnShutdown</h2>
@@ -145,8 +144,6 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>If true, the engine will attempt to flush queued async log events during shutdown. Default is true. </p>
-
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00109">109</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -174,8 +171,6 @@ Properties</h2></td></tr>
 <p>When set to EngineLoggingMode.Asynchronous, log entries are enqueued and processed on a background thread as a fire-and-forget operation. This avoids blocking the engine's main loop but may drop log records if the queue is saturated.</p>
 <p>When set to EngineLoggingMode.Synchronous, log entries are written immediately on the calling thread. This guarantees ordering and delivery but may negatively impact engine performance, especially when logging to the console. </p>
 <p>The logging execution mode. The default value is EngineLoggingMode.Asynchronous. </p>
-
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00081">81</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -207,8 +202,6 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00094">94</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
-
 </div>
 </div>
 <a id="ac855c43adbb76108ebf60b3a4e607f37" name="ac855c43adbb76108ebf60b3a4e607f37"></a>
@@ -232,8 +225,6 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1.5 seconds. </p>
-
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00033">33</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -259,8 +250,6 @@ Properties</h2></td></tr>
 
 <p>Total number of system ticks between each CPS sampling. </p>
 
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00043">43</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
-
 </div>
 </div>
 <a id="a9b0e346219ec6961dcdfb9425538bc55" name="a9b0e346219ec6961dcdfb9425538bc55"></a>
@@ -285,8 +274,6 @@ Properties</h2></td></tr>
 
 <p>Optional collection of serialized <a class="el" href="class_gondwana_1_1_engine_state.html">EngineState</a>s to mount at initialization. </p>
 
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00114">114</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
-
 </div>
 </div>
 <a id="aedc1761c6b8c8261ec99bd8bc1b17a33" name="aedc1761c6b8c8261ec99bd8bc1b17a33"></a>
@@ -309,9 +296,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Target screen refresh rate for the <a class="el" href="class_gondwana_1_1_engine.html">Engine</a>. Setting the number lower allows more time for the processor to perform background <a class="el" href="class_gondwana_1_1_engine.html">Engine</a> tasks. Set the value to 0 for no upper limit. Default is 60 FPS. </p>
-
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00021">21</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p>Target screen refresh rate for the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a>. Setting the number lower allows more time for the processor to perform background <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> tasks. Set the value to 0 for no upper limit. Default is 60 FPS. </p>
 
 </div>
 </div>
@@ -337,8 +322,6 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Gamepad events. Use this to prevent flooding the system with too many events at once (holding down a button, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00057">57</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
-
 </div>
 </div>
 <a id="ac1cf26699f1a240bc2face7c098067d8" name="ac1cf26699f1a240bc2face7c098067d8"></a>
@@ -362,8 +345,6 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Minimum time (in seconds) allowed between Keyboard events. Use this to prevent flooding the system with too many events at once (holding down a key, etc). Default is 0.03 seconds (30 milliseconds). </p>
-
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00050">50</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -389,12 +370,10 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with too many events at once (holding down a button, dragging, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="_engine_configuration_8cs_source.html#l00064">64</a> of file <a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Configuration/<a class="el" href="_engine_configuration_8cs_source.html">EngineConfiguration.cs</a></li>
+<li>X:/github/isthimius/Gondwana/Gondwana/Configuration/<a class="el" href="_engine_configuration_8cs.html">EngineConfiguration.cs</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
