@@ -65,6 +65,12 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
         };
     }
 
+    /// <summary>
+    /// Determines whether the current <see cref="AssetsFileEntry"/> is equal to another <see cref="AssetsFileEntry"/>
+    /// </summary>
+    /// <remarks>Two entries are considered equal if they have the same asset type and asset name (case-insensitive comparison).</remarks>
+    /// <param name="other">The <see cref="AssetsFileEntry"/> to compare with the current instance.</param>
+    /// <returns><see langword="true"/> if the specified entry is equal to the current entry; otherwise, <see langword="false"/>.</returns>
     public bool Equals(AssetsFileEntry? other)
     {
         if (other is null) return false;
@@ -72,7 +78,17 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
                string.Equals(AssetName, other.AssetName, StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Determines whether the specified object is equal to the current <see cref="AssetsFileEntry"/>.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns><see langword="true"/> if the specified object is an <see cref="AssetsFileEntry"/> and is equal to the current entry; otherwise, <see langword="false"/>.</returns>
     public override bool Equals(object? obj) => Equals(obj as AssetsFileEntry);
 
+    /// <summary>
+    /// Returns the hash code for the current <see cref="AssetsFileEntry"/>.
+    /// </summary>
+    /// <remarks>The hash code is computed based on the asset type and the lowercase version of the asset name to ensure case-insensitive equality.</remarks>
+    /// <returns>A 32-bit signed integer hash code.</returns>
     public override int GetHashCode() => HashCode.Combine(AssetType, AssetName.ToLowerInvariant());
 }

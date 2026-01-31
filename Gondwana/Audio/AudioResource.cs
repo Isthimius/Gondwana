@@ -450,6 +450,12 @@ public class AudioResource : IDisposable
 
     #region IDisposable members
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="AudioResource"/> instance.
+    /// </summary>
+    /// <remarks>This method stops playback, disposes of the output device and wave stream, deletes any
+    /// temporary files, and raises the <see cref="Disposed"/> event. After calling this method, the instance
+    /// should not be used further.</remarks>
     public void Dispose()
     {
         Dispose(true);
@@ -458,6 +464,12 @@ public class AudioResource : IDisposable
 
     ~AudioResource() => Dispose(false);
 
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="AudioResource"/> and optionally releases the managed resources.
+    /// </summary>
+    /// <remarks>This method implements the dispose pattern. When <paramref name="disposing"/> is <see langword="true"/>,
+    /// it releases both managed and unmanaged resources. When <see langword="false"/>, it releases only unmanaged resources.</remarks>
+    /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (disposed)

@@ -1,5 +1,9 @@
 ﻿namespace Gondwana.Assets;
 
+/// <summary>
+/// Defines the types of assets that can be stored and managed by the engine.
+/// </summary>
+/// <remarks>This enumeration is used to categorize assets in <see cref="AssetsFile"/> and related asset management components.</remarks>
 public enum AssetTypes
 {
     /// <summary>

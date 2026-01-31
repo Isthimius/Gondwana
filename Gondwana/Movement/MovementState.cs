@@ -3,6 +3,11 @@ using Gondwana.Movement.Scripted;
 
 namespace Gondwana.Movement;
 
+/// <summary>
+/// Represents the current motion state of an <see cref="IMovable"/> object, including velocity, acceleration,
+/// damping, and active scripted movements. This structure is used by <see cref="MovementController"/> to
+/// track and manage both physics-based (integrated) and scripted motion behaviors.
+/// </summary>
 public struct MovementState
 {
     /// <summary>

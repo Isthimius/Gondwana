@@ -27,11 +27,19 @@ public sealed class Tilesheet : IDisposable
 
     private TilesheetSlice?[,]? _tileCache;
 
+    /// <summary>
+    /// Occurs when this tilesheet is disposed.
+    /// </summary>
     public event EventHandler<TilesheetDisposedEventArgs> Disposed;
 
     private Tilesheet()
     { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tilesheet"/> class with the specified name and bitmap.
+    /// </summary>
+    /// <param name="name">The name to assign to this tilesheet.</param>
+    /// <param name="bitmap">The SkiaSharp bitmap containing the tilesheet image.</param>
     public Tilesheet(string name, SKBitmap bitmap)
         : this()
     {
@@ -40,15 +48,35 @@ public sealed class Tilesheet : IDisposable
         TilesheetRegistry.Instance.Register(this);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tilesheet"/> class by loading an image from a stream.
+    /// </summary>
+    /// <param name="name">The name to assign to this tilesheet.</param>
+    /// <param name="stream">The stream containing the image data.</param>
+    /// <exception cref="ArgumentException">Thrown when the stream contains invalid image data.</exception>
     public Tilesheet(string name, Stream stream)
         : this(name, SKBitmap.Decode(stream) ?? throw new ArgumentException("Invalid image stream.")) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tilesheet"/> class by loading an image from a file.
+    /// </summary>
+    /// <param name="name">The name to assign to this tilesheet.</param>
+    /// <param name="file">The path to the image file.</param>
+    /// <exception cref="ArgumentException">Thrown when the file is not a valid image.</exception>
     public Tilesheet(string name, string file)
         : this(name, SKBitmap.Decode(file) ?? throw new ArgumentException($"Invalid image file: {file}"))
     {
         ImageFilePath = file;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tilesheet"/> class by loading an image from an assets file.
+    /// </summary>
+    /// <param name="resFile">The assets file containing the tilesheet image.</param>
+    /// <param name="entryName">The name of the asset entry within the assets file.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="resFile"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="entryName"/> is null or whitespace, or when the asset cannot be decoded.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the asset entry does not exist or returns a null data stream.</exception>
     public Tilesheet(AssetsFile resFile, string entryName)
     {
         if (resFile is null)
@@ -77,6 +105,13 @@ public sealed class Tilesheet : IDisposable
         TilesheetRegistry.Instance.Register(this);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tilesheet"/> class by copying settings from a base tilesheet
+    /// and loading a new image from a file.
+    /// </summary>
+    /// <param name="baseSheet">The tilesheet whose settings should be copied.</param>
+    /// <param name="name">The name to assign to this tilesheet.</param>
+    /// <param name="file">The path to the image file.</param>
     public Tilesheet(Tilesheet baseSheet, string name, string file)
     {
         InitialOffsetX = baseSheet.InitialOffsetX;
@@ -94,15 +129,27 @@ public sealed class Tilesheet : IDisposable
         TilesheetRegistry.Instance.Register(this);
     }
 
+    /// <summary>
+    /// Gets the SkiaSharp bitmap containing the tilesheet image.
+    /// This may be a modified version if alpha masking or premultiplication has been applied.
+    /// </summary>
     [JsonIgnore]
     public SKBitmap SkBitmap { get; private set; }
 
+    /// <summary>
+    /// Gets the original SkiaSharp bitmap before any alpha masking or premultiplication was applied.
+    /// Returns <see langword="null"/> if no modifications have been made.
+    /// </summary>
     [JsonIgnore]
     public SKBitmap? SkBitmapOriginal { get; private set; } = null;
 
     [JsonProperty]
     private string _name = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the name of this tilesheet.
+    /// Changing the name updates the tilesheet's registration in the <see cref="TilesheetRegistry"/>.
+    /// </summary>
     [JsonIgnore]
     public string Name
     {
@@ -121,6 +168,10 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     private Size _tileSize;
 
+    /// <summary>
+    /// Gets or sets the size of each individual tile in the tilesheet (without overhang).
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
     [JsonIgnore]
     public Size TileSize
     {
@@ -132,12 +183,19 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries.
+    /// </summary>
     [JsonProperty]
     public Overhang OverhangPixels { get; set; } = Overhang.None;
 
     [JsonProperty]
     private int _initialOffsetX;
 
+    /// <summary>
+    /// Gets or sets the horizontal offset (in pixels) from the left edge of the tilesheet to the first tile.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
     [JsonIgnore]
     public int InitialOffsetX
     {
@@ -152,6 +210,10 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     private int _initialOffsetY;
 
+    /// <summary>
+    /// Gets or sets the vertical offset (in pixels) from the top edge of the tilesheet to the first tile.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
     [JsonIgnore]
     public int InitialOffsetY
     {
@@ -166,6 +228,10 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     private int _xPixelsBetweenTiles;
 
+    /// <summary>
+    /// Gets or sets the horizontal spacing (in pixels) between tiles in the tilesheet.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
     [JsonIgnore]
     public int XPixelsBetweenTiles
     {
@@ -180,6 +246,10 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     private int _yPixelsBetweenTiles;
 
+    /// <summary>
+    /// Gets or sets the vertical spacing (in pixels) between tiles in the tilesheet.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
     [JsonIgnore]
     public int YPixelsBetweenTiles
     {
@@ -191,24 +261,54 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.
+    /// </summary>
     [JsonProperty]
     public TypedValueBag ValueBag { get; set; } = new();
 
+    /// <summary>
+    /// Gets the asset identifier if this tilesheet was loaded from an assets file.
+    /// Returns <see langword="null"/> if the tilesheet was loaded from another source.
+    /// </summary>
     [JsonProperty]
     public AssetsFileIdentifier? AssetIdentifier { get; private set; }
 
+    /// <summary>
+    /// Gets the file path of the image file if this tilesheet was loaded from a file.
+    /// Returns an empty string if the tilesheet was loaded from another source.
+    /// </summary>
     [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
+    /// <summary>
+    /// Gets the color used for alpha masking, if <see cref="ApplyMask"/> has been called.
+    /// Returns <see langword="null"/> if no mask has been applied.
+    /// </summary>
     [JsonProperty]
     public SKColor? MaskColor { get; private set; } = null;
 
+    /// <summary>
+    /// Gets the tolerance value used when applying the alpha mask.
+    /// This determines how closely pixels must match the mask color to be made transparent.
+    /// </summary>
     [JsonProperty]
     public byte MaskTolerance { get; private set; } = 5;
 
+    /// <summary>
+    /// Gets a value indicating whether the bitmap has been premultiplied with its alpha channel.
+    /// This is <see langword="true"/> after calling <see cref="ApplyMask"/> or <see cref="ApplyPremultiplyAlpha"/>.
+    /// </summary>
     [JsonProperty]
     public bool Premultiplied { get; private set; } = false;
 
+    /// <summary>
+    /// Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent,
+    /// and then premultiplies the alpha channel.
+    /// </summary>
+    /// <param name="maskColor">The color to treat as transparent. If <see langword="null"/>, defaults to white.</param>
+    /// <param name="tolerance">The tolerance for color matching (0-255). Lower values require closer matches.</param>
+    /// <exception cref="ArgumentException">Thrown when the bitmap is null or empty.</exception>
     public void ApplyMask(SKColor? maskColor = null, byte tolerance = 5)
     {
         if (SkBitmap == null || SkBitmap.IsEmpty)
@@ -248,6 +348,11 @@ public sealed class Tilesheet : IDisposable
         BuildTileCache();
     }
 
+    /// <summary>
+    /// Premultiplies the alpha channel of the bitmap, improving rendering performance and quality.
+    /// Preserves the original bitmap in <see cref="SkBitmapOriginal"/> before applying the operation.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the bitmap is null or empty.</exception>
     public void ApplyPremultiplyAlpha()
     {
         if (SkBitmap == null || SkBitmap.IsEmpty)
@@ -260,6 +365,13 @@ public sealed class Tilesheet : IDisposable
         BuildTileCache();
     }
 
+    /// <summary>
+    /// Encodes the tilesheet bitmap to a byte array in the specified image format.
+    /// </summary>
+    /// <param name="format">The image format to encode to. Defaults to PNG.</param>
+    /// <param name="quality">The encoding quality (0-100). Defaults to 100 (highest quality).</param>
+    /// <returns>A byte array containing the encoded image data.</returns>
+    /// <exception cref="ArgumentException">Thrown when the bitmap is null or empty.</exception>
     public byte[] ToByteArray(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {
         if (SkBitmap == null || SkBitmap.IsEmpty)
@@ -341,6 +453,15 @@ public sealed class Tilesheet : IDisposable
         _tileCache = null;
     }
 
+    /// <summary>
+    /// Retrieves the SkiaSharp image for the tile at the specified coordinates.
+    /// </summary>
+    /// <param name="x">The zero-based tile column index.</param>
+    /// <param name="y">The zero-based tile row index.</param>
+    /// <returns>
+    /// The <see cref="SKImage"/> for the specified tile, or <see langword="null"/> if the coordinates
+    /// are out of bounds or the tile cache is not initialized.
+    /// </returns>
     public SKImage? GetImage(int x, int y)
     {
         if (_tileCache == null)
@@ -355,6 +476,15 @@ public sealed class Tilesheet : IDisposable
         return _tileCache?[x, y]?.Image;
     }
 
+    /// <summary>
+    /// Retrieves the SkiaSharp bitmap for the tile at the specified coordinates.
+    /// </summary>
+    /// <param name="x">The zero-based tile column index.</param>
+    /// <param name="y">The zero-based tile row index.</param>
+    /// <returns>
+    /// The <see cref="SKBitmap"/> for the specified tile, or <see langword="null"/> if the coordinates
+    /// are out of bounds or the tile cache is not initialized.
+    /// </returns>
     public SKBitmap? GetBitmap(int x, int y)
     {
         if (_tileCache == null)
@@ -369,6 +499,13 @@ public sealed class Tilesheet : IDisposable
         return _tileCache?[x, y]?.Bitmap;
     }
 
+    /// <summary>
+    /// Retrieves all tile bitmaps from the tilesheet as a dictionary indexed by their coordinates.
+    /// </summary>
+    /// <returns>
+    /// A dictionary where keys are (x, y) tuples representing tile coordinates and values are the
+    /// corresponding <see cref="SKBitmap"/> instances.
+    /// </returns>
     public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
         if (_tileCache == null)
@@ -394,6 +531,13 @@ public sealed class Tilesheet : IDisposable
         return tiles;
     }
 
+    /// <summary>
+    /// Retrieves all tile images from the tilesheet as a dictionary indexed by their coordinates.
+    /// </summary>
+    /// <returns>
+    /// A dictionary where keys are (x, y) tuples representing tile coordinates and values are the
+    /// corresponding <see cref="SKImage"/> instances.
+    /// </returns>
     public Dictionary<(int x, int y), SKImage> GetAllImages()
     {
         if (_tileCache == null)
@@ -431,6 +575,10 @@ public sealed class Tilesheet : IDisposable
     // --- IDisposable pattern ---
     private bool _disposed;
 
+    /// <summary>
+    /// Releases all resources used by this tilesheet, including cached tiles, bitmaps,
+    /// and registration in the <see cref="TilesheetRegistry"/>.
+    /// </summary>
     public void Dispose()
     {
         Dispose(true);
