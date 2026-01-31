@@ -93,28 +93,36 @@ $(function(){initNavTree('class_gondwana_1_1_input_1_1_input_event_configuration
   <div class="headertitle"><div class="title">Gondwana.Input.InputEventConfigurationBase Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides a base class for input event configuration that implements throttling and pause functionality for various input types (keyboard, mouse, gamepad). This abstract class manages timing between events using high-resolution ticks and tracks the last event occurrence to enable event rate limiting. Derived classes extend this functionality for specific input device types.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.InputEventConfigurationBase:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="class_gondwana_1_1_input_1_1_input_event_configuration_base.png" usemap="#Gondwana_2EInput_2EInputEventConfigurationBase_map" alt=""/>
   <map id="Gondwana_2EInput_2EInputEventConfigurationBase_map" name="Gondwana_2EInput_2EInputEventConfigurationBase_map">
-<area href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration.html" alt="Gondwana.Input.Gamepad.GamepadButtonEventConfiguration" shape="rect" coords="0,56,360,80"/>
-<area href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html" alt="Gondwana.Input.Keyboard.KeyEventConfiguration" shape="rect" coords="370,56,730,80"/>
-<area href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html" alt="Gondwana.Input.Mouse.MouseEventConfiguration" shape="rect" coords="740,56,1100,80"/>
+<area href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration.html" title="Represents the configuration for gamepad button events, including button identification and timing co..." alt="Gondwana.Input.Gamepad.GamepadButtonEventConfiguration" shape="rect" coords="0,56,360,80"/>
+<area href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html" title="Represents the configuration for keyboard key events, including key identification and timing control..." alt="Gondwana.Input.Keyboard.KeyEventConfiguration" shape="rect" coords="370,56,730,80"/>
+<area href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html" title="Represents the configuration for mouse event monitoring, including movement tracking settings and tim..." alt="Gondwana.Input.Mouse.MouseEventConfiguration" shape="rect" coords="740,56,1100,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a2b228e52c05559f5c8886dc612007172" id="r_a2b228e52c05559f5c8886dc612007172"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b228e52c05559f5c8886dc612007172">InputEventConfigurationBase</a> (double secondsBetweenEvents, bool isPaused)</td></tr>
+<tr class="memdesc:a2b228e52c05559f5c8886dc612007172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html" title="Provides a base class for input event configuration that implements throttling and pause functionalit...">InputEventConfigurationBase</a> class with the specified throttling interval and pause state. This constructor sets up the timing mechanism for event rate limiting.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a5d470314de217fb88bc6db5185b17ad4" id="r_a5d470314de217fb88bc6db5185b17ad4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d470314de217fb88bc6db5185b17ad4">TimeBetweenEvents</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a5d470314de217fb88bc6db5185b17ad4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the minimum time interval in seconds that must elapse between consecutive events. This property controls the throttling rate for input events, preventing excessive event generation from high-frequency input sources. The value is stored internally as high-resolution ticks for precise timing calculations.  <br /></td></tr>
 <tr class="memitem:a2963d70aa9cc5e0d335eecc21ecf15d2" id="r_a2963d70aa9cc5e0d335eecc21ecf15d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2963d70aa9cc5e0d335eecc21ecf15d2">IsPaused</a> = false<code> [get, set]</code></td></tr>
+<tr class="memdesc:a2963d70aa9cc5e0d335eecc21ecf15d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether event processing is currently paused. When set to <code>true</code>, events will not be raised even if input occurs and timing conditions are met. This property provides a convenient way to temporarily disable input event generation without removing or reconfiguring the event monitoring setup, useful for modal dialogs, cutscenes, or transitioning between game states.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides a base class for input event configuration that implements throttling and pause functionality for various input types (keyboard, mouse, gamepad). This abstract class manages timing between events using high-resolution ticks and tracks the last event occurrence to enable event rate limiting. Derived classes extend this functionality for specific input device types. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2b228e52c05559f5c8886dc612007172" name="a2b228e52c05559f5c8886dc612007172"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b228e52c05559f5c8886dc612007172">&#9670;&#160;</a></span>InputEventConfigurationBase()</h2>
 
@@ -142,6 +150,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html" title="Provides a base class for input event configuration that implements throttling and pause functionalit...">InputEventConfigurationBase</a> class with the specified throttling interval and pause state. This constructor sets up the timing mechanism for event rate limiting. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">secondsBetweenEvents</td><td>The minimum time interval in seconds that must elapse between consecutive events. This value is converted to high-resolution ticks internally for precise timing. A value of 0 means no throttling is applied, allowing events to fire as frequently as input occurs. </td></tr>
+    <tr><td class="paramname">isPaused</td><td>A value indicating whether event processing is initially paused. When paused, events will not be raised even if input occurs and timing conditions are met. This provides a way to temporarily disable input without removing the configuration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -165,6 +182,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets a value indicating whether event processing is currently paused. When set to <code>true</code>, events will not be raised even if input occurs and timing conditions are met. This property provides a convenient way to temporarily disable input event generation without removing or reconfiguring the event monitoring setup, useful for modal dialogs, cutscenes, or transitioning between game states. </p>
+<p><code>true</code> if event processing is paused and events should not be raised; otherwise, <code>false</code>. Default is <code>false</code>. </p>
+
 </div>
 </div>
 <a id="a5d470314de217fb88bc6db5185b17ad4" name="a5d470314de217fb88bc6db5185b17ad4"></a>
@@ -187,11 +207,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the minimum time interval in seconds that must elapse between consecutive events. This property controls the throttling rate for input events, preventing excessive event generation from high-frequency input sources. The value is stored internally as high-resolution ticks for precise timing calculations. </p>
+<p>The time interval in seconds. A value of 0 means no throttling is applied, and events can be raised as frequently as input changes occur. Higher values reduce event frequency, which can be useful for rate-limiting button repeat events or reducing processing overhead from rapid input. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/<a class="el" href="_input_event_configuration_base_8cs.html">InputEventConfigurationBase.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

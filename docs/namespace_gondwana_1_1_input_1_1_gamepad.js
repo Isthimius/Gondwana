@@ -4,7 +4,6 @@ var namespace_gondwana_1_1_input_1_1_gamepad =
     [ "GamepadButtonEventConfiguration", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration" ],
     [ "GamepadEventPoller", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller" ],
     [ "GamepadStickState", "struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html", "struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state" ],
-    [ "IGamepadAdapter", "interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html", "interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter" ],
     [ "IGamepadManager< out T >", "interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.html", "interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g" ],
     [ "StickDirection", "namespace_gondwana_1_1_input_1_1_gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92", [
       [ "None", "namespace_gondwana_1_1_input_1_1_gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a6adf97f83acf6453d4a6a4b1070f3754", null ],

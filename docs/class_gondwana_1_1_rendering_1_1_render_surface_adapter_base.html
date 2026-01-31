@@ -112,16 +112,21 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:ae5ec6cc715ff40b37cad1828c0164868" id="r_ae5ec6cc715ff40b37cad1828c0164868"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5ec6cc715ff40b37cad1828c0164868">RenderSurfaceAdapterBase</a> (int destWidth, int destHeight)</td></tr>
+<tr class="memdesc:ae5ec6cc715ff40b37cad1828c0164868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a> class with the specified dimensions.  <br /></td></tr>
 <tr class="memitem:a406a663858eadcb3ed5de20e14ca049b" id="r_a406a663858eadcb3ed5de20e14ca049b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a406a663858eadcb3ed5de20e14ca049b">SetDestinationSize</a> (int destWidth, int destHeight)</td></tr>
+<tr class="memdesc:a406a663858eadcb3ed5de20e14ca049b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the destination size of the render surface and raises the <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a> event if the dimensions have changed.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a02161b1fcf631174f0b69d7595f5e74f" id="r_a02161b1fcf631174f0b69d7595f5e74f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02161b1fcf631174f0b69d7595f5e74f">Width</a><code> [get, protected set]</code></td></tr>
+<tr class="memdesc:a02161b1fcf631174f0b69d7595f5e74f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current width of the render surface in pixels.  <br /></td></tr>
 <tr class="memitem:ae84340b8de8d385ce27da526d9a87317" id="r_ae84340b8de8d385ce27da526d9a87317"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae84340b8de8d385ce27da526d9a87317">Height</a><code> [get, protected set]</code></td></tr>
+<tr class="memdesc:ae84340b8de8d385ce27da526d9a87317"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current height of the render surface in pixels.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:aec240b322b995ec0cdf4fca485cfba47" id="r_aec240b322b995ec0cdf4fca485cfba47"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html">RenderSurfaceAdapterResizedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec240b322b995ec0cdf4fca485cfba47">Resized</a></td></tr>
+<tr class="memdesc:aec240b322b995ec0cdf4fca485cfba47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the render surface adapter is resized.  <br /></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae5ec6cc715ff40b37cad1828c0164868" name="ae5ec6cc715ff40b37cad1828c0164868"></a>
@@ -150,6 +155,15 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.html">RenderSurfaceAdapterBase</a> class with the specified dimensions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">destWidth</td><td>The initial width of the render surface in pixels.</td></tr>
+    <tr><td class="paramname">destHeight</td><td>The initial height of the render surface in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -226,6 +240,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Sets the destination size of the render surface and raises the <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a> event if the dimensions have changed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">destWidth</td><td>The new width of the render surface in pixels.</td></tr>
+    <tr><td class="paramname">destHeight</td><td>The new height of the render surface in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>If the specified dimensions are the same as the current dimensions, this method returns without making changes or raising the <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a> event. </p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -249,6 +273,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current height of the render surface in pixels. </p>
+<p>The height of the render surface.</p>
+
 </div>
 </div>
 <a id="a02161b1fcf631174f0b69d7595f5e74f" name="a02161b1fcf631174f0b69d7595f5e74f"></a>
@@ -271,6 +298,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current width of the render surface in pixels. </p>
+<p>The width of the render surface.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -286,11 +316,11 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when the render surface adapter is resized. </p>
+<p>This event is raised when the <a class="el" href="#a02161b1fcf631174f0b69d7595f5e74f" title="Gets the current width of the render surface in pixels.">Width</a> or <a class="el" href="#ae84340b8de8d385ce27da526d9a87317" title="Gets the current height of the render surface in pixels.">Height</a> properties change, providing both the old and new dimensions in the event arguments. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/<a class="el" href="_render_surface_adapter_base_8cs.html">RenderSurfaceAdapterBase.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

@@ -93,6 +93,9 @@ $(function(){initNavTree('class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_eve
   <div class="headertitle"><div class="title">Gondwana.Input.Keyboard.KeyDownEventArgs Class Reference<span class="mlabels"><span class="mlabel sealed">sealed</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides data for keyboard key events, including information about the key that was pressed, the action performed (pressed, released, or repeated), and the state of modifier keys at the time of the event. This event args class is used with keyboard input polling to deliver comprehensive keyboard event information to event handlers.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Keyboard.KeyDownEventArgs:</div>
 <div class="dyncontent">
@@ -103,17 +106,26 @@ Inheritance diagram for Gondwana.Input.Keyboard.KeyDownEventArgs:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a20128ffccf8cc883e77b1cd0dbf6c6d3" id="r_a20128ffccf8cc883e77b1cd0dbf6c6d3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20128ffccf8cc883e77b1cd0dbf6c6d3">KeyDownEventArgs</a> (<a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html">KeyEventConfiguration</a> config, <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a> modifiers, <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a> action)</td></tr>
+<tr class="memdesc:a20128ffccf8cc883e77b1cd0dbf6c6d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html" title="Provides data for keyboard key events, including information about the key that was pressed,...">KeyDownEventArgs</a> class with the specified key configuration, modifier state, and key action.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ab602259867bce4e452fd3fa18b813a92" id="r_ab602259867bce4e452fd3fa18b813a92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html">KeyEventConfiguration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab602259867bce4e452fd3fa18b813a92">KeyConfig</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab602259867bce4e452fd3fa18b813a92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the configuration details for the keyboard key that generated this event, including the key identifier, throttling settings, and pause state. This configuration controls how frequently the key can generate events.  <br /></td></tr>
 <tr class="memitem:a1aff53422c51970c2e611682aa89f8e7" id="r_a1aff53422c51970c2e611682aa89f8e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1aff53422c51970c2e611682aa89f8e7">Modifiers</a><code> [get]</code></td></tr>
+<tr class="memdesc:a1aff53422c51970c2e611682aa89f8e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated. This can be a combination of multiple modifiers when keys like Ctrl+Shift or Ctrl+Alt are pressed together. Use the convenience properties <a class="el" href="#a788bd9c4da3fab30c0062ea098a54ade" title="Gets a value indicating whether the Shift modifier key was pressed at the time this event was generat...">IsShift</a>, <a class="el" href="#a44cb3b7b6929143f7e1d9b7e0a5b2ca3" title="Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this event wa...">IsCtrl</a>, and <a class="el" href="#a036cdc248fda34bf9f5276d6577af731" title="Gets a value indicating whether the Alt modifier key was pressed at the time this event was generated...">IsAlt</a> to check for specific modifiers.  <br /></td></tr>
 <tr class="memitem:aeacbe0f1e54a9dc8673dbf795277901e" id="r_aeacbe0f1e54a9dc8673dbf795277901e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77">KeyAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeacbe0f1e54a9dc8673dbf795277901e">KeyAction</a><code> [get]</code></td></tr>
+<tr class="memdesc:aeacbe0f1e54a9dc8673dbf795277901e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the type of action that occurred for this key, indicating whether the key was initially pressed, released, or is being held down and generating repeated events. This allows handlers to respond differently to key press, key release, and key repeat scenarios.  <br /></td></tr>
 <tr class="memitem:a788bd9c4da3fab30c0062ea098a54ade" id="r_a788bd9c4da3fab30c0062ea098a54ade"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a788bd9c4da3fab30c0062ea098a54ade">IsShift</a><code> [get]</code></td></tr>
+<tr class="memdesc:a788bd9c4da3fab30c0062ea098a54ade"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the Shift modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c" title="The Shift modifier key is currently pressed. This typically modifies character input to produce upper...">KeyboardModifierState.Shift</a>.  <br /></td></tr>
 <tr class="memitem:a44cb3b7b6929143f7e1d9b7e0a5b2ca3" id="r_a44cb3b7b6929143f7e1d9b7e0a5b2ca3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44cb3b7b6929143f7e1d9b7e0a5b2ca3">IsCtrl</a><code> [get]</code></td></tr>
+<tr class="memdesc:a44cb3b7b6929143f7e1d9b7e0a5b2ca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47" title="The Control (Ctrl) modifier key is currently pressed. This is commonly used for keyboard shortcuts an...">KeyboardModifierState.Ctrl</a>.  <br /></td></tr>
 <tr class="memitem:a036cdc248fda34bf9f5276d6577af731" id="r_a036cdc248fda34bf9f5276d6577af731"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a036cdc248fda34bf9f5276d6577af731">IsAlt</a><code> [get]</code></td></tr>
+<tr class="memdesc:a036cdc248fda34bf9f5276d6577af731"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the Alt modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf" title="The Alt (Alternate) modifier key is currently pressed. This is used for alternate keyboard shortcuts,...">KeyboardModifierState.Alt</a>.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides data for keyboard key events, including information about the key that was pressed, the action performed (pressed, released, or repeated), and the state of modifier keys at the time of the event. This event args class is used with keyboard input polling to deliver comprehensive keyboard event information to event handlers. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a20128ffccf8cc883e77b1cd0dbf6c6d3" name="a20128ffccf8cc883e77b1cd0dbf6c6d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a20128ffccf8cc883e77b1cd0dbf6c6d3">&#9670;&#160;</a></span>KeyDownEventArgs()</h2>
 
@@ -138,6 +150,16 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html" title="Provides data for keyboard key events, including information about the key that was pressed,...">KeyDownEventArgs</a> class with the specified key configuration, modifier state, and key action. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">config</td><td>The configuration details for the key that generated the event, including key identification and throttling settings. </td></tr>
+    <tr><td class="paramname">modifiers</td><td>The state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of the event. This can be a combination of multiple modifiers using bitwise flags. </td></tr>
+    <tr><td class="paramname">action</td><td>The type of action that occurred for this key (pressed, released, or repeated), indicating the phase of the key interaction. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -161,6 +183,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a value indicating whether the Alt modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf" title="The Alt (Alternate) modifier key is currently pressed. This is used for alternate keyboard shortcuts,...">KeyboardModifierState.Alt</a>. </p>
+
 </div>
 </div>
 <a id="a44cb3b7b6929143f7e1d9b7e0a5b2ca3" name="a44cb3b7b6929143f7e1d9b7e0a5b2ca3"></a>
@@ -182,6 +206,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47" title="The Control (Ctrl) modifier key is currently pressed. This is commonly used for keyboard shortcuts an...">KeyboardModifierState.Ctrl</a>. </p>
 
 </div>
 </div>
@@ -205,6 +231,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a value indicating whether the Shift modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c" title="The Shift modifier key is currently pressed. This typically modifies character input to produce upper...">KeyboardModifierState.Shift</a>. </p>
+
 </div>
 </div>
 <a id="aeacbe0f1e54a9dc8673dbf795277901e" name="aeacbe0f1e54a9dc8673dbf795277901e"></a>
@@ -226,6 +254,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the type of action that occurred for this key, indicating whether the key was initially pressed, released, or is being held down and generating repeated events. This allows handlers to respond differently to key press, key release, and key repeat scenarios. </p>
 
 </div>
 </div>
@@ -249,6 +279,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the configuration details for the keyboard key that generated this event, including the key identifier, throttling settings, and pause state. This configuration controls how frequently the key can generate events. </p>
+
 </div>
 </div>
 <a id="a1aff53422c51970c2e611682aa89f8e7" name="a1aff53422c51970c2e611682aa89f8e7"></a>
@@ -271,11 +303,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated. This can be a combination of multiple modifiers when keys like Ctrl+Shift or Ctrl+Alt are pressed together. Use the convenience properties <a class="el" href="#a788bd9c4da3fab30c0062ea098a54ade" title="Gets a value indicating whether the Shift modifier key was pressed at the time this event was generat...">IsShift</a>, <a class="el" href="#a44cb3b7b6929143f7e1d9b7e0a5b2ca3" title="Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this event wa...">IsCtrl</a>, and <a class="el" href="#a036cdc248fda34bf9f5276d6577af731" title="Gets a value indicating whether the Alt modifier key was pressed at the time this event was generated...">IsAlt</a> to check for specific modifiers. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/Keyboard/<a class="el" href="_key_down_event_args_8cs.html">KeyDownEventArgs.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

@@ -45,32 +45,23 @@ var NAVTREE =
         [ "Properties", "functions_prop.html", "functions_prop" ],
         [ "Events", "functions_evnt.html", null ]
       ] ]
-    ] ],
-    [ "Files", "files.html", [
-      [ "File List", "files.html", "files_dup" ],
-      [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
-        [ "Typedefs", "globals_type.html", null ]
-      ] ]
     ] ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"_aabb_8cs.html",
-"_sprite_moved_event_args_8cs.html",
-"class_gondwana_1_1_collision_1_1_collision_world.html#a5f8e6f56a3dde72376742dc18f29f52f",
-"class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#aa8d214d9dcc85f9ac8990a61149816b5",
-"class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4",
-"class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#ad628da1ed304368a92d6113567d5f561",
-"class_gondwana_1_1_engine.html#a8a60330c4716d5112a589cf7b5477fc9",
-"class_gondwana_1_1_movement_1_1_movement_controller.html#ae88f083d038a3f4cdac1c83ca7ab7a46",
-"class_gondwana_1_1_rendering_1_1_views_1_1_viewport_resized_event_args.html#ade5b28cf0ed51710a7c5a37a2aebe41e",
-"class_gondwana_1_1_video_1_1_vlc_video_player.html#a81ef2ae82616f41ad144d2663bad9fb3",
-"dir_55a8409626953718f9874eff5866f983.html",
-"interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.html",
-"struct_gondwana_1_1_collision_1_1_aabb.html"
+"annotated.html",
+"class_gondwana_1_1_coordinate_test_1_1_game_window.html#a1cd5548b31a1b2d0dc90b19401ffd043",
+"class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a0ff816d3ac12017ee6caff6e522e8cea",
+"class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a316c9ccbea0460ac5a853ff0e1a8bc34",
+"class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#ad340d5603c3fea7f053bbfb81e310399",
+"class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html#a0dccd2c6b4b2563a750a20ec6c0e9f02",
+"class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html#a78783cfbc2578e9269179221138bada4",
+"class_gondwana_1_1_scenes_1_1_scene_layer.html#a0ce8b6216ce767e416bdc8c9477bde12",
+"class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html#a64a2c27a73493304a4424c192ba424c1",
+"interface_gondwana_1_1_i_engine_dispatcher.html",
+"namespace_gondwana_1_1_win_forms_1_1_audio.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

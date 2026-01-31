@@ -102,12 +102,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab243f1d9ae1ef9f7906e536d25fe6efc" id="r_ab243f1d9ae1ef9f7906e536d25fe6efc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab243f1d9ae1ef9f7906e536d25fe6efc">StartMonitoringKey</a> (int keyCode, string? displayName=null, double timeBetweenEvents=-1, bool isPaused=false)</td></tr>
 <tr class="memdesc:ab243f1d9ae1ef9f7906e536d25fe6efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary API: monitor by platform-agnostic key code. Platform layers (<a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a>, SDL, etc.) are responsible for mapping their key enums/names to key codes.  <br /></td></tr>
 <tr class="memitem:a42534518e50bbd625f8c29bc600dc93e" id="r_a42534518e50bbd625f8c29bc600dc93e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42534518e50bbd625f8c29bc600dc93e">StopMonitoringKey</a> (int keyCode)</td></tr>
+<tr class="memdesc:a42534518e50bbd625f8c29bc600dc93e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregisters a specific key from event monitoring by its platform-agnostic key code. After calling this method, the key will no longer be polled and will not generate <a class="el" href="#a93c0de7b15a700fb8cd2fceed43197ed" title="Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and...">KeyDown</a> events until it is registered again using <a class="el" href="#ab243f1d9ae1ef9f7906e536d25fe6efc" title="Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...">StartMonitoringKey</a>.  <br /></td></tr>
 <tr class="memitem:a7ba2fcaefc68a556bf46e943ae2f25ea" id="r_a7ba2fcaefc68a556bf46e943ae2f25ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ba2fcaefc68a556bf46e943ae2f25ea">StopMonitoringKey</a> (string key)</td></tr>
+<tr class="memdesc:a7ba2fcaefc68a556bf46e943ae2f25ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregisters a specific key from event monitoring by parsing its string representation. If the string can be parsed as an integer key code, the key will be unregistered. After calling this method, the key will no longer generate <a class="el" href="#a93c0de7b15a700fb8cd2fceed43197ed" title="Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and...">KeyDown</a> events.  <br /></td></tr>
 <tr class="memitem:a123f622a2f5b19616cf4404d91538764" id="r_a123f622a2f5b19616cf4404d91538764"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a123f622a2f5b19616cf4404d91538764">StopMonitoringAllKeys</a> ()</td></tr>
+<tr class="memdesc:a123f622a2f5b19616cf4404d91538764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregisters all keys from event monitoring, clearing all key configurations and state tracking. After calling this method, no keys will generate events until they are registered again using <a class="el" href="#ab243f1d9ae1ef9f7906e536d25fe6efc" title="Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...">StartMonitoringKey</a>. This is useful for resetting the keyboard state when changing game modes or screens.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a7fb962a9db32bbc2a547461215b1a423" id="r_a7fb962a9db32bbc2a547461215b1a423"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7fb962a9db32bbc2a547461215b1a423">Initialize</a> (<a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html">IKeyboardAdapter</a> adapter)</td></tr>
+<tr class="memdesc:a7fb962a9db32bbc2a547461215b1a423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html" title="Cross-platform singleton keyboard handler with throttling and manual input state feeding.">KeyboardEventPoller</a> with the specified keyboard adapter. This method replaces the existing instance and configures it to monitor keyboard input through the provided adapter.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -123,6 +127,7 @@ Properties</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a93c0de7b15a700fb8cd2fceed43197ed" id="r_a93c0de7b15a700fb8cd2fceed43197ed"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html">KeyDownEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a93c0de7b15a700fb8cd2fceed43197ed">KeyDown</a></td></tr>
+<tr class="memdesc:a93c0de7b15a700fb8cd2fceed43197ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and throttling settings. Subscribe to this event to handle keyboard input in your application. The event provides information about the key action (pressed, released, or repeated) and current keyboard modifier states.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Cross-platform singleton keyboard handler with throttling and manual input state feeding. </p>
@@ -149,6 +154,14 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Initializes the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html" title="Cross-platform singleton keyboard handler with throttling and manual input state feeding.">KeyboardEventPoller</a> with the specified keyboard adapter. This method replaces the existing instance and configures it to monitor keyboard input through the provided adapter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">adapter</td><td>The keyboard adapter that provides access to the current keyboard state and key press information. This adapter abstracts platform-specific keyboard input handling. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -200,6 +213,8 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Unregisters all keys from event monitoring, clearing all key configurations and state tracking. After calling this method, no keys will generate events until they are registered again using <a class="el" href="#ab243f1d9ae1ef9f7906e536d25fe6efc" title="Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...">StartMonitoringKey</a>. This is useful for resetting the keyboard state when changing game modes or screens. </p>
+
 </div>
 </div>
 <a id="a42534518e50bbd625f8c29bc600dc93e" name="a42534518e50bbd625f8c29bc600dc93e"></a>
@@ -217,6 +232,14 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Unregisters a specific key from event monitoring by its platform-agnostic key code. After calling this method, the key will no longer be polled and will not generate <a class="el" href="#a93c0de7b15a700fb8cd2fceed43197ed" title="Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and...">KeyDown</a> events until it is registered again using <a class="el" href="#ab243f1d9ae1ef9f7906e536d25fe6efc" title="Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...">StartMonitoringKey</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keyCode</td><td>The platform-agnostic key code identifying the key to stop monitoring. This should match the key code used when calling <a class="el" href="#ab243f1d9ae1ef9f7906e536d25fe6efc" title="Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...">StartMonitoringKey</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a7ba2fcaefc68a556bf46e943ae2f25ea" name="a7ba2fcaefc68a556bf46e943ae2f25ea"></a>
@@ -233,6 +256,14 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Unregisters a specific key from event monitoring by parsing its string representation. If the string can be parsed as an integer key code, the key will be unregistered. After calling this method, the key will no longer generate <a class="el" href="#a93c0de7b15a700fb8cd2fceed43197ed" title="Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and...">KeyDown</a> events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>A string representation of the key code to stop monitoring. The string must be parseable as an integer. If parsing fails, this method has no effect. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -346,11 +377,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and throttling settings. Subscribe to this event to handle keyboard input in your application. The event provides information about the key action (pressed, released, or repeated) and current keyboard modifier states. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/Keyboard/<a class="el" href="_keyboard_event_poller_8cs.html">KeyboardEventPoller.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

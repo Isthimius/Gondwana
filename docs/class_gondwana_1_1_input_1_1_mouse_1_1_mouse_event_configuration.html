@@ -93,33 +93,43 @@ $(function(){initNavTree('class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_con
   <div class="headertitle"><div class="title">Gondwana.Input.Mouse.MouseEventConfiguration Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents the configuration for mouse event monitoring, including movement tracking settings and timing controls for event throttling. This configuration is used to control how frequently mouse events are raised, whether mouse movement should be tracked, and whether event processing is currently paused.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Mouse.MouseEventConfiguration:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.png" usemap="#Gondwana_2EInput_2EMouse_2EMouseEventConfiguration_map" alt=""/>
   <map id="Gondwana_2EInput_2EMouse_2EMouseEventConfiguration_map" name="Gondwana_2EInput_2EMouse_2EMouseEventConfiguration_map">
-<area href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html" alt="Gondwana.Input.InputEventConfigurationBase" shape="rect" coords="0,0,295,24"/>
+<area href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html" title="Provides a base class for input event configuration that implements throttling and pause functionalit..." alt="Gondwana.Input.InputEventConfigurationBase" shape="rect" coords="0,0,295,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a389fe14c04036ef4a1196bbf493125f4" id="r_a389fe14c04036ef4a1196bbf493125f4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a389fe14c04036ef4a1196bbf493125f4">MouseEventConfiguration</a> (bool trackMouseMovement, double secondsBetweenEvents=0, bool isPaused=false)</td></tr>
+<tr class="memdesc:a389fe14c04036ef4a1196bbf493125f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html" title="Represents the configuration for mouse event monitoring, including movement tracking settings and tim...">MouseEventConfiguration</a> class with the specified movement tracking and event timing settings.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:abbdb5b8bcae2f98c552ba00991eca2ff" id="r_abbdb5b8bcae2f98c552ba00991eca2ff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbdb5b8bcae2f98c552ba00991eca2ff">TrackMouseMovement</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:abbdb5b8bcae2f98c552ba00991eca2ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether mouse cursor movement should be tracked and reported in mouse events. When enabled, mouse events will include position updates even when no buttons are pressed, allowing detection of mouse hover, cursor tracking, and movement-based interactions. When disabled, events may only be raised for button presses, releases, or other explicit actions, potentially reducing event frequency and processing overhead.  <br /></td></tr>
 <tr class="inherit_header properties_class_gondwana_1_1_input_1_1_input_event_configuration_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_class_gondwana_1_1_input_1_1_input_event_configuration_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html">Gondwana.Input.InputEventConfigurationBase</a></td></tr>
 <tr class="memitem:a5d470314de217fb88bc6db5185b17ad4 inherit properties_class_gondwana_1_1_input_1_1_input_event_configuration_base" id="r_a5d470314de217fb88bc6db5185b17ad4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html#a5d470314de217fb88bc6db5185b17ad4">TimeBetweenEvents</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a5d470314de217fb88bc6db5185b17ad4 inherit properties_class_gondwana_1_1_input_1_1_input_event_configuration_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the minimum time interval in seconds that must elapse between consecutive events. This property controls the throttling rate for input events, preventing excessive event generation from high-frequency input sources. The value is stored internally as high-resolution ticks for precise timing calculations.  <br /></td></tr>
 <tr class="memitem:a2963d70aa9cc5e0d335eecc21ecf15d2 inherit properties_class_gondwana_1_1_input_1_1_input_event_configuration_base" id="r_a2963d70aa9cc5e0d335eecc21ecf15d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html#a2963d70aa9cc5e0d335eecc21ecf15d2">IsPaused</a> = false<code> [get, set]</code></td></tr>
+<tr class="memdesc:a2963d70aa9cc5e0d335eecc21ecf15d2 inherit properties_class_gondwana_1_1_input_1_1_input_event_configuration_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether event processing is currently paused. When set to <code>true</code>, events will not be raised even if input occurs and timing conditions are met. This property provides a convenient way to temporarily disable input event generation without removing or reconfiguring the event monitoring setup, useful for modal dialogs, cutscenes, or transitioning between game states.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_class_gondwana_1_1_input_1_1_input_event_configuration_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_gondwana_1_1_input_1_1_input_event_configuration_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html">Gondwana.Input.InputEventConfigurationBase</a></td></tr>
 <tr class="memitem:a2b228e52c05559f5c8886dc612007172 inherit pro_methods_class_gondwana_1_1_input_1_1_input_event_configuration_base" id="r_a2b228e52c05559f5c8886dc612007172"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html#a2b228e52c05559f5c8886dc612007172">InputEventConfigurationBase</a> (double secondsBetweenEvents, bool isPaused)</td></tr>
+<tr class="memdesc:a2b228e52c05559f5c8886dc612007172 inherit pro_methods_class_gondwana_1_1_input_1_1_input_event_configuration_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html" title="Provides a base class for input event configuration that implements throttling and pause functionalit...">InputEventConfigurationBase</a> class with the specified throttling interval and pause state. This constructor sets up the timing mechanism for event rate limiting.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents the configuration for mouse event monitoring, including movement tracking settings and timing controls for event throttling. This configuration is used to control how frequently mouse events are raised, whether mouse movement should be tracked, and whether event processing is currently paused. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a389fe14c04036ef4a1196bbf493125f4" name="a389fe14c04036ef4a1196bbf493125f4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a389fe14c04036ef4a1196bbf493125f4">&#9670;&#160;</a></span>MouseEventConfiguration()</h2>
 
@@ -144,6 +154,16 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html" title="Represents the configuration for mouse event monitoring, including movement tracking settings and tim...">MouseEventConfiguration</a> class with the specified movement tracking and event timing settings. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trackMouseMovement</td><td>A value indicating whether mouse cursor movement should be tracked and reported in events. Set to <code>true</code> to track all mouse movements including hover, or <code>false</code> to only track explicit actions like button presses and scrolling. </td></tr>
+    <tr><td class="paramname">secondsBetweenEvents</td><td>The minimum time interval in seconds that must elapse between consecutive mouse events. Use this to throttle high-frequency mouse input. A value of 0 means no throttling is applied, and events will be generated as frequently as the mouse state changes. Default is 0. </td></tr>
+    <tr><td class="paramname">isPaused</td><td>A value indicating whether event processing for the mouse is initially paused. When paused, the mouse will not generate events even if moved, clicked, or scrolled. This is useful for temporarily disabling mouse input, such as when a modal dialog is displayed or during cutscenes. Default is <code>false</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -167,11 +187,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets a value indicating whether mouse cursor movement should be tracked and reported in mouse events. When enabled, mouse events will include position updates even when no buttons are pressed, allowing detection of mouse hover, cursor tracking, and movement-based interactions. When disabled, events may only be raised for button presses, releases, or other explicit actions, potentially reducing event frequency and processing overhead. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/Mouse/<a class="el" href="_mouse_event_configuration_8cs.html">MouseEventConfiguration.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

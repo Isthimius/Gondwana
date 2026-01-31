@@ -93,6 +93,9 @@ $(function(){initNavTree('class_gondwana_1_1_cycles_per_second_calculated_event_
   <div class="headertitle"><div class="title">Gondwana.CyclesPerSecondCalculatedEventArgs Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides data for events that report calculated cycles per second (CPS) performance metrics. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.CyclesPerSecondCalculatedEventArgs:</div>
 <div class="dyncontent">
@@ -103,17 +106,26 @@ Inheritance diagram for Gondwana.CyclesPerSecondCalculatedEventArgs:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af10277cacdc753884d4205c68be5563b" id="r_af10277cacdc753884d4205c68be5563b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af10277cacdc753884d4205c68be5563b">CyclesPerSecondCalculatedEventArgs</a> (long totalGross, long totalNet, double grossCPS, double netCPS, double sampleTime)</td></tr>
+<tr class="memdesc:af10277cacdc753884d4205c68be5563b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_cycles_per_second_calculated_event_args.html" title="Provides data for events that report calculated cycles per second (CPS) performance metrics....">CyclesPerSecondCalculatedEventArgs</a> class with the specified cycle counts, rates, and sampling time.  <br /></td></tr>
 <tr class="memitem:a1efdf4ba59140f1ecb644704b0756eee" id="r_a1efdf4ba59140f1ecb644704b0756eee"><td class="memItemLeft" align="right" valign="top">override string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1efdf4ba59140f1ecb644704b0756eee">ToString</a> ()</td></tr>
+<tr class="memdesc:a1efdf4ba59140f1ecb644704b0756eee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a formatted string representation of the performance metrics, including total cycle counts, sampling time, and calculated rates. This provides a human-readable summary of all performance data suitable for logging, debugging, or display purposes.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a20034b542a1e5fa8af5675d982ef3568" id="r_a20034b542a1e5fa8af5675d982ef3568"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20034b542a1e5fa8af5675d982ef3568">TotalGrossCycles</a></td></tr>
+<tr class="memdesc:a20034b542a1e5fa8af5675d982ef3568"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total number of gross cycles counted during the sampling period. Gross cycles represent all engine update cycles, including those that may not have resulted in a rendered frame. This value provides insight into the engine's overall processing activity.  <br /></td></tr>
 <tr class="memitem:a89ac609fc26ace2c12b4316c24aa9e6c" id="r_a89ac609fc26ace2c12b4316c24aa9e6c"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89ac609fc26ace2c12b4316c24aa9e6c">TotalNetCycles</a></td></tr>
+<tr class="memdesc:a89ac609fc26ace2c12b4316c24aa9e6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total number of net cycles counted during the sampling period. Net cycles typically represent engine update cycles that resulted in rendered frames, providing a more accurate measure of visible performance and frame delivery.  <br /></td></tr>
 <tr class="memitem:a037cfb72bc48bb3952d4a5c74572bb7d" id="r_a037cfb72bc48bb3952d4a5c74572bb7d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a037cfb72bc48bb3952d4a5c74572bb7d">GrossCPS</a></td></tr>
+<tr class="memdesc:a037cfb72bc48bb3952d4a5c74572bb7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The calculated gross cycles per second rate, representing how many engine cycles occurred per second during the sampling period. This includes all cycles regardless of whether they produced rendered output.  <br /></td></tr>
 <tr class="memitem:a1c87063c8632163cc66fd59e827dbe61" id="r_a1c87063c8632163cc66fd59e827dbe61"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c87063c8632163cc66fd59e827dbe61">NetCPS</a></td></tr>
+<tr class="memdesc:a1c87063c8632163cc66fd59e827dbe61"><td class="mdescLeft">&#160;</td><td class="mdescRight">The calculated net cycles per second rate, representing the effective frame rate (FPS). This value indicates how many rendered frames or meaningful engine cycles occurred per second during the sampling period, providing the most relevant performance metric for visual smoothness.  <br /></td></tr>
 <tr class="memitem:a950f6a3a313494c672cb52c4ce16c4ee" id="r_a950f6a3a313494c672cb52c4ce16c4ee"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a950f6a3a313494c672cb52c4ce16c4ee">SampleTime</a></td></tr>
+<tr class="memdesc:a950f6a3a313494c672cb52c4ce16c4ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration of the sampling period in seconds over which the cycle counts and rates were measured. This time window determines the granularity and accuracy of the CPS calculations.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides data for events that report calculated cycles per second (CPS) performance metrics. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af10277cacdc753884d4205c68be5563b" name="af10277cacdc753884d4205c68be5563b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af10277cacdc753884d4205c68be5563b">&#9670;&#160;</a></span>CyclesPerSecondCalculatedEventArgs()</h2>
 
@@ -148,6 +160,18 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_cycles_per_second_calculated_event_args.html" title="Provides data for events that report calculated cycles per second (CPS) performance metrics....">CyclesPerSecondCalculatedEventArgs</a> class with the specified cycle counts, rates, and sampling time. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">totalGross</td><td>The total number of gross cycles counted during the sampling period. </td></tr>
+    <tr><td class="paramname">totalNet</td><td>The total number of net cycles counted during the sampling period. </td></tr>
+    <tr><td class="paramname">grossCPS</td><td>The calculated gross cycles per second rate. </td></tr>
+    <tr><td class="paramname">netCPS</td><td>The calculated net cycles per second rate (effective FPS). </td></tr>
+    <tr><td class="paramname">sampleTime</td><td>The duration of the sampling period in seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -166,6 +190,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns a formatted string representation of the performance metrics, including total cycle counts, sampling time, and calculated rates. This provides a human-readable summary of all performance data suitable for logging, debugging, or display purposes. </p>
+<dl class="section return"><dt>Returns</dt><dd>A multi-line string containing formatted performance metrics with the following information: total gross cycles, total net cycles, sampling time in seconds, gross CPS, and net CPS (FPS). </dd></dl>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -181,6 +208,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The calculated gross cycles per second rate, representing how many engine cycles occurred per second during the sampling period. This includes all cycles regardless of whether they produced rendered output. </p>
+
 </div>
 </div>
 <a id="a1c87063c8632163cc66fd59e827dbe61" name="a1c87063c8632163cc66fd59e827dbe61"></a>
@@ -194,6 +223,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The calculated net cycles per second rate, representing the effective frame rate (FPS). This value indicates how many rendered frames or meaningful engine cycles occurred per second during the sampling period, providing the most relevant performance metric for visual smoothness. </p>
 
 </div>
 </div>
@@ -209,6 +240,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The duration of the sampling period in seconds over which the cycle counts and rates were measured. This time window determines the granularity and accuracy of the CPS calculations. </p>
+
 </div>
 </div>
 <a id="a20034b542a1e5fa8af5675d982ef3568" name="a20034b542a1e5fa8af5675d982ef3568"></a>
@@ -222,6 +255,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The total number of gross cycles counted during the sampling period. Gross cycles represent all engine update cycles, including those that may not have resulted in a rendered frame. This value provides insight into the engine's overall processing activity. </p>
 
 </div>
 </div>
@@ -237,11 +272,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The total number of net cycles counted during the sampling period. Net cycles typically represent engine update cycles that resulted in rendered frames, providing a more accurate measure of visible performance and frame delivery. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/<a class="el" href="_cycles_per_second_calculated_event_args_8cs.html">CyclesPerSecondCalculatedEventArgs.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

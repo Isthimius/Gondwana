@@ -102,7 +102,7 @@ Inheritance diagram for Gondwana.Rendering.Backbuffers.BackbufferBase:</div>
  <div class="center">
   <img src="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.png" usemap="#Gondwana_2ERendering_2EBackbuffers_2EBackbufferBase_map" alt=""/>
   <map id="Gondwana_2ERendering_2EBackbuffers_2EBackbufferBase_map" name="Gondwana_2ERendering_2EBackbuffers_2EBackbufferBase_map">
-<area href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html" alt="Gondwana.Rendering.Backbuffers.BitmapBackbuffer" shape="rect" coords="0,112,309,136"/>
+<area href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html" title="Provides a bitmap-based backbuffer implementation for rendering operations using SkiaSharp...." alt="Gondwana.Rendering.Backbuffers.BitmapBackbuffer" shape="rect" coords="0,112,309,136"/>
 <area href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer.html" alt="Gondwana.Rendering.Backbuffers.GpuBackbuffer" shape="rect" coords="319,112,628,136"/>
   </map>
 </div></div>
@@ -112,11 +112,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7f2563970fef0f39c7b1ef75afbcac7d" id="r_a7f2563970fef0f39c7b1ef75afbcac7d"><td class="memItemLeft" align="right" valign="top">virtual byte[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f2563970fef0f39c7b1ef75afbcac7d">ToByteArray</a> (SKEncodedImageFormat format=SKEncodedImageFormat.Png, int quality=100)</td></tr>
 <tr class="memdesc:a7f2563970fef0f39c7b1ef75afbcac7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the current image to a byte array in the specified format and quality.  <br /></td></tr>
 <tr class="memitem:ad337f9fed366bb07672919518bd3b7c2" id="r_ad337f9fed366bb07672919518bd3b7c2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad337f9fed366bb07672919518bd3b7c2">Dispose</a> ()</td></tr>
+<tr class="memdesc:ad337f9fed366bb07672919518bd3b7c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a17a557c2e9c23d280ff2af975fe80f29" id="r_a17a557c2e9c23d280ff2af975fe80f29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17a557c2e9c23d280ff2af975fe80f29">BackbufferBase</a> (int width, int height)</td></tr>
+<tr class="memdesc:a17a557c2e9c23d280ff2af975fe80f29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> class with the specified dimensions.  <br /></td></tr>
 <tr class="memitem:a4bb11aed72f485c90ce42d395cb9678a" id="r_a4bb11aed72f485c90ce42d395cb9678a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bb11aed72f485c90ce42d395cb9678a">UpdateSize</a> (int width, int height)</td></tr>
+<tr class="memdesc:a4bb11aed72f485c90ce42d395cb9678a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the stored backbuffer dimensions and raises the SizeChanged event.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -125,6 +128,7 @@ Protected Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:aec9089b369950756218d786c83a59af5" id="r_aec9089b369950756218d786c83a59af5"><td class="memItemLeft" align="right" valign="top">SKCanvas&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec9089b369950756218d786c83a59af5">Canvas</a><code> [get]</code></td></tr>
+<tr class="memdesc:aec9089b369950756218d786c83a59af5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a> canvas used for drawing operations on this backbuffer.  <br /></td></tr>
 <tr class="memitem:a6352fc1e08a034964b2776149af72f24" id="r_a6352fc1e08a034964b2776149af72f24"><td class="memItemLeft" align="right" valign="top">SKPaint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6352fc1e08a034964b2776149af72f24">FogPaint</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a6352fc1e08a034964b2776149af72f24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the paint object used to render fog effects.  <br /></td></tr>
 <tr class="memitem:a7359e524a27798cfad65a3bf689f072b" id="r_a7359e524a27798cfad65a3bf689f072b"><td class="memItemLeft" align="right" valign="top">SKPaint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7359e524a27798cfad65a3bf689f072b">GridLinePaint</a><code> [get, set]</code></td></tr>
@@ -140,7 +144,7 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rendering operations are performed before being presented to the display. </p>
-<p>This abstract class serves as the foundation for backbuffer implementations, offering methods and properties to facilitate rendering operations, manage graphical state, and interact with graphical elements such as tiles. Derived classes must implement the <a class="el" href="#aec9089b369950756218d786c83a59af5">Canvas</a>, DrawTileFrame(Tile), and Snapshot members to define specific rendering behavior.</p>
+<p>This abstract class serves as the foundation for backbuffer implementations, offering methods and properties to facilitate rendering operations, manage graphical state, and interact with graphical elements such as tiles. Derived classes must implement the <a class="el" href="#aec9089b369950756218d786c83a59af5" title="Gets the SkiaSharp canvas used for drawing operations on this backbuffer.">Canvas</a>, DrawTileFrame(Tile, RectangleF), and Snapshot members to define specific rendering behavior.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a17a557c2e9c23d280ff2af975fe80f29" name="a17a557c2e9c23d280ff2af975fe80f29"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a17a557c2e9c23d280ff2af975fe80f29">&#9670;&#160;</a></span>BackbufferBase()</h2>
@@ -169,6 +173,16 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> class with the specified dimensions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>The width of the backbuffer in pixels.</td></tr>
+    <tr><td class="paramname">height</td><td>The height of the backbuffer in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This constructor establishes the initial size of the backbuffer. Derived classes can override RequestResize to implement dynamic resizing behavior if needed. </p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -194,6 +208,10 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> instance. </p>
+<p>This method disposes of managed resources including paint objects used for fog effects, grid lines, collision boxes, and fill operations. Derived classes can override this method to dispose of additional resources but should call the base implementation to ensure proper cleanup of base class resources. </p>
+<p>After disposal, the backbuffer should not be used for further rendering operations. </p>
 
 <p>Reimplemented in <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html#ac70c3a4da0791216d9e7e8947c703b8b">Gondwana.Rendering.Backbuffers.BitmapBackbuffer</a>, and <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Gondwana.Rendering.Backbuffers.GpuBackbuffer</a>.</p>
 
@@ -266,6 +284,17 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Updates the stored backbuffer dimensions and raises the SizeChanged event. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>The new width in pixels.</td></tr>
+    <tr><td class="paramname">height</td><td>The new height in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This method should be called by derived classes after successfully resizing the backbuffer to ensure that the <a class="el" href="#a4363faf5b1440170776c8881fb1e761a" title="Gets the current Backbuffer width in a thread-safe manner.">Width</a> and <a class="el" href="#a904ea16bdee9a1de14718c23ceac671e" title="Gets the current Backbuffer height in a thread-safe manner.">Height</a> properties are updated in a thread-safe manner and subscribers are notified of the size change. </p>
+<p>The method uses volatile writes to ensure visibility across threads and raises the SizeChanged event with the new dimensions. </p>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -318,6 +347,11 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a> canvas used for drawing operations on this backbuffer. </p>
+<p>An SKCanvas instance that provides the drawing surface for rendering operations. </p>
+<p>Derived classes must implement this property to provide access to the underlying drawing canvas. All rendering operations, including tiles, sprites, and direct drawing instances, are performed on this canvas. </p>
+<p>The canvas should be configured with appropriate coordinate transformations, clipping regions, and rendering states before drawing operations begin. </p>
 
 </div>
 </div>
@@ -482,9 +516,6 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/Backbuffers/<a class="el" href="_backbuffer_base_8cs.html">BackbufferBase.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

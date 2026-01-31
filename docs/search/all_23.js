@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['🤝_20contributing_0',['🤝 Contributing',['../X:/github/isthimius/Gondwana/README.md#autotoc_md17',1,'']]]
+  ['🧭_20key_20design_20principles_0',['🧭 Key Design Principles',['../X:/github/isthimius/Gondwana/README.md#autotoc_md10',1,'']]]
 ];

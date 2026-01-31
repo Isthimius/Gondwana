@@ -93,6 +93,9 @@ $(function(){initNavTree('interface_gondwana_1_1_input_1_1_mouse_1_1_i_mouse_ada
   <div class="headertitle"><div class="title">Gondwana.Input.Mouse.IMouseAdapter Interface Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Defines an adapter interface for accessing mouse device state, including cursor position, button presses, scroll wheel input, and keyboard modifier states. Implementations of this interface provide abstraction over various mouse input APIs to provide unified access to mouse hardware across different platforms.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Mouse.IMouseAdapter:</div>
 <div class="dyncontent">
@@ -106,11 +109,17 @@ Inheritance diagram for Gondwana.Input.Mouse.IMouseAdapter:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ae4355cdf2cdd3c26340aed1b6173d933" id="r_ae4355cdf2cdd3c26340aed1b6173d933"><td class="memItemLeft" align="right" valign="top">Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4355cdf2cdd3c26340aed1b6173d933">CurrentPosition</a><code> [get]</code></td></tr>
+<tr class="memdesc:ae4355cdf2cdd3c26340aed1b6173d933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of the mouse cursor in screen or client coordinates, depending on the implementation. This position is typically updated continuously as the user moves the mouse and represents the pixel coordinates where the cursor is currently located.  <br /></td></tr>
 <tr class="memitem:a7a6e0f11805bcf06ae4ce64d51224b6a" id="r_a7a6e0f11805bcf06ae4ce64d51224b6a"><td class="memItemLeft" align="right" valign="top">HashSet&lt; <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565b">MouseButton</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a6e0f11805bcf06ae4ce64d51224b6a">PressedButtons</a><code> [get]</code></td></tr>
+<tr class="memdesc:a7a6e0f11805bcf06ae4ce64d51224b6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the set of mouse buttons that are currently pressed. This collection includes identifiers for all buttons that are in the down state, such as <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565ba945d5e233cf7d6240f6b783b36a374ff" title="The primary (left) mouse button. This is typically used for standard clicking, selecting,...">MouseButton.Left</a>, <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565ba92b09c7c48c520c3c55e497875da437c" title="The secondary (right) mouse button. This is typically used for context menus and alternate actions....">MouseButton.Right</a>, <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565bab1ca34f82e83c52b010f86955f264e05" title="The middle mouse button, usually implemented as a clickable scroll wheel. This is often used for spec...">MouseButton.Middle</a>, and additional buttons if supported by the hardware. The collection is empty when no buttons are pressed.  <br /></td></tr>
 <tr class="memitem:a52819b0e62534e867d1610ded7050b95" id="r_a52819b0e62534e867d1610ded7050b95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52819b0e62534e867d1610ded7050b95">CurrentKeyboardModifiers</a><code> [get]</code></td></tr>
+<tr class="memdesc:a52819b0e62534e867d1610ded7050b95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of mouse input. This allows mouse event handlers to respond to modified mouse actions, such as Ctrl+Click or Shift+Drag. The state can be a combination of multiple modifiers using bitwise flags.  <br /></td></tr>
 <tr class="memitem:a13ee34adb2be7266a5671d1bf3704d17" id="r_a13ee34adb2be7266a5671d1bf3704d17"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13ee34adb2be7266a5671d1bf3704d17">ScrollDelta</a><code> [get]</code></td></tr>
+<tr class="memdesc:a13ee34adb2be7266a5671d1bf3704d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the accumulated scroll wheel delta since the last poll, measured in implementation-defined units. Positive values indicate upward scrolling (scrolling away from the user), while negative values indicate downward scrolling (scrolling toward the user). The magnitude represents the distance or speed of the scroll. This value is typically reset or accumulated between polling intervals.  <br /></td></tr>
 </table>
-<a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Defines an adapter interface for accessing mouse device state, including cursor position, button presses, scroll wheel input, and keyboard modifier states. Implementations of this interface provide abstraction over various mouse input APIs to provide unified access to mouse hardware across different platforms. </p>
+</div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
 <a id="a52819b0e62534e867d1610ded7050b95" name="a52819b0e62534e867d1610ded7050b95"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a52819b0e62534e867d1610ded7050b95">&#9670;&#160;</a></span>CurrentKeyboardModifiers</h2>
 
@@ -130,6 +139,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the current state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of mouse input. This allows mouse event handlers to respond to modified mouse actions, such as Ctrl+Click or Shift+Drag. The state can be a combination of multiple modifiers using bitwise flags. </p>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_mouse_1_1_win_forms_mouse_adapter.html#ad07e64d4425919574f2acedfd76d881c">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
@@ -155,6 +166,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current position of the mouse cursor in screen or client coordinates, depending on the implementation. This position is typically updated continuously as the user moves the mouse and represents the pixel coordinates where the cursor is currently located. </p>
+
 <p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_mouse_1_1_win_forms_mouse_adapter.html#afb8294972bb334f2068dd74fe5bd2c4b">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
 </div>
@@ -178,6 +191,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the set of mouse buttons that are currently pressed. This collection includes identifiers for all buttons that are in the down state, such as <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565ba945d5e233cf7d6240f6b783b36a374ff" title="The primary (left) mouse button. This is typically used for standard clicking, selecting,...">MouseButton.Left</a>, <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565ba92b09c7c48c520c3c55e497875da437c" title="The secondary (right) mouse button. This is typically used for context menus and alternate actions....">MouseButton.Right</a>, <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565bab1ca34f82e83c52b010f86955f264e05" title="The middle mouse button, usually implemented as a clickable scroll wheel. This is often used for spec...">MouseButton.Middle</a>, and additional buttons if supported by the hardware. The collection is empty when no buttons are pressed. </p>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_mouse_1_1_win_forms_mouse_adapter.html#ac9358f4a6b7de2be6cf9b3c844b6219e">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
@@ -203,13 +218,12 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the accumulated scroll wheel delta since the last poll, measured in implementation-defined units. Positive values indicate upward scrolling (scrolling away from the user), while negative values indicate downward scrolling (scrolling toward the user). The magnitude represents the distance or speed of the scroll. This value is typically reset or accumulated between polling intervals. </p>
+
 <p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_mouse_1_1_win_forms_mouse_adapter.html#a2e2efa3580144d6dd66b903e64dac423">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this interface was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/Mouse/<a class="el" href="_i_mouse_adapter_8cs.html">IMouseAdapter.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

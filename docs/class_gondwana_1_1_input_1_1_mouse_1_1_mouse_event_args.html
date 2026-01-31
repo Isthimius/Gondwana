@@ -93,6 +93,9 @@ $(function(){initNavTree('class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_arg
   <div class="headertitle"><div class="title">Gondwana.Input.Mouse.MouseEventArgs Class Reference<span class="mlabels"><span class="mlabel sealed">sealed</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides comprehensive data for mouse events, including cursor position (current and previous), button states with transition information, scroll wheel delta, and keyboard modifier states. This event args class is used with mouse input polling to deliver complete mouse state information to event handlers, enabling sophisticated mouse interaction handling including drag operations, modified clicks, and scroll detection.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Mouse.MouseEventArgs:</div>
 <div class="dyncontent">
@@ -103,20 +106,32 @@ Inheritance diagram for Gondwana.Input.Mouse.MouseEventArgs:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ade73947aa6097281ed1a65d90d3ddffd" id="r_ade73947aa6097281ed1a65d90d3ddffd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade73947aa6097281ed1a65d90d3ddffd">MouseEventArgs</a> (<a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html">MouseEventConfiguration</a> mouseEventConfiguration, <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a> currentKeyboardModifiers, IReadOnlyDictionary&lt; <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565b">MouseButton</a>, <a class="el" href="struct_gondwana_1_1_input_1_1_mouse_1_1_mouse_button_state.html">MouseButtonState</a> &gt; buttonStates, Point previousPosition, Point currentPosition, int scrollDelta)</td></tr>
+<tr class="memdesc:ade73947aa6097281ed1a65d90d3ddffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html" title="Provides comprehensive data for mouse events, including cursor position (current and previous),...">MouseEventArgs</a> class with comprehensive mouse state information including configuration, button states, cursor positions, scroll data, and keyboard modifiers.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:aee4693975a2110b7c573c545cb6ff501" id="r_aee4693975a2110b7c573c545cb6ff501"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html">MouseEventConfiguration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee4693975a2110b7c573c545cb6ff501">MouseEventConfiguration</a><code> [get]</code></td></tr>
+<tr class="memdesc:aee4693975a2110b7c573c545cb6ff501"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the configuration details for the mouse event monitoring, including throttling settings and pause state. This configuration controls how frequently mouse events can be generated and whether event processing is currently active.  <br /></td></tr>
 <tr class="memitem:a83e44ce85155be72c884e180adef47ed" id="r_a83e44ce85155be72c884e180adef47ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83e44ce85155be72c884e180adef47ed">CurrentKeyboardModifiers</a><code> [get]</code></td></tr>
+<tr class="memdesc:a83e44ce85155be72c884e180adef47ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generated. This can be a combination of multiple modifiers when keys like Ctrl+Shift are pressed together with mouse actions. Use the convenience properties <a class="el" href="#ac3457f362b2449ab8e6e54bd17aec962" title="Gets a value indicating whether the Shift modifier key was pressed at the time this mouse event was g...">IsShift</a>, <a class="el" href="#a443b283e1c33c5faeec6f3aca51826b1" title="Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this mouse ev...">IsCtrl</a>, and <a class="el" href="#aae954a3e60cc80d924b99079d65983bd" title="Gets a value indicating whether the Alt modifier key was pressed at the time this mouse event was gen...">IsAlt</a> to check for specific modifiers.  <br /></td></tr>
 <tr class="memitem:ab7c71aab970e6467b1c3962277f896ad" id="r_ab7c71aab970e6467b1c3962277f896ad"><td class="memItemLeft" align="right" valign="top">IReadOnlyDictionary&lt; <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565b">MouseButton</a>, <a class="el" href="struct_gondwana_1_1_input_1_1_mouse_1_1_mouse_button_state.html">MouseButtonState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7c71aab970e6467b1c3962277f896ad">ButtonStates</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab7c71aab970e6467b1c3962277f896ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only dictionary mapping each monitored mouse button to its current state, including whether it is down, was just pressed, or was just released. This provides comprehensive information about all mouse button states and transitions in a single event, enabling handlers to respond to complex multi-button interactions and detect precise press/release moments.  <br /></td></tr>
 <tr class="memitem:a05f27b827cc7c641853f5c657225f0f5" id="r_a05f27b827cc7c641853f5c657225f0f5"><td class="memItemLeft" align="right" valign="top">Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05f27b827cc7c641853f5c657225f0f5">PreviousPosition</a><code> [get]</code></td></tr>
+<tr class="memdesc:a05f27b827cc7c641853f5c657225f0f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the previous position of the mouse cursor before the current polling interval. This position, combined with <a class="el" href="#a3c1de508f8b0959f8fc1aa3bebe29d33" title="Gets the current position of the mouse cursor at the time this event was generated....">CurrentPosition</a>, allows calculation of mouse movement delta, which is useful for implementing drag operations, camera controls, and other motion-based interactions.  <br /></td></tr>
 <tr class="memitem:a3c1de508f8b0959f8fc1aa3bebe29d33" id="r_a3c1de508f8b0959f8fc1aa3bebe29d33"><td class="memItemLeft" align="right" valign="top">Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c1de508f8b0959f8fc1aa3bebe29d33">CurrentPosition</a><code> [get]</code></td></tr>
+<tr class="memdesc:a3c1de508f8b0959f8fc1aa3bebe29d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of the mouse cursor at the time this event was generated. This represents the pixel coordinates where the cursor is located and can be compared with <a class="el" href="#a05f27b827cc7c641853f5c657225f0f5" title="Gets the previous position of the mouse cursor before the current polling interval....">PreviousPosition</a> to determine movement direction and distance.  <br /></td></tr>
 <tr class="memitem:a898666b7766a495694d4a927a53e477b" id="r_a898666b7766a495694d4a927a53e477b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a898666b7766a495694d4a927a53e477b">ScrollDelta</a><code> [get]</code></td></tr>
+<tr class="memdesc:a898666b7766a495694d4a927a53e477b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the accumulated scroll wheel delta since the last poll, measured in implementation-defined units. Positive values indicate upward scrolling (scrolling away from the user), while negative values indicate downward scrolling (scrolling toward the user). The magnitude represents the distance or speed of the scroll. A value of 0 indicates no scrolling occurred.  <br /></td></tr>
 <tr class="memitem:ac3457f362b2449ab8e6e54bd17aec962" id="r_ac3457f362b2449ab8e6e54bd17aec962"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3457f362b2449ab8e6e54bd17aec962">IsShift</a><code> [get]</code></td></tr>
+<tr class="memdesc:ac3457f362b2449ab8e6e54bd17aec962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the Shift modifier key was pressed at the time this mouse event was generated. This is a convenience property that checks if the <a class="el" href="#a83e44ce85155be72c884e180adef47ed" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generate...">CurrentKeyboardModifiers</a> flags include KeyboardModifierState.Shift, commonly used for modified mouse operations like multi-selection or alternate drag modes.  <br /></td></tr>
 <tr class="memitem:a443b283e1c33c5faeec6f3aca51826b1" id="r_a443b283e1c33c5faeec6f3aca51826b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a443b283e1c33c5faeec6f3aca51826b1">IsCtrl</a><code> [get]</code></td></tr>
+<tr class="memdesc:a443b283e1c33c5faeec6f3aca51826b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this mouse event was generated. This is a convenience property that checks if the <a class="el" href="#a83e44ce85155be72c884e180adef47ed" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generate...">CurrentKeyboardModifiers</a> flags include KeyboardModifierState.Ctrl, commonly used for modified mouse operations like Ctrl+Click for opening in new tabs or adding to selections.  <br /></td></tr>
 <tr class="memitem:aae954a3e60cc80d924b99079d65983bd" id="r_aae954a3e60cc80d924b99079d65983bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae954a3e60cc80d924b99079d65983bd">IsAlt</a><code> [get]</code></td></tr>
+<tr class="memdesc:aae954a3e60cc80d924b99079d65983bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the Alt modifier key was pressed at the time this mouse event was generated. This is a convenience property that checks if the <a class="el" href="#a83e44ce85155be72c884e180adef47ed" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generate...">CurrentKeyboardModifiers</a> flags include KeyboardModifierState.Alt, commonly used for alternate mouse operations or special drag modes.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides comprehensive data for mouse events, including cursor position (current and previous), button states with transition information, scroll wheel delta, and keyboard modifier states. This event args class is used with mouse input polling to deliver complete mouse state information to event handlers, enabling sophisticated mouse interaction handling including drag operations, modified clicks, and scroll detection. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ade73947aa6097281ed1a65d90d3ddffd" name="ade73947aa6097281ed1a65d90d3ddffd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ade73947aa6097281ed1a65d90d3ddffd">&#9670;&#160;</a></span>MouseEventArgs()</h2>
 
@@ -156,6 +171,19 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html" title="Provides comprehensive data for mouse events, including cursor position (current and previous),...">MouseEventArgs</a> class with comprehensive mouse state information including configuration, button states, cursor positions, scroll data, and keyboard modifiers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mouseEventConfiguration</td><td>The configuration details for mouse event monitoring, including throttling and pause settings. </td></tr>
+    <tr><td class="paramname">currentKeyboardModifiers</td><td>The state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of the mouse event. This can be a combination of multiple modifiers using bitwise flags. </td></tr>
+    <tr><td class="paramname">buttonStates</td><td>A read-only dictionary mapping each mouse button to its current state, including down state and press/release transitions. This provides complete button state information for the event. </td></tr>
+    <tr><td class="paramname">previousPosition</td><td>The previous position of the mouse cursor before this polling interval, used to calculate movement deltas for drag operations and motion tracking. </td></tr>
+    <tr><td class="paramname">currentPosition</td><td>The current position of the mouse cursor at the time of this event, representing where the cursor is currently located in screen or client coordinates. </td></tr>
+    <tr><td class="paramname">scrollDelta</td><td>The accumulated scroll wheel delta since the last poll. Positive values indicate upward scrolling, negative values indicate downward scrolling, and 0 indicates no scrolling occurred. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -179,6 +207,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a read-only dictionary mapping each monitored mouse button to its current state, including whether it is down, was just pressed, or was just released. This provides comprehensive information about all mouse button states and transitions in a single event, enabling handlers to respond to complex multi-button interactions and detect precise press/release moments. </p>
+
 </div>
 </div>
 <a id="a83e44ce85155be72c884e180adef47ed" name="a83e44ce85155be72c884e180adef47ed"></a>
@@ -200,6 +230,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generated. This can be a combination of multiple modifiers when keys like Ctrl+Shift are pressed together with mouse actions. Use the convenience properties <a class="el" href="#ac3457f362b2449ab8e6e54bd17aec962" title="Gets a value indicating whether the Shift modifier key was pressed at the time this mouse event was g...">IsShift</a>, <a class="el" href="#a443b283e1c33c5faeec6f3aca51826b1" title="Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this mouse ev...">IsCtrl</a>, and <a class="el" href="#aae954a3e60cc80d924b99079d65983bd" title="Gets a value indicating whether the Alt modifier key was pressed at the time this mouse event was gen...">IsAlt</a> to check for specific modifiers. </p>
 
 </div>
 </div>
@@ -223,6 +255,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current position of the mouse cursor at the time this event was generated. This represents the pixel coordinates where the cursor is located and can be compared with <a class="el" href="#a05f27b827cc7c641853f5c657225f0f5" title="Gets the previous position of the mouse cursor before the current polling interval....">PreviousPosition</a> to determine movement direction and distance. </p>
+
 </div>
 </div>
 <a id="aae954a3e60cc80d924b99079d65983bd" name="aae954a3e60cc80d924b99079d65983bd"></a>
@@ -244,6 +278,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets a value indicating whether the Alt modifier key was pressed at the time this mouse event was generated. This is a convenience property that checks if the <a class="el" href="#a83e44ce85155be72c884e180adef47ed" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generate...">CurrentKeyboardModifiers</a> flags include KeyboardModifierState.Alt, commonly used for alternate mouse operations or special drag modes. </p>
 
 </div>
 </div>
@@ -267,6 +303,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this mouse event was generated. This is a convenience property that checks if the <a class="el" href="#a83e44ce85155be72c884e180adef47ed" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generate...">CurrentKeyboardModifiers</a> flags include KeyboardModifierState.Ctrl, commonly used for modified mouse operations like Ctrl+Click for opening in new tabs or adding to selections. </p>
+
 </div>
 </div>
 <a id="ac3457f362b2449ab8e6e54bd17aec962" name="ac3457f362b2449ab8e6e54bd17aec962"></a>
@@ -288,6 +326,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets a value indicating whether the Shift modifier key was pressed at the time this mouse event was generated. This is a convenience property that checks if the <a class="el" href="#a83e44ce85155be72c884e180adef47ed" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this mouse event was generate...">CurrentKeyboardModifiers</a> flags include KeyboardModifierState.Shift, commonly used for modified mouse operations like multi-selection or alternate drag modes. </p>
 
 </div>
 </div>
@@ -311,6 +351,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the configuration details for the mouse event monitoring, including throttling settings and pause state. This configuration controls how frequently mouse events can be generated and whether event processing is currently active. </p>
+
 </div>
 </div>
 <a id="a05f27b827cc7c641853f5c657225f0f5" name="a05f27b827cc7c641853f5c657225f0f5"></a>
@@ -332,6 +374,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the previous position of the mouse cursor before the current polling interval. This position, combined with <a class="el" href="#a3c1de508f8b0959f8fc1aa3bebe29d33" title="Gets the current position of the mouse cursor at the time this event was generated....">CurrentPosition</a>, allows calculation of mouse movement delta, which is useful for implementing drag operations, camera controls, and other motion-based interactions. </p>
 
 </div>
 </div>
@@ -355,11 +399,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the accumulated scroll wheel delta since the last poll, measured in implementation-defined units. Positive values indicate upward scrolling (scrolling away from the user), while negative values indicate downward scrolling (scrolling toward the user). The magnitude represents the distance or speed of the scroll. A value of 0 indicates no scrolling occurred. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/Mouse/<a class="el" href="_mouse_event_args_8cs.html">MouseEventArgs.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

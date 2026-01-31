@@ -101,7 +101,9 @@ Classes</h2></td></tr>
 <tr class="memitem:KeyboardEventPoller" id="r_KeyboardEventPoller"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html">KeyboardEventPoller</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-platform singleton keyboard handler with throttling and manual input state feeding.  <a href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html#details">More...</a><br /></td></tr>
 <tr class="memitem:KeyDownEventArgs" id="r_KeyDownEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html">KeyDownEventArgs</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides data for keyboard key events, including information about the key that was pressed, the action performed (pressed, released, or repeated), and the state of modifier keys at the time of the event. This event args class is used with keyboard input polling to deliver comprehensive keyboard event information to event handlers.  <a href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html#details">More...</a><br /></td></tr>
 <tr class="memitem:KeyEventConfiguration" id="r_KeyEventConfiguration"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html">KeyEventConfiguration</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the configuration for keyboard key events, including key identification and timing controls for event throttling. This configuration is used to control how frequently key events are raised and whether event processing is currently paused for a specific key.  <a href="class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -109,11 +111,13 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#aa747e05d7cceff7dc29e3f1155c77a77aea1e34304a5d8ffa7c9b0ed8ede4ef1a">Released</a>
 , <a class="el" href="#aa747e05d7cceff7dc29e3f1155c77a77a7f7309d5a83099309ac04dcb795ad0ce">Repeated</a>
  }</td></tr>
+<tr class="memdesc:aa747e05d7cceff7dc29e3f1155c77a77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the type of action performed on a keyboard key, indicating whether the key was pressed, released, or is being held down and generating repeated input events. This enumeration is typically used in keyboard event handling to distinguish between different phases of key interaction.  <a href="#aa747e05d7cceff7dc29e3f1155c77a77">More...</a><br /></td></tr>
 <tr class="memitem:a9a26020facee161978f965f4c451a92e" id="r_a9a26020facee161978f965f4c451a92e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a> { <a class="el" href="#a9a26020facee161978f965f4c451a92ea6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
 , <a class="el" href="#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c">Shift</a> = 1
 , <a class="el" href="#a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47">Ctrl</a> = 2
 , <a class="el" href="#a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf">Alt</a> = 4
  }</td></tr>
+<tr class="memdesc:a9a26020facee161978f965f4c451a92e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the state of keyboard modifier keys (Shift, Ctrl, Alt) that can be pressed simultaneously with other keys to modify their behavior. This is a flags enumeration, allowing multiple modifiers to be combined to represent complex modifier combinations (e.g., Ctrl | Shift for Ctrl+Shift).  <a href="#a9a26020facee161978f965f4c451a92e">More...</a><br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
 <a id="aa747e05d7cceff7dc29e3f1155c77a77" name="aa747e05d7cceff7dc29e3f1155c77a77"></a>
@@ -127,10 +131,15 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Represents the type of action performed on a keyboard key, indicating whether the key was pressed, released, or is being held down and generating repeated input events. This enumeration is typically used in keyboard event handling to distinguish between different phases of key interaction. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa747e05d7cceff7dc29e3f1155c77a77ad78a68f6a85421ae121c2cb5b73a1040" name="aa747e05d7cceff7dc29e3f1155c77a77ad78a68f6a85421ae121c2cb5b73a1040"></a>Pressed&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa747e05d7cceff7dc29e3f1155c77a77aea1e34304a5d8ffa7c9b0ed8ede4ef1a" name="aa747e05d7cceff7dc29e3f1155c77a77aea1e34304a5d8ffa7c9b0ed8ede4ef1a"></a>Released&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa747e05d7cceff7dc29e3f1155c77a77a7f7309d5a83099309ac04dcb795ad0ce" name="aa747e05d7cceff7dc29e3f1155c77a77a7f7309d5a83099309ac04dcb795ad0ce"></a>Repeated&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa747e05d7cceff7dc29e3f1155c77a77ad78a68f6a85421ae121c2cb5b73a1040" name="aa747e05d7cceff7dc29e3f1155c77a77ad78a68f6a85421ae121c2cb5b73a1040"></a>Pressed&#160;</td><td class="fielddoc"><p>The key was initially pressed down. This action occurs once when the user first pushes the key, before any repeat events are generated. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa747e05d7cceff7dc29e3f1155c77a77aea1e34304a5d8ffa7c9b0ed8ede4ef1a" name="aa747e05d7cceff7dc29e3f1155c77a77aea1e34304a5d8ffa7c9b0ed8ede4ef1a"></a>Released&#160;</td><td class="fielddoc"><p>The key was released after being pressed. This action occurs once when the user lifts their finger from the key, marking the end of the key press interaction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa747e05d7cceff7dc29e3f1155c77a77a7f7309d5a83099309ac04dcb795ad0ce" name="aa747e05d7cceff7dc29e3f1155c77a77a7f7309d5a83099309ac04dcb795ad0ce"></a>Repeated&#160;</td><td class="fielddoc"><p>The key is being held down and is generating repeated input events. This action occurs continuously at a system-defined or application-defined rate while the user keeps the key pressed, typically used to implement auto-repeat behavior for text input or held actions. </p>
+</td></tr>
 </table>
 
 </div>
@@ -146,11 +155,17 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Represents the state of keyboard modifier keys (Shift, Ctrl, Alt) that can be pressed simultaneously with other keys to modify their behavior. This is a flags enumeration, allowing multiple modifiers to be combined to represent complex modifier combinations (e.g., Ctrl | Shift for Ctrl+Shift). </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92ea6adf97f83acf6453d4a6a4b1070f3754" name="a9a26020facee161978f965f4c451a92ea6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c" name="a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c"></a>Shift&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47" name="a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47"></a>Ctrl&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf" name="a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf"></a>Alt&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92ea6adf97f83acf6453d4a6a4b1070f3754" name="a9a26020facee161978f965f4c451a92ea6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>No modifier keys are currently pressed. This represents the default keyboard state when only regular keys (without modifiers) are being pressed or held. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c" name="a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c"></a>Shift&#160;</td><td class="fielddoc"><p>The Shift modifier key is currently pressed. This typically modifies character input to produce uppercase letters and alternate symbols, and can also modify the behavior of shortcut keys. Can be combined with <a class="el" href="#a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47" title="The Control (Ctrl) modifier key is currently pressed. This is commonly used for keyboard shortcuts an...">Ctrl</a> and/or <a class="el" href="#a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf" title="The Alt (Alternate) modifier key is currently pressed. This is used for alternate keyboard shortcuts,...">Alt</a> for multi-modifier shortcuts. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47" name="a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47"></a>Ctrl&#160;</td><td class="fielddoc"><p>The Control (Ctrl) modifier key is currently pressed. This is commonly used for keyboard shortcuts and commands (e.g., Ctrl+C for copy, Ctrl+V for paste). Can be combined with <a class="el" href="#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c" title="The Shift modifier key is currently pressed. This typically modifies character input to produce upper...">Shift</a> and/or <a class="el" href="#a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf" title="The Alt (Alternate) modifier key is currently pressed. This is used for alternate keyboard shortcuts,...">Alt</a> for multi-modifier shortcuts. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf" name="a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf"></a>Alt&#160;</td><td class="fielddoc"><p>The Alt (Alternate) modifier key is currently pressed. This is used for alternate keyboard shortcuts, menu access keys, and special character input. Can be combined with <a class="el" href="#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c" title="The Shift modifier key is currently pressed. This typically modifies character input to produce upper...">Shift</a> and/or <a class="el" href="#a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47" title="The Control (Ctrl) modifier key is currently pressed. This is commonly used for keyboard shortcuts an...">Ctrl</a> for multi-modifier shortcuts. </p>
+</td></tr>
 </table>
 
 </div>

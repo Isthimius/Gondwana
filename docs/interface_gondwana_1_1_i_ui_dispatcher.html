@@ -93,26 +93,36 @@ $(function(){initNavTree('interface_gondwana_1_1_i_ui_dispatcher.html','','inter
   <div class="headertitle"><div class="title">Gondwana.IUiDispatcher Interface Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Defines a contract for dispatching actions to the UI thread in a thread-safe manner. Implementations of this interface provide mechanisms for posting or sending work items from any thread to be executed on the application's main UI thread, ensuring thread-safe access to UI components and controls.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.IUiDispatcher:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="interface_gondwana_1_1_i_ui_dispatcher.png" usemap="#Gondwana_2EIUiDispatcher_map" alt=""/>
   <map id="Gondwana_2EIUiDispatcher_map" name="Gondwana_2EIUiDispatcher_map">
-<area href="class_gondwana_1_1_ui_dispatcher.html" alt="Gondwana.UiDispatcher" shape="rect" coords="0,56,151,80"/>
+<area href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ..." alt="Gondwana.UiDispatcher" shape="rect" coords="0,56,151,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abf90e59f92882784bb5f5c0ad03bb560" id="r_abf90e59f92882784bb5f5c0ad03bb560"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf90e59f92882784bb5f5c0ad03bb560">Post</a> (Action action)</td></tr>
+<tr class="memdesc:abf90e59f92882784bb5f5c0ad03bb560"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronously posts an action to be executed on the UI thread. This method queues the action and returns immediately without waiting for execution to complete.  <br /></td></tr>
 <tr class="memitem:a269f327aa5290839fabe0270962971f5" id="r_a269f327aa5290839fabe0270962971f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a269f327aa5290839fabe0270962971f5">Send</a> (Action action)</td></tr>
+<tr class="memdesc:a269f327aa5290839fabe0270962971f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronously sends an action to be executed on the UI thread, blocking the calling thread until the action completes. Use with caution to avoid deadlocks.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a89b32e25f56b12c8e8112b7703674669" id="r_a89b32e25f56b12c8e8112b7703674669"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89b32e25f56b12c8e8112b7703674669">IsOnUIThread</a><code> [get]</code></td></tr>
+<tr class="memdesc:a89b32e25f56b12c8e8112b7703674669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the current thread is the UI thread to which this dispatcher is bound.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Defines a contract for dispatching actions to the UI thread in a thread-safe manner. Implementations of this interface provide mechanisms for posting or sending work items from any thread to be executed on the application's main UI thread, ensuring thread-safe access to UI components and controls. </p>
+<p>The UI dispatcher pattern is essential for cross-thread communication in applications with a dedicated UI thread. It allows background threads (such as the engine's update loop) to safely schedule UI updates without causing threading violations. </p>
+<p>Most operations should use <a class="el" href="#abf90e59f92882784bb5f5c0ad03bb560" title="Asynchronously posts an action to be executed on the UI thread. This method queues the action and ret...">Post</a> (asynchronous) rather than <a class="el" href="#a269f327aa5290839fabe0270962971f5" title="Synchronously sends an action to be executed on the UI thread, blocking the calling thread until the ...">Send</a> (synchronous) to avoid potential deadlocks and improve responsiveness. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="abf90e59f92882784bb5f5c0ad03bb560" name="abf90e59f92882784bb5f5c0ad03bb560"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abf90e59f92882784bb5f5c0ad03bb560">&#9670;&#160;</a></span>Post()</h2>
 
@@ -127,6 +137,17 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Asynchronously posts an action to be executed on the UI thread. This method queues the action and returns immediately without waiting for execution to complete. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>The action to execute on the UI thread. The action will be queued and executed asynchronously on the UI thread's message loop. </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This is the preferred method for dispatching UI operations from background threads. It is non-blocking and avoids potential deadlocks that can occur with synchronous dispatch. </p>
+<p>The action is queued to the UI thread's message pump and will be executed when the UI thread processes it. There is no guarantee about the exact timing of execution, and the calling thread continues immediately without waiting. </p>
+<p>This method is thread-safe and can be called from any thread. </p>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_ui_dispatcher.html#a69e897d476a04ff6688a0ba931420443">Gondwana.UiDispatcher</a>.</p>
 
@@ -146,6 +167,18 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Synchronously sends an action to be executed on the UI thread, blocking the calling thread until the action completes. Use with caution to avoid deadlocks. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>The action to execute on the UI thread. The calling thread will block until this action completes execution on the UI thread. </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This method provides synchronous dispatch to the UI thread, blocking the caller until the action has been executed and completed. This can be useful when the calling code needs to ensure UI updates have finished before proceeding, or when a return value from the UI operation is required. </p>
+<p><b>Warning:</b> Using <a class="el" href="#a269f327aa5290839fabe0270962971f5" title="Synchronously sends an action to be executed on the UI thread, blocking the calling thread until the ...">Send</a> can lead to deadlocks if the UI thread is waiting for the calling thread, or if there are circular dependencies. It should be avoided on web platforms and in single-threaded environments where blocking the caller would also block the UI thread. </p>
+<p>In most cases, prefer using <a class="el" href="#abf90e59f92882784bb5f5c0ad03bb560" title="Asynchronously posts an action to be executed on the UI thread. This method queues the action and ret...">Post</a> for asynchronous, non-blocking dispatch. </p>
+<p>This method is thread-safe and can be called from any thread, but exercise caution to avoid deadlock scenarios. </p>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_ui_dispatcher.html#ae0d2c0ef8168776950910912909715e5">Gondwana.UiDispatcher</a>.</p>
 
@@ -172,13 +205,14 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a value indicating whether the current thread is the UI thread to which this dispatcher is bound. </p>
+<p><code>true</code> if the current thread is the UI thread; otherwise, <code>false</code>. </p>
+<p>This property can be used to optimize action execution by running UI updates inline when already on the UI thread, avoiding unnecessary marshalling overhead. It also allows code to determine if cross-thread marshalling is required before accessing UI components. </p>
+
 <p>Implemented in <a class="el" href="class_gondwana_1_1_ui_dispatcher.html#a998a7eb1a8418281070150f020f1c0d8">Gondwana.UiDispatcher</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this interface was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/<a class="el" href="_i_ui_dispatcher_8cs.html">IUiDispatcher.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

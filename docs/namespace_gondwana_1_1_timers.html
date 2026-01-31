@@ -106,9 +106,11 @@ Enumerations</h2></td></tr>
 <tr class="memitem:ae9d007991e00874a718658b6a05bd255" id="r_ae9d007991e00874a718658b6a05bd255"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9d007991e00874a718658b6a05bd255">TimerCycles</a> { <a class="el" href="#ae9d007991e00874a718658b6a05bd255ae1a9dc9f23534e63de9df0d540ac1611">Once</a>
 , <a class="el" href="#ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a">Repeating</a>
  }</td></tr>
+<tr class="memdesc:ae9d007991e00874a718658b6a05bd255"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies the cycle behavior of a Timer, determining whether it executes once or repeatedly at its configured interval.  <a href="#ae9d007991e00874a718658b6a05bd255">More...</a><br /></td></tr>
 <tr class="memitem:a9719fea9a031c57c60c092f3ac64af41" id="r_a9719fea9a031c57c60c092f3ac64af41"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9719fea9a031c57c60c092f3ac64af41">TimerType</a> { <a class="el" href="#a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead">PreCycle</a>
 , <a class="el" href="#a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39">PostCycle</a>
  }</td></tr>
+<tr class="memdesc:a9719fea9a031c57c60c092f3ac64af41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies when a Timer should have its Timer.Tick event raised relative to the engine's main update and render cycle. This controls the execution timing of timer events within each engine cycle.  <a href="#a9719fea9a031c57c60c092f3ac64af41">More...</a><br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
 <a id="ae9d007991e00874a718658b6a05bd255" name="ae9d007991e00874a718658b6a05bd255"></a>
@@ -122,9 +124,14 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Specifies the cycle behavior of a <a class="el" href="class_gondwana_1_1_timers_1_1_timer.html" title="Represents a high-resolution timer that can trigger events at specified intervals and supports variou...">Timer</a>, determining whether it executes once or repeatedly at its configured interval. </p>
+<p>This enumeration is used when creating timers to control their lifecycle behavior. A <a class="el" href="#ae9d007991e00874a718658b6a05bd255ae1a9dc9f23534e63de9df0d540ac1611" title="The timer executes only once. After the first Timer.Tick event is raised, the timer is automatically ...">Once</a> timer will automatically be removed after its first execution, while a <a class="el" href="#ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a" title="The timer executes repeatedly at its configured interval. The Timer.Tick event is raised each time th...">Repeating</a> timer will continue to raise events until explicitly removed or disposed. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ae9d007991e00874a718658b6a05bd255ae1a9dc9f23534e63de9df0d540ac1611" name="ae9d007991e00874a718658b6a05bd255ae1a9dc9f23534e63de9df0d540ac1611"></a>Once&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a" name="ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a"></a>Repeating&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ae9d007991e00874a718658b6a05bd255ae1a9dc9f23534e63de9df0d540ac1611" name="ae9d007991e00874a718658b6a05bd255ae1a9dc9f23534e63de9df0d540ac1611"></a>Once&#160;</td><td class="fielddoc"><p>The timer executes only once. After the first Timer.Tick event is raised, the timer is automatically disposed and removed from the active timer collection. This is useful for delayed one-time actions or deferred execution scenarios. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a" name="ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a"></a>Repeating&#160;</td><td class="fielddoc"><p>The timer executes repeatedly at its configured interval. The Timer.Tick event is raised each time the interval elapses, and the timer continues executing until it is explicitly removed via Timer.Remove or Timer.Dispose. This is useful for periodic updates, polling operations, or recurring game logic. </p>
+</td></tr>
 </table>
 
 </div>
@@ -140,9 +147,41 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Specifies when a <a class="el" href="class_gondwana_1_1_timers_1_1_timer.html" title="Represents a high-resolution timer that can trigger events at specified intervals and supports variou...">Timer</a> should have its Timer.Tick event raised relative to the engine's main update and render cycle. This controls the execution timing of timer events within each engine cycle. </p>
+<p>The engine's cycle is divided into two main phases: background tasks (which include input polling, animation updates, and movement processing) and foreground tasks (which include rendering and presentation). <a class="el" href="namespace_gondwana_1_1_timers.html">Timers</a> can be configured to execute during either phase. </p>
+<p><a class="el" href="#a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead" title="The timer&#39;s Timer.Tick event is raised during the background task phase, before the engine performs i...">PreCycle</a> timers are raised during the background task phase before any rendering occurs, making them suitable for game logic, state updates, and input processing. <a class="el" href="#a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39" title="The timer&#39;s Timer.Tick event is raised after the foreground rendering and presentation phase complete...">PostCycle</a> timers are raised after the foreground render phase completes, making them suitable for post-render operations, diagnostics, and deferred cleanup tasks. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead" name="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead"></a>PreCycle&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39" name="a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39"></a>PostCycle&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead" name="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead"></a>PreCycle&#160;</td><td class="fielddoc"><p>The timer's Timer.Tick event is raised during the background task phase, before the engine performs its foreground rendering operations. </p>
+<p>PreCycle timers execute during the engine's background task phase, which includes: </p>
+<ul>
+<li>
+<a class="el" href="namespace_gondwana_1_1_input.html">Input</a> polling (keyboard, mouse, gamepad) </li>
+<li>
+Tile animation cycling </li>
+<li>
+Sprite movement processing </li>
+<li>
+<a class="el" href="namespace_gondwana_1_1_collision.html">Collision</a> detection and resolution </li>
+<li>
+Camera updates </li>
+</ul>
+<p>This timing is appropriate for game logic updates, AI processing, state changes, and any operations that need to complete before the current frame is rendered. PreCycle timers run at the engine's full update rate, which may be higher than the render frame rate depending on configuration. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39" name="a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39"></a>PostCycle&#160;</td><td class="fielddoc"><p>The timer's Timer.Tick event is raised after the foreground rendering and presentation phase completes. </p>
+<p>PostCycle timers execute after the engine has completed all foreground tasks, including: </p>
+<ul>
+<li>
+Direct drawing updates </li>
+<li>
+Render surface backbuffer rendering </li>
+<li>
+Backbuffer presentation to display adapters </li>
+<li>
+Gamepad state updates </li>
+</ul>
+<p>This timing is appropriate for post-render operations such as performance monitoring, screenshot capture, frame statistics collection, deferred resource cleanup, or any operations that should occur after a complete frame has been rendered and presented. PostCycle timers run at the effective render frame rate (FPS), which may be throttled by the engine's target FPS setting. </p>
+</td></tr>
 </table>
 
 </div>

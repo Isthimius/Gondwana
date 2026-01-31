@@ -93,10 +93,14 @@ $(function(){initNavTree('struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stic
   <div class="headertitle"><div class="title">Gondwana.Input.Gamepad.GamepadStickState Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents the state of an analog stick on a gamepad, including both normalized floating-point values for convenient use in game logic and raw integer values from the underlying input system. This immutable struct provides methods for deadzone processing, direction detection, and magnitude calculation.  
+ <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad07db2c89f236e32eb9f4d84292b6bb6" id="r_ad07db2c89f236e32eb9f4d84292b6bb6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad07db2c89f236e32eb9f4d84292b6bb6">GamepadStickState</a> (float x, float y, int rawX=0, int rawY=0)</td></tr>
+<tr class="memdesc:ad07db2c89f236e32eb9f4d84292b6bb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> struct with the specified normalized and optional raw values.  <br /></td></tr>
 <tr class="memitem:a4b457c1f841d41a2d2794f256492b4bd" id="r_a4b457c1f841d41a2d2794f256492b4bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b457c1f841d41a2d2794f256492b4bd">IsEngaged</a> (float threshold=0.15f)</td></tr>
 <tr class="memdesc:a4b457c1f841d41a2d2794f256492b4bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the stick is pushed beyond the threshold.  <br /></td></tr>
 <tr class="memitem:af2bbee868a664b23cbc867eb638aa49b" id="r_af2bbee868a664b23cbc867eb638aa49b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92">StickDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2bbee868a664b23cbc867eb638aa49b">Direction</a> (float threshold=0.15f)</td></tr>
@@ -104,18 +108,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a50542303651732ef842febeae7fae56b" id="r_a50542303651732ef842febeae7fae56b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50542303651732ef842febeae7fae56b">WithDeadzone</a> (float threshold=0.15f)</td></tr>
 <tr class="memdesc:a50542303651732ef842febeae7fae56b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new stick state with a deadzone applied.  <br /></td></tr>
 <tr class="memitem:adb42fd74f6ab23ba4b17e8d3a5ff8219" id="r_adb42fd74f6ab23ba4b17e8d3a5ff8219"><td class="memItemLeft" align="right" valign="top">override string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb42fd74f6ab23ba4b17e8d3a5ff8219">ToString</a> ()</td></tr>
+<tr class="memdesc:adb42fd74f6ab23ba4b17e8d3a5ff8219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string representation of the normalized stick position showing the X and Y values formatted to two decimal places in the format "(X, Y)".  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aa4e3f8a26e2c385e5289c54f84e65c45" id="r_aa4e3f8a26e2c385e5289c54f84e65c45"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa4e3f8a26e2c385e5289c54f84e65c45">FromRaw16</a> (int rawX, int rawY)</td></tr>
-<tr class="memdesc:aa4e3f8a26e2c385e5289c54f84e65c45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a> instance from raw 16-bit signed integer values.  <br /></td></tr>
+<tr class="memdesc:aa4e3f8a26e2c385e5289c54f84e65c45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> instance from raw 16-bit signed integer values.  <br /></td></tr>
 <tr class="memitem:a1488e5b0b47cf725791f9c23b4270e99" id="r_a1488e5b0b47cf725791f9c23b4270e99"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1488e5b0b47cf725791f9c23b4270e99">FromRawUnsigned16</a> (ushort rawX, ushort rawY)</td></tr>
-<tr class="memdesc:a1488e5b0b47cf725791f9c23b4270e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a> instance from raw 16-bit unsigned integer values.  <br /></td></tr>
+<tr class="memdesc:a1488e5b0b47cf725791f9c23b4270e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> instance from raw 16-bit unsigned integer values.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a27f54ed07aa86d162f50dfdfc3bb0703" id="r_a27f54ed07aa86d162f50dfdfc3bb0703"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27f54ed07aa86d162f50dfdfc3bb0703">X</a><code> [get]</code></td></tr>
+<tr class="memdesc:a27f54ed07aa86d162f50dfdfc3bb0703"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the normalized horizontal position of the analog stick in the range [-1, 1], where -1 represents full left, 0 represents center, and 1 represents full right.  <br /></td></tr>
 <tr class="memitem:ac2ff3dcc26713beaa1f06d64668ce81f" id="r_ac2ff3dcc26713beaa1f06d64668ce81f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2ff3dcc26713beaa1f06d64668ce81f">Y</a><code> [get]</code></td></tr>
+<tr class="memdesc:ac2ff3dcc26713beaa1f06d64668ce81f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the normalized vertical position of the analog stick in the range [-1, 1], where -1 represents full down, 0 represents center, and 1 represents full up.  <br /></td></tr>
 <tr class="memitem:afb2576c804a383349c1d751d68ea1958" id="r_afb2576c804a383349c1d751d68ea1958"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb2576c804a383349c1d751d68ea1958">RawX</a><code> [get]</code></td></tr>
 <tr class="memdesc:afb2576c804a383349c1d751d68ea1958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw horizontal value before normalization (e.g., from XInput or SDL2)  <br /></td></tr>
 <tr class="memitem:a67ccecc4db48e94c9d0d18d5c0425016" id="r_a67ccecc4db48e94c9d0d18d5c0425016"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67ccecc4db48e94c9d0d18d5c0425016">RawY</a><code> [get]</code></td></tr>
@@ -125,7 +132,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a21788ee6c99fc20a99d3fda3e507ec19" id="r_a21788ee6c99fc20a99d3fda3e507ec19"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21788ee6c99fc20a99d3fda3e507ec19">Angle</a><code> [get]</code></td></tr>
 <tr class="memdesc:a21788ee6c99fc20a99d3fda3e507ec19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the angle (in radians) relative to (1, 0).  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents the state of an analog stick on a gamepad, including both normalized floating-point values for convenient use in game logic and raw integer values from the underlying input system. This immutable struct provides methods for deadzone processing, direction detection, and magnitude calculation. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad07db2c89f236e32eb9f4d84292b6bb6" name="ad07db2c89f236e32eb9f4d84292b6bb6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad07db2c89f236e32eb9f4d84292b6bb6">&#9670;&#160;</a></span>GamepadStickState()</h2>
 
@@ -154,6 +163,17 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new instance of the <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> struct with the specified normalized and optional raw values. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The normalized horizontal position in the range [-1, 1], where -1 is full left, 0 is center, and 1 is full right. </td></tr>
+    <tr><td class="paramname">y</td><td>The normalized vertical position in the range [-1, 1], where -1 is full down, 0 is center, and 1 is full up. </td></tr>
+    <tr><td class="paramname">rawX</td><td>The raw horizontal value from the underlying input system. Default is 0. </td></tr>
+    <tr><td class="paramname">rawY</td><td>The raw vertical value from the underlying input system. Default is 0. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -204,7 +224,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a> instance from raw 16-bit signed integer values. </p>
+<p>Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> instance from raw 16-bit signed integer values. </p>
 <p>The method normalizes the raw input values to a floating-point range of [-1, 1] to represent the stick's position, while preserving the original raw values for reference.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -213,7 +233,7 @@ Properties</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a> representing the normalized stick position, with X and Y values clamped to the range [-1, 1], and the original raw values.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> representing the normalized stick position, with X and Y values clamped to the range [-1, 1], and the original raw values.</dd></dl>
 
 </div>
 </div>
@@ -244,7 +264,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a> instance from raw 16-bit unsigned integer values. </p>
+<p>Creates a <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> instance from raw 16-bit unsigned integer values. </p>
 <p>The raw input values are normalized to the range [-1, 1] based on the assumption that the midpoint (32768) represents the neutral position, and the range extends from 0 to 65535.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -253,7 +273,7 @@ Properties</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a> instance with normalized X and Y values in the range [-1, 1], along with the original raw input values.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> instance with normalized X and Y values in the range [-1, 1], along with the original raw input values.</dd></dl>
 
 </div>
 </div>
@@ -290,6 +310,9 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a string representation of the normalized stick position showing the X and Y values formatted to two decimal places in the format "(X, Y)". </p>
+<dl class="section return"><dt>Returns</dt><dd>A string in the format "(X, Y)" where X and Y are formatted to two decimal places.</dd></dl>
 
 </div>
 </div>
@@ -429,6 +452,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the normalized horizontal position of the analog stick in the range [-1, 1], where -1 represents full left, 0 represents center, and 1 represents full right. </p>
+
 </div>
 </div>
 <a id="ac2ff3dcc26713beaa1f06d64668ce81f" name="ac2ff3dcc26713beaa1f06d64668ce81f"></a>
@@ -451,11 +476,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the normalized vertical position of the analog stick in the range [-1, 1], where -1 represents full down, 0 represents center, and 1 represents full up. </p>
+
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/Gamepad/<a class="el" href="_gamepad_stick_state_8cs.html">GamepadStickState.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

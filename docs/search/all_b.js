@@ -1,8 +1,12 @@
 var searchData=
 [
-  ['jitterx_0',['JitterX',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a28ba373cdc2f4fd0eb22ed8062ecbc9a',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
-  ['jittery_1',['JitterY',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#ae2855cb3bf53237456a7571d3ee8ea93',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
-  ['jsonserializersettings_2',['JsonSerializerSettings',['../class_gondwana_1_1_engine_state.html#a2864134b663df76ec41d30203223b446',1,'Gondwana::EngineState']]],
-  ['justpressed_3',['JustPressed',['../struct_gondwana_1_1_input_1_1_mouse_1_1_mouse_button_state.html#a3444c447cb098220cfcb77904cf1cdf1',1,'Gondwana::Input::Mouse::MouseButtonState']]],
-  ['justreleased_4',['JustReleased',['../struct_gondwana_1_1_input_1_1_mouse_1_1_mouse_button_state.html#ae938c31a8f18ded729b57529d7f205de',1,'Gondwana::Input::Mouse::MouseButtonState']]]
+  ['key_0',['Key',['../class_gondwana_1_1_audio_1_1_audio_resource.html#a0a14358601f4af15b55d5d5c4aad4d42',1,'Gondwana.Audio.AudioResource.Key'],['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html#a54ce9ac94ffa80be23f48bee6e3a5176',1,'Gondwana.Input.Keyboard.KeyEventConfiguration.Key']]],
+  ['key_20design_20principles_1',['🧭 Key Design Principles',['../X:/github/isthimius/Gondwana/README.md#autotoc_md10',1,'']]],
+  ['keyaction_2',['KeyAction',['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html#aeacbe0f1e54a9dc8673dbf795277901e',1,'Gondwana.Input.Keyboard.KeyDownEventArgs.KeyAction'],['../namespace_gondwana_1_1_input_1_1_keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77',1,'Gondwana.Input.Keyboard.KeyAction']]],
+  ['keyboardeventpoller_3',['KeyboardEventPoller',['../class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html',1,'Gondwana.Input.Keyboard.KeyboardEventPoller'],['../class_gondwana_1_1_engine.html#ad4d8bba8a42dcfe160378ab32924605e',1,'Gondwana.Engine.KeyboardEventPoller']]],
+  ['keyboardmodifierstate_4',['KeyboardModifierState',['../namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e',1,'Gondwana::Input::Keyboard']]],
+  ['keyconfig_5',['KeyConfig',['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html#ab602259867bce4e452fd3fa18b813a92',1,'Gondwana::Input::Keyboard::KeyDownEventArgs']]],
+  ['keydown_6',['KeyDown',['../class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html#a93c0de7b15a700fb8cd2fceed43197ed',1,'Gondwana::Input::Keyboard::KeyboardEventPoller']]],
+  ['keydowneventargs_7',['KeyDownEventArgs',['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html',1,'Gondwana.Input.Keyboard.KeyDownEventArgs'],['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html#a20128ffccf8cc883e77b1cd0dbf6c6d3',1,'Gondwana.Input.Keyboard.KeyDownEventArgs.KeyDownEventArgs()']]],
+  ['keyeventconfiguration_8',['KeyEventConfiguration',['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html',1,'Gondwana.Input.Keyboard.KeyEventConfiguration'],['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_event_configuration.html#a9f029a31bc82e6052a0b012356b1b26d',1,'Gondwana.Input.Keyboard.KeyEventConfiguration.KeyEventConfiguration()']]]
 ];

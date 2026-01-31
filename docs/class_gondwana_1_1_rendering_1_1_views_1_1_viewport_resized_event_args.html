@@ -93,18 +93,27 @@ $(function(){initNavTree('class_gondwana_1_1_rendering_1_1_views_1_1_viewport_re
   <div class="headertitle"><div class="title">Gondwana.Rendering.Views.ViewportResizedEventArgs Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides data for the <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html#a4386f3d057772b034e426db46cb8c2ea" title="Fired whenever TargetRectPx changes (viewport resized or moved). Provides the Viewport instance and t...">Viewport.TargetRectChanged</a> event, which is raised when a viewport's target rectangle is resized or repositioned on the render surface.  
+ <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a96b5df67fb83ad9174209a468af8c8c4" id="r_a96b5df67fb83ad9174209a468af8c8c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96b5df67fb83ad9174209a468af8c8c4">ViewportResizedEventArgs</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html">Viewport</a> viewport, Rectangle oldRect, Rectangle newRect)</td></tr>
+<tr class="memdesc:a96b5df67fb83ad9174209a468af8c8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport_resized_event_args.html" title="Provides data for the Viewport.TargetRectChanged event, which is raised when a viewport&#39;s target rect...">ViewportResizedEventArgs</a> class with the specified viewport and rectangle values.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ade5b28cf0ed51710a7c5a37a2aebe41e" id="r_ade5b28cf0ed51710a7c5a37a2aebe41e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html">Viewport</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade5b28cf0ed51710a7c5a37a2aebe41e">Viewport</a><code> [get]</code></td></tr>
+<tr class="memdesc:ade5b28cf0ed51710a7c5a37a2aebe41e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the viewport instance that was resized or repositioned.  <br /></td></tr>
 <tr class="memitem:a664a1e306048d8c3241788e0aa29a81b" id="r_a664a1e306048d8c3241788e0aa29a81b"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a664a1e306048d8c3241788e0aa29a81b">OldRect</a><code> [get]</code></td></tr>
+<tr class="memdesc:a664a1e306048d8c3241788e0aa29a81b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the previous target rectangle before the resize or reposition operation.  <br /></td></tr>
 <tr class="memitem:ae61d576e8710d80bb54e03ab5411c311" id="r_ae61d576e8710d80bb54e03ab5411c311"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae61d576e8710d80bb54e03ab5411c311">NewRect</a><code> [get]</code></td></tr>
+<tr class="memdesc:ae61d576e8710d80bb54e03ab5411c311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the new target rectangle after the resize or reposition operation.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides data for the <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html#a4386f3d057772b034e426db46cb8c2ea" title="Fired whenever TargetRectPx changes (viewport resized or moved). Provides the Viewport instance and t...">Viewport.TargetRectChanged</a> event, which is raised when a viewport's target rectangle is resized or repositioned on the render surface. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a96b5df67fb83ad9174209a468af8c8c4" name="a96b5df67fb83ad9174209a468af8c8c4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a96b5df67fb83ad9174209a468af8c8c4">&#9670;&#160;</a></span>ViewportResizedEventArgs()</h2>
 
@@ -129,6 +138,16 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport_resized_event_args.html" title="Provides data for the Viewport.TargetRectChanged event, which is raised when a viewport&#39;s target rect...">ViewportResizedEventArgs</a> class with the specified viewport and rectangle values. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewport</td><td>The viewport that was resized or repositioned.</td></tr>
+    <tr><td class="paramname">oldRect</td><td>The target rectangle before the change.</td></tr>
+    <tr><td class="paramname">newRect</td><td>The target rectangle after the change.</td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -152,6 +171,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the new target rectangle after the resize or reposition operation. </p>
+<p>A Rectangle representing the viewport's current screen-space bounds after the change occurred. </p>
+
 </div>
 </div>
 <a id="a664a1e306048d8c3241788e0aa29a81b" name="a664a1e306048d8c3241788e0aa29a81b"></a>
@@ -173,6 +195,9 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the previous target rectangle before the resize or reposition operation. </p>
+<p>A Rectangle representing the viewport's screen-space bounds before the change occurred. </p>
 
 </div>
 </div>
@@ -196,11 +221,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the viewport instance that was resized or repositioned. </p>
+<p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html" title="A rectangular window on the render target with its own zoom and placement. Viewport never moves the w...">Views.Viewport</a> that raised the event. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/Views/<a class="el" href="_viewport_resized_event_args_8cs.html">ViewportResizedEventArgs.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

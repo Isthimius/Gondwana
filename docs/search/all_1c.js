@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['✨_20features_0',['✨ Features',['../X:/github/isthimius/Gondwana/README.md#autotoc_md4',1,'']]]
+  ['🎯_20who_20gondwana_20is_20for_0',['🎯 Who Gondwana Is For',['../X:/github/isthimius/Gondwana/README.md#autotoc_md2',1,'']]]
 ];

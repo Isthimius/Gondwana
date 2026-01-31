@@ -94,7 +94,7 @@ $(function(){initNavTree('class_gondwana_1_1_rendering_1_1_views_1_1_camera.html
 </div><!--header-->
 <div class="contents">
 
-<p>Represents a world-space camera for a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a>. The camera tracks a world-space upper-left position in pixels and is used by <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> to determine which part of the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a> is visible. It supports snapping, smooth follow, dead zones, and clamping to world bounds.  
+<p>Represents a world-space camera for a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a>. The camera tracks a world-space upper-left position in pixels and is used by <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> to determine which part of the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> is visible. It supports snapping, smooth follow, dead zones, and clamping to world bounds.  
  <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -104,7 +104,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7ae2188de1edff562ece539033cb75dc" id="r_a7ae2188de1edff562ece539033cb75dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ae2188de1edff562ece539033cb75dc">CenterOn</a> (PointF worldCenterPx)</td></tr>
 <tr class="memdesc:a7ae2188de1edff562ece539033cb75dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly repositions the camera so that the given world-space point appears at the center of the view. Uses the current visible world size to compute the appropriate camera upper-left position.  <br /></td></tr>
 <tr class="memitem:a763032a020e2f7d813a0b003be7b7563" id="r_a763032a020e2f7d813a0b003be7b7563"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a763032a020e2f7d813a0b003be7b7563">CenterOnGrid</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, int col, int row)</td></tr>
-<tr class="memdesc:a763032a020e2f7d813a0b003be7b7563"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly centers the camera on the specified tile in the given <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>. The tile's visual center is placed at the center of the view.  <br /></td></tr>
+<tr class="memdesc:a763032a020e2f7d813a0b003be7b7563"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly centers the camera on the specified tile in the given <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. The tile's visual center is placed at the center of the view.  <br /></td></tr>
 <tr class="memitem:a84585df672a7f457dec68523f6176b8b" id="r_a84585df672a7f457dec68523f6176b8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84585df672a7f457dec68523f6176b8b">PanCenterTo</a> (PointF worldCenterPx, float speed)</td></tr>
 <tr class="memdesc:a84585df672a7f457dec68523f6176b8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly pans the camera so that the given world-space point ends up at the center of the visible view, using the given follow speed.  <br /></td></tr>
 <tr class="memitem:a4ff77567709299bc35c86bb803a3c2c2" id="r_a4ff77567709299bc35c86bb803a3c2c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ff77567709299bc35c86bb803a3c2c2">AnimateCenterOnGrid</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, int col, int row, float speed)</td></tr>
@@ -147,7 +147,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:a44856449f475bd2c38c8910206eaa23a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls how quickly the camera moves toward its follow target when smooth follow is enabled. Interpreted as a lerp factor per second: higher values feel snappier, lower values feel more floaty.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Represents a world-space camera for a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a>. The camera tracks a world-space upper-left position in pixels and is used by <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> to determine which part of the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a> is visible. It supports snapping, smooth follow, dead zones, and clamping to world bounds. </p>
+<div class="textblock"><p>Represents a world-space camera for a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a>. The camera tracks a world-space upper-left position in pixels and is used by <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> to determine which part of the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> is visible. It supports snapping, smooth follow, dead zones, and clamping to world bounds. </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a4ff77567709299bc35c86bb803a3c2c2" name="a4ff77567709299bc35c86bb803a3c2c2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4ff77567709299bc35c86bb803a3c2c2">&#9670;&#160;</a></span>AnimateCenterOnGrid()</h2>
@@ -231,7 +231,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Instantly centers the camera on the specified tile in the given <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>. The tile's visual center is placed at the center of the view. </p>
+<p>Instantly centers the camera on the specified tile in the given <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. The tile's visual center is placed at the center of the view. </p>
 
 </div>
 </div>
@@ -565,7 +565,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 <p>Smoothly pans the camera so that the specified grid tile becomes the visual center of the view over approximately the given duration. This is a one-shot cinematic pan to a tile, not a continuous follow. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">layer</td><td><a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a> layer the grid position belongs to. </td></tr>
+    <tr><td class="paramname">layer</td><td><a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> layer the grid position belongs to. </td></tr>
     <tr><td class="paramname">col</td><td>Grid column of the tile to center on.</td></tr>
     <tr><td class="paramname">row</td><td>Grid row of the tile to center on.</td></tr>
     <tr><td class="paramname">durationSeconds</td><td>Approximate time (in seconds) for the camera to reach the target cell. Values &lt;= 0 cause an immediate snap to the destination. </td></tr>
@@ -727,9 +727,6 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/Views/<a class="el" href="_camera_8cs.html">Camera.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

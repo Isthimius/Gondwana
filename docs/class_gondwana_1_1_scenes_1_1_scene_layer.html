@@ -93,6 +93,9 @@ $(function(){initNavTree('class_gondwana_1_1_scenes_1_1_scene_layer.html','','cl
   <div class="headertitle"><div class="title">Gondwana.Scenes.SceneLayer Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents a single layer within a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a>, containing a grid of tiles and supporting various coordinate systems, parallax scrolling, and rendering properties. <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> layers provide the fundamental structure for organizing and rendering tile-based game content.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Scenes.SceneLayer:</div>
 <div class="dyncontent">
@@ -103,56 +106,94 @@ Inheritance diagram for Gondwana.Scenes.SceneLayer:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" id="r_a2c55f9f0b71d6fc72cbfa3d9a0d0ed12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12">SetTileSize</a> (int newWidth, int newHeight)</td></tr>
+<tr class="memdesc:a2c55f9f0b71d6fc72cbfa3d9a0d0ed12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets both the width and height of tiles in this layer atomically, raising only a single <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event.  <br /></td></tr>
 <tr class="memitem:a8e484b10fcc567050632269596c987d4" id="r_a8e484b10fcc567050632269596c987d4"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e484b10fcc567050632269596c987d4">GridToWorldPx</a> (PointF grid)</td></tr>
-<tr class="memdesc:a8e484b10fcc567050632269596c987d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a grid coordinate (col,row) into the world-space pixel anchor where that tile begins. This returns the tile’s top-left anchor in world pixels, not the tile center.  <br /></td></tr>
+<tr class="memdesc:a8e484b10fcc567050632269596c987d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a grid coordinate (col,row) into the world-space pixel anchor where that tile begins. This returns the tile's top-left anchor in world pixels, not the tile center.  <br /></td></tr>
 <tr class="memitem:a5a32b42fedf1dcf1365878805a4eeca1" id="r_a5a32b42fedf1dcf1365878805a4eeca1"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a32b42fedf1dcf1365878805a4eeca1">WorldPxToGrid</a> (PointF worldPx)</td></tr>
-<tr class="memdesc:a5a32b42fedf1dcf1365878805a4eeca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel position into this layer’s grid coordinates. This uses the layer’s active coordinate system (square, iso, hex, etc.) and returns fractional grid values when the point lies between tiles.  <br /></td></tr>
+<tr class="memdesc:a5a32b42fedf1dcf1365878805a4eeca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel position into this layer's grid coordinates. This uses the layer's active coordinate system (square, iso, hex, etc.) and returns fractional grid values when the point lies between tiles.  <br /></td></tr>
 <tr class="memitem:a03eb3422904f9f7d53c96b3da2e02fde" id="r_a03eb3422904f9f7d53c96b3da2e02fde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03eb3422904f9f7d53c96b3da2e02fde">GetAdjacentTile</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a> tile, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5">CardinalDirections</a> direction)</td></tr>
 <tr class="memdesc:a03eb3422904f9f7d53c96b3da2e02fde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the neighboring tile in the given direction, or null if the direction would move off the layer and wrapping is not enabled. The meaning of N,S,E,W depends on the active coordinate system.  <br /></td></tr>
 <tr class="memitem:a1752ec1eb9abb1316ea8421f07f54006" id="r_a1752ec1eb9abb1316ea8421f07f54006"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1752ec1eb9abb1316ea8421f07f54006">WrapGrid</a> (PointF grid)</td></tr>
-<tr class="memdesc:a1752ec1eb9abb1316ea8421f07f54006"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wraps a grid coordinate around the layer’s valid grid bounds using toroidal wrapping (0..max). Used by movement and map designs that loop at edges.  <br /></td></tr>
+<tr class="memdesc:a1752ec1eb9abb1316ea8421f07f54006"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wraps a grid coordinate around the layer's valid grid bounds using toroidal wrapping (0..max). Used by movement and map designs that loop at edges.  <br /></td></tr>
 <tr class="memitem:a14b741c5327ab5f0b7ef5c6fc58fc5fb" id="r_a14b741c5327ab5f0b7ef5c6fc58fc5fb"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14b741c5327ab5f0b7ef5c6fc58fc5fb">GetLayerBoundsPx</a> ()</td></tr>
-<tr class="memdesc:a14b741c5327ab5f0b7ef5c6fc58fc5fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the world-space pixel bounding rectangle for this <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>. This uses the coordinate system to evaluate the pixel extents of the extreme grid tiles. Works for square, iso, hex, and any other supported projection.  <br /></td></tr>
+<tr class="memdesc:a14b741c5327ab5f0b7ef5c6fc58fc5fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the world-space pixel bounding rectangle for this <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. This uses the coordinate system to evaluate the pixel extents of the extreme grid tiles. Works for square, iso, hex, and any other supported projection.  <br /></td></tr>
 <tr class="memitem:a0266e1fa73adb38033a994a5dc999c3d" id="r_a0266e1fa73adb38033a994a5dc999c3d"><td class="memItemLeft" align="right" valign="top">IEnumerator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0266e1fa73adb38033a994a5dc999c3d">GetEnumerator</a> ()</td></tr>
+<tr class="memdesc:a0266e1fa73adb38033a994a5dc999c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an enumerator that iterates through the layer's tiles.  <br /></td></tr>
 <tr class="memitem:ace850ea943a51dfd01a7b960ae9a96dc" id="r_ace850ea943a51dfd01a7b960ae9a96dc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace850ea943a51dfd01a7b960ae9a96dc">Dispose</a> ()</td></tr>
+<tr class="memdesc:ace850ea943a51dfd01a7b960ae9a96dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> and disposes all tiles.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a6eb0f1fe4aba594dfe2258b4d06ce829" id="r_a6eb0f1fe4aba594dfe2258b4d06ce829"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6eb0f1fe4aba594dfe2258b4d06ce829">ValueBag</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a6eb0f1fe4aba594dfe2258b4d06ce829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the extensible value bag for storing arbitrary layer-specific metadata.  <br /></td></tr>
 <tr class="memitem:a3bc95f18b0758b5dc81a82c4f9f6683d" id="r_a3bc95f18b0758b5dc81a82c4f9f6683d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3">CoordinateSystemTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3bc95f18b0758b5dc81a82c4f9f6683d">CoordinateSystemType</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a3bc95f18b0758b5dc81a82c4f9f6683d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the coordinate system type used by this layer for transforming between grid coordinates and pixel positions.  <br /></td></tr>
 <tr class="memitem:a2d657e96220296392dd0819d66029e4e" id="r_a2d657e96220296392dd0819d66029e4e"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d657e96220296392dd0819d66029e4e">ID</a> = Guid.NewGuid().ToString()<code> [get, set]</code></td></tr>
+<tr class="memdesc:a2d657e96220296392dd0819d66029e4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the unique identifier for this layer.  <br /></td></tr>
 <tr class="memitem:aacf01c57de45ceb7fed3c5ec7b9aab1c" id="r_aacf01c57de45ceb7fed3c5ec7b9aab1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacf01c57de45ceb7fed3c5ec7b9aab1c">Scene</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:aacf01c57de45ceb7fed3c5ec7b9aab1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the parent scene that contains this layer.  <br /></td></tr>
 <tr class="memitem:ab63fda32793770266928c379c1088ec2" id="r_ab63fda32793770266928c379c1088ec2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab63fda32793770266928c379c1088ec2">ZOrder</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ab63fda32793770266928c379c1088ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the z-order (rendering depth) of this layer within its parent scene.  <br /></td></tr>
 <tr class="memitem:aad14b4f45fe0f24046eac8eb648e60dc" id="r_aad14b4f45fe0f24046eac8eb648e60dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad14b4f45fe0f24046eac8eb648e60dc">Parallax</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:aad14b4f45fe0f24046eac8eb648e60dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the parallax scrolling factor for this layer.  <br /></td></tr>
 <tr class="memitem:a0ce8b6216ce767e416bdc8c9477bde12" id="r_a0ce8b6216ce767e416bdc8c9477bde12"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ce8b6216ce767e416bdc8c9477bde12">SceneLayerTileHeight</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a0ce8b6216ce767e416bdc8c9477bde12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the height of each tile in this layer, measured in pixels.  <br /></td></tr>
 <tr class="memitem:ac244cb1a5160eb0727c654334f6c8b39" id="r_ac244cb1a5160eb0727c654334f6c8b39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac244cb1a5160eb0727c654334f6c8b39">SceneLayerTileWidth</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ac244cb1a5160eb0727c654334f6c8b39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the width of each tile in this layer, measured in pixels.  <br /></td></tr>
 <tr class="memitem:a1254da822e4e5e20e4960acd1e70be12" id="r_a1254da822e4e5e20e4960acd1e70be12"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1254da822e4e5e20e4960acd1e70be12">Visible</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a1254da822e4e5e20e4960acd1e70be12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this layer should be rendered.  <br /></td></tr>
 <tr class="memitem:a1900bf4ad91ac3508050f7654400a28b" id="r_a1900bf4ad91ac3508050f7654400a28b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>[,]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1900bf4ad91ac3508050f7654400a28b">SceneLayerTileArray</a><code> [get]</code></td></tr>
+<tr class="memdesc:a1900bf4ad91ac3508050f7654400a28b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the two-dimensional array of tiles that comprise this layer's grid.  <br /></td></tr>
 <tr class="memitem:a958ed10b48f15930d257d8d7ddb46057" id="r_a958ed10b48f15930d257d8d7ddb46057"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a958ed10b48f15930d257d8d7ddb46057">GridColumnCount</a><code> [get]</code></td></tr>
+<tr class="memdesc:a958ed10b48f15930d257d8d7ddb46057"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of columns (tiles wide) in this layer's grid.  <br /></td></tr>
 <tr class="memitem:a66305751d643a83bd615591eefd480c1" id="r_a66305751d643a83bd615591eefd480c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66305751d643a83bd615591eefd480c1">GridRowCount</a><code> [get]</code></td></tr>
+<tr class="memdesc:a66305751d643a83bd615591eefd480c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of rows (tiles high) in this layer's grid.  <br /></td></tr>
 <tr class="memitem:a56c96e2aac98cc844669261aad0fee56" id="r_a56c96e2aac98cc844669261aad0fee56"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56c96e2aac98cc844669261aad0fee56">WrapHorizontally</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a56c96e2aac98cc844669261aad0fee56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this layer wraps horizontally at the grid boundaries.  <br /></td></tr>
 <tr class="memitem:a07994ff52aae5a303748d8be3cf3e81b" id="r_a07994ff52aae5a303748d8be3cf3e81b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07994ff52aae5a303748d8be3cf3e81b">WrapVertically</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a07994ff52aae5a303748d8be3cf3e81b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this layer wraps vertically at the grid boundaries.  <br /></td></tr>
 <tr class="memitem:a582d49df8cfc0b28dc9988cc07919717" id="r_a582d49df8cfc0b28dc9988cc07919717"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a582d49df8cfc0b28dc9988cc07919717">ShowGridLines</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a582d49df8cfc0b28dc9988cc07919717"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether grid lines should be rendered over this layer for debugging.  <br /></td></tr>
 <tr class="memitem:ac68c60907a67666307c7720012e08c50" id="r_ac68c60907a67666307c7720012e08c50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac68c60907a67666307c7720012e08c50">ShowCollisionBoxes</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ac68c60907a67666307c7720012e08c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugging.  <br /></td></tr>
 <tr class="memitem:a21f256bf1956f7cbf867049dee1d182f" id="r_a21f256bf1956f7cbf867049dee1d182f"><td class="memItemLeft" align="right" valign="top">Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21f256bf1956f7cbf867049dee1d182f">OriginPx</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a21f256bf1956f7cbf867049dee1d182f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the world-space pixel origin of this layer's (0,0) tile position.  <br /></td></tr>
 <tr class="memitem:a006600f06d81e49e4536ea25b301dfcb" id="r_a006600f06d81e49e4536ea25b301dfcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a006600f06d81e49e4536ea25b301dfcb">this[int x, int y]</a><code> [get]</code></td></tr>
+<tr class="memdesc:a006600f06d81e49e4536ea25b301dfcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile at the specified grid coordinates.  <br /></td></tr>
 <tr class="memitem:ac33f0277b098c23150da638a5172e585" id="r_ac33f0277b098c23150da638a5172e585"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac33f0277b098c23150da638a5172e585">this[Point pt]</a><code> [get]</code></td></tr>
+<tr class="memdesc:ac33f0277b098c23150da638a5172e585"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile at the specified grid coordinates.  <br /></td></tr>
 <tr class="memitem:a9dba6f8c67abd04616f16b3df93c71ce" id="r_a9dba6f8c67abd04616f16b3df93c71ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9dba6f8c67abd04616f16b3df93c71ce">this[PointF ptF]</a><code> [get]</code></td></tr>
+<tr class="memdesc:a9dba6f8c67abd04616f16b3df93c71ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile at the specified grid coordinates, truncating fractional values.  <br /></td></tr>
 <tr class="memitem:ae03f86925d0ed36365f117ce6d419ddb" id="r_ae03f86925d0ed36365f117ce6d419ddb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae03f86925d0ed36365f117ce6d419ddb">Empty</a> = new EmptySceneLayer()<code> [get]</code></td></tr>
+<tr class="memdesc:ae03f86925d0ed36365f117ce6d419ddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton empty scene layer instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a3620fa9a5a899170be2420c702b01b99" id="r_a3620fa9a5a899170be2420c702b01b99"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3620fa9a5a899170be2420c702b01b99">SceneLayerTileSizeChanged</a></td></tr>
+<tr class="memdesc:a3620fa9a5a899170be2420c702b01b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the tile dimensions of this layer change.  <br /></td></tr>
 <tr class="memitem:a920415e1a6758104a41124894f210b81" id="r_a920415e1a6758104a41124894f210b81"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a920415e1a6758104a41124894f210b81">VisibleChanged</a></td></tr>
+<tr class="memdesc:a920415e1a6758104a41124894f210b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the visibility state of this layer changes.  <br /></td></tr>
 <tr class="memitem:ac2d4d3999fb500703dae19720bbd85e5" id="r_ac2d4d3999fb500703dae19720bbd85e5"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2d4d3999fb500703dae19720bbd85e5">WrappingChanged</a></td></tr>
+<tr class="memdesc:ac2d4d3999fb500703dae19720bbd85e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the wrapping configuration of this layer changes.  <br /></td></tr>
 <tr class="memitem:a1f27d21f7e9fc749a72ad13c7410fb2e" id="r_a1f27d21f7e9fc749a72ad13c7410fb2e"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f27d21f7e9fc749a72ad13c7410fb2e">ShowGridLinesChanged</a></td></tr>
+<tr class="memdesc:a1f27d21f7e9fc749a72ad13c7410fb2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the grid line display setting changes.  <br /></td></tr>
 <tr class="memitem:aff3f1a426a9327b05d1c7575013706d6" id="r_aff3f1a426a9327b05d1c7575013706d6"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff3f1a426a9327b05d1c7575013706d6">ShowCollisionBoxesChanged</a></td></tr>
+<tr class="memdesc:aff3f1a426a9327b05d1c7575013706d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the collision box display setting changes.  <br /></td></tr>
 <tr class="memitem:ac54b2857da2dde0080039df135f85042" id="r_ac54b2857da2dde0080039df135f85042"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac54b2857da2dde0080039df135f85042">ZOrderChanged</a></td></tr>
+<tr class="memdesc:ac54b2857da2dde0080039df135f85042"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the z-order (rendering depth) of this layer changes.  <br /></td></tr>
 <tr class="memitem:aa6430a168f54a55f6c8ff0c92cce2ffa" id="r_aa6430a168f54a55f6c8ff0c92cce2ffa"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6430a168f54a55f6c8ff0c92cce2ffa">ParallaxChanged</a></td></tr>
+<tr class="memdesc:aa6430a168f54a55f6c8ff0c92cce2ffa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the parallax scrolling factor of this layer changes.  <br /></td></tr>
 <tr class="memitem:ae96fb0646d612dfd7732a37e2b1e8dd0" id="r_ae96fb0646d612dfd7732a37e2b1e8dd0"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae96fb0646d612dfd7732a37e2b1e8dd0">OriginPxChanged</a></td></tr>
+<tr class="memdesc:ae96fb0646d612dfd7732a37e2b1e8dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the world-space origin point of this layer changes.  <br /></td></tr>
 <tr class="memitem:af4be1dee9c4288a03f9fe6479428c12e" id="r_af4be1dee9c4288a03f9fe6479428c12e"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4be1dee9c4288a03f9fe6479428c12e">Disposing</a></td></tr>
+<tr class="memdesc:af4be1dee9c4288a03f9fe6479428c12e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when this layer is being disposed.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents a single layer within a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a>, containing a grid of tiles and supporting various coordinate systems, parallax scrolling, and rendering properties. <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> layers provide the fundamental structure for organizing and rendering tile-based game content. </p>
+<p>A <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> is a 2D grid of <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> instances that can be rendered with different coordinate systems (orthogonal, isometric, hexagonal), z-ordering for depth sorting, and parallax effects for multi-plane scrolling backgrounds. </p>
+<p>Layers support both tile-based content and sprite rendering, with automatic management of dirty regions for efficient incremental rendering. They can also contain direct drawing instances for custom graphics overlays. </p>
+<p>Each layer maintains its own coordinate system transformation, allowing mixing of different projection types within the same scene. Layers can be configured to wrap horizontally or vertically for seamless tiling effects. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ace850ea943a51dfd01a7b960ae9a96dc" name="ace850ea943a51dfd01a7b960ae9a96dc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ace850ea943a51dfd01a7b960ae9a96dc">&#9670;&#160;</a></span>Dispose()</h2>
 
@@ -175,6 +216,19 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> and disposes all tiles. </p>
+<p>This method performs orderly cleanup of the layer, including: </p>
+<ul>
+<li>
+Raising the <a class="el" href="#af4be1dee9c4288a03f9fe6479428c12e" title="Occurs when this layer is being disposed.">Disposing</a> event </li>
+<li>
+Disposing all <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> instances in the grid </li>
+<li>
+Clearing all event subscriptions </li>
+</ul>
+<p>After disposal, the layer should not be used. This method can be overridden in derived classes to add custom cleanup logic, but the base implementation should be called to ensure proper resource release. </p>
+<p>This method suppresses finalization to prevent the finalizer from running, as cleanup has already been performed. </p>
 
 </div>
 </div>
@@ -216,6 +270,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns an enumerator that iterates through the layer's tiles. </p>
+<dl class="section return"><dt>Returns</dt><dd>An IEnumerator for iterating through <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> instances.</dd></dl>
+<p>This method enables enumeration of layer tiles using non-generic enumerator interfaces. Tiles are enumerated in column-major order (all rows in column 0, then all rows in column 1, etc.). For type-safe enumeration, the generic IEnumerable&lt;T&gt;.GetEnumerator is preferred. </p>
+
 </div>
 </div>
 <a id="a14b741c5327ab5f0b7ef5c6fc58fc5fb" name="a14b741c5327ab5f0b7ef5c6fc58fc5fb"></a>
@@ -241,7 +299,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Computes the world-space pixel bounding rectangle for this <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>. This uses the coordinate system to evaluate the pixel extents of the extreme grid tiles. Works for square, iso, hex, and any other supported projection. </p>
+<p>Computes the world-space pixel bounding rectangle for this <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. This uses the coordinate system to evaluate the pixel extents of the extreme grid tiles. Works for square, iso, hex, and any other supported projection. </p>
 
 </div>
 </div>
@@ -260,7 +318,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts a grid coordinate (col,row) into the world-space pixel anchor where that tile begins. This returns the tile’s top-left anchor in world pixels, not the tile center. </p>
+<p>Converts a grid coordinate (col,row) into the world-space pixel anchor where that tile begins. This returns the tile's top-left anchor in world pixels, not the tile center. </p>
 
 </div>
 </div>
@@ -283,6 +341,17 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Sets both the width and height of tiles in this layer atomically, raising only a single <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newWidth</td><td>The new tile width in pixels.</td></tr>
+    <tr><td class="paramname">newHeight</td><td>The new tile height in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This method is preferred over setting <a class="el" href="#ac244cb1a5160eb0727c654334f6c8b39" title="Gets or sets the width of each tile in this layer, measured in pixels.">SceneLayerTileWidth</a> and <a class="el" href="#a0ce8b6216ce767e416bdc8c9477bde12" title="Gets or sets the height of each tile in this layer, measured in pixels.">SceneLayerTileHeight</a> separately, as it avoids triggering two change events and two scene refreshes. </p>
+<p>The method raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event after updating both dimensions. </p>
+
 </div>
 </div>
 <a id="a5a32b42fedf1dcf1365878805a4eeca1" name="a5a32b42fedf1dcf1365878805a4eeca1"></a>
@@ -300,7 +369,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts a world-space pixel position into this layer’s grid coordinates. This uses the layer’s active coordinate system (square, iso, hex, etc.) and returns fractional grid values when the point lies between tiles. </p>
+<p>Converts a world-space pixel position into this layer's grid coordinates. This uses the layer's active coordinate system (square, iso, hex, etc.) and returns fractional grid values when the point lies between tiles. </p>
 
 </div>
 </div>
@@ -319,7 +388,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Wraps a grid coordinate around the layer’s valid grid bounds using toroidal wrapping (0..max). Used by movement and map designs that loop at edges. </p>
+<p>Wraps a grid coordinate around the layer's valid grid bounds using toroidal wrapping (0..max). Used by movement and map designs that loop at edges. </p>
 
 </div>
 </div>
@@ -344,6 +413,23 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the coordinate system type used by this layer for transforming between grid coordinates and pixel positions. </p>
+<p>A <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3" title="Identifies the layout and math rules used to map tiles to world pixels and world pixels back to grid ...">CoordinateSystemTypes</a> value specifying the projection type.</p>
+<p>The coordinate system determines how grid positions are mapped to screen pixels and affects rendering, collision detection, and movement calculations. Common types include: </p>
+<ul>
+<li>
+CoordinateSystemTypes.Orthogonal - Standard square grid </li>
+<li>
+CoordinateSystemTypes.IsometricRhombic - Diamond-shaped isometric projection </li>
+<li>
+CoordinateSystemTypes.IsometricAxial - Axial isometric projection </li>
+<li>
+CoordinateSystemTypes.HexAxialFlatTop - Hexagonal grid with flat-top orientation </li>
+<li>
+CoordinateSystemTypes.HexAxialPointedTop - Hexagonal grid with pointed-top orientation </li>
+</ul>
+<p>Changing the coordinate system after layer creation is supported but may produce unexpected visual results if tile content was designed for a different projection. </p>
+
 </div>
 </div>
 <a id="ae03f86925d0ed36365f117ce6d419ddb" name="ae03f86925d0ed36365f117ce6d419ddb"></a>
@@ -365,6 +451,23 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the singleton empty scene layer instance. </p>
+<p>A <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> instance with zero dimensions that serves as a null object pattern. </p>
+<p>The empty scene layer is a special singleton instance that contains no tiles (0x0 grid), is invisible, has minimum z-order, and serves as a placeholder when a valid layer is not available. It is used internally by <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html#a98e66a9feac69e867a1a0b0ba172642f" title="Gets the singleton empty scene instance.">Scene.Empty</a> and helps avoid null reference checks. </p>
+<p>This layer has the following characteristics: </p>
+<ul>
+<li>
+Grid dimensions: 0 columns × 0 rows </li>
+<li>
+<a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Tile</a> size: 1×1 pixels </li>
+<li>
+Visible: false </li>
+<li>
+ZOrder: int.MinValue </li>
+<li>
+Parallax: 1.0 </li>
+</ul>
 
 </div>
 </div>
@@ -388,6 +491,10 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the number of columns (tiles wide) in this layer's grid. </p>
+<p>The width of the tile grid in tiles.</p>
+<p>This value is determined at layer creation time and represents the horizontal extent of the tile array. Valid column indices range from 0 to <code>GridColumnCount - 1</code>. </p>
+
 </div>
 </div>
 <a id="a66305751d643a83bd615591eefd480c1" name="a66305751d643a83bd615591eefd480c1"></a>
@@ -409,6 +516,10 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the number of rows (tiles high) in this layer's grid. </p>
+<p>The height of the tile grid in tiles.</p>
+<p>This value is determined at layer creation time and represents the vertical extent of the tile array. Valid row indices range from 0 to <code>GridRowCount - 1</code>. </p>
 
 </div>
 </div>
@@ -432,6 +543,10 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the unique identifier for this layer. </p>
+<p>A string representing the layer's unique ID, typically a GUID.</p>
+<p>The ID is automatically generated when a layer is created and is used to identify the layer within its parent scene. It can also be used to look up layers via <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html#a0bd8ee56ed5fc05b4f5a52dc8ced7063" title="Retrieves a layer from this scene by its unique identifier.">Scene.GetSceneLayerByID</a> or the scene's string indexer. </p>
+
 </div>
 </div>
 <a id="a21f256bf1956f7cbf867049dee1d182f" name="a21f256bf1956f7cbf867049dee1d182f"></a>
@@ -453,6 +568,11 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the world-space pixel origin of this layer's (0,0) tile position. </p>
+<p>A Point specifying the pixel offset in world space. Default is (0, 0).</p>
+<p>The origin point allows shifting the entire layer as a block within world space, which is useful for creating offset parallax effects, layered UI elements, or special positioning requirements. Normally this is (0, 0), meaning the layer's grid coordinate (0, 0) maps to world pixel (0, 0). </p>
+<p>Setting this property raises the <a class="el" href="#ae96fb0646d612dfd7732a37e2b1e8dd0" title="Occurs when the world-space origin point of this layer changes.">OriginPxChanged</a> event and triggers a full scene refresh. </p>
 
 </div>
 </div>
@@ -476,6 +596,19 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the parallax scrolling factor for this layer. </p>
+<p>A floating-point value controlling the layer's scroll rate relative to the camera. Default is 1.0 (no parallax effect). </p>
+<p>Parallax scrolling creates depth illusion by moving layers at different rates: </p>
+<ul>
+<li>
+Values less than 1.0 (e.g., 0.5) create a background effect, moving slower than the camera </li>
+<li>
+Value of 1.0 moves with the camera (standard layer movement) </li>
+<li>
+Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster than the camera </li>
+</ul>
+<p>Setting this property raises the <a class="el" href="#aa6430a168f54a55f6c8ff0c92cce2ffa" title="Occurs when the parallax scrolling factor of this layer changes.">ParallaxChanged</a> event and triggers a full scene refresh. </p>
+
 </div>
 </div>
 <a id="aacf01c57de45ceb7fed3c5ec7b9aab1c" name="aacf01c57de45ceb7fed3c5ec7b9aab1c"></a>
@@ -497,6 +630,10 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the parent scene that contains this layer. </p>
+<p>The <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Gondwana.Scenes.Scene</a> that owns this layer, or <code>null</code> if the layer is not attached to a scene.</p>
+<p>This property is set automatically when the layer is added to a scene via <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html#aad4dc2ff1930c42d3ac8dc39bf89d084" title="Creates and adds a new SceneLayer to this scene with the specified properties.">Scene.AddLayer</a> and cleared when the layer is removed. The scene reference provides access to scene-level resources such as the collision world. </p>
 
 </div>
 </div>
@@ -520,6 +657,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the two-dimensional array of tiles that comprise this layer's grid. </p>
+<p>A 2D array of <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> instances indexed by [column, row].</p>
+<p>This property provides direct access to the underlying tile array. The array is indexed by [x, y] or [column, row], where [0, 0] represents the top-left tile. </p>
+<p>For safer access with bounds checking and wrapping support, prefer using the layer's indexer properties (<code>layer[x, y]</code>, <code>layer[point]</code>, or <code>layer[pointf]</code>). </p>
+
 </div>
 </div>
 <a id="a0ce8b6216ce767e416bdc8c9477bde12" name="a0ce8b6216ce767e416bdc8c9477bde12"></a>
@@ -541,6 +683,11 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the height of each tile in this layer, measured in pixels. </p>
+<p>The tile height in pixels. Default is typically 32.</p>
+<p>This property defines the rendered height of tiles in this layer. Changes to tile height affect how tiles are positioned and rendered within the layer's coordinate system. </p>
+<p>Setting this property raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event and triggers a full scene refresh. Consider using <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> to update both width and height atomically with a single event. </p>
 
 </div>
 </div>
@@ -564,6 +711,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the width of each tile in this layer, measured in pixels. </p>
+<p>The tile width in pixels. Default is typically 32.</p>
+<p>This property defines the rendered width of tiles in this layer. Changes to tile width affect how tiles are positioned and rendered within the layer's coordinate system. </p>
+<p>Setting this property raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event and triggers a full scene refresh. Consider using <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> to update both width and height atomically with a single event. </p>
+
 </div>
 </div>
 <a id="ac68c60907a67666307c7720012e08c50" name="ac68c60907a67666307c7720012e08c50"></a>
@@ -585,6 +737,11 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugging. </p>
+<p><code>true</code> if collision boxes should be displayed; otherwise, <code>false</code>.</p>
+<p><a class="el" href="namespace_gondwana_1_1_collision.html">Collision</a> boxes provide a visual overlay showing the collision geometry of tiles and sprites, which is useful during development for debugging physics interactions, verifying collision boundaries, and tuning collision detection. </p>
+<p>Setting this property raises the <a class="el" href="#aff3f1a426a9327b05d1c7575013706d6" title="Occurs when the collision box display setting changes.">ShowCollisionBoxesChanged</a> event and triggers a full scene refresh. </p>
 
 </div>
 </div>
@@ -608,6 +765,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets a value indicating whether grid lines should be rendered over this layer for debugging. </p>
+<p><code>true</code> if grid lines should be displayed; otherwise, <code>false</code>.</p>
+<p>Grid lines provide a visual overlay showing tile boundaries, which is useful during development for aligning content, debugging tile positions, and verifying coordinate system behavior. </p>
+<p>Setting this property raises the <a class="el" href="#a1f27d21f7e9fc749a72ad13c7410fb2e" title="Occurs when the grid line display setting changes.">ShowGridLinesChanged</a> event and triggers a full scene refresh. </p>
+
 </div>
 </div>
 <a id="a006600f06d81e49e4536ea25b301dfcb" name="a006600f06d81e49e4536ea25b301dfcb"></a>
@@ -629,6 +791,17 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the tile at the specified grid coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column index (X coordinate).</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row index (Y coordinate).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
+<p>This indexer provides bounds-checked access to tiles in the layer's grid. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html">Coordinates</a> outside the valid range (0 to GridColumnCount-1, 0 to GridRowCount-1) return <code>null</code>. Wrapping is not applied; use <a class="el" href="#a1752ec1eb9abb1316ea8421f07f54006" title="Wraps a grid coordinate around the layer&#39;s valid grid bounds using toroidal wrapping (0....">WrapGrid</a> first if wrapping behavior is desired. </p>
 
 </div>
 </div>
@@ -652,6 +825,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the tile at the specified grid coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pt</td><td>A Point specifying the grid coordinates (X = column, Y = row).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
+<p>This indexer provides convenient point-based access to tiles and internally uses the [x, y] indexer. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html">Coordinates</a> outside the valid range return <code>null</code>. </p>
+
 </div>
 </div>
 <a id="a9dba6f8c67abd04616f16b3df93c71ce" name="a9dba6f8c67abd04616f16b3df93c71ce"></a>
@@ -673,6 +856,16 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the tile at the specified grid coordinates, truncating fractional values. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptF</td><td>A PointF specifying the grid coordinates (X = column, Y = row). Fractional values are truncated to integers. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the truncated position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
+<p>This indexer provides convenient access when working with floating-point grid coordinates, such as results from <a class="el" href="#a5a32b42fedf1dcf1365878805a4eeca1" title="Converts a world-space pixel position into this layer&#39;s grid coordinates. This uses the layer&#39;s activ...">WorldPxToGrid</a>. The coordinates are cast to integers, truncating toward zero. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html">Coordinates</a> outside the valid range return <code>null</code>. </p>
 
 </div>
 </div>
@@ -696,6 +889,10 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the extensible value bag for storing arbitrary layer-specific metadata. </p>
+<p>A <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> instance for storing custom key-value data.</p>
+<p>The value bag allows games or engine extensions to attach arbitrary structured data to layers (such as layer-specific properties, AI navigation data, weather effects, or custom attributes) without modifying the core <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> class. Values are accessed using strongly-typed ValueKey&lt;T&gt; instances and are included in layer serialization. </p>
+
 </div>
 </div>
 <a id="a1254da822e4e5e20e4960acd1e70be12" name="a1254da822e4e5e20e4960acd1e70be12"></a>
@@ -717,6 +914,11 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets a value indicating whether this layer should be rendered. </p>
+<p><code>true</code> if the layer is visible and should be rendered; otherwise, <code>false</code>.</p>
+<p>Invisible layers are excluded from rendering but remain part of the scene structure. This is useful for temporarily hiding layers (such as background layers in cutscenes) without removing them from the scene. </p>
+<p>Setting this property raises the <a class="el" href="#a920415e1a6758104a41124894f210b81" title="Occurs when the visibility state of this layer changes.">VisibleChanged</a> event, invalidates the parent scene's visible layer cache, and triggers a full scene refresh. </p>
 
 </div>
 </div>
@@ -740,6 +942,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets a value indicating whether this layer wraps horizontally at the grid boundaries. </p>
+<p><code>true</code> if horizontal wrapping is enabled; otherwise, <code>false</code>.</p>
+<p>When enabled, horizontal coordinates that exceed the grid boundaries wrap around to the opposite side, creating a seamless toroidal topology. This is useful for scrolling backgrounds, wrap-around game worlds, and continuous map designs. </p>
+<p>Setting this property raises the <a class="el" href="#ac2d4d3999fb500703dae19720bbd85e5" title="Occurs when the wrapping configuration of this layer changes.">WrappingChanged</a> event and triggers a full scene refresh. </p>
+
 </div>
 </div>
 <a id="a07994ff52aae5a303748d8be3cf3e81b" name="a07994ff52aae5a303748d8be3cf3e81b"></a>
@@ -761,6 +968,11 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets a value indicating whether this layer wraps vertically at the grid boundaries. </p>
+<p><code>true</code> if vertical wrapping is enabled; otherwise, <code>false</code>.</p>
+<p>When enabled, vertical coordinates that exceed the grid boundaries wrap around to the opposite side, creating a seamless toroidal topology. This is useful for scrolling backgrounds, wrap-around game worlds, and continuous map designs. </p>
+<p>Setting this property raises the <a class="el" href="#ac2d4d3999fb500703dae19720bbd85e5" title="Occurs when the wrapping configuration of this layer changes.">WrappingChanged</a> event and triggers a full scene refresh. </p>
 
 </div>
 </div>
@@ -784,6 +996,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the z-order (rendering depth) of this layer within its parent scene. </p>
+<p>An integer representing the layer's rendering priority. Lower values render first (behind), higher values render last (in front).</p>
+<p>Z-order determines the rendering order of layers when multiple layers are present in a scene. Layers with lower z-order values are rendered first and appear behind layers with higher values. </p>
+<p>Setting this property raises the <a class="el" href="#ac54b2857da2dde0080039df135f85042" title="Occurs when the z-order (rendering depth) of this layer changes.">ZOrderChanged</a> event and typically triggers a full scene refresh to ensure correct layer ordering. </p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -799,6 +1016,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when this layer is being disposed. </p>
+<p>This event is raised at the beginning of the <a class="el" href="#ace850ea943a51dfd01a7b960ae9a96dc" title="Releases all resources used by the SceneLayer and disposes all tiles.">Dispose</a> method, before any tiles are disposed or resources are released. Subscribers can use this event to perform cleanup operations or save state before the layer is destroyed. </p>
+
 </div>
 </div>
 <a id="ae96fb0646d612dfd7732a37e2b1e8dd0" name="ae96fb0646d612dfd7732a37e2b1e8dd0"></a>
@@ -812,6 +1032,9 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when the world-space origin point of this layer changes. </p>
+<p>This event is raised when the <a class="el" href="#a21f256bf1956f7cbf867049dee1d182f" title="Gets or sets the world-space pixel origin of this layer&#39;s (0,0) tile position.">OriginPx</a> property is modified. Origin changes shift the entire layer as a block within world space and require a full scene refresh to ensure all tiles and sprites are positioned correctly. </p>
 
 </div>
 </div>
@@ -827,6 +1050,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when the parallax scrolling factor of this layer changes. </p>
+<p>This event is raised when the <a class="el" href="#aad14b4f45fe0f24046eac8eb648e60dc" title="Gets or sets the parallax scrolling factor for this layer.">Parallax</a> property is modified. Parallax changes affect how the layer scrolls relative to the camera and require a full scene refresh to ensure correct positioning of all layer content. </p>
+
 </div>
 </div>
 <a id="a3620fa9a5a899170be2420c702b01b99" name="a3620fa9a5a899170be2420c702b01b99"></a>
@@ -840,6 +1066,9 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when the tile dimensions of this layer change. </p>
+<p>This event is raised when either <a class="el" href="#ac244cb1a5160eb0727c654334f6c8b39" title="Gets or sets the width of each tile in this layer, measured in pixels.">SceneLayerTileWidth</a> or <a class="el" href="#a0ce8b6216ce767e416bdc8c9477bde12" title="Gets or sets the height of each tile in this layer, measured in pixels.">SceneLayerTileHeight</a> is modified, or when <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> is called. Changes to tile size typically require a full scene refresh to ensure correct rendering of all tiles and sprites. </p>
 
 </div>
 </div>
@@ -855,6 +1084,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when the collision box display setting changes. </p>
+<p>This event is raised when the <a class="el" href="#ac68c60907a67666307c7720012e08c50" title="Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugg...">ShowCollisionBoxes</a> property is modified. <a class="el" href="namespace_gondwana_1_1_collision.html">Collision</a> box visibility changes require a full scene refresh to add or remove collision box overlays from the rendering output, useful for debugging collision detection. </p>
+
 </div>
 </div>
 <a id="a1f27d21f7e9fc749a72ad13c7410fb2e" name="a1f27d21f7e9fc749a72ad13c7410fb2e"></a>
@@ -868,6 +1100,9 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when the grid line display setting changes. </p>
+<p>This event is raised when the <a class="el" href="#a582d49df8cfc0b28dc9988cc07919717" title="Gets or sets a value indicating whether grid lines should be rendered over this layer for debugging.">ShowGridLines</a> property is modified. Grid line visibility changes require a full scene refresh to add or remove grid line overlays from the rendering output. </p>
 
 </div>
 </div>
@@ -883,6 +1118,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when the visibility state of this layer changes. </p>
+<p>This event is raised when the <a class="el" href="#a1254da822e4e5e20e4960acd1e70be12" title="Gets or sets a value indicating whether this layer should be rendered.">Visible</a> property is modified. Visibility changes affect which layers are included in rendering and may trigger cache invalidation for visible layer collections in the parent scene. </p>
+
 </div>
 </div>
 <a id="ac2d4d3999fb500703dae19720bbd85e5" name="ac2d4d3999fb500703dae19720bbd85e5"></a>
@@ -896,6 +1134,9 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when the wrapping configuration of this layer changes. </p>
+<p>This event is raised when either <a class="el" href="#a56c96e2aac98cc844669261aad0fee56" title="Gets or sets a value indicating whether this layer wraps horizontally at the grid boundaries.">WrapHorizontally</a> or <a class="el" href="#a07994ff52aae5a303748d8be3cf3e81b" title="Gets or sets a value indicating whether this layer wraps vertically at the grid boundaries.">WrapVertically</a> is modified. Wrapping changes affect how the layer handles tile coordinates at boundaries and typically require a full scene refresh. </p>
 
 </div>
 </div>
@@ -911,11 +1152,11 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when the z-order (rendering depth) of this layer changes. </p>
+<p>This event is raised when the <a class="el" href="#ab63fda32793770266928c379c1088ec2" title="Gets or sets the z-order (rendering depth) of this layer within its parent scene.">ZOrder</a> property is modified. Z-order changes affect the rendering order of layers within the parent scene and typically require re-sorting the visible layer collection and a full scene refresh. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Scenes/<a class="el" href="_scene_layer_8cs.html">SceneLayer.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

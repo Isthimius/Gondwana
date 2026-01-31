@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['📂_20project_20structure_0',['📂 Project Structure',['../X:/github/isthimius/Gondwana/README.md#autotoc_md6',1,'']]]
+  ['📜_20license_0',['📜 License',['../X:/github/isthimius/Gondwana/README.md#autotoc_md19',1,'']]]
 ];

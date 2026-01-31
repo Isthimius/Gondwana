@@ -93,29 +93,39 @@ $(function(){initNavTree('class_gondwana_1_1_rendering_1_1_views_1_1_view.html',
   <div class="headertitle"><div class="title">Gondwana.Rendering.Views.View Class Reference<span class="mlabels"><span class="mlabel sealed">sealed</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents a rendered view of a scene, combining a camera position with a viewport configuration to control what portion of the world is visible and how it is displayed on screen. Multiple views can be used to create split-screen, picture-in-picture, or other multi-viewport rendering scenarios.  
+ <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af71865959fe62e046f3d168c73be2292" id="r_af71865959fe62e046f3d168c73be2292"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af71865959fe62e046f3d168c73be2292">ZoomAroundScreenPoint</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, PointF screenPoint, float targetZoom, float durationSeconds)</td></tr>
 <tr class="memdesc:af71865959fe62e046f3d168c73be2292"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly zooms the view so that a given screen-space point appears to zoom in/out around a fixed world position beneath it, similar to map-style mouse-wheel zoom. Both the viewport zoom and camera position are animated over the specified duration.  <br /></td></tr>
 <tr class="memitem:a2ca7df6ee35057e1cb2e6aead6117230" id="r_a2ca7df6ee35057e1cb2e6aead6117230"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ca7df6ee35057e1cb2e6aead6117230">ScreenPxToWorldPx</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, PointF screenPx)</td></tr>
+<tr class="memdesc:a2ca7df6ee35057e1cb2e6aead6117230"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a screen-space pixel position into world-space coordinates for the specified scene layer, accounting for the view's camera position, viewport zoom, screen offsets, and the layer's parallax factor.  <br /></td></tr>
 <tr class="memitem:a6efebd46dd788a8587c492f2499b159d" id="r_a6efebd46dd788a8587c492f2499b159d"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6efebd46dd788a8587c492f2499b159d">WorldPxToScreenPx</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, PointF worldPx)</td></tr>
+<tr class="memdesc:a6efebd46dd788a8587c492f2499b159d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel position into screen-space coordinates for this view, accounting for the camera position, viewport zoom, screen offsets, and the specified layer's parallax factor.  <br /></td></tr>
 <tr class="memitem:aa8ae663f298ee55f3fc813ec3dc7c843" id="r_aa8ae663f298ee55f3fc813ec3dc7c843"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8ae663f298ee55f3fc813ec3dc7c843">ScreenPxToGrid</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, PointF screenPx)</td></tr>
-<tr class="memdesc:aa8ae663f298ee55f3fc813ec3dc7c843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a point in screen-space into the grid coordinate on the specified <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> by first mapping the screen pixel to world-space, then letting the layer’s coordinate system resolve the corresponding tile.  <br /></td></tr>
+<tr class="memdesc:aa8ae663f298ee55f3fc813ec3dc7c843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a point in screen-space into the grid coordinate on the specified <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> by first mapping the screen pixel to world-space, then letting the layer's coordinate system resolve the corresponding tile.  <br /></td></tr>
 <tr class="memitem:ac33dbf74f3317abe54778791aa879865" id="r_ac33dbf74f3317abe54778791aa879865"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac33dbf74f3317abe54778791aa879865">WorldRectToScreenRect</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, RectangleF worldRect)</td></tr>
-<tr class="memdesc:ac33dbf74f3317abe54778791aa879865"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel rectangle into a screen-space rectangle for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>, using the specified layer's parallax factor.  <br /></td></tr>
+<tr class="memdesc:ac33dbf74f3317abe54778791aa879865"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel rectangle into a screen-space rectangle for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>, using the specified layer's parallax factor.  <br /></td></tr>
 <tr class="memitem:acb47af9b38be41d6a967ff43178c3b4b" id="r_acb47af9b38be41d6a967ff43178c3b4b"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb47af9b38be41d6a967ff43178c3b4b">ScreenRectToWorldRect</a> (<a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> layer, RectangleF screenRect)</td></tr>
 <tr class="memdesc:acb47af9b38be41d6a967ff43178c3b4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a screen-space rectangle (on the adapter) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ab5aa81ac0627aab8fea9d74a554751ea" id="r_ab5aa81ac0627aab8fea9d74a554751ea"><td class="memItemLeft" align="right" valign="top">Guid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab5aa81ac0627aab8fea9d74a554751ea">Id</a> = Guid.NewGuid()<code> [get]</code></td></tr>
+<tr class="memdesc:ab5aa81ac0627aab8fea9d74a554751ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier for this view instance.  <br /></td></tr>
 <tr class="memitem:adb522fe29de7d75154d5ab1065ee07cd" id="r_adb522fe29de7d75154d5ab1065ee07cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_camera.html">Camera</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb522fe29de7d75154d5ab1065ee07cd">Camera</a><code> [get]</code></td></tr>
+<tr class="memdesc:adb522fe29de7d75154d5ab1065ee07cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the camera that controls the world-space position and following behavior for this view. The camera determines which part of the world is visible.  <br /></td></tr>
 <tr class="memitem:ae5ae082bf07d3d41b2934881b097a9e0" id="r_ae5ae082bf07d3d41b2934881b097a9e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html">Viewport</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5ae082bf07d3d41b2934881b097a9e0">Viewport</a><code> [get]</code></td></tr>
+<tr class="memdesc:ae5ae082bf07d3d41b2934881b097a9e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the viewport that defines the screen-space rectangle, zoom level, and other rendering parameters for this view. The viewport controls how the camera's visible world region is mapped to screen pixels.  <br /></td></tr>
 <tr class="memitem:ac1362dc270142153bf4d756de846ed62" id="r_ac1362dc270142153bf4d756de846ed62"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1362dc270142153bf4d756de846ed62">ZOrder</a> = 0<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac1362dc270142153bf4d756de846ed62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls the draw order of this view relative to other views. Lower values are drawn first (behind); higher values are drawn later (in front).  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents a rendered view of a scene, combining a camera position with a viewport configuration to control what portion of the world is visible and how it is displayed on screen. Multiple views can be used to create split-screen, picture-in-picture, or other multi-viewport rendering scenarios. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aa8ae663f298ee55f3fc813ec3dc7c843" name="aa8ae663f298ee55f3fc813ec3dc7c843"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8ae663f298ee55f3fc813ec3dc7c843">&#9670;&#160;</a></span>ScreenPxToGrid()</h2>
 
@@ -135,10 +145,10 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts a point in screen-space into the grid coordinate on the specified <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> by first mapping the screen pixel to world-space, then letting the layer’s coordinate system resolve the corresponding tile. </p>
+<p>Converts a point in screen-space into the grid coordinate on the specified <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> by first mapping the screen pixel to world-space, then letting the layer's coordinate system resolve the corresponding tile. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">layer</td><td>The <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> whose grid the point should be mapped onto.</td></tr>
+    <tr><td class="paramname">layer</td><td>The <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> whose grid the point should be mapped onto.</td></tr>
     <tr><td class="paramname">screenPx</td><td>The pixel position relative to the RenderSurface.</td></tr>
   </table>
   </dd>
@@ -165,6 +175,18 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Converts a screen-space pixel position into world-space coordinates for the specified scene layer, accounting for the view's camera position, viewport zoom, screen offsets, and the layer's parallax factor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>The scene layer whose parallax factor should be used for the conversion. </td></tr>
+    <tr><td class="paramname">screenPx</td><td>The screen-space pixel position relative to the render surface. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The corresponding world-space pixel position. </dd></dl>
+<p>The transformation formula is: </p><div class="fragment"><div class="line">world = camera * parallax + (screen - offset) * zoom</div>
+</div><!-- fragment --><p> This is commonly used for mouse picking and screen-to-world raycasting. </p>
 
 </div>
 </div>
@@ -211,6 +233,18 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Converts a world-space pixel position into screen-space coordinates for this view, accounting for the camera position, viewport zoom, screen offsets, and the specified layer's parallax factor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>The scene layer whose parallax factor should be used for the conversion. </td></tr>
+    <tr><td class="paramname">worldPx</td><td>The world-space pixel position to convert. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The corresponding screen-space pixel position on the render surface. </dd></dl>
+<p>The transformation formula is: </p><div class="fragment"><div class="line">screen = offset + (world - camera * parallax) / zoom</div>
+</div><!-- fragment --><p> This is commonly used for rendering world objects to screen coordinates and for UI elements that track world positions. </p>
+
 </div>
 </div>
 <a id="ac33dbf74f3317abe54778791aa879865" name="ac33dbf74f3317abe54778791aa879865"></a>
@@ -232,11 +266,11 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts a world-space pixel rectangle into a screen-space rectangle for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>, using the specified layer's parallax factor. </p>
+<p>Converts a world-space pixel rectangle into a screen-space rectangle for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>, using the specified layer's parallax factor. </p>
 <p>Matches the render path: screen = offset + (world - camera * parallax) / zoom</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">layer</td><td><a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html">Scene</a> layer whose parallax should be applied.</td></tr>
+    <tr><td class="paramname">layer</td><td><a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> layer whose parallax should be applied.</td></tr>
     <tr><td class="paramname">worldRect</td><td>World-space rectangle (in pixels).</td></tr>
   </table>
   </dd>
@@ -308,6 +342,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the camera that controls the world-space position and following behavior for this view. The camera determines which part of the world is visible. </p>
+<p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_camera.html" title="Represents a world-space camera for a Scene. The camera tracks a world-space upper-left position in p...">Views.Camera</a> instance associated with this view. </p>
+
 </div>
 </div>
 <a id="ab5aa81ac0627aab8fea9d74a554751ea" name="ab5aa81ac0627aab8fea9d74a554751ea"></a>
@@ -330,6 +367,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the unique identifier for this view instance. </p>
+<p>A GUID that uniquely identifies this view throughout its lifetime. </p>
+
 </div>
 </div>
 <a id="ae5ae082bf07d3d41b2934881b097a9e0" name="ae5ae082bf07d3d41b2934881b097a9e0"></a>
@@ -351,6 +391,9 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the viewport that defines the screen-space rectangle, zoom level, and other rendering parameters for this view. The viewport controls how the camera's visible world region is mapped to screen pixels. </p>
+<p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html" title="A rectangular window on the render target with its own zoom and placement. Viewport never moves the w...">Views.Viewport</a> instance associated with this view. </p>
 
 </div>
 </div>
@@ -378,9 +421,6 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Rendering/Views/<a class="el" href="_view_8cs.html">View.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

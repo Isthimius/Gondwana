@@ -93,31 +93,47 @@ $(function(){initNavTree('class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_pol
   <div class="headertitle"><div class="title">Gondwana.Input.Mouse.MouseEventPoller Class Reference<span class="mlabels"><span class="mlabel sealed">sealed</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides centralized polling and event management for mouse input, including button presses, cursor movement, and scroll wheel activity. This singleton class monitors mouse state and raises events with comprehensive information including button states, position data, scroll deltas, and keyboard modifier states, with support for event throttling and pause functionality.  
+ <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a5a013ec1fc0742a7efd72631ad13ad68" id="r_a5a013ec1fc0742a7efd72631ad13ad68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a013ec1fc0742a7efd72631ad13ad68">StartMonitoringMouse</a> (bool trackMouseMovement=true, double timeBetweenEvents=-1, bool isPaused=false)</td></tr>
+<tr class="memdesc:a5a013ec1fc0742a7efd72631ad13ad68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts or reconfigures mouse input monitoring with the specified settings. This method creates a new configuration that controls movement tracking, event throttling, and pause state. Call this method to begin monitoring mouse input or to change monitoring settings.  <br /></td></tr>
 <tr class="memitem:affe11699c919122f54beeebc29fd90ba" id="r_affe11699c919122f54beeebc29fd90ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affe11699c919122f54beeebc29fd90ba">StopMonitoringMouse</a> ()</td></tr>
+<tr class="memdesc:affe11699c919122f54beeebc29fd90ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops monitoring mouse input by clearing the configuration. After calling this method, mouse events will no longer be raised until <a class="el" href="#a5a013ec1fc0742a7efd72631ad13ad68" title="Starts or reconfigures mouse input monitoring with the specified settings. This method creates a new ...">StartMonitoringMouse</a> is called again. This is useful for completely disabling mouse input, such as during specific game states or when transitioning between scenes.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a863a32be78e3091effe86a1fdf090ddc" id="r_a863a32be78e3091effe86a1fdf090ddc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a863a32be78e3091effe86a1fdf090ddc">Initialize</a> (<a class="el" href="interface_gondwana_1_1_input_1_1_mouse_1_1_i_mouse_adapter.html">IMouseAdapter</a> adapter, <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html">MouseEventConfiguration</a>? mouseEventConfiguration=null)</td></tr>
+<tr class="memdesc:a863a32be78e3091effe86a1fdf090ddc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html" title="Provides centralized polling and event management for mouse input, including button presses,...">MouseEventPoller</a> with the specified mouse adapter and optional configuration. This method replaces the existing instance and configures it to monitor mouse input through the provided adapter.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:abc22f03595a97cf74a7337dfd7884d93" id="r_abc22f03595a97cf74a7337dfd7884d93"><td class="memItemLeft" align="right" valign="top">static ? <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html">MouseEventPoller</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc22f03595a97cf74a7337dfd7884d93">Instance</a><code> [get]</code></td></tr>
+<tr class="memdesc:abc22f03595a97cf74a7337dfd7884d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html" title="Provides centralized polling and event management for mouse input, including button presses,...">MouseEventPoller</a> class. This instance is created through the <a class="el" href="#a863a32be78e3091effe86a1fdf090ddc" title="Initializes the singleton instance of the MouseEventPoller with the specified mouse adapter and optio...">Initialize</a> method and provides centralized access to mouse event polling functionality throughout the application.  <br /></td></tr>
 <tr class="memitem:ae57b5ff4b484f7cef22ceb8bc3c0efe3" id="r_ae57b5ff4b484f7cef22ceb8bc3c0efe3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_input_1_1_mouse_1_1_i_mouse_adapter.html">IMouseAdapter</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae57b5ff4b484f7cef22ceb8bc3c0efe3">Adapter</a><code> [get]</code></td></tr>
+<tr class="memdesc:ae57b5ff4b484f7cef22ceb8bc3c0efe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse adapter currently in use, which provides access to the underlying mouse hardware state including cursor position, pressed buttons, and scroll wheel data. Returns <code>null</code> if no adapter has been configured.  <br /></td></tr>
 <tr class="memitem:a8c3a4dacf1848fd18958875e4b772a3c" id="r_a8c3a4dacf1848fd18958875e4b772a3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html">MouseEventConfiguration</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c3a4dacf1848fd18958875e4b772a3c">Configuration</a><code> [get]</code></td></tr>
+<tr class="memdesc:a8c3a4dacf1848fd18958875e4b772a3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current mouse event configuration, which controls movement tracking, throttling intervals, and pause state. Returns <code>null</code> if mouse monitoring has been stopped or not yet configured.  <br /></td></tr>
 <tr class="memitem:ae8448c6a0cdb18b93d176312ad4995c2" id="r_ae8448c6a0cdb18b93d176312ad4995c2"><td class="memItemLeft" align="right" valign="top">Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8448c6a0cdb18b93d176312ad4995c2">CurrentPosition</a><code> [get]</code></td></tr>
+<tr class="memdesc:ae8448c6a0cdb18b93d176312ad4995c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of the mouse cursor in screen or client coordinates. If no adapter is configured, returns the default Point value (0, 0). This property provides convenient access to the cursor position without requiring direct access to the adapter.  <br /></td></tr>
 <tr class="memitem:a88eb94fe676c780585eb5298ade71243" id="r_a88eb94fe676c780585eb5298ade71243"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88eb94fe676c780585eb5298ade71243">CurrentKeyboardModifiers</a><code> [get]</code></td></tr>
+<tr class="memdesc:a88eb94fe676c780585eb5298ade71243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of the last poll. If no adapter is configured, returns KeyboardModifierState.None. This allows mouse event handlers to detect modified mouse operations like Ctrl+Click or Shift+Drag.  <br /></td></tr>
 <tr class="memitem:aaaa1d580ca13527978b4108f1cf2129d" id="r_aaaa1d580ca13527978b4108f1cf2129d"><td class="memItemLeft" align="right" valign="top">IReadOnlyDictionary&lt; <a class="el" href="namespace_gondwana_1_1_input_1_1_mouse.html#ac242f16981be3646394b24d27ee1565b">MouseButton</a>, <a class="el" href="struct_gondwana_1_1_input_1_1_mouse_1_1_mouse_button_state.html">MouseButtonState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaaa1d580ca13527978b4108f1cf2129d">ButtonStates</a><code> [get]</code></td></tr>
+<tr class="memdesc:aaaa1d580ca13527978b4108f1cf2129d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only dictionary containing the current state of all monitored mouse buttons, including whether each button is down, was just pressed, or was just released. This provides direct access to button states outside of event handling, useful for polling-based input checks in game loops or update methods.  <br /></td></tr>
 <tr class="memitem:a14e6a3e8d05cb6d2912bc0827e1efc39" id="r_a14e6a3e8d05cb6d2912bc0827e1efc39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14e6a3e8d05cb6d2912bc0827e1efc39">ScrollDelta</a><code> [get]</code></td></tr>
+<tr class="memdesc:a14e6a3e8d05cb6d2912bc0827e1efc39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the most recent scroll wheel delta value captured during the last poll. Positive values indicate upward scrolling, negative values indicate downward scrolling, and 0 indicates no scrolling. This provides direct access to scroll state outside of event handling.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a90e3cd4a9c169d3201b7b4226d3d5cd2" id="r_a90e3cd4a9c169d3201b7b4226d3d5cd2"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html">MouseEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90e3cd4a9c169d3201b7b4226d3d5cd2">MouseEvent</a></td></tr>
+<tr class="memdesc:a90e3cd4a9c169d3201b7b4226d3d5cd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when mouse input is detected and the configuration allows the event to be raised based on throttling settings. This event provides comprehensive mouse state information including button states (with press/release transitions), cursor position (current and previous), scroll wheel delta, and keyboard modifier states. Subscribe to this event to handle all mouse input in your application.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides centralized polling and event management for mouse input, including button presses, cursor movement, and scroll wheel activity. This singleton class monitors mouse state and raises events with comprehensive information including button states, position data, scroll deltas, and keyboard modifier states, with support for event throttling and pause functionality. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a863a32be78e3091effe86a1fdf090ddc" name="a863a32be78e3091effe86a1fdf090ddc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a863a32be78e3091effe86a1fdf090ddc">&#9670;&#160;</a></span>Initialize()</h2>
 
@@ -145,6 +161,15 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Initializes the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html" title="Provides centralized polling and event management for mouse input, including button presses,...">MouseEventPoller</a> with the specified mouse adapter and optional configuration. This method replaces the existing instance and configures it to monitor mouse input through the provided adapter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">adapter</td><td>The mouse adapter that provides access to the current mouse state including cursor position, button presses, scroll wheel data, and keyboard modifiers. This adapter abstracts platform-specific mouse input handling. </td></tr>
+    <tr><td class="paramname">mouseEventConfiguration</td><td>Optional configuration for mouse event monitoring. If <code>null</code>, a default configuration is created with mouse movement tracking enabled and the throttling interval set from Engine.Configuration.TimeBetweenMouseEvents. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a5a013ec1fc0742a7efd72631ad13ad68" name="a5a013ec1fc0742a7efd72631ad13ad68"></a>
@@ -171,6 +196,16 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Starts or reconfigures mouse input monitoring with the specified settings. This method creates a new configuration that controls movement tracking, event throttling, and pause state. Call this method to begin monitoring mouse input or to change monitoring settings. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trackMouseMovement</td><td>A value indicating whether mouse cursor movement should be tracked and reported in events. Set to <code>true</code> to track all mouse movements including hover, or <code>false</code> to only track explicit actions like button presses and scrolling. Default is <code>true</code>. </td></tr>
+    <tr><td class="paramname">timeBetweenEvents</td><td>The minimum time interval in seconds between consecutive mouse events. Use this to throttle high-frequency mouse input. A value of -1 (default) uses the engine's default time between mouse events from Engine.Configuration.TimeBetweenMouseEvents. A value of 0 means no throttling. </td></tr>
+    <tr><td class="paramname">isPaused</td><td>A value indicating whether event processing for the mouse should be initially paused. When paused, the mouse will not generate events even if moved, clicked, or scrolled. Default is <code>false</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="affe11699c919122f54beeebc29fd90ba" name="affe11699c919122f54beeebc29fd90ba"></a>
@@ -187,6 +222,8 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Stops monitoring mouse input by clearing the configuration. After calling this method, mouse events will no longer be raised until <a class="el" href="#a5a013ec1fc0742a7efd72631ad13ad68" title="Starts or reconfigures mouse input monitoring with the specified settings. This method creates a new ...">StartMonitoringMouse</a> is called again. This is useful for completely disabling mouse input, such as during specific game states or when transitioning between scenes. </p>
 
 </div>
 </div>
@@ -211,6 +248,8 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the mouse adapter currently in use, which provides access to the underlying mouse hardware state including cursor position, pressed buttons, and scroll wheel data. Returns <code>null</code> if no adapter has been configured. </p>
+
 </div>
 </div>
 <a id="aaaa1d580ca13527978b4108f1cf2129d" name="aaaa1d580ca13527978b4108f1cf2129d"></a>
@@ -232,6 +271,8 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets a read-only dictionary containing the current state of all monitored mouse buttons, including whether each button is down, was just pressed, or was just released. This provides direct access to button states outside of event handling, useful for polling-based input checks in game loops or update methods. </p>
 
 </div>
 </div>
@@ -255,6 +296,8 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current mouse event configuration, which controls movement tracking, throttling intervals, and pause state. Returns <code>null</code> if mouse monitoring has been stopped or not yet configured. </p>
+
 </div>
 </div>
 <a id="a88eb94fe676c780585eb5298ade71243" name="a88eb94fe676c780585eb5298ade71243"></a>
@@ -276,6 +319,8 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the current state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of the last poll. If no adapter is configured, returns KeyboardModifierState.None. This allows mouse event handlers to detect modified mouse operations like Ctrl+Click or Shift+Drag. </p>
 
 </div>
 </div>
@@ -299,6 +344,8 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current position of the mouse cursor in screen or client coordinates. If no adapter is configured, returns the default Point value (0, 0). This property provides convenient access to the cursor position without requiring direct access to the adapter. </p>
+
 </div>
 </div>
 <a id="abc22f03595a97cf74a7337dfd7884d93" name="abc22f03595a97cf74a7337dfd7884d93"></a>
@@ -320,6 +367,8 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html" title="Provides centralized polling and event management for mouse input, including button presses,...">MouseEventPoller</a> class. This instance is created through the <a class="el" href="#a863a32be78e3091effe86a1fdf090ddc" title="Initializes the singleton instance of the MouseEventPoller with the specified mouse adapter and optio...">Initialize</a> method and provides centralized access to mouse event polling functionality throughout the application. </p>
 
 </div>
 </div>
@@ -343,6 +392,8 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the most recent scroll wheel delta value captured during the last poll. Positive values indicate upward scrolling, negative values indicate downward scrolling, and 0 indicates no scrolling. This provides direct access to scroll state outside of event handling. </p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -358,11 +409,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when mouse input is detected and the configuration allows the event to be raised based on throttling settings. This event provides comprehensive mouse state information including button states (with press/release transitions), cursor position (current and previous), scroll wheel delta, and keyboard modifier states. Subscribe to this event to handle all mouse input in your application. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>X:/github/isthimius/Gondwana/Gondwana/Input/Mouse/<a class="el" href="_mouse_event_poller_8cs.html">MouseEventPoller.cs</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
