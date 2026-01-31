@@ -1,8 +1,9 @@
-﻿using Gondwana.Drawing;
+﻿using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Backbuffers;
 
 public class GpuBackbuffer : BackbufferBase
 {
@@ -47,11 +48,11 @@ public class GpuBackbuffer : BackbufferBase
         _grContext.Submit(true);
     }
 
-    protected internal override void DrawTileFrame(Tile tile)
+    protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
         if (image != null)
-            Canvas.DrawImage(image, tile.DrawLocation.ToSKRect());
+            Canvas.DrawImage(image, tile.DrawLocationWorld.ToSKRect());
     }
 
     protected internal override SKImage Snapshot() => _surface.Snapshot();

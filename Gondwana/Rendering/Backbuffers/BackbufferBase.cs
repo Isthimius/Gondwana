@@ -1,17 +1,18 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Backbuffers;
 
 /// <summary>
 /// Represents a base class for managing a graphical backbuffer, and is the in-memory surface where
 /// rendering operations are performed before being presented to the display.
 /// </summary>
 /// <remarks>This abstract class serves as the foundation for backbuffer implementations, offering methods and
-/// properties to facilitate rendering operations, manage graphical state, and interact with graphical  elements such as
+/// properties to facilitate rendering operations, manage graphical state, and interact with graphical elements such as
 /// tiles. Derived classes must implement the <see cref="Canvas"/>, <see cref="DrawTileFrame(Tile)"/>, and <see
 /// cref="Snapshot"/> members to define specific rendering behavior.</remarks>
 public abstract class BackbufferBase : IDisposable
@@ -35,24 +36,38 @@ public abstract class BackbufferBase : IDisposable
 
     protected internal abstract void BeginFrame();
 
-    protected internal abstract void DrawTileFrame(Tile tile);
+    protected internal abstract void DrawTileFrame(Tile tile, RectangleF destRectScreen);
 
     protected internal abstract void EndFrame();
 
     /// <summary>
     /// Gets or sets the paint object used to render fog effects.
     /// </summary>
-    public SKPaint FogPaint { get; set; } = new() { Color = new SKColor(0, 0, 0, 128), IsAntialias = true };
+    public SKPaint FogPaint { get; set; } = new()
+    {
+        Color = new SKColor(0, 0, 0, 128),
+        IsAntialias = true
+    };
 
     /// <summary>
     /// Gets or sets the paint settings used to render grid lines.
     /// </summary>
-    public SKPaint GridLinePaint { get; set; } = new() { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 };
+    public SKPaint GridLinePaint { get; set; } = new()
+    {
+        Color = SKColors.White,
+        IsStroke = true,
+        StrokeWidth = 1
+    };
 
     /// <summary>
     /// Gets or sets the paint settings used to render collision boxes.
     /// </summary>
-    public SKPaint CollisionBoxPaint { get; set; } = new() { Color = SKColors.Green, IsStroke = true, StrokeWidth = 1 };
+    public SKPaint CollisionBoxPaint { get; set; } = new()
+    {
+        Color = SKColors.Green,
+        IsStroke = true,
+        StrokeWidth = 1
+    };
 
     /// <summary>
     /// Gets the current Backbuffer width in a thread-safe manner.
@@ -78,7 +93,8 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
-    /// ***** IMPORTANT: DirtyRectangle is ALWAYS in adapter/control SCREEN pixels. *****
+    /// Union of all rectangle areas redrawn on the current frame, to be rendered to the UI adapter.
+    /// <para />***** IMPORTANT: DirtyRectangle is ALWAYS in adapter/control SCREEN pixels. *****
     /// </summary>
     protected internal Rectangle DirtyRectangle { get; private set; }
 
@@ -111,48 +127,97 @@ public abstract class BackbufferBase : IDisposable
 
         _fillPaint.Color = ClearColor;
 
+        // Screen-pixel space
+        Canvas.Save();
+        Canvas.ResetMatrix();
+
         // Rect is expected to be in the current canvas coordinate space.
         Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
+
+        // mark area as dirty so it gets presented to the UI adapter
+        AddToBackbufferDirtyRectangle(rectPx);
+
+        Canvas.Restore();
     }
 
-    /// <summary>
-    /// Runs as part of DoBackgroundTasks()
-    /// </summary>
-    internal void DrawTiles(IEnumerable<Tile> tiles)
+    internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables, Rectangle clipRect)
+    {
+        Canvas.Save();
+        Canvas.ClipRect(clipRect.ToSKRect());
+
+        var tiles = new List<Tile>();
+
+        foreach (var drawable in drawables)
+        {
+            if (!drawable.Visible)
+                continue;
+
+            var destRectScreen = drawable.GetDrawLocationScreen(view);
+            drawable.Draw(this, destRectScreen);
+
+            AddToBackbufferDirtyRectangle(destRectScreen.ToPixelAlignedRect());
+
+            if (drawable is Tile tile)
+                tiles.Add(tile);
+        }
+
+        PostDrawTiles(view, tiles);
+
+        Canvas.Restore();
+    }
+
+    private void PostDrawTiles(View view, List<Tile> tiles)
     {
         foreach (var tile in tiles)
         {
-            if (!tile.Visible)
-                continue;
+            // WORLD -> SCREEN conversion
+            var worldPts = tile.OutlinePointsWorld;
+            var ptsScreen = new SKPoint[worldPts.Length];
 
-            DrawTileFrame(tile);
-        }
+            for (int i = 0; i < worldPts.Length; i++)
+            {
+                var p = worldPts[i];
+                var sp = view.WorldPxToScreenPx(
+                    tile.SceneLayer,
+                    new PointF(p.X, p.Y)
+                );
 
-        foreach (var tile in tiles)
-        {
+                ptsScreen[i] = new SKPoint(sp.X, sp.Y);
+            }
+
+            // close polygon when needed
+            static SKPoint[] Enclose(SKPoint[] pts)
+            {
+                if (pts.Length == 0) return pts;
+                var arr = new SKPoint[pts.Length + 1];
+                Array.Copy(pts, arr, pts.Length);
+                arr[^1] = pts[0];
+                return arr;
+            }
+
             if (tile.EnableFog)
             {
                 using var path = new SKPath();
-                var pts = tile.OutlinePoints.ToSKPoints(enclose: true);
-
-                path.AddPoly(pts, close: true);
-
+                path.AddPoly(ptsScreen, close: true);
                 Canvas.DrawPath(path, FogPaint);
             }
 
             if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), GridLinePaint);
+                Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), GridLinePaint);
 
             if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)
-                Canvas.DrawPoints(SKPointMode.Polygon, tile.OutlinePoints.ToSKPoints(enclose: true), CollisionBoxPaint);
+            {
+                var colRectScreen = tile.GetCollisionAreaScreen(view).ToSKRect();
+                Canvas.DrawRect(colRectScreen, CollisionBoxPaint);
+            }
         }
     }
 
     /// <summary>
-    /// Runs as part of DoBackgroundTasks().
     /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
+    /// This is used to signal to the UI adapter what needs to be repainted.
     /// </summary>
-    protected internal void AddToDirtyRectangle(Rectangle area)
+    protected internal void AddToBackbufferDirtyRectangle(Rectangle area)
     {
         if (area.IsEmpty)
             return;
@@ -160,11 +225,6 @@ public abstract class BackbufferBase : IDisposable
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
-    }
-
-    protected internal void MarkFullDirty()
-    {
-        DirtyRectangle = new Rectangle(0, 0, Width, Height);
     }
 
     protected internal void ClearDirtyRectangle()

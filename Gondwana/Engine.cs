@@ -14,17 +14,74 @@ using Timer = Gondwana.Timers.Timer;
 
 namespace Gondwana;
 
+/// <summary>
+/// Represents the core game engine singleton responsible for managing the main update loop,
+/// input systems, rendering, timing, and subsystem coordination.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The <see cref="Engine"/> class is implemented as a thread-safe singleton and provides
+/// centralized access to all major engine subsystems including input polling, scene management,
+/// rendering, and collision detection.
+/// </para>
+/// <para>
+/// Typical usage involves calling <see cref="Initialize"/> to configure the engine,
+/// then <see cref="Start(SynchronizationContext)"/> to begin the main loop, and finally
+/// <see cref="Stop"/> followed by <see cref="Dispose"/> for cleanup.
+/// </para>
+/// </remarks>
 public sealed class Engine : IDisposable
 {
     #region static members
 
     private static readonly Lazy<Engine> _instance = new(() => new Engine());
+    
+    /// <summary>
+    /// Gets the singleton instance of the <see cref="Engine"/>.
+    /// </summary>
+    /// <value>The globally shared <see cref="Engine"/> instance.</value>
+    /// <remarks>
+    /// This property provides thread-safe access to the engine instance using lazy initialization.
+    /// The instance is created on first access and persists for the application lifetime.
+    /// </remarks>
     public static Engine Instance => _instance.Value;
 
+    /// <summary>
+    /// Gets the logger instance used by the engine for diagnostic and informational messages.
+    /// </summary>
+    /// <value>An <see cref="ILogger{TCategoryName}"/> instance configured for the <see cref="Engine"/> type.</value>
+    /// <remarks>
+    /// This logger is used internally by the engine to report initialization status,
+    /// errors, warnings, and other runtime information.
+    /// </remarks>
     public static ILogger<Engine> Logger => EngineLogger.GetLogger<Engine>();
 
+    /// <summary>
+    /// Gets the keyboard event polling subsystem, if initialized.
+    /// </summary>
+    /// <value>
+    /// The <see cref="Gondwana.Input.Keyboard.KeyboardEventPoller"/> instance if initialized;
+    /// otherwise, <c>null</c>.
+    /// </value>
+    /// <remarks>
+    /// This property provides access to the keyboard input subsystem. The poller must be
+    /// initialized via <see cref="Initialize"/> with a valid <see cref="IKeyboardAdapter"/>
+    /// before use.
+    /// </remarks>
     public static KeyboardEventPoller? KeyboardEventPoller => KeyboardEventPoller.Instance ?? null;
 
+    /// <summary>
+    /// Gets the mouse event polling subsystem, if initialized.
+    /// </summary>
+    /// <value>
+    /// The <see cref="Gondwana.Input.Mouse.MouseEventPoller"/> instance if initialized;
+    /// otherwise, <c>null</c>.
+    /// </value>
+    /// <remarks>
+    /// This property provides access to the mouse input subsystem. The poller must be
+    /// initialized via <see cref="Initialize"/> with a valid <see cref="IMouseAdapter"/>
+    /// before use.
+    /// </remarks>
     public static MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
 
     private static IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
@@ -43,6 +100,17 @@ public sealed class Engine : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the gamepad event polling subsystem, if initialized.
+    /// </summary>
+    /// <value>
+    /// The <see cref="Gondwana.Input.Gamepad.GamepadEventPoller"/> instance if initialized;
+    /// otherwise, <c>null</c>.
+    /// </value>
+    /// <remarks>
+    /// This property provides access to the gamepad input subsystem. The poller is
+    /// automatically initialized when a <see cref="GamepadManager"/> is assigned.
+    /// </remarks>
     public static GamepadEventPoller? GamepadEventPoller => GamepadEventPoller.Instance;
 
     #endregion
@@ -122,7 +190,7 @@ public sealed class Engine : IDisposable
     /// <remarks>
     /// <para>
     /// Use this event to inject custom background logic such as diagnostics, AI updates,
-    /// or subsystem polling prior to the engine’s own background operations.
+    /// or subsystem polling prior to the engine's own background operations.
     /// </para>
     /// </remarks>
     public event Action? BeforeBackgroundTasksExecute;
@@ -312,7 +380,7 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>
-    /// Starts the <see cref="Engine"/> using the current thread’s <see cref="SynchronizationContext"/>.
+    /// Starts the <see cref="Engine"/> using the current thread's <see cref="SynchronizationContext"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -365,7 +433,7 @@ public sealed class Engine : IDisposable
     /// Threading behavior:
     /// </para>
     /// <list type="bullet">
-    ///   <item><description>The engine’s main loop runs on a background task, not the UI thread.</description></item>
+    ///   <item><description>The engine's main loop runs on a background task, not the UI thread.</description></item>
     ///   <item><description>All rendering and timing operations are controlled through <see cref="Cycle"/>.</description></item>
     ///   <item><description>The <see cref="UiDispatcher"/> guarantees that event notifications 
     ///   targeting the UI are executed safely on the originating thread.</description></item>
@@ -408,6 +476,8 @@ public sealed class Engine : IDisposable
 
         _cycleTask = Task.Run(() =>
         {
+            EngineDispatcher.BindToCurrentThread();
+
             while (Instance.IsRunning)
             {
                 Instance.Cycle();
@@ -421,13 +491,13 @@ public sealed class Engine : IDisposable
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method cleanly terminates the engine’s background execution cycle started by 
+    /// This method cleanly terminates the engine's background execution cycle started by 
     /// <see cref="Start(SynchronizationContext)"/>. It sets <see cref="IsRunning"/> to <c>false</c>,
     /// signaling the loop in <see cref="Cycle"/> to exit on the next iteration.
     /// </para>
     /// <para>
     /// <b>Stop()</b> does not immediately dispose of resources or clear state. It simply halts
-    /// ongoing updates and rendering, allowing the engine’s subsystems (timers, surfaces, 
+    /// ongoing updates and rendering, allowing the engine's subsystems (timers, surfaces, 
     /// input pollers, etc.) to remain intact for later reuse or inspection.
     /// </para>
     /// <para>
@@ -449,34 +519,169 @@ public sealed class Engine : IDisposable
 
     #region public properties
 
+    /// <summary>
+    /// Gets the UI dispatcher used for marshalling operations to the UI thread.
+    /// </summary>
+    /// <value>
+    /// An <see cref="IUiDispatcher"/> instance if the engine was started with a valid
+    /// <see cref="SynchronizationContext"/>; otherwise, <c>null</c>.
+    /// </value>
+    /// <remarks>
+    /// This dispatcher is established when <see cref="Start(SynchronizationContext)"/> is called
+    /// and is used internally to post events and operations that must execute on the UI thread.
+    /// </remarks>
     public IUiDispatcher? UiDispatcher { get; private set; }
 
+    /// <summary>
+    /// Gets the engine dispatcher used for marshalling operations to the engine's background thread.
+    /// </summary>
+    /// <value>An <see cref="IEngineDispatcher"/> instance bound to the engine's update loop thread.</value>
+    /// <remarks>
+    /// This dispatcher allows external code to safely post work items that should execute
+    /// on the engine's dedicated background thread, ensuring thread-safe access to engine state.
+    /// </remarks>
+    public IEngineDispatcher EngineDispatcher { get; } = new EngineDispatcher();
+
+    /// <summary>
+    /// Gets a value indicating whether the engine has completed its initialization sequence.
+    /// </summary>
+    /// <value><c>true</c> if initialization is complete; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// This property returns <c>true</c> after <see cref="Initialize"/> has successfully
+    /// completed all setup operations and raised the <see cref="InitializationComplete"/> event.
+    /// </remarks>
     public bool IsInitialized => _isInitialized;
 
+    /// <summary>
+    /// Gets a value indicating whether the engine is currently in the process of initializing.
+    /// </summary>
+    /// <value><c>true</c> if initialization is in progress; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// This property is <c>true</c> between the start of <see cref="Initialize"/> and
+    /// the completion of all initialization steps. It is used to prevent concurrent initialization attempts.
+    /// </remarks>
     public bool IsInitializing => _isInitializing;
 
+    /// <summary>
+    /// Gets a value indicating whether the engine's main loop is currently executing.
+    /// </summary>
+    /// <value><c>true</c> if the engine loop is active; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// This property is set to <c>true</c> when <see cref="Start(SynchronizationContext)"/> is called
+    /// and remains <c>true</c> until <see cref="Stop"/> is invoked or the engine is disposed.
+    /// </remarks>
     public bool IsRunning { get; private set; }
 
+    /// <summary>
+    /// Gets the total number of high-resolution timer ticks that have elapsed since the engine started.
+    /// </summary>
+    /// <value>The elapsed ticks as measured by <see cref="HighResTimer"/>.</value>
+    /// <remarks>
+    /// This value represents elapsed time in the native resolution of the high-resolution timer.
+    /// Use <see cref="TotalSecondsEngineRunning"/> for a time value in seconds.
+    /// </remarks>
     public long TotalTicksEngineRunning => HighResTimer.GetCurrentTick() - _startTick;
 
+    /// <summary>
+    /// Gets the total number of seconds that have elapsed since the engine started.
+    /// </summary>
+    /// <value>The elapsed time in seconds as a floating-point value.</value>
+    /// <remarks>
+    /// This value is derived from <see cref="TotalTicksEngineRunning"/> and provides
+    /// a convenient measure of total runtime duration.
+    /// </remarks>
     public double TotalSecondsEngineRunning => TotalTicksEngineRunning / (double)HighResTimer.TicksPerSecond;
 
+    /// <summary>
+    /// Gets the current gross cycles per second rate.
+    /// </summary>
+    /// <value>The number of complete engine cycles executed per second, including throttled cycles.</value>
+    /// <remarks>
+    /// <para>
+    /// This metric reflects all calls to <see cref="Cycle"/>, regardless of whether
+    /// a foreground render was performed. It represents the engine's update frequency
+    /// for background tasks such as input polling, timers, and animations.
+    /// </para>
+    /// <para>
+    /// This value is updated at the interval specified by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
+    /// </para>
+    /// </remarks>
     public double CyclesPerSecond => _grossCPS;
 
+    /// <summary>
+    /// Gets the current net frames per second rate.
+    /// </summary>
+    /// <value>The number of complete render frames presented per second.</value>
+    /// <remarks>
+    /// <para>
+    /// This metric reflects only cycles that resulted in a foreground render operation,
+    /// as controlled by <see cref="EngineConfiguration.TargetFPS"/>. It represents the
+    /// actual visual frame rate delivered to the user.
+    /// </para>
+    /// <para>
+    /// This value is updated at the interval specified by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
+    /// </para>
+    /// </remarks>
     public double FramesPerSecond => _netFPS;
 
+    /// <summary>
+    /// Gets a value indicating whether the engine has been disposed.
+    /// </summary>
+    /// <value><c>true</c> if <see cref="Dispose"/> has completed; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// Once this property is <c>true</c>, the engine instance should not be used further.
+    /// All managed resources have been released and subsystems have been shut down.
+    /// </remarks>
     public bool IsDisposed { get; private set; } = false;
 
+    /// <summary>
+    /// Gets the engine's persistent state container for storing arbitrary key-value data.
+    /// </summary>
+    /// <value>An <see cref="EngineState"/> instance that persists across engine sessions.</value>
+    /// <remarks>
+    /// <para>
+    /// The <see cref="State"/> container provides a convenient mechanism for storing
+    /// game-specific configuration, player progress, or other persistent data that should
+    /// survive between application runs.
+    /// </para>
+    /// <para>
+    /// State can be loaded from and saved to disk using the methods provided by
+    /// the <see cref="EngineState"/> class.
+    /// </para>
+    /// </remarks>
     public EngineState State { get; } = new EngineState();
 
     private EngineConfiguration? _config = new();
 
+    /// <summary>
+    /// Gets the current engine configuration settings.
+    /// </summary>
+    /// <value>An <see cref="EngineConfiguration"/> instance containing all engine settings.</value>
+    /// <remarks>
+    /// <para>
+    /// This property provides thread-safe access to the engine's configuration,
+    /// which is loaded during <see cref="Initialize"/> from a configuration file
+    /// or default values.
+    /// </para>
+    /// <para>
+    /// Configuration settings control behavior such as target frame rate, logging mode,
+    /// sampling intervals, and other core engine parameters.
+    /// </para>
+    /// </remarks>
     public EngineConfiguration Configuration
     {
         get => Volatile.Read(ref _config!);
         private set => Volatile.Write(ref _config, value);
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the engine is currently executing its disposal sequence.
+    /// </summary>
+    /// <value><c>true</c> if disposal is in progress; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// This property is set to <c>true</c> at the start of <see cref="Dispose"/> and can be
+    /// used by subsystems to detect when cleanup is underway.
+    /// </remarks>
     public bool IsDisposing { get; private set; }
 
     #endregion public properties
@@ -485,6 +690,8 @@ public sealed class Engine : IDisposable
 
     private void Cycle()
     {
+        EngineDispatcher.Drain();
+
         long tick = HighResTimer.GetCurrentTick();
 
         DoBackgroundTasks(tick);
@@ -541,7 +748,7 @@ public sealed class Engine : IDisposable
 
         // update cameras so any movement can mark RefreshNeeded = All.
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.ViewRenderer!.UpdateCameras(deltaSeconds);
+            surface.ViewManager.UpdateCameras(deltaSeconds);
 
         AfterBackgroundTasksExecute?.Invoke();
 
@@ -553,21 +760,16 @@ public sealed class Engine : IDisposable
         // raise event
         BeforeEngineCycle?.Invoke();
 
-        // refresh all RenderSurfaceHost backbuffers
-        foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.DrawRefreshQueueToBackbuffer(tick);
-
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 
-        // render all DirectDrawing instances.
-        // this will add to the DirtyRects of any Backbuffers,
-        // to be picked up next DoBackgroundTasks()
-        DirectDrawingManager.Instance.RenderAll();
+        // refresh all RenderSurfaceHost backbuffers
+        foreach (var surface in RenderSurfaceHostRegistry.All)
+            surface.RenderToBackbuffer(tick);
 
         // render each Backbuffer to RenderSurfaceHost adapter
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.RenderBackbufferToAdapter();
+            surface.PresentBackbufferToAdapter();
 
         // update state of gamepad(s)
         GamepadManager?.Update();
@@ -594,7 +796,7 @@ public sealed class Engine : IDisposable
         double grossCps = grossCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
         double netCps = netCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
 
-        // Build immutable args NOW (so lambda doesn’t read changing fields later)
+        // Build immutable args NOW (so lambda doesn't read changing fields later)
         var args = new CyclesPerSecondCalculatedEventArgs(
             grossCycles,
             netCycles,
@@ -689,6 +891,27 @@ public sealed class Engine : IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="Engine"/> and stops all subsystems.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method performs an orderly shutdown of the engine, including:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>Stopping the main engine loop</description></item>
+    ///   <item><description>Waiting for the background thread to exit</description></item>
+    ///   <item><description>Raising the <see cref="Disposing"/> event</description></item>
+    ///   <item><description>Cleaning up input subsystems</description></item>
+    ///   <item><description>Flushing asynchronous logs if configured</description></item>
+    ///   <item><description>Clearing timers and state</description></item>
+    ///   <item><description>Raising the <see cref="Disposed"/> event</description></item>
+    /// </list>
+    /// <para>
+    /// After disposal, the engine instance should not be used. To restart the engine,
+    /// a new application session is required.
+    /// </para>
+    /// </remarks>
     public void Dispose()
     {
         Dispose(disposing: true);

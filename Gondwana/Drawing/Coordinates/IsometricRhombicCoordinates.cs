@@ -8,7 +8,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// but kept separate for alternative adjacency/rounding if needed.
 /// Uses identical math for now (clean, predictable behavior).
 /// </summary>
-internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
+internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
@@ -22,8 +22,8 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         float dx = gp.X;
         float dy = gp.Y;
 
-        float px = originX + (dx - dy) * (W / 2f);
-        float py = originY + (dx + dy) * (H / 2f);
+        float px = (dx - dy) * (W / 2f) - originX;
+        float py = (dx + dy) * (H / 2f) - originY;
 
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
@@ -36,8 +36,8 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        float a = (pixelPt.X - originX) / (W / 2f);
-        float b = (pixelPt.Y - originY) / (H / 2f);
+        float a = (pixelPt.X + originX) / (W / 2f);
+        float b = (pixelPt.Y + originY) / (H / 2f);
 
         float dx = (a + b) / 2f;
         float dy = (b - a) / 2f;
@@ -45,13 +45,13 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
         return new PointF(dx, dy);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        var ul = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Left, pixelRange.Top));
-        var ur = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Right, pixelRange.Top));
-        var ll = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Left, pixelRange.Bottom));
-        var lr = GetSceneLayerCoordinatesAtPixel( sceneLayer, new PointF(pixelRange.Right, pixelRange.Bottom));
+        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
+        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Top));
+        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Bottom));
+        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Bottom));
 
         int minX = (int)Math.Floor(new[] { ul.X, ur.X, ll.X, lr.X }.Min()) - 1;
         int maxX = (int)Math.Ceiling(new[] { ul.X, ur.X, ll.X, lr.X }.Max()) + 1;
@@ -65,7 +65,7 @@ internal sealed class DiagIsoDiagMatrixCoordinates : ISceneLayerCoordinates
                 var gp =  sceneLayer[x, y];
                 if (gp == null) continue;
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(pixelRange)) result.Add(gp);
+                if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
         return result;

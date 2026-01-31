@@ -1,9 +1,12 @@
-﻿using Gondwana.Rendering;
-using Gondwana.Timers;
-using SkiaSharp;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
+using Gondwana.Timers;
+using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct.Particles;
 
@@ -179,12 +182,52 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// </summary>
     public float CullingMarginY { get; set; } = 32f;
 
-    public ParticleSurface(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
-        : base(host, bounds)
+    private ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
+                           DirectDrawingMode mode,
+                           SceneLayer? sceneLayer,
+                           View? view,
+                           Rectangle? screenBounds,
+                           Rectangle? worldBounds,
+                           string? nickname = null,
+                           int maxParticles = 2000,
+                           SKBitmap? particleSprite = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);
         _particleSprite = particleSprite;
     }
+
+    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
+                           SceneLayer sceneLayer,
+                           Rectangle? worldBounds,
+                           string? nickname = null,
+                           int maxParticles = 2000,
+                           SKBitmap? particleSprite = null)
+        : this(renderSurfaceHost,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer,
+               null,
+               null,
+               worldBounds,
+               nickname,
+               maxParticles,
+               particleSprite) { }
+
+    public ParticleSurface (RenderSurfaceHostBase renderSurfaceHost,
+                            View view,
+                            Rectangle? screenBounds,
+                            string? nickname = null,
+                            int maxParticles = 2000,
+                            SKBitmap? particleSprite = null)
+        : this(renderSurfaceHost,
+              DirectDrawingMode.View,
+              null,
+              view,
+              screenBounds,
+              null,
+              nickname,
+              maxParticles,
+              particleSprite) { }
 
     /// <summary>
     /// Immediately spawns a fixed number of particles from the given emitter.
@@ -287,10 +330,10 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             p.Life -= dt;
 
             // cull if out of bounds (with margin)
-            bool isInView = p.X >= Bounds.Left - CullingMarginX
-                         && p.X <= Bounds.Right + CullingMarginX
-                         && p.Y >= Bounds.Top - CullingMarginY
-                         && p.Y <= Bounds.Bottom + CullingMarginY;
+            bool isInView = p.X >= ScreenBounds.Left - CullingMarginX
+                         && p.X <= ScreenBounds.Right + CullingMarginX
+                         && p.Y >= ScreenBounds.Top - CullingMarginY
+                         && p.Y <= ScreenBounds.Bottom + CullingMarginY;
 
             if (p.Life > 0 && isInView)
                 _particles[write++] = p;
@@ -329,9 +372,9 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// particles.Invalidate();       // mark dirty so the manager re-renders
     /// </code>
     /// </example>
-    protected internal override void Draw()
+    protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = backbuffer.Canvas;
 
         // e.g., default blend; you may switch per-emitter later if you add BlendMode there
         _paint.BlendMode = SKBlendMode.Plus;

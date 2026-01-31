@@ -1,55 +1,53 @@
 ﻿using Gondwana.Scenes;
-using SkiaSharp;
+using System.Collections.ObjectModel;
 using System.Drawing;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Views;
 
-public sealed class ViewRenderer
+public sealed class ViewManager
 {
     private readonly RenderSurfaceHostBase _renderSurfaceHost;
     private readonly List<View> _views = new();
 
-    private ViewRenderer() { }
+    // TODO: add events for view added/removed/changed
 
-    internal ViewRenderer(RenderSurfaceHostBase renderSurfaceHost)
+    private ViewManager() { }
+
+    internal ViewManager(RenderSurfaceHostBase renderSurfaceHost)
     {
         _renderSurfaceHost = renderSurfaceHost;
     }
 
-    public IReadOnlyList<View> Views => _views;
+    public ReadOnlyCollection<View> Views => _views.AsReadOnly();
 
     public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0, RectangleF? worldBoundsPx = null)
     {
-        if (_renderSurfaceHost.Scene is not null)
+        if (worldBoundsPx is null)
+            worldBoundsPx = RectangleF.Empty;
+
+        var cam = new Camera(_renderSurfaceHost.Scene)
         {
-            if (worldBoundsPx is null)
-                worldBoundsPx = RectangleF.Empty;
+            // clamp camera to Scene pixel bounds
+            WorldBoundsPx = worldBoundsPx.Value,
+            FollowLerpPerSecond = 0f // snap by default
+        };
 
-            var cam = new Camera(_renderSurfaceHost.Scene)
-            {
-                // clamp camera to Scene pixel bounds
-                WorldBoundsPx = worldBoundsPx.Value,
-                FollowLerpPerSecond = 0f // snap by default
-            };
+        cam.SnapTo(new PointF(0, 0));
 
-            cam.SnapTo(new PointF(0, 0));
+        var vp = new Viewport
+        {
+            TargetRectPx = targetRectPx,
+            Zoom = zoom
+        };
 
-            var vp = new Viewport
-            {
-                TargetRectPx = targetRectPx,
-                Zoom = zoom
-            };
+        var view = new View(cam, vp) { ZOrder = zOrder };
+        view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
+        view.Viewport.ZoomChanged += OnViewportZoomChanged;
 
-            var view = new View(cam, vp) { ZOrder = zOrder };
-            view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
-            view.Viewport.ZoomChanged += OnViewportZoomChanged;
+        _views.Add(view);
+        _renderSurfaceHost.Scene.FullRefreshNeeded = true;
 
-            _views.Add(view);
-            SortViews();
-
-            if (_renderSurfaceHost.Scene is not null)
-                _renderSurfaceHost.Scene.FullRefreshNeeded = true;
-        }
+        SortViews();
     }
 
     /// <summary>
@@ -153,7 +151,7 @@ public sealed class ViewRenderer
 
     public void ClearViews()
     {
-        foreach (var view in _views)
+        foreach (var view in _views!)
         {
             view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
             view.Viewport.ZoomChanged -= OnViewportZoomChanged;
@@ -165,6 +163,26 @@ public sealed class ViewRenderer
             _renderSurfaceHost.Scene.FullRefreshNeeded = true;
     }
 
+    public IReadOnlyList<View> GetViewsBelow(View view)
+    {
+        int idx = _views.IndexOf(view);
+        if (idx <= 0)
+            return Array.Empty<View>();
+
+        // views with lower Z (earlier in sorted list)
+        return _views.GetRange(0, idx);
+    }
+
+    public IReadOnlyList<View> GetViewsAbove(View view)
+    {
+        int idx = _views.IndexOf(view);
+        if (idx < 0 || idx >= _views.Count - 1)
+            return Array.Empty<View>();
+
+        // views with higher Z (later in sorted list)
+        return _views.GetRange(idx + 1, _views.Count - (idx + 1));
+    }
+
     #region internal methods
 
     internal void UpdateCameras(float dtSeconds)
@@ -173,41 +191,6 @@ public sealed class ViewRenderer
         {
             view.Camera.Update(dtSeconds);
             view.Viewport.UpdateZoom(dtSeconds);
-        }
-    }
-
-    internal void Render(
-        SKCanvas canvas,
-        float dtSeconds,
-        Scene scene,
-        Action<View, SceneLayer> drawLayer)
-    {
-        foreach (var view in _views)
-        {
-            // Camera already updated earlier this frame.
-            view.Viewport.Begin(canvas);
-
-            var cam = view.Camera;
-
-            int countOfVisibleLayers = scene?.CountOfVisibleLayers ?? 0;
-            for (int i = 0; i < countOfVisibleLayers; i++)
-            {
-                var layer = scene.VisibleSceneLayers[i];
-
-                canvas.Save();
-
-                float p = layer.Parallax;
-
-                canvas.Translate(
-                    -cam.PositionPx.X * p,
-                    -cam.PositionPx.Y * p);
-
-                drawLayer(view, layer);
-
-                canvas.Restore();
-            }
-
-            view.Viewport.End(canvas);
         }
     }
 
@@ -250,7 +233,9 @@ public sealed class ViewRenderer
         _views.Sort(static (a, b) =>
         {
             int cmp = a.ZOrder.CompareTo(b.ZOrder);
-            if (cmp != 0) return cmp;
+
+            if (cmp != 0)
+                return cmp;
 
             // deterministic tie-breaker
             return a.Id.CompareTo(b.Id);

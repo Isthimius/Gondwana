@@ -1,9 +1,12 @@
-﻿using Gondwana.Rendering;
+﻿using System.Drawing;
+using System.Runtime.CompilerServices;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using SkiaSharp;
-using System.Drawing;
-using System.Runtime.CompilerServices;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -72,11 +75,15 @@ public class DirectRectangle : DirectDrawingMovableBase
     private long _pulseLastTick = 0;
     private float _timeSec; // accumulated seconds
 
-    public DirectRectangle(
-        RenderSurfaceHostBase renderSurfaceHost,
-        Rectangle bounds,
-        Color color)
-        : base(renderSurfaceHost, bounds)
+    private DirectRectangle(Color color,
+                           RenderSurfaceHostBase renderSurfaceHost,
+                           DirectDrawingMode mode,
+                           SceneLayer? sceneLayer,
+                           View? view,
+                           Rectangle? screenBounds,
+                           Rectangle? worldBounds,
+                           string? nickname = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         // initialize with defaults; actual paints built lazily
         _fillPaint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill };
@@ -85,6 +92,20 @@ public class DirectRectangle : DirectDrawingMovableBase
         SetBlendMode(SKBlendMode.SrcOver);
         SetFilled(false);
     }
+
+    public DirectRectangle(Color color,
+                           RenderSurfaceHostBase renderSurfaceHost,
+                           SceneLayer sceneLayer,
+                           Rectangle worldBounds,
+                           string? nickname = null)
+        : this(color, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, worldBounds, null, nickname) { }
+
+    public DirectRectangle(Color color,
+                           RenderSurfaceHostBase renderSurfaceHost,
+                           View view,
+                           Rectangle screenBounds,
+                           string? nickname = null)
+        : this(color, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
 
     /// <summary>Sets the base color (used for fill and/or outline if no border color is specified).</summary>
     public DirectRectangle SetColor(Color color)
@@ -350,14 +371,14 @@ public class DirectRectangle : DirectDrawingMovableBase
         base.Update(tick);
     }
 
-    protected internal override void Draw()
+    protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = backbuffer.Canvas;
 
         if (_needsRebuildPaints)
             RebuildPaints();
 
-        var fillRect = Bounds.ToSKRect();
+        var fillRect = destRectScreen.ToSKRect();
         var strokeRect = fillRect;
 
         bool willDrawStroke = !_isFilled || _borderColor.HasValue || _strokePaint.StrokeWidth > 0.01f;
@@ -366,8 +387,10 @@ public class DirectRectangle : DirectDrawingMovableBase
         // 1) APPLY STROKE ALIGNMENT (use HALF the width; path is centered)
         if (willDrawStroke && _strokeAlign != StrokeAlign.Center)
         {
-            if (_strokeAlign == StrokeAlign.Inside) strokeRect.Inflate(-half, -half);
-            else if (_strokeAlign == StrokeAlign.Outside) strokeRect.Inflate(half, half);
+            if (_strokeAlign == StrokeAlign.Inside)
+                strokeRect.Inflate(-half, -half);
+            else if (_strokeAlign == StrokeAlign.Outside)
+                strokeRect.Inflate(half, half);
         }
 
         // 1.5) corner radius for the stroke path, adjusted to keep the inner/outer arcs aligned to the fill

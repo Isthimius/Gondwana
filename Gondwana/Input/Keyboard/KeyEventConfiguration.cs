@@ -1,3 +1,4 @@
+
 namespace Gondwana.Input.Keyboard;
 
 public class KeyEventConfiguration : InputEventConfigurationBase
@@ -8,5 +9,10 @@ public class KeyEventConfiguration : InputEventConfigurationBase
         : base(secondsBetweenEvents, isPaused)
     {
         Key = key;
+    }
+
+    public override string ToString()
+    {
+        return $"KeyEventConfiguration: Key={Key}, TimeBetweenEvents={TimeBetweenEvents}, IsPaused={IsPaused}";
     }
 }

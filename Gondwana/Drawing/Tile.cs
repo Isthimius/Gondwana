@@ -2,22 +2,19 @@ using System.Drawing;
 using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing;
 
 [JsonObject(IsReference = true)]
-public abstract class Tile : IComparable<Tile>, IDisposable
+public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
 {
     #region static members
 
-    public static List<Tile> TilesAnimating { get; private set; }
-
-    static Tile()
-    {
-        TilesAnimating = new List<Tile>();
-    }
+    public static List<Tile> TilesAnimating { get; } = new();
 
     #endregion static members
 
@@ -35,35 +32,25 @@ public abstract class Tile : IComparable<Tile>, IDisposable
 
     #endregion fields
 
-    #region public fields
-
-    [JsonProperty]
-    public object Tag;
-
-    #endregion public fields
-
     #region abstract properties
 
     public abstract bool IsPositionFixed { get; }
-    public abstract Rectangle DrawLocation { get; }
+
+    public abstract Rectangle DrawLocationWorld { get; }
+    
     public abstract PointF SceneLayerCoordinates { get; }
+    
     public abstract SceneLayer SceneLayer { get; }
 
     #endregion abstract properties
 
-    [JsonIgnore]
-    public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
+    #region IDrawable members
 
     [JsonProperty]
-    public virtual int ZOrder
-    {
-        get { return zOrder; }
-        set
-        {
-            zOrder = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
-        }
-    }
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
+    [JsonProperty]
+    public string? Nickname { get; set; }
 
     [JsonProperty]
     public virtual bool Visible
@@ -72,9 +59,37 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             visible = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
+
+    [JsonProperty]
+    public virtual int ZOrder
+    {
+        get { return zOrder; }
+        set
+        {
+            zOrder = value;
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+        }
+    }
+
+    public virtual RectangleF GetDrawLocationScreen(View view)
+    {
+        return view.WorldRectToScreenRect(SceneLayer, DrawLocationWorld);
+    }
+
+    public virtual RectangleF GetCollisionAreaScreen(View view)
+    {
+        return view.WorldRectToScreenRect(SceneLayer, CollisionArea);
+    }
+
+    public virtual void Draw(BackbufferBase backbuffer, RectangleF destRectScreen) => backbuffer.DrawTileFrame(this, destRectScreen);
+
+    #endregion IDrawable members
+
+    [JsonIgnore]
+    public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
 
     [JsonProperty]
     public virtual Frame CurrentFrame
@@ -83,9 +98,9 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             // animation might change Tile size, so add before and after
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
             frame = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 
@@ -103,7 +118,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     {
         get
         {
-            Rectangle rect = DrawLocation;
+            Rectangle rect = DrawLocationWorld;
             rect.Y += AdjustCollisionArea.Top;
             rect.X += AdjustCollisionArea.Left;
             rect.Height += AdjustCollisionArea.Bottom - AdjustCollisionArea.Top;
@@ -119,7 +134,7 @@ public abstract class Tile : IComparable<Tile>, IDisposable
         set
         {
             enableFog = value;
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocation);
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 
@@ -128,22 +143,13 @@ public abstract class Tile : IComparable<Tile>, IDisposable
     /// Override this property in a derived class to define custom areas for these effects.
     /// </summary>
     [JsonIgnore]
-    public virtual Point[] OutlinePoints => SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
+    public virtual Point[] OutlinePointsWorld => SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
 
     [JsonProperty]
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
 
-    /// <summary>
-    /// if position is fixed, use top of primary (i.e., non-overhanging) area;
-    /// otherwise, use bottom of location for comparison
-    /// </summary>
-    private static float GetTileLocForCompare(Tile tile)
-    {
-        if (!tile.IsPositionFixed)
-            return tile.DrawLocation.Bottom - tile.OverhangPixels.Bottom - 1;
-        else
-            return tile.DrawLocation.Top + tile.OverhangPixels.Top;
-    }
+    [JsonProperty]
+    public TypedValueBag ValueBag { get; } = new();
 
     #region IComparable<Tile> Members
 
@@ -167,6 +173,16 @@ public abstract class Tile : IComparable<Tile>, IDisposable
              .CompareTo((tileLoc, tile.zOrder, tile.SceneLayerCoordinates.X));
     }
 
+    /// <summary>
+    /// if position is fixed, use top of primary (i.e., non-overhanging) area;
+    /// otherwise, use bottom of location for comparison
+    /// </summary>
+    private static float GetTileLocForCompare(Tile tile)
+    {
+        return tile.IsPositionFixed
+            ? tile.DrawLocationWorld.Top + tile.OverhangPixels.Top
+            : tile.DrawLocationWorld.Bottom - tile.OverhangPixels.Bottom - 1;
+    }
     #endregion IComparable<Tile> Members
 
     #region IDisposable Members

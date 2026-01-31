@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Views;
 
 /// <summary>
 /// A rectangular window on the render target with its own zoom and placement.
@@ -26,7 +26,7 @@ public sealed class Viewport
     public event Action<ViewportZoomChangedEventArgs>? ZoomChanged;
 
     /// <summary>
-    /// Screen-space rectangle (in RenderSurface pixels) where this view is drawn.
+    /// Screen-space rectangle (in SCREEN / RenderSurface pixels) where this view is drawn.
     /// This defines the on-screen position and size of the viewport for this view.
     /// </summary>
     public Rectangle TargetRectPx
@@ -78,33 +78,8 @@ public sealed class Viewport
     /// <summary>Optional per-view HUD/safe-area offset in screen pixels.</summary>
     public PointF ScreenOffsetPx { get; set; } = PointF.Empty;
 
-    /// <summary>World size visible through this viewport (useful for Camera clamping).</summary>
+    /// <summary>World size visible through this viewport (used for Camera clamping).</summary>
     public SizeF VisibleWorldSizePx => new SizeF(TargetRectPx.Width / Zoom, TargetRectPx.Height / Zoom);
-
-    /// <summary>
-    /// Apply clip and transform for this viewport. Must be paired with End().
-    /// </summary>
-    internal void Begin(SKCanvas canvas)
-    {
-        canvas.Save();
-
-        var targetRect = TargetRectPx;
-
-        // Clip to viewport rect
-        canvas.ClipRect(new SKRect(targetRect.Left, targetRect.Top, targetRect.Right, targetRect.Bottom));
-
-        float zoom = Math.Max(Zoom, 1e-6f);
-        float scale = 1f / zoom;
-
-        // 1) Move origin to viewport top-left in screen space
-        canvas.Translate(targetRect.Left + ScreenOffsetPx.X,
-                         targetRect.Top + ScreenOffsetPx.Y);
-
-        // 2) Apply zoom (world → screen)
-        canvas.Scale(scale, scale);
-    }
-
-    internal void End(SKCanvas canvas) => canvas.Restore();
 
     #region zoom zoom
 

@@ -3,7 +3,7 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
 
-internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
+internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint)
     {
@@ -12,8 +12,8 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
 
         var origin = sceneLayer.OriginPx;
 
-        int x = origin.X + (int)(W * layerPoint.X);
-        int y = origin.Y + (int)(H * layerPoint.Y);
+        int x = (int)(W * layerPoint.X) - origin.X;
+        int y = (int)(H * layerPoint.Y) - origin.Y;
 
         return new Point(x, y);
     }
@@ -26,20 +26,20 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        float gx = (pixelPt.X - originX) / W;
-        float gy = (pixelPt.Y - originY) / H;
+        float gx = (pixelPt.X + originX) / W;
+        float gy = (pixelPt.Y + originY) / H;
 
         return new PointF(gx, gy);
     }
 
     // Updated to properly consider overhang in all directions
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var retVal = new List<SceneLayerTile>();
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
-        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Left, pixelRange.Top));
-        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Right - 1, pixelRange.Bottom - 1));
+        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
+        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right - 1, worldPixelRange.Bottom - 1));
 
         int minY = (int)Math.Floor(ptUL.Y) - 1;
         int maxY = (int)Math.Ceiling(ptBR.Y) + 1;
@@ -56,7 +56,7 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
 
                 // Overhang-aware pixel rect
                 var rect = GetPixelRangeForTile(gPt, includeOverhang);
-                if (rect.IntersectsWith(pixelRange))
+                if (rect.IntersectsWith(worldPixelRange))
                     retVal.Add(gPt);
             }
         }
@@ -75,8 +75,8 @@ internal sealed class SquareIsoCoordinates : ISceneLayerCoordinates
 
         var baseRect = new Rectangle
         {
-            X = originX + (int)(W * tile.SceneLayerCoordinates.X),
-            Y = originY + (int)(H * tile.SceneLayerCoordinates.Y),
+            X = (int)(W * tile.SceneLayerCoordinates.X) - originX,
+            Y = (int)(H * tile.SceneLayerCoordinates.Y) - originY,
             Width = W,
             Height = H
         };

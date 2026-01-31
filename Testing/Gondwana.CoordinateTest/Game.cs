@@ -21,7 +21,7 @@ public class Game : IDisposable
 {
     public WinFormBitmapRenderSurfaceControl RenderSurface { get; private set; }
 
-    public Scene? Scene { get; private set; }
+    public Scene Scene { get; private set; }
 
     public Game(WinFormBitmapRenderSurfaceControl renderSurface)
     {
@@ -46,12 +46,12 @@ public class Game : IDisposable
         RenderSurface.Host.Bind(Scene, false);
         RenderSurface.Host.Backbuffer!.FogPaint.Color = new SKColor(220, 230, 255, 120);
 
-        RenderSurface.Host.ViewRenderer.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
-        RenderSurface.Host.ViewRenderer.Views[0].Camera.SnapTo(new PointF(-800, -100));
-        RenderSurface.Host.ViewRenderer.Views[1].Camera.SnapTo(new PointF(100, 100));
+        RenderSurface.Host.ViewManager.AddView(new Rectangle(800, 0, 800, 300), 1f, 10);
+        RenderSurface.Host.ViewManager.Views[0].Camera.SnapTo(new PointF(-800, -100));
+        RenderSurface.Host.ViewManager.Views[1].Camera.SnapTo(new PointF(100, 100));
         RenderSurface.Host.RedrawDirtyRectangleOnly = true;
 
-        RenderSurface.Host.Scene[0].OriginPx = new Point(100, 100);
+        RenderSurface.Host.Scene[0].OriginPx = new Point(-100, -100);
 
         InitSprites();
         InitDirectDrawings();
@@ -104,8 +104,8 @@ public class Game : IDisposable
     {
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
-        var sprite1 = SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_1");
-        SpriteManager.CreateSprite(Scene![0], tilesheet[0, 0], "rooster_2").Visible = true;
+        var sprite1 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
+        SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2").Visible = true;
         SpriteManager.GetSpriteByID("rooster_2")!.SetPosition(new Vector2(5, 0));
 
         sprite1.Visible = true;
@@ -125,6 +125,8 @@ public class Game : IDisposable
     private ParticleSurface? _particleSurface;
     private ParticleEmitter? _clickEmitter;
 
+    private TextBlock? _spriteNameTag;
+
     private void InitDirectDrawings()
     {
         //Implementation for creating direct drawings goes here
@@ -132,12 +134,17 @@ public class Game : IDisposable
         var bounds1 = new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150);
         var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
 
-        _directRectangle = new DirectRectangle(RenderSurface.Host,
+        _directRectangle = new DirectRectangle(Color.Wheat,
+                                               RenderSurface.Host,
+                                               RenderSurface.Host.ViewManager.Views[0],
                                                bounds1,
-                                               Color.Wheat);
+                                               null);
         _directRectangle.SetFilled(true).SetAlpha(128);
 
-        _textBlockCPS = new TextBlock(RenderSurface.Host, _directRectangle.Bounds);
+        _textBlockCPS = new TextBlock(RenderSurface.Host,
+                                      RenderSurface.Host.ViewManager.Views[0],
+                                      bounds1,
+                                      null);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
         Engine.Instance.CPSCalculated += (e) =>
@@ -145,10 +152,20 @@ public class Game : IDisposable
             _textBlockCPS.SetText(e.ToString());
         };
 
-        _textBlockMouse = new TextBlock(RenderSurface.Host, bounds2);
+        _textBlockMouse = new TextBlock(RenderSurface.Host,
+                                        RenderSurface.Host.ViewManager.Views[0],
+                                        bounds2,
+                                        null);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        InitializeParticles();
+        //InitializeParticles();
+
+        _spriteNameTag = new TextBlock(RenderSurface.Host,
+                                                       Scene[0],
+                                                       null,
+                                                       new Rectangle(0, 0, 150, 30));
+        _spriteNameTag.SetColors(Color.Blue, Color.White).SetText("Mister Rooster").ZOrder = 20;
+        _spriteNameTag.Movement.FollowTileSoft(SpriteManager.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
     }
 
     private void InitializeParticles()
@@ -161,7 +178,10 @@ public class Game : IDisposable
             RenderSurface.Host.RenderSurfaceAdapter!.Height);
 
         // Particle system registered like any other DirectDrawing
-        _particleSurface = new ParticleSurface(RenderSurface.Host, bounds);
+        _particleSurface = new ParticleSurface(RenderSurface.Host,
+                                               RenderSurface.Host.ViewManager.Views[0],
+                                               bounds,
+                                               null);
 
         // Tweak gravity if you want more “floaty” bursts
         _particleSurface.GravityY = 0f;
@@ -217,8 +237,8 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.SquareIso);
-        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.SquareIso);
+        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.Orthogonal);
+        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.Orthogonal);
 
         sceneLayer1.ShowGridLines = true;
         sceneLayer1.ShowCollisionBoxes = false;
@@ -263,21 +283,21 @@ public class Game : IDisposable
     {
         Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
         Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.W.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.A.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.S.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.D.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Left.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Right.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Up.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.Down.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.PageUp.ToString());
-        Engine.KeyboardEventPoller.StartMonitoringKey(Keys.PageDown.ToString());
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.W, "W");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.A, "A");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.S, "S");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.D, "D");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left, "Left");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right, "Right");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up, "Up");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down, "Down");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp, "PageUp");
+        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown, "PageDown");
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
     {
-        var camera = RenderSurface.Host.ViewRenderer.Views[0].Camera;
+        var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
         var curPos = camera.PositionPx;
         var sprite = SpriteManager.GetSpriteByID("rooster_1");
 
@@ -354,10 +374,15 @@ public class Game : IDisposable
 
     private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
     {
-        var view = RenderSurface.Host.ViewRenderer.Views[0];
-        var layer = Scene!.SceneLayers[0];
+        var view = RenderSurface.Host.ViewManager.Views[0];
+        var layer = Scene.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
+
+        var worldPx = view.ScreenPxToWorldPx(layer, screenPos);
+        var screenPx = view.WorldPxToScreenPx(layer, worldPx);
+        //Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
+        //Engine.Logger.LogTrace($"\r\nscreen1 = {screenPos} \r\nworld   = {worldPx} \r\nscreen2 = {screenPx}\r\n");
 
         // 1) screen → world (via View)
         var worldFromScreen = view.ScreenPxToWorldPx(layer, screenPos);
@@ -401,7 +426,7 @@ public class Game : IDisposable
         }
     }
 
-    private void ScrollWheelZoom(Input.Mouse.MouseEventArgs args, Gondwana.Rendering.View view, SceneLayer layer)
+    private void ScrollWheelZoom(Input.Mouse.MouseEventArgs args, Rendering.Views.View view, SceneLayer layer)
     {
         // Zoom with scroll, unchanged
         //if (args.ScrollDelta != 0)

@@ -1,14 +1,15 @@
 using System.Drawing;
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
 
 namespace Gondwana.Rendering;
 
-internal sealed class RefreshQueue : IDisposable
+internal sealed class RefreshQueue
 {
     private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
 
     internal RefreshQueue() => _worldRects = new List<Rectangle>(64);
-
-    ~RefreshQueue() => Dispose();
 
     /// <summary>
     /// True if there is at least one world-space dirty rectangle enqueued.
@@ -33,6 +34,14 @@ internal sealed class RefreshQueue : IDisposable
         if (worldPixelRange.IsEmpty)
             return;
 
+        // ensure we're on the engine thread
+        var engine = Engine.Instance;
+        if (!engine.EngineDispatcher.IsOnEngineThread)
+        {
+            engine.EngineDispatcher.Post(() => AddWorldRect(worldPixelRange));
+            return;
+        }
+
         // Fast containment check: if any existing rect already fully contains this one, skip storing it.
         for (int i = 0; i < _worldRects.Count; i++)
         {
@@ -43,7 +52,43 @@ internal sealed class RefreshQueue : IDisposable
         _worldRects.Add(worldPixelRange);
     }
 
-    internal void ClearRefreshQueue() => _worldRects.Clear();
+    internal void AddViewScreenRect(View view, SceneLayer sceneLayer, Rectangle screenPixelRange)
+    {
+        if (screenPixelRange.IsEmpty)
+            return;
+        
+        if (view is null)
+            throw new ArgumentNullException(nameof(view));
+        
+        if (sceneLayer is null)
+            throw new ArgumentNullException(nameof(sceneLayer));
 
-    public void Dispose() => GC.SuppressFinalize(this);
+        // ensure we're on the engine thread
+        var engine = Engine.Instance;
+        if (!engine.EngineDispatcher.IsOnEngineThread)
+        {
+            engine.EngineDispatcher.Post(() => AddViewScreenRect(view, sceneLayer, screenPixelRange));
+            return;
+        }
+
+        // clamp screenPixelRange to view's viewport
+        screenPixelRange.Intersect(view.Viewport.TargetRectPx);
+
+        var worldRect = view.ScreenRectToWorldRect(sceneLayer, screenPixelRange);
+        worldRect.Inflate(3, 3); // Expand by 1 pixel in all directions to account for rounding errors.
+        AddWorldRect(worldRect.ToPixelAlignedRect());
+    }
+
+    internal void ClearRefreshQueue()
+    {
+        // ensure we're on the engine thread
+        var engine = Engine.Instance;
+        if (!engine.EngineDispatcher.IsOnEngineThread)
+        {
+            engine.EngineDispatcher.Post(() => ClearRefreshQueue());
+            return;
+        }
+
+        _worldRects.Clear();
+    }
 }

@@ -7,7 +7,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// Hexagonal – Pointed-Top layout (even-r horizontal layout)
 /// Bounding rectangle is (W x H). Centers advance by (W/2 per row parity, 0.75*H vertically)
 /// </summary>
-internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
+internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
 {
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
@@ -19,8 +19,8 @@ internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        int x = originX + col * W + ((row & 1) == 0 ? 0 : W / 2);
-        int y = originY + (int)Math.Floor(row * (H * 0.75f));
+        int x = -originX + col * W + ((row & 1) == 0 ? 0 : W / 2);
+        int y = -originY + (int)Math.Floor(row * (H * 0.75f));
         return new Point(x, y);
     }
 
@@ -32,10 +32,10 @@ internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        float fy = (pixelPt.Y - originY) / (H * 0.75f);
+        float fy = (pixelPt.Y + originY) / (H * 0.75f);
         int approxRow = (int)Math.Round(fy);
 
-        int baseX = originX + ((approxRow & 1) == 0 ? 0 : W / 2);
+        int baseX = -originX + ((approxRow & 1) == 0 ? 0 : W / 2);
         float fx = (pixelPt.X - baseX) / (float)W;
         int approxCol = (int)Math.Round(fx);
 
@@ -50,33 +50,33 @@ internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
             var pInt = new Point((int)Math.Round(pixelPt.X), (int)Math.Round(pixelPt.Y));
             if (PointInPolygon(poly, pInt)) return new PointF(cand.X, cand.Y);
 
-            float cx = sceneLayer.OriginPx.X + cand.X * W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
-            float cy = sceneLayer.OriginPx.Y + cand.Y * (H * 0.75f) + H / 2f;
+            float cx = -sceneLayer.OriginPx.X + cand.X * (float)W + ((cand.Y & 1) == 0 ? 0 : W / 2f) + W / 2f;
+            float cy = -sceneLayer.OriginPx.Y + cand.Y * (H * 0.75f) + H / 2f;
             float d = (cx - pixelPt.X) * (cx - pixelPt.X) + (cy - pixelPt.Y) * (cy - pixelPt.Y);
             if (d < bestDist) { bestDist = d; best = cand; }
         }
         return new PointF(best.X, best.Y);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
 
-        int minRow = (int)Math.Floor((pixelRange.Top - sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
-        int maxRow = (int)Math.Ceiling((pixelRange.Bottom - sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
+        int minRow = (int)Math.Floor((worldPixelRange.Top + sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
+        int maxRow = (int)Math.Ceiling((worldPixelRange.Bottom + sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
 
         for (int row = minRow; row <= maxRow; row++)
         {
             int xOffset = ((row & 1) == 0 ? 0 : W / 2);
-            int minCol = (int)Math.Floor((pixelRange.Left - sceneLayer.OriginPx.X - xOffset) / (float)W) - 2;
-            int maxCol = (int)Math.Ceiling((pixelRange.Right - sceneLayer.OriginPx.X - xOffset) / (float)W) + 2;
+            int minCol = (int)Math.Floor((worldPixelRange.Left + sceneLayer.OriginPx.X - xOffset) / (float)W) - 2;
+            int maxCol = (int)Math.Ceiling((worldPixelRange.Right + sceneLayer.OriginPx.X - xOffset) / (float)W) + 2;
 
             for (int col = minCol; col <= maxCol; col++)
             {
                 var gp = sceneLayer[col, row]; if (gp == null) continue;
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(pixelRange)) result.Add(gp);
+                if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
         return result;
@@ -155,8 +155,8 @@ internal sealed class HexagonalPointedTopCoordinates : ISceneLayerCoordinates
         int originY = sceneLayer.OriginPx.Y;
 
         var p = new Point(
-            originX + col * W + ((row & 1) == 0 ? 0 : W / 2),
-            originY + (int)Math.Floor(row * (H * 0.75f)));
+            -originX + col * W + ((row & 1) == 0 ? 0 : W / 2),
+            -originY + (int)Math.Floor(row * (H * 0.75f)));
 
         var rect = new Rectangle(p.X, p.Y, W, H);
         var ohRect = TileBounds.ApplyOverhang(rect, includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None, includeOverhang);

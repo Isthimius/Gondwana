@@ -11,7 +11,7 @@ namespace Gondwana.Drawing.Coordinates;
 ///   (i.e., tight diamond packing without rotating the world axes)
 /// Pixel anchor = TOP vertex of the diamond
 /// </summary>
-internal sealed class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
+internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
 {
     // Precompute half sizes repeatedly used
     private static void WH(SceneLayer m, out int W, out int H, out float halfW, out float halfH)
@@ -34,8 +34,8 @@ internal sealed class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         float gy = gp.Y;
 
         // STEP BY FULL TILE SIZE (W, H)
-        float px = originX + gx * W;
-        float py = originY + gy * H;
+        float px = -originX + gx * W;
+        float py = -originY + gy * H;
 
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
@@ -48,22 +48,22 @@ internal sealed class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
         int originY = sceneLayer.OriginPx.Y;
 
         // Inverse for full-tile stepping
-        float gxF = (pixelPt.X - originX) / W;
-        float gyF = (pixelPt.Y - originY) / H;
+        float gxF = (pixelPt.X + originX) / W;
+        float gyF = (pixelPt.Y + originY) / H;
 
         return new PointF(gxF, gyF);
     }
 
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
 
         // Corner → coarse grid bounds (continuous)
-        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Left, pixelRange.Top));
-        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Right, pixelRange.Top));
-        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Left, pixelRange.Bottom));
-        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(pixelRange.Right, pixelRange.Bottom));
+        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
+        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Top));
+        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Bottom));
+        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Bottom));
 
         int minX = (int)System.Math.Floor(System.Math.Min(System.Math.Min(ul.X, ur.X), System.Math.Min(ll.X, lr.X))) - 2;
         int maxX = (int)System.Math.Ceiling(System.Math.Max(System.Math.Max(ul.X, ur.X), System.Math.Max(ll.X, lr.X))) + 2;
@@ -88,7 +88,7 @@ internal sealed class DiagIsoSquareMatrixCoordinates : ISceneLayerCoordinates
                 if (gp == null) continue;
 
                 var r = GetPixelRangeForTile(gp, includeOverhang);
-                if (r.IntersectsWith(pixelRange)) result.Add(gp);
+                if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
         return result;

@@ -1,7 +1,10 @@
+using System.Drawing;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -47,17 +50,55 @@ public sealed class DirectImage : DirectDrawingMovableBase
     // normalized anchor (0..1) where 0,0 = top-left of dest rect
     private float _anchorX = 0.5f, _anchorY = 0.5f;
 
-    public DirectImage(RenderSurfaceHostBase host, Rectangle bounds, SKBitmap bitmap)
-        : base(host, bounds)
+    private DirectImage(SKBitmap bitmap,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       DirectDrawingMode mode,
+                       SceneLayer? sceneLayer,
+                       View? view,
+                       Rectangle? screenBounds,
+                       Rectangle? worldBounds,
+                       string? name = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
     {
         SetBitmap(bitmap);
     }
 
-    public DirectImage(RenderSurfaceHostBase host, Rectangle bounds, SKImage image)
-        : base(host, bounds)
+    private DirectImage(SKImage image,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        DirectDrawingMode mode,
+                        SceneLayer? sceneLayer,
+                        View? view,
+                        Rectangle? screenBounds,
+                        Rectangle? worldBounds,
+                        string? nickname = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         SetImage(image);
     }
+
+    public DirectImage (SKBitmap bitmap,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        SceneLayer sceneLayer,
+                        Rectangle worldBounds,
+                        string? nickname = null) : this(bitmap, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
+
+    public DirectImage (SKBitmap bitmap,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        View view,
+                        Rectangle screenBounds,
+                        string? nickname = null) : this(bitmap, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
+
+    public DirectImage(SKImage image,
+                       RenderSurfaceHostBase renderSurfaceHost,
+                       SceneLayer sceneLayer,
+                       Rectangle worldBounds,
+                       string? nickname = null) : this(image, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
+
+    public DirectImage(SKImage image,
+                        RenderSurfaceHostBase renderSurfaceHost,
+                        View view,
+                        Rectangle screenBounds,
+                        string? nickname = null) : this(image, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, nickname) { }
 
     /// <summary>Replace the backing bitmap (converts to SKImage on draw if needed).</summary>
     public DirectImage SetBitmap(SKBitmap bitmap)
@@ -153,9 +194,9 @@ public sealed class DirectImage : DirectDrawingMovableBase
         return this;
     }
 
-    protected internal override void Draw()
+    protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = backbuffer.Canvas;
 
         // get SKImage to draw
         var img = _image ?? (_bitmap != null ? SKImage.FromBitmap(_bitmap) : null);
@@ -166,7 +207,7 @@ public sealed class DirectImage : DirectDrawingMovableBase
         SKRect src = _src ?? new SKRect(0, 0, img.Width, img.Height);
 
         // destination rect (screen space), computed by scale mode
-        SKRect dst = ComputeDestRect(Bounds, src, _scale);
+        SKRect dst = ComputeDestRect(destRectScreen.ToPixelAlignedRect(), src, _scale);
 
         // apply tint/opacity via color filter
         // combine tint with opacity (multiply in linear-ish sRGB)

@@ -1,10 +1,11 @@
-﻿using Gondwana.Drawing;
+﻿using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
-namespace Gondwana.Rendering;
+namespace Gondwana.Rendering.Backbuffers;
 
 public sealed class BitmapBackbuffer : BackbufferBase
 {
@@ -88,16 +89,14 @@ public sealed class BitmapBackbuffer : BackbufferBase
         }
     }
 
-    /// <summary>
-    /// Runs as part of DoBackgroundTasks()
-    /// </summary>
-    protected internal override void DrawTileFrame(Tile tile)
+    protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var bmp = tile.CurrentFrame.SkBitmap;
-        var worldRect = tile.DrawLocation.ToSKRect();
 
-        if (bmp is not null)
-            Canvas.DrawBitmap(bmp, worldRect, _bitmapPaint);
+        if (bmp is null)
+            return;
+
+        Canvas.DrawBitmap(bmp, destRectScreen.ToSKRect(), _bitmapPaint);
     }
 
     // Producer copies out an immutable image for the adapter/UI thread
@@ -105,7 +104,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
     {
         lock (_gate)
         {
-            if (_disposed || _surface is null) throw new ObjectDisposedException(nameof(BitmapBackbuffer));
+            if (_disposed || _surface is null)
+                throw new ObjectDisposedException(nameof(BitmapBackbuffer));
+
             return _surface.Snapshot(); // immutable; safe to use on UI thread
         }
     }

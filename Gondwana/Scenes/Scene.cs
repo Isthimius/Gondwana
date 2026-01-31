@@ -53,15 +53,16 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         foreach (var sceneLayer in _sceneLayers)
             OnSceneLayerAdded(sceneLayer);
 
-        _allScenes.Add(this);
+        if (!ReferenceEquals(this, Empty))
+            _allScenes.Add(this);
     }
 
     #endregion constructors / finalizer
 
     #region public properties
 
-    [JsonIgnore]
-    public object? Tag { get; set; }
+    [JsonProperty]
+    public TypedValueBag ValueBag { get; } = new();
 
     [JsonProperty]
     public string ID { get; protected internal set; } = Guid.NewGuid().ToString();
@@ -130,7 +131,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
                                int height = 32,
                                int zOrder = 0,
                                float parallax = 1f,
-                               CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SquareIso)
+                               CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
     {
         var sceneLayer = new SceneLayer(columnCount, rowCount, width, height, parallax, coordinateSystem);
         sceneLayer.ZOrder = zOrder;
@@ -222,7 +223,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowCollisionBoxesChanged += showCollisionBoxesChanged;
         sceneLayer.ZOrderChanged += zOrderChangedDel;
         sceneLayer.ParallaxChanged += parallaxChangedDel;
-        sceneLayer.OriginPxChanged += zeroPixelChangedDel;
+        sceneLayer.OriginPxChanged += originPxChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerAdded?.Invoke(sceneLayer);
@@ -240,7 +241,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         sceneLayer.ShowCollisionBoxesChanged -= showCollisionBoxesChanged;
         sceneLayer.ZOrderChanged -= zOrderChangedDel;
         sceneLayer.ParallaxChanged -= parallaxChangedDel;
-        sceneLayer.OriginPxChanged -= zeroPixelChangedDel;
+        sceneLayer.OriginPxChanged -= originPxChangedDel;
 
         _visibleSortedDirty = true;
         SceneLayerRemoved?.Invoke(sceneLayer);
@@ -260,7 +261,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     private Action<SceneLayer> showCollisionBoxesChanged;
     private Action<SceneLayer> zOrderChangedDel;
     private Action<SceneLayer> parallaxChangedDel;
-    private Action<SceneLayer> zeroPixelChangedDel;
+    private Action<SceneLayer> originPxChangedDel;
 
     private void SetSceneLayerEventDelegates()
     {
@@ -272,7 +273,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         showCollisionBoxesChanged = (sceneLayer) => _SceneLayerShowCollisionBoxChanged();
         zOrderChangedDel = (sceneLayer) => _SceneLayerZOrderChanged();
         parallaxChangedDel = (sceneLayer) => _SceneLayerParallaxChanged();
-        zeroPixelChangedDel = (sceneLayer) => _SceneLayerZeroPixelChanged();
+        originPxChangedDel = (sceneLayer) => _SceneLayerZeroPixelChanged();
     }
 
     private void _SceneLayerVisibleChanged()
@@ -321,7 +322,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region IDisposable Members
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         GC.SuppressFinalize(this);
 
@@ -357,4 +358,37 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     }
 
     #endregion static helpers
+
+    #region empty Scene
+
+    public static Scene Empty { get; } = new EmptyScene();
+
+    private sealed class EmptyScene : Scene
+    {
+        internal EmptyScene()
+        {
+            _sceneLayers.Clear();
+
+            // Attach the singleton empty layer
+            _sceneLayers.Add(SceneLayer.Empty);
+            SceneLayer.Empty.Scene = this;
+
+            FullRefreshNeeded = false;
+        }
+
+        protected override void OnSceneLayerAdded(SceneLayer sceneLayer)
+            => throw new InvalidOperationException("Cannot add layers to Scene.Empty");
+
+        protected override void OnSceneLayerRemoved(SceneLayer sceneLayer)
+        {
+            // no-op
+        }
+
+        public override void Dispose()
+        {
+            // Intentionally empty — singleton
+        }
+    }
+
+    #endregion empty Scene
 }

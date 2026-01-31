@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
@@ -49,7 +50,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                         int width = 32,
                         int height = 32,
                         float parallax = 1,
-                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.SquareIso)
+                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
     {
         var tileArray = new SceneLayerTile[columnCount, rowCount];
 
@@ -69,11 +70,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region properties
 
-    [JsonIgnore]
-    public object? Tag { get; set; }
+    [JsonProperty]
+    public TypedValueBag ValueBag { get; } = new();
 
     [JsonIgnore]
-    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new SquareIsoCoordinates();
+    internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new OrthogonalCoordinates();
 
     [JsonProperty]
     public CoordinateSystemTypes CoordinateSystemType
@@ -82,11 +83,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             return CoordinateSystem switch
             {
-                SquareIsoCoordinates => CoordinateSystemTypes.SquareIso,
-                DiagIsoDiagMatrixCoordinates => CoordinateSystemTypes.DiagIso_DiagMatrix,
-                DiagIsoSquareMatrixCoordinates => CoordinateSystemTypes.DiagIso_SquareMatrix,
-                HexagonalFlatTopCoordinates => CoordinateSystemTypes.HexFlatTop,
-                HexagonalPointedTopCoordinates => CoordinateSystemTypes.HexPointedTop,
+                OrthogonalCoordinates => CoordinateSystemTypes.Orthogonal,
+                IsometricRhombicCoordinates => CoordinateSystemTypes.IsometricRhombic,
+                IsometricAxialCoordinates => CoordinateSystemTypes.IsometricAxial,
+                HexAxialFlatTopCoordinates => CoordinateSystemTypes.HexAxialFlatTop,
+                HexAxialPointedTop => CoordinateSystemTypes.HexAxialPointedTop,
                 _ => throw new InvalidOperationException($"Unknown coordinate system type: {CoordinateSystem.GetType().Name}")
             };
         }
@@ -94,11 +95,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             CoordinateSystem = value switch
             {
-                CoordinateSystemTypes.SquareIso => new SquareIsoCoordinates(),
-                CoordinateSystemTypes.DiagIso_DiagMatrix => new DiagIsoDiagMatrixCoordinates(),
-                CoordinateSystemTypes.DiagIso_SquareMatrix => new DiagIsoSquareMatrixCoordinates(),
-                CoordinateSystemTypes.HexFlatTop => new HexagonalFlatTopCoordinates(),
-                CoordinateSystemTypes.HexPointedTop => new HexagonalPointedTopCoordinates(),
+                CoordinateSystemTypes.Orthogonal => new OrthogonalCoordinates(),
+                CoordinateSystemTypes.IsometricRhombic => new IsometricRhombicCoordinates(),
+                CoordinateSystemTypes.IsometricAxial => new IsometricAxialCoordinates(),
+                CoordinateSystemTypes.HexAxialFlatTop => new HexAxialFlatTopCoordinates(),
+                CoordinateSystemTypes.HexAxialPointedTop => new HexAxialPointedTop(),
                 _ => throw new ArgumentOutOfRangeException(nameof(value), $"Unknown coordinate system type: {value}")
             };
         }
@@ -238,7 +239,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             showCollisionBoxes = value;
             ShowCollisionBoxesChanged?.Invoke(this);
         }
-   }
+    }
 
     // World-space origin (in pixels) of this layer’s (0,0) tile.
     // Usually (0,0); can be shifted to move the entire layer as a block.
@@ -309,7 +310,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// extreme grid tiles. Works for square, iso, hex, and any other supported
     /// projection.
     /// </summary>
-    public RectangleF GetLayerBoundsPx()
+    public virtual RectangleF GetLayerBoundsPx()
     {
         if (GridColumnCount == 0 || GridRowCount == 0)
             return RectangleF.Empty;
@@ -320,11 +321,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // Corner tiles
         var corners = new[]
         {
-        this[0, 0],
-        this[maxCol, 0],
-        this[0, maxRow],
-        this[maxCol, maxRow]
-    };
+            this[0, 0],
+            this[maxCol, 0],
+            this[0, maxRow],
+            this[maxCol, maxRow]
+        };
 
         RectangleF result = RectangleF.Empty;
         bool hasBounds = false;
@@ -382,11 +383,16 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    internal IEnumerable<Tile> GetTilesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
+    internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
     {
+        // Make selection rect covering so we never miss the edge tile.
+        // Drawing is still clipped later, so over-selecting is safe.
+        var queryRect = worldRect;
+        queryRect.Inflate(SceneLayerTileWidth, SceneLayerTileHeight); // <- KEY (tile-sized)
+        queryRect.Inflate(1, 1); // optional boundary insurance
+
         // Gather into a list so we can sort it.
-        var list = new List<Tile>(64);
-        var seen = new HashSet<Tile>();
+        var list = new List<IDrawable>(64);
 
         // 1) Grid tiles
         var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
@@ -398,40 +404,77 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         {
             for (int i = 0; i < sceneLayerTiles.Count; i++)
             {
-                var t = sceneLayerTiles[i];
-                if (t is null) continue;
+                var tile = sceneLayerTiles[i];
 
-                // Defensive overlap check (same idea as sprites)
-                if (!t.DrawLocation.IntersectsWith(worldRect))
+                if (tile is null)
                     continue;
 
-                if (seen.Add(t))
-                    list.Add(t);
+                if (!tile.Visible)
+                    continue;
+
+                // Defensive overlap check (same idea as sprites)
+                if (!tile.DrawLocationWorld.IntersectsWith(queryRect))
+                    continue;
+
+                list.Add(tile);
             }
         }
 
         // 2) Sprites
-        var sprites = SpriteManager.GetSpritesInRange(worldRect, this, fullEnclosures: false);
+        var sprites = SpriteManager.GetSpritesInRange(queryRect, this, fullEnclosures: false);
 
         for (int i = 0; i < sprites.Count; i++)
         {
-            var s = sprites[i];
-            if (s is null) continue;
+            var sprite = sprites[i];
 
-            // Defensive overlap check (cheap)
-            if (!s.DrawLocation.IntersectsWith(worldRect))
+            if (sprite is null)
                 continue;
 
-            if (seen.Add(s))
-                list.Add(s);
+            // Defensive overlap check (cheap)
+            if (!sprite.DrawLocationWorld.IntersectsWith(queryRect))
+                continue;
+
+            list.Add(sprite);
         }
 
-        // 3) Sort using Tile.CompareTo
-        list.Sort(); // ← this calls Tile.CompareTo internally
+        // 3) DirectDrawing instances
+        var drawings = DirectDrawingManager.Instance.GetDrawingsForLayer(this);
 
-        // 4) Yield in sorted order
-        for (int i = 0; i < list.Count; i++)
-            yield return list[i];
+        for (int i = 0; i < drawings.Count; i++)
+        {
+            var drawing = drawings[i];
+
+            if (!drawing.Visible)
+                continue;
+
+            // Must be SceneLayer-mode by definition if it's "for layer", but be defensive:
+            if (drawing.Mode != DirectDrawingMode.SceneLayer)
+                continue;
+
+            // Only include if it intersects this dirty rect
+            if (!drawing.WorldBounds.IntersectsWith(worldRect))
+                continue;
+
+            list.Add(drawing);
+        }
+
+        // 4) Sort using Tile.CompareTo
+        list.Sort(CompareDrawables); // ← this calls Tile.CompareTo internally
+        return list;
+    }
+
+    private static int CompareDrawables(IDrawable a, IDrawable b)
+    {
+        int z = a.ZOrder.CompareTo(b.ZOrder);
+        if (z != 0)
+            return z;
+
+        // Preserve legacy ordering for tiles/sprites when Z ties
+        if (a is Tile ta && b is Tile tb)
+            return ta.CompareTo(tb);
+
+        // Stable tie-breaker (avoid flicker)
+        return a.Id.CompareTo(b.Id);
     }
 
     #endregion private methods
@@ -476,14 +519,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region IDisposable Members
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         GC.SuppressFinalize(this);
 
         Disposing?.Invoke(this);
-
-        // dispose child objects
-        RefreshQueue.Dispose();
 
         foreach (SceneLayerTile gridPt in this)
             gridPt.Dispose();
@@ -496,4 +536,21 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     #endregion IDisposable Members
+
+    #region empty SceneLayer
+
+    public static SceneLayer Empty { get; } = new EmptySceneLayer();
+
+    private sealed class EmptySceneLayer : SceneLayer
+    {
+        internal EmptySceneLayer()
+            : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
+        {
+            Visible = false;
+            ZOrder = int.MinValue;
+            Parallax = 1f;
+        }
+    }
+
+    #endregion empty SceneLayer
 }

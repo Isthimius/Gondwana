@@ -9,27 +9,28 @@
 public enum CoordinateSystemTypes
 {
     /// <summary>
-    /// Square tiles laid out in a simple row/column grid.
+    /// Axis-aligned square grid (Cartesian lattice).
     /// </summary>
-    SquareIso = 0,
+    Orthogonal = 0,
 
     /// <summary>
-    /// Diamond-shaped isometric grid (axis-aligned diamonds).
+    /// Isometric projection using a rhombic (diamond) lattice.
     /// </summary>
-    DiagIso_DiagMatrix = 1,
+    IsometricRhombic = 1,
 
     /// <summary>
-    /// Square-based isometric stepping (half-width diagonal steps).
+    /// Isometric projection using an underlying square lattice
+    /// with diagonal basis vectors.
     /// </summary>
-    DiagIso_SquareMatrix = 2,
+    IsometricAxial = 2,
 
     /// <summary>
-    /// Hexagonal tiles with flat tops (horizontal edges).
+    /// Hexagonal grid using axial coordinates with flat-topped hexes.
     /// </summary>
-    HexFlatTop = 3,
+    HexAxialFlatTop = 3,
 
     /// <summary>
-    /// Hexagonal tiles with pointed tops (vertical edges).
+    /// Hexagonal grid using axial coordinates with pointy-topped hexes.
     /// </summary>
-    HexPointedTop = 4
+    HexAxialPointedTop = 4
 }
