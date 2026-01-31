@@ -22,6 +22,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         halfH = H * 0.5f;
     }
 
+    /// <summary>
+    /// Converts scene layer grid coordinates to the anchor pixel position in world space.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer containing the coordinate system parameters.</param>
+    /// <param name="gp">The grid coordinates to convert.</param>
+    /// <returns>The anchor pixel position (top vertex of the diamond) in world space.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
@@ -40,6 +46,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
 
+    /// <summary>
+    /// Converts a pixel position in world space to scene layer grid coordinates.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer containing the coordinate system parameters.</param>
+    /// <param name="pixelPt">The pixel position in world space to convert.</param>
+    /// <returns>The corresponding grid coordinates in the scene layer.</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
         WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
@@ -54,6 +66,13 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         return new PointF(gxF, gyF);
     }
 
+    /// <summary>
+    /// Gets all scene layer tiles that intersect with the specified pixel range in world space.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer to query.</param>
+    /// <param name="worldPixelRange">The rectangular pixel range in world space.</param>
+    /// <param name="includeOverhang">Whether to include tile overhang when testing for intersection.</param>
+    /// <returns>A list of tiles that intersect with the specified pixel range.</returns>
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
@@ -94,6 +113,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         return result;
     }
 
+    /// <summary>
+    /// Gets the pixel bounding rectangle for a tile in world space.
+    /// </summary>
+    /// <param name="tile">The tile to get the bounds for.</param>
+    /// <param name="includeOverhang">Whether to include the tile's overhang pixels in the bounds.</param>
+    /// <returns>The rectangular pixel bounds of the tile in world space.</returns>
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         WH(tile.SceneLayer, out int W, out int H, out float halfW, out float halfH);
@@ -106,6 +131,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
 
+    /// <summary>
+    /// Gets the combined pixel bounding rectangle for a list of tiles in world space.
+    /// </summary>
+    /// <param name="tileList">The list of tiles to compute bounds for.</param>
+    /// <param name="includeOverhang">Whether to include each tile's overhang pixels in the bounds.</param>
+    /// <returns>The union of all tile bounds, or an empty rectangle if the list is empty.</returns>
     public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle ret = Rectangle.Empty;
@@ -117,6 +148,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         return ret;
     }
 
+    /// <summary>
+    /// Gets the scene layer tile adjacent to the specified tile in the given cardinal direction.
+    /// </summary>
+    /// <param name="gp">The reference tile.</param>
+    /// <param name="dir">The cardinal direction to look for an adjacent tile.</param>
+    /// <returns>The adjacent tile in the specified direction, or null if no tile exists there.</returns>
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
         var m = gp.SceneLayer; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
@@ -135,6 +172,12 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         };
     }
 
+    /// <summary>
+    /// Gets the polygon vertices that define the diamond shape of the tile in world space.
+    /// </summary>
+    /// <param name="tile">The tile to get polygon points for.</param>
+    /// <param name="includeOverhang">Whether to extend the polygon to include overhang pixels.</param>
+    /// <returns>An array of points representing the diamond vertices (top, right, bottom, left).</returns>
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         WH(tile.SceneLayer, out int W, out int H, out _, out _);
@@ -151,6 +194,13 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         };
     }
 
+    /// <summary>
+    /// Finds the equivalent scene layer coordinates within the bounds of the grid, wrapping coordinates as needed (torus mapping).
+    /// </summary>
+    /// <param name="valColRow">The input coordinates (may be outside grid bounds).</param>
+    /// <param name="xUpperBound">The maximum X grid coordinate (inclusive).</param>
+    /// <param name="yUpperBound">The maximum Y grid coordinate (inclusive).</param>
+    /// <returns>The wrapped coordinates that fall within [0, xUpperBound] and [0, yUpperBound].</returns>
     public PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound)
     {
         // For now, keep the simple torus mapping; if you prefer no wrap, clamp upstream.

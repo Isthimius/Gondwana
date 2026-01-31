@@ -9,6 +9,12 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
 {
+    /// <summary>
+    /// Gets the anchor pixel position for a tile at the specified scene layer coordinates.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer containing the tile.</param>
+    /// <param name="gp">The scene layer coordinates (column, row).</param>
+    /// <returns>The pixel position of the tile's anchor point.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
         int W = sceneLayer.SceneLayerTileWidth;
@@ -23,6 +29,13 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         return new Point(x, y);
     }
 
+    /// <summary>
+    /// Gets the scene layer coordinates (column, row) at the specified pixel position.
+    /// Uses polygon hit-testing and nearest center calculation to determine the hexagonal tile.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer to query.</param>
+    /// <param name="pixelPt">The pixel position to convert.</param>
+    /// <returns>The scene layer coordinates as a PointF (column, row).</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
         int W = sceneLayer.SceneLayerTileWidth;
@@ -85,6 +98,13 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         return new PointF(best.X, best.Y);
     }
 
+    /// <summary>
+    /// Gets all scene layer tiles that intersect with the specified pixel range.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer to query.</param>
+    /// <param name="worldPixelRange">The pixel range to search within.</param>
+    /// <param name="includeOverhang">Whether to include tile overhang pixels in the intersection test.</param>
+    /// <returns>A list of tiles that intersect with the specified pixel range.</returns>
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
@@ -116,6 +136,12 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         return result;
     }
 
+    /// <summary>
+    /// Gets the pixel bounding rectangle for the specified tile.
+    /// </summary>
+    /// <param name="tile">The tile to get the pixel range for.</param>
+    /// <param name="includeOverhang">Whether to include overhang pixels in the bounds.</param>
+    /// <returns>A rectangle representing the tile's pixel bounds.</returns>
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
@@ -124,6 +150,12 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
 
+    /// <summary>
+    /// Gets the combined pixel bounding rectangle for a list of tiles.
+    /// </summary>
+    /// <param name="tileList">The list of tiles to get the combined pixel range for.</param>
+    /// <param name="includeOverhang">Whether to include overhang pixels in the bounds.</param>
+    /// <returns>A rectangle representing the union of all tile bounds, or an empty rectangle if the list is empty.</returns>
     public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle ret = Rectangle.Empty;
@@ -135,6 +167,13 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         return ret;
     }
 
+    /// <summary>
+    /// Gets the adjacent scene layer tile in the specified cardinal direction.
+    /// For flat-top hexagons, valid directions are E, W, NE, SE, NW, SW. N and S return null.
+    /// </summary>
+    /// <param name="gp">The source tile.</param>
+    /// <param name="dir">The cardinal direction to search.</param>
+    /// <returns>The adjacent tile in the specified direction, or null if none exists or direction is invalid.</returns>
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
         int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
@@ -154,11 +193,24 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         };
     }
 
+    /// <summary>
+    /// Gets the polygon vertices for the specified tile as an array of points.
+    /// </summary>
+    /// <param name="tile">The tile to get the polygon for.</param>
+    /// <param name="includeOverhang">Whether to include overhang in the polygon calculation.</param>
+    /// <returns>An array of six points representing the hexagonal tile's vertices.</returns>
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         return HexPolygonFlatTop(tile.SceneLayer, (int)tile.SceneLayerCoordinates.X, (int)tile.SceneLayerCoordinates.Y, includeOverhang);
     }
 
+    /// <summary>
+    /// Finds equivalent scene layer coordinates within the specified bounds by wrapping values.
+    /// </summary>
+    /// <param name="valColRow">The input coordinates (column, row).</param>
+    /// <param name="xUpperBound">The upper bound for the X coordinate (column).</param>
+    /// <param name="yUpperBound">The upper bound for the Y coordinate (row).</param>
+    /// <returns>The wrapped coordinates within bounds.</returns>
     public PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound)
     {
         // wrap like square; hex maps are usually finite with wrap disabled, but keep parity sane

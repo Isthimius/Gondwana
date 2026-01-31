@@ -2,14 +2,26 @@ using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Animation;
 
+/// <summary>
+/// Manages animation playback for a <see cref="Tile"/>, controlling animation cycles, frame timing, and raising events during the animation lifecycle.
+/// </summary>
 public class Animator : IDisposable
 {
     #region events
 
+    /// <summary>
+    /// Occurs when an animation starts playing.
+    /// </summary>
     public event Action<AnimatorEventArgs> Started;
 
+    /// <summary>
+    /// Occurs when an animation stops playing.
+    /// </summary>
     public event Action<AnimatorEventArgs> Stopped;
 
+    /// <summary>
+    /// Occurs each time the animation advances to the next frame in the cycle.
+    /// </summary>
     public event Action<AnimatorEventArgs> Cycled;
 
     #endregion events
@@ -24,6 +36,10 @@ public class Animator : IDisposable
 
     #region constructors / finalizer
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Animator"/> class for the specified tile.
+    /// </summary>
+    /// <param name="tile">The tile that owns this animator.</param>
     protected internal Animator(Tile tile)
     {
         parent = tile;
@@ -38,13 +54,23 @@ public class Animator : IDisposable
 
     #region properties
 
+    /// <summary>
+    /// Gets the tile that owns this animator.
+    /// </summary>
     public Tile Parent
     {
         get { return parent; }
     }
 
+    /// <summary>
+    /// Gets or sets the current animation cycle being played.
+    /// </summary>
     public Cycle CurrentCycle { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the animation is currently cycling.
+    /// Setting this property to <c>true</c> starts the animation; setting it to <c>false</c> stops it.
+    /// </summary>
     public bool IsCycling
     {
         get { return cycling; }
@@ -64,12 +90,22 @@ public class Animator : IDisposable
 
     #region public methods
 
+    /// <summary>
+    /// Sets the current animation cycle using the specified cycle key.
+    /// </summary>
+    /// <param name="cycleKey">The key identifying the animation cycle to set as current.</param>
+    /// <returns>The cycle that was set as the current cycle.</returns>
     public Cycle SetCurrentCycle(string cycleKey)
     {
         CurrentCycle = Cycle.GetAnimationCycle(cycleKey);
         return CurrentCycle;
     }
 
+    /// <summary>
+    /// Starts playing the current animation cycle.
+    /// If no cycle is set, this method has no effect.
+    /// Raises the <see cref="Started"/> event when the animation begins.
+    /// </summary>
     public void StartAnimation()
     {
         if (CurrentCycle != null)
@@ -84,12 +120,21 @@ public class Animator : IDisposable
         }
     }
 
+    /// <summary>
+    /// Sets the current animation cycle and starts playing it.
+    /// </summary>
+    /// <param name="cycleKey">The key identifying the animation cycle to play.</param>
     public void StartAnimation(string cycleKey)
     {
         CurrentCycle = Cycle.GetAnimationCycle(cycleKey);
         StartAnimation();
     }
 
+    /// <summary>
+    /// Stops the current animation cycle.
+    /// Raises the <see cref="Stopped"/> event and advances to the next cycle if one is configured.
+    /// If the next cycle is configured to hide the tile on cycle end, the parent tile will be hidden.
+    /// </summary>
     public void StopAnimation()
     {
         // only perform action if actually cycling
@@ -149,6 +194,7 @@ public class Animator : IDisposable
     #region IDisposable Members
 
     /// <summary>
+    /// Releases all event handlers and suppresses finalization.
     /// *** DO NOT CALL DIRECTLY! ***
     /// </summary>
     public void Dispose()

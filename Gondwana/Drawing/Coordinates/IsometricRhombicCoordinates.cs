@@ -10,6 +10,12 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
 {
+    /// <summary>
+    /// Gets the anchor pixel position for a given scene layer coordinate.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer containing tile dimensions and origin.</param>
+    /// <param name="gp">The grid-space coordinates (x,y).</param>
+    /// <returns>The pixel position as a <see cref="Point"/>.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
         int W = sceneLayer.SceneLayerTileWidth;
@@ -28,6 +34,12 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
 
+    /// <summary>
+    /// Converts a pixel position to scene layer coordinates.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer containing tile dimensions and origin.</param>
+    /// <param name="pixelPt">The pixel position to convert.</param>
+    /// <returns>The scene layer coordinates as a <see cref="PointF"/>.</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
         int W = sceneLayer.SceneLayerTileWidth;
@@ -45,6 +57,13 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         return new PointF(dx, dy);
     }
 
+    /// <summary>
+    /// Gets all scene layer tiles that intersect with the specified pixel range.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer to query tiles from.</param>
+    /// <param name="worldPixelRange">The rectangular pixel range to check for intersections.</param>
+    /// <param name="includeOverhang">Whether to include tile overhang in intersection calculations.</param>
+    /// <returns>A list of <see cref="SceneLayerTile"/> objects that intersect with the pixel range.</returns>
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
@@ -71,6 +90,12 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         return result;
     }
 
+    /// <summary>
+    /// Gets the pixel range (bounding rectangle) for a tile.
+    /// </summary>
+    /// <param name="tile">The tile to get the pixel range for.</param>
+    /// <param name="includeOverhang">Whether to include the tile's overhang pixels in the range.</param>
+    /// <returns>A <see cref="Rectangle"/> representing the pixel range of the tile.</returns>
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
@@ -79,6 +104,12 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
 
+    /// <summary>
+    /// Gets the combined pixel range (bounding rectangle) for a list of tiles.
+    /// </summary>
+    /// <param name="tileList">The list of tiles to get the combined pixel range for.</param>
+    /// <param name="includeOverhang">Whether to include overhang pixels in the range.</param>
+    /// <returns>A <see cref="Rectangle"/> representing the union of all tile pixel ranges.</returns>
     public Rectangle GetPixelRangeForTileList(List<Tile> tileList, bool includeOverhang)
     {
         Rectangle ret = Rectangle.Empty;
@@ -90,6 +121,12 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         return ret;
     }
 
+    /// <summary>
+    /// Gets the adjacent scene layer tile in the specified cardinal direction.
+    /// </summary>
+    /// <param name="gp">The source scene layer tile.</param>
+    /// <param name="dir">The cardinal direction to get the adjacent tile.</param>
+    /// <returns>The adjacent <see cref="SceneLayerTile"/>, or null if no tile exists in that direction.</returns>
     public SceneLayerTile GetAdjacentSceneLayerTile(SceneLayerTile gp, CardinalDirections dir)
     {
         var m = gp.SceneLayer; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
@@ -107,6 +144,12 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         };
     }
 
+    /// <summary>
+    /// Gets the polygon points that define the diamond shape of a tile.
+    /// </summary>
+    /// <param name="tile">The tile to get polygon points for.</param>
+    /// <param name="includeOverhang">Whether to include overhang pixels in the polygon.</param>
+    /// <returns>An array of <see cref="Point"/> objects defining the tile's diamond shape.</returns>
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
@@ -122,6 +165,13 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
             };
     }
 
+    /// <summary>
+    /// Finds the equivalent scene layer coordinates within the specified bounds using modulo wrapping.
+    /// </summary>
+    /// <param name="valColRow">The coordinates to wrap.</param>
+    /// <param name="xUpperBound">The upper bound for the x-coordinate (inclusive).</param>
+    /// <param name="yUpperBound">The upper bound for the y-coordinate (inclusive).</param>
+    /// <returns>The wrapped coordinates as a <see cref="PointF"/>.</returns>
     public PointF FindEquivalentSceneLayerCoordinates(PointF valColRow, int xUpperBound, int yUpperBound)
     {
         float modX = valColRow.X % (xUpperBound + 1);
