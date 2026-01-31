@@ -37,8 +37,29 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </remarks>
     public event EventHandler<RenderSurfaceHostBindEventArgs>? BindToScene;
 
+    /// <summary>
+    /// Occurs at the beginning of the backbuffer rendering process.
+    /// </summary>
+    public event Action RenderBackbufferBegin;
+
+    /// <summary>
+    /// Occurs at the end of the backbuffer rendering process.
+    /// </summary>
+    public event Action RenderBackbufferEnd;
+
+    /// <summary>
+    /// Occurs when a backbuffer render operation is skipped because the scene is not dirty.
+    /// </summary>
+    public event Action RenderBackbufferNoOp;
+
     private RenderSurfaceHost() : base() => _viewManager = new ViewManager(this);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RenderSurfaceHost{TBackbuffer}"/> class with the specified render surface adapter.
+    /// </summary>
+    /// <param name="renderSurfaceAdapter">The platform-specific adapter that provides the underlying rendering surface.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="renderSurfaceAdapter"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if the adapter has non-positive dimensions.</exception>
     public RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter) : this()
     {
         _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
@@ -174,6 +195,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     internal override void RenderToBackbuffer(long tick)
     {
+        RenderBackbufferBegin?.Invoke();
+
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)
         {
@@ -193,7 +216,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             {
                 // scene is not dirty, this frame is done...
                 if (!Scene.IsDirty)
+                {
+                    RenderBackbufferNoOp?.Invoke();
                     return;
+                }
             }
         }
 
@@ -261,6 +287,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
 
         Scene.FullRefreshNeeded = false;
+
+        RenderBackbufferEnd?.Invoke();
     }
 
     #region DrawRefreshQueueToBackbuffer helpers
