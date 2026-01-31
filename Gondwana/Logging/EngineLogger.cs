@@ -5,6 +5,35 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Logging;
 
+/// <summary>
+/// Provides centralized logging infrastructure for the Gondwana engine with support for both 
+/// synchronous and asynchronous logging modes.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This static class manages logging across the engine, supporting two distinct modes:
+/// <list type="bullet">
+/// <item><description><see cref="EngineLoggingMode.Asynchronous"/> (default): Log messages are queued to a bounded channel 
+/// and processed by a background worker thread, preventing logging operations from blocking the engine thread.</description></item>
+/// <item><description><see cref="EngineLoggingMode.Synchronous"/>: Log messages are written directly on the calling thread, 
+/// useful for debugging or when deterministic ordering is required.</description></item>
+/// </list>
+/// </para>
+/// <para>
+/// The asynchronous mode uses a fire-and-forget strategy with a bounded channel (default capacity: 8192). 
+/// When the channel is full, new log messages are dropped rather than blocking the caller. This design prioritizes 
+/// engine performance over guaranteed log delivery.
+/// </para>
+/// <para>
+/// Logger instances are cached per type for performance. The underlying <see cref="ILoggerFactory"/> can be 
+/// customized via <see cref="Initialize"/> or <see cref="SetLogLevel"/>. By default, Debug and Console 
+/// providers are configured.
+/// </para>
+/// <para>
+/// Thread-safety: All public methods and properties are thread-safe. The <see cref="LoggingError"/> event 
+/// is raised when exceptions occur during logging operations, allowing applications to monitor logging health.
+/// </para>
+/// </remarks>
 public static partial class EngineLogger
 {
     private static ILoggerFactory _loggerFactory = LoggerFactory.Create(static builder =>
@@ -25,6 +54,15 @@ public static partial class EngineLogger
     /// </summary>
     public static event EventHandler<LoggingErrorEventArgs>? LoggingError;
 
+    /// <summary>
+    /// Gets or sets the current logging mode (synchronous or asynchronous).
+    /// When set to <see cref="EngineLoggingMode.Asynchronous"/>, the background worker is automatically started.
+    /// When set to <see cref="EngineLoggingMode.Synchronous"/>, logs are written directly on the calling thread.
+    /// </summary>
+    /// <remarks>
+    /// Default mode is <see cref="EngineLoggingMode.Asynchronous"/>.
+    /// Changing this property is thread-safe.
+    /// </remarks>
     public static EngineLoggingMode Mode
     {
         get => _mode;
@@ -140,11 +178,41 @@ public static partial class EngineLogger
         _loggerCache.Clear(); // refresh wrappers
     }
 
+    /// <summary>
+    /// Gets the underlying <see cref="ILoggerFactory"/> used by the engine logger.
+    /// This factory can be used to create additional loggers or configure advanced logging scenarios.
+    /// </summary>
+    /// <remarks>
+    /// Changes to this factory (via <see cref="Initialize"/> or <see cref="SetLogLevel"/>) 
+    /// will affect all subsequently created loggers.
+    /// </remarks>
     public static ILoggerFactory EngineLoggerFactory => _loggerFactory;
 
+    /// <summary>
+    /// Gets a logger instance for the specified type.
+    /// The logger is cached and respects the current <see cref="Mode"/> setting.
+    /// </summary>
+    /// <typeparam name="T">The type to create a logger for. The type name will be used as the logger category.</typeparam>
+    /// <returns>
+    /// An <see cref="ILogger{T}"/> instance that routes log messages according to the current logging mode
+    /// (synchronous or asynchronous).
+    /// </returns>
+    /// <remarks>
+    /// This method is thread-safe and returns cached instances for performance.
+    /// The returned logger automatically adapts to changes in the <see cref="Mode"/> property.
+    /// </remarks>
     public static ILogger<T> GetLogger<T>() =>
         (ILogger<T>)_loggerCache.GetOrAdd(typeof(T), static _ => new ModeLogger<T>());
 
+    /// <summary>
+    /// Sets the minimum log level for all loggers created by the engine logger factory.
+    /// Recreates the internal logger factory with Debug and Console providers at the specified level.
+    /// </summary>
+    /// <param name="level">The minimum <see cref="LogLevel"/> to log. Messages below this level will be filtered out.</param>
+    /// <remarks>
+    /// This method clears the logger cache, so any previously retrieved loggers may need to be refreshed.
+    /// The new log level applies to all loggers created after this method is called.
+    /// </remarks>
     public static void SetLogLevel(LogLevel level)
     {
         _loggerFactory = LoggerFactory.Create(builder =>

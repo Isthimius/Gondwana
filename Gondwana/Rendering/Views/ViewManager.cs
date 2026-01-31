@@ -4,6 +4,12 @@ using System.Drawing;
 
 namespace Gondwana.Rendering.Views;
 
+/// <summary>
+/// Manages a collection of views for a render surface, handling view creation,
+/// removal, ordering, and multi-viewport layouts. Each view combines a camera
+/// and viewport to control what portion of the scene is rendered and where it
+/// appears on screen.
+/// </summary>
 public sealed class ViewManager
 {
     private readonly RenderSurfaceHostBase _renderSurfaceHost;
@@ -18,8 +24,41 @@ public sealed class ViewManager
         _renderSurfaceHost = renderSurfaceHost;
     }
 
+    /// <summary>
+    /// Gets a read-only collection of all views currently managed by this view manager.
+    /// Views are sorted by Z-order, with lower values appearing first (drawn behind).
+    /// </summary>
+    /// <value>
+    /// A <see cref="ReadOnlyCollection{T}"/> of <see cref="View"/> instances.
+    /// </value>
     public ReadOnlyCollection<View> Views => _views.AsReadOnly();
 
+    /// <summary>
+    /// Creates and adds a new view with the specified screen rectangle, zoom level,
+    /// and Z-order. The view is automatically configured with a camera that can be
+    /// optionally clamped to world bounds.
+    /// </summary>
+    /// <param name="targetRectPx">
+    /// The screen-space rectangle (in pixels) where this view will be rendered
+    /// on the render surface.
+    /// </param>
+    /// <param name="zoom">
+    /// Initial zoom factor for the view. Values greater than 1 zoom in;
+    /// values less than 1 zoom out. Default is 1 (no zoom).
+    /// </param>
+    /// <param name="zOrder">
+    /// Draw order relative to other views. Lower values are drawn first (behind);
+    /// higher values are drawn later (in front). Default is 0.
+    /// </param>
+    /// <param name="worldBoundsPx">
+    /// Optional world-space bounds (in pixels) that limit where the camera can move.
+    /// If null or <see cref="RectangleF.Empty"/>, the camera has no movement constraints.
+    /// </param>
+    /// <remarks>
+    /// The newly created view's camera is initially positioned at world origin (0,0)
+    /// and configured to snap to targets without smoothing. The view is automatically
+    /// sorted by Z-order after being added.
+    /// </remarks>
     public void AddView(Rectangle targetRectPx, float zoom = 1f, int zOrder = 0, RectangleF? worldBoundsPx = null)
     {
         if (worldBoundsPx is null)
@@ -149,6 +188,15 @@ public sealed class ViewManager
             worldBoundsPx: worldBoundsPx);
     }
 
+    /// <summary>
+    /// Removes all views from the manager, unsubscribing from their events and
+    /// marking the scene as needing a full refresh.
+    /// </summary>
+    /// <remarks>
+    /// This method cleanly detaches event handlers from each view's viewport
+    /// before clearing the collection. After clearing, the scene is flagged
+    /// for a full refresh to update the rendering state.
+    /// </remarks>
     public void ClearViews()
     {
         foreach (var view in _views!)
@@ -163,6 +211,18 @@ public sealed class ViewManager
             _renderSurfaceHost.Scene.FullRefreshNeeded = true;
     }
 
+    /// <summary>
+    /// Returns all views that are rendered behind (below) the specified view,
+    /// based on Z-order. Views with lower Z-order values appear behind.
+    /// </summary>
+    /// <param name="view">
+    /// The reference view to find views below.
+    /// </param>
+    /// <returns>
+    /// A read-only list of views with lower Z-order than the specified view.
+    /// Returns an empty collection if the view is not found or is already
+    /// the bottom-most view.
+    /// </returns>
     public IReadOnlyList<View> GetViewsBelow(View view)
     {
         int idx = _views.IndexOf(view);
@@ -173,6 +233,18 @@ public sealed class ViewManager
         return _views.GetRange(0, idx);
     }
 
+    /// <summary>
+    /// Returns all views that are rendered in front of (above) the specified view,
+    /// based on Z-order. Views with higher Z-order values appear in front.
+    /// </summary>
+    /// <param name="view">
+    /// The reference view to find views above.
+    /// </param>
+    /// <returns>
+    /// A read-only list of views with higher Z-order than the specified view.
+    /// Returns an empty collection if the view is not found or is already
+    /// the top-most view.
+    /// </returns>
     public IReadOnlyList<View> GetViewsAbove(View view)
     {
         int idx = _views.IndexOf(view);

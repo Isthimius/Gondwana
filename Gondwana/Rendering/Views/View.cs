@@ -5,10 +5,39 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering.Views;
 
+/// <summary>
+/// Represents a rendered view of a scene, combining a camera position with a viewport
+/// configuration to control what portion of the world is visible and how it is displayed
+/// on screen. Multiple views can be used to create split-screen, picture-in-picture,
+/// or other multi-viewport rendering scenarios.
+/// </summary>
 public sealed class View
 {
+    /// <summary>
+    /// Gets the unique identifier for this view instance.
+    /// </summary>
+    /// <value>
+    /// A GUID that uniquely identifies this view throughout its lifetime.
+    /// </value>
     public Guid Id { get; } = Guid.NewGuid();
+
+    /// <summary>
+    /// Gets the camera that controls the world-space position and following behavior
+    /// for this view. The camera determines which part of the world is visible.
+    /// </summary>
+    /// <value>
+    /// The <see cref="Views.Camera"/> instance associated with this view.
+    /// </value>
     public Camera Camera { get; }
+
+    /// <summary>
+    /// Gets the viewport that defines the screen-space rectangle, zoom level, and
+    /// other rendering parameters for this view. The viewport controls how the
+    /// camera's visible world region is mapped to screen pixels.
+    /// </summary>
+    /// <value>
+    /// The <see cref="Views.Viewport"/> instance associated with this view.
+    /// </value>
     public Viewport Viewport { get; }
 
     /// <summary>
@@ -21,7 +50,7 @@ public sealed class View
     {
         Camera = cam;
         Viewport = vp;
-        // Let camera clamp against THIS viewport’s visible world size.
+        // Let camera clamp against THIS viewport's visible world size.
         Camera.GetVisibleWorldSizePx = () => Viewport.VisibleWorldSizePx;
     }
 
@@ -89,6 +118,25 @@ public sealed class View
 
     #region Coordinate conversion methods
 
+    /// <summary>
+    /// Converts a screen-space pixel position into world-space coordinates
+    /// for the specified scene layer, accounting for the view's camera position,
+    /// viewport zoom, screen offsets, and the layer's parallax factor.
+    /// </summary>
+    /// <param name="layer">
+    /// The scene layer whose parallax factor should be used for the conversion.
+    /// </param>
+    /// <param name="screenPx">
+    /// The screen-space pixel position relative to the render surface.
+    /// </param>
+    /// <returns>
+    /// The corresponding world-space pixel position.
+    /// </returns>
+    /// <remarks>
+    /// The transformation formula is:
+    /// <code>world = camera * parallax + (screen - offset) * zoom</code>
+    /// This is commonly used for mouse picking and screen-to-world raycasting.
+    /// </remarks>
     public PointF ScreenPxToWorldPx(SceneLayer layer, PointF screenPx)
     {
         float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
@@ -105,6 +153,26 @@ public sealed class View
         return new PointF(worldX, worldY);
     }
 
+    /// <summary>
+    /// Converts a world-space pixel position into screen-space coordinates
+    /// for this view, accounting for the camera position, viewport zoom,
+    /// screen offsets, and the specified layer's parallax factor.
+    /// </summary>
+    /// <param name="layer">
+    /// The scene layer whose parallax factor should be used for the conversion.
+    /// </param>
+    /// <param name="worldPx">
+    /// The world-space pixel position to convert.
+    /// </param>
+    /// <returns>
+    /// The corresponding screen-space pixel position on the render surface.
+    /// </returns>
+    /// <remarks>
+    /// The transformation formula is:
+    /// <code>screen = offset + (world - camera * parallax) / zoom</code>
+    /// This is commonly used for rendering world objects to screen coordinates
+    /// and for UI elements that track world positions.
+    /// </remarks>
     public PointF WorldPxToScreenPx(SceneLayer layer, PointF worldPx)
     {
         float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
@@ -121,7 +189,7 @@ public sealed class View
     /// <summary>
     /// Converts a point in screen-space into the grid coordinate on the specified
     /// SceneLayer by first mapping the screen pixel to world-space, then letting the
-    /// layer’s coordinate system resolve the corresponding tile.
+    /// layer's coordinate system resolve the corresponding tile.
     /// </summary>
     /// <param name="layer">The SceneLayer whose grid the point should be mapped onto.</param>
     /// <param name="screenPx">The pixel position relative to the RenderSurface.</param>

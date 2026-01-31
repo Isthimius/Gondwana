@@ -4,16 +4,46 @@ namespace Gondwana.Rendering;
 
 public abstract class RenderSurfaceAdapterBase
 {
+    /// <summary>
+    /// Occurs when the render surface adapter is resized.
+    /// </summary>
+    /// <remarks>
+    /// This event is raised when the <see cref="Width"/> or <see cref="Height"/> properties change,
+    /// providing both the old and new dimensions in the event arguments.
+    /// </remarks>
     public event Action<RenderSurfaceAdapterResizedEventArgs>? Resized;
 
+    /// <summary>
+    /// Gets the current width of the render surface in pixels.
+    /// </summary>
+    /// <value>The width of the render surface.</value>
     public int Width { get; protected set; }
+
+    /// <summary>
+    /// Gets the current height of the render surface in pixels.
+    /// </summary>
+    /// <value>The height of the render surface.</value>
     public int Height { get; protected set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RenderSurfaceAdapterBase"/> class with the specified dimensions.
+    /// </summary>
+    /// <param name="destWidth">The initial width of the render surface in pixels.</param>
+    /// <param name="destHeight">The initial height of the render surface in pixels.</param>
     protected RenderSurfaceAdapterBase(int destWidth, int destHeight)
     {
         SetDestinationSize(destWidth, destHeight);
     }
 
+    /// <summary>
+    /// Sets the destination size of the render surface and raises the <see cref="Resized"/> event if the dimensions have changed.
+    /// </summary>
+    /// <param name="destWidth">The new width of the render surface in pixels.</param>
+    /// <param name="destHeight">The new height of the render surface in pixels.</param>
+    /// <remarks>
+    /// If the specified dimensions are the same as the current dimensions, this method returns without making changes
+    /// or raising the <see cref="Resized"/> event.
+    /// </remarks>
     protected void SetDestinationSize(int destWidth, int destHeight)
     {
         if (destWidth == Width && destHeight == Height)

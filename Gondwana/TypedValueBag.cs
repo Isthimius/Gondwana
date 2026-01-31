@@ -237,6 +237,18 @@ public sealed class TypedValueBag : ICloneable
     /// </summary>
     public TypedValueBag Clone() => new(this);
 
-    // Explicit interface impl, because ICloneable returns object
+    /// <summary>
+    /// Creates a deep copy of this <see cref="TypedValueBag"/> as an <see cref="object"/>.
+    /// This is the explicit implementation of <see cref="ICloneable.Clone"/>.
+    /// </summary>
+    /// <returns>
+    /// A new <see cref="TypedValueBag"/> instance that is a deep copy of this instance,
+    /// returned as an <see cref="object"/>.
+    /// </returns>
+    /// <remarks>
+    /// This method delegates to the strongly-typed <see cref="Clone"/> method.
+    /// All values are cloned at the underlying JSON token level, ensuring that the
+    /// cloned bag does not share mutable state with this instance.
+    /// </remarks>
     object ICloneable.Clone() => Clone();
 }
