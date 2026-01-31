@@ -13,11 +13,25 @@ public sealed class KeyboardEventPoller
     /// </summary>
     public static KeyboardEventPoller? Instance { get; private set; }
 
+    /// <summary>
+    /// Initializes the singleton instance of the <see cref="KeyboardEventPoller"/> with the specified keyboard adapter.
+    /// This method replaces the existing instance and configures it to monitor keyboard input through the provided adapter.
+    /// </summary>
+    /// <param name="adapter">
+    /// The keyboard adapter that provides access to the current keyboard state and key press information.
+    /// This adapter abstracts platform-specific keyboard input handling.
+    /// </param>
     public static void Initialize(IKeyboardAdapter adapter)
     {
         Instance = new KeyboardEventPoller(adapter);
     }
 
+    /// <summary>
+    /// Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration
+    /// and throttling settings. Subscribe to this event to handle keyboard input in your application.
+    /// The event provides information about the key action (pressed, released, or repeated) and current
+    /// keyboard modifier states.
+    /// </summary>
     public event Action<KeyDownEventArgs>? KeyDown;
 
     // Hot path uses int key codes.
@@ -125,6 +139,15 @@ public sealed class KeyboardEventPoller
         });
     }
 
+    /// <summary>
+    /// Unregisters a specific key from event monitoring by its platform-agnostic key code.
+    /// After calling this method, the key will no longer be polled and will not generate
+    /// <see cref="KeyDown"/> events until it is registered again using <see cref="StartMonitoringKey"/>.
+    /// </summary>
+    /// <param name="keyCode">
+    /// The platform-agnostic key code identifying the key to stop monitoring.
+    /// This should match the key code used when calling <see cref="StartMonitoringKey"/>.
+    /// </param>
     public void StopMonitoringKey(int keyCode)
     {
         _pendingOps.Enqueue(() =>
@@ -134,12 +157,27 @@ public sealed class KeyboardEventPoller
         });
     }
 
+    /// <summary>
+    /// Unregisters a specific key from event monitoring by parsing its string representation.
+    /// If the string can be parsed as an integer key code, the key will be unregistered.
+    /// After calling this method, the key will no longer generate <see cref="KeyDown"/> events.
+    /// </summary>
+    /// <param name="key">
+    /// A string representation of the key code to stop monitoring. The string must be parseable
+    /// as an integer. If parsing fails, this method has no effect.
+    /// </param>
     public void StopMonitoringKey(string key)
     {
         if (int.TryParse(key, out int code))
             StopMonitoringKey(code);
     }
 
+    /// <summary>
+    /// Unregisters all keys from event monitoring, clearing all key configurations and state tracking.
+    /// After calling this method, no keys will generate events until they are registered again
+    /// using <see cref="StartMonitoringKey"/>. This is useful for resetting the keyboard state
+    /// when changing game modes or screens.
+    /// </summary>
     public void StopMonitoringAllKeys()
     {
         _pendingOps.Enqueue(() =>
