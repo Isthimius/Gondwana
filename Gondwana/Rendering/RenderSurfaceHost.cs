@@ -179,22 +179,22 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
             Scene.FullRefreshNeeded = false;
-
-            return;
-        }
-
-        // 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
-        //    This already clears the whole backbuffer and enqueues a full rect per layer.
-        if (Scene.FullRefreshNeeded)
-        {
-            // this will mark the Scene.IsDirty flag as true
-            EnqueueFullSceneRefresh();
         }
         else
         {
-            // scene is not dirty, this frame is done...
-            if (!Scene.IsDirty)
-                return;
+            // 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
+            //    This already clears the whole backbuffer and enqueues a full rect per layer.
+            if (Scene.FullRefreshNeeded)
+            {
+                // this will mark the Scene.IsDirty flag as true
+                EnqueueFullSceneRefresh();
+            }
+            else
+            {
+                // scene is not dirty, this frame is done...
+                if (!Scene.IsDirty)
+                    return;
+            }
         }
 
         // 2) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
