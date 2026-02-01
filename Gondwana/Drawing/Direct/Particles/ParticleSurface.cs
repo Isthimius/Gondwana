@@ -330,10 +330,14 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             p.Life -= dt;
 
             // cull if out of bounds (with margin)
-            bool isInView = p.X >= ScreenBounds.Left - CullingMarginX
-                         && p.X <= ScreenBounds.Right + CullingMarginX
-                         && p.Y >= ScreenBounds.Top - CullingMarginY
-                         && p.Y <= ScreenBounds.Bottom + CullingMarginY;
+            Rectangle cullBounds = (Mode == DirectDrawingMode.SceneLayer)
+                ? WorldBounds
+                : ScreenBounds;
+
+            bool isInView = p.X >= cullBounds.Left - CullingMarginX
+                         && p.X <= cullBounds.Right + CullingMarginX
+                         && p.Y >= cullBounds.Top - CullingMarginY
+                         && p.Y <= cullBounds.Bottom + CullingMarginY;
 
             if (p.Life > 0 && isInView)
                 _particles[write++] = p;
@@ -379,6 +383,18 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
         // e.g., default blend; you may switch per-emitter later if you add BlendMode there
         _paint.BlendMode = SKBlendMode.Plus;
 
+        // Source bounds in the particle coordinate space
+        Rectangle srcBounds = (Mode == DirectDrawingMode.SceneLayer)
+            ? WorldBounds
+            : ScreenBounds;
+
+        // Guard against divide-by-zero (shouldn't happen, but cheap insurance)
+        float sx = (srcBounds.Width > 0) ? (destRectScreen.Width / srcBounds.Width) : 1f;
+        float sy = (srcBounds.Height > 0) ? (destRectScreen.Height / srcBounds.Height) : 1f;
+
+        // Usually uniform; if not, pick one (or average) for size scaling
+        float sSize = (sx + sy) * 0.5f;
+
         for (int i = 0; i < _alive; i++)
         {
             ref var p = ref _particles[i];
@@ -393,21 +409,23 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             // apply global tint
             _paint.Color = ApplyTint(p.Color, a, tint);
 
+            // Map particle position from srcBounds space -> destRectScreen space
+            float x = destRectScreen.Left + (p.X - srcBounds.Left) * sx;
+            float y = destRectScreen.Top + (p.Y - srcBounds.Top) * sy;
+
             if (p.ParticleSprite is null)
             {
-                // circle primitive
-                float size = p.Size * (1f + 0.5f * t);
-                canvas.DrawCircle(p.X, p.Y, size, _paint);
+                float size = (p.Size * sSize) * (1f + 0.5f * t);
+                canvas.DrawCircle(x, y, size, _paint);
             }
             else
             {
-                // textured quad
-                float s = p.Size;
-                var dst = new SKRect(p.X - s * 0.5f, p.Y - s * 0.5f,
-                                     p.X + s * 0.5f, p.Y + s * 0.5f);
+                float s = p.Size * sSize;
+                var dst = new SKRect(x - s * 0.5f, y - s * 0.5f,
+                                     x + s * 0.5f, y + s * 0.5f);
 
                 canvas.Save();
-                canvas.RotateDegrees(p.Rotation, p.X, p.Y);
+                canvas.RotateDegrees(p.Rotation, x, y);
                 canvas.DrawBitmap(p.ParticleSprite, dst, _paint);
                 canvas.Restore();
             }
