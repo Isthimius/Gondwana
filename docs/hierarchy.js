@@ -110,7 +110,7 @@ var hierarchy =
     [ "IEquatable", null, [
       [ "Gondwana.Assets.AssetsFileEntry", "class_gondwana_1_1_assets_1_1_assets_file_entry.html", null ]
     ] ],
-    [ "IGamepadAdapter", null, [
+    [ "Gondwana.Input.Gamepad.IGamepadAdapter", "interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html", [
       [ "Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html", null ],
       [ "Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html", null ]
     ] ],

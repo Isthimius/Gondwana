@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -110,14 +111,14 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a8ba162b2728d8986a5fd5caf987b1cd5" id="r_a8ba162b2728d8986a5fd5caf987b1cd5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ba162b2728d8986a5fd5caf987b1cd5">Initialize</a> (IEnumerable&lt; IGamepadAdapter &gt;? adapters)</td></tr>
+<tr class="memitem:a8ba162b2728d8986a5fd5caf987b1cd5" id="r_a8ba162b2728d8986a5fd5caf987b1cd5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ba162b2728d8986a5fd5caf987b1cd5">Initialize</a> (IEnumerable&lt; <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a> &gt;? adapters)</td></tr>
 <tr class="memdesc:a8ba162b2728d8986a5fd5caf987b1cd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html" title="Provides centralized polling and event management for gamepad button inputs across multiple gamepad d...">GamepadEventPoller</a> with the specified gamepad adapters. This method replaces the existing instance and configures it to monitor the provided adapters.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a5067f976ff6e51f7999b23fe105f7fc8" id="r_a5067f976ff6e51f7999b23fe105f7fc8"><td class="memItemLeft" align="right" valign="top">static ? <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html">GamepadEventPoller</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5067f976ff6e51f7999b23fe105f7fc8">Instance</a> = new()<code> [get]</code></td></tr>
 <tr class="memdesc:a5067f976ff6e51f7999b23fe105f7fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html" title="Provides centralized polling and event management for gamepad button inputs across multiple gamepad d...">GamepadEventPoller</a> class. This instance is created automatically on first access and can be reinitialized using the <a class="el" href="#a8ba162b2728d8986a5fd5caf987b1cd5" title="Initializes the singleton instance of the GamepadEventPoller with the specified gamepad adapters....">Initialize(IEnumerable&lt;IGamepadAdapter&gt;?)</a> method.  <br /></td></tr>
-<tr class="memitem:a288a290095d7a9f4cbbfac2f0329f4bb" id="r_a288a290095d7a9f4cbbfac2f0329f4bb"><td class="memItemLeft" align="right" valign="top">IEnumerable&lt; IGamepadAdapter &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a288a290095d7a9f4cbbfac2f0329f4bb">Adapters</a><code> [get]</code></td></tr>
+<tr class="memitem:a288a290095d7a9f4cbbfac2f0329f4bb" id="r_a288a290095d7a9f4cbbfac2f0329f4bb"><td class="memItemLeft" align="right" valign="top">IEnumerable&lt; <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a288a290095d7a9f4cbbfac2f0329f4bb">Adapters</a><code> [get]</code></td></tr>
 <tr class="memdesc:a288a290095d7a9f4cbbfac2f0329f4bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of gamepad adapters currently being monitored by this poller. Each adapter represents a physical or virtual gamepad device and provides access to its current state.  <br /></td></tr>
 <tr class="memitem:a43d0b16c381493cea5c49979a0d0271b" id="r_a43d0b16c381493cea5c49979a0d0271b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a43d0b16c381493cea5c49979a0d0271b">PauseAllInput</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a43d0b16c381493cea5c49979a0d0271b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether all input processing is globally paused. When set to <code>true</code>, the poller will not raise any button events regardless of individual button configuration pause states. This provides a convenient way to temporarily disable all gamepad input, such as when a game is paused or a modal dialog is displayed.  <br /></td></tr>
@@ -144,7 +145,7 @@ Events</h2></td></tr>
         <tr>
           <td class="memname">void Gondwana.Input.Gamepad.GamepadEventPoller.Initialize </td>
           <td>(</td>
-          <td class="paramtype">IEnumerable&lt; IGamepadAdapter &gt;?</td>          <td class="paramname"><span class="paramname"><em>adapters</em></span></td><td>)</td>
+          <td class="paramtype">IEnumerable&lt; <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a> &gt;?</td>          <td class="paramname"><span class="paramname"><em>adapters</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -232,7 +233,7 @@ Sufficient time has elapsed since the last event for that button (based on throt
 <p>Registers a button on a specific gamepad for event monitoring with optional throttling and pause configuration. Once registered, the button will be polled during calls to <a class="el" href="#a0dccd2c6b4b2563a750a20ec6c0e9f02" title="Polls the configured gamepad adapters for button press events and raises the ButtonDown event for but...">PollForEvents(long)</a> and generate <a class="el" href="#a31fdf8c47ede5aa3c31983891733c856" title="Occurs when a monitored gamepad button is pressed and the button&#39;s configuration allows the event to ...">ButtonDown</a> events when pressed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">gamepadId</td><td>The unique identifier of the gamepad device on which the button should be monitored. This must match the IGamepadAdapter.GamepadId of one of the configured adapters. </td></tr>
+    <tr><td class="paramname">gamepadId</td><td>The unique identifier of the gamepad device on which the button should be monitored. This must match the <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#a41b512f417480ddc8a2a79b6eb6336d3" title="Gets the unique identifier for the gamepad device.">IGamepadAdapter.GamepadId</a> of one of the configured adapters. </td></tr>
     <tr><td class="paramname">button</td><td>The identifier of the button to monitor (e.g., "A", "B", "X", "Y", "Start", "Back"). This should match the button naming convention used by the gamepad adapter. </td></tr>
     <tr><td class="paramname">timeBetweenEvents</td><td>The minimum time interval in seconds between consecutive events for this button. Use this to throttle rapid button presses. A value of -1 (default) will use the engine's default time between gamepad events from Engine.Configuration.TimeBetweenGamepadEvents. A value of 0 means no throttling. </td></tr>
     <tr><td class="paramname">isPaused</td><td>A value indicating whether event processing for this button should be initially paused. When paused, the button will not generate events even if pressed. Default is <code>false</code>. </td></tr>
@@ -308,7 +309,7 @@ Sufficient time has elapsed since the last event for that button (based on throt
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">IEnumerable&lt;IGamepadAdapter&gt;? Gondwana.Input.Gamepad.GamepadEventPoller.Adapters</td>
+          <td class="memname">IEnumerable&lt;<a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a>&gt;? Gondwana.Input.Gamepad.GamepadEventPoller.Adapters</td>
         </tr>
       </table>
   </td>

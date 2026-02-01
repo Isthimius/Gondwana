@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -94,7 +95,7 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.htm
 </div><!--header-->
 <div class="contents">
 
-<p>References a <a class="el" href="struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html">FrameSequence</a> object, along with a particular Throttle value for animating through <a class="el" href="struct_gondwana_1_1_drawing_1_1_frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a> objects.  
+<p>References a <a class="el" href="struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html" title="Represents a sequence of animation frames that can be cycled through using different animation patter...">FrameSequence</a> object, along with a particular Throttle value for animating through <a class="el" href="struct_gondwana_1_1_drawing_1_1_frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a> objects.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Animation.Cycle:</div>
@@ -106,33 +107,47 @@ Inheritance diagram for Gondwana.Drawing.Animation.Cycle:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a88e5e9be604a637d58c6bf813e38bb3f" id="r_a88e5e9be604a637d58c6bf813e38bb3f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88e5e9be604a637d58c6bf813e38bb3f">Cycle</a> (<a class="el" href="struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html">FrameSequence</a> sequence, double throttleTime, string cycleKey, bool hideTileOnCycleEnd=false)</td></tr>
+<tr class="memdesc:a88e5e9be604a637d58c6bf813e38bb3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> class.  <br /></td></tr>
 <tr class="memitem:a656af470fa14b685fa89cc038d6681bb" id="r_a656af470fa14b685fa89cc038d6681bb"><td class="memItemLeft" align="right" valign="top">object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a656af470fa14b685fa89cc038d6681bb">Clone</a> ()</td></tr>
+<tr class="memdesc:a656af470fa14b685fa89cc038d6681bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a shallow copy of the current <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> instance.  <br /></td></tr>
 <tr class="memitem:a9fc7a40db5c6846fc0a950e7805c56b4" id="r_a9fc7a40db5c6846fc0a950e7805c56b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fc7a40db5c6846fc0a950e7805c56b4">Dispose</a> ()</td></tr>
+<tr class="memdesc:a9fc7a40db5c6846fc0a950e7805c56b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> and removes it from the static cycle collection.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ad90cba5704fa7dc26e038083d4c49b43" id="r_ad90cba5704fa7dc26e038083d4c49b43"><td class="memItemLeft" align="right" valign="top">static List&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad90cba5704fa7dc26e038083d4c49b43">GetAnimationCycleKeys</a> ()</td></tr>
+<tr class="memdesc:ad90cba5704fa7dc26e038083d4c49b43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a list of all registered animation cycle keys.  <br /></td></tr>
 <tr class="memitem:ad96d21acb5317fb02a48711d51af813a" id="r_ad96d21acb5317fb02a48711d51af813a"><td class="memItemLeft" align="right" valign="top">static List&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html">Cycle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad96d21acb5317fb02a48711d51af813a">GetAnimationCycles</a> ()</td></tr>
+<tr class="memdesc:ad96d21acb5317fb02a48711d51af813a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a list of all registered animation cycles.  <br /></td></tr>
 <tr class="memitem:a929b57a5b337e7adba7eb018eb1427cd" id="r_a929b57a5b337e7adba7eb018eb1427cd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html">Cycle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a929b57a5b337e7adba7eb018eb1427cd">GetAnimationCycle</a> (string cycleKey)</td></tr>
+<tr class="memdesc:a929b57a5b337e7adba7eb018eb1427cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a clone of the animation cycle with the specified key.  <br /></td></tr>
 <tr class="memitem:a7a66da9913ecec08e41c955674754d41" id="r_a7a66da9913ecec08e41c955674754d41"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a66da9913ecec08e41c955674754d41">ClearAnimationCycle</a> (string cycleKey)</td></tr>
+<tr class="memdesc:a7a66da9913ecec08e41c955674754d41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes and disposes the animation cycle with the specified key.  <br /></td></tr>
 <tr class="memitem:a0fdd2e85a2390fd7aabcd7b7bc504d86" id="r_a0fdd2e85a2390fd7aabcd7b7bc504d86"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fdd2e85a2390fd7aabcd7b7bc504d86">ClearAllAnimationCycles</a> ()</td></tr>
+<tr class="memdesc:a0fdd2e85a2390fd7aabcd7b7bc504d86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes and disposes all registered animation cycles.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:abb5ec509013d2a95d5b3598e10099c47" id="r_abb5ec509013d2a95d5b3598e10099c47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html">FrameSequence</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb5ec509013d2a95d5b3598e10099c47">Sequence</a></td></tr>
+<tr class="memdesc:abb5ec509013d2a95d5b3598e10099c47"><td class="mdescLeft">&#160;</td><td class="mdescRight">The frame sequence used by this animation cycle.  <br /></td></tr>
 <tr class="memitem:ae09de85e9c63e88a043fe633050dcab4" id="r_ae09de85e9c63e88a043fe633050dcab4"><td class="memItemLeft" align="right" valign="top">readonly string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae09de85e9c63e88a043fe633050dcab4">CycleKey</a></td></tr>
+<tr class="memdesc:ae09de85e9c63e88a043fe633050dcab4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The unique identifier key for this cycle.  <br /></td></tr>
 <tr class="memitem:aa8d214d9dcc85f9ac8990a61149816b5" id="r_aa8d214d9dcc85f9ac8990a61149816b5"><td class="memItemLeft" align="right" valign="top">readonly bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8d214d9dcc85f9ac8990a61149816b5">HideTileOnCycleEnd</a></td></tr>
+<tr class="memdesc:aa8d214d9dcc85f9ac8990a61149816b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates whether the tile should be hidden when the cycle completes.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a4b3c5498aa2e991a7056b6f1be51329f" id="r_a4b3c5498aa2e991a7056b6f1be51329f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b3c5498aa2e991a7056b6f1be51329f">ThrottleTime</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a4b3c5498aa2e991a7056b6f1be51329f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the time in seconds between frame transitions in the animation cycle.  <br /></td></tr>
 <tr class="memitem:a41b758418ec539a9798cc6f23a722aa7" id="r_a41b758418ec539a9798cc6f23a722aa7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41b758418ec539a9798cc6f23a722aa7">TotalCycleTime</a><code> [get]</code></td></tr>
 <tr class="memdesc:a41b758418ec539a9798cc6f23a722aa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total time in seconds for the <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a>.  <br /></td></tr>
 <tr class="memitem:a746d029fea89bd72ac5e788032c2ada0" id="r_a746d029fea89bd72ac5e788032c2ada0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html">Cycle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a746d029fea89bd72ac5e788032c2ada0">NextCycle</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a746d029fea89bd72ac5e788032c2ada0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the next cycle to transition to when this cycle completes.  <br /></td></tr>
 <tr class="memitem:a4925e466c387d0dc138abcba9548ddf6" id="r_a4925e466c387d0dc138abcba9548ddf6"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4925e466c387d0dc138abcba9548ddf6">Count</a><code> [get]</code></td></tr>
+<tr class="memdesc:a4925e466c387d0dc138abcba9548ddf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total number of animation cycles currently registered.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>References a <a class="el" href="struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html">FrameSequence</a> object, along with a particular Throttle value for animating through <a class="el" href="struct_gondwana_1_1_drawing_1_1_frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a> objects. </p>
+<div class="textblock"><p>References a <a class="el" href="struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html" title="Represents a sequence of animation frames that can be cycled through using different animation patter...">FrameSequence</a> object, along with a particular Throttle value for animating through <a class="el" href="struct_gondwana_1_1_drawing_1_1_frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a> objects. </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a88e5e9be604a637d58c6bf813e38bb3f" name="a88e5e9be604a637d58c6bf813e38bb3f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88e5e9be604a637d58c6bf813e38bb3f">&#9670;&#160;</a></span>Cycle()</h2>
@@ -163,6 +178,17 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sequence</td><td>The frame sequence to animate through</td></tr>
+    <tr><td class="paramname">throttleTime</td><td>The time in seconds between frame transitions</td></tr>
+    <tr><td class="paramname">cycleKey</td><td>The unique identifier for this cycle</td></tr>
+    <tr><td class="paramname">hideTileOnCycleEnd</td><td>If true, hides the tile when the cycle completes. Default is false.</td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -189,6 +215,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Removes and disposes all registered animation cycles. </p>
+
 </div>
 </div>
 <a id="a7a66da9913ecec08e41c955674754d41" name="a7a66da9913ecec08e41c955674754d41"></a>
@@ -214,6 +242,14 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Removes and disposes the animation cycle with the specified key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cycleKey</td><td>The unique identifier of the cycle to clear</td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a656af470fa14b685fa89cc038d6681bb" name="a656af470fa14b685fa89cc038d6681bb"></a>
@@ -231,6 +267,9 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Creates a shallow copy of the current <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> instance. </p>
+<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> object that is a copy of this instance</dd></dl>
+
 </div>
 </div>
 <a id="a9fc7a40db5c6846fc0a950e7805c56b4" name="a9fc7a40db5c6846fc0a950e7805c56b4"></a>
@@ -247,6 +286,8 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> and removes it from the static cycle collection. </p>
 
 </div>
 </div>
@@ -273,6 +314,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Retrieves a clone of the animation cycle with the specified key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cycleKey</td><td>The unique identifier of the cycle to retrieve</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A cloned <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> instance if found; otherwise, null</dd></dl>
+
 </div>
 </div>
 <a id="ad90cba5704fa7dc26e038083d4c49b43" name="ad90cba5704fa7dc26e038083d4c49b43"></a>
@@ -297,6 +347,9 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Retrieves a list of all registered animation cycle keys. </p>
+<dl class="section return"><dt>Returns</dt><dd>A list containing all cycle keys</dd></dl>
 
 </div>
 </div>
@@ -323,6 +376,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Retrieves a list of all registered animation cycles. </p>
+<dl class="section return"><dt>Returns</dt><dd>A list containing all registered <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> instances</dd></dl>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -338,6 +394,8 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The unique identifier key for this cycle. </p>
+
 </div>
 </div>
 <a id="aa8d214d9dcc85f9ac8990a61149816b5" name="aa8d214d9dcc85f9ac8990a61149816b5"></a>
@@ -352,6 +410,8 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Indicates whether the tile should be hidden when the cycle completes. </p>
+
 </div>
 </div>
 <a id="abb5ec509013d2a95d5b3598e10099c47" name="abb5ec509013d2a95d5b3598e10099c47"></a>
@@ -365,6 +425,8 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The frame sequence used by this animation cycle. </p>
 
 </div>
 </div>
@@ -389,6 +451,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the total number of animation cycles currently registered. </p>
+
 </div>
 </div>
 <a id="a746d029fea89bd72ac5e788032c2ada0" name="a746d029fea89bd72ac5e788032c2ada0"></a>
@@ -411,6 +475,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the next cycle to transition to when this cycle completes. </p>
+
 </div>
 </div>
 <a id="a4b3c5498aa2e991a7056b6f1be51329f" name="a4b3c5498aa2e991a7056b6f1be51329f"></a>
@@ -432,6 +498,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the time in seconds between frame transitions in the animation cycle. </p>
 
 </div>
 </div>

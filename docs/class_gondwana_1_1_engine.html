@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -105,7 +106,7 @@ Inheritance diagram for Gondwana.Engine:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5ae8238a801cebbc26d97088d8398f8e" id="r_a5ae8238a801cebbc26d97088d8398f8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e">Initialize</a> (string? configFileName=null, bool? autoSaveConfig=null, <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html">IKeyboardAdapter</a>? keyboardAdapter=null, <a class="el" href="interface_gondwana_1_1_input_1_1_mouse_1_1_i_mouse_adapter.html">IMouseAdapter</a>? mouseAdapter=null, IGamepadManager&lt; IGamepadAdapter &gt;? gamepadManager=null)</td></tr>
+<tr class="memitem:a5ae8238a801cebbc26d97088d8398f8e" id="r_a5ae8238a801cebbc26d97088d8398f8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e">Initialize</a> (string? configFileName=null, bool? autoSaveConfig=null, <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html">IKeyboardAdapter</a>? keyboardAdapter=null, <a class="el" href="interface_gondwana_1_1_input_1_1_mouse_1_1_i_mouse_adapter.html">IMouseAdapter</a>? mouseAdapter=null, IGamepadManager&lt; <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a> &gt;? gamepadManager=null)</td></tr>
 <tr class="memdesc:a5ae8238a801cebbc26d97088d8398f8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one-time or on-demand initialization of the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> instance, loading configuration, state files, and input adapters required for execution.  <br /></td></tr>
 <tr class="memitem:adb629909790987f304bc63413290160d" id="r_adb629909790987f304bc63413290160d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb629909790987f304bc63413290160d">Start</a> ()</td></tr>
 <tr class="memdesc:adb629909790987f304bc63413290160d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> using the current thread's SynchronizationContext.  <br /></td></tr>
@@ -126,7 +127,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:ad4d8bba8a42dcfe160378ab32924605e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the keyboard event polling subsystem, if initialized.  <br /></td></tr>
 <tr class="memitem:a1568d7eaaecbd4206ca3368530b0d320" id="r_a1568d7eaaecbd4206ca3368530b0d320"><td class="memItemLeft" align="right" valign="top">static ? <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html">MouseEventPoller</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1568d7eaaecbd4206ca3368530b0d320">MouseEventPoller</a><code> [get]</code></td></tr>
 <tr class="memdesc:a1568d7eaaecbd4206ca3368530b0d320"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse event polling subsystem, if initialized.  <br /></td></tr>
-<tr class="memitem:a4daf0eeba87a8565f75a745360094554" id="r_a4daf0eeba87a8565f75a745360094554"><td class="memItemLeft" align="right" valign="top">static ? IGamepadManager&lt; IGamepadAdapter &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4daf0eeba87a8565f75a745360094554">GamepadManager</a><code> [get, set]</code></td></tr>
+<tr class="memitem:a4daf0eeba87a8565f75a745360094554" id="r_a4daf0eeba87a8565f75a745360094554"><td class="memItemLeft" align="right" valign="top">static ? IGamepadManager&lt; <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4daf0eeba87a8565f75a745360094554">GamepadManager</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a4daf0eeba87a8565f75a745360094554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the gamepad manager responsible for handling gamepad input.  <br /></td></tr>
 <tr class="memitem:ab25174b7ed0d75691b53f7c23c344ceb" id="r_ab25174b7ed0d75691b53f7c23c344ceb"><td class="memItemLeft" align="right" valign="top">static ? <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html">GamepadEventPoller</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab25174b7ed0d75691b53f7c23c344ceb">GamepadEventPoller</a><code> [get]</code></td></tr>
 <tr class="memdesc:ab25174b7ed0d75691b53f7c23c344ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the gamepad event polling subsystem, if initialized.  <br /></td></tr>
@@ -251,7 +252,7 @@ Raising the <a class="el" href="#a00b0e4f9d003fbb6e1711f8fadc33bb8" title="Raise
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">IGamepadManager&lt; IGamepadAdapter &gt;?</td>          <td class="paramname"><span class="paramname"><em>gamepadManager</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
+          <td class="paramtype">IGamepadManager&lt; <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a> &gt;?</td>          <td class="paramname"><span class="paramname"><em>gamepadManager</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -262,7 +263,7 @@ Raising the <a class="el" href="#a00b0e4f9d003fbb6e1711f8fadc33bb8" title="Raise
 <li>
 Raises the <a class="el" href="#aae919c657e9096bec3306b8669d0da14" title="Occurs immediately before the engine begins its internal initialization sequence.">PreInitialization</a> event (on the UI thread if available). </li>
 <li>
-Loads engine configuration settings from file using <a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration_file.html#a3c30de9161e52c8a2ad35746d9117698">EngineConfigurationFile.Load</a>. </li>
+Loads engine configuration settings from file using <a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration_file.html#a3c30de9161e52c8a2ad35746d9117698" title="Loads an engine configuration file from disk.">EngineConfigurationFile.Load</a>. </li>
 <li>
 Loads any <a class="el" href="class_gondwana_1_1_engine_state.html" title="Represents the complete serializable state of the game engine, including assets, scenes,...">EngineState</a> files declared in configuration. </li>
 <li>
@@ -534,7 +535,7 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">? IGamepadManager&lt;IGamepadAdapter&gt; Gondwana.Engine.GamepadManager</td>
+          <td class="memname">? IGamepadManager&lt;<a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a>&gt; Gondwana.Engine.GamepadManager</td>
         </tr>
       </table>
   </td>

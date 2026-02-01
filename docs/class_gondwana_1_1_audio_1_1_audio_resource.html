@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -116,6 +117,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7cae1d1b45fb5d0a2f1343f90022f2f3" id="r_a7cae1d1b45fb5d0a2f1343f90022f2f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7cae1d1b45fb5d0a2f1343f90022f2f3">Stop</a> ()</td></tr>
 <tr class="memdesc:a7cae1d1b45fb5d0a2f1343f90022f2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the output device, halting any ongoing audio playback.  <br /></td></tr>
 <tr class="memitem:a5bf8e7803b0bfd6087a6804fce518595" id="r_a5bf8e7803b0bfd6087a6804fce518595"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bf8e7803b0bfd6087a6804fce518595">Dispose</a> ()</td></tr>
+<tr class="memdesc:a5bf8e7803b0bfd6087a6804fce518595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -125,6 +127,7 @@ Public Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a909735b3294db4d7f0d06b7db64ae15a" id="r_a909735b3294db4d7f0d06b7db64ae15a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a909735b3294db4d7f0d06b7db64ae15a">Dispose</a> (bool disposing)</td></tr>
+<tr class="memdesc:a909735b3294db4d7f0d06b7db64ae15a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the unmanaged resources used by the <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> and optionally releases the managed resources.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -182,6 +185,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instance. </p>
+<p>This method stops playback, disposes of the output device and wave stream, deletes any temporary files, and raises the <a class="el" href="#ad6f8322b6569027430afafe0c4ffea45" title="Event that is raised when the audio resource is disposed.">Disposed</a> event. After calling this method, the instance should not be used further.</p>
+
 </div>
 </div>
 <a id="a909735b3294db4d7f0d06b7db64ae15a" name="a909735b3294db4d7f0d06b7db64ae15a"></a>
@@ -206,6 +212,15 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Releases the unmanaged resources used by the <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> and optionally releases the managed resources. </p>
+<p>This method implements the dispose pattern. When <em>disposing</em>  is <code>true</code>, it releases both managed and unmanaged resources. When <code>false</code>, it releases only unmanaged resources.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">disposing</td><td><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

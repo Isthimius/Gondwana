@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -104,8 +105,10 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides centralized polling and event management for gamepad button inputs across multiple gamepad devices. This singleton class monitors registered buttons on connected gamepads and raises events when buttons are pressed, with support for event throttling and pause states at both global and per-button levels.  <a href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html#details">More...</a><br /></td></tr>
 <tr class="memitem:GamepadStickState" id="r_GamepadStickState"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the state of an analog stick on a gamepad, including both normalized floating-point values for convenient use in game logic and raw integer values from the underlying input system. This immutable struct provides methods for deadzone processing, direction detection, and magnitude calculation.  <a href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html#details">More...</a><br /></td></tr>
+<tr class="memitem:IGamepadAdapter" id="r_IGamepadAdapter"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines an adapter interface for accessing gamepad input state and information.  <a href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#details">More...</a><br /></td></tr>
 <tr class="memitem:IGamepadManager_3C_20out_20T_20_3E" id="r_IGamepadManager_3C_20out_20T_20_3E"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.html">IGamepadManager&lt; out T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface to track a collection of <a class="el" href="">gamepad adapters."/&gt; </a> <a href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface to track a collection of <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">gamepad adapters."/&gt; </a> <a href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>

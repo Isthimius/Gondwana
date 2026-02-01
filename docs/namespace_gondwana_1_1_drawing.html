@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -110,10 +111,12 @@ Classes</h2></td></tr>
 <tr class="memitem:IDrawable" id="r_IDrawable"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html">IDrawable</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an object that can be drawn on a visual surface, with properties for visibility and stacking order.  <a href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Tile" id="r_Tile"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Tile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an abstract base class for drawable tiles in the <a class="el" href="namespace_gondwana.html">Gondwana</a> engine. Provides core functionality for rendering, animation, collision detection, and scene layer integration.  <a href="class_gondwana_1_1_drawing_1_1_tile.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6fce70584993e761e53ab83006f77912" id="r_a6fce70584993e761e53ab83006f77912"><td class="memItemLeft" align="right" valign="top">record struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6fce70584993e761e53ab83006f77912">Overhang</a> (int Left, int Top, int Right, int Bottom)</td></tr>
+<tr class="memdesc:a6fce70584993e761e53ab83006f77912"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the overhang dimensions (in pixels) that extend beyond a tile's primary area. Overhang values define how much a tile's visual representation exceeds its logical boundaries in each direction (left, top, right, and bottom).  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a6fce70584993e761e53ab83006f77912" name="a6fce70584993e761e53ab83006f77912"></a>
@@ -144,6 +147,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Represents the overhang dimensions (in pixels) that extend beyond a tile's primary area. Overhang values define how much a tile's visual representation exceeds its logical boundaries in each direction (left, top, right, and bottom). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Left</td><td>The number of pixels the tile extends beyond its left boundary.</td></tr>
+    <tr><td class="paramname">Top</td><td>The number of pixels the tile extends beyond its top boundary.</td></tr>
+    <tr><td class="paramname">Right</td><td>The number of pixels the tile extends beyond its right boundary.</td></tr>
+    <tr><td class="paramname">Bottom</td><td>The number of pixels the tile extends beyond its bottom boundary.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Represents an overhang with no extension in any direction (all values are zero).</p>
+<p>Gets a value indicating whether this overhang has no extension in any direction. Returns <code>true</code> if all overhang values (Left, Top, Right, Bottom) are zero; otherwise, <code>false</code>.</p>
 
 </div>
 </div>

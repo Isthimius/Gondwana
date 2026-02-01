@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -106,13 +107,18 @@ Inheritance diagram for Gondwana.Audio.StereoPanSampleProvider:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a5c5d3346826c1a4013efe903f1990cf5" id="r_a5c5d3346826c1a4013efe903f1990cf5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c5d3346826c1a4013efe903f1990cf5">StereoPanSampleProvider</a> (ISampleProvider source)</td></tr>
+<tr class="memdesc:a5c5d3346826c1a4013efe903f1990cf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_audio_1_1_stereo_pan_sample_provider.html" title="Simple stereo balancer: multiplies L/R samples independently. Expects stereo IEEE float (NAudio will ...">StereoPanSampleProvider</a> class with the specified stereo sample source.  <br /></td></tr>
 <tr class="memitem:ab8e2dfee16b80e434baac7109778fa28" id="r_ab8e2dfee16b80e434baac7109778fa28"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab8e2dfee16b80e434baac7109778fa28">Read</a> (float[] buffer, int offset, int count)</td></tr>
+<tr class="memdesc:ab8e2dfee16b80e434baac7109778fa28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads samples from the source and applies independent left and right channel volume adjustments.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:aa175750fa52140e7685d58d636a3668f" id="r_aa175750fa52140e7685d58d636a3668f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa175750fa52140e7685d58d636a3668f">LeftVolume</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:aa175750fa52140e7685d58d636a3668f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the volume multiplier for the left channel.  <br /></td></tr>
 <tr class="memitem:a6c3cc3bca9632422b514e0d403a22c35" id="r_a6c3cc3bca9632422b514e0d403a22c35"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c3cc3bca9632422b514e0d403a22c35">RightVolume</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a6c3cc3bca9632422b514e0d403a22c35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the volume multiplier for the right channel.  <br /></td></tr>
 <tr class="memitem:a972a5b2254e45e0ef89c7dcc709cf14c" id="r_a972a5b2254e45e0ef89c7dcc709cf14c"><td class="memItemLeft" align="right" valign="top">WaveFormat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a972a5b2254e45e0ef89c7dcc709cf14c">WaveFormat</a><code> [get]</code></td></tr>
+<tr class="memdesc:a972a5b2254e45e0ef89c7dcc709cf14c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the wave format of the sample provider.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Simple stereo balancer: multiplies L/R samples independently. Expects stereo IEEE float (NAudio will convert upstream via ToSampleProvider()). </p>
@@ -131,6 +137,20 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_audio_1_1_stereo_pan_sample_provider.html" title="Simple stereo balancer: multiplies L/R samples independently. Expects stereo IEEE float (NAudio will ...">StereoPanSampleProvider</a> class with the specified stereo sample source. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The stereo sample source to apply panning to. Must be stereo (2 channels) and use IEEE float encoding.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentException</td><td>Thrown when the source is not stereo (2 channels) or does not use IEEE float encoding.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -159,6 +179,17 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Reads samples from the source and applies independent left and right channel volume adjustments. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>The buffer to fill with samples.</td></tr>
+    <tr><td class="paramname">offset</td><td>The offset in the buffer to start writing samples.</td></tr>
+    <tr><td class="paramname">count</td><td>The number of samples to read.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of samples actually read from the source.</dd></dl>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -182,6 +213,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the volume multiplier for the left channel. </p>
+<p>A value of 1.0 represents full volume. Values between 0.0 and 1.0 reduce volume, while values greater than 1.0 can provide gain.</p>
+
 </div>
 </div>
 <a id="a6c3cc3bca9632422b514e0d403a22c35" name="a6c3cc3bca9632422b514e0d403a22c35"></a>
@@ -204,6 +238,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the volume multiplier for the right channel. </p>
+<p>A value of 1.0 represents full volume. Values between 0.0 and 1.0 reduce volume, while values greater than 1.0 can provide gain.</p>
+
 </div>
 </div>
 <a id="a972a5b2254e45e0ef89c7dcc709cf14c" name="a972a5b2254e45e0ef89c7dcc709cf14c"></a>
@@ -225,6 +262,9 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the wave format of the sample provider. </p>
+<p>Returns the wave format from the underlying source provider.</p>
 
 </div>
 </div>

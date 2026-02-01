@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -93,6 +94,9 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_animation_1_1_animator.
   <div class="headertitle"><div class="title">Gondwana.Drawing.Animation.Animator Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Manages animation playback for a <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...">Tile</a>, controlling animation cycles, frame timing, and raising events during the animation lifecycle.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Animation.Animator:</div>
 <div class="dyncontent">
@@ -103,25 +107,37 @@ Inheritance diagram for Gondwana.Drawing.Animation.Animator:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a390c529411ff3fa02d659d5f1dcbedde" id="r_a390c529411ff3fa02d659d5f1dcbedde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html">Cycle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a390c529411ff3fa02d659d5f1dcbedde">SetCurrentCycle</a> (string cycleKey)</td></tr>
+<tr class="memdesc:a390c529411ff3fa02d659d5f1dcbedde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current animation cycle using the specified cycle key.  <br /></td></tr>
 <tr class="memitem:a57d91f3c0ada57776d48e8d09cd8f823" id="r_a57d91f3c0ada57776d48e8d09cd8f823"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57d91f3c0ada57776d48e8d09cd8f823">StartAnimation</a> ()</td></tr>
+<tr class="memdesc:a57d91f3c0ada57776d48e8d09cd8f823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts playing the current animation cycle. If no cycle is set, this method has no effect. Raises the <a class="el" href="#a314a6221d984ac059ae6b4af5788f9f6" title="Occurs when an animation starts playing.">Started</a> event when the animation begins.  <br /></td></tr>
 <tr class="memitem:acdf1a768ce240f068451a09e85131af2" id="r_acdf1a768ce240f068451a09e85131af2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acdf1a768ce240f068451a09e85131af2">StartAnimation</a> (string cycleKey)</td></tr>
+<tr class="memdesc:acdf1a768ce240f068451a09e85131af2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current animation cycle and starts playing it.  <br /></td></tr>
 <tr class="memitem:aa76e54b08f07d88a0887eaa9c428dc96" id="r_aa76e54b08f07d88a0887eaa9c428dc96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa76e54b08f07d88a0887eaa9c428dc96">StopAnimation</a> ()</td></tr>
+<tr class="memdesc:aa76e54b08f07d88a0887eaa9c428dc96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the current animation cycle. Raises the <a class="el" href="#a47bd062544a3205996b73987c43ca4aa" title="Occurs when an animation stops playing.">Stopped</a> event and advances to the next cycle if one is configured. If the next cycle is configured to hide the tile on cycle end, the parent tile will be hidden.  <br /></td></tr>
 <tr class="memitem:ab97a014e19cf65dc8df3b6b818bd62b9" id="r_ab97a014e19cf65dc8df3b6b818bd62b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab97a014e19cf65dc8df3b6b818bd62b9">Dispose</a> ()</td></tr>
-<tr class="memdesc:ab97a014e19cf65dc8df3b6b818bd62b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">*** DO NOT CALL DIRECTLY! ***  <br /></td></tr>
+<tr class="memdesc:ab97a014e19cf65dc8df3b6b818bd62b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all event handlers and suppresses finalization. *** DO NOT CALL DIRECTLY! ***.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a637593ccb682de791e63489e15c801b0" id="r_a637593ccb682de791e63489e15c801b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Tile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a637593ccb682de791e63489e15c801b0">Parent</a><code> [get]</code></td></tr>
+<tr class="memdesc:a637593ccb682de791e63489e15c801b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile that owns this animator.  <br /></td></tr>
 <tr class="memitem:a436cd964279b12fd35fb20def4a142b9" id="r_a436cd964279b12fd35fb20def4a142b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html">Cycle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a436cd964279b12fd35fb20def4a142b9">CurrentCycle</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a436cd964279b12fd35fb20def4a142b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current animation cycle being played.  <br /></td></tr>
 <tr class="memitem:a53e5fe7745f09c7417c6f86550fd6c68" id="r_a53e5fe7745f09c7417c6f86550fd6c68"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53e5fe7745f09c7417c6f86550fd6c68">IsCycling</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a53e5fe7745f09c7417c6f86550fd6c68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the animation is currently cycling. Setting this property to <code>true</code> starts the animation; setting it to <code>false</code> stops it.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a314a6221d984ac059ae6b4af5788f9f6" id="r_a314a6221d984ac059ae6b4af5788f9f6"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_animator_event_args.html">AnimatorEventArgs</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a314a6221d984ac059ae6b4af5788f9f6">Started</a></td></tr>
+<tr class="memdesc:a314a6221d984ac059ae6b4af5788f9f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when an animation starts playing.  <br /></td></tr>
 <tr class="memitem:a47bd062544a3205996b73987c43ca4aa" id="r_a47bd062544a3205996b73987c43ca4aa"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_animator_event_args.html">AnimatorEventArgs</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47bd062544a3205996b73987c43ca4aa">Stopped</a></td></tr>
+<tr class="memdesc:a47bd062544a3205996b73987c43ca4aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when an animation stops playing.  <br /></td></tr>
 <tr class="memitem:ac99de3f89cc91b525bee625c27be2144" id="r_ac99de3f89cc91b525bee625c27be2144"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_animation_1_1_animator_event_args.html">AnimatorEventArgs</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac99de3f89cc91b525bee625c27be2144">Cycled</a></td></tr>
+<tr class="memdesc:ac99de3f89cc91b525bee625c27be2144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs each time the animation advances to the next frame in the cycle.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Manages animation playback for a <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...">Tile</a>, controlling animation cycles, frame timing, and raising events during the animation lifecycle. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ab97a014e19cf65dc8df3b6b818bd62b9" name="ab97a014e19cf65dc8df3b6b818bd62b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab97a014e19cf65dc8df3b6b818bd62b9">&#9670;&#160;</a></span>Dispose()</h2>
 
@@ -137,7 +153,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>*** DO NOT CALL DIRECTLY! *** </p>
+<p>Releases all event handlers and suppresses finalization. *** DO NOT CALL DIRECTLY! ***. </p>
 
 </div>
 </div>
@@ -156,6 +172,15 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Sets the current animation cycle using the specified cycle key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cycleKey</td><td>The key identifying the animation cycle to set as current.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The cycle that was set as the current cycle.</dd></dl>
+
 </div>
 </div>
 <a id="a57d91f3c0ada57776d48e8d09cd8f823" name="a57d91f3c0ada57776d48e8d09cd8f823"></a>
@@ -172,6 +197,8 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Starts playing the current animation cycle. If no cycle is set, this method has no effect. Raises the <a class="el" href="#a314a6221d984ac059ae6b4af5788f9f6" title="Occurs when an animation starts playing.">Started</a> event when the animation begins. </p>
 
 </div>
 </div>
@@ -190,6 +217,14 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Sets the current animation cycle and starts playing it. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cycleKey</td><td>The key identifying the animation cycle to play.</td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="aa76e54b08f07d88a0887eaa9c428dc96" name="aa76e54b08f07d88a0887eaa9c428dc96"></a>
@@ -206,6 +241,8 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Stops the current animation cycle. Raises the <a class="el" href="#a47bd062544a3205996b73987c43ca4aa" title="Occurs when an animation stops playing.">Stopped</a> event and advances to the next cycle if one is configured. If the next cycle is configured to hide the tile on cycle end, the parent tile will be hidden. </p>
 
 </div>
 </div>
@@ -230,6 +267,8 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the current animation cycle being played. </p>
+
 </div>
 </div>
 <a id="a53e5fe7745f09c7417c6f86550fd6c68" name="a53e5fe7745f09c7417c6f86550fd6c68"></a>
@@ -251,6 +290,8 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets a value indicating whether the animation is currently cycling. Setting this property to <code>true</code> starts the animation; setting it to <code>false</code> stops it. </p>
 
 </div>
 </div>
@@ -274,6 +315,8 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the tile that owns this animator. </p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -289,6 +332,8 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs each time the animation advances to the next frame in the cycle. </p>
+
 </div>
 </div>
 <a id="a314a6221d984ac059ae6b4af5788f9f6" name="a314a6221d984ac059ae6b4af5788f9f6"></a>
@@ -303,6 +348,8 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when an animation starts playing. </p>
+
 </div>
 </div>
 <a id="a47bd062544a3205996b73987c43ca4aa" name="a47bd062544a3205996b73987c43ca4aa"></a>
@@ -316,6 +363,8 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when an animation stops playing. </p>
 
 </div>
 </div>

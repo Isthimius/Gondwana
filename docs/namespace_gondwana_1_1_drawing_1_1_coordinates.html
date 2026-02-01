@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -107,7 +108,9 @@ Classes</h2></td></tr>
 <tr class="memitem:IsometricRhombicCoordinates" id="r_IsometricRhombicCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>IsometricRhombicCoordinates</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diagonal-Isometric (Diagonal Matrix) – same diamond projection but kept separate for alternative adjacency/rounding if needed. Uses identical math for now (clean, predictable behavior). <br /></td></tr>
 <tr class="memitem:OrthogonalCoordinates" id="r_OrthogonalCoordinates"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>OrthogonalCoordinates</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides orthogonal (rectangular grid) coordinate system implementation for scene layers. Tiles are arranged in a standard rectangular grid with no rotation or skewing. <br /></td></tr>
 <tr class="memitem:TileBounds" id="r_TileBounds"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>TileBounds</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides utility methods for calculating tile boundaries and applying adjustments. <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -123,6 +126,7 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#aa6e576eaf3606eeb09ed97f167eba7c5a7f39ac71e81132daad44925b3bdfde5a">NW</a>
 <br />
  }</td></tr>
+<tr class="memdesc:aa6e576eaf3606eeb09ed97f167eba7c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the eight cardinal and intercardinal directions of the compass.  <a href="#aa6e576eaf3606eeb09ed97f167eba7c5">More...</a><br /></td></tr>
 <tr class="memitem:ab877f6c99482c3923c816533c12f9ab3" id="r_ab877f6c99482c3923c816533c12f9ab3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab877f6c99482c3923c816533c12f9ab3">CoordinateSystemTypes</a> { <br />
 &#160;&#160;<a class="el" href="#ab877f6c99482c3923c816533c12f9ab3a7b2e80981e360c8634aef96cbcb62e57">Orthogonal</a> = 0
 , <a class="el" href="#ab877f6c99482c3923c816533c12f9ab3ae35c27bfb999cff29c164d656c28dae7">IsometricRhombic</a> = 1
@@ -146,15 +150,25 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Represents the eight cardinal and intercardinal directions of the compass. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a8d9c307cb7f3c4a32822a51922d1ceaa" name="aa6e576eaf3606eeb09ed97f167eba7c5a8d9c307cb7f3c4a32822a51922d1ceaa"></a>N&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5adc33066c3993e0d50896e533fd692ce0" name="aa6e576eaf3606eeb09ed97f167eba7c5adc33066c3993e0d50896e533fd692ce0"></a>NE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da" name="aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da"></a>E&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5af003c44deab679aa2edfaff864c77402" name="aa6e576eaf3606eeb09ed97f167eba7c5af003c44deab679aa2edfaff864c77402"></a>SE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a5dbc98dcc983a70728bd082d1a47546e" name="aa6e576eaf3606eeb09ed97f167eba7c5a5dbc98dcc983a70728bd082d1a47546e"></a>S&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77" name="aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77"></a>SW&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a61e9c06ea9a85a5088a499df6458d276" name="aa6e576eaf3606eeb09ed97f167eba7c5a61e9c06ea9a85a5088a499df6458d276"></a>W&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a7f39ac71e81132daad44925b3bdfde5a" name="aa6e576eaf3606eeb09ed97f167eba7c5a7f39ac71e81132daad44925b3bdfde5a"></a>NW&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a8d9c307cb7f3c4a32822a51922d1ceaa" name="aa6e576eaf3606eeb09ed97f167eba7c5a8d9c307cb7f3c4a32822a51922d1ceaa"></a>N&#160;</td><td class="fielddoc"><p>North direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5adc33066c3993e0d50896e533fd692ce0" name="aa6e576eaf3606eeb09ed97f167eba7c5adc33066c3993e0d50896e533fd692ce0"></a>NE&#160;</td><td class="fielddoc"><p>Northeast direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da" name="aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da"></a>E&#160;</td><td class="fielddoc"><p>East direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5af003c44deab679aa2edfaff864c77402" name="aa6e576eaf3606eeb09ed97f167eba7c5af003c44deab679aa2edfaff864c77402"></a>SE&#160;</td><td class="fielddoc"><p>Southeast direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a5dbc98dcc983a70728bd082d1a47546e" name="aa6e576eaf3606eeb09ed97f167eba7c5a5dbc98dcc983a70728bd082d1a47546e"></a>S&#160;</td><td class="fielddoc"><p>South direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77" name="aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77"></a>SW&#160;</td><td class="fielddoc"><p>Southwest direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a61e9c06ea9a85a5088a499df6458d276" name="aa6e576eaf3606eeb09ed97f167eba7c5a61e9c06ea9a85a5088a499df6458d276"></a>W&#160;</td><td class="fielddoc"><p>West direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa6e576eaf3606eeb09ed97f167eba7c5a7f39ac71e81132daad44925b3bdfde5a" name="aa6e576eaf3606eeb09ed97f167eba7c5a7f39ac71e81132daad44925b3bdfde5a"></a>NW&#160;</td><td class="fielddoc"><p>Northwest direction. </p>
+</td></tr>
 </table>
 
 </div>

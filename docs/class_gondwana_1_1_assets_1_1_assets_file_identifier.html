@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -100,16 +101,24 @@ $(function(){initNavTree('class_gondwana_1_1_assets_1_1_assets_file_identifier.h
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab962dfdf57165c7d99fd395782844f87" id="r_ab962dfdf57165c7d99fd395782844f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab962dfdf57165c7d99fd395782844f87">AssetsFileIdentifier</a> ()</td></tr>
+<tr class="memdesc:ab962dfdf57165c7d99fd395782844f87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html" title="Represents an identifier for a specific asset within a file, including its type and name.">AssetsFileIdentifier</a> class.  <br /></td></tr>
 <tr class="memitem:a36900d9713768046e44437a05d8606c2" id="r_a36900d9713768046e44437a05d8606c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36900d9713768046e44437a05d8606c2">AssetsFileIdentifier</a> (<a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html">AssetsFile</a> resFile, <a class="el" href="namespace_gondwana_1_1_assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1">AssetTypes</a> resType, string entry)</td></tr>
+<tr class="memdesc:a36900d9713768046e44437a05d8606c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html" title="Represents an identifier for a specific asset within a file, including its type and name.">AssetsFileIdentifier</a> class with the specified asset file, type, and name.  <br /></td></tr>
 <tr class="memitem:aa16c9b8cdfac18f45e962ef3ba75ac6c" id="r_aa16c9b8cdfac18f45e962ef3ba75ac6c"><td class="memItemLeft" align="right" valign="top">override string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa16c9b8cdfac18f45e962ef3ba75ac6c">ToString</a> ()</td></tr>
+<tr class="memdesc:aa16c9b8cdfac18f45e962ef3ba75ac6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string representation of this asset identifier.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a595201f176e984d5c36d62dbbbc45da3" id="r_a595201f176e984d5c36d62dbbbc45da3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html">AssetsFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a595201f176e984d5c36d62dbbbc45da3">AssetsFile</a> = null!<code> [get]</code></td></tr>
+<tr class="memdesc:a595201f176e984d5c36d62dbbbc45da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset.  <br /></td></tr>
 <tr class="memitem:a1a1dc4d762cba7907cf07a76455fbdef" id="r_a1a1dc4d762cba7907cf07a76455fbdef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1">AssetTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a1dc4d762cba7907cf07a76455fbdef">AssetType</a><code> [get]</code></td></tr>
+<tr class="memdesc:a1a1dc4d762cba7907cf07a76455fbdef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the type of the asset.  <br /></td></tr>
 <tr class="memitem:a0ed9d30ea3e757a403e63eaf04402ab2" id="r_a0ed9d30ea3e757a403e63eaf04402ab2"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ed9d30ea3e757a403e63eaf04402ab2">AssetName</a> = null!<code> [get]</code></td></tr>
+<tr class="memdesc:a0ed9d30ea3e757a403e63eaf04402ab2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the name of the asset.  <br /></td></tr>
 <tr class="memitem:a136a7eb153d2b486bd5125d9a25a3a3a" id="r_a136a7eb153d2b486bd5125d9a25a3a3a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a136a7eb153d2b486bd5125d9a25a3a3a">IsValid</a><code> [get]</code></td></tr>
+<tr class="memdesc:a136a7eb153d2b486bd5125d9a25a3a3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether this asset identifier is valid and can retrieve data.  <br /></td></tr>
 <tr class="memitem:a6f355ca0a323eb3207d461d80d45e28b" id="r_a6f355ca0a323eb3207d461d80d45e28b"><td class="memItemLeft" align="right" valign="top">Stream?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f355ca0a323eb3207d461d80d45e28b">Data</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6f355ca0a323eb3207d461d80d45e28b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the stream containing the asset data.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an identifier for a specific asset within a file, including its type and name. </p>
@@ -128,6 +137,9 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html" title="Represents an identifier for a specific asset within a file, including its type and name.">AssetsFileIdentifier</a> class. </p>
+<p>This parameterless constructor is primarily used for JSON deserialization.</p>
 
 </div>
 </div>
@@ -155,6 +167,16 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html" title="Represents an identifier for a specific asset within a file, including its type and name.">AssetsFileIdentifier</a> class with the specified asset file, type, and name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">resFile</td><td>The <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset.</td></tr>
+    <tr><td class="paramname">resType</td><td>The type of the asset.</td></tr>
+    <tr><td class="paramname">entry</td><td>The name of the asset entry.</td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -172,6 +194,9 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a string representation of this asset identifier. </p>
+<dl class="section return"><dt>Returns</dt><dd>A string containing the asset file path, asset type, and asset name.</dd></dl>
 
 </div>
 </div>
@@ -196,6 +221,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the name of the asset. </p>
+
 </div>
 </div>
 <a id="a595201f176e984d5c36d62dbbbc45da3" name="a595201f176e984d5c36d62dbbbc45da3"></a>
@@ -217,6 +244,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset. </p>
 
 </div>
 </div>
@@ -240,6 +269,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the type of the asset. </p>
+
 </div>
 </div>
 <a id="a6f355ca0a323eb3207d461d80d45e28b" name="a6f355ca0a323eb3207d461d80d45e28b"></a>
@@ -262,6 +293,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the stream containing the asset data. </p>
+<p>Returns <code>null</code> if the asset cannot be found in the associated <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.</p>
+
 </div>
 </div>
 <a id="a136a7eb153d2b486bd5125d9a25a3a3a" name="a136a7eb153d2b486bd5125d9a25a3a3a"></a>
@@ -283,6 +317,9 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets a value indicating whether this asset identifier is valid and can retrieve data. </p>
+<p>An identifier is considered valid if its <a class="el" href="#a6f355ca0a323eb3207d461d80d45e28b" title="Gets the stream containing the asset data.">Data</a> property returns a non-null stream.</p>
 
 </div>
 </div>

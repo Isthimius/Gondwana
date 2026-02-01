@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -93,19 +94,32 @@ $(function(){initNavTree('struct_gondwana_1_1_movement_1_1_scripted_1_1_scripted
   <div class="headertitle"><div class="title">Gondwana.Movement.Scripted.ScriptedMovement Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents the state and parameters of a scripted movement operation applied to an object. Supports two movement modes: tween-based interpolation (<a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a>) and continuous directional movement (<a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a>).  
+ <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aeb4b2750726bb13db4f8202021216958" id="r_aeb4b2750726bb13db4f8202021216958"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceb">MovementScriptType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb4b2750726bb13db4f8202021216958">Type</a></td></tr>
+<tr class="memdesc:aeb4b2750726bb13db4f8202021216958"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of movement script currently active. Determines which fields are relevant and how the movement is calculated. See <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceb" title="Defines the type of scripted movement behavior applied to an object. Movement scripts control how an ...">MovementScriptType</a> for available movement modes.  <br /></td></tr>
 <tr class="memitem:a1addcef08404d47cbd646999fefcc4c6" id="r_a1addcef08404d47cbd646999fefcc4c6"><td class="memItemLeft" align="right" valign="top">Vector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1addcef08404d47cbd646999fefcc4c6">Origin</a></td></tr>
+<tr class="memdesc:a1addcef08404d47cbd646999fefcc4c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The starting position captured when the movement script was initiated. Used primarily by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to calculate interpolation between the origin and target over the specified duration.  <br /></td></tr>
 <tr class="memitem:a405c846fa4a1fa28777810cb7a561e2b" id="r_a405c846fa4a1fa28777810cb7a561e2b"><td class="memItemLeft" align="right" valign="top">Vector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a405c846fa4a1fa28777810cb7a561e2b">Target</a></td></tr>
+<tr class="memdesc:a405c846fa4a1fa28777810cb7a561e2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The target position or destination for the movement. For <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a>, this is the final position after interpolation completes. For <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a>, this is the position the object continuously moves toward.  <br /></td></tr>
 <tr class="memitem:af1ead2157beeaad2dcd176505b4612fa" id="r_af1ead2157beeaad2dcd176505b4612fa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1ead2157beeaad2dcd176505b4612fa">DurationSec</a></td></tr>
+<tr class="memdesc:af1ead2157beeaad2dcd176505b4612fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total duration of the movement in seconds. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to determine the interpolation timeframe. The tween completes when <a class="el" href="#a5444d842567b5842b63b62b8994ccf5f" title="The elapsed time in seconds since the movement script started. Only used by MovementScriptType....">ElapsedSec</a> reaches this value, regardless of distance traveled.  <br /></td></tr>
 <tr class="memitem:a5444d842567b5842b63b62b8994ccf5f" id="r_a5444d842567b5842b63b62b8994ccf5f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5444d842567b5842b63b62b8994ccf5f">ElapsedSec</a></td></tr>
+<tr class="memdesc:a5444d842567b5842b63b62b8994ccf5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The elapsed time in seconds since the movement script started. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to track progress through the tween. Normalized to [0,1] as (ElapsedSec / DurationSec) before applying the easing function.  <br /></td></tr>
 <tr class="memitem:aa1dd96e01e460db3bbab458f0d2eb037" id="r_aa1dd96e01e460db3bbab458f0d2eb037"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1dd96e01e460db3bbab458f0d2eb037">SpeedPerSec</a></td></tr>
+<tr class="memdesc:aa1dd96e01e460db3bbab458f0d2eb037"><td class="mdescLeft">&#160;</td><td class="mdescRight">The movement speed in units per second. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a> for continuous directional movement. Determines how quickly the object moves toward the target position each frame.  <br /></td></tr>
 <tr class="memitem:a43911a17223a674f10686cfe15bfe45c" id="r_a43911a17223a674f10686cfe15bfe45c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a43911a17223a674f10686cfe15bfe45c">SnapEpsilon</a></td></tr>
+<tr class="memdesc:a43911a17223a674f10686cfe15bfe45c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The distance threshold for snapping to the target position. When the object is within this epsilon distance from the target, it snaps exactly to the target and the movement is considered complete. Prevents endless micro-adjustments and floating-point precision issues. Used by both <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> and <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a>.  <br /></td></tr>
 <tr class="memitem:a99bc4946c18714aa230d618f00dea6e7" id="r_a99bc4946c18714aa230d618f00dea6e7"><td class="memItemLeft" align="right" valign="top">Func&lt; float, float &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99bc4946c18714aa230d618f00dea6e7">Easing</a></td></tr>
+<tr class="memdesc:a99bc4946c18714aa230d618f00dea6e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional easing function applied to the normalized time value during interpolation. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to control the acceleration curve. If null, linear interpolation is used. See EasingFunctions for available easing curves. The function should accept a value in [0,1] and return a smoothed value in [0,1].  <br /></td></tr>
 </table>
-<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents the state and parameters of a scripted movement operation applied to an object. Supports two movement modes: tween-based interpolation (<a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a>) and continuous directional movement (<a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a>). </p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="af1ead2157beeaad2dcd176505b4612fa" name="af1ead2157beeaad2dcd176505b4612fa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af1ead2157beeaad2dcd176505b4612fa">&#9670;&#160;</a></span>DurationSec</h2>
 
@@ -117,6 +131,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The total duration of the movement in seconds. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to determine the interpolation timeframe. The tween completes when <a class="el" href="#a5444d842567b5842b63b62b8994ccf5f" title="The elapsed time in seconds since the movement script started. Only used by MovementScriptType....">ElapsedSec</a> reaches this value, regardless of distance traveled. </p>
 
 </div>
 </div>
@@ -132,6 +148,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Optional easing function applied to the normalized time value during interpolation. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to control the acceleration curve. If null, linear interpolation is used. See EasingFunctions for available easing curves. The function should accept a value in [0,1] and return a smoothed value in [0,1]. </p>
+
 </div>
 </div>
 <a id="a5444d842567b5842b63b62b8994ccf5f" name="a5444d842567b5842b63b62b8994ccf5f"></a>
@@ -145,6 +163,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The elapsed time in seconds since the movement script started. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to track progress through the tween. Normalized to [0,1] as (ElapsedSec / DurationSec) before applying the easing function. </p>
 
 </div>
 </div>
@@ -160,6 +180,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The starting position captured when the movement script was initiated. Used primarily by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> to calculate interpolation between the origin and target over the specified duration. </p>
+
 </div>
 </div>
 <a id="a43911a17223a674f10686cfe15bfe45c" name="a43911a17223a674f10686cfe15bfe45c"></a>
@@ -173,6 +195,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The distance threshold for snapping to the target position. When the object is within this epsilon distance from the target, it snaps exactly to the target and the movement is considered complete. Prevents endless micro-adjustments and floating-point precision issues. Used by both <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a> and <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a>. </p>
 
 </div>
 </div>
@@ -188,6 +212,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The movement speed in units per second. Only used by <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a> for continuous directional movement. Determines how quickly the object moves toward the target position each frame. </p>
+
 </div>
 </div>
 <a id="a405c846fa4a1fa28777810cb7a561e2b" name="a405c846fa4a1fa28777810cb7a561e2b"></a>
@@ -202,6 +228,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The target position or destination for the movement. For <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a>, this is the final position after interpolation completes. For <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a>, this is the position the object continuously moves toward. </p>
+
 </div>
 </div>
 <a id="aeb4b2750726bb13db4f8202021216958" name="aeb4b2750726bb13db4f8202021216958"></a>
@@ -215,6 +243,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The type of movement script currently active. Determines which fields are relevant and how the movement is calculated. See <a class="el" href="namespace_gondwana_1_1_movement_1_1_scripted.html#acceea70f10f67dacd1575f3bc3e58ceb" title="Defines the type of scripted movement behavior applied to an object. Movement scripts control how an ...">MovementScriptType</a> for available movement modes. </p>
 
 </div>
 </div>

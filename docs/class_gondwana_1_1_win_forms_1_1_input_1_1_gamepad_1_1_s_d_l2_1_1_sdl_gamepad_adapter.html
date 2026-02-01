@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -97,8 +98,11 @@ $(function(){initNavTree('class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1
 Inheritance diagram for Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.png" alt=""/>
- </div></div>
+  <img src="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.png" usemap="#Gondwana_2EWinForms_2EInput_2EGamepad_2ESDL2_2ESdlGamepadAdapter_map" alt=""/>
+  <map id="Gondwana_2EWinForms_2EInput_2EGamepad_2ESDL2_2ESdlGamepadAdapter_map" name="Gondwana_2EWinForms_2EInput_2EGamepad_2ESDL2_2ESdlGamepadAdapter_map">
+<area href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html" title="Defines an adapter interface for accessing gamepad input state and information." alt="Gondwana.Input.Gamepad.IGamepadAdapter" shape="rect" coords="0,0,375,24"/>
+  </map>
+</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -109,11 +113,17 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a82ed3bac077e75b3208920fee5af7093" id="r_a82ed3bac077e75b3208920fee5af7093"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a82ed3bac077e75b3208920fee5af7093">GamepadId</a><code> [get]</code></td></tr>
+<tr class="memdesc:a82ed3bac077e75b3208920fee5af7093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier for the gamepad device.  <br /></td></tr>
 <tr class="memitem:a9ffa9630d5695926dc089e854f3542ff" id="r_a9ffa9630d5695926dc089e854f3542ff"><td class="memItemLeft" align="right" valign="top">IReadOnlyCollection&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ffa9630d5695926dc089e854f3542ff">PressedButtons</a><code> [get]</code></td></tr>
+<tr class="memdesc:a9ffa9630d5695926dc089e854f3542ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only collection of button identifiers that are currently pressed on the gamepad.  <br /></td></tr>
 <tr class="memitem:ad326df2802f679e0a84dd711cb66cbbc" id="r_ad326df2802f679e0a84dd711cb66cbbc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad326df2802f679e0a84dd711cb66cbbc">LeftStick</a><code> [get]</code></td></tr>
+<tr class="memdesc:ad326df2802f679e0a84dd711cb66cbbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of the left analog stick, or null if not available.  <br /></td></tr>
 <tr class="memitem:a271c95baf085da52ecf4c6deeba944d1" id="r_a271c95baf085da52ecf4c6deeba944d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html">GamepadStickState</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a271c95baf085da52ecf4c6deeba944d1">RightStick</a><code> [get]</code></td></tr>
+<tr class="memdesc:a271c95baf085da52ecf4c6deeba944d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of the right analog stick, or null if not available.  <br /></td></tr>
 <tr class="memitem:a7424f60c5c99ec9006c8b4adc19cc28b" id="r_a7424f60c5c99ec9006c8b4adc19cc28b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7424f60c5c99ec9006c8b4adc19cc28b">LeftTrigger</a><code> [get]</code></td></tr>
+<tr class="memdesc:a7424f60c5c99ec9006c8b4adc19cc28b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current pressure value of the left trigger, typically ranging from 0.0 (not pressed) to 1.0 (fully pressed)  <br /></td></tr>
 <tr class="memitem:aeb60880798268ca97fc0a9a0cea931fd" id="r_aeb60880798268ca97fc0a9a0cea931fd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb60880798268ca97fc0a9a0cea931fd">RightTrigger</a><code> [get]</code></td></tr>
+<tr class="memdesc:aeb60880798268ca97fc0a9a0cea931fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current pressure value of the right trigger, typically ranging from 0.0 (not pressed) to 1.0 (fully pressed)  <br /></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="abf52aa0fee02abe856858177800f11e1" name="abf52aa0fee02abe856858177800f11e1"></a>
@@ -189,6 +199,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the unique identifier for the gamepad device. </p>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#a41b512f417480ddc8a2a79b6eb6336d3">Gondwana.Input.Gamepad.IGamepadAdapter</a>.</p>
+
 </div>
 </div>
 <a id="ad326df2802f679e0a84dd711cb66cbbc" name="ad326df2802f679e0a84dd711cb66cbbc"></a>
@@ -210,6 +224,10 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the current state of the left analog stick, or null if not available. </p>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#aef076bdaaa703103aff05de692d31c25">Gondwana.Input.Gamepad.IGamepadAdapter</a>.</p>
 
 </div>
 </div>
@@ -233,6 +251,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current pressure value of the left trigger, typically ranging from 0.0 (not pressed) to 1.0 (fully pressed) </p>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#a12aa1180f799893775bd6c35c6b9f6a7">Gondwana.Input.Gamepad.IGamepadAdapter</a>.</p>
+
 </div>
 </div>
 <a id="a9ffa9630d5695926dc089e854f3542ff" name="a9ffa9630d5695926dc089e854f3542ff"></a>
@@ -254,6 +276,10 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets a read-only collection of button identifiers that are currently pressed on the gamepad. </p>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#a93d2bb45cc16b07c31da26ffa0f1601d">Gondwana.Input.Gamepad.IGamepadAdapter</a>.</p>
 
 </div>
 </div>
@@ -277,6 +303,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current state of the right analog stick, or null if not available. </p>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#aac83f9fc7e7e948ae0e61ed772c39dc0">Gondwana.Input.Gamepad.IGamepadAdapter</a>.</p>
+
 </div>
 </div>
 <a id="aeb60880798268ca97fc0a9a0cea931fd" name="aeb60880798268ca97fc0a9a0cea931fd"></a>
@@ -298,6 +328,10 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the current pressure value of the right trigger, typically ranging from 0.0 (not pressed) to 1.0 (fully pressed) </p>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#ac37c23c699c2b2532effddc6961f6346">Gondwana.Input.Gamepad.IGamepadAdapter</a>.</p>
 
 </div>
 </div>

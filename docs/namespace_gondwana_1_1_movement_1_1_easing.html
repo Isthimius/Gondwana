@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -122,7 +123,7 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a74018978c1a1f6aa869a55d97d8dc3d3a45532e9b1e49b79e591cb796ddccb26a">SmootherStep</a>
 <br />
  }</td></tr>
-<tr class="memdesc:a74018978c1a1f6aa869a55d97d8dc3d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">All supported easing functions. Each function expects t ∈ [0,1] and returns a smoothed [0,1].  <a href="#a74018978c1a1f6aa869a55d97d8dc3d3">More...</a><br /></td></tr>
+<tr class="memdesc:a74018978c1a1f6aa869a55d97d8dc3d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of all supported easing functions for animation and movement interpolation. Each easing function expects a normalized time value t ∈ [0,1] and returns a smoothed progression value ∈ [0,1]. Use with EasingFunctions.From to obtain the corresponding easing function delegate.  <a href="#a74018978c1a1f6aa869a55d97d8dc3d3">More...</a><br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
 <a id="a74018978c1a1f6aa869a55d97d8dc3d3" name="a74018978c1a1f6aa869a55d97d8dc3d3"></a>
@@ -137,37 +138,37 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>All supported easing functions. Each function expects t ∈ [0,1] and returns a smoothed [0,1]. </p>
+<p>Enumeration of all supported easing functions for animation and movement interpolation. Each easing function expects a normalized time value t ∈ [0,1] and returns a smoothed progression value ∈ [0,1]. Use with EasingFunctions.From to obtain the corresponding easing function delegate. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a32a843da6ea40ab3b17a3421ccdf671b" name="a74018978c1a1f6aa869a55d97d8dc3d3a32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"><p>Linear easing; no acceleration or deceleration. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a32a843da6ea40ab3b17a3421ccdf671b" name="a74018978c1a1f6aa869a55d97d8dc3d3a32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"><p>Linear easing with constant velocity throughout the transition. No acceleration or deceleration is applied; the output equals the input. Formula: f(t) = t. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a52afbedefc192687be6606155b5bf593" name="a74018978c1a1f6aa869a55d97d8dc3d3a52afbedefc192687be6606155b5bf593"></a>EaseInQuad&#160;</td><td class="fielddoc"><p>Quadratic ease-in; starts slowly and accelerates. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a52afbedefc192687be6606155b5bf593" name="a74018978c1a1f6aa869a55d97d8dc3d3a52afbedefc192687be6606155b5bf593"></a>EaseInQuad&#160;</td><td class="fielddoc"><p>Quadratic ease-in curve that starts slowly and gradually accelerates. Creates a gentle acceleration effect suitable for subtle animations. Formula: f(t) = t² </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3afa3017a8e690c168c1c1ae13360e65df" name="a74018978c1a1f6aa869a55d97d8dc3d3afa3017a8e690c168c1c1ae13360e65df"></a>EaseOutQuad&#160;</td><td class="fielddoc"><p>Quadratic ease-out; starts quickly and decelerates. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3afa3017a8e690c168c1c1ae13360e65df" name="a74018978c1a1f6aa869a55d97d8dc3d3afa3017a8e690c168c1c1ae13360e65df"></a>EaseOutQuad&#160;</td><td class="fielddoc"><p>Quadratic ease-out curve that starts quickly and gradually decelerates. Creates a gentle deceleration effect as the animation approaches completion. Formula: f(t) = t(2 - t) </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ad37eb834b1eb836f03c9aafdc55e2e6d" name="a74018978c1a1f6aa869a55d97d8dc3d3ad37eb834b1eb836f03c9aafdc55e2e6d"></a>EaseInOutQuad&#160;</td><td class="fielddoc"><p>Quadratic ease-in/out; slow start and end, fast middle. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ad37eb834b1eb836f03c9aafdc55e2e6d" name="a74018978c1a1f6aa869a55d97d8dc3d3ad37eb834b1eb836f03c9aafdc55e2e6d"></a>EaseInOutQuad&#160;</td><td class="fielddoc"><p>Quadratic ease-in/out curve with slow start and end, faster movement in the middle. Provides smooth acceleration and deceleration for balanced animations. Combines ease-in for the first half and ease-out for the second half. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a13f3932381b4de8932a9a30d7aeaa289" name="a74018978c1a1f6aa869a55d97d8dc3d3a13f3932381b4de8932a9a30d7aeaa289"></a>EaseInCubic&#160;</td><td class="fielddoc"><p>Cubic ease-in; starts very slowly, strong acceleration. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a13f3932381b4de8932a9a30d7aeaa289" name="a74018978c1a1f6aa869a55d97d8dc3d3a13f3932381b4de8932a9a30d7aeaa289"></a>EaseInCubic&#160;</td><td class="fielddoc"><p>Cubic ease-in curve that starts very slowly with strong acceleration toward the end. More pronounced than quadratic easing; ideal for dramatic entrances. Formula: f(t) = t³ </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a46062163182303cb41decc9c7f56ef86" name="a74018978c1a1f6aa869a55d97d8dc3d3a46062163182303cb41decc9c7f56ef86"></a>EaseOutCubic&#160;</td><td class="fielddoc"><p>Cubic ease-out; starts quickly, strong deceleration. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a46062163182303cb41decc9c7f56ef86" name="a74018978c1a1f6aa869a55d97d8dc3d3a46062163182303cb41decc9c7f56ef86"></a>EaseOutCubic&#160;</td><td class="fielddoc"><p>Cubic ease-out curve that starts quickly with strong deceleration toward the end. More pronounced than quadratic easing; ideal for dramatic stops. Formula: f(t) = (t-1)³ + 1. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a51e1906b67f89bfc0e47c85379fe4eec" name="a74018978c1a1f6aa869a55d97d8dc3d3a51e1906b67f89bfc0e47c85379fe4eec"></a>EaseInOutCubic&#160;</td><td class="fielddoc"><p>Cubic ease-in/out; gentle start and finish, smooth center. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a51e1906b67f89bfc0e47c85379fe4eec" name="a74018978c1a1f6aa869a55d97d8dc3d3a51e1906b67f89bfc0e47c85379fe4eec"></a>EaseInOutCubic&#160;</td><td class="fielddoc"><p>Cubic ease-in/out curve with gentle start and finish, smooth transition through the center. Provides more pronounced easing than quadratic while maintaining smoothness. Well-suited for natural-feeling object movements. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ac47abf7ba72a963e3d9e3525d89f92a1" name="a74018978c1a1f6aa869a55d97d8dc3d3ac47abf7ba72a963e3d9e3525d89f92a1"></a>EaseInQuart&#160;</td><td class="fielddoc"><p>Quartic ease-in; very slow start with steep acceleration. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ac47abf7ba72a963e3d9e3525d89f92a1" name="a74018978c1a1f6aa869a55d97d8dc3d3ac47abf7ba72a963e3d9e3525d89f92a1"></a>EaseInQuart&#160;</td><td class="fielddoc"><p>Quartic ease-in curve with very slow start and steep acceleration. Creates a heavy, cinematic feel with dramatic acceleration buildup. Formula: f(t) = t⁴ </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a7b438a0c5d49f6c2ac651442d3a0aaa4" name="a74018978c1a1f6aa869a55d97d8dc3d3a7b438a0c5d49f6c2ac651442d3a0aaa4"></a>EaseOutQuart&#160;</td><td class="fielddoc"><p>Quartic ease-out; fast start with steep deceleration. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a7b438a0c5d49f6c2ac651442d3a0aaa4" name="a74018978c1a1f6aa869a55d97d8dc3d3a7b438a0c5d49f6c2ac651442d3a0aaa4"></a>EaseOutQuart&#160;</td><td class="fielddoc"><p>Quartic ease-out curve with fast start and steep deceleration. Creates a heavy, cinematic feel with dramatic deceleration to rest. Formula: f(t) = 1 - (t-1)⁴ </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a42fc7065092dad93fc6ff98a0c7712ab" name="a74018978c1a1f6aa869a55d97d8dc3d3a42fc7065092dad93fc6ff98a0c7712ab"></a>EaseInOutQuart&#160;</td><td class="fielddoc"><p>Quartic ease-in/out; balanced acceleration and deceleration. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a42fc7065092dad93fc6ff98a0c7712ab" name="a74018978c1a1f6aa869a55d97d8dc3d3a42fc7065092dad93fc6ff98a0c7712ab"></a>EaseInOutQuart&#160;</td><td class="fielddoc"><p>Quartic ease-in/out curve with balanced acceleration and deceleration. Heavy easing at both ends creates a cinematic, weighty motion feel. Ideal for important UI transitions or camera movements. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a3da6cf8d49f36b2496cf8af494f4f9f7" name="a74018978c1a1f6aa869a55d97d8dc3d3a3da6cf8d49f36b2496cf8af494f4f9f7"></a>EaseInQuint&#160;</td><td class="fielddoc"><p>Quintic ease-in; extremely slow start with powerful acceleration. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a3da6cf8d49f36b2496cf8af494f4f9f7" name="a74018978c1a1f6aa869a55d97d8dc3d3a3da6cf8d49f36b2496cf8af494f4f9f7"></a>EaseInQuint&#160;</td><td class="fielddoc"><p>Quintic ease-in curve with extremely slow start and powerful acceleration. The strongest ease-in; barely moves at the beginning before accelerating dramatically. Formula: f(t) = t⁵ </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a5fb24d5365624d849b2cfc6a6390dc39" name="a74018978c1a1f6aa869a55d97d8dc3d3a5fb24d5365624d849b2cfc6a6390dc39"></a>EaseOutQuint&#160;</td><td class="fielddoc"><p>Quintic ease-out; very fast start with strong deceleration. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a5fb24d5365624d849b2cfc6a6390dc39" name="a74018978c1a1f6aa869a55d97d8dc3d3a5fb24d5365624d849b2cfc6a6390dc39"></a>EaseOutQuint&#160;</td><td class="fielddoc"><p>Quintic ease-out curve with very fast start and strong deceleration. The strongest ease-out; rockets forward then settles gradually to rest. Formula: f(t) = (t-1)⁵ + 1. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ae7d36b8fab9c6b6cff17c29c3dbd25a1" name="a74018978c1a1f6aa869a55d97d8dc3d3ae7d36b8fab9c6b6cff17c29c3dbd25a1"></a>EaseInOutQuint&#160;</td><td class="fielddoc"><p>Quintic ease-in/out; smoothest ease with a flat midpoint. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ae7d36b8fab9c6b6cff17c29c3dbd25a1" name="a74018978c1a1f6aa869a55d97d8dc3d3ae7d36b8fab9c6b6cff17c29c3dbd25a1"></a>EaseInOutQuint&#160;</td><td class="fielddoc"><p>Quintic ease-in/out curve providing the smoothest easing with nearly flat velocity at the midpoint. Maximal easing at both ends creates extremely smooth, natural-feeling motion. Best for long, flowing animations requiring the most gradual transitions. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ab4cb90d3e50a3e043cabff0b7be07f88" name="a74018978c1a1f6aa869a55d97d8dc3d3ab4cb90d3e50a3e043cabff0b7be07f88"></a>SmoothStep&#160;</td><td class="fielddoc"><p>SmoothStep; Hermite interpolation (3t² - 2t³), smooth edges. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3ab4cb90d3e50a3e043cabff0b7be07f88" name="a74018978c1a1f6aa869a55d97d8dc3d3ab4cb90d3e50a3e043cabff0b7be07f88"></a>SmoothStep&#160;</td><td class="fielddoc"><p>Hermite smoothstep interpolation with smooth edges and continuous first derivative (C¹). Provides gentle ease-in and ease-out with zero velocity at endpoints. Formula: f(t) = 3t² - 2t³ Commonly used in procedural generation and shader programming. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a45532e9b1e49b79e591cb796ddccb26a" name="a74018978c1a1f6aa869a55d97d8dc3d3a45532e9b1e49b79e591cb796ddccb26a"></a>SmootherStep&#160;</td><td class="fielddoc"><p>SmootherStep; improved Hermite interpolation (6t⁵ - 15t⁴ + 10t³) with gentler transitions. </p>
+<tr><td class="fieldname"><a id="a74018978c1a1f6aa869a55d97d8dc3d3a45532e9b1e49b79e591cb796ddccb26a" name="a74018978c1a1f6aa869a55d97d8dc3d3a45532e9b1e49b79e591cb796ddccb26a"></a>SmootherStep&#160;</td><td class="fielddoc"><p>Ken Perlin's improved smootherstep interpolation with gentler transitions and continuous second derivative (C²). Even smoother than SmoothStep with flatter velocity curve at the center. Formula: f(t) = 6t⁵ - 15t⁴ + 10t³ Preferred for high-quality interpolation where smoothness is critical. </p>
 </td></tr>
 </table>
 

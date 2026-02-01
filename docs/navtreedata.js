@@ -61,7 +61,7 @@ var NAVTREEINDEX =
 "class_gondwana_1_1_scenes_1_1_scene_layer.html#a0ce8b6216ce767e416bdc8c9477bde12",
 "class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html#a64a2c27a73493304a4424c192ba424c1",
 "interface_gondwana_1_1_i_engine_dispatcher.html",
-"namespace_gondwana_1_1_win_forms_1_1_audio.html"
+"namespace_gondwana_1_1_rendering.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

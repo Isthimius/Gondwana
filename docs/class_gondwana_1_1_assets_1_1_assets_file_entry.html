@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -108,8 +109,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a079597cb5018e0fb06cf583d2cfe230f" id="r_a079597cb5018e0fb06cf583d2cfe230f"><td class="memItemLeft" align="right" valign="top">override string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a079597cb5018e0fb06cf583d2cfe230f">ToString</a> ()</td></tr>
 <tr class="memdesc:a079597cb5018e0fb06cf583d2cfe230f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string representation of the asset, combining the asset type and name.  <br /></td></tr>
 <tr class="memitem:a410fc050c35f7a98ed937eb00b0ebb5b" id="r_a410fc050c35f7a98ed937eb00b0ebb5b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a410fc050c35f7a98ed937eb00b0ebb5b">Equals</a> (<a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html">AssetsFileEntry</a>? other)</td></tr>
+<tr class="memdesc:a410fc050c35f7a98ed937eb00b0ebb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the current <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a> is equal to another <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a>  <br /></td></tr>
 <tr class="memitem:a07cfe4332ee3da419526faef9b1e573a" id="r_a07cfe4332ee3da419526faef9b1e573a"><td class="memItemLeft" align="right" valign="top">override bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07cfe4332ee3da419526faef9b1e573a">Equals</a> (object? obj)</td></tr>
+<tr class="memdesc:a07cfe4332ee3da419526faef9b1e573a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the specified object is equal to the current <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a>.  <br /></td></tr>
 <tr class="memitem:a2126ab4782a8dd4b9be5613145434b72" id="r_a2126ab4782a8dd4b9be5613145434b72"><td class="memItemLeft" align="right" valign="top">override int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2126ab4782a8dd4b9be5613145434b72">GetHashCode</a> ()</td></tr>
+<tr class="memdesc:a2126ab4782a8dd4b9be5613145434b72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the hash code for the current <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a>.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -137,6 +141,16 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Determines whether the current <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a> is equal to another <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a> </p>
+<p>Two entries are considered equal if they have the same asset type and asset name (case-insensitive comparison).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>The <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a> to compare with the current instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the specified entry is equal to the current entry; otherwise, <code>false</code>.</dd></dl>
+
 </div>
 </div>
 <a id="a07cfe4332ee3da419526faef9b1e573a" name="a07cfe4332ee3da419526faef9b1e573a"></a>
@@ -154,6 +168,15 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Determines whether the specified object is equal to the current <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>The object to compare with the current instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the specified object is an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a> and is equal to the current entry; otherwise, <code>false</code>.</dd></dl>
+
 </div>
 </div>
 <a id="a2126ab4782a8dd4b9be5613145434b72" name="a2126ab4782a8dd4b9be5613145434b72"></a>
@@ -170,6 +193,10 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the hash code for the current <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html" title="Represents an entry for an engine asset file, including its type and name.">AssetsFileEntry</a>. </p>
+<p>The hash code is computed based on the asset type and the lowercase version of the asset name to ensure case-insensitive equality.</p>
+<dl class="section return"><dt>Returns</dt><dd>A 32-bit signed integer hash code.</dd></dl>
 
 </div>
 </div>

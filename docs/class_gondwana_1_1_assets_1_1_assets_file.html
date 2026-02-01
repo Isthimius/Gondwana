@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -118,6 +119,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a04993d63e330991b3fc75f205156c08d" id="r_a04993d63e330991b3fc75f205156c08d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04993d63e330991b3fc75f205156c08d">Save</a> ()</td></tr>
 <tr class="memdesc:a04993d63e330991b3fc75f205156c08d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the current set of entries to a zip file at the specified file path.  <br /></td></tr>
 <tr class="memitem:a724db91fd9088bfdd49e7e5a4942580f" id="r_a724db91fd9088bfdd49e7e5a4942580f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a724db91fd9088bfdd49e7e5a4942580f">Dispose</a> ()</td></tr>
+<tr class="memdesc:a724db91fd9088bfdd49e7e5a4942580f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -253,6 +255,9 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instance. </p>
+<p>This method closes the underlying zip file, clears the loaded state, and removes this instance from the global collection of asset files. After calling this method, the instance should not be used further.</p>
 
 </div>
 </div>

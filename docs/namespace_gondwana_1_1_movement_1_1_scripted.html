@@ -17,6 +17,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -97,6 +98,7 @@ $(function(){initNavTree('namespace_gondwana_1_1_movement_1_1_scripted.html','',
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:ScriptedMovement" id="r_ScriptedMovement"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_gondwana_1_1_movement_1_1_scripted_1_1_scripted_movement.html">ScriptedMovement</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the state and parameters of a scripted movement operation applied to an object. Supports two movement modes: tween-based interpolation (<a class="el" href="#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" title="Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...">MovementScriptType.TweenTo</a>) and continuous directional movement (<a class="el" href="#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" title="Continuous movement toward a target position or object. The object moves in the direction of the targ...">MovementScriptType.Toward</a>).  <a href="struct_gondwana_1_1_movement_1_1_scripted_1_1_scripted_movement.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -104,6 +106,7 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b">TweenTo</a>
 , <a class="el" href="#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562">Toward</a>
  }</td></tr>
+<tr class="memdesc:acceea70f10f67dacd1575f3bc3e58ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the type of scripted movement behavior applied to an object. Movement scripts control how an object moves over time, either through interpolation or continuous tracking.  <a href="#acceea70f10f67dacd1575f3bc3e58ceb">More...</a><br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
 <a id="acceea70f10f67dacd1575f3bc3e58ceb" name="acceea70f10f67dacd1575f3bc3e58ceb"></a>
@@ -117,10 +120,15 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Defines the type of scripted movement behavior applied to an object. <a class="el" href="namespace_gondwana_1_1_movement.html">Movement</a> scripts control how an object moves over time, either through interpolation or continuous tracking. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="acceea70f10f67dacd1575f3bc3e58ceba6adf97f83acf6453d4a6a4b1070f3754" name="acceea70f10f67dacd1575f3bc3e58ceba6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" name="acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b"></a>TweenTo&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" name="acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562"></a>Toward&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="acceea70f10f67dacd1575f3bc3e58ceba6adf97f83acf6453d4a6a4b1070f3754" name="acceea70f10f67dacd1575f3bc3e58ceba6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>No movement script is active. The object is not being controlled by any scripted movement behavior and can move freely or remain stationary. This is the default state when no movement automation is applied. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b" name="acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b"></a>TweenTo&#160;</td><td class="fielddoc"><p>Tween-based movement to a target position or state over a fixed duration. The object interpolates smoothly from its current state to the target using an easing function. <a class="el" href="namespace_gondwana_1_1_movement.html">Movement</a> completes after the specified duration, regardless of distance. Supports various easing curves (linear, quadratic, cubic, etc.) for different animation feels. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562" name="acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562"></a>Toward&#160;</td><td class="fielddoc"><p>Continuous movement toward a target position or object. The object moves in the direction of the target at a constant or variable speed. <a class="el" href="namespace_gondwana_1_1_movement.html">Movement</a> continues until the object reaches the target or the script is cancelled. Useful for chase behaviors, homing projectiles, or AI pathfinding. </p>
+</td></tr>
 </table>
 
 </div>
