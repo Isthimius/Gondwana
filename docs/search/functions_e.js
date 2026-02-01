@@ -16,9 +16,8 @@ var searchData=
   ['reset_13',['Reset',['../struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html#a5f1efbadf93c14b57a176ab02a8062aa',1,'Gondwana::Drawing::Animation::FrameSequence']]],
   ['resize_14',['Resize',['../class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html#ab1039ac3f028ede03e76de06101434c4',1,'Gondwana::Rendering::Views::Viewport']]],
   ['resizeto_15',['ResizeTo',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a41ec4bfa5ce9b186ce66b2b36df56426',1,'Gondwana::Drawing::Sprites::Sprite']]],
-  ['resourcefile_16',['ResourceFile',['../class_gondwana_1_1_design_1_1_controls_1_1_resource_file.html#a0c6a00baa3fbe39c3774f4dfe2e97ca2',1,'Gondwana::Design::Controls::ResourceFile']]],
-  ['resume_17',['Resume',['../class_gondwana_1_1_audio_1_1_audio_resource.html#ae99615c055d269dcbf5568faf8cb9f80',1,'Gondwana::Audio::AudioResource']]],
-  ['revealsetcount_18',['RevealSetCount',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aa13990987a3e6641cca331d69b1295f2',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['revealstop_19',['RevealStop',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#ad4aa2a13614a9dfd7c45b56d87441d1d',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['revealto_20',['RevealTo',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a15fd13ea5e88a25cfd4dc2130765852d',1,'Gondwana::Drawing::Direct::DirectDrawingBase']]]
+  ['resume_16',['Resume',['../class_gondwana_1_1_audio_1_1_audio_resource.html#ae99615c055d269dcbf5568faf8cb9f80',1,'Gondwana::Audio::AudioResource']]],
+  ['revealsetcount_17',['RevealSetCount',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aa13990987a3e6641cca331d69b1295f2',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['revealstop_18',['RevealStop',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#ad4aa2a13614a9dfd7c45b56d87441d1d',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['revealto_19',['RevealTo',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a15fd13ea5e88a25cfd4dc2130765852d',1,'Gondwana::Drawing::Direct::DirectDrawingBase']]]
 ];

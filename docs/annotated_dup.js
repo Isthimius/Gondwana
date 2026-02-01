@@ -26,32 +26,6 @@ var annotated_dup =
         [ "EngineConfiguration", "class_gondwana_1_1_configuration_1_1_engine_configuration.html", "class_gondwana_1_1_configuration_1_1_engine_configuration" ],
         [ "EngineConfigurationFile", "class_gondwana_1_1_configuration_1_1_engine_configuration_file.html", "class_gondwana_1_1_configuration_1_1_engine_configuration_file" ]
       ] ],
-      [ "CoordinateTest", "namespace_gondwana_1_1_coordinate_test.html", [
-        [ "Game", "class_gondwana_1_1_coordinate_test_1_1_game.html", "class_gondwana_1_1_coordinate_test_1_1_game" ],
-        [ "GameWindow", "class_gondwana_1_1_coordinate_test_1_1_game_window.html", "class_gondwana_1_1_coordinate_test_1_1_game_window" ]
-      ] ],
-      [ "Design", "namespace_gondwana_1_1_design.html", [
-        [ "Controls", "namespace_gondwana_1_1_design_1_1_controls.html", [
-          [ "AssetFolder", "class_gondwana_1_1_design_1_1_controls_1_1_asset_folder.html", "class_gondwana_1_1_design_1_1_controls_1_1_asset_folder" ],
-          [ "AssetViewer", "class_gondwana_1_1_design_1_1_controls_1_1_asset_viewer.html", "class_gondwana_1_1_design_1_1_controls_1_1_asset_viewer" ],
-          [ "Cycle", "class_gondwana_1_1_design_1_1_controls_1_1_cycle.html", "class_gondwana_1_1_design_1_1_controls_1_1_cycle" ],
-          [ "FramesBar", "class_gondwana_1_1_design_1_1_controls_1_1_frames_bar.html", "class_gondwana_1_1_design_1_1_controls_1_1_frames_bar" ],
-          [ "Grid", "class_gondwana_1_1_design_1_1_controls_1_1_grid.html", "class_gondwana_1_1_design_1_1_controls_1_1_grid" ],
-          [ "GridsDisplay", "class_gondwana_1_1_design_1_1_controls_1_1_grids_display.html", "class_gondwana_1_1_design_1_1_controls_1_1_grids_display" ],
-          [ "MediaFile", "class_gondwana_1_1_design_1_1_controls_1_1_media_file.html", "class_gondwana_1_1_design_1_1_controls_1_1_media_file" ],
-          [ "MediaFileMenu", "class_gondwana_1_1_design_1_1_controls_1_1_media_file_menu.html", "class_gondwana_1_1_design_1_1_controls_1_1_media_file_menu" ],
-          [ "ProjectFile", "class_gondwana_1_1_design_1_1_controls_1_1_project_file.html", "class_gondwana_1_1_design_1_1_controls_1_1_project_file" ],
-          [ "ResourceFile", "class_gondwana_1_1_design_1_1_controls_1_1_resource_file.html", "class_gondwana_1_1_design_1_1_controls_1_1_resource_file" ],
-          [ "Sprite", "class_gondwana_1_1_design_1_1_controls_1_1_sprite.html", "class_gondwana_1_1_design_1_1_controls_1_1_sprite" ],
-          [ "Tilesheet", "class_gondwana_1_1_design_1_1_controls_1_1_tilesheet.html", "class_gondwana_1_1_design_1_1_controls_1_1_tilesheet" ],
-          [ "TilesheetMenu", "class_gondwana_1_1_design_1_1_controls_1_1_tilesheet_menu.html", "class_gondwana_1_1_design_1_1_controls_1_1_tilesheet_menu" ]
-        ] ],
-        [ "Forms", "namespace_gondwana_1_1_design_1_1_forms.html", [
-          [ "BitmapChangeColorPopUp", "class_gondwana_1_1_design_1_1_forms_1_1_bitmap_change_color_pop_up.html", "class_gondwana_1_1_design_1_1_forms_1_1_bitmap_change_color_pop_up" ],
-          [ "CycleViewer", "class_gondwana_1_1_design_1_1_forms_1_1_cycle_viewer.html", "class_gondwana_1_1_design_1_1_forms_1_1_cycle_viewer" ]
-        ] ],
-        [ "ScriptDesigner", "class_gondwana_1_1_design_1_1_script_designer.html", "class_gondwana_1_1_design_1_1_script_designer" ]
-      ] ],
       [ "Drawing", "namespace_gondwana_1_1_drawing.html", [
         [ "Animation", "namespace_gondwana_1_1_drawing_1_1_animation.html", [
           [ "Animator", "class_gondwana_1_1_drawing_1_1_animation_1_1_animator.html", "class_gondwana_1_1_drawing_1_1_animation_1_1_animator" ],
@@ -128,9 +102,6 @@ var annotated_dup =
         [ "MovementController", "class_gondwana_1_1_movement_1_1_movement_controller.html", "class_gondwana_1_1_movement_1_1_movement_controller" ],
         [ "MovementState", "struct_gondwana_1_1_movement_1_1_movement_state.html", "struct_gondwana_1_1_movement_1_1_movement_state" ]
       ] ],
-      [ "ParticleTest", "namespace_gondwana_1_1_particle_test.html", [
-        [ "Form1", "class_gondwana_1_1_particle_test_1_1_form1.html", "class_gondwana_1_1_particle_test_1_1_form1" ]
-      ] ],
       [ "Rendering", "namespace_gondwana_1_1_rendering.html", [
         [ "Backbuffers", "namespace_gondwana_1_1_rendering_1_1_backbuffers.html", [
           [ "BackbufferBase", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base" ],
@@ -199,21 +170,5 @@ var annotated_dup =
       [ "IUiDispatcher", "interface_gondwana_1_1_i_ui_dispatcher.html", "interface_gondwana_1_1_i_ui_dispatcher" ],
       [ "TypedValueBag", "class_gondwana_1_1_typed_value_bag.html", "class_gondwana_1_1_typed_value_bag" ],
       [ "UiDispatcher", "class_gondwana_1_1_ui_dispatcher.html", "class_gondwana_1_1_ui_dispatcher" ]
-    ] ],
-    [ "GondwanaTest", "namespace_gondwana_test.html", [
-      [ "GondwanaTest", "class_gondwana_test_1_1_gondwana_test.html", null ]
-    ] ],
-    [ "GondwanaWinTest", "namespace_gondwana_win_test.html", [
-      [ "Form1", "class_gondwana_win_test_1_1_form1.html", "class_gondwana_win_test_1_1_form1" ]
-    ] ],
-    [ "HWG", "namespace_h_w_g.html", [
-      [ "Spot", "namespace_h_w_g_1_1_spot.html", [
-        [ "Game", "class_h_w_g_1_1_spot_1_1_game.html", "class_h_w_g_1_1_spot_1_1_game" ],
-        [ "GameWindow", "class_h_w_g_1_1_spot_1_1_game_window.html", "class_h_w_g_1_1_spot_1_1_game_window" ]
-      ] ]
-    ] ],
-    [ "Slider", "namespace_slider.html", [
-      [ "Puzzle", "class_slider_1_1_puzzle.html", "class_slider_1_1_puzzle" ],
-      [ "PuzzleForm", "class_slider_1_1_puzzle_form.html", "class_slider_1_1_puzzle_form" ]
     ] ]
 ];

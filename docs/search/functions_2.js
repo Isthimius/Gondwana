@@ -25,7 +25,6 @@ var searchData=
   ['configureverticalsplit_22',['ConfigureVerticalSplit',['../class_gondwana_1_1_rendering_1_1_views_1_1_view_manager.html#a0ea85643b4b886d927d5af75b8c075a9',1,'Gondwana::Rendering::Views::ViewManager']]],
   ['contains_23',['Contains',['../class_gondwana_1_1_audio_1_1_audio_resource_manager.html#a2f6b6b4cb82aeb73f442a45b710857e1',1,'Gondwana::Audio::AudioResourceManager']]],
   ['createnew_24',['CreateNew',['../class_gondwana_1_1_configuration_1_1_engine_configuration_file.html#ac665c371c4427463ecdbddcbc6e6f50d',1,'Gondwana::Configuration::EngineConfigurationFile']]],
-  ['cycle_25',['Cycle',['../class_gondwana_1_1_design_1_1_controls_1_1_cycle.html#a41c73535cbdace35c0e7ae5ffbb5f933',1,'Gondwana.Design.Controls.Cycle.Cycle()'],['../class_gondwana_1_1_design_1_1_controls_1_1_cycle.html#a437dda92c3cea94e6d99a70ec19b0669',1,'Gondwana.Design.Controls.Cycle.Cycle(Gondwana.Common.Drawing.Animation.Cycle animCycle)'],['../class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#a88e5e9be604a637d58c6bf813e38bb3f',1,'Gondwana.Drawing.Animation.Cycle.Cycle()']]],
-  ['cyclespersecondcalculatedeventargs_26',['CyclesPerSecondCalculatedEventArgs',['../class_gondwana_1_1_cycles_per_second_calculated_event_args.html#af10277cacdc753884d4205c68be5563b',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]],
-  ['cycleviewer_27',['CycleViewer',['../class_gondwana_1_1_design_1_1_forms_1_1_cycle_viewer.html#ab1d4d78e001e1c3aa2f9f19881473e19',1,'Gondwana::Design::Forms::CycleViewer']]]
+  ['cycle_25',['Cycle',['../class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#a88e5e9be604a637d58c6bf813e38bb3f',1,'Gondwana::Drawing::Animation::Cycle']]],
+  ['cyclespersecondcalculatedeventargs_26',['CyclesPerSecondCalculatedEventArgs',['../class_gondwana_1_1_cycles_per_second_calculated_event_args.html#af10277cacdc753884d4205c68be5563b',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]]
 ];

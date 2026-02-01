@@ -11,7 +11,5 @@ var searchData=
   ['horizalign_8',['HorizAlign',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#aa0c9cb286ffdd480798244f9e07a66ab',1,'Gondwana::Drawing::Sprites::Sprite']]],
   ['horizontalalignment_9',['HorizontalAlignment',['../namespace_gondwana_1_1_drawing_1_1_sprites.html#ab3dde0a5b955ae7bce32212444fdf778',1,'Gondwana::Drawing::Sprites']]],
   ['horizontalpadding_10',['HorizontalPadding',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a34b030cbc1c2cb02b7018546f027c662',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['host_11',['Host',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_control.html#a3248b336b58d8d9203687ea77e5a3bf1',1,'Gondwana::WinForms::Rendering::WinFormBitmapRenderSurfaceControl']]],
-  ['hwg_12',['HWG',['../namespace_h_w_g.html',1,'']]],
-  ['hwg_3a_3aspot_13',['Spot',['../namespace_h_w_g_1_1_spot.html',1,'HWG']]]
+  ['host_11',['Host',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_control.html#a3248b336b58d8d9203687ea77e5a3bf1',1,'Gondwana::WinForms::Rendering::WinFormBitmapRenderSurfaceControl']]]
 ];
