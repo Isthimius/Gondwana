@@ -17,7 +17,6 @@ namespace Gondwana.Drawing.Direct;
 /// <para>
 /// Direct drawings are automatically registered when constructed and removed when disposed. The manager
 /// maintains a concurrent dictionary keyed by each drawing's unique <see cref="IDirectDrawable.Id"/>,
-
 /// ensuring thread-safe access during rendering and updates.
 /// </para>
 /// <para>
