@@ -77,7 +77,7 @@ public partial class Form1 : Form
         glowBox.ZOrder = 1;
 
         _textBlock = new TextBlock(renderSurface, renderSurface.ViewManager.Views[0], new Rectangle(20, adapter.Height * 7 / 10, adapter.Width - 40, 160), null)
-            .SetFont(SKTypeface.FromFamilyName("Papyrus"), 14f, minSize: 14f)
+            .SetFont(SKTypeface.FromFamilyName("Papyrus"), 16f, minSize: 14f)
             .SetColors(Color.White, Color.Transparent)
             .SetAlignment(SKTextAlign.Center, VerticalAlign.Center)
             .EnableWrapping()

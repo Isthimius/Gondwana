@@ -28,7 +28,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         Children = new ReadOnlyCollection<DirectDrawingMovableBase>(_children);
         Nickname = nickname;
 
-        Movement = new MovementController(this, MovementState.ForPixel(new Vector2(_anchor.X, _anchor.Y)));
+        Movement = new MovementController(this, MovementState.ForPixel());
         DirectDrawingManager.Instance.AddOrReplace(this);
     }
 

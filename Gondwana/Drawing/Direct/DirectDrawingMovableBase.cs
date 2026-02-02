@@ -88,7 +88,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     {
         Rectangle bounds = (mode == DirectDrawingMode.SceneLayer ? worldBounds : screenBounds)!.Value;
 
-        var movementState = MovementState.ForPixel(new Vector2(bounds.X, bounds.Y));
+        var movementState = MovementState.ForPixel();
         Movement = new MovementController(this, movementState);
     }
 
