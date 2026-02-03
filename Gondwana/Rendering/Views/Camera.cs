@@ -113,8 +113,8 @@ public sealed class Camera
     {
         // Anchor (top-left of tile)
         var anchor = layer.GridToWorldPx(new PointF(col, row));
-        float tileCenterX = anchor.X + layer.SceneLayerTileWidth * 0.5f;
-        float tileCenterY = anchor.Y + layer.SceneLayerTileHeight * 0.5f;
+        float tileCenterX = anchor.X + layer.TileWidth * 0.5f;
+        float tileCenterY = anchor.Y + layer.TileHeight * 0.5f;
 
         var vis = GetVisibleWorldSizePx();
 
@@ -154,8 +154,8 @@ public sealed class Camera
     {
         // Compute world center of the tile and reuse PanCenterTo.
         var anchor = layer.GridToWorldPx(new PointF(col, row));
-        float tileCenterX = anchor.X + layer.SceneLayerTileWidth * 0.5f;
-        float tileCenterY = anchor.Y + layer.SceneLayerTileHeight * 0.5f;
+        float tileCenterX = anchor.X + layer.TileWidth * 0.5f;
+        float tileCenterY = anchor.Y + layer.TileHeight * 0.5f;
 
         PanCenterTo(new PointF(tileCenterX, tileCenterY), speed);
     }
@@ -305,8 +305,8 @@ public sealed class Camera
         // Same pattern as AnimateCenterOnGrid: get the tile's world-space anchor
         // (top-left), then offset by half the tile size to get its visual center.
         var anchor = layer.GridToWorldPx(new PointF(col, row));
-        float tileCenterX = anchor.X + layer.SceneLayerTileWidth * 0.5f;
-        float tileCenterY = anchor.Y + layer.SceneLayerTileHeight * 0.5f;
+        float tileCenterX = anchor.X + layer.TileWidth * 0.5f;
+        float tileCenterY = anchor.Y + layer.TileHeight * 0.5f;
 
         // Then pan so that tile center ends up at the center of the view
         // over the requested duration.
@@ -404,7 +404,7 @@ public sealed class Camera
             if (target.PositionSpace == MovementSpace.Grid)
             {
                 var anchor = layer.GridToWorldPx(new PointF(pos.X, pos.Y));
-                worldCenterX = anchor.X + layer.SceneLayerTileWidth * 0.5f;
+                worldCenterX = anchor.X + layer.TileWidth * 0.5f;
             }
             else
             {
@@ -442,7 +442,7 @@ public sealed class Camera
             if (target.PositionSpace == MovementSpace.Grid)
             {
                 var anchor = layer.GridToWorldPx(new PointF(pos.X, pos.Y));
-                worldCenterY = anchor.Y + layer.SceneLayerTileHeight * 0.5f;
+                worldCenterY = anchor.Y + layer.TileHeight * 0.5f;
             }
             else
             {
@@ -593,8 +593,8 @@ public sealed class Camera
     {
         var anchor = layer.GridToWorldPx(new PointF(gridPos.X, gridPos.Y));
         return new PointF(
-            anchor.X + layer.SceneLayerTileWidth * 0.5f,
-            anchor.Y + layer.SceneLayerTileHeight * 0.5f);
+            anchor.X + layer.TileWidth * 0.5f,
+            anchor.Y + layer.TileHeight * 0.5f);
     }
 
     #endregion private methods

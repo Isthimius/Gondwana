@@ -17,8 +17,8 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
     /// <returns>The pixel position as a <see cref="Point"/>.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint)
     {
-        int W = sceneLayer.SceneLayerTileWidth;
-        int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth;
+        int H = sceneLayer.TileHeight;
 
         var origin = sceneLayer.OriginPx;
 
@@ -36,8 +36,8 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
     /// <returns>The scene layer coordinates as a <see cref="PointF"/>.</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        int W = sceneLayer.SceneLayerTileWidth;
-        int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth;
+        int H = sceneLayer.TileHeight;
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -96,8 +96,8 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         var layer = tile.SceneLayer;
-        int W = layer.SceneLayerTileWidth;
-        int H = layer.SceneLayerTileHeight;
+        int W = layer.TileWidth;
+        int H = layer.TileHeight;
 
         int originX = layer.OriginPx.X;
         int originY = layer.OriginPx.Y;

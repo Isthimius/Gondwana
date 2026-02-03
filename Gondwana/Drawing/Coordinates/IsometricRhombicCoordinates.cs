@@ -18,8 +18,8 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     /// <returns>The pixel position as a <see cref="Point"/>.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        int W = sceneLayer.SceneLayerTileWidth;
-        int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth;
+        int H = sceneLayer.TileHeight;
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -42,8 +42,8 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     /// <returns>The scene layer coordinates as a <see cref="PointF"/>.</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        int W = sceneLayer.SceneLayerTileWidth;
-        int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth;
+        int H = sceneLayer.TileHeight;
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -99,7 +99,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
-        int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
+        int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
@@ -153,7 +153,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     public Point[] GetPolygonPts(Tile tile, bool includeOverhang)
     {
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
-        int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
+        int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
 
         return new[]

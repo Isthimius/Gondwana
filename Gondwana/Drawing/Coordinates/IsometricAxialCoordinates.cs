@@ -16,8 +16,8 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     // Precompute half sizes repeatedly used
     private static void WH(SceneLayer m, out int W, out int H, out float halfW, out float halfH)
     {
-        W = m.SceneLayerTileWidth;
-        H = m.SceneLayerTileHeight;
+        W = m.TileWidth;
+        H = m.TileHeight;
         halfW = W * 0.5f;
         halfH = H * 0.5f;
     }

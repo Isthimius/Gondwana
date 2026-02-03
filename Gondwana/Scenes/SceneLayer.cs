@@ -41,8 +41,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// Occurs when the tile dimensions of this layer change.
     /// </summary>
     /// <remarks>
-    /// This event is raised when either <see cref="SceneLayerTileWidth"/> or
-    /// <see cref="SceneLayerTileHeight"/> is modified, or when <see cref="SetTileSize"/>
+    /// This event is raised when either <see cref="TileWidth"/> or
+    /// <see cref="TileHeight"/> is modified, or when <see cref="SetTileSize"/>
     /// is called. Changes to tile size typically require a full scene refresh to ensure
     /// correct rendering of all tiles and sprites.
     /// </remarks>
@@ -345,7 +345,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// </para>
     /// </remarks>
     [JsonProperty]
-    public int SceneLayerTileHeight
+    public int TileHeight
     {
         get { return _tileHeight; }
         set
@@ -371,7 +371,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// </para>
     /// </remarks>
     [JsonProperty]
-    public int SceneLayerTileWidth
+    public int TileWidth
     {
         get { return _tileWidth; }
         set
@@ -604,8 +604,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <param name="newHeight">The new tile height in pixels.</param>
     /// <remarks>
     /// <para>
-    /// This method is preferred over setting <see cref="SceneLayerTileWidth"/> and
-    /// <see cref="SceneLayerTileHeight"/> separately, as it avoids triggering two change events
+    /// This method is preferred over setting <see cref="TileWidth"/> and
+    /// <see cref="TileHeight"/> separately, as it avoids triggering two change events
     /// and two scene refreshes.
     /// </para>
     /// <para>
@@ -738,7 +738,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // Make selection rect covering so we never miss the edge tile.
         // Drawing is still clipped later, so over-selecting is safe.
         var queryRect = worldRect;
-        queryRect.Inflate(SceneLayerTileWidth, SceneLayerTileHeight); // <- KEY (tile-sized)
+        queryRect.Inflate(TileWidth, TileHeight); // <- KEY (tile-sized)
         queryRect.Inflate(1, 1); // optional boundary insurance
 
         // Gather into a list so we can sort it.

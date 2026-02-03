@@ -17,8 +17,8 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
     /// <returns>The pixel position of the tile's anchor point.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        int W = sceneLayer.SceneLayerTileWidth;
-        int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth;
+        int H = sceneLayer.TileHeight;
         int col = (int)Math.Round(gp.X);
         int row = (int)Math.Round(gp.Y);
 
@@ -39,8 +39,8 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
     /// <returns>The scene layer coordinates as a PointF (column, row).</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        int W = sceneLayer.SceneLayerTileWidth;
-        int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth;
+        int H = sceneLayer.TileHeight;
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -81,7 +81,7 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        int W = sceneLayer.SceneLayerTileWidth; int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth; int H = sceneLayer.TileHeight;
 
         int minRow = (int)Math.Floor((worldPixelRange.Top + sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
         int maxRow = (int)Math.Ceiling((worldPixelRange.Bottom + sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
@@ -111,7 +111,7 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
-        int W = tile.SceneLayer.SceneLayerTileWidth; int H = tile.SceneLayer.SceneLayerTileHeight;
+        int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H);
         return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
     }
@@ -200,8 +200,8 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
 
     private static Point[] HexPolygonPointedTop(SceneLayer sceneLayer, int col, int row, bool includeOverhang)
     {
-        int W = sceneLayer.SceneLayerTileWidth;
-        int H = sceneLayer.SceneLayerTileHeight;
+        int W = sceneLayer.TileWidth;
+        int H = sceneLayer.TileHeight;
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;

@@ -81,9 +81,6 @@ public partial class Sprite
         // collision baseline
         _resizeStartCollisionAdjust = AdjustCollisionArea;
         _resizeStartSizeForCollision = RenderSize;
-
-        // Make sure we repaint right away if something changes on first tick
-        _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(this.DrawLocationWorld, SpriteManager.GetDrawLocation(this, _sceneLayer, sceneLayerCoordinates, targetSize)));
     }
 
     /// <summary>

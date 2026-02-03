@@ -310,8 +310,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 // 2) Expand world rect by **one full tile** in all directions.
                 //    This compensates for fractional-layer motion (parallax),
                 //    camera motion, and tile boundaries.
-                int expandX = layer.SceneLayerTileWidth;
-                int expandY = layer.SceneLayerTileHeight;
+                int expandX = layer.TileWidth;
+                int expandY = layer.TileHeight;
 
                 layerWorldRect.Inflate(expandX, expandY);
 

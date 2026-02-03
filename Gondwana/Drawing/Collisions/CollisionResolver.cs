@@ -103,7 +103,7 @@ internal static class CollisionResolver
         // If rect changed, map back to grid coordinates and update the sprite.
         if (rect != sprite.CollisionArea)
         {
-            var sceneCoord = SpriteManager.GridCoordinates(sprite, layer, rect);
+            var sceneCoord = sprite.GetSceneLayerCoordsFromSpriteWorldRect(rect);
             sprite.SetPosition(new System.Numerics.Vector2(sceneCoord.X, sceneCoord.Y));
         }
     }

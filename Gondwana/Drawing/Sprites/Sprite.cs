@@ -1,11 +1,12 @@
-using System.Drawing;
-using System.Numerics;
-using System.Runtime.Serialization;
 using Gondwana.Collision;
 using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Movement;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
+using System.Drawing;
+using System.Numerics;
+using System.Runtime.Serialization;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -49,7 +50,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         CurrentFrame = frame;
 
         if (SpriteManager.SizeNewSpritesToSceneLayer)
-            renderSize = new Size(_sceneLayer.SceneLayerTileWidth, _sceneLayer.SceneLayerTileHeight);
+            renderSize = new Size(_sceneLayer.TileWidth, _sceneLayer.TileHeight);
         else
             renderSize = CurrentFrame.Tilesheet.TileSize;
 
@@ -126,8 +127,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         PointF newCoord = new PointF(pos.X, pos.Y);
 
         // compute old/new draw rects in WORLD pixels
-        Rectangle oldDraw = SpriteManager.GetDrawLocation(this, _sceneLayer, oldCoord, renderSize);
-        Rectangle newDraw = SpriteManager.GetDrawLocation(this, _sceneLayer, newCoord, renderSize);
+        Rectangle oldDraw = DrawLocationWorld;
+        Rectangle newDraw = DrawLocationWorld;
 
         // union of old + new = full movement envelope
         Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
@@ -246,7 +247,67 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     }
 
     [JsonIgnore]
-    public override Rectangle DrawLocationWorld => SpriteManager.GetDrawLocation(this, _sceneLayer, sceneLayerCoordinates, renderSize);
+    public override Rectangle DrawLocationWorld
+    {
+        get
+        {
+            // get the "top left" of the Sprite gridCoordinates value
+            Point pxlPt = _sceneLayer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(_sceneLayer, SceneLayerCoordinates);
+
+            // adjust X coord
+            switch (HorizAlign)
+            {
+                case HorizontalAlignment.Left:
+                    // no adjustment necessary
+                    break;
+
+                case HorizontalAlignment.Center:
+                    // shift right by half the difference between Tile Width values
+                    // if Sprite Width > GridPt Width, Sprite will shift left
+                    pxlPt.X += (_sceneLayer.TileWidth - renderSize.Width) / 2;
+                    break;
+
+                case HorizontalAlignment.Right:
+                    // shift right by the entire difference between Tile Width values
+                    // if Sprite Width > GridPt Width, Sprite will shift left
+                    pxlPt.X += (_sceneLayer.TileWidth - renderSize.Width);
+                    break;
+
+                default:
+                    // shouldn't get here...
+                    break;
+            }
+
+            // adjust Y coord
+            switch (VertAlign)
+            {
+                case VerticalAlignment.Top:
+                    // no adjustment necessary
+                    break;
+
+                case VerticalAlignment.Middle:
+                    // shift down by half the difference between Tile Height values
+                    // if Sprite Height > GridPt Height, Sprite will shift up
+                    pxlPt.Y += (_sceneLayer.TileHeight - renderSize.Height) / 2;
+                    break;
+
+                case VerticalAlignment.Bottom:
+                    // shift down by the entire difference between Tile Height values
+                    // if Sprite Height > GridPt Height, Sprite will shift up
+                    pxlPt.Y += (_sceneLayer.TileHeight - renderSize.Height);
+                    break;
+
+                default:
+                    // shouldn't get here...
+                    break;
+            }
+
+            pxlPt.X += NudgeX;
+            pxlPt.Y += NudgeY;
+
+            return new Rectangle(pxlPt, renderSize);
+        }
+    }
 
     [JsonIgnore]
     public override bool IsPositionFixed => false;
@@ -271,6 +332,75 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     }
 
     #endregion public properties
+
+    #region internal methods
+
+    /// <summary>
+    /// Converts a sprite’s world-pixel rectangle back into SceneLayer coordinates,
+    /// reversing any visual placement adjustments (nudges and alignment) applied
+    /// during rendering. This is primarily used when collision resolution modifies
+    /// a sprite’s position in pixel space and the sprite’s SceneLayer position
+    /// must be updated to match.
+    /// </summary>
+    internal PointF GetSceneLayerCoordsFromSpriteWorldRect(Rectangle worldRectPx)
+    {
+        // work the Sprites.DrawLocation method backwards...
+        worldRectPx.X -= NudgeX;
+        worldRectPx.Y -= NudgeY;
+
+        // adjust X coord
+        switch (HorizAlign)
+        {
+            case HorizontalAlignment.Left:
+                // no adjustment necessary
+                break;
+
+            case HorizontalAlignment.Center:
+                // shift left by half the difference between Tile Width values
+                // if Sprite Width > GridPt Width, Sprite will shift right
+                worldRectPx.X -= (_sceneLayer.TileWidth - worldRectPx.Width) / 2;
+                break;
+
+            case HorizontalAlignment.Right:
+                // shift left by the entire difference between Tile Width values
+                // if Sprite Width > GridPt Width, Sprite will shift right
+                worldRectPx.X -= (_sceneLayer.TileWidth - worldRectPx.Width);
+                break;
+
+            default:
+                // shouldn't get here...
+                break;
+        }
+
+        // adjust Y coord
+        switch (VertAlign)
+        {
+            case VerticalAlignment.Top:
+                // no adjustment necessary
+                break;
+
+            case VerticalAlignment.Middle:
+                // shift up by half the difference between Tile Height values
+                // if Sprite Height > GridPt Height, Sprite will shift down
+                worldRectPx.Y -= (_sceneLayer.TileHeight - worldRectPx.Height) / 2;
+                break;
+
+            case VerticalAlignment.Bottom:
+                // shift up by the entire difference between Tile Height values
+                // if Sprite Height > GridPt Height, Sprite will shift down
+                worldRectPx.Y -= (_sceneLayer.TileHeight - worldRectPx.Height);
+                break;
+
+            default:
+                // shouldn't get here...
+                break;
+        }
+
+        // find and return the grid coordinates after the Sprite adjustments have been considered
+        return _sceneLayer.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(_sceneLayer, worldRectPx.Location);
+    }
+
+    #endregion
 
     #region IDisposable Members
 
