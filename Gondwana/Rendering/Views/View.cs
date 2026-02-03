@@ -46,6 +46,16 @@ public sealed class View
     /// </summary>
     public int ZOrder { get; set; } = 0;
 
+    /// <summary>
+    /// Gets or sets the minimum zoom level allowed for this View.
+    /// </summary>
+    public float MinZoom { get; set; } = 0.1f;
+
+    /// <summary>
+    /// Gets or sets the maximum zoom level allowed for this View.
+    /// </summary>
+    public float MaxZoom { get; set; } = 8f;
+
     internal View(Camera cam, Viewport vp)
     {
         Camera = cam;
@@ -79,10 +89,7 @@ public sealed class View
         if (layer is null)
             throw new ArgumentNullException(nameof(layer));
 
-        // TODO: Make min/max zoom configurable per-viewport?
-        float minZoom = 0.1f;
-        float maxZoom = 8f;
-        targetZoom = Math.Clamp(targetZoom, minZoom, maxZoom);
+        targetZoom = Math.Clamp(targetZoom, MinZoom, MaxZoom);
 
         // World under cursor BEFORE zoom changes
         var worldUnderCursor = ScreenPxToWorldPx(layer, screenPoint);

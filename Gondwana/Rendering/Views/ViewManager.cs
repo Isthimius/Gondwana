@@ -15,7 +15,15 @@ public sealed class ViewManager
     private readonly RenderSurfaceHostBase _renderSurfaceHost;
     private readonly List<View> _views = new();
 
-    // TODO: add events for view added/removed/changed
+    /// <summary>
+    /// Occurs after a new <see cref="View"/> is added.
+    /// </summary>
+    public event Action<View>? ViewAdded;
+
+    /// <summary>
+    /// Occurs after a <see cref="View"/> is removed.
+    /// </summary>
+    public event Action<View>? ViewRemoved;
 
     private ViewManager() { }
 
@@ -87,6 +95,8 @@ public sealed class ViewManager
         _renderSurfaceHost.Scene.FullRefreshNeeded = true;
 
         SortViews();
+
+        ViewAdded?.Invoke(view);
     }
 
     /// <summary>
@@ -203,6 +213,7 @@ public sealed class ViewManager
         {
             view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
             view.Viewport.ZoomChanged -= OnViewportZoomChanged;
+            ViewRemoved?.Invoke(view);
         }
 
         _views.Clear();
