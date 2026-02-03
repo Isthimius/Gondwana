@@ -48,6 +48,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     private float _accum;
     private const float _fixedDt = 1f / 240f;
     private const int _maxSubsteps = 8;
+    private Vector2 _posPx;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectDrawingMovableBase"/> class with integrated movement capabilities.
@@ -87,6 +88,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
         : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, name)
     {
         Rectangle bounds = (mode == DirectDrawingMode.SceneLayer ? worldBounds : screenBounds)!.Value;
+        _posPx = new Vector2(bounds.X, bounds.Y);
 
         var movementState = MovementState.ForPixel();
         Movement = new MovementController(this, movementState);
@@ -153,14 +155,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     /// <see cref="DirectDrawingBase.ScreenBounds"/> for view mode).
     /// </para>
     /// </remarks>
-    public Vector2 GetPosition()
-    {
-        Rectangle r = (Mode == DirectDrawingMode.SceneLayer)
-            ? WorldBounds
-            : ScreenBounds;
-
-        return new Vector2(r.X, r.Y);
-    }
+    public Vector2 GetPosition() => _posPx;
 
     /// <summary>
     /// Sets the position of this direct drawing to the specified pixel coordinates.
@@ -192,10 +187,15 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
     /// </remarks>
     public void SetPosition(Vector2 p)
     {
+        // mark old area dirty
         ForceRefresh();
 
-        int x = (int)Math.Round(p.X);
-        int y = (int)Math.Round(p.Y);
+        // keep precise position for movement math
+        _posPx = p;
+
+        // pixel-align only for rendering bounds
+        int x = (int)MathF.Round(p.X);
+        int y = (int)MathF.Round(p.Y);
 
         if (Mode == DirectDrawingMode.SceneLayer)
         {
@@ -208,6 +208,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
             ScreenBounds = new Rectangle(x, y, r.Width, r.Height);
         }
 
+        // mark new area dirty
         ForceRefresh();
     }
 
