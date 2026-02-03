@@ -385,6 +385,8 @@ public abstract class BackbufferBase : IDisposable
         if (area.IsEmpty)
             return;
 
+        area.Inflate(area.Width, area.Height);
+
         DirtyRectangle = DirtyRectangle.IsEmpty
             ? area
             : Rectangle.Union(DirtyRectangle, area);
