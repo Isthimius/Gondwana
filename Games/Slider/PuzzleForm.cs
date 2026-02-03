@@ -86,8 +86,7 @@ namespace Slider
 
             if (e.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
             {
-                // TODO: also check if any sprites are moving
-                if (!Program.puzzle._isShuffling)
+                if (!Program.puzzle._isShuffling && !SpriteManager.AllSprites.Where(s => s.Movement.MovementState.HasMotion).Any())
                 {
                     List<Sprite> sprites = SpriteManager.GetSpritesAtPixel(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
                     if (sprites.Count != 0)
