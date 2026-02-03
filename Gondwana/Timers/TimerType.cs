@@ -22,7 +22,8 @@
     {
         /// <summary>
         /// The timer's <see cref="Timer.Tick"/> event is raised during the background task phase,
-        /// before the engine performs its foreground rendering operations.
+        /// before the engine performs its foreground rendering operations. *** NOTE: this event
+        /// may be raised multiple times per rendered frame, depending on the engine's frame rate. ***
         /// </summary>
         /// <remarks>
         /// <para>
