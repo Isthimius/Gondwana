@@ -22,14 +22,14 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     [JsonProperty("SceneLayer")]
     internal SceneLayer _sceneLayer;
 
-    private HorizontalAlignment horizAlign;
-    private VerticalAlignment vertAlign;
-    private int nudgeX;
-    private int nudgeY;
-    private Size renderSize;
+    private HorizontalAlignment _horizAlign;
+    private VerticalAlignment _vertAlign;
+    private int _nudgeX;
+    private int _nudgeY;
+    private Size _renderSize;
 
     [JsonProperty("SceneLayerCoordinates")]
-    private PointF sceneLayerCoordinates;
+    private PointF _sceneLayerCoordinates;
 
     #endregion private / internal fields
 
@@ -43,16 +43,16 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         _sceneLayer = sceneLayer;
         animator = new Animator(this);
         pauseAnimation = false;
-        horizAlign = HorizontalAlignment.Center;
-        vertAlign = VerticalAlignment.Bottom;
-        nudgeX = 0;
-        nudgeY = 0;
+        _horizAlign = HorizontalAlignment.Center;
+        _vertAlign = VerticalAlignment.Bottom;
+        _nudgeX = 0;
+        _nudgeY = 0;
         CurrentFrame = frame;
 
         if (SpriteManager.SizeNewSpritesToSceneLayer)
-            renderSize = new Size(_sceneLayer.TileWidth, _sceneLayer.TileHeight);
+            _renderSize = new Size(_sceneLayer.TileWidth, _sceneLayer.TileHeight);
         else
-            renderSize = CurrentFrame.Tilesheet.TileSize;
+            _renderSize = CurrentFrame.Tilesheet.TileSize;
 
         zOrder = 1;
 
@@ -74,14 +74,14 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         _sceneLayer = sprite._sceneLayer;
         frame = sprite.frame;
-        horizAlign = sprite.horizAlign;
-        vertAlign = sprite.vertAlign;
-        nudgeX = sprite.nudgeX;
-        nudgeY = sprite.nudgeY;
-        renderSize = sprite.renderSize;
+        _horizAlign = sprite._horizAlign;
+        _vertAlign = sprite._vertAlign;
+        _nudgeX = sprite._nudgeX;
+        _nudgeY = sprite._nudgeY;
+        _renderSize = sprite._renderSize;
         ZOrder = sprite.zOrder;
         visible = sprite.visible;
-        sceneLayerCoordinates = sprite.SceneLayerCoordinates;
+        _sceneLayerCoordinates = sprite.SceneLayerCoordinates;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
@@ -118,12 +118,12 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     public MovementSpace PositionSpace => MovementSpace.Grid;
 
-    public Vector2 GetPosition() => new Vector2(sceneLayerCoordinates.X, sceneLayerCoordinates.Y);
+    public Vector2 GetPosition() => new Vector2(_sceneLayerCoordinates.X, _sceneLayerCoordinates.Y);
 
     public void SetPosition(Vector2 pos)
     {
         // old and new coordinate space positions
-        PointF oldCoord = sceneLayerCoordinates;
+        PointF oldCoord = _sceneLayerCoordinates;
         PointF newCoord = new PointF(pos.X, pos.Y);
 
         // compute old/new draw rects in WORLD pixels
@@ -135,7 +135,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         movementWorldRect.Inflate(new Size(5, 5));
 
         // commit the move
-        sceneLayerCoordinates = newCoord;
+        _sceneLayerCoordinates = newCoord;
 
         // enqueue ONE world-space dirty rect for the whole movement
         _sceneLayer.RefreshQueue.AddWorldRect(movementWorldRect);
@@ -154,95 +154,95 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     [JsonProperty]
     public HorizontalAlignment HorizAlign
     {
-        get { return horizAlign; }
+        get { return _horizAlign; }
         set
         {
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
                 var oldRect = this.DrawLocationWorld;
-                horizAlign = value;
+                _horizAlign = value;
                 var newRect = this.DrawLocationWorld;
                 _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
-                horizAlign = value;
+                _horizAlign = value;
         }
     }
 
     [JsonProperty]
     public VerticalAlignment VertAlign
     {
-        get { return vertAlign; }
+        get { return _vertAlign; }
         set
         {
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
                 var oldRect = this.DrawLocationWorld;
-                vertAlign = value;
+                _vertAlign = value;
                 var newRect = this.DrawLocationWorld;
                 _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
-                vertAlign = value;
+                _vertAlign = value;
         }
     }
 
     [JsonProperty]
     public int NudgeX
     {
-        get { return nudgeX; }
+        get { return _nudgeX; }
         set
         {
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
                 var oldRect = this.DrawLocationWorld;
-                nudgeX = value;
+                _nudgeX = value;
                 var newRect = this.DrawLocationWorld;
                 _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
-                nudgeX = value;
+                _nudgeX = value;
         }
     }
 
     [JsonProperty]
     public int NudgeY
     {
-        get { return nudgeY; }
+        get { return _nudgeY; }
         set
         {
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
                 var oldRect = this.DrawLocationWorld;
-                nudgeY = value;
+                _nudgeY = value;
                 var newRect = this.DrawLocationWorld;
                 _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
-                nudgeY = value;
+                _nudgeY = value;
         }
     }
 
     [JsonProperty]
     public Size RenderSize
     {
-        get { return renderSize; }
+        get { return _renderSize; }
         set
         {
             // add to refresh queue before and after property change
             if (_sceneLayer != null)
             {
                 var oldRect = this.DrawLocationWorld;
-                renderSize = value;
+                _renderSize = value;
                 var newRect = this.DrawLocationWorld;
                 _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
-                renderSize = value;
+                _renderSize = value;
         }
     }
 
@@ -264,13 +264,13 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
                 case HorizontalAlignment.Center:
                     // shift right by half the difference between Tile Width values
                     // if Sprite Width > GridPt Width, Sprite will shift left
-                    pxlPt.X += (_sceneLayer.TileWidth - renderSize.Width) / 2;
+                    pxlPt.X += (_sceneLayer.TileWidth - _renderSize.Width) / 2;
                     break;
 
                 case HorizontalAlignment.Right:
                     // shift right by the entire difference between Tile Width values
                     // if Sprite Width > GridPt Width, Sprite will shift left
-                    pxlPt.X += (_sceneLayer.TileWidth - renderSize.Width);
+                    pxlPt.X += (_sceneLayer.TileWidth - _renderSize.Width);
                     break;
 
                 default:
@@ -288,13 +288,13 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
                 case VerticalAlignment.Middle:
                     // shift down by half the difference between Tile Height values
                     // if Sprite Height > GridPt Height, Sprite will shift up
-                    pxlPt.Y += (_sceneLayer.TileHeight - renderSize.Height) / 2;
+                    pxlPt.Y += (_sceneLayer.TileHeight - _renderSize.Height) / 2;
                     break;
 
                 case VerticalAlignment.Bottom:
                     // shift down by the entire difference between Tile Height values
                     // if Sprite Height > GridPt Height, Sprite will shift up
-                    pxlPt.Y += (_sceneLayer.TileHeight - renderSize.Height);
+                    pxlPt.Y += (_sceneLayer.TileHeight - _renderSize.Height);
                     break;
 
                 default:
@@ -305,7 +305,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             pxlPt.X += NudgeX;
             pxlPt.Y += NudgeY;
 
-            return new Rectangle(pxlPt, renderSize);
+            return new Rectangle(pxlPt, _renderSize);
         }
     }
 
@@ -313,7 +313,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
     public override bool IsPositionFixed => false;
 
     [JsonIgnore]
-    public override PointF SceneLayerCoordinates => sceneLayerCoordinates;
+    public override PointF SceneLayerCoordinates => _sceneLayerCoordinates;
 
     [JsonIgnore]
     public override SceneLayer SceneLayer => _sceneLayer;

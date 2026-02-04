@@ -771,7 +771,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
 
         // 2) Sprites
-        var sprites = SpriteManager.GetSpritesInRange(queryRect, this, fullEnclosures: false);
+        var sprites = SpriteManager.GetSpritesInWorldRectRange(queryRect, this, fullEnclosures: false);
 
         for (int i = 0; i < sprites.Count; i++)
         {

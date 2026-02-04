@@ -39,7 +39,7 @@ public partial class Sprite
 
         var next = new Size(Math.Max(1, w), Math.Max(1, h));
 
-        if (next != renderSize)
+        if (next != _renderSize)
         {
             RenderSize = next;                 // invalidation happens here (your setter)
             ApplyScaledCollisionAdjust(next);   // keep collision proportional

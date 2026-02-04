@@ -88,7 +88,8 @@ namespace Slider
             {
                 if (!Program.puzzle._isShuffling && !SpriteManager.AllSprites.Where(s => s.Movement.MovementState.HasMotion).Any())
                 {
-                    List<Sprite> sprites = SpriteManager.GetSpritesAtPixel(new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
+                    List<Sprite> sprites = SpriteManager.GetSpritesAtViewPixel(winFormBitmapRenderSurfaceControl1.Host.ViewManager.Views[0],
+                        new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
                     if (sprites.Count != 0)
                         Program.puzzle.SlidePiece(sprites[0], 0.15f);
                 }

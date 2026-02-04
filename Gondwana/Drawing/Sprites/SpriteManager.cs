@@ -1,7 +1,9 @@
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
+using Gondwana.Timers;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using Gondwana.Scenes;
-using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -11,6 +13,8 @@ public static class SpriteManager
 
     private static long _lastTick = HighResTimer.GetCurrentTick();
 
+    public static event Action<Sprite>? SpriteCreated;
+
     static SpriteManager() { }
 
     public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
@@ -19,17 +23,11 @@ public static class SpriteManager
 
     #region public methods
 
-    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame)
+    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string? id = null)
     {
-        Sprite sprite = new Sprite(sceneLayer, frame);
-        return sprite;
-    }
-
-    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string id)
-    {
-        Sprite sprite = CreateSprite(sceneLayer, frame);
+        var sprite = new Sprite(sceneLayer, frame);
         sprite.Nickname = id;
-
+        SpriteCreated?.Invoke(sprite);
         return sprite;
     }
 
@@ -43,6 +41,7 @@ public static class SpriteManager
             newSprite._sceneLayer.RefreshQueue.AddWorldRect(newSprite.DrawLocationWorld);
         }
 
+        SpriteCreated?.Invoke(newSprite);
         return newSprite;
     }
 
@@ -87,40 +86,14 @@ public static class SpriteManager
         return null;
     }
 
-    public static List<Sprite> GetSpritesInRange(Rectangle range)
-    {
-        return GetSpritesInRange(range, false);
-    }
-
-    public static List<Sprite> GetSpritesInRange(Rectangle range, bool fullEnclosures)
+    // world
+    public static List<Sprite> GetSpritesInWorldRectRange(Rectangle worldRect, SceneLayer? sceneLayer = null, bool fullEnclosures = false)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
         foreach (Sprite sprite in _spriteList)
         {
-            // check if sprite in range
-            if (fullEnclosures)
-            {
-                if (range.Contains(sprite.DrawLocationWorld))
-                    retSprites.Add(sprite);
-            }
-            else
-            {
-                if (sprite.DrawLocationWorld.IntersectsWith(range))
-                    retSprites.Add(sprite);
-            }
-        }
-
-        return retSprites;
-    }
-
-    public static List<Sprite> GetSpritesInRange(Rectangle worldRect, SceneLayer sceneLayer, bool fullEnclosures = false)
-    {
-        List<Sprite> retSprites = new List<Sprite>();
-
-        foreach (Sprite sprite in _spriteList)
-        {
-            if (sprite.SceneLayer == sceneLayer)
+            if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
                 // check if sprite in range
                 if (fullEnclosures)
@@ -139,29 +112,50 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPixel(Point pxlPt)
+    // screen
+    public static List<Sprite> GetSpritesInViewRectRange(
+        View view,
+        Rectangle viewRectPx,
+        SceneLayer? sceneLayer = null,
+        bool fullEnclosures = false)
     {
-        List<Sprite> retSprites = new List<Sprite>();
+        var retSprites = new List<Sprite>();
 
-        foreach (Sprite sprite in _spriteList)
+        foreach (var sprite in _spriteList)
         {
-            // check if sprite at Point
-            if (sprite.DrawLocationWorld.Contains(pxlPt))
-                retSprites.Add(sprite);
+            if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
+            {
+                var rectScreen = sprite.GetDrawLocationScreen(view).ToPixelAlignedRect();
+
+                if (fullEnclosures)
+                {
+                    if (viewRectPx.Contains(rectScreen))
+                        retSprites.Add(sprite);
+                }
+                else
+                {
+                    if (rectScreen.IntersectsWith(viewRectPx))
+                        retSprites.Add(sprite);
+                }
+            }
         }
 
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPixel(Point pxlPt, SceneLayer sceneLayer)
+    // screen
+    public static List<Sprite> GetSpritesAtViewPixel(View view, Point viewPxlPt, SceneLayer? sceneLayer = null)
     {
-        List<Sprite> retSprites = new List<Sprite>();
+        var retSprites = new List<Sprite>();
 
         foreach (Sprite sprite in _spriteList)
         {
-            // check if sprite at Point
-            if ((sprite.SceneLayer == sceneLayer) && (sprite.DrawLocationWorld.Contains(pxlPt)))
-                retSprites.Add(sprite);
+            if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
+            {
+                // check if sprite at Point
+                if (sprite.GetDrawLocationScreen(view).Contains(viewPxlPt))
+                    retSprites.Add(sprite);
+            }
         }
 
         return retSprites;
