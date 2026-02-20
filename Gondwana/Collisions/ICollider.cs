@@ -1,6 +1,4 @@
-﻿using Gondwana.Drawing;
-
-namespace Gondwana.Collisions;
+﻿namespace Gondwana.Collisions;
 
 /// <summary>
 /// World-space axis-aligned collider used by the collision system.
@@ -22,6 +20,6 @@ public interface ICollider
     /// <summary>Bitmask of what this collider collides *with*.</summary>
     int CollidesWithMask { get; }
 
-    /// <summary>Back-reference to owning object (Sprite, Tile, etc.).</summary>
+    /// <summary>Back-reference to owning object (Sprite, SceneLayerTile, etc.).</summary>
     ICollisionEntity Owner { get; }
 }

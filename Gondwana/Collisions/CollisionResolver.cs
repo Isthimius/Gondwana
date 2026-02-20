@@ -1,24 +1,29 @@
 ﻿using System.Drawing;
-using Gondwana.Collisions;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 
-namespace Gondwana.Drawing.Collisions;
+namespace Gondwana.Collisions;
 
 /// <summary>
 /// Simple collision resolution for Sprites against collidable Tiles.
 /// Phase 1: axis-aligned AABB push-out, Sprite vs. Tiles on same SceneLayer.
 /// </summary>
-internal static class CollisionResolver
+internal sealed class CollisionResolver
 {
-    private static readonly List<ICollider> _queryResults = new();
+    private readonly List<ICollider> _queryResults = new();
+    private readonly CollisionWorld _world;
+
+    internal CollisionResolver(CollisionWorld world)
+    {
+        _world = world ?? throw new ArgumentNullException(nameof(world));
+    }
 
     /// <summary>
     /// Resolves collisions for all Sprites that have collision detection enabled.
     /// </summary>
-    internal static void ResolveSpriteTileCollisions(Scene scene)
+    internal void ResolveSpriteTileCollisions(Scene scene)
     {
-        var world = scene.CollisionWorld;
+        var world = _world;
         if (world == null)
             return;
 

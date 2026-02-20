@@ -1,33 +1,33 @@
-﻿using System.Collections.Generic;
-
-namespace Gondwana.Collisions;
+﻿namespace Gondwana.Collisions;
 
 public sealed class CollisionWorld
 {
-    private readonly List<ICollider> _static = new();
-    private readonly List<ICollider> _dynamic = new();
+    private readonly HashSet<ICollider> _static = new();
+    private readonly HashSet<ICollider> _dynamic = new();
 
-    public IReadOnlyList<ICollider> StaticColliders => _static;
-    public IReadOnlyList<ICollider> DynamicColliders => _dynamic;
+    public IEnumerable<ICollider> StaticColliders => _static;
+    public IEnumerable<ICollider> DynamicColliders => _dynamic;
 
     public void Register(ICollider collider)
     {
+        if (collider is null)
+            throw new ArgumentNullException(nameof(collider));
+
         if (collider.IsStatic)
-        {
-            if (!_static.Contains(collider))
-                _static.Add(collider);
-        }
+            _static.Add(collider);
         else
-        {
-            if (!_dynamic.Contains(collider))
-                _dynamic.Add(collider);
-        }
+            _dynamic.Add(collider);
     }
 
     public void Unregister(ICollider collider)
     {
-        _static.Remove(collider);
-        _dynamic.Remove(collider);
+        if (collider is null)
+            return;
+
+        if (collider.IsStatic)
+            _static.Remove(collider);
+        else
+            _dynamic.Remove(collider);
     }
 
     /// <summary>

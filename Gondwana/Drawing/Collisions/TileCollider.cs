@@ -1,6 +1,6 @@
 ﻿using Gondwana.Collisions;
 
-namespace Gondwana.Drawing;
+namespace Gondwana.Drawing.Collisions;
 
 public sealed class TileCollider : ICollider
 {
