@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Collision;
+﻿namespace Gondwana.Collisions;
 
 public static class CollisionDirectionHelper
 {

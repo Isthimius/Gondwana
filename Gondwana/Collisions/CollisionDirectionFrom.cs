@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Collisions;
+﻿namespace Gondwana.Collisions;
 
 public enum CollisionDirectionFrom
 { N, NE, E, SE, S, SW, W, NW, Center }

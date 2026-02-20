@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Runtime.Serialization;
-using Gondwana.Collision;
+using Gondwana.Collisions;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
