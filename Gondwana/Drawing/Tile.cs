@@ -14,7 +14,7 @@ namespace Gondwana.Drawing;
 /// Provides core functionality for rendering, animation, collision detection, and scene layer integration.
 /// </summary>
 [JsonObject(IsReference = true)]
-public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
+public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDisposable
 {
     #region static members
 

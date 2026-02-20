@@ -1,6 +1,6 @@
-﻿using Gondwana.Drawing;
+﻿using Gondwana.Collisions;
 
-namespace Gondwana.Collisions;
+namespace Gondwana.Drawing;
 
 public sealed class TileCollider : ICollider
 {
@@ -21,5 +21,5 @@ public sealed class TileCollider : ICollider
     public bool IsStatic => _isStatic;
     public int LayerMask => _layerMask;
     public int CollidesWithMask => _collidesWithMask;
-    public Tile Owner => _tile;
+    public ICollisionEntity Owner => _tile;
 }

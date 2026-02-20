@@ -23,5 +23,5 @@ public interface ICollider
     int CollidesWithMask { get; }
 
     /// <summary>Back-reference to owning object (Sprite, Tile, etc.).</summary>
-    Tile Owner { get; }
+    ICollisionEntity Owner { get; }
 }
