@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Gondwana.Collision;
+namespace Gondwana.Drawing.Collision;
 
 public sealed class CollisionWorld
 {

@@ -85,7 +85,7 @@ public class Game : IDisposable
     {
         // Implementation for loading scenes goes here
         var scene = new Scene();
-        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.Orthogonal);
+        var sceneLayer1 = scene.AddLayer(12, 12, 64, 64, 10, 1f, CoordinateSystemTypes.Orthogonal);
 
         sceneLayer1.ShowGridLines = true;
 
@@ -251,5 +251,4 @@ public class Game : IDisposable
     }
 
     #endregion IDisposable support
-
 }
