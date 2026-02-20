@@ -1,6 +1,6 @@
 ﻿using Gondwana.Drawing;
 
-namespace Gondwana.Collision;
+namespace Gondwana.Drawing.Collision;
 
 /// <summary>
 /// World-space axis-aligned collider used by the collision system.

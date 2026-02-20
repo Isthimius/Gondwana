@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Gondwana.Collision;
+namespace Gondwana.Drawing.Collision;
 
 /// <summary>
 /// Represents an axis-aligned bounding box (AABB) defined by its minimum and maximum coordinates along the X and Y

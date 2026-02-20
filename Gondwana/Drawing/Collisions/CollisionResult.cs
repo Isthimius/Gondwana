@@ -1,6 +1,6 @@
 ﻿using Gondwana.Drawing.Collisions;
 
-namespace Gondwana.Collision;
+namespace Gondwana.Drawing.Collision;
 
 public readonly struct CollisionResult
 {
