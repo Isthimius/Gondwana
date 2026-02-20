@@ -359,7 +359,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// (<see cref="SkiaSharp.SKBlendMode.Plus"/>) by default for bright/glowy effects.
     /// </para>
     /// <para>
-    /// You normally don’t call this directly. Once the system is registered with
+    /// Do not call this directly. Once the system is registered with
     /// <see cref="DirectDrawingManager"/>, the manager invokes <c>Render()</c>
     /// during the host’s render pass.
     /// </para>
