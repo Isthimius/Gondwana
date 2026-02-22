@@ -743,8 +743,8 @@ public sealed class Engine : IDisposable
         SpriteManager.MoveSprites(tick);
 
         // resolve collisions after movement
-        foreach (var scene in Scenes.Scene.GetAllScenes())
-            CollisionResolver.ResolveSpriteTileCollisions(scene);
+        //foreach (var scene in Scenes.Scene.GetAllScenes())
+        //    CollisionResolver.ResolveSpriteTileCollisions(scene);
 
         // update cameras so any movement can mark RefreshNeeded = All.
         foreach (var surface in RenderSurfaceHostRegistry.All)

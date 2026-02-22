@@ -1,5 +1,6 @@
 using Gondwana.Collisions;
 using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Movement;
 using Gondwana.Scenes;

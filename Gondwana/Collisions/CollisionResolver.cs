@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 
@@ -37,7 +38,7 @@ internal sealed class CollisionResolver
         }
     }
 
-    private static void ResolveForSprite(Sprite sprite, CollisionWorld world)
+    private void ResolveForSprite(Sprite sprite, CollisionWorld world)
     {
         var layer = sprite.SceneLayer;
         if (layer == null)
