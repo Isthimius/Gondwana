@@ -22,19 +22,14 @@ internal sealed class CollisionResolver
     /// <summary>
     /// Resolves collisions for all Sprites that have collision detection enabled.
     /// </summary>
-    internal void ResolveSpriteTileCollisions(Scene scene)
+    internal void ResolveTileCollisions()
     {
-        var world = _world;
-        if (world == null)
-            return;
-
-        foreach (var sprite in SpriteManager.AllSprites)
+        foreach (var dyn in _world.DynamicColliders)
         {
-            // only handle sprites in this scene
-            if (sprite.SceneLayer.Scene != scene)
+            if (dyn.Owner is not Sprite sprite)
                 continue;
 
-            ResolveForSprite(sprite, world);
+            ResolveForSprite(sprite, _world);
         }
     }
 

@@ -38,28 +38,42 @@ public sealed class CollisionWorld
         in Aabb area,
         int layerMask,
         int collidesWithMask,
-        List<ICollider> results)
+        List<ICollider> results,
+        ICollider? ignore = null)
     {
         results.Clear();
 
-        // helper
         static bool MaskPasses(ICollider c, int layer, int collidesWith)
         {
-            if ((c.LayerMask & collidesWith) == 0) return false;
-            if ((layer & c.CollidesWithMask) == 0) return false;
+            if ((c.LayerMask & collidesWith) == 0)
+                return false;
+
+            if ((layer & c.CollidesWithMask) == 0)
+                return false;
+
             return true;
         }
 
         foreach (var c in _static)
         {
-            if (!MaskPasses(c, layerMask, collidesWithMask)) continue;
+            if (ReferenceEquals(c, ignore))
+                continue;
+
+            if (!MaskPasses(c, layerMask, collidesWithMask))
+                continue;
+
             if (area.Intersects(c.BoundsWorldPx))
                 results.Add(c);
         }
 
         foreach (var c in _dynamic)
         {
-            if (!MaskPasses(c, layerMask, collidesWithMask)) continue;
+            if (ReferenceEquals(c, ignore))
+                continue;
+
+            if (!MaskPasses(c, layerMask, collidesWithMask))
+                continue;
+
             if (area.Intersects(c.BoundsWorldPx))
                 results.Add(c);
         }

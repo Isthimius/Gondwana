@@ -59,7 +59,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
-        _sceneLayer.Scene.CollisionWorld.Register(_collider);
+        _sceneLayer.CollisionWorld.Register(_collider);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
         SpriteManager._spriteList.Add(this);
@@ -86,7 +86,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
-        _sceneLayer.Scene.CollisionWorld.Register(_collider);
+        _sceneLayer.CollisionWorld.Register(_collider);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
     }
 
@@ -107,7 +107,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         if (_sceneLayer != null)
         {
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
-            _sceneLayer.Scene.CollisionWorld.Register(_collider);
+            _sceneLayer.CollisionWorld.Register(_collider);
         }
 
         SpriteManager._spriteList.Add(this);
@@ -419,7 +419,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
             if (_collider != null)
             {
-                var world = _sceneLayer.Scene?.CollisionWorld;
+                var world = _sceneLayer.CollisionWorld;
                 if (world != null)
                 {
                     world.Unregister(_collider);

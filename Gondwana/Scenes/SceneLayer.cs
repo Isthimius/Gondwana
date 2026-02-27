@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Drawing;
 using System.Runtime.Serialization;
+using Gondwana.Collisions;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
+using static System.Net.WebRequestMethods;
 
 namespace Gondwana.Scenes;
 
@@ -592,6 +595,21 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the collision world associated with this scene, used for physics and collision detection.
+    /// </summary>
+    /// <value>A <see cref="Gondwana.Collision.CollisionWorld"/> instance managing collision data for this scene.</value>
+    /// <remarks>
+    /// The collision world maintains collision geometry, spatial partitioning structures, and
+    /// collision detection state for all collidable entities within the scene. It is automatically
+    /// created when the scene is initialized and is used by the engine's collision resolution system.
+    /// </remarks>
+    [JsonIgnore]
+    public CollisionWorld CollisionWorld { get; private set; } = new();
+
+    [JsonIgnore]
+    internal CollisionResolver CollisionResolver { get; private set; } = null!;
+
     #endregion properties
 
     #region public methods
@@ -715,8 +733,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         CoordinateSystemType = coordinateSystem;
 
+        CollisionWorld = new CollisionWorld();
+        CollisionResolver = new CollisionResolver(CollisionWorld);
+
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
+        RebuildTileColliders();
         RefreshQueue = new RefreshQueue();
     }
 
@@ -730,6 +752,18 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 _sceneLayerTileArray[X, Y] = new SceneLayerTile(this);
                 _sceneLayerTileArray[X, Y].sceneLayerCoordinates = new Point(X, Y);
             }
+        }
+    }
+
+    private void RebuildTileColliders()
+    {
+        foreach (var tile in _sceneLayerTileArray)
+        {
+            if (tile is null)
+                continue;
+
+            tile.Collider ??= new TileCollider(tile, layerMask: /*nonzero*/, collidesWithMask: /*nonzero*/, isStatic: true);
+            CollisionWorld.Register(tile.Collider);
         }
     }
 

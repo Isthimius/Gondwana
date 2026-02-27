@@ -107,8 +107,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     private void Init()
     {
-        CollisionWorld = new CollisionWorld();   // ensure new instance on deserialization too
-
         SetSceneLayerEventDelegates();
 
         foreach (var sceneLayer in _sceneLayers)
@@ -245,18 +243,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// </remarks>
     [JsonIgnore]
     public int CountOfVisibleLayers => VisibleSceneLayers?.Count ?? 0;
-
-    /// <summary>
-    /// Gets the collision world associated with this scene, used for physics and collision detection.
-    /// </summary>
-    /// <value>A <see cref="Gondwana.Collision.CollisionWorld"/> instance managing collision data for this scene.</value>
-    /// <remarks>
-    /// The collision world maintains collision geometry, spatial partitioning structures, and
-    /// collision detection state for all collidable entities within the scene. It is automatically
-    /// created when the scene is initialized and is used by the engine's collision resolution system.
-    /// </remarks>
-    [JsonIgnore]
-    public CollisionWorld CollisionWorld { get; private set; } = new();
 
     #endregion public properties
 

@@ -1,8 +1,11 @@
 using System.Drawing;
+using Gondwana.Collisions;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Collisions;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
+using static System.Net.WebRequestMethods;
 
 namespace Gondwana.Scenes;
 
@@ -23,6 +26,9 @@ public class SceneLayerTile : Tile
     /// </summary>
     [JsonProperty]
     internal Point sceneLayerCoordinates;
+
+    [JsonIgnore]
+    internal ICollider? Collider;
 
     #endregion private / internal fields
 
