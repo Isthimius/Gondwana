@@ -738,7 +738,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
-        RebuildTileColliders();
+        BuildTileColliders();
         RefreshQueue = new RefreshQueue();
     }
 
@@ -755,14 +755,14 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    private void RebuildTileColliders()
+    private void BuildTileColliders()
     {
         foreach (var tile in _sceneLayerTileArray)
         {
             if (tile is null)
                 continue;
 
-            tile.Collider ??= new TileCollider(tile, layerMask: /*nonzero*/, collidesWithMask: /*nonzero*/, isStatic: true);
+            tile.Collider ??= new TileCollider(tile, layerMask: ~0, collidesWithMask: ~0, isStatic: true);
             CollisionWorld.Register(tile.Collider);
         }
     }

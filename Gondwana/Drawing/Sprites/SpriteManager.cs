@@ -17,8 +17,7 @@ public static class SpriteManager
 
     static SpriteManager() { }
 
-    public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
-
+    public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();  
     public static bool SizeNewSpritesToSceneLayer { get; set; } = true;
 
     #region public methods

@@ -22,8 +22,12 @@ public readonly struct Aabb
 
     public Aabb(float minX, float minY, float maxX, float maxY)
     {
-        if (maxX < minX) throw new ArgumentException("maxX < minX");
-        if (maxY < minY) throw new ArgumentException("maxY < minY");
+        if (maxX < minX)
+            throw new ArgumentException("maxX < minX");
+
+        if (maxY < minY)
+            throw new ArgumentException("maxY < minY");
+
         MinX = minX;
         MinY = minY;
         MaxX = maxX;
