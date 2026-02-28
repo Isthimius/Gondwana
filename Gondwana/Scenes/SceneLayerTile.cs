@@ -26,9 +26,6 @@ public class SceneLayerTile : Tile
     [JsonProperty]
     internal Point sceneLayerCoordinates;
 
-    [JsonIgnore]
-    internal ICollider? Collider;
-
     #endregion private / internal fields
 
     #region constructors / finalizer

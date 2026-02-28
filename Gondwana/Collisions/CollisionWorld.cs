@@ -31,6 +31,15 @@ public sealed class CollisionWorld
     }
 
     /// <summary>
+    /// Removes all registered colliders from the collision world.
+    /// </summary>
+    public void Clear()
+    {
+        _static.Clear();
+        _dynamic.Clear();
+    }
+
+    /// <summary>
     /// Broad-phase query: returns colliders overlapping the given AABB that also
     /// match the provided layer mask (bitwise AND with their LayerMask / CollidesWithMask).
     /// </summary>

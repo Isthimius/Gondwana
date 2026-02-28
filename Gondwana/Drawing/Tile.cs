@@ -181,7 +181,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// Returns null if the tile has no collision detection.
     /// </summary>
     [JsonIgnore]
-    public virtual ICollider? Collider => _collider;
+    public virtual ICollider? Collider { get => _collider; internal set => _collider = value; }
 
     /// <summary>
     /// Gets the effective collision area of the tile in world coordinates,

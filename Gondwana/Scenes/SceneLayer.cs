@@ -991,6 +991,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         Disposing?.Invoke(this);
 
+        CollisionWorld.Clear();
+
         foreach (SceneLayerTile gridPt in this)
             gridPt.Dispose();
 
