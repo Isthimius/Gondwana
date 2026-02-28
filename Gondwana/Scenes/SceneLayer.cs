@@ -597,7 +597,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <summary>
     /// Gets the collision world associated with this scene, used for physics and collision detection.
     /// </summary>
-    /// <value>A <see cref="Gondwana.Collision.CollisionWorld"/> instance managing collision data for this scene.</value>
+    /// <value>A <see cref="CollisionWorld"/> instance managing collision data for this scene.</value>
     /// <remarks>
     /// The collision world maintains collision geometry, spatial partitioning structures, and
     /// collision detection state for all collidable entities within the scene. It is automatically
