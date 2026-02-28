@@ -215,7 +215,7 @@ public sealed class Engine : IDisposable
     /// game state that must occur before foreground drawing.
     /// </para>
     /// </remarks>
-    public event Action? BeforeEngineCycle;
+    public event Action? BeforeFrameRender;
 
     /// <summary>
     /// Occurs immediately after <see cref="DoForegroundTasks(long)"/> completes within each engine cycle.
@@ -226,7 +226,7 @@ public sealed class Engine : IDisposable
     /// such as post-render effects, profiling, or scheduling background jobs.
     /// </para>
     /// </remarks>
-    public event Action? AfterEngineCycle;
+    public event Action? AfterFrameRender;
 
     /// <summary>
     /// Occurs whenever cycles-per-second (CPS) and frames-per-second (FPS) metrics are calculated.
@@ -761,7 +761,7 @@ public sealed class Engine : IDisposable
     private void DoForegroundTasks(long tick)
     {
         // raise event
-        BeforeEngineCycle?.Invoke();
+        BeforeFrameRender?.Invoke();
 
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
@@ -778,7 +778,7 @@ public sealed class Engine : IDisposable
         GamepadManager?.Update();
 
         // raise event
-        AfterEngineCycle?.Invoke();
+        AfterFrameRender?.Invoke();
 
         // raise post-cycle timer events
         Timer.RaiseTimerEvents(TimerType.PostCycle, tick);
@@ -788,7 +788,8 @@ public sealed class Engine : IDisposable
     {
         // Has the sampling interval elapsed?
         long elapsedTicks = tick - _lastCPSSamplingTick;
-        if (elapsedTicks < Configuration.SamplingTimeForCPSTicks) return;
+        if (elapsedTicks < Configuration.SamplingTimeForCPSTicks)
+            return;
 
         // SNAPSHOT the counters BEFORE resetting or posting
         long grossCycles = _grossCyclesThisMeasure;
