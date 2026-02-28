@@ -9,7 +9,6 @@ using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
-using static System.Net.WebRequestMethods;
 
 namespace Gondwana.Scenes;
 
