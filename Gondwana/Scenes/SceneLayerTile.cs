@@ -5,7 +5,6 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
-using static System.Net.WebRequestMethods;
 
 namespace Gondwana.Scenes;
 
