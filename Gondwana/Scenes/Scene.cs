@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Runtime.Serialization;
-using Gondwana.Collision;
+using Gondwana.Collisions;
 using Gondwana.Drawing.Coordinates;
-using Gondwana.Rendering;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -107,8 +106,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     private void Init()
     {
-        CollisionWorld = new CollisionWorld();   // ensure new instance on deserialization too
-
         SetSceneLayerEventDelegates();
 
         foreach (var sceneLayer in _sceneLayers)
@@ -247,16 +244,13 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public int CountOfVisibleLayers => VisibleSceneLayers?.Count ?? 0;
 
     /// <summary>
-    /// Gets the collision world associated with this scene, used for physics and collision detection.
+    /// Gets the registry of collision groups used to organize and manage collision detection within the scene.
     /// </summary>
-    /// <value>A <see cref="Gondwana.Collision.CollisionWorld"/> instance managing collision data for this scene.</value>
-    /// <remarks>
-    /// The collision world maintains collision geometry, spatial partitioning structures, and
-    /// collision detection state for all collidable entities within the scene. It is automatically
-    /// created when the scene is initialized and is used by the engine's collision resolution system.
-    /// </remarks>
+    /// <remarks>Use this property to access the collection of collision groups for efficient grouping and
+    /// handling of collision logic. The registry is initialized automatically and provides methods for adding,
+    /// removing, and querying collision groups as needed.</remarks>
     [JsonIgnore]
-    public CollisionWorld CollisionWorld { get; private set; } = new();
+    public CollisionGroupRegistry CollisionGroups { get; } = new();
 
     #endregion public properties
 

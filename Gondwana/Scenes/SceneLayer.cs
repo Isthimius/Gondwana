@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Drawing;
 using System.Runtime.Serialization;
+using Gondwana.Collisions;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
@@ -592,6 +594,31 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the collision world associated with this scene, used for physics and collision detection.
+    /// </summary>
+    /// <value>A <see cref="ColliderRegistry"/> instance managing collision data for this scene.</value>
+    /// <remarks>
+    /// The collision world maintains collision geometry, spatial partitioning structures, and
+    /// collision detection state for all collidable entities within the scene. It is automatically
+    /// created when the scene is initialized and is used by the engine's collision resolution system.
+    /// </remarks>
+    [JsonIgnore]
+    public ColliderRegistry ColliderRegistry { get; private set; } = new();
+
+    [JsonIgnore]
+    internal CollisionResolver CollisionResolver { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the registry of collision groups used to organize and manage collision detection within the scene.
+    /// </summary>
+    /// <remarks>Use this property to access the collection of collision groups for efficient grouping and
+    /// handling of collision logic. The registry is initialized automatically and provides methods for adding,
+    /// removing, and querying collision groups as needed. This is a shim that points to the same
+    /// property on the parent Scene.</remarks>
+    [JsonIgnore]
+    public CollisionGroupRegistry CollisionGroups => Scene.CollisionGroups;
+
     #endregion properties
 
     #region public methods
@@ -715,8 +742,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         CoordinateSystemType = coordinateSystem;
 
+        ColliderRegistry = new ColliderRegistry();
+        CollisionResolver = new CollisionResolver(ColliderRegistry);
+
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
+        BuildTileColliders();
         RefreshQueue = new RefreshQueue();
     }
 
@@ -730,6 +761,17 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 _sceneLayerTileArray[X, Y] = new SceneLayerTile(this);
                 _sceneLayerTileArray[X, Y].sceneLayerCoordinates = new Point(X, Y);
             }
+        }
+    }
+
+    private void BuildTileColliders()
+    {
+        foreach (var tile in _sceneLayerTileArray)
+        {
+            if (tile is null)
+                continue;
+
+            tile.Collider ??= new TileCollider(tile, collisionGroup: CollisionMasks.None, collidesWith: CollisionMasks.None);
         }
     }
 

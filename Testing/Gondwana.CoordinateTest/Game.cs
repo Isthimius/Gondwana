@@ -104,11 +104,16 @@ public class Game : IDisposable
     {
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
+        
         var sprite1 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
-        SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2").Visible = true;
-        SpriteManager.GetSpriteByID("rooster_2")!.SetPosition(new Vector2(5, 0));
-
         sprite1.Visible = true;
+        sprite1.CollisionsEnabled = true;
+
+        var sprite2 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2");
+        sprite2.Visible = true;
+        sprite2.SetPosition(new Vector2(5, 0));
+        sprite2.CollisionsEnabled = true;
+
         FrameSequence frameSequence = new FrameSequence();
         frameSequence.AddFrame(tilesheet, 0, 0);
         frameSequence.AddFrame(tilesheet, 1, 0);

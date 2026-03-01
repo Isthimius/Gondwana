@@ -1,7 +1,8 @@
-﻿using Gondwana.Drawing.Collisions;
+﻿namespace Gondwana.Collisions;
 
-namespace Gondwana.Drawing.Collision;
-
+/// <summary>
+/// planned for future use
+/// </summary>
 public readonly struct CollisionResult
 {
     public ICollider Primary { get; }

@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using Gondwana.Drawing.Collisions;
+using Gondwana.Collisions;
 
 namespace Gondwana.Drawing.Sprites;
 

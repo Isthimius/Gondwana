@@ -1,25 +1,23 @@
-﻿using Gondwana.Drawing;
+﻿using Gondwana.Collisions;
 
-namespace Gondwana.Drawing.Collision;
+namespace Gondwana.Drawing.Collisions;
 
 public sealed class TileCollider : ICollider
 {
     private readonly Tile _tile;
-    private readonly int _layerMask;
-    private readonly int _collidesWithMask;
-    private readonly bool _isStatic;
 
-    public TileCollider(Tile tile, int layerMask, int collidesWithMask, bool isStatic = false)
+    public TileCollider(Tile tile, int collisionGroup, int collidesWith, CollisionResponseType responseType = CollisionResponseType.Solid)
     {
         _tile = tile ?? throw new ArgumentNullException(nameof(tile));
-        _layerMask = layerMask;
-        _collidesWithMask = collidesWithMask;
-        _isStatic = isStatic;
+        CollisionGroup = collisionGroup;
+        CollidesWith = collidesWith;
+        ResponseType = responseType;
     }
 
     public Aabb BoundsWorldPx => Aabb.FromRectangle(_tile.CollisionArea);
-    public bool IsStatic => _isStatic;
-    public int LayerMask => _layerMask;
-    public int CollidesWithMask => _collidesWithMask;
-    public Tile Owner => _tile;
+    public ICollisionEntity Owner => _tile;
+    public bool IsStatic => _tile.IsPositionFixed;
+    public int CollisionGroup { get; set; }
+    public int CollidesWith { get; set; }
+    public CollisionResponseType ResponseType { get; set; }
 }

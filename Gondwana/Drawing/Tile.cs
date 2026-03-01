@@ -1,5 +1,5 @@
 using System.Drawing;
-using Gondwana.Collision;
+using Gondwana.Collisions;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Rendering.Backbuffers;
@@ -14,7 +14,7 @@ namespace Gondwana.Drawing;
 /// Provides core functionality for rendering, animation, collision detection, and scene layer integration.
 /// </summary>
 [JsonObject(IsReference = true)]
-public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
+public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDisposable
 {
     #region static members
 
@@ -230,6 +230,23 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
     [JsonProperty]
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
 
+    private bool _collisionsEnabled = false;
+ 
+    [JsonProperty]
+    public bool CollisionsEnabled
+    {
+        get => _collisionsEnabled;
+        set
+        {
+            _collisionsEnabled = value;
+
+            if (_collisionsEnabled)
+                SceneLayer.ColliderRegistry.Register(_collider!);
+            else
+                SceneLayer.ColliderRegistry.Unregister(_collider!);
+        }
+    }
+
     /// <summary>
     /// Gets the value bag for storing arbitrary typed values associated with this tile.
     /// Useful for attaching custom game-specific data without subclassing.
@@ -296,6 +313,7 @@ public abstract class Tile : IDrawable, IComparable<Tile>, IDisposable
         if (animator != null)
             animator.Dispose();
 
+        SceneLayer.ColliderRegistry.Unregister(_collider!);
         _collider = null;
     }
 

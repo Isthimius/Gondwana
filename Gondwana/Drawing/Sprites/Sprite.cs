@@ -1,6 +1,6 @@
-using Gondwana.Collision;
+using Gondwana.Collisions;
 using Gondwana.Drawing.Animation;
-using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Collisions;
 using Gondwana.Movement;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace Gondwana.Drawing.Sprites;
 
 [JsonObject(IsReference = true)]
-public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
+public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntity, IDisposable
 {
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
 
@@ -57,8 +57,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         zOrder = 1;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
-        _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
-        _sceneLayer.Scene.CollisionWorld.Register(_collider);
+        _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
         SpriteManager._spriteList.Add(this);
@@ -84,8 +83,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         _sceneLayerCoordinates = sprite.SceneLayerCoordinates;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
-        _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
-        _sceneLayer.Scene.CollisionWorld.Register(_collider);
+        _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
     }
 
@@ -101,12 +99,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         pauseAnimation = false;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
-        _collider = new TileCollider(this, layerMask: 1, collidesWithMask: ~0, isStatic: false);
+        _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
 
         if (_sceneLayer != null)
         {
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
-            _sceneLayer.Scene.CollisionWorld.Register(_collider);
         }
 
         SpriteManager._spriteList.Add(this);
@@ -114,7 +111,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     #endregion constructors / finalizer
 
-    #region IMovable Members
+    #region IMovable / ICollisionMovableEntity Members
 
     public MovementSpace PositionSpace => MovementSpace.Grid;
 
@@ -144,7 +141,26 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, newCoord));
     }
 
-    #endregion IMovable Members
+    /// <summary>
+    /// Applies a world-pixel translation. Used by collision resolution.
+    /// </summary>
+    public void TranslateWorldPx(int dx, int dy)
+    {
+        if (dx == 0 && dy == 0)
+            return;
+
+        // Start from current world rect
+        var rect = CollisionArea;
+        rect.X += dx;
+        rect.Y += dy;
+
+        // Convert back to whatever coordinate system Sprite uses internally
+        var sceneCoord = GetSceneLayerCoordsFromSpriteWorldRect(rect);
+
+        SetPosition(new Vector2(sceneCoord.X, sceneCoord.Y));
+    }
+
+    #endregion IMovable / ICollisionMovableEntity Members
 
     #region public properties
 
@@ -415,15 +431,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
             // Mark the last draw region as dirty so the background under this sprite is repainted.
             // DrawLocation should already be a world-space rectangle.
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
-
-            if (_collider != null)
-            {
-                var world = _sceneLayer.Scene?.CollisionWorld;
-                if (world != null)
-                {
-                    world.Unregister(_collider);
-                }
-            }
         }
 
         if (SpriteManager._spriteList.IndexOf(this) != -1)

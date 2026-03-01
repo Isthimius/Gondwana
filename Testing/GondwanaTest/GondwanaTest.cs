@@ -15,7 +15,7 @@ class GondwanaTest
         TestRectangles();
 
 
-        //Gondwana.Engine.Instance.AfterEngineCycle += new Gondwana.EngineCycleEventArgs(Engine_AfterEngineCycle);
+        //Gondwana.Engine.Instance.AfterFrameRender += new Gondwana.EngineCycleEventArgs(Engine_AfterEngineCycle);
         //Gondwana.Engine.Instance.CPSCalculated += new Gondwana.EngineCycleEventArgs(EngineCPSCalculated);
 
         /*
