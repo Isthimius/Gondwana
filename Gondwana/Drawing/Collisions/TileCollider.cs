@@ -6,12 +6,12 @@ public sealed class TileCollider : ICollider
 {
     private readonly Tile _tile;
 
-    public TileCollider(Tile tile, int layerMask = 0, int collidesWithMask = 0, CollisionResponseType response = CollisionResponseType.Solid)
+    public TileCollider(Tile tile, int collisionGroup = 0, int collidesWith = 0, CollisionResponseType responseType = CollisionResponseType.Solid)
     {
         _tile = tile ?? throw new ArgumentNullException(nameof(tile));
-        CollisionGroup = layerMask;
-        CollidesWith = collidesWithMask;
-        ResponseType = response;
+        CollisionGroup = collisionGroup;
+        CollidesWith = collidesWith;
+        ResponseType = responseType;
     }
 
     public Aabb BoundsWorldPx => Aabb.FromRectangle(_tile.CollisionArea);

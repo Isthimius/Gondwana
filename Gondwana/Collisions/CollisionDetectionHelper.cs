@@ -1,5 +1,8 @@
 ﻿namespace Gondwana.Collisions;
 
+/// <summary>
+/// planned for future use
+/// </summary>
 public static class CollisionDirectionHelper
 {
     public static CollisionDirectionFrom FromCenters(Aabb primary, Aabb other)
