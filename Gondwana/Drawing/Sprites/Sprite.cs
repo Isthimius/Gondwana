@@ -57,7 +57,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         zOrder = 1;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
-        _collider = new TileCollider(this, collisionGroup: 1, collidesWith: 1);
+        _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
         SpriteManager._spriteList.Add(this);
@@ -83,7 +83,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _sceneLayerCoordinates = sprite.SceneLayerCoordinates;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
-        _collider = new TileCollider(this, collisionGroup: 1, collidesWith: 1);
+        _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
     }
 
@@ -99,7 +99,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         pauseAnimation = false;
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
-        _collider = new TileCollider(this, collisionGroup: 1, collidesWith: 1);
+        _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
 
         if (_sceneLayer != null)
         {

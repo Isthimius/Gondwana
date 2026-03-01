@@ -1,5 +1,9 @@
-﻿namespace Gondwana.Collisions;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
+namespace Gondwana.Collisions;
+
+[JsonConverter(typeof(StringEnumConverter))]
 public enum CollisionResponseType
 {
     Solid,   // push-out / block movement
