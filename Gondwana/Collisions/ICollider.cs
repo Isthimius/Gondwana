@@ -18,10 +18,10 @@ public interface ICollider
     bool IsStatic { get; }
 
     /// <summary>Bitmask identifying what this collider is (e.g., Player = 1, World = 2, Enemy = 4, etc.).</summary>
-    int LayerMask { get; set; }
+    int CollisionGroup { get; set; }
 
     /// <summary>Bitmask of what this collider collides *with*.</summary>
-    int CollidesWithMask { get; set; }
+    int CollidesWith { get; set; }
 
-    CollisionResponseType Response { get; set; }
+    CollisionResponseType ResponseType { get; set; }
 }

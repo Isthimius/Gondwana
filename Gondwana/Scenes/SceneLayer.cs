@@ -597,14 +597,14 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <summary>
     /// Gets the collision world associated with this scene, used for physics and collision detection.
     /// </summary>
-    /// <value>A <see cref="CollisionWorld"/> instance managing collision data for this scene.</value>
+    /// <value>A <see cref="ColliderRegistry"/> instance managing collision data for this scene.</value>
     /// <remarks>
     /// The collision world maintains collision geometry, spatial partitioning structures, and
     /// collision detection state for all collidable entities within the scene. It is automatically
     /// created when the scene is initialized and is used by the engine's collision resolution system.
     /// </remarks>
     [JsonIgnore]
-    public ColliderRegistry CollisionWorld { get; private set; } = new();
+    public ColliderRegistry ColliderRegistry { get; private set; } = new();
 
     [JsonIgnore]
     internal CollisionResolver CollisionResolver { get; private set; } = null!;
@@ -732,8 +732,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         CoordinateSystemType = coordinateSystem;
 
-        CollisionWorld = new ColliderRegistry();
-        CollisionResolver = new CollisionResolver(CollisionWorld);
+        ColliderRegistry = new ColliderRegistry();
+        CollisionResolver = new CollisionResolver(ColliderRegistry);
 
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
@@ -762,7 +762,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 continue;
 
             tile.Collider ??= new TileCollider(tile, layerMask: 0, collidesWithMask: 0);
-            CollisionWorld.Register(tile.Collider);
+            ColliderRegistry.Register(tile.Collider);
         }
     }
 

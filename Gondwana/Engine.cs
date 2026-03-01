@@ -746,7 +746,7 @@ public sealed class Engine : IDisposable
         foreach (var scene in Scenes.Scene.GetAllScenes())
         {
             foreach (var layer in scene.SceneLayers)
-                layer.CollisionResolver.ResolveTileCollisions();
+                layer.CollisionResolver.Resolve();
         }
 
         // update cameras so any movement can mark RefreshNeeded = All.

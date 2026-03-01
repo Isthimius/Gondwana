@@ -1,17 +1,26 @@
 ﻿using System.Drawing;
-using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
 
 namespace Gondwana.Collisions;
 
 /// <summary>
-/// Simple collision resolution for Sprites against collidable Tiles.
-/// Phase 1: axis-aligned AABB push-out, Sprite vs. Tiles on same SceneLayer.
+/// Simple collision resolution for dynamic colliders against colliders in the registry.
+/// - Solid vs Solid: axis-aligned AABB push-out (minimum-axis).
+/// - Trigger involvement: reported via event, no push-out.
 /// </summary>
 internal sealed class CollisionResolver
 {
     private readonly List<ICollider> _queryResults = new();
     private readonly ColliderRegistry _world;
+
+    /// <summary>
+    /// Fired when either collider in an overlap is a Trigger. No push-out is performed.
+    /// </summary>
+    internal event Action<ICollider, ICollider, Rectangle>? TriggerOverlap;
+
+    /// <summary>
+    /// Fired when a Solid vs Solid overlap occurs (resolution will also be applied).
+    /// </summary>
+    internal event Action<ICollider, ICollider, Rectangle>? SolidOverlap;
 
     internal CollisionResolver(ColliderRegistry world)
     {
@@ -19,80 +28,77 @@ internal sealed class CollisionResolver
     }
 
     /// <summary>
-    /// Resolves collisions for all Sprites that have collision detection enabled.
+    /// Resolves collisions for all dynamic colliders in this registry.
     /// </summary>
-    internal void ResolveTileCollisions()
+    internal void Resolve()
     {
-        foreach (var dyn in _world.DynamicColliders)
+        foreach (var mover in _world.DynamicColliders)
         {
-            if (dyn.Owner is not Sprite sprite)
-                continue;
+            if (mover.Owner is not ICollisionMovableEntity movableOwner)
+                continue; // Dynamic list should only contain movable owners
 
-            ResolveForSprite(sprite, dyn);
+            ResolveForMover(mover, movableOwner);
         }
     }
 
-    private void ResolveForSprite(Sprite sprite, ICollider mover)
+    private void ResolveForMover(ICollider mover, ICollisionMovableEntity movableOwner)
     {
-        // Start from the sprite’s current collision rect in pixel space.
-        Rectangle rect = sprite.CollisionArea;
+        // Start from mover’s current collision rect in world pixel space.
+        Rectangle rect = mover.Owner.CollisionArea;
 
-        // Build AABB for broad-phase query.
+        // Broad-phase query based on current rect.
         var aabb = Aabb.FromRectangle(rect);
 
-        _world.QueryAabb(aabb, mover.LayerMask, mover.CollidesWithMask, _queryResults);
+        _world.QueryAabb(aabb, mover.CollisionGroup, mover.CollidesWith, _queryResults, ignore: mover);
 
-        foreach (var collider in _queryResults)
+        int totalDx = 0;
+        int totalDy = 0;
+
+        foreach (var otherCollider in _queryResults)
         {
-            // Don’t collide with yourself
-            if (ReferenceEquals(collider, mover))
+            var otherRect = otherCollider.BoundsWorldPx.ToRectangle();
+
+            if (!rect.IntersectsWith(otherRect))
                 continue;
 
-            // Only care about Tiles on the same SceneLayer
-            if (collider.Owner is not Tile tile)
-                continue;
-
-            var other = collider.BoundsWorldPx.ToRectangle();
-
-            if (!rect.IntersectsWith(other))
-                continue;
-
-            // Compute intersection
-            Rectangle overlap = Rectangle.Intersect(rect, other);
+            Rectangle overlap = Rectangle.Intersect(rect, otherRect);
             if (overlap.IsEmpty)
                 continue;
+
+            // Trigger collisions: report only, no push-out.
+            if (mover.ResponseType == CollisionResponseType.Trigger || otherCollider.ResponseType == CollisionResponseType.Trigger)
+            {
+                TriggerOverlap?.Invoke(mover, otherCollider, overlap);
+                continue;
+            }
+
+            SolidOverlap?.Invoke(mover, otherCollider, overlap);
 
             // Centers for deciding push direction
             float centerX = rect.Left + rect.Width * 0.5f;
             float centerY = rect.Top + rect.Height * 0.5f;
 
-            float otherCenterX = other.Left + other.Width * 0.5f;
-            float otherCenterY = other.Top + other.Height * 0.5f;
+            float otherCenterX = otherRect.Left + otherRect.Width * 0.5f;
+            float otherCenterY = otherRect.Top + otherRect.Height * 0.5f;
 
-            // Minimum Translation Vector: push along the smallest axis of overlap.
             int dx = 0;
             int dy = 0;
 
             if (overlap.Width < overlap.Height)
-            {
-                // Push horizontally
                 dx = (centerX < otherCenterX) ? -overlap.Width : overlap.Width;
-            }
             else
-            {
-                // Push vertically
                 dy = (centerY < otherCenterY) ? -overlap.Height : overlap.Height;
-            }
 
             rect.X += dx;
             rect.Y += dy;
+
+            totalDx += dx;
+            totalDy += dy;
         }
 
-        // If rect changed, map back to grid coordinates and update the sprite.
-        if (rect != sprite.CollisionArea)
+        if (totalDx != 0 || totalDy != 0)
         {
-            var sceneCoord = sprite.GetSceneLayerCoordsFromSpriteWorldRect(rect);
-            sprite.SetPosition(new System.Numerics.Vector2(sceneCoord.X, sceneCoord.Y));
+            movableOwner.TranslateWorldPx(totalDx, totalDy);
         }
     }
 }

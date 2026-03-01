@@ -45,10 +45,10 @@ public sealed class ColliderRegistry
 
         static bool MaskPasses(ICollider c, int layer, int collidesWith)
         {
-            if ((c.LayerMask & collidesWith) == 0)
+            if ((c.CollisionGroup & collidesWith) == 0)
                 return false;
 
-            if ((layer & c.CollidesWithMask) == 0)
+            if ((layer & c.CollidesWith) == 0)
                 return false;
 
             return true;

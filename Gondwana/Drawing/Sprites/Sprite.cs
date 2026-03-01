@@ -1,7 +1,6 @@
 using Gondwana.Collisions;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
-using Gondwana.Drawing.Sprites;
 using Gondwana.Movement;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
@@ -12,7 +11,7 @@ using System.Runtime.Serialization;
 namespace Gondwana.Drawing.Sprites;
 
 [JsonObject(IsReference = true)]
-public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
+public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntity, IDisposable
 {
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
 
@@ -59,7 +58,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: 1);
-        _sceneLayer.CollisionWorld.Register(_collider);
+        _sceneLayer.ColliderRegistry.Register(_collider);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
         SpriteManager._spriteList.Add(this);
@@ -86,7 +85,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
         _collider = new TileCollider(this, layerMask: 1, collidesWithMask: 1);
-        _sceneLayer.CollisionWorld.Register(_collider);
+        _sceneLayer.ColliderRegistry.Register(_collider);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
     }
 
@@ -107,7 +106,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         if (_sceneLayer != null)
         {
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
-            _sceneLayer.CollisionWorld.Register(_collider);
+            _sceneLayer.ColliderRegistry.Register(_collider);
         }
 
         SpriteManager._spriteList.Add(this);
@@ -115,7 +114,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
     #endregion constructors / finalizer
 
-    #region IMovable Members
+    #region IMovable / ICollisionMovableEntity Members
 
     public MovementSpace PositionSpace => MovementSpace.Grid;
 
@@ -145,7 +144,26 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
         SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, newCoord));
     }
 
-    #endregion IMovable Members
+    /// <summary>
+    /// Applies a world-pixel translation. Used by collision resolution.
+    /// </summary>
+    public void TranslateWorldPx(int dx, int dy)
+    {
+        if (dx == 0 && dy == 0)
+            return;
+
+        // Start from current world rect
+        var rect = CollisionArea;
+        rect.X += dx;
+        rect.Y += dy;
+
+        // Convert back to whatever coordinate system Sprite uses internally
+        var sceneCoord = GetSceneLayerCoordsFromSpriteWorldRect(rect);
+
+        SetPosition(new Vector2(sceneCoord.X, sceneCoord.Y));
+    }
+
+    #endregion IMovable / ICollisionMovableEntity Members
 
     #region public properties
 
@@ -419,7 +437,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, IDisposable
 
             if (_collider != null)
             {
-                var world = _sceneLayer.CollisionWorld;
+                var world = _sceneLayer.ColliderRegistry;
                 if (world != null)
                 {
                     world.Unregister(_collider);
