@@ -231,7 +231,12 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
 
     private bool _collisionsEnabled = false;
- 
+
+    /// <summary>
+    /// Gets or sets a value indicating whether collision detection is enabled for this tile.
+    /// When set to true, the tile's collider is registered with the scene layer's collision system.
+    /// When set to false, the collider is unregistered and collisions will not be detected.
+    /// </summary>
     [JsonProperty]
     public bool CollisionsEnabled
     {

@@ -70,6 +70,8 @@ public partial class Sprite
     /// <summary>
     /// Smoothly resize the sprite to an absolute pixel size over the given duration (seconds).
     /// </summary>
+    /// <param name="targetSize">The target size in pixels to resize to.</param>
+    /// <param name="durationSeconds">The duration of the resize animation in seconds.</param>
     public void ResizeTo(Size targetSize, float durationSeconds)
     {
         _resizeStart = RenderSize;
@@ -87,6 +89,8 @@ public partial class Sprite
     /// Scale to a factor relative to current RenderSize over the given duration (seconds).
     /// factor > 1 grows; factor < 1 shrinks.
     /// </summary>
+    /// <param name="factor">The scaling factor. Values greater than 1 grow the sprite, values less than 1 shrink it.</param>
+    /// <param name="durationSeconds">The duration of the scaling animation in seconds.</param>
     public void ScaleBy(float factor, float durationSeconds)
     {
         factor = MathF.Max(0.01f, factor);

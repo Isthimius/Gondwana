@@ -13,8 +13,14 @@ namespace Gondwana.Drawing.Sprites;
 [JsonObject(IsReference = true)]
 public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntity, IDisposable
 {
+    /// <summary>
+    /// Occurs when the sprite has moved to a new position on the scene layer.
+    /// </summary>
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
 
+    /// <summary>
+    /// Occurs when the sprite is being disposed.
+    /// </summary>
     public event Action<Sprite>? Disposing;
 
     #region private / internal fields
@@ -35,6 +41,12 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
     #region constructors / finalizer
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Sprite"/> class with the specified scene layer and frame.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer to attach the sprite to.</param>
+    /// <param name="frame">The initial frame for the sprite.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="sceneLayer"/> is null.</exception>
     protected internal Sprite(SceneLayer sceneLayer, Frame frame)
     {
         if (sceneLayer == null)
@@ -113,10 +125,21 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
     #region IMovable / ICollisionMovableEntity Members
 
+    /// <summary>
+    /// Gets the movement space used by this sprite.
+    /// </summary>
     public MovementSpace PositionSpace => MovementSpace.Grid;
 
+    /// <summary>
+    /// Gets the current position of the sprite in scene layer coordinates.
+    /// </summary>
+    /// <returns>A <see cref="Vector2"/> representing the sprite's position.</returns>
     public Vector2 GetPosition() => new Vector2(_sceneLayerCoordinates.X, _sceneLayerCoordinates.Y);
 
+    /// <summary>
+    /// Sets the position of the sprite in scene layer coordinates and updates the display.
+    /// </summary>
+    /// <param name="pos">The new position for the sprite.</param>
     public void SetPosition(Vector2 pos)
     {
         // old and new coordinate space positions
@@ -144,6 +167,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// <summary>
     /// Applies a world-pixel translation. Used by collision resolution.
     /// </summary>
+    /// <param name="dx">The horizontal pixel offset to apply.</param>
+    /// <param name="dy">The vertical pixel offset to apply.</param>
     public void TranslateWorldPx(int dx, int dy)
     {
         if (dx == 0 && dy == 0)
@@ -164,9 +189,15 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
     #region public properties
 
+    /// <summary>
+    /// Gets the movement controller for this sprite.
+    /// </summary>
     [JsonIgnore]
     public MovementController Movement { get; private set; }
 
+    /// <summary>
+    /// Gets or sets the horizontal alignment of the sprite relative to its scene layer coordinates.
+    /// </summary>
     [JsonProperty]
     public HorizontalAlignment HorizAlign
     {
@@ -186,6 +217,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the vertical alignment of the sprite relative to its scene layer coordinates.
+    /// </summary>
     [JsonProperty]
     public VerticalAlignment VertAlign
     {
@@ -205,6 +239,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the horizontal pixel offset (nudge) to apply to the sprite's position.
+    /// </summary>
     [JsonProperty]
     public int NudgeX
     {
@@ -224,6 +261,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the vertical pixel offset (nudge) to apply to the sprite's position.
+    /// </summary>
     [JsonProperty]
     public int NudgeY
     {
@@ -243,6 +283,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the size at which the sprite will be rendered.
+    /// </summary>
     [JsonProperty]
     public Size RenderSize
     {
@@ -262,6 +305,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets the world-space pixel rectangle where the sprite will be drawn, taking into account alignment, size, and nudge offsets.
+    /// </summary>
     [JsonIgnore]
     public override Rectangle DrawLocationWorld
     {
@@ -325,15 +371,28 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the sprite's position is fixed. Always returns false for sprites.
+    /// </summary>
     [JsonIgnore]
     public override bool IsPositionFixed => false;
 
+    /// <summary>
+    /// Gets the scene layer coordinates of the sprite.
+    /// </summary>
     [JsonIgnore]
     public override PointF SceneLayerCoordinates => _sceneLayerCoordinates;
 
+    /// <summary>
+    /// Gets the scene layer that this sprite is attached to.
+    /// </summary>
     [JsonIgnore]
     public override SceneLayer SceneLayer => _sceneLayer;
 
+    /// <summary>
+    /// Gets or sets the Z-order (depth) of the sprite for rendering. Higher values are drawn on top.
+    /// Minimum value is 1.
+    /// </summary>
     [JsonProperty]
     public virtual new int ZOrder
     {
@@ -358,6 +417,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// a sprite’s position in pixel space and the sprite’s SceneLayer position
     /// must be updated to match.
     /// </summary>
+    /// <param name="worldRectPx">The world-pixel rectangle to convert.</param>
+    /// <returns>The scene layer coordinates corresponding to the world-pixel rectangle.</returns>
     internal PointF GetSceneLayerCoordsFromSpriteWorldRect(Rectangle worldRectPx)
     {
         // work the Sprites.DrawLocation method backwards...
@@ -420,6 +481,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
     #region IDisposable Members
 
+    /// <summary>
+    /// Releases all resources used by the sprite and removes it from the sprite manager.
+    /// </summary>
     public override void Dispose()
     {
         GC.SuppressFinalize(this);

@@ -45,6 +45,9 @@ public class Animator : IDisposable
         parent = tile;
     }
 
+    /// <summary>
+    /// Finalizer that ensures proper cleanup of the animator resources.
+    /// </summary>
     ~Animator()
     {
         Dispose();

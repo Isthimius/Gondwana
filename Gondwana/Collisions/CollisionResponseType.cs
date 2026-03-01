@@ -3,10 +3,20 @@ using Newtonsoft.Json.Converters;
 
 namespace Gondwana.Collisions;
 
+/// <summary>
+/// Defines how a collider responds to collisions with other colliders.
+/// </summary>
 [JsonConverter(typeof(StringEnumConverter))]
 public enum CollisionResponseType
 {
-    Solid,   // push-out / block movement
-    Trigger  // do not push-out, just report
+    /// <summary>
+    /// Solid collision response that pushes out overlapping colliders and blocks movement.
+    /// </summary>
+    Solid,
+    
+    /// <summary>
+    /// Trigger collision response that reports overlaps without applying push-out or blocking movement.
+    /// </summary>
+    Trigger
 }
 

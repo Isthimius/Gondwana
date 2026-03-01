@@ -29,8 +29,8 @@ namespace Gondwana.Drawing.Direct.Particles;
 /// </para>
 /// <para>
 /// Internally, the particle pool is compacted each update to avoid GC churn.
-/// Rendering uses Skia’s <see cref="SKBlendMode.Plus"/> for additive blending,
-/// making it suitable for “glowy” effects such as fire, sparks, and magical auras.
+/// Rendering uses Skia's <see cref="SKBlendMode.Plus"/> for additive blending,
+/// making it suitable for "glowy" effects such as fire, sparks, and magical auras.
 /// </para>
 /// </remarks>
 ///
@@ -129,7 +129,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     public float GlobalEmitScale { get; set; } = 1f;
 
     /// <summary>
-    /// Global tint color multiplied against every particle’s own color
+    /// Global tint color multiplied against every particle's own color
     /// during rendering.
     /// </summary>
     /// <remarks>
@@ -197,6 +197,16 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
         _particleSprite = particleSprite;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParticleSurface"/> class for scene layer rendering
+    /// with world-space coordinate bounds.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The render surface host managing this particle system.</param>
+    /// <param name="sceneLayer">The scene layer to render particles on.</param>
+    /// <param name="worldBounds">The world-space bounds for the particle system, or <c>null</c> for unbounded.</param>
+    /// <param name="nickname">An optional friendly name for debugging and identification.</param>
+    /// <param name="maxParticles">The maximum number of particles this system can manage simultaneously. Default is 2000.</param>
+    /// <param name="particleSprite">An optional bitmap texture to use for particles instead of circles.</param>
     public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
                            SceneLayer sceneLayer,
                            Rectangle? worldBounds,
@@ -213,6 +223,16 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
                maxParticles,
                particleSprite) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParticleSurface"/> class for view-based rendering
+    /// with screen-space coordinate bounds.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The render surface host managing this particle system.</param>
+    /// <param name="view">The view to render particles on.</param>
+    /// <param name="screenBounds">The screen-space bounds for the particle system, or <c>null</c> for unbounded.</param>
+    /// <param name="nickname">An optional friendly name for debugging and identification.</param>
+    /// <param name="maxParticles">The maximum number of particles this system can manage simultaneously. Default is 2000.</param>
+    /// <param name="particleSprite">An optional bitmap texture to use for particles instead of circles.</param>
     public ParticleSurface (RenderSurfaceHostBase renderSurfaceHost,
                             View view,
                             Rectangle? screenBounds,
@@ -250,6 +270,10 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// </example>
     public void Burst(ParticleEmitter emitter, int count) => EmitFrom(emitter, count);
 
+    /// <summary>
+    /// Releases the particle array back to the pool and disposes managed resources.
+    /// </summary>
+    /// <param name="disposing">True if disposing managed resources; false if called from finalizer.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -361,7 +385,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// <para>
     /// Do not call this directly. Once the system is registered with
     /// <see cref="DirectDrawingManager"/>, the manager invokes <c>Render()</c>
-    /// during the host’s render pass.
+    /// during the host's render pass.
     /// </para>
     /// </remarks>
     /// <example>

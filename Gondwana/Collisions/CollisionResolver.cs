@@ -22,6 +22,11 @@ internal sealed class CollisionResolver
     /// </summary>
     internal event Action<ICollider, ICollider, Rectangle>? SolidOverlap;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollisionResolver"/> class with the specified collider registry.
+    /// </summary>
+    /// <param name="world">The collider registry containing static and dynamic colliders to resolve against.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="world"/> is <c>null</c>.</exception>
     internal CollisionResolver(ColliderRegistry world)
     {
         _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -43,7 +48,7 @@ internal sealed class CollisionResolver
 
     private void ResolveForMover(ICollider mover, ICollisionMovableEntity movableOwner)
     {
-        // Start from mover’s current collision rect in world pixel space.
+        // Start from mover's current collision rect in world pixel space.
         Rectangle rect = mover.Owner.CollisionArea;
 
         // Broad-phase query based on current rect.

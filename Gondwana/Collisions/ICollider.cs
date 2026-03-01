@@ -23,5 +23,8 @@ public interface ICollider
     /// <summary>Bitmask of what this collider collides *with*.</summary>
     int CollidesWith { get; set; }
 
+    /// <summary>
+    /// Gets or sets how this collider responds to collisions (Solid blocks movement, Trigger reports only).
+    /// </summary>
     CollisionResponseType ResponseType { get; set; }
 }
