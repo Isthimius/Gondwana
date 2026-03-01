@@ -58,7 +58,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
         _collider = new TileCollider(this, collisionGroup: 1, collidesWith: 1);
-        _sceneLayer.ColliderRegistry.Register(_collider);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
         SpriteManager._spriteList.Add(this);
@@ -85,7 +84,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
         Movement = new MovementController(this, MovementState.ForSceneLayer(), this.SceneLayer);
         _collider = new TileCollider(this, collisionGroup: 1, collidesWith: 1);
-        _sceneLayer.ColliderRegistry.Register(_collider);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
     }
 
@@ -106,7 +104,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         if (_sceneLayer != null)
         {
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
-            _sceneLayer.ColliderRegistry.Register(_collider);
         }
 
         SpriteManager._spriteList.Add(this);
@@ -434,15 +431,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             // Mark the last draw region as dirty so the background under this sprite is repainted.
             // DrawLocation should already be a world-space rectangle.
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
-
-            if (_collider != null)
-            {
-                var world = _sceneLayer.ColliderRegistry;
-                if (world != null)
-                {
-                    world.Unregister(_collider);
-                }
-            }
         }
 
         if (SpriteManager._spriteList.IndexOf(this) != -1)

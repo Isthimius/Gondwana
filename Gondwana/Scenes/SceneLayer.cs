@@ -762,7 +762,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 continue;
 
             tile.Collider ??= new TileCollider(tile, collisionGroup: 0, collidesWith: 0);
-            ColliderRegistry.Register(tile.Collider);
         }
     }
 

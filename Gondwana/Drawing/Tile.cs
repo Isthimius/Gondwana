@@ -230,6 +230,23 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     [JsonProperty]
     public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
 
+    private bool _collisionsEnabled = false;
+ 
+    [JsonProperty]
+    public bool CollisionsEnabled
+    {
+        get => _collisionsEnabled;
+        set
+        {
+            _collisionsEnabled = value;
+
+            if (_collisionsEnabled)
+                SceneLayer.ColliderRegistry.Register(_collider!);
+            else
+                SceneLayer.ColliderRegistry.Unregister(_collider!);
+        }
+    }
+
     /// <summary>
     /// Gets the value bag for storing arbitrary typed values associated with this tile.
     /// Useful for attaching custom game-specific data without subclassing.
@@ -296,6 +313,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         if (animator != null)
             animator.Dispose();
 
+        SceneLayer.ColliderRegistry.Unregister(_collider!);
         _collider = null;
     }
 
