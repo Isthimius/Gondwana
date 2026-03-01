@@ -1,3 +1,8 @@
-﻿namespace Gondwana.Collisions;
+﻿using System.Drawing;
 
-public interface ICollisionEntity { }
+namespace Gondwana.Collisions;
+
+public interface ICollisionEntity
+{
+    Rectangle CollisionArea { get; }
+}

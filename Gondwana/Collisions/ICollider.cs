@@ -23,5 +23,5 @@ public interface ICollider
     /// <summary>Bitmask of what this collider collides *with*.</summary>
     int CollidesWithMask { get; set; }
 
-    CollisionResponse Response { get; set; }
+    CollisionResponseType Response { get; set; }
 }

@@ -5,12 +5,10 @@ namespace Gondwana.Drawing.Collisions;
 public sealed class TileCollider : ICollider
 {
     private readonly Tile _tile;
-    private readonly bool _isStatic;
 
-    public TileCollider(Tile tile, int layerMask, int collidesWithMask, CollisionResponse response = CollisionResponse.Solid)
+    public TileCollider(Tile tile, int layerMask = 0, int collidesWithMask = 0, CollisionResponseType response = CollisionResponseType.Solid)
     {
         _tile = tile ?? throw new ArgumentNullException(nameof(tile));
-        _isStatic = _tile.IsPositionFixed;
         LayerMask = layerMask;
         CollidesWithMask = collidesWithMask;
         Response = response;
@@ -18,8 +16,8 @@ public sealed class TileCollider : ICollider
 
     public Aabb BoundsWorldPx => Aabb.FromRectangle(_tile.CollisionArea);
     public ICollisionEntity Owner => _tile;
-    public bool IsStatic => _isStatic;
+    public bool IsStatic => _tile.IsPositionFixed;
     public int LayerMask { get; set; }
     public int CollidesWithMask { get; set; }
-    public CollisionResponse Response { get; set; }
+    public CollisionResponseType Response { get; set; }
 }

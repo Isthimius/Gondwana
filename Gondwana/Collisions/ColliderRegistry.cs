@@ -1,6 +1,6 @@
 ﻿namespace Gondwana.Collisions;
 
-public sealed class CollisionWorld
+public sealed class ColliderRegistry
 {
     private readonly HashSet<ICollider> _static = new();
     private readonly HashSet<ICollider> _dynamic = new();

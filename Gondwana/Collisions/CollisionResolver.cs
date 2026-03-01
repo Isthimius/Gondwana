@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Scenes;
 
 namespace Gondwana.Collisions;
 
@@ -12,9 +11,9 @@ namespace Gondwana.Collisions;
 internal sealed class CollisionResolver
 {
     private readonly List<ICollider> _queryResults = new();
-    private readonly CollisionWorld _world;
+    private readonly ColliderRegistry _world;
 
-    internal CollisionResolver(CollisionWorld world)
+    internal CollisionResolver(ColliderRegistry world)
     {
         _world = world ?? throw new ArgumentNullException(nameof(world));
     }
@@ -29,40 +28,28 @@ internal sealed class CollisionResolver
             if (dyn.Owner is not Sprite sprite)
                 continue;
 
-            ResolveForSprite(sprite, _world);
+            ResolveForSprite(sprite, dyn);
         }
     }
 
-    private void ResolveForSprite(Sprite sprite, CollisionWorld world)
+    private void ResolveForSprite(Sprite sprite, ICollider mover)
     {
-        var layer = sprite.SceneLayer;
-        if (layer == null)
-            return;
-
         // Start from the sprite’s current collision rect in pixel space.
         Rectangle rect = sprite.CollisionArea;
 
         // Build AABB for broad-phase query.
         var aabb = Aabb.FromRectangle(rect);
 
-        // For now, treat the sprite’s “layerMask” as 1 and it collides with everything (~0).
-        // Later you can pass real masks from the sprite’s collider.
-        const int spriteLayerMask = 1;
-        const int spriteCollidesWithMask = ~0;
-
-        world.QueryAabb(aabb, spriteLayerMask, spriteCollidesWithMask, _queryResults);
+        _world.QueryAabb(aabb, mover.LayerMask, mover.CollidesWithMask, _queryResults);
 
         foreach (var collider in _queryResults)
         {
             // Don’t collide with yourself
-            if (ReferenceEquals(collider.Owner, sprite))
+            if (ReferenceEquals(collider, mover))
                 continue;
 
             // Only care about Tiles on the same SceneLayer
             if (collider.Owner is not Tile tile)
-                continue;
-
-            if (tile.SceneLayer != layer)
                 continue;
 
             var other = collider.BoundsWorldPx.ToRectangle();

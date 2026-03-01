@@ -604,7 +604,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// created when the scene is initialized and is used by the engine's collision resolution system.
     /// </remarks>
     [JsonIgnore]
-    public CollisionWorld CollisionWorld { get; private set; } = new();
+    public ColliderRegistry CollisionWorld { get; private set; } = new();
 
     [JsonIgnore]
     internal CollisionResolver CollisionResolver { get; private set; } = null!;
@@ -732,7 +732,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         CoordinateSystemType = coordinateSystem;
 
-        CollisionWorld = new CollisionWorld();
+        CollisionWorld = new ColliderRegistry();
         CollisionResolver = new CollisionResolver(CollisionWorld);
 
         // let each SceneLayerTile in array know its position in the array
@@ -761,7 +761,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             if (tile is null)
                 continue;
 
-            tile.Collider ??= new TileCollider(tile, layerMask: ~0, collidesWithMask: ~0, isStatic: true);
+            tile.Collider ??= new TileCollider(tile, layerMask: 0, collidesWithMask: 0);
             CollisionWorld.Register(tile.Collider);
         }
     }
