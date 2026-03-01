@@ -609,6 +609,16 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     internal CollisionResolver CollisionResolver { get; private set; } = null!;
 
+    /// <summary>
+    /// Gets the registry of collision groups used to organize and manage collision detection within the scene.
+    /// </summary>
+    /// <remarks>Use this property to access the collection of collision groups for efficient grouping and
+    /// handling of collision logic. The registry is initialized automatically and provides methods for adding,
+    /// removing, and querying collision groups as needed. This is a shim that points to the same
+    /// property on the parent Scene.</remarks>
+    [JsonIgnore]
+    public CollisionGroupRegistry CollisionGroups => Scene.CollisionGroups;
+
     #endregion properties
 
     #region public methods

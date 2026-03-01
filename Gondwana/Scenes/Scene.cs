@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Collisions;
 using Gondwana.Drawing.Coordinates;
-using Gondwana.Rendering;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -243,6 +242,15 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// </remarks>
     [JsonIgnore]
     public int CountOfVisibleLayers => VisibleSceneLayers?.Count ?? 0;
+
+    /// <summary>
+    /// Gets the registry of collision groups used to organize and manage collision detection within the scene.
+    /// </summary>
+    /// <remarks>Use this property to access the collection of collision groups for efficient grouping and
+    /// handling of collision logic. The registry is initialized automatically and provides methods for adding,
+    /// removing, and querying collision groups as needed.</remarks>
+    [JsonIgnore]
+    public CollisionGroupRegistry CollisionGroups { get; } = new();
 
     #endregion public properties
 
