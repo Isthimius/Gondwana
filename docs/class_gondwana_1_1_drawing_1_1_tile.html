@@ -103,9 +103,10 @@ Inheritance diagram for Gondwana.Drawing.Tile:</div>
  <div class="center">
   <img src="class_gondwana_1_1_drawing_1_1_tile.png" usemap="#Gondwana_2EDrawing_2ETile_map" alt=""/>
   <map id="Gondwana_2EDrawing_2ETile_map" name="Gondwana_2EDrawing_2ETile_map">
-<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,211,24"/>
-<area href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html" alt="Gondwana.Drawing.Sprites.Sprite" shape="rect" coords="110,112,321,136"/>
-<area href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer." alt="Gondwana.Scenes.SceneLayerTile" shape="rect" coords="331,112,542,136"/>
+<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,216,24"/>
+<area href="interface_gondwana_1_1_collisions_1_1_i_collision_entity.html" title="Represents an entity that participates in the collision system and has a defined collision area." alt="Gondwana.Collisions.ICollisionEntity" shape="rect" coords="226,0,442,24"/>
+<area href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html" title="Represents a movable visual element on a scene layer that can be positioned, animated,..." alt="Gondwana.Drawing.Sprites.Sprite" shape="rect" coords="226,112,442,136"/>
+<area href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer." alt="Gondwana.Scenes.SceneLayerTile" shape="rect" coords="452,112,668,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -125,7 +126,7 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
-<tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_collision_1_1_i_collider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
+<tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -155,7 +156,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:abe1c33a0aab3bfa09f748920e504b4ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the animator responsible for managing frame transitions and animation sequences for this tile.  <br /></td></tr>
 <tr class="memitem:a6d1b82d253d8c1f4b21f43ac41487884" id="r_a6d1b82d253d8c1f4b21f43ac41487884"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d1b82d253d8c1f4b21f43ac41487884">PauseAnimation</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a6d1b82d253d8c1f4b21f43ac41487884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the tile's animation is currently paused.  <br /></td></tr>
-<tr class="memitem:a50bde19a832324893f058b03e14cf7f3" id="r_a50bde19a832324893f058b03e14cf7f3"><td class="memItemLeft" align="right" valign="top">virtual ? <a class="el" href="interface_gondwana_1_1_collision_1_1_i_collider.html">ICollider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50bde19a832324893f058b03e14cf7f3">Collider</a><code> [get]</code></td></tr>
+<tr class="memitem:a50bde19a832324893f058b03e14cf7f3" id="r_a50bde19a832324893f058b03e14cf7f3"><td class="memItemLeft" align="right" valign="top">virtual ? <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html">ICollider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50bde19a832324893f058b03e14cf7f3">Collider</a><code> [get]</code></td></tr>
 <tr class="memdesc:a50bde19a832324893f058b03e14cf7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collider used for collision detection with this tile. Returns null if the tile has no collision detection.  <br /></td></tr>
 <tr class="memitem:a39985eb5adff013e78446f18336963e9" id="r_a39985eb5adff013e78446f18336963e9"><td class="memItemLeft" align="right" valign="top">virtual Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39985eb5adff013e78446f18336963e9">CollisionArea</a><code> [get]</code></td></tr>
 <tr class="memdesc:a39985eb5adff013e78446f18336963e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effective collision area of the tile in world coordinates, incorporating any adjustments specified by <a class="el" href="#ac8f79979d79887bc43b245de84e9a052" title="Gets or sets the collision area adjustment values that modify the tile&#39;s collision boundaries....">AdjustCollisionArea</a>.  <br /></td></tr>
@@ -163,8 +164,10 @@ Properties</h2></td></tr>
 <tr class="memdesc:a0862275089f09bfb25738641365856f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether fog of war rendering is enabled for this tile. Setting this property triggers a refresh of the tile's screen area.  <br /></td></tr>
 <tr class="memitem:a56ea85f53ad251db7f223588a341773a" id="r_a56ea85f53ad251db7f223588a341773a"><td class="memItemLeft" align="right" valign="top">virtual Point[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56ea85f53ad251db7f223588a341773a">OutlinePointsWorld</a><code> [get]</code></td></tr>
 <tr class="memdesc:a56ea85f53ad251db7f223588a341773a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to determine polygonal area when drawing grid lines or fog. Override this property in a derived class to define custom areas for these effects.  <br /></td></tr>
-<tr class="memitem:ac8f79979d79887bc43b245de84e9a052" id="r_ac8f79979d79887bc43b245de84e9a052"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8f79979d79887bc43b245de84e9a052">AdjustCollisionArea</a> = CollisionDetectionAdjustment.None<code> [get, set]</code></td></tr>
+<tr class="memitem:ac8f79979d79887bc43b245de84e9a052" id="r_ac8f79979d79887bc43b245de84e9a052"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8f79979d79887bc43b245de84e9a052">AdjustCollisionArea</a> = CollisionDetectionAdjustment.None<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac8f79979d79887bc43b245de84e9a052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision area adjustment values that modify the tile's collision boundaries. Use this to fine-tune the collision detection area relative to the tile's visual bounds.  <br /></td></tr>
+<tr class="memitem:a04aecd48929540170b3fbe43cb5e06f8" id="r_a04aecd48929540170b3fbe43cb5e06f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04aecd48929540170b3fbe43cb5e06f8">CollisionsEnabled</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a04aecd48929540170b3fbe43cb5e06f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether collision detection is enabled for this tile. When set to true, the tile's collider is registered with the scene layer's collision system. When set to false, the collider is unregistered and collisions will not be detected.  <br /></td></tr>
 <tr class="memitem:a809ee69a8d25e7cf843f042c9b6298b6" id="r_a809ee69a8d25e7cf843f042c9b6298b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a809ee69a8d25e7cf843f042c9b6298b6">ValueBag</a> = new()<code> [get]</code></td></tr>
 <tr class="memdesc:a809ee69a8d25e7cf843f042c9b6298b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the value bag for storing arbitrary typed values associated with this tile. Useful for attaching custom game-specific data without subclassing.  <br /></td></tr>
 </table>
@@ -347,7 +350,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="interface_gondwana_1_1_collision_1_1_i_collider.html">ICollider</a>? Gondwana.Drawing.Tile._collider</td>
+          <td class="memname"><a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html">ICollider</a>? Gondwana.Drawing.Tile._collider</td>
         </tr>
       </table>
   </td>
@@ -392,7 +395,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a> Gondwana.Drawing.Tile.AdjustCollisionArea = CollisionDetectionAdjustment.None</td>
+          <td class="memname">virtual <a class="el" href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a> Gondwana.Drawing.Tile.AdjustCollisionArea = CollisionDetectionAdjustment.None</td>
         </tr>
       </table>
   </td>
@@ -416,7 +419,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual ? <a class="el" href="interface_gondwana_1_1_collision_1_1_i_collider.html">ICollider</a> Gondwana.Drawing.Tile.Collider</td>
+          <td class="memname">virtual ? <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html">ICollider</a> Gondwana.Drawing.Tile.Collider</td>
         </tr>
       </table>
   </td>
@@ -451,6 +454,32 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the effective collision area of the tile in world coordinates, incorporating any adjustments specified by <a class="el" href="#ac8f79979d79887bc43b245de84e9a052" title="Gets or sets the collision area adjustment values that modify the tile&#39;s collision boundaries....">AdjustCollisionArea</a>. </p>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collision_entity.html#a1a63d7f8a676c9e8388c0920d1097124">Gondwana.Collisions.ICollisionEntity</a>.</p>
+
+</div>
+</div>
+<a id="a04aecd48929540170b3fbe43cb5e06f8" name="a04aecd48929540170b3fbe43cb5e06f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04aecd48929540170b3fbe43cb5e06f8">&#9670;&#160;</a></span>CollisionsEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Drawing.Tile.CollisionsEnabled</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets a value indicating whether collision detection is enabled for this tile. When set to true, the tile's collider is registered with the scene layer's collision system. When set to false, the collider is unregistered and collisions will not be detected. </p>
 
 </div>
 </div>

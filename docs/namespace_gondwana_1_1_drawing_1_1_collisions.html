@@ -97,54 +97,9 @@ $(function(){initNavTree('namespace_gondwana_1_1_drawing_1_1_collisions.html',''
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:CollisionDetectionAdjustment" id="r_CollisionDetectionAdjustment"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pixel adjustments applied to a <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...">Tile</a>'s DrawLocation to produce its collision box. Positive values shrink/expand the collision rect relative to the visual rect.  <a href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html#details">More...</a><br /></td></tr>
-<tr class="memitem:CollisionResolver" id="r_CollisionResolver"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>CollisionResolver</b></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple collision resolution for <a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html">Sprites</a> against collidable Tiles. Phase 1: axis-aligned AABB push-out, <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html">Sprite</a> vs. Tiles on same <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. <br /></td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:af21d1de1578105d78012bd003ce07e59" id="r_af21d1de1578105d78012bd003ce07e59"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af21d1de1578105d78012bd003ce07e59">CollisionDirectionFrom</a> { <br />
-&#160;&#160;<a class="el" href="#af21d1de1578105d78012bd003ce07e59a8d9c307cb7f3c4a32822a51922d1ceaa">N</a>
-, <a class="el" href="#af21d1de1578105d78012bd003ce07e59adc33066c3993e0d50896e533fd692ce0">NE</a>
-, <a class="el" href="#af21d1de1578105d78012bd003ce07e59a3a3ea00cfc35332cedf6e5e9a32e94da">E</a>
-, <a class="el" href="#af21d1de1578105d78012bd003ce07e59af003c44deab679aa2edfaff864c77402">SE</a>
-, <br />
-&#160;&#160;<a class="el" href="#af21d1de1578105d78012bd003ce07e59a5dbc98dcc983a70728bd082d1a47546e">S</a>
-, <a class="el" href="#af21d1de1578105d78012bd003ce07e59a6f56aa4e2561eb66f17f6d8de8070a77">SW</a>
-, <a class="el" href="#af21d1de1578105d78012bd003ce07e59a61e9c06ea9a85a5088a499df6458d276">W</a>
-, <a class="el" href="#af21d1de1578105d78012bd003ce07e59a7f39ac71e81132daad44925b3bdfde5a">NW</a>
-, <br />
-&#160;&#160;<a class="el" href="#af21d1de1578105d78012bd003ce07e59a4f1f6016fc9f3f2353c0cc7c67b292bd">Center</a>
-<br />
- }</td></tr>
+<tr class="memitem:TileCollider" id="r_TileCollider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider.html">TileCollider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides collision detection capabilities for a <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...">Tile</a> by implementing the <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html" title="World-space axis-aligned collider used by the collision system.">ICollider</a> interface.  <a href="class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider.html#details">More...</a><br /></td></tr>
 </table>
-<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
-<a id="af21d1de1578105d78012bd003ce07e59" name="af21d1de1578105d78012bd003ce07e59"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af21d1de1578105d78012bd003ce07e59">&#9670;&#160;</a></span>CollisionDirectionFrom</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="#af21d1de1578105d78012bd003ce07e59">Gondwana.Drawing.Collisions.CollisionDirectionFrom</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59a8d9c307cb7f3c4a32822a51922d1ceaa" name="af21d1de1578105d78012bd003ce07e59a8d9c307cb7f3c4a32822a51922d1ceaa"></a>N&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59adc33066c3993e0d50896e533fd692ce0" name="af21d1de1578105d78012bd003ce07e59adc33066c3993e0d50896e533fd692ce0"></a>NE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59a3a3ea00cfc35332cedf6e5e9a32e94da" name="af21d1de1578105d78012bd003ce07e59a3a3ea00cfc35332cedf6e5e9a32e94da"></a>E&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59af003c44deab679aa2edfaff864c77402" name="af21d1de1578105d78012bd003ce07e59af003c44deab679aa2edfaff864c77402"></a>SE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59a5dbc98dcc983a70728bd082d1a47546e" name="af21d1de1578105d78012bd003ce07e59a5dbc98dcc983a70728bd082d1a47546e"></a>S&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59a6f56aa4e2561eb66f17f6d8de8070a77" name="af21d1de1578105d78012bd003ce07e59a6f56aa4e2561eb66f17f6d8de8070a77"></a>SW&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59a61e9c06ea9a85a5088a499df6458d276" name="af21d1de1578105d78012bd003ce07e59a61e9c06ea9a85a5088a499df6458d276"></a>W&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59a7f39ac71e81132daad44925b3bdfde5a" name="af21d1de1578105d78012bd003ce07e59a7f39ac71e81132daad44925b3bdfde5a"></a>NW&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af21d1de1578105d78012bd003ce07e59a4f1f6016fc9f3f2353c0cc7c67b292bd" name="af21d1de1578105d78012bd003ce07e59a4f1f6016fc9f3f2353c0cc7c67b292bd"></a>Center&#160;</td><td class="fielddoc"></td></tr>
-</table>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

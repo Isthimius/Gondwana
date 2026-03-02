@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: Gondwana.Drawing.Collisions.CollisionDetectionAdjustment Struct Reference</title>
+<title>Gondwana Game Engine: Gondwana.Collisions.CollisionDetectionAdjustment Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -65,7 +65,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html','','struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment-members'); });
+$(function(){initNavTree('struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html','','struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment-members'); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -91,39 +91,45 @@ $(function(){initNavTree('struct_gondwana_1_1_drawing_1_1_collisions_1_1_collisi
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">Gondwana.Drawing.Collisions.CollisionDetectionAdjustment Struct Reference</div></div>
+  <div class="headertitle"><div class="title">Gondwana.Collisions.CollisionDetectionAdjustment Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Pixel adjustments applied to a <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...">Tile</a>'s DrawLocation to produce its collision box. Positive values shrink/expand the collision rect relative to the visual rect.  
+<p>Pixel adjustments applied to a Tile's DrawLocation to produce its collision box. Positive values shrink/expand the collision rect relative to the visual rect.  
  <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9afc9593c8a8efb2bb9e95af2669ede2" id="r_a9afc9593c8a8efb2bb9e95af2669ede2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9afc9593c8a8efb2bb9e95af2669ede2">CollisionDetectionAdjustment</a> (int top, int bottom, int left, int right)</td></tr>
+<tr class="memitem:a712765017228b504dc11a2f52c5e9ffe" id="r_a712765017228b504dc11a2f52c5e9ffe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a712765017228b504dc11a2f52c5e9ffe">CollisionDetectionAdjustment</a> (int top, int bottom, int left, int right)</td></tr>
+<tr class="memdesc:a712765017228b504dc11a2f52c5e9ffe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html" title="Pixel adjustments applied to a Tile&#39;s DrawLocation to produce its collision box. Positive values shri...">CollisionDetectionAdjustment</a> struct with the specified edge adjustments.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ab196608379ea731a90a0eddbf4a314cc" id="r_ab196608379ea731a90a0eddbf4a314cc"><td class="memItemLeft" align="right" valign="top">static readonly <a class="el" href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab196608379ea731a90a0eddbf4a314cc">None</a> = new()</td></tr>
+<tr class="memitem:a816512645fecf510897fc907857950ea" id="r_a816512645fecf510897fc907857950ea"><td class="memItemLeft" align="right" valign="top">static readonly <a class="el" href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a816512645fecf510897fc907857950ea">None</a> = new()</td></tr>
+<tr class="memdesc:a816512645fecf510897fc907857950ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a collision detection adjustment with no pixel offsets (all values are zero).  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
-<tr class="memitem:aa77fb207ef952263c1c7b388d9b1c2a0" id="r_aa77fb207ef952263c1c7b388d9b1c2a0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa77fb207ef952263c1c7b388d9b1c2a0">Top</a><code> [get, set]</code></td></tr>
-<tr class="memitem:a76a421949d4233f6f3d70662fc3d0863" id="r_a76a421949d4233f6f3d70662fc3d0863"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76a421949d4233f6f3d70662fc3d0863">Bottom</a><code> [get, set]</code></td></tr>
-<tr class="memitem:a176a61c1aedac89073cf98e99234e2f5" id="r_a176a61c1aedac89073cf98e99234e2f5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a176a61c1aedac89073cf98e99234e2f5">Left</a><code> [get, set]</code></td></tr>
-<tr class="memitem:a73ad6fa9f93ee8a74708076886ef603f" id="r_a73ad6fa9f93ee8a74708076886ef603f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73ad6fa9f93ee8a74708076886ef603f">Right</a><code> [get, set]</code></td></tr>
+<tr class="memitem:ac7907c01da59672a7ef317ffc175e876" id="r_ac7907c01da59672a7ef317ffc175e876"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7907c01da59672a7ef317ffc175e876">Top</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ac7907c01da59672a7ef317ffc175e876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the top edge of the collision box.  <br /></td></tr>
+<tr class="memitem:a91e61be53ada67dc96d967e23cd625cc" id="r_a91e61be53ada67dc96d967e23cd625cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91e61be53ada67dc96d967e23cd625cc">Bottom</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a91e61be53ada67dc96d967e23cd625cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the bottom edge of the collision box.  <br /></td></tr>
+<tr class="memitem:af5e4415630f8628f88135052e52c2632" id="r_af5e4415630f8628f88135052e52c2632"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5e4415630f8628f88135052e52c2632">Left</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:af5e4415630f8628f88135052e52c2632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the left edge of the collision box.  <br /></td></tr>
+<tr class="memitem:a59b33d6003771e8d4ba4baf26abf7d4d" id="r_a59b33d6003771e8d4ba4baf26abf7d4d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59b33d6003771e8d4ba4baf26abf7d4d">Right</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a59b33d6003771e8d4ba4baf26abf7d4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the right edge of the collision box.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Pixel adjustments applied to a <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...">Tile</a>'s DrawLocation to produce its collision box. Positive values shrink/expand the collision rect relative to the visual rect. </p>
+<div class="textblock"><p>Pixel adjustments applied to a Tile's DrawLocation to produce its collision box. Positive values shrink/expand the collision rect relative to the visual rect. </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a9afc9593c8a8efb2bb9e95af2669ede2" name="a9afc9593c8a8efb2bb9e95af2669ede2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9afc9593c8a8efb2bb9e95af2669ede2">&#9670;&#160;</a></span>CollisionDetectionAdjustment()</h2>
+<a id="a712765017228b504dc11a2f52c5e9ffe" name="a712765017228b504dc11a2f52c5e9ffe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a712765017228b504dc11a2f52c5e9ffe">&#9670;&#160;</a></span>CollisionDetectionAdjustment()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Gondwana.Drawing.Collisions.CollisionDetectionAdjustment.CollisionDetectionAdjustment </td>
+          <td class="memname">Gondwana.Collisions.CollisionDetectionAdjustment.CollisionDetectionAdjustment </td>
           <td>(</td>
           <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>top</em></span>, </td>
         </tr>
@@ -145,11 +151,22 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html" title="Pixel adjustments applied to a Tile&#39;s DrawLocation to produce its collision box. Positive values shri...">CollisionDetectionAdjustment</a> struct with the specified edge adjustments. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">top</td><td>The pixel adjustment for the top edge.</td></tr>
+    <tr><td class="paramname">bottom</td><td>The pixel adjustment for the bottom edge.</td></tr>
+    <tr><td class="paramname">left</td><td>The pixel adjustment for the left edge.</td></tr>
+    <tr><td class="paramname">right</td><td>The pixel adjustment for the right edge.</td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="ab196608379ea731a90a0eddbf4a314cc" name="ab196608379ea731a90a0eddbf4a314cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab196608379ea731a90a0eddbf4a314cc">&#9670;&#160;</a></span>None</h2>
+<a id="a816512645fecf510897fc907857950ea" name="a816512645fecf510897fc907857950ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a816512645fecf510897fc907857950ea">&#9670;&#160;</a></span>None</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -158,7 +175,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">readonly <a class="el" href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a> Gondwana.Drawing.Collisions.CollisionDetectionAdjustment.None = new()</td>
+          <td class="memname">readonly <a class="el" href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a> Gondwana.Collisions.CollisionDetectionAdjustment.None = new()</td>
         </tr>
       </table>
   </td>
@@ -168,11 +185,13 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Represents a collision detection adjustment with no pixel offsets (all values are zero). </p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
-<a id="a76a421949d4233f6f3d70662fc3d0863" name="a76a421949d4233f6f3d70662fc3d0863"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76a421949d4233f6f3d70662fc3d0863">&#9670;&#160;</a></span>Bottom</h2>
+<a id="a91e61be53ada67dc96d967e23cd625cc" name="a91e61be53ada67dc96d967e23cd625cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91e61be53ada67dc96d967e23cd625cc">&#9670;&#160;</a></span>Bottom</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -181,7 +200,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Gondwana.Drawing.Collisions.CollisionDetectionAdjustment.Bottom</td>
+          <td class="memname">int Gondwana.Collisions.CollisionDetectionAdjustment.Bottom</td>
         </tr>
       </table>
   </td>
@@ -191,10 +210,12 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the pixel adjustment applied to the bottom edge of the collision box. </p>
+
 </div>
 </div>
-<a id="a176a61c1aedac89073cf98e99234e2f5" name="a176a61c1aedac89073cf98e99234e2f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a176a61c1aedac89073cf98e99234e2f5">&#9670;&#160;</a></span>Left</h2>
+<a id="af5e4415630f8628f88135052e52c2632" name="af5e4415630f8628f88135052e52c2632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5e4415630f8628f88135052e52c2632">&#9670;&#160;</a></span>Left</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -203,7 +224,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Gondwana.Drawing.Collisions.CollisionDetectionAdjustment.Left</td>
+          <td class="memname">int Gondwana.Collisions.CollisionDetectionAdjustment.Left</td>
         </tr>
       </table>
   </td>
@@ -213,10 +234,12 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the pixel adjustment applied to the left edge of the collision box. </p>
+
 </div>
 </div>
-<a id="a73ad6fa9f93ee8a74708076886ef603f" name="a73ad6fa9f93ee8a74708076886ef603f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73ad6fa9f93ee8a74708076886ef603f">&#9670;&#160;</a></span>Right</h2>
+<a id="a59b33d6003771e8d4ba4baf26abf7d4d" name="a59b33d6003771e8d4ba4baf26abf7d4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b33d6003771e8d4ba4baf26abf7d4d">&#9670;&#160;</a></span>Right</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -225,7 +248,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Gondwana.Drawing.Collisions.CollisionDetectionAdjustment.Right</td>
+          <td class="memname">int Gondwana.Collisions.CollisionDetectionAdjustment.Right</td>
         </tr>
       </table>
   </td>
@@ -235,10 +258,12 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the pixel adjustment applied to the right edge of the collision box. </p>
+
 </div>
 </div>
-<a id="aa77fb207ef952263c1c7b388d9b1c2a0" name="aa77fb207ef952263c1c7b388d9b1c2a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa77fb207ef952263c1c7b388d9b1c2a0">&#9670;&#160;</a></span>Top</h2>
+<a id="ac7907c01da59672a7ef317ffc175e876" name="ac7907c01da59672a7ef317ffc175e876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7907c01da59672a7ef317ffc175e876">&#9670;&#160;</a></span>Top</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -247,7 +272,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Gondwana.Drawing.Collisions.CollisionDetectionAdjustment.Top</td>
+          <td class="memname">int Gondwana.Collisions.CollisionDetectionAdjustment.Top</td>
         </tr>
       </table>
   </td>
@@ -256,6 +281,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the pixel adjustment applied to the top edge of the collision box. </p>
 
 </div>
 </div>
@@ -272,7 +299,7 @@ Properties</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="namespace_gondwana.html">Gondwana</a></li><li class="navelem"><a href="namespace_gondwana_1_1_drawing.html">Drawing</a></li><li class="navelem"><a href="namespace_gondwana_1_1_drawing_1_1_collisions.html">Collisions</a></li><li class="navelem"><a href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a></li>
+    <li class="navelem"><a href="namespace_gondwana.html">Gondwana</a></li><li class="navelem"><a href="namespace_gondwana_1_1_collisions.html">Collisions</a></li><li class="navelem"><a href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
   </ul>
 </div>

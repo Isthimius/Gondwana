@@ -27,11 +27,11 @@ var searchData=
   ['originpx_24',['OriginPx',['../class_gondwana_1_1_scenes_1_1_scene_layer.html#a21f256bf1956f7cbf867049dee1d182f',1,'Gondwana::Scenes::SceneLayer']]],
   ['originpxchanged_25',['OriginPxChanged',['../class_gondwana_1_1_scenes_1_1_scene_layer.html#ae96fb0646d612dfd7732a37e2b1e8dd0',1,'Gondwana::Scenes::SceneLayer']]],
   ['orthogonal_26',['Orthogonal',['../namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3a7b2e80981e360c8634aef96cbcb62e57',1,'Gondwana::Drawing::Coordinates']]],
-  ['other_27',['Other',['../struct_gondwana_1_1_collision_1_1_collision_result.html#a05ab13fdf741892b67a2ec91f0aa3686',1,'Gondwana::Collision::CollisionResult']]],
+  ['other_27',['Other',['../struct_gondwana_1_1_collisions_1_1_collision_result.html#adb72ba927780f983706b4701ee4d3bc2',1,'Gondwana::Collisions::CollisionResult']]],
   ['outlineenabled_28',['OutlineEnabled',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aaa9cdf867e4935510b1084463f104ba2',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['outlinepointsworld_29',['OutlinePointsWorld',['../class_gondwana_1_1_drawing_1_1_tile.html#a56ea85f53ad251db7f223588a341773a',1,'Gondwana::Drawing::Tile']]],
   ['outside_30',['Outside',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#a539cd00ff56cd777ffea4ab41303bc1ea76fbf0ccd7fcd64879c2ff2119dc15a4',1,'Gondwana::Drawing::Direct::DirectRectangle']]],
   ['overhang_31',['Overhang',['../namespace_gondwana_1_1_drawing.html#a6fce70584993e761e53ab83006f77912',1,'Gondwana::Drawing']]],
   ['overhangpixels_32',['OverhangPixels',['../struct_gondwana_1_1_drawing_1_1_frame.html#a9c2ed2e18f4848fdd0c3e28454d69277',1,'Gondwana.Drawing.Frame.OverhangPixels'],['../class_gondwana_1_1_drawing_1_1_tile.html#a06b3bff9f658e13237a591b2d8ec1a69',1,'Gondwana.Drawing.Tile.OverhangPixels'],['../class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html#a090f3d18fd676e5dcd7608c404b9f41d',1,'Gondwana.Drawing.Tilesheets.Tilesheet.OverhangPixels']]],
-  ['owner_33',['Owner',['../interface_gondwana_1_1_collision_1_1_i_collider.html#a8446e3e3a1e265965b15188ef71e2a0b',1,'Gondwana.Collision.ICollider.Owner'],['../class_gondwana_1_1_collision_1_1_tile_collider.html#a584b8946a9146a38ae7ef64e5eb81416',1,'Gondwana.Collision.TileCollider.Owner']]]
+  ['owner_33',['Owner',['../interface_gondwana_1_1_collisions_1_1_i_collider.html#a41eae72a171b3b4d2c46dfc696f01a1d',1,'Gondwana.Collisions.ICollider.Owner'],['../class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider.html#a86d32ba662e2955a63a2a3fd085907dd',1,'Gondwana.Drawing.Collisions.TileCollider.Owner']]]
 ];

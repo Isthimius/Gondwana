@@ -8,6 +8,8 @@ var class_gondwana_1_1_rendering_1_1_views_1_1_view =
     [ "ZoomAroundScreenPoint", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html#af71865959fe62e046f3d168c73be2292", null ],
     [ "Camera", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html#adb522fe29de7d75154d5ab1065ee07cd", null ],
     [ "Id", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html#ab5aa81ac0627aab8fea9d74a554751ea", null ],
+    [ "MaxZoom", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html#a10796ee097b5883682f041f090a32fd7", null ],
+    [ "MinZoom", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html#a86d326b72634dd9f9755ad969edd388f", null ],
     [ "Viewport", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html#ae5ae082bf07d3d41b2934881b097a9e0", null ],
     [ "ZOrder", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html#ac1362dc270142153bf4d756de846ed62", null ]
 ];

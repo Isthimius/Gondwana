@@ -15,12 +15,15 @@ var annotated_dup =
         [ "AudioResourceManager", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html", "class_gondwana_1_1_audio_1_1_audio_resource_manager" ],
         [ "StereoPanSampleProvider", "class_gondwana_1_1_audio_1_1_stereo_pan_sample_provider.html", "class_gondwana_1_1_audio_1_1_stereo_pan_sample_provider" ]
       ] ],
-      [ "Collision", "namespace_gondwana_1_1_collision.html", [
-        [ "Aabb", "struct_gondwana_1_1_collision_1_1_aabb.html", "struct_gondwana_1_1_collision_1_1_aabb" ],
-        [ "CollisionResult", "struct_gondwana_1_1_collision_1_1_collision_result.html", "struct_gondwana_1_1_collision_1_1_collision_result" ],
-        [ "CollisionWorld", "class_gondwana_1_1_collision_1_1_collision_world.html", "class_gondwana_1_1_collision_1_1_collision_world" ],
-        [ "ICollider", "interface_gondwana_1_1_collision_1_1_i_collider.html", "interface_gondwana_1_1_collision_1_1_i_collider" ],
-        [ "TileCollider", "class_gondwana_1_1_collision_1_1_tile_collider.html", "class_gondwana_1_1_collision_1_1_tile_collider" ]
+      [ "Collisions", "namespace_gondwana_1_1_collisions.html", [
+        [ "Aabb", "struct_gondwana_1_1_collisions_1_1_aabb.html", "struct_gondwana_1_1_collisions_1_1_aabb" ],
+        [ "ColliderRegistry", "class_gondwana_1_1_collisions_1_1_collider_registry.html", "class_gondwana_1_1_collisions_1_1_collider_registry" ],
+        [ "CollisionDetectionAdjustment", "struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html", "struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment" ],
+        [ "CollisionGroupRegistry", "class_gondwana_1_1_collisions_1_1_collision_group_registry.html", "class_gondwana_1_1_collisions_1_1_collision_group_registry" ],
+        [ "CollisionResult", "struct_gondwana_1_1_collisions_1_1_collision_result.html", "struct_gondwana_1_1_collisions_1_1_collision_result" ],
+        [ "ICollider", "interface_gondwana_1_1_collisions_1_1_i_collider.html", "interface_gondwana_1_1_collisions_1_1_i_collider" ],
+        [ "ICollisionEntity", "interface_gondwana_1_1_collisions_1_1_i_collision_entity.html", "interface_gondwana_1_1_collisions_1_1_i_collision_entity" ],
+        [ "ICollisionMovableEntity", "interface_gondwana_1_1_collisions_1_1_i_collision_movable_entity.html", "interface_gondwana_1_1_collisions_1_1_i_collision_movable_entity" ]
       ] ],
       [ "Configuration", "namespace_gondwana_1_1_configuration.html", [
         [ "EngineConfiguration", "class_gondwana_1_1_configuration_1_1_engine_configuration.html", "class_gondwana_1_1_configuration_1_1_engine_configuration" ],
@@ -34,7 +37,7 @@ var annotated_dup =
           [ "FrameSequence", "struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html", "struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence" ]
         ] ],
         [ "Collisions", "namespace_gondwana_1_1_drawing_1_1_collisions.html", [
-          [ "CollisionDetectionAdjustment", "struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html", "struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment" ]
+          [ "TileCollider", "class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider.html", "class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider" ]
         ] ],
         [ "Direct", "namespace_gondwana_1_1_drawing_1_1_direct.html", [
           [ "Particles", "namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html", [

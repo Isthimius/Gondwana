@@ -1,12 +1,12 @@
 var hierarchy =
 [
-    [ "Gondwana.Collision.Aabb", "struct_gondwana_1_1_collision_1_1_aabb.html", null ],
+    [ "Gondwana.Collisions.Aabb", "struct_gondwana_1_1_collisions_1_1_aabb.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "class_gondwana_1_1_assets_1_1_assets_file_identifier.html", null ],
     [ "Gondwana.Rendering.Views.Camera", "class_gondwana_1_1_rendering_1_1_views_1_1_camera.html", null ],
-    [ "Gondwana.Drawing.Collisions.CollisionDetectionAdjustment", "struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html", null ],
-    [ "Gondwana.Collision.CollisionResult", "struct_gondwana_1_1_collision_1_1_collision_result.html", null ],
-    [ "Gondwana.Collision.CollisionWorld", "class_gondwana_1_1_collision_1_1_collision_world.html", null ],
-    [ "Gondwana.Drawing.Sprites.CompositeSprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html", null ],
+    [ "Gondwana.Collisions.ColliderRegistry", "class_gondwana_1_1_collisions_1_1_collider_registry.html", null ],
+    [ "Gondwana.Collisions.CollisionDetectionAdjustment", "struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html", null ],
+    [ "Gondwana.Collisions.CollisionGroupRegistry", "class_gondwana_1_1_collisions_1_1_collision_group_registry.html", null ],
+    [ "Gondwana.Collisions.CollisionResult", "struct_gondwana_1_1_collisions_1_1_collision_result.html", null ],
     [ "Gondwana.Drawing.Direct.DirectDrawingManager", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html", null ],
     [ "Gondwana.Configuration.EngineConfiguration", "class_gondwana_1_1_configuration_1_1_engine_configuration.html", null ],
     [ "Gondwana.EngineState", "class_gondwana_1_1_engine_state.html", null ],
@@ -30,8 +30,17 @@ var hierarchy =
       [ "Gondwana.Drawing.Animation.Cycle", "class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html", null ],
       [ "Gondwana.TypedValueBag", "class_gondwana_1_1_typed_value_bag.html", null ]
     ] ],
-    [ "Gondwana.Collision.ICollider", "interface_gondwana_1_1_collision_1_1_i_collider.html", [
-      [ "Gondwana.Collision.TileCollider", "class_gondwana_1_1_collision_1_1_tile_collider.html", null ]
+    [ "Gondwana.Collisions.ICollider", "interface_gondwana_1_1_collisions_1_1_i_collider.html", [
+      [ "Gondwana.Drawing.Collisions.TileCollider", "class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider.html", null ]
+    ] ],
+    [ "Gondwana.Collisions.ICollisionEntity", "interface_gondwana_1_1_collisions_1_1_i_collision_entity.html", [
+      [ "Gondwana.Collisions.ICollisionMovableEntity", "interface_gondwana_1_1_collisions_1_1_i_collision_movable_entity.html", [
+        [ "Gondwana.Drawing.Sprites.Sprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html", null ]
+      ] ],
+      [ "Gondwana.Drawing.Tile", "class_gondwana_1_1_drawing_1_1_tile.html", [
+        [ "Gondwana.Drawing.Sprites.Sprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html", null ],
+        [ "Gondwana.Scenes.SceneLayerTile", "class_gondwana_1_1_scenes_1_1_scene_layer_tile.html", null ]
+      ] ]
     ] ],
     [ "IComparable", null, [
       [ "Gondwana.Drawing.Direct.DirectDrawingBase", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html", [
@@ -43,10 +52,7 @@ var hierarchy =
         ] ],
         [ "Gondwana.Drawing.Direct.DirectVideo", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html", null ]
       ] ],
-      [ "Gondwana.Drawing.Tile", "class_gondwana_1_1_drawing_1_1_tile.html", [
-        [ "Gondwana.Drawing.Sprites.Sprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html", null ],
-        [ "Gondwana.Scenes.SceneLayerTile", "class_gondwana_1_1_scenes_1_1_scene_layer_tile.html", null ]
-      ] ]
+      [ "Gondwana.Drawing.Tile", "class_gondwana_1_1_drawing_1_1_tile.html", null ]
     ] ],
     [ "IDisposable", null, [
       [ "Gondwana.Assets.AssetsFile", "class_gondwana_1_1_assets_1_1_assets_file.html", null ],
@@ -116,7 +122,9 @@ var hierarchy =
     [ "Gondwana.Movement.IMovable", "interface_gondwana_1_1_movement_1_1_i_movable.html", [
       [ "Gondwana.Drawing.Direct.DirectComposite", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html", null ],
       [ "Gondwana.Drawing.Direct.DirectDrawingMovableBase", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html", null ],
-      [ "Gondwana.Movement.IMovableOnSceneLayer", "interface_gondwana_1_1_movement_1_1_i_movable_on_scene_layer.html", null ]
+      [ "Gondwana.Movement.IMovableOnSceneLayer", "interface_gondwana_1_1_movement_1_1_i_movable_on_scene_layer.html", [
+        [ "Gondwana.Drawing.Sprites.CompositeSprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html", null ]
+      ] ]
     ] ],
     [ "IMovableOnSceneLayer", null, [
       [ "Gondwana.Drawing.Sprites.Sprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html", null ]

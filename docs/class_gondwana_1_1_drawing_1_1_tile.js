@@ -10,6 +10,7 @@ var class_gondwana_1_1_drawing_1_1_tile =
     [ "AdjustCollisionArea", "class_gondwana_1_1_drawing_1_1_tile.html#ac8f79979d79887bc43b245de84e9a052", null ],
     [ "Collider", "class_gondwana_1_1_drawing_1_1_tile.html#a50bde19a832324893f058b03e14cf7f3", null ],
     [ "CollisionArea", "class_gondwana_1_1_drawing_1_1_tile.html#a39985eb5adff013e78446f18336963e9", null ],
+    [ "CollisionsEnabled", "class_gondwana_1_1_drawing_1_1_tile.html#a04aecd48929540170b3fbe43cb5e06f8", null ],
     [ "CurrentFrame", "class_gondwana_1_1_drawing_1_1_tile.html#a1a7a5eb292031f6d4c23291f31c9aa93", null ],
     [ "DrawLocationWorld", "class_gondwana_1_1_drawing_1_1_tile.html#aa018700bb26077b44c54a8c0e5f18aaa", null ],
     [ "EnableFog", "class_gondwana_1_1_drawing_1_1_tile.html#a0862275089f09bfb25738641365856f6", null ],

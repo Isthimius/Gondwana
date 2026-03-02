@@ -114,7 +114,9 @@ Inheritance diagram for Gondwana.Drawing.Direct.Particles.ParticleSurface:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a3014d74e9496c42565d7a977ef6a9d90" id="r_a3014d74e9496c42565d7a977ef6a9d90"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3014d74e9496c42565d7a977ef6a9d90">ParticleSurface</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a> sceneLayer, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>? worldBounds, string? nickname=null, int maxParticles=2000, SKBitmap? particleSprite=null)</td></tr>
+<tr class="memdesc:a3014d74e9496c42565d7a977ef6a9d90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a> class for scene layer rendering with world-space coordinate bounds.  <br /></td></tr>
 <tr class="memitem:a107de8a9168c91d203b3de67f4d34c43" id="r_a107de8a9168c91d203b3de67f4d34c43"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a107de8a9168c91d203b3de67f4d34c43">ParticleSurface</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_host_base.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view, <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>? screenBounds, string? nickname=null, int maxParticles=2000, SKBitmap? particleSprite=null)</td></tr>
+<tr class="memdesc:a107de8a9168c91d203b3de67f4d34c43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a> class for view-based rendering with screen-space coordinate bounds.  <br /></td></tr>
 <tr class="memitem:a47d4eed4bc338e884bacd36843cad999" id="r_a47d4eed4bc338e884bacd36843cad999"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47d4eed4bc338e884bacd36843cad999">Burst</a> (<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html">ParticleEmitter</a> emitter, int count)</td></tr>
 <tr class="memdesc:a47d4eed4bc338e884bacd36843cad999"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immediately spawns a fixed number of particles from the given emitter. Useful for explosions, impacts, or click/tap feedback.  <br /></td></tr>
 <tr class="memitem:a00256efd1a1f3ba03842fe5fff21ca19" id="r_a00256efd1a1f3ba03842fe5fff21ca19"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00256efd1a1f3ba03842fe5fff21ca19">Update</a> (long tick)</td></tr>
@@ -162,7 +164,7 @@ Public Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a20056eedc80de1146bb183ce93af0179" id="r_a20056eedc80de1146bb183ce93af0179"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20056eedc80de1146bb183ce93af0179">Dispose</a> (bool disposing)</td></tr>
-<tr class="memdesc:a20056eedc80de1146bb183ce93af0179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance.  <br /></td></tr>
+<tr class="memdesc:a20056eedc80de1146bb183ce93af0179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the particle array back to the pool and disposes managed resources.  <br /></td></tr>
 <tr class="memitem:af8536f304f371a596db90b8532fc9fdc" id="r_af8536f304f371a596db90b8532fc9fdc"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8536f304f371a596db90b8532fc9fdc">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
 <tr class="memdesc:af8536f304f371a596db90b8532fc9fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders all live particles to the current backbuffer.  <br /></td></tr>
 <tr class="inherit_header pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a></td></tr>
@@ -181,7 +183,7 @@ Properties</h2></td></tr>
 <tr class="memitem:a85f67929b08a959d9d39b1fafcc68cf4" id="r_a85f67929b08a959d9d39b1fafcc68cf4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a85f67929b08a959d9d39b1fafcc68cf4">GlobalEmitScale</a> = 1f<code> [get, set]</code></td></tr>
 <tr class="memdesc:a85f67929b08a959d9d39b1fafcc68cf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global multiplier applied to all emitter <code>EmitRate</code> values in this particle system. Acts like a master volume knob for particle density.  <br /></td></tr>
 <tr class="memitem:a74becb34ff39d124023c7253c35da6f3" id="r_a74becb34ff39d124023c7253c35da6f3"><td class="memItemLeft" align="right" valign="top">SKColor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74becb34ff39d124023c7253c35da6f3">GlobalColorTint</a> = SKColors.White<code> [get, set]</code></td></tr>
-<tr class="memdesc:a74becb34ff39d124023c7253c35da6f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global tint color multiplied against every particle’s own color during rendering.  <br /></td></tr>
+<tr class="memdesc:a74becb34ff39d124023c7253c35da6f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global tint color multiplied against every particle's own color during rendering.  <br /></td></tr>
 <tr class="memitem:a902e6b3d20c47de94948c1e7718346ed" id="r_a902e6b3d20c47de94948c1e7718346ed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a902e6b3d20c47de94948c1e7718346ed">GravityX</a> = 0f<code> [get, set]</code></td></tr>
 <tr class="memdesc:a902e6b3d20c47de94948c1e7718346ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the horizontal component of gravity, measured in pixels per second squared. Default is 0 (no horizontal gravity).  <br /></td></tr>
 <tr class="memitem:a097410af3acfe301f3a15d5e4f3d2f04" id="r_a097410af3acfe301f3a15d5e4f3d2f04"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a097410af3acfe301f3a15d5e4f3d2f04">GravityY</a> = 400f<code> [get, set]</code></td></tr>
@@ -271,7 +273,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a>. </p>
 <p>The particle system maintains a pool of particles that are updated and rendered each frame. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html">Particles</a> have a position, velocity, life span, size, and color. The system uses <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a> to draw either simple circles or textured sprites. </p>
 <p>Emission is controlled through one or more <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html" title="Configures how particles are spawned over time at a given location.">ParticleEmitter</a> instances. Each emitter defines its own position, rate, life range, velocity ranges, size range, and base color. This allows you to layer effects (e.g., smoke plus sparks) within a single particle system. </p>
-<p>Internally, the particle pool is compacted each update to avoid GC churn. <a class="el" href="namespace_gondwana_1_1_rendering.html">Rendering</a> uses Skia’s SKBlendMode.Plus for additive blending, making it suitable for “glowy” effects such as fire, sparks, and magical auras. </p>
+<p>Internally, the particle pool is compacted each update to avoid GC churn. <a class="el" href="namespace_gondwana_1_1_rendering.html">Rendering</a> uses Skia's SKBlendMode.Plus for additive blending, making it suitable for "glowy" effects such as fire, sparks, and magical auras. </p>
 <p>The following demonstrates how to create a particle system with two emitters:</p>
 <div class="fragment"><div class="line"><span class="comment">// Create a particle system covering the whole viewport</span></div>
 <div class="line">var particles = <span class="keyword">new</span> DirectParticles(renderHost,</div>
@@ -305,7 +307,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line">particles.Emitters.Add(sparks);</div>
 <div class="line">particles.Emitters.Add(smoke);</div>
 <div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html"><div class="ttname"><a href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html">Gondwana.Drawing.Direct.Particles.ParticleEmitter</a></div><div class="ttdoc">Configures how particles are spawned over time at a given location.</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:93</div></div>
-<div class="ttc" id="anamespace_gondwana_1_1_drawing_1_1_direct_1_1_particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdef"><b>Definition</b> ParticleSpawnDistribution.cs:5</div></div>
+<div class="ttc" id="anamespace_gondwana_1_1_drawing_1_1_direct_1_1_particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdoc">Particles are spawned uniformly within a rectangular area. This is the default distribution.</div><div class="ttdef"><b>Definition</b> ParticleSpawnDistribution.cs:11</div></div>
 </div><!-- fragment --> </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a3014d74e9496c42565d7a977ef6a9d90" name="a3014d74e9496c42565d7a977ef6a9d90"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3014d74e9496c42565d7a977ef6a9d90">&#9670;&#160;</a></span>ParticleSurface() <span class="overload">[1/2]</span></h2>
@@ -345,6 +347,19 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a> class for scene layer rendering with world-space coordinate bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host managing this particle system.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer to render particles on.</td></tr>
+    <tr><td class="paramname">worldBounds</td><td>The world-space bounds for the particle system, or <code>null</code> for unbounded.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional friendly name for debugging and identification.</td></tr>
+    <tr><td class="paramname">maxParticles</td><td>The maximum number of particles this system can manage simultaneously. Default is 2000.</td></tr>
+    <tr><td class="paramname">particleSprite</td><td>An optional bitmap texture to use for particles instead of circles.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -386,6 +401,19 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a> class for view-based rendering with screen-space coordinate bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host managing this particle system.</td></tr>
+    <tr><td class="paramname">view</td><td>The view to render particles on.</td></tr>
+    <tr><td class="paramname">screenBounds</td><td>The screen-space bounds for the particle system, or <code>null</code> for unbounded.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional friendly name for debugging and identification.</td></tr>
+    <tr><td class="paramname">maxParticles</td><td>The maximum number of particles this system can manage simultaneously. Default is 2000.</td></tr>
+    <tr><td class="paramname">particleSprite</td><td>An optional bitmap texture to use for particles instead of circles.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -452,22 +480,13 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Releases resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance. </p>
+<p>Releases the particle array back to the pool and disposes managed resources. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">disposing</td><td><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources (called from finalizer). </td></tr>
+    <tr><td class="paramname">disposing</td><td>True if disposing managed resources; false if called from finalizer.</td></tr>
   </table>
   </dd>
 </dl>
-<p>When <em>disposing</em>  is <code>true</code>, this method: </p><ul>
-<li>
-Marks affected regions as dirty by calling ForceRefresh. </li>
-<li>
-Raises the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a911321b64ad973d2ed9d3e9b39f2fc4d" title="Occurs when this direct drawing is being disposed.">Disposing</a> event. </li>
-<li>
-Clears all event handlers to prevent memory leaks. </li>
-</ul>
-<p>Override this method in derived classes to release additional resources. Always call <code>base.Dispose(disposing)</code> to ensure proper cleanup of the base class. </p>
 
 <p>Reimplemented from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ad239dc0e99d67621d35385086d91e98f">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
 
@@ -502,7 +521,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Renders all live particles to the current backbuffer. </p>
 <p>Draws each particle as either a Skia circle or a textured quad (if a sprite is provided). Alpha fades with age. Uses additive blending (SkiaSharp.SKBlendMode.Plus) by default for bright/glowy effects. </p>
-<p>You normally don’t call this directly. Once the system is registered with <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a>, the manager invokes <code>Render()</code> during the host’s render pass. </p>
+<p>Do not call this directly. Once the system is registered with <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a>, the manager invokes <code>Render()</code> during the host's render pass. </p>
 <div class="fragment"><div class="line"><span class="comment">// One-time setup</span></div>
 <div class="line">directDrawingManager.AddOrReplace(particles);</div>
 <div class="line"> </div>
@@ -659,7 +678,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </table>
 </div><div class="memdoc">
 
-<p>Global tint color multiplied against every particle’s own color during rendering. </p>
+<p>Global tint color multiplied against every particle's own color during rendering. </p>
 <p>Useful for quickly recoloring or fading an entire particle system without touching individual emitters. <br  />
  </p>
 <p>Defaults to SKColors.White, which leaves particles unchanged. Setting alpha here provides an additional global fade, stacked with per-particle fading. </p>

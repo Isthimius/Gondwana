@@ -11,7 +11,7 @@ var class_gondwana_1_1_scenes_1_1_scene =
     [ "OnSceneLayerRemoved", "class_gondwana_1_1_scenes_1_1_scene.html#a73cca5146c3aefbf24f2a80daba37f4d", null ],
     [ "RemoveAllLayers", "class_gondwana_1_1_scenes_1_1_scene.html#ac8e6956c491cbbf7a1197f4c378e7d7e", null ],
     [ "RemoveLayer", "class_gondwana_1_1_scenes_1_1_scene.html#ab4a8de3e48467b6a52a08ee886f578af", null ],
-    [ "CollisionWorld", "class_gondwana_1_1_scenes_1_1_scene.html#ae22f66025b186a7bd0966c7292d5a07b", null ],
+    [ "CollisionGroups", "class_gondwana_1_1_scenes_1_1_scene.html#a334bb5644cab120c1a6c02cb89b65bdd", null ],
     [ "Count", "class_gondwana_1_1_scenes_1_1_scene.html#adcdad11fcc98c491f4edc90dbe32a71b", null ],
     [ "CountOfVisibleLayers", "class_gondwana_1_1_scenes_1_1_scene.html#a9860887b89736db85032548e42d20bdd", null ],
     [ "FullRefreshNeeded", "class_gondwana_1_1_scenes_1_1_scene.html#a4028379dbb7e8c28a6babd9f878044d2", null ],

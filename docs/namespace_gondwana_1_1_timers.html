@@ -153,7 +153,7 @@ Enumerations</h2></td></tr>
 <p>The engine's cycle is divided into two main phases: background tasks (which include input polling, animation updates, and movement processing) and foreground tasks (which include rendering and presentation). <a class="el" href="namespace_gondwana_1_1_timers.html">Timers</a> can be configured to execute during either phase. </p>
 <p><a class="el" href="#a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead" title="The timer&#39;s Timer.Tick event is raised during the background task phase, before the engine performs i...">PreCycle</a> timers are raised during the background task phase before any rendering occurs, making them suitable for game logic, state updates, and input processing. <a class="el" href="#a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39" title="The timer&#39;s Timer.Tick event is raised after the foreground rendering and presentation phase complete...">PostCycle</a> timers are raised after the foreground render phase completes, making them suitable for post-render operations, diagnostics, and deferred cleanup tasks. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead" name="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead"></a>PreCycle&#160;</td><td class="fielddoc"><p>The timer's Timer.Tick event is raised during the background task phase, before the engine performs its foreground rendering operations. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead" name="a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead"></a>PreCycle&#160;</td><td class="fielddoc"><p>The timer's Timer.Tick event is raised during the background task phase, before the engine performs its foreground rendering operations. *** NOTE: this event may be raised multiple times per rendered frame, depending on the engine's frame rate. ***. </p>
 <p>PreCycle timers execute during the engine's background task phase, which includes: </p>
 <ul>
 <li>
@@ -163,7 +163,7 @@ Tile animation cycling </li>
 <li>
 Sprite movement processing </li>
 <li>
-<a class="el" href="namespace_gondwana_1_1_collision.html">Collision</a> detection and resolution </li>
+Collision detection and resolution </li>
 <li>
 Camera updates </li>
 </ul>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['e_0',['E',['../namespace_gondwana_1_1_drawing_1_1_collisions.html#af21d1de1578105d78012bd003ce07e59a3a3ea00cfc35332cedf6e5e9a32e94da',1,'Gondwana.Drawing.Collisions.E'],['../namespace_gondwana_1_1_drawing_1_1_coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da',1,'Gondwana.Drawing.Coordinates.E']]],
+  ['e_0',['E',['../namespace_gondwana_1_1_collisions.html#a5a0b3f45dd9c1c22983d001f75845c34a3a3ea00cfc35332cedf6e5e9a32e94da',1,'Gondwana.Collisions.E'],['../namespace_gondwana_1_1_drawing_1_1_coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da',1,'Gondwana.Drawing.Coordinates.E']]],
   ['easeincubic_1',['EaseInCubic',['../namespace_gondwana_1_1_movement_1_1_easing.html#a74018978c1a1f6aa869a55d97d8dc3d3a13f3932381b4de8932a9a30d7aeaa289',1,'Gondwana::Movement::Easing']]],
   ['easeinoutcubic_2',['EaseInOutCubic',['../namespace_gondwana_1_1_movement_1_1_easing.html#a74018978c1a1f6aa869a55d97d8dc3d3a51e1906b67f89bfc0e47c85379fe4eec',1,'Gondwana::Movement::Easing']]],
   ['easeinoutquad_3',['EaseInOutQuad',['../namespace_gondwana_1_1_movement_1_1_easing.html#a74018978c1a1f6aa869a55d97d8dc3d3ad37eb834b1eb836f03c9aafdc55e2e6d',1,'Gondwana::Movement::Easing']]],

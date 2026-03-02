@@ -24,6 +24,6 @@ var searchData=
   ['isrunning_21',['IsRunning',['../class_gondwana_1_1_engine.html#a792f37da86d34e4777fa59a91964ab28',1,'Gondwana::Engine']]],
   ['isscripted_22',['IsScripted',['../class_gondwana_1_1_movement_1_1_movement_controller.html#a319638d422096928d3c09adff26c7dbe',1,'Gondwana::Movement::MovementController']]],
   ['isshift_23',['IsShift',['../class_gondwana_1_1_input_1_1_keyboard_1_1_key_down_event_args.html#a788bd9c4da3fab30c0062ea098a54ade',1,'Gondwana.Input.Keyboard.KeyDownEventArgs.IsShift'],['../class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html#ac3457f362b2449ab8e6e54bd17aec962',1,'Gondwana.Input.Mouse.MouseEventArgs.IsShift']]],
-  ['isstatic_24',['IsStatic',['../interface_gondwana_1_1_collision_1_1_i_collider.html#a2e2ea944d2c35478afe3878456abca5c',1,'Gondwana.Collision.ICollider.IsStatic'],['../class_gondwana_1_1_collision_1_1_tile_collider.html#a4565d59d2d3936441d9497ffde6573d8',1,'Gondwana.Collision.TileCollider.IsStatic']]],
+  ['isstatic_24',['IsStatic',['../interface_gondwana_1_1_collisions_1_1_i_collider.html#a30998c64a8fff9bf88c6460d95688f5f',1,'Gondwana.Collisions.ICollider.IsStatic'],['../class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider.html#ae3f72294863f24201d04db3de2af6f31',1,'Gondwana.Drawing.Collisions.TileCollider.IsStatic']]],
   ['isvalid_25',['IsValid',['../class_gondwana_1_1_assets_1_1_assets_file_identifier.html#a136a7eb153d2b486bd5125d9a25a3a3a',1,'Gondwana::Assets::AssetsFileIdentifier']]]
 ];

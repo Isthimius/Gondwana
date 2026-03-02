@@ -137,10 +137,10 @@ Properties</h2></td></tr>
 <tr class="memdesc:ab63fda32793770266928c379c1088ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the z-order (rendering depth) of this layer within its parent scene.  <br /></td></tr>
 <tr class="memitem:aad14b4f45fe0f24046eac8eb648e60dc" id="r_aad14b4f45fe0f24046eac8eb648e60dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad14b4f45fe0f24046eac8eb648e60dc">Parallax</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:aad14b4f45fe0f24046eac8eb648e60dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the parallax scrolling factor for this layer.  <br /></td></tr>
-<tr class="memitem:a0ce8b6216ce767e416bdc8c9477bde12" id="r_a0ce8b6216ce767e416bdc8c9477bde12"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ce8b6216ce767e416bdc8c9477bde12">SceneLayerTileHeight</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a0ce8b6216ce767e416bdc8c9477bde12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the height of each tile in this layer, measured in pixels.  <br /></td></tr>
-<tr class="memitem:ac244cb1a5160eb0727c654334f6c8b39" id="r_ac244cb1a5160eb0727c654334f6c8b39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac244cb1a5160eb0727c654334f6c8b39">SceneLayerTileWidth</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:ac244cb1a5160eb0727c654334f6c8b39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the width of each tile in this layer, measured in pixels.  <br /></td></tr>
+<tr class="memitem:a69e78c0da41b8b9f48092fcac16a0959" id="r_a69e78c0da41b8b9f48092fcac16a0959"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69e78c0da41b8b9f48092fcac16a0959">TileHeight</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a69e78c0da41b8b9f48092fcac16a0959"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the height of each tile in this layer, measured in pixels.  <br /></td></tr>
+<tr class="memitem:ac678abad69fa8586f5fd16e1b9da3862" id="r_ac678abad69fa8586f5fd16e1b9da3862"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac678abad69fa8586f5fd16e1b9da3862">TileWidth</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ac678abad69fa8586f5fd16e1b9da3862"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the width of each tile in this layer, measured in pixels.  <br /></td></tr>
 <tr class="memitem:a1254da822e4e5e20e4960acd1e70be12" id="r_a1254da822e4e5e20e4960acd1e70be12"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1254da822e4e5e20e4960acd1e70be12">Visible</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a1254da822e4e5e20e4960acd1e70be12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this layer should be rendered.  <br /></td></tr>
 <tr class="memitem:a1900bf4ad91ac3508050f7654400a28b" id="r_a1900bf4ad91ac3508050f7654400a28b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>[,]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1900bf4ad91ac3508050f7654400a28b">SceneLayerTileArray</a><code> [get]</code></td></tr>
@@ -159,6 +159,10 @@ Properties</h2></td></tr>
 <tr class="memdesc:ac68c60907a67666307c7720012e08c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugging.  <br /></td></tr>
 <tr class="memitem:a21f256bf1956f7cbf867049dee1d182f" id="r_a21f256bf1956f7cbf867049dee1d182f"><td class="memItemLeft" align="right" valign="top">Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21f256bf1956f7cbf867049dee1d182f">OriginPx</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a21f256bf1956f7cbf867049dee1d182f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the world-space pixel origin of this layer's (0,0) tile position.  <br /></td></tr>
+<tr class="memitem:a57de1732566a17fe38238c4ddd6b526c" id="r_a57de1732566a17fe38238c4ddd6b526c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_collisions_1_1_collider_registry.html">ColliderRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57de1732566a17fe38238c4ddd6b526c">ColliderRegistry</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a57de1732566a17fe38238c4ddd6b526c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collision world associated with this scene, used for physics and collision detection.  <br /></td></tr>
+<tr class="memitem:a0f2fa3a90cd18f0a4b8fa9c95b95e755" id="r_a0f2fa3a90cd18f0a4b8fa9c95b95e755"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_collisions_1_1_collision_group_registry.html">CollisionGroupRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f2fa3a90cd18f0a4b8fa9c95b95e755">CollisionGroups</a><code> [get]</code></td></tr>
+<tr class="memdesc:a0f2fa3a90cd18f0a4b8fa9c95b95e755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the registry of collision groups used to organize and manage collision detection within the scene.  <br /></td></tr>
 <tr class="memitem:a006600f06d81e49e4536ea25b301dfcb" id="r_a006600f06d81e49e4536ea25b301dfcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a006600f06d81e49e4536ea25b301dfcb">this[int x, int y]</a><code> [get]</code></td></tr>
 <tr class="memdesc:a006600f06d81e49e4536ea25b301dfcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile at the specified grid coordinates.  <br /></td></tr>
 <tr class="memitem:ac33f0277b098c23150da638a5172e585" id="r_ac33f0277b098c23150da638a5172e585"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac33f0277b098c23150da638a5172e585">this[Point pt]</a><code> [get]</code></td></tr>
@@ -350,7 +354,7 @@ Clearing all event subscriptions </li>
   </table>
   </dd>
 </dl>
-<p>This method is preferred over setting <a class="el" href="#ac244cb1a5160eb0727c654334f6c8b39" title="Gets or sets the width of each tile in this layer, measured in pixels.">SceneLayerTileWidth</a> and <a class="el" href="#a0ce8b6216ce767e416bdc8c9477bde12" title="Gets or sets the height of each tile in this layer, measured in pixels.">SceneLayerTileHeight</a> separately, as it avoids triggering two change events and two scene refreshes. </p>
+<p>This method is preferred over setting <a class="el" href="#ac678abad69fa8586f5fd16e1b9da3862" title="Gets or sets the width of each tile in this layer, measured in pixels.">TileWidth</a> and <a class="el" href="#a69e78c0da41b8b9f48092fcac16a0959" title="Gets or sets the height of each tile in this layer, measured in pixels.">TileHeight</a> separately, as it avoids triggering two change events and two scene refreshes. </p>
 <p>The method raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event after updating both dimensions. </p>
 
 </div>
@@ -394,6 +398,57 @@ Clearing all event subscriptions </li>
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a id="a57de1732566a17fe38238c4ddd6b526c" name="a57de1732566a17fe38238c4ddd6b526c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57de1732566a17fe38238c4ddd6b526c">&#9670;&#160;</a></span>ColliderRegistry</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_collisions_1_1_collider_registry.html">ColliderRegistry</a> Gondwana.Scenes.SceneLayer.ColliderRegistry = new()</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the collision world associated with this scene, used for physics and collision detection. </p>
+<p>A <a class="el" href="#a57de1732566a17fe38238c4ddd6b526c" title="Gets the collision world associated with this scene, used for physics and collision detection.">ColliderRegistry</a> instance managing collision data for this scene.</p>
+<p>The collision world maintains collision geometry, spatial partitioning structures, and collision detection state for all collidable entities within the scene. It is automatically created when the scene is initialized and is used by the engine's collision resolution system. </p>
+
+</div>
+</div>
+<a id="a0f2fa3a90cd18f0a4b8fa9c95b95e755" name="a0f2fa3a90cd18f0a4b8fa9c95b95e755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f2fa3a90cd18f0a4b8fa9c95b95e755">&#9670;&#160;</a></span>CollisionGroups</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_collisions_1_1_collision_group_registry.html">CollisionGroupRegistry</a> Gondwana.Scenes.SceneLayer.CollisionGroups</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the registry of collision groups used to organize and manage collision detection within the scene. </p>
+<p>Use this property to access the collection of collision groups for efficient grouping and handling of collision logic. The registry is initialized automatically and provides methods for adding, removing, and querying collision groups as needed. This is a shim that points to the same property on the parent <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a>.</p>
+
+</div>
+</div>
 <a id="a3bc95f18b0758b5dc81a82c4f9f6683d" name="a3bc95f18b0758b5dc81a82c4f9f6683d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3bc95f18b0758b5dc81a82c4f9f6683d">&#9670;&#160;</a></span>CoordinateSystemType</h2>
 
@@ -665,60 +720,6 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 
 </div>
 </div>
-<a id="a0ce8b6216ce767e416bdc8c9477bde12" name="a0ce8b6216ce767e416bdc8c9477bde12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ce8b6216ce767e416bdc8c9477bde12">&#9670;&#160;</a></span>SceneLayerTileHeight</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Gondwana.Scenes.SceneLayer.SceneLayerTileHeight</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets or sets the height of each tile in this layer, measured in pixels. </p>
-<p>The tile height in pixels. Default is typically 32.</p>
-<p>This property defines the rendered height of tiles in this layer. Changes to tile height affect how tiles are positioned and rendered within the layer's coordinate system. </p>
-<p>Setting this property raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event and triggers a full scene refresh. Consider using <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> to update both width and height atomically with a single event. </p>
-
-</div>
-</div>
-<a id="ac244cb1a5160eb0727c654334f6c8b39" name="ac244cb1a5160eb0727c654334f6c8b39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac244cb1a5160eb0727c654334f6c8b39">&#9670;&#160;</a></span>SceneLayerTileWidth</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Gondwana.Scenes.SceneLayer.SceneLayerTileWidth</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets or sets the width of each tile in this layer, measured in pixels. </p>
-<p>The tile width in pixels. Default is typically 32.</p>
-<p>This property defines the rendered width of tiles in this layer. Changes to tile width affect how tiles are positioned and rendered within the layer's coordinate system. </p>
-<p>Setting this property raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event and triggers a full scene refresh. Consider using <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> to update both width and height atomically with a single event. </p>
-
-</div>
-</div>
 <a id="ac68c60907a67666307c7720012e08c50" name="ac68c60907a67666307c7720012e08c50"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac68c60907a67666307c7720012e08c50">&#9670;&#160;</a></span>ShowCollisionBoxes</h2>
 
@@ -741,7 +742,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 
 <p>Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugging. </p>
 <p><code>true</code> if collision boxes should be displayed; otherwise, <code>false</code>.</p>
-<p><a class="el" href="namespace_gondwana_1_1_collision.html">Collision</a> boxes provide a visual overlay showing the collision geometry of tiles and sprites, which is useful during development for debugging physics interactions, verifying collision boundaries, and tuning collision detection. </p>
+<p>Collision boxes provide a visual overlay showing the collision geometry of tiles and sprites, which is useful during development for debugging physics interactions, verifying collision boundaries, and tuning collision detection. </p>
 <p>Setting this property raises the <a class="el" href="#aff3f1a426a9327b05d1c7575013706d6" title="Occurs when the collision box display setting changes.">ShowCollisionBoxesChanged</a> event and triggers a full scene refresh. </p>
 
 </div>
@@ -867,6 +868,60 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer_tile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the truncated position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides convenient access when working with floating-point grid coordinates, such as results from <a class="el" href="#a5a32b42fedf1dcf1365878805a4eeca1" title="Converts a world-space pixel position into this layer&#39;s grid coordinates. This uses the layer&#39;s activ...">WorldPxToGrid</a>. The coordinates are cast to integers, truncating toward zero. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_coordinates.html">Coordinates</a> outside the valid range return <code>null</code>. </p>
+
+</div>
+</div>
+<a id="a69e78c0da41b8b9f48092fcac16a0959" name="a69e78c0da41b8b9f48092fcac16a0959"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69e78c0da41b8b9f48092fcac16a0959">&#9670;&#160;</a></span>TileHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Gondwana.Scenes.SceneLayer.TileHeight</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the height of each tile in this layer, measured in pixels. </p>
+<p>The tile height in pixels. Default is typically 32.</p>
+<p>This property defines the rendered height of tiles in this layer. Changes to tile height affect how tiles are positioned and rendered within the layer's coordinate system. </p>
+<p>Setting this property raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event and triggers a full scene refresh. Consider using <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> to update both width and height atomically with a single event. </p>
+
+</div>
+</div>
+<a id="ac678abad69fa8586f5fd16e1b9da3862" name="ac678abad69fa8586f5fd16e1b9da3862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac678abad69fa8586f5fd16e1b9da3862">&#9670;&#160;</a></span>TileWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Gondwana.Scenes.SceneLayer.TileWidth</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the width of each tile in this layer, measured in pixels. </p>
+<p>The tile width in pixels. Default is typically 32.</p>
+<p>This property defines the rendered width of tiles in this layer. Changes to tile width affect how tiles are positioned and rendered within the layer's coordinate system. </p>
+<p>Setting this property raises the <a class="el" href="#a3620fa9a5a899170be2420c702b01b99" title="Occurs when the tile dimensions of this layer change.">SceneLayerTileSizeChanged</a> event and triggers a full scene refresh. Consider using <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> to update both width and height atomically with a single event. </p>
 
 </div>
 </div>
@@ -1069,7 +1124,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 </div><div class="memdoc">
 
 <p>Occurs when the tile dimensions of this layer change. </p>
-<p>This event is raised when either <a class="el" href="#ac244cb1a5160eb0727c654334f6c8b39" title="Gets or sets the width of each tile in this layer, measured in pixels.">SceneLayerTileWidth</a> or <a class="el" href="#a0ce8b6216ce767e416bdc8c9477bde12" title="Gets or sets the height of each tile in this layer, measured in pixels.">SceneLayerTileHeight</a> is modified, or when <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> is called. Changes to tile size typically require a full scene refresh to ensure correct rendering of all tiles and sprites. </p>
+<p>This event is raised when either <a class="el" href="#ac678abad69fa8586f5fd16e1b9da3862" title="Gets or sets the width of each tile in this layer, measured in pixels.">TileWidth</a> or <a class="el" href="#a69e78c0da41b8b9f48092fcac16a0959" title="Gets or sets the height of each tile in this layer, measured in pixels.">TileHeight</a> is modified, or when <a class="el" href="#a2c55f9f0b71d6fc72cbfa3d9a0d0ed12" title="Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTil...">SetTileSize</a> is called. Changes to tile size typically require a full scene refresh to ensure correct rendering of all tiles and sprites. </p>
 
 </div>
 </div>
@@ -1086,7 +1141,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 </div><div class="memdoc">
 
 <p>Occurs when the collision box display setting changes. </p>
-<p>This event is raised when the <a class="el" href="#ac68c60907a67666307c7720012e08c50" title="Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugg...">ShowCollisionBoxes</a> property is modified. <a class="el" href="namespace_gondwana_1_1_collision.html">Collision</a> box visibility changes require a full scene refresh to add or remove collision box overlays from the rendering output, useful for debugging collision detection. </p>
+<p>This event is raised when the <a class="el" href="#ac68c60907a67666307c7720012e08c50" title="Gets or sets a value indicating whether collision boxes should be rendered over this layer for debugg...">ShowCollisionBoxes</a> property is modified. Collision box visibility changes require a full scene refresh to add or remove collision box overlays from the rendering output, useful for debugging collision detection. </p>
 
 </div>
 </div>

@@ -170,10 +170,10 @@ Events</h2></td></tr>
 <tr class="memdesc:aba0ee0f4107548ebf257a4eb8a013bc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs immediately before DoBackgroundTasks(long) executes within each engine cycle.  <br /></td></tr>
 <tr class="memitem:a8fb8ab8faaa00491831d34fd3d23c35d" id="r_a8fb8ab8faaa00491831d34fd3d23c35d"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8fb8ab8faaa00491831d34fd3d23c35d">AfterBackgroundTasksExecute</a></td></tr>
 <tr class="memdesc:a8fb8ab8faaa00491831d34fd3d23c35d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs immediately after DoBackgroundTasks(long) has completed.  <br /></td></tr>
-<tr class="memitem:ab9f3dc8928010614f210f36c0a85e6ac" id="r_ab9f3dc8928010614f210f36c0a85e6ac"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab9f3dc8928010614f210f36c0a85e6ac">BeforeEngineCycle</a></td></tr>
-<tr class="memdesc:ab9f3dc8928010614f210f36c0a85e6ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs immediately before DoForegroundTasks(long) executes within each engine cycle.  <br /></td></tr>
-<tr class="memitem:a8a60330c4716d5112a589cf7b5477fc9" id="r_a8a60330c4716d5112a589cf7b5477fc9"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a60330c4716d5112a589cf7b5477fc9">AfterEngineCycle</a></td></tr>
-<tr class="memdesc:a8a60330c4716d5112a589cf7b5477fc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs immediately after DoForegroundTasks(long) completes within each engine cycle.  <br /></td></tr>
+<tr class="memitem:a058f31467a42fe376b0955967931e476" id="r_a058f31467a42fe376b0955967931e476"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a058f31467a42fe376b0955967931e476">BeforeFrameRender</a></td></tr>
+<tr class="memdesc:a058f31467a42fe376b0955967931e476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs immediately before DoForegroundTasks(long) executes within each engine cycle.  <br /></td></tr>
+<tr class="memitem:a3376a217fab6a271437d14854831a65c" id="r_a3376a217fab6a271437d14854831a65c"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3376a217fab6a271437d14854831a65c">AfterFrameRender</a></td></tr>
+<tr class="memdesc:a3376a217fab6a271437d14854831a65c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs immediately after DoForegroundTasks(long) completes within each engine cycle.  <br /></td></tr>
 <tr class="memitem:a587a18579b91b31848634e1586e38127" id="r_a587a18579b91b31848634e1586e38127"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_cycles_per_second_calculated_event_args.html">CyclesPerSecondCalculatedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a587a18579b91b31848634e1586e38127">CPSCalculated</a></td></tr>
 <tr class="memdesc:a587a18579b91b31848634e1586e38127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs whenever cycles-per-second (CPS) and frames-per-second (FPS) metrics are calculated.  <br /></td></tr>
 <tr class="memitem:ab80856e97f9f913863165bd99d719105" id="r_ab80856e97f9f913863165bd99d719105"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab80856e97f9f913863165bd99d719105">Disposing</a></td></tr>
@@ -907,14 +907,14 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 
 </div>
 </div>
-<a id="a8a60330c4716d5112a589cf7b5477fc9" name="a8a60330c4716d5112a589cf7b5477fc9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a60330c4716d5112a589cf7b5477fc9">&#9670;&#160;</a></span>AfterEngineCycle</h2>
+<a id="a3376a217fab6a271437d14854831a65c" name="a3376a217fab6a271437d14854831a65c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3376a217fab6a271437d14854831a65c">&#9670;&#160;</a></span>AfterFrameRender</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Action? Gondwana.Engine.AfterEngineCycle</td>
+          <td class="memname">Action? Gondwana.Engine.AfterFrameRender</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -941,14 +941,14 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 
 </div>
 </div>
-<a id="ab9f3dc8928010614f210f36c0a85e6ac" name="ab9f3dc8928010614f210f36c0a85e6ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9f3dc8928010614f210f36c0a85e6ac">&#9670;&#160;</a></span>BeforeEngineCycle</h2>
+<a id="a058f31467a42fe376b0955967931e476" name="a058f31467a42fe376b0955967931e476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a058f31467a42fe376b0955967931e476">&#9670;&#160;</a></span>BeforeFrameRender</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Action? Gondwana.Engine.BeforeEngineCycle</td>
+          <td class="memname">Action? Gondwana.Engine.BeforeFrameRender</td>
         </tr>
       </table>
 </div><div class="memdoc">

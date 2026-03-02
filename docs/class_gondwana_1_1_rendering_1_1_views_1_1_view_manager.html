@@ -119,6 +119,13 @@ Public Member Functions</h2></td></tr>
 Properties</h2></td></tr>
 <tr class="memitem:a73cd2d2e8dd433960f9eeb1c10078472" id="r_a73cd2d2e8dd433960f9eeb1c10078472"><td class="memItemLeft" align="right" valign="top">ReadOnlyCollection&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73cd2d2e8dd433960f9eeb1c10078472">Views</a><code> [get]</code></td></tr>
 <tr class="memdesc:a73cd2d2e8dd433960f9eeb1c10078472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only collection of all views currently managed by this view manager. <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> are sorted by Z-order, with lower values appearing first (drawn behind).  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
+Events</h2></td></tr>
+<tr class="memitem:af729aba5ea2e1b90eb364c98bc211e12" id="r_af729aba5ea2e1b90eb364c98bc211e12"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af729aba5ea2e1b90eb364c98bc211e12">ViewAdded</a></td></tr>
+<tr class="memdesc:af729aba5ea2e1b90eb364c98bc211e12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs after a new <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> is added.  <br /></td></tr>
+<tr class="memitem:a57a9b014a2674fa11853ebba71554a3c" id="r_a57a9b014a2674fa11853ebba71554a3c"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57a9b014a2674fa11853ebba71554a3c">ViewRemoved</a></td></tr>
+<tr class="memdesc:a57a9b014a2674fa11853ebba71554a3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs after a <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> is removed.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages a collection of views for a render surface, handling view creation, removal, ordering, and multi-viewport layouts. Each view combines a camera and viewport to control what portion of the scene is rendered and where it appears on screen. </p>
@@ -351,6 +358,39 @@ Properties</h2></td></tr>
 
 <p>Gets a read-only collection of all views currently managed by this view manager. <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> are sorted by Z-order, with lower values appearing first (drawn behind). </p>
 <p>A ReadOnlyCollection&lt;T&gt; of <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> instances. </p>
+
+</div>
+</div>
+<a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
+<a id="af729aba5ea2e1b90eb364c98bc211e12" name="af729aba5ea2e1b90eb364c98bc211e12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af729aba5ea2e1b90eb364c98bc211e12">&#9670;&#160;</a></span>ViewAdded</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Action&lt;<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>&gt;? Gondwana.Rendering.Views.ViewManager.ViewAdded</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs after a new <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> is added. </p>
+
+</div>
+</div>
+<a id="a57a9b014a2674fa11853ebba71554a3c" name="a57a9b014a2674fa11853ebba71554a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57a9b014a2674fa11853ebba71554a3c">&#9670;&#160;</a></span>ViewRemoved</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Action&lt;<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a>&gt;? Gondwana.Rendering.Views.ViewManager.ViewRemoved</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs after a <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> is removed. </p>
 
 </div>
 </div>

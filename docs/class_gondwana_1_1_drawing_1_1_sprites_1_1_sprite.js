@@ -6,6 +6,7 @@ var class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite =
     [ "ResizeTo", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a41ec4bfa5ce9b186ce66b2b36df56426", null ],
     [ "ScaleBy", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a756c3be01e25b9662a47bdc151466052", null ],
     [ "SetPosition", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a65e329846630306b9db34241ff8dd670", null ],
+    [ "TranslateWorldPx", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a0786f02005a6fa9358a26bcfe30b5144", null ],
     [ "DrawLocationWorld", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a2d3455a0c4a9659fa7419573c2a5c068", null ],
     [ "HorizAlign", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#aa0c9cb286ffdd480798244f9e07a66ab", null ],
     [ "IsPositionFixed", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a90e6f3dc6e855b978ba00f133afacdd5", null ],

@@ -94,23 +94,33 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html
   <div class="headertitle"><div class="title">Gondwana.Drawing.Sprites.Sprite Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html">Sprites</a> support alignment, positioning, animation, and can be managed through the SpriteManager.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Sprites.Sprite:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.png" usemap="#Gondwana_2EDrawing_2ESprites_2ESprite_map" alt=""/>
   <map id="Gondwana_2EDrawing_2ESprites_2ESprite_map" name="Gondwana_2EDrawing_2ESprites_2ESprite_map">
-<area href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional..." alt="Gondwana.Drawing.Tile" shape="rect" coords="213,56,416,80"/>
-<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,203,24"/>
+<area href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional..." alt="Gondwana.Drawing.Tile" shape="rect" coords="412,56,677,80"/>
+<area href="interface_gondwana_1_1_collisions_1_1_i_collision_movable_entity.html" title="Represents a collision entity that can be moved or repositioned in response to collision resolution." alt="Gondwana.Collisions.ICollisionMovableEntity" shape="rect" coords="1100,56,1365,80"/>
+<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,265,24"/>
+<area href="interface_gondwana_1_1_collisions_1_1_i_collision_entity.html" title="Represents an entity that participates in the collision system and has a defined collision area." alt="Gondwana.Collisions.ICollisionEntity" shape="rect" coords="275,0,540,24"/>
+<area href="interface_gondwana_1_1_collisions_1_1_i_collision_entity.html" title="Represents an entity that participates in the collision system and has a defined collision area." alt="Gondwana.Collisions.ICollisionEntity" shape="rect" coords="1100,0,1365,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aecb27b5190b87273097228a1aa4b5806" id="r_aecb27b5190b87273097228a1aa4b5806"><td class="memItemLeft" align="right" valign="top">Vector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecb27b5190b87273097228a1aa4b5806">GetPosition</a> ()</td></tr>
+<tr class="memdesc:aecb27b5190b87273097228a1aa4b5806"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of the sprite in scene layer coordinates.  <br /></td></tr>
 <tr class="memitem:a65e329846630306b9db34241ff8dd670" id="r_a65e329846630306b9db34241ff8dd670"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65e329846630306b9db34241ff8dd670">SetPosition</a> (Vector2 pos)</td></tr>
+<tr class="memdesc:a65e329846630306b9db34241ff8dd670"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the position of the sprite in scene layer coordinates and updates the display.  <br /></td></tr>
+<tr class="memitem:a0786f02005a6fa9358a26bcfe30b5144" id="r_a0786f02005a6fa9358a26bcfe30b5144"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0786f02005a6fa9358a26bcfe30b5144">TranslateWorldPx</a> (int dx, int dy)</td></tr>
+<tr class="memdesc:a0786f02005a6fa9358a26bcfe30b5144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a world-pixel translation. Used by collision resolution.  <br /></td></tr>
 <tr class="memitem:aa3c760f6aeae24f2a907da2f254cc84a" id="r_aa3c760f6aeae24f2a907da2f254cc84a"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3c760f6aeae24f2a907da2f254cc84a">Dispose</a> ()</td></tr>
-<tr class="memdesc:aa3c760f6aeae24f2a907da2f254cc84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the tile, including removing it from animation tracking, disposing its animator, and clearing collision references.  <br /></td></tr>
+<tr class="memdesc:aa3c760f6aeae24f2a907da2f254cc84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the sprite and removes it from the sprite manager.  <br /></td></tr>
 <tr class="memitem:a41ec4bfa5ce9b186ce66b2b36df56426" id="r_a41ec4bfa5ce9b186ce66b2b36df56426"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41ec4bfa5ce9b186ce66b2b36df56426">ResizeTo</a> (Size targetSize, float durationSeconds)</td></tr>
 <tr class="memdesc:a41ec4bfa5ce9b186ce66b2b36df56426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly resize the sprite to an absolute pixel size over the given duration (seconds).  <br /></td></tr>
 <tr class="memitem:a756c3be01e25b9662a47bdc151466052" id="r_a756c3be01e25b9662a47bdc151466052"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a756c3be01e25b9662a47bdc151466052">ScaleBy</a> (float factor, float durationSeconds)</td></tr>
@@ -130,18 +140,29 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a5af76c96faa97a96da6ce2c3059d4e8a" id="r_a5af76c96faa97a96da6ce2c3059d4e8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_movement.html#a49b5fa80f99283d647bd189725d7341d">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5af76c96faa97a96da6ce2c3059d4e8a">PositionSpace</a><code> [get]</code></td></tr>
+<tr class="memdesc:a5af76c96faa97a96da6ce2c3059d4e8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement space used by this sprite.  <br /></td></tr>
 <tr class="memitem:a3fcf8c4787dc72a87346f30983c3264f" id="r_a3fcf8c4787dc72a87346f30983c3264f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_movement_1_1_movement_controller.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fcf8c4787dc72a87346f30983c3264f">Movement</a><code> [get]</code></td></tr>
+<tr class="memdesc:a3fcf8c4787dc72a87346f30983c3264f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement controller for this sprite.  <br /></td></tr>
 <tr class="memitem:aa0c9cb286ffdd480798244f9e07a66ab" id="r_aa0c9cb286ffdd480798244f9e07a66ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html#ab3dde0a5b955ae7bce32212444fdf778">HorizontalAlignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0c9cb286ffdd480798244f9e07a66ab">HorizAlign</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:aa0c9cb286ffdd480798244f9e07a66ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the horizontal alignment of the sprite relative to its scene layer coordinates.  <br /></td></tr>
 <tr class="memitem:a328f0ff2cff30af2cba9390f828323ee" id="r_a328f0ff2cff30af2cba9390f828323ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html#aaea16d478d36b47862f55443c2ac3587">VerticalAlignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a328f0ff2cff30af2cba9390f828323ee">VertAlign</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a328f0ff2cff30af2cba9390f828323ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the vertical alignment of the sprite relative to its scene layer coordinates.  <br /></td></tr>
 <tr class="memitem:a1e4dcfed8ab4a0f0f107e1efb4e9f1b2" id="r_a1e4dcfed8ab4a0f0f107e1efb4e9f1b2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1e4dcfed8ab4a0f0f107e1efb4e9f1b2">NudgeX</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a1e4dcfed8ab4a0f0f107e1efb4e9f1b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the horizontal pixel offset (nudge) to apply to the sprite's position.  <br /></td></tr>
 <tr class="memitem:a6d50639219eaa417989f21de25b2c9a0" id="r_a6d50639219eaa417989f21de25b2c9a0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d50639219eaa417989f21de25b2c9a0">NudgeY</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a6d50639219eaa417989f21de25b2c9a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the vertical pixel offset (nudge) to apply to the sprite's position.  <br /></td></tr>
 <tr class="memitem:a49679223aa6a45895bb3be4f4eed76f9" id="r_a49679223aa6a45895bb3be4f4eed76f9"><td class="memItemLeft" align="right" valign="top">Size&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49679223aa6a45895bb3be4f4eed76f9">RenderSize</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a49679223aa6a45895bb3be4f4eed76f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the size at which the sprite will be rendered.  <br /></td></tr>
 <tr class="memitem:a2d3455a0c4a9659fa7419573c2a5c068" id="r_a2d3455a0c4a9659fa7419573c2a5c068"><td class="memItemLeft" align="right" valign="top">override Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d3455a0c4a9659fa7419573c2a5c068">DrawLocationWorld</a><code> [get]</code></td></tr>
+<tr class="memdesc:a2d3455a0c4a9659fa7419573c2a5c068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the world-space pixel rectangle where the sprite will be drawn, taking into account alignment, size, and nudge offsets.  <br /></td></tr>
 <tr class="memitem:a90e6f3dc6e855b978ba00f133afacdd5" id="r_a90e6f3dc6e855b978ba00f133afacdd5"><td class="memItemLeft" align="right" valign="top">override bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90e6f3dc6e855b978ba00f133afacdd5">IsPositionFixed</a><code> [get]</code></td></tr>
+<tr class="memdesc:a90e6f3dc6e855b978ba00f133afacdd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the sprite's position is fixed. Always returns false for sprites.  <br /></td></tr>
 <tr class="memitem:ad340d5603c3fea7f053bbfb81e310399" id="r_ad340d5603c3fea7f053bbfb81e310399"><td class="memItemLeft" align="right" valign="top">override PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad340d5603c3fea7f053bbfb81e310399">SceneLayerCoordinates</a><code> [get]</code></td></tr>
+<tr class="memdesc:ad340d5603c3fea7f053bbfb81e310399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer coordinates of the sprite.  <br /></td></tr>
 <tr class="memitem:adf54b801271083c8d120f6290277dc99" id="r_adf54b801271083c8d120f6290277dc99"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf54b801271083c8d120f6290277dc99">SceneLayer</a><code> [get]</code></td></tr>
+<tr class="memdesc:adf54b801271083c8d120f6290277dc99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer that this sprite is attached to.  <br /></td></tr>
 <tr class="memitem:a263cdfc878e8fe4426ba3547c50ded2a" id="r_a263cdfc878e8fe4426ba3547c50ded2a"><td class="memItemLeft" align="right" valign="top">virtual new int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a263cdfc878e8fe4426ba3547c50ded2a">ZOrder</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a263cdfc878e8fe4426ba3547c50ded2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones.  <br /></td></tr>
+<tr class="memdesc:a263cdfc878e8fe4426ba3547c50ded2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the Z-order (depth) of the sprite for rendering. Higher values are drawn on top. Minimum value is 1.  <br /></td></tr>
 <tr class="inherit_header properties_class_gondwana_1_1_drawing_1_1_tile"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_class_gondwana_1_1_drawing_1_1_tile')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:ac3ae883651077bbeed079cd372670fcd inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_ac3ae883651077bbeed079cd372670fcd"><td class="memItemLeft" align="right" valign="top">static List&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Tile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#ac3ae883651077bbeed079cd372670fcd">TilesAnimating</a> = new()<code> [get]</code></td></tr>
 <tr class="memdesc:ac3ae883651077bbeed079cd372670fcd inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of all tiles that are currently animating in the scene. Used to track and update animated tiles during the render cycle.  <br /></td></tr>
@@ -169,7 +190,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:abe1c33a0aab3bfa09f748920e504b4ae inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the animator responsible for managing frame transitions and animation sequences for this tile.  <br /></td></tr>
 <tr class="memitem:a6d1b82d253d8c1f4b21f43ac41487884 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_a6d1b82d253d8c1f4b21f43ac41487884"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a6d1b82d253d8c1f4b21f43ac41487884">PauseAnimation</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a6d1b82d253d8c1f4b21f43ac41487884 inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the tile's animation is currently paused.  <br /></td></tr>
-<tr class="memitem:a50bde19a832324893f058b03e14cf7f3 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_a50bde19a832324893f058b03e14cf7f3"><td class="memItemLeft" align="right" valign="top">virtual ? <a class="el" href="interface_gondwana_1_1_collision_1_1_i_collider.html">ICollider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a50bde19a832324893f058b03e14cf7f3">Collider</a><code> [get]</code></td></tr>
+<tr class="memitem:a50bde19a832324893f058b03e14cf7f3 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_a50bde19a832324893f058b03e14cf7f3"><td class="memItemLeft" align="right" valign="top">virtual ? <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html">ICollider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a50bde19a832324893f058b03e14cf7f3">Collider</a><code> [get]</code></td></tr>
 <tr class="memdesc:a50bde19a832324893f058b03e14cf7f3 inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collider used for collision detection with this tile. Returns null if the tile has no collision detection.  <br /></td></tr>
 <tr class="memitem:a39985eb5adff013e78446f18336963e9 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_a39985eb5adff013e78446f18336963e9"><td class="memItemLeft" align="right" valign="top">virtual Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a39985eb5adff013e78446f18336963e9">CollisionArea</a><code> [get]</code></td></tr>
 <tr class="memdesc:a39985eb5adff013e78446f18336963e9 inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effective collision area of the tile in world coordinates, incorporating any adjustments specified by <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#ac8f79979d79887bc43b245de84e9a052" title="Gets or sets the collision area adjustment values that modify the tile&#39;s collision boundaries....">AdjustCollisionArea</a>.  <br /></td></tr>
@@ -177,23 +198,29 @@ Properties</h2></td></tr>
 <tr class="memdesc:a0862275089f09bfb25738641365856f6 inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether fog of war rendering is enabled for this tile. Setting this property triggers a refresh of the tile's screen area.  <br /></td></tr>
 <tr class="memitem:a56ea85f53ad251db7f223588a341773a inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_a56ea85f53ad251db7f223588a341773a"><td class="memItemLeft" align="right" valign="top">virtual Point[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a56ea85f53ad251db7f223588a341773a">OutlinePointsWorld</a><code> [get]</code></td></tr>
 <tr class="memdesc:a56ea85f53ad251db7f223588a341773a inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to determine polygonal area when drawing grid lines or fog. Override this property in a derived class to define custom areas for these effects.  <br /></td></tr>
-<tr class="memitem:ac8f79979d79887bc43b245de84e9a052 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_ac8f79979d79887bc43b245de84e9a052"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="struct_gondwana_1_1_drawing_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#ac8f79979d79887bc43b245de84e9a052">AdjustCollisionArea</a> = CollisionDetectionAdjustment.None<code> [get, set]</code></td></tr>
+<tr class="memitem:ac8f79979d79887bc43b245de84e9a052 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_ac8f79979d79887bc43b245de84e9a052"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#ac8f79979d79887bc43b245de84e9a052">AdjustCollisionArea</a> = CollisionDetectionAdjustment.None<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac8f79979d79887bc43b245de84e9a052 inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision area adjustment values that modify the tile's collision boundaries. Use this to fine-tune the collision detection area relative to the tile's visual bounds.  <br /></td></tr>
+<tr class="memitem:a04aecd48929540170b3fbe43cb5e06f8 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_a04aecd48929540170b3fbe43cb5e06f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a04aecd48929540170b3fbe43cb5e06f8">CollisionsEnabled</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a04aecd48929540170b3fbe43cb5e06f8 inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether collision detection is enabled for this tile. When set to true, the tile's collider is registered with the scene layer's collision system. When set to false, the collider is unregistered and collisions will not be detected.  <br /></td></tr>
 <tr class="memitem:a809ee69a8d25e7cf843f042c9b6298b6 inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_a809ee69a8d25e7cf843f042c9b6298b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a809ee69a8d25e7cf843f042c9b6298b6">ValueBag</a> = new()<code> [get]</code></td></tr>
 <tr class="memdesc:a809ee69a8d25e7cf843f042c9b6298b6 inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the value bag for storing arbitrary typed values associated with this tile. Useful for attaching custom game-specific data without subclassing.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a4d4ae3cd00aac852e64f8e3d49a41170" id="r_a4d4ae3cd00aac852e64f8e3d49a41170"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_moved_event_args.html">SpriteMovedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d4ae3cd00aac852e64f8e3d49a41170">SpriteMoved</a></td></tr>
+<tr class="memdesc:a4d4ae3cd00aac852e64f8e3d49a41170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the sprite has moved to a new position on the scene layer.  <br /></td></tr>
 <tr class="memitem:a2518d4feddc38b4ee9cd509f7ccc5b2b" id="r_a2518d4feddc38b4ee9cd509f7ccc5b2b"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html">Sprite</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2518d4feddc38b4ee9cd509f7ccc5b2b">Disposing</a></td></tr>
+<tr class="memdesc:a2518d4feddc38b4ee9cd509f7ccc5b2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the sprite is being disposed.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_class_gondwana_1_1_drawing_1_1_tile"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_gondwana_1_1_drawing_1_1_tile')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_tile" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
-<tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_tile" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_collision_1_1_i_collider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
+<tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_tile" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html">Sprites</a> support alignment, positioning, animation, and can be managed through the SpriteManager. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ac6e9df3779449c4b2e6874eed9169c26" name="ac6e9df3779449c4b2e6874eed9169c26"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6e9df3779449c4b2e6874eed9169c26">&#9670;&#160;</a></span>CancelResize()</h2>
 
@@ -236,7 +263,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Releases all resources used by the tile, including removing it from animation tracking, disposing its animator, and clearing collision references. </p>
+<p>Releases all resources used by the sprite and removes it from the sprite manager. </p>
 
 <p>Reimplemented from <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a6ca4859d010ae75a57af442c51e83022">Gondwana.Drawing.Tile</a>.</p>
 
@@ -256,6 +283,9 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Gets the current position of the sprite in scene layer coordinates. </p>
+<dl class="section return"><dt>Returns</dt><dd>A Vector2 representing the sprite's position.</dd></dl>
 
 </div>
 </div>
@@ -279,6 +309,13 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Smoothly resize the sprite to an absolute pixel size over the given duration (seconds). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">targetSize</td><td>The target size in pixels to resize to.</td></tr>
+    <tr><td class="paramname">durationSeconds</td><td>The duration of the resize animation in seconds.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -302,6 +339,13 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Scale to a factor relative to current RenderSize over the given duration (seconds). factor &gt; 1 grows; factor &lt; 1 shrinks. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">factor</td><td>The scaling factor. Values greater than 1 grow the sprite, values less than 1 shrink it.</td></tr>
+    <tr><td class="paramname">durationSeconds</td><td>The duration of the scaling animation in seconds.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -319,6 +363,46 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Sets the position of the sprite in scene layer coordinates and updates the display. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The new position for the sprite.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0786f02005a6fa9358a26bcfe30b5144" name="a0786f02005a6fa9358a26bcfe30b5144"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0786f02005a6fa9358a26bcfe30b5144">&#9670;&#160;</a></span>TranslateWorldPx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.TranslateWorldPx </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dy</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies a world-pixel translation. Used by collision resolution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dx</td><td>The horizontal pixel offset to apply.</td></tr>
+    <tr><td class="paramname">dy</td><td>The vertical pixel offset to apply.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collision_movable_entity.html#a68cbb7534fb9961e9f46560bfaf616cf">Gondwana.Collisions.ICollisionMovableEntity</a>.</p>
 
 </div>
 </div>
@@ -343,6 +427,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the world-space pixel rectangle where the sprite will be drawn, taking into account alignment, size, and nudge offsets. </p>
+
 </div>
 </div>
 <a id="aa0c9cb286ffdd480798244f9e07a66ab" name="aa0c9cb286ffdd480798244f9e07a66ab"></a>
@@ -364,6 +450,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the horizontal alignment of the sprite relative to its scene layer coordinates. </p>
 
 </div>
 </div>
@@ -387,6 +475,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a value indicating whether the sprite's position is fixed. Always returns false for sprites. </p>
+
 </div>
 </div>
 <a id="a3fcf8c4787dc72a87346f30983c3264f" name="a3fcf8c4787dc72a87346f30983c3264f"></a>
@@ -408,6 +498,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the movement controller for this sprite. </p>
 
 </div>
 </div>
@@ -431,6 +523,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the horizontal pixel offset (nudge) to apply to the sprite's position. </p>
+
 </div>
 </div>
 <a id="a6d50639219eaa417989f21de25b2c9a0" name="a6d50639219eaa417989f21de25b2c9a0"></a>
@@ -452,6 +546,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the vertical pixel offset (nudge) to apply to the sprite's position. </p>
 
 </div>
 </div>
@@ -475,6 +571,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the movement space used by this sprite. </p>
+
 </div>
 </div>
 <a id="a49679223aa6a45895bb3be4f4eed76f9" name="a49679223aa6a45895bb3be4f4eed76f9"></a>
@@ -496,6 +594,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets or sets the size at which the sprite will be rendered. </p>
 
 </div>
 </div>
@@ -519,6 +619,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the scene layer that this sprite is attached to. </p>
+
 </div>
 </div>
 <a id="ad340d5603c3fea7f053bbfb81e310399" name="ad340d5603c3fea7f053bbfb81e310399"></a>
@@ -540,6 +642,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the scene layer coordinates of the sprite. </p>
 
 </div>
 </div>
@@ -563,6 +667,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets the vertical alignment of the sprite relative to its scene layer coordinates. </p>
+
 </div>
 </div>
 <a id="a263cdfc878e8fe4426ba3547c50ded2a" name="a263cdfc878e8fe4426ba3547c50ded2a"></a>
@@ -585,7 +691,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones. </p>
+<p>Gets or sets the Z-order (depth) of the sprite for rendering. Higher values are drawn on top. Minimum value is 1. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
@@ -604,6 +710,8 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when the sprite is being disposed. </p>
+
 </div>
 </div>
 <a id="a4d4ae3cd00aac852e64f8e3d49a41170" name="a4d4ae3cd00aac852e64f8e3d49a41170"></a>
@@ -617,6 +725,8 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when the sprite has moved to a new position on the scene layer. </p>
 
 </div>
 </div>

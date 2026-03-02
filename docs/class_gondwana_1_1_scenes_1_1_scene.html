@@ -159,8 +159,8 @@ Properties</h2></td></tr>
 <tr class="memdesc:a62f82a3e296beb61cedf989dde078a65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only collection of visible layers sorted by z-order for rendering.  <br /></td></tr>
 <tr class="memitem:a9860887b89736db85032548e42d20bdd" id="r_a9860887b89736db85032548e42d20bdd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9860887b89736db85032548e42d20bdd">CountOfVisibleLayers</a><code> [get]</code></td></tr>
 <tr class="memdesc:a9860887b89736db85032548e42d20bdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of currently visible layers in this scene.  <br /></td></tr>
-<tr class="memitem:ae22f66025b186a7bd0966c7292d5a07b" id="r_ae22f66025b186a7bd0966c7292d5a07b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_collision_1_1_collision_world.html">CollisionWorld</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae22f66025b186a7bd0966c7292d5a07b">CollisionWorld</a> = new()<code> [get]</code></td></tr>
-<tr class="memdesc:ae22f66025b186a7bd0966c7292d5a07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collision world associated with this scene, used for physics and collision detection.  <br /></td></tr>
+<tr class="memitem:a334bb5644cab120c1a6c02cb89b65bdd" id="r_a334bb5644cab120c1a6c02cb89b65bdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_collisions_1_1_collision_group_registry.html">CollisionGroupRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a334bb5644cab120c1a6c02cb89b65bdd">CollisionGroups</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a334bb5644cab120c1a6c02cb89b65bdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the registry of collision groups used to organize and manage collision detection within the scene.  <br /></td></tr>
 <tr class="memitem:a866b0d37d88a97ac79b91a3d15bafc2f" id="r_a866b0d37d88a97ac79b91a3d15bafc2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a866b0d37d88a97ac79b91a3d15bafc2f">this[int i]</a><code> [get]</code></td></tr>
 <tr class="memdesc:a866b0d37d88a97ac79b91a3d15bafc2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> at the specified index in the layer collection.  <br /></td></tr>
 <tr class="memitem:ad508ccea57aaf5cabcb9adfb39e5525c" id="r_ad508ccea57aaf5cabcb9adfb39e5525c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html">SceneLayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad508ccea57aaf5cabcb9adfb39e5525c">this[string id]</a><code> [get]</code></td></tr>
@@ -663,8 +663,8 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
-<a id="ae22f66025b186a7bd0966c7292d5a07b" name="ae22f66025b186a7bd0966c7292d5a07b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae22f66025b186a7bd0966c7292d5a07b">&#9670;&#160;</a></span>CollisionWorld</h2>
+<a id="a334bb5644cab120c1a6c02cb89b65bdd" name="a334bb5644cab120c1a6c02cb89b65bdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a334bb5644cab120c1a6c02cb89b65bdd">&#9670;&#160;</a></span>CollisionGroups</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -673,7 +673,7 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_gondwana_1_1_collision_1_1_collision_world.html">CollisionWorld</a> Gondwana.Scenes.Scene.CollisionWorld = new()</td>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_collisions_1_1_collision_group_registry.html">CollisionGroupRegistry</a> Gondwana.Scenes.Scene.CollisionGroups = new()</td>
         </tr>
       </table>
   </td>
@@ -683,9 +683,8 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 </table>
 </div><div class="memdoc">
 
-<p>Gets the collision world associated with this scene, used for physics and collision detection. </p>
-<p>A <a class="el" href="class_gondwana_1_1_collision_1_1_collision_world.html">Gondwana.Collision.CollisionWorld</a> instance managing collision data for this scene.</p>
-<p>The collision world maintains collision geometry, spatial partitioning structures, and collision detection state for all collidable entities within the scene. It is automatically created when the scene is initialized and is used by the engine's collision resolution system. </p>
+<p>Gets the registry of collision groups used to organize and manage collision detection within the scene. </p>
+<p>Use this property to access the collection of collision groups for efficient grouping and handling of collision logic. The registry is initialized automatically and provides methods for adding, removing, and querying collision groups as needed.</p>
 
 </div>
 </div>

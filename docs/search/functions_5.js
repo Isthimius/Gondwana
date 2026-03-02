@@ -16,6 +16,6 @@ var searchData=
   ['framesequence_13',['FrameSequence',['../struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html#a96f583d8b111d25f4d2b8468ff23a00a',1,'Gondwana.Drawing.Animation.FrameSequence.FrameSequence(Frame frame)'],['../struct_gondwana_1_1_drawing_1_1_animation_1_1_frame_sequence.html#ad05efde23ccc4b4811887bffa18d49bd',1,'Gondwana.Drawing.Animation.FrameSequence.FrameSequence(List&lt; Frame &gt; frames)']]],
   ['fromraw16_14',['FromRaw16',['../struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html#aa4e3f8a26e2c385e5289c54f84e65c45',1,'Gondwana::Input::Gamepad::GamepadStickState']]],
   ['fromrawunsigned16_15',['FromRawUnsigned16',['../struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html#a1488e5b0b47cf725791f9c23b4270e99',1,'Gondwana::Input::Gamepad::GamepadStickState']]],
-  ['fromrectangle_16',['FromRectangle',['../struct_gondwana_1_1_collision_1_1_aabb.html#ad8d50652186f5618d892f93d2ea56e80',1,'Gondwana::Collision::Aabb']]],
-  ['fromrectanglef_17',['FromRectangleF',['../struct_gondwana_1_1_collision_1_1_aabb.html#adec6dbea885489636b29bc80669fdf1d',1,'Gondwana::Collision::Aabb']]]
+  ['fromrectangle_16',['FromRectangle',['../struct_gondwana_1_1_collisions_1_1_aabb.html#af4865f8c0fed54ba515f36e3d53bce13',1,'Gondwana::Collisions::Aabb']]],
+  ['fromrectanglef_17',['FromRectangleF',['../struct_gondwana_1_1_collisions_1_1_aabb.html#a1581ca23bda273b456ad0b73d8d41009',1,'Gondwana::Collisions::Aabb']]]
 ];

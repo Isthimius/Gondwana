@@ -2,7 +2,7 @@ var namespace_gondwana =
 [
     [ "Assets", "namespace_gondwana_1_1_assets.html", "namespace_gondwana_1_1_assets" ],
     [ "Audio", "namespace_gondwana_1_1_audio.html", "namespace_gondwana_1_1_audio" ],
-    [ "Collision", "namespace_gondwana_1_1_collision.html", "namespace_gondwana_1_1_collision" ],
+    [ "Collisions", "namespace_gondwana_1_1_collisions.html", "namespace_gondwana_1_1_collisions" ],
     [ "Configuration", "namespace_gondwana_1_1_configuration.html", "namespace_gondwana_1_1_configuration" ],
     [ "Drawing", "namespace_gondwana_1_1_drawing.html", "namespace_gondwana_1_1_drawing" ],
     [ "Extensibility", "namespace_gondwana_1_1_extensibility.html", null ],

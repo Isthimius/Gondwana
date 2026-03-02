@@ -123,6 +123,10 @@ Properties</h2></td></tr>
 <tr class="memdesc:ae5ae082bf07d3d41b2934881b097a9e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the viewport that defines the screen-space rectangle, zoom level, and other rendering parameters for this view. The viewport controls how the camera's visible world region is mapped to screen pixels.  <br /></td></tr>
 <tr class="memitem:ac1362dc270142153bf4d756de846ed62" id="r_ac1362dc270142153bf4d756de846ed62"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1362dc270142153bf4d756de846ed62">ZOrder</a> = 0<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac1362dc270142153bf4d756de846ed62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls the draw order of this view relative to other views. Lower values are drawn first (behind); higher values are drawn later (in front).  <br /></td></tr>
+<tr class="memitem:a86d326b72634dd9f9755ad969edd388f" id="r_a86d326b72634dd9f9755ad969edd388f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86d326b72634dd9f9755ad969edd388f">MinZoom</a> = 0.1f<code> [get, set]</code></td></tr>
+<tr class="memdesc:a86d326b72634dd9f9755ad969edd388f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the minimum zoom level allowed for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>.  <br /></td></tr>
+<tr class="memitem:a10796ee097b5883682f041f090a32fd7" id="r_a10796ee097b5883682f041f090a32fd7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10796ee097b5883682f041f090a32fd7">MaxZoom</a> = 8f<code> [get, set]</code></td></tr>
+<tr class="memdesc:a10796ee097b5883682f041f090a32fd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the maximum zoom level allowed for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a rendered view of a scene, combining a camera position with a viewport configuration to control what portion of the world is visible and how it is displayed on screen. Multiple views can be used to create split-screen, picture-in-picture, or other multi-viewport rendering scenarios. </p>
@@ -370,6 +374,54 @@ Properties</h2></td></tr>
 
 <p>Gets the unique identifier for this view instance. </p>
 <p>A GUID that uniquely identifies this view throughout its lifetime. </p>
+
+</div>
+</div>
+<a id="a10796ee097b5883682f041f090a32fd7" name="a10796ee097b5883682f041f090a32fd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10796ee097b5883682f041f090a32fd7">&#9670;&#160;</a></span>MaxZoom</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Rendering.Views.View.MaxZoom = 8f</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the maximum zoom level allowed for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>. </p>
+
+</div>
+</div>
+<a id="a86d326b72634dd9f9755ad969edd388f" name="a86d326b72634dd9f9755ad969edd388f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86d326b72634dd9f9755ad969edd388f">&#9670;&#160;</a></span>MinZoom</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Rendering.Views.View.MinZoom = 0.1f</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the minimum zoom level allowed for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>. </p>
 
 </div>
 </div>

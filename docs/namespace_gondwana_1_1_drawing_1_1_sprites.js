@@ -3,6 +3,10 @@ var namespace_gondwana_1_1_drawing_1_1_sprites =
     [ "CompositeSprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite" ],
     [ "Sprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite" ],
     [ "SpriteMovedEventArgs", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_moved_event_args.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_moved_event_args" ],
+    [ "CompositeAnchorMode", "namespace_gondwana_1_1_drawing_1_1_sprites.html#aac527e726cd61575ba7724154d7b2119", [
+      [ "TopLeft", "namespace_gondwana_1_1_drawing_1_1_sprites.html#aac527e726cd61575ba7724154d7b2119ab32beb056fbfe36afbabc6c88c81ab36", null ],
+      [ "Center", "namespace_gondwana_1_1_drawing_1_1_sprites.html#aac527e726cd61575ba7724154d7b2119a4f1f6016fc9f3f2353c0cc7c67b292bd", null ]
+    ] ],
     [ "HorizontalAlignment", "namespace_gondwana_1_1_drawing_1_1_sprites.html#ab3dde0a5b955ae7bce32212444fdf778", [
       [ "Left", "namespace_gondwana_1_1_drawing_1_1_sprites.html#ab3dde0a5b955ae7bce32212444fdf778a945d5e233cf7d6240f6b783b36a374ff", null ],
       [ "Center", "namespace_gondwana_1_1_drawing_1_1_sprites.html#ab3dde0a5b955ae7bce32212444fdf778a4f1f6016fc9f3f2353c0cc7c67b292bd", null ],
