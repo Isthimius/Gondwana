@@ -43,7 +43,7 @@ public partial class Form1 : Form
         Engine.Instance.CPSCalculated += (cps) =>
         {
             var sb = new StringBuilder()
-                .Append("Oh no!!! The wizard doth spray purple slime!")
+                .Append("Oh no!!! The wizard doth spray purple slime! (version " + EngineInfo.Version + ")")
                 .AppendLine($" There are {_particleSurface?.ActiveParticleCount ?? 0} active particles!!!")
                 .AppendLine(cps.ToString());
 

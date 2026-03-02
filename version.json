@@ -4,6 +4,7 @@
   "assemblyVersion": "2.0.0",
   "publicReleaseRefSpec": [
     "^refs/heads/main$",
+    "^refs/heads/master$",
     "^refs/tags/v\\d+\\.\\d+\\.\\d+$"
   ],
   "gitCommitIdShortFixedLength": 8,
