@@ -10,6 +10,10 @@ using System.Runtime.Serialization;
 
 namespace Gondwana.Drawing.Sprites;
 
+/// <summary>
+/// Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection.
+/// Sprites support alignment, positioning, animation, and can be managed through the <see cref="SpriteManager"/>.
+/// </summary>
 [JsonObject(IsReference = true)]
 public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntity, IDisposable
 {
@@ -99,6 +103,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
     }
 
+    /// <summary>
+    /// Finalizes an instance of the <see cref="Sprite"/> class and releases unmanaged resources.
+    /// </summary>
     ~Sprite()
     {
         Dispose();
@@ -142,26 +149,21 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// <param name="pos">The new position for the sprite.</param>
     public void SetPosition(Vector2 pos)
     {
-        // old and new coordinate space positions
         PointF oldCoord = _sceneLayerCoordinates;
-        PointF newCoord = new PointF(pos.X, pos.Y);
-
-        // compute old/new draw rects in WORLD pixels
         Rectangle oldDraw = DrawLocationWorld;
-        Rectangle newDraw = DrawLocationWorld;
-
-        // union of old + new = full movement envelope
-        Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
-        movementWorldRect.Inflate(new Size(5, 5));
 
         // commit the move
-        _sceneLayerCoordinates = newCoord;
+        _sceneLayerCoordinates = new PointF(pos.X, pos.Y);
 
-        // enqueue ONE world-space dirty rect for the whole movement
+        // compute destination draw rect AFTER updating coords
+        Rectangle newDraw = DrawLocationWorld;
+
+        Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
+        movementWorldRect.Inflate(5, 5);
+
         _sceneLayer.RefreshQueue.AddWorldRect(movementWorldRect);
 
-        // raise the event
-        SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, newCoord));
+        SpriteMoved?.Invoke(new SpriteMovedEventArgs(this, oldCoord, _sceneLayerCoordinates));
     }
 
     /// <summary>
