@@ -16,6 +16,7 @@
 		<AssemblyName>Gondwana</AssemblyName>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
 		<!-- NuGet packaging -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
