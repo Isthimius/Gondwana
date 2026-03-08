@@ -15,6 +15,10 @@ public sealed class TilesheetRegistry
     private static readonly Lazy<TilesheetRegistry> _instance =
         new(() => new TilesheetRegistry());
 
+    /// <summary>
+    /// Gets the singleton instance of the <see cref="TilesheetRegistry"/>.
+    /// </summary>
+    /// <value>The singleton instance.</value>
     public static TilesheetRegistry Instance => _instance.Value;
 
     // Private ctor ensures no one else can new this up
@@ -47,6 +51,17 @@ public sealed class TilesheetRegistry
             replaced.Dispose();
     }
 
+    /// <summary>
+    /// Attempts to retrieve a <see cref="Tilesheet"/> by its name from the registry.
+    /// </summary>
+    /// <param name="name">The name of the tilesheet to retrieve. Cannot be <see langword="null"/>.</param>
+    /// <param name="sheet">When this method returns, contains the tilesheet associated with the specified name, 
+    /// if found; otherwise, <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> if the tilesheet was found in the registry; otherwise, <see langword="false"/>.</returns>
+    /// <remarks>
+    /// This method is thread-safe. If <paramref name="name"/> is <see langword="null"/>, a warning is logged and 
+    /// the method returns <see langword="false"/>.
+    /// </remarks>
     public bool TryGet(string name, out Tilesheet? sheet)
     {
         if (name is null)
@@ -60,6 +75,15 @@ public sealed class TilesheetRegistry
             return _sheets.TryGetValue(name, out sheet!);
     }
 
+    /// <summary>
+    /// Retrieves a <see cref="Tilesheet"/> by its name from the registry, or <see langword="null"/> if not found.
+    /// </summary>
+    /// <param name="name">The name of the tilesheet to retrieve.</param>
+    /// <returns>The tilesheet associated with the specified name, or <see langword="null"/> if not found.</returns>
+    /// <remarks>
+    /// This method is thread-safe and provides a convenient alternative to <see cref="TryGet"/> when 
+    /// a null return value is acceptable.
+    /// </remarks>
     public Tilesheet? GetOrNull(string name)
     {
         return TryGet(name, out var s) ? s : null;
@@ -123,6 +147,13 @@ public sealed class TilesheetRegistry
         return true;
     }
 
+    /// <summary>
+    /// Removes all tilesheets from the registry and disposes them.
+    /// </summary>
+    /// <remarks>
+    /// This method is thread-safe. All tilesheets in the registry are disposed after being removed.
+    /// Use with caution as any external references to the tilesheets will reference disposed objects.
+    /// </remarks>
     public void Clear()
     {
         List<Tilesheet> copy;
@@ -136,6 +167,13 @@ public sealed class TilesheetRegistry
             ts.Dispose();
     }
 
+    /// <summary>
+    /// Gets a read-only list of all tilesheet names currently registered in the registry.
+    /// </summary>
+    /// <value>A read-only list containing the names of all registered tilesheets.</value>
+    /// <remarks>
+    /// This property is thread-safe and returns a snapshot of the names at the time of access.
+    /// </remarks>
     public IReadOnlyList<string> Names
     {
         get
@@ -145,6 +183,14 @@ public sealed class TilesheetRegistry
         }
     }
 
+    /// <summary>
+    /// Gets an immutable snapshot of all registered tilesheets as a dictionary.
+    /// </summary>
+    /// <returns>An immutable dictionary containing all registered tilesheets, keyed by their names.</returns>
+    /// <remarks>
+    /// This method is thread-safe and returns a snapshot of the registry at the time of invocation.
+    /// The returned dictionary uses the same string comparer as the internal collection.
+    /// </remarks>
     public IImmutableDictionary<string, Tilesheet> GetAll()
     {
         lock (_gate)
@@ -153,6 +199,13 @@ public sealed class TilesheetRegistry
         }
     }
 
+    /// <summary>
+    /// Gets the number of tilesheets currently registered in the registry.
+    /// </summary>
+    /// <value>The total count of registered tilesheets.</value>
+    /// <remarks>
+    /// This property is thread-safe.
+    /// </remarks>
     public int Count
     {
         get

@@ -2,6 +2,9 @@
 
 namespace Gondwana.SkiaSharp;
 
+/// <summary>
+/// Provides utility methods for working with SkiaSharp bitmaps, including saving, encoding, and alpha channel operations.
+/// </summary>
 public static class SkiaHelper
 {
     /// <summary>
@@ -40,6 +43,13 @@ public static class SkiaHelper
         return data.ToArray();
     }
 
+    /// <summary>
+    /// Applies an alpha mask to a bitmap by making pixels that match the target color transparent.
+    /// Pixels within the tolerance range of the target color will be set to fully transparent.
+    /// </summary>
+    /// <param name="bitmap">The bitmap to modify.</param>
+    /// <param name="targetColor">The color to make transparent.</param>
+    /// <param name="tolerance">The tolerance for color matching (0-255). Higher values match more similar colors.</param>
     public static void ApplyAlphaMask(SKBitmap bitmap, SKColor targetColor, byte tolerance = 5)
     {
         if (bitmap == null || bitmap.IsEmpty)
@@ -65,6 +75,13 @@ public static class SkiaHelper
         bitmap.NotifyPixelsChanged();
     }
 
+    /// <summary>
+    /// Converts a bitmap to use premultiplied alpha format.
+    /// If the bitmap already uses premultiplied alpha, it is returned unchanged.
+    /// Otherwise, a new bitmap is created with premultiplied alpha values.
+    /// </summary>
+    /// <param name="bitmap">The bitmap to convert.</param>
+    /// <returns>A bitmap with premultiplied alpha. May be the original bitmap if it already uses premultiplied alpha, or a new bitmap with converted values.</returns>
     public static SKBitmap PremultiplyAlpha(SKBitmap bitmap)
     {
         if (bitmap == null || bitmap.IsEmpty)

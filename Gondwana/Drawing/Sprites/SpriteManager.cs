@@ -1,7 +1,9 @@
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
+using Gondwana.Timers;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using Gondwana.Scenes;
-using Gondwana.Timers;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -11,28 +13,45 @@ public static class SpriteManager
 
     private static long _lastTick = HighResTimer.GetCurrentTick();
 
+    /// <summary>
+    /// Event raised when a new sprite is created.
+    /// </summary>
+    public static event Action<Sprite>? SpriteCreated;
+
     static SpriteManager() { }
 
+    /// <summary>
+    /// Gets a read-only collection of all sprites currently managed by the sprite manager.
+    /// </summary>
     public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
-
+    /// <summary>
+    /// Gets or sets a value indicating whether new sprites should be automatically sized to their scene layer.
+    /// </summary>
     public static bool SizeNewSpritesToSceneLayer { get; set; } = true;
 
     #region public methods
 
-    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame)
+    /// <summary>
+    /// Creates a new sprite on the specified scene layer with the given frame.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer on which to create the sprite.</param>
+    /// <param name="frame">The frame to use for the sprite.</param>
+    /// <param name="id">Optional nickname/identifier for the sprite.</param>
+    /// <returns>The newly created sprite.</returns>
+    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string? id = null)
     {
-        Sprite sprite = new Sprite(sceneLayer, frame);
+        var sprite = new Sprite(sceneLayer, frame);
+        sprite.Nickname = id;
+        SpriteCreated?.Invoke(sprite);
         return sprite;
     }
 
-    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string id)
-    {
-        Sprite sprite = CreateSprite(sceneLayer, frame);
-        sprite.ID = id;
-
-        return sprite;
-    }
-
+    /// <summary>
+    /// Creates a clone of the specified sprite on the given scene layer.
+    /// </summary>
+    /// <param name="sprite">The sprite to clone.</param>
+    /// <param name="sceneLayer">The scene layer for the cloned sprite.</param>
+    /// <returns>The cloned sprite.</returns>
     public static Sprite CloneSprite(Sprite sprite, SceneLayer sceneLayer)
     {
         Sprite newSprite = new Sprite(sprite);
@@ -40,12 +59,19 @@ public static class SpriteManager
         if (newSprite.SceneLayer != sceneLayer)
         {
             newSprite._sceneLayer = sceneLayer;
-            newSprite.QueueRefreshArea(newSprite.DrawLocation);
+            newSprite._sceneLayer.RefreshQueue.AddWorldRect(newSprite.DrawLocationWorld);
         }
 
+        SpriteCreated?.Invoke(newSprite);
         return newSprite;
     }
 
+    /// <summary>
+    /// Creates a clone of the sprite with the specified ID on the given scene layer.
+    /// </summary>
+    /// <param name="id">The ID/nickname of the sprite to clone.</param>
+    /// <param name="sceneLayer">The scene layer for the cloned sprite.</param>
+    /// <returns>The cloned sprite, or null if no sprite with the specified ID exists.</returns>
     public static Sprite? CloneSprite(string id, SceneLayer sceneLayer)
     {
         Sprite? sprite = GetSpriteByID(id);
@@ -56,12 +82,20 @@ public static class SpriteManager
         return null;
     }
 
+    /// <summary>
+    /// Removes and disposes the specified sprite.
+    /// </summary>
+    /// <param name="sprite">The sprite to remove.</param>
     public static void Remove(Sprite sprite)
     {
         // Dispose method of Sprite adds area to Ref Queue and removes from spriteList
         sprite.Dispose();
     }
 
+    /// <summary>
+    /// Removes and disposes the sprite with the specified ID.
+    /// </summary>
+    /// <param name="ID">The ID/nickname of the sprite to remove.</param>
     public static void Remove(string ID)
     {
         Sprite? sprite = GetSpriteByID(ID);
@@ -69,6 +103,9 @@ public static class SpriteManager
             Remove(sprite);
     }
 
+    /// <summary>
+    /// Removes and disposes all sprites currently managed by the sprite manager.
+    /// </summary>
     public static void Clear()
     {
         List<Sprite> tempSprites = new List<Sprite>(_spriteList);
@@ -76,61 +113,47 @@ public static class SpriteManager
             Remove(sprite);
     }
 
+    /// <summary>
+    /// Retrieves a sprite by its ID/nickname.
+    /// </summary>
+    /// <param name="ID">The ID/nickname of the sprite to retrieve.</param>
+    /// <returns>The sprite with the specified ID, or null if not found.</returns>
     public static Sprite? GetSpriteByID(string ID)
     {
         foreach (Sprite sprite in _spriteList)
         {
-            if (sprite.ID == ID)
+            if (sprite.Nickname == ID)
                 return sprite;
         }
 
         return null;
     }
 
-    public static List<Sprite> GetSpritesInRange(Rectangle range)
-    {
-        return GetSpritesInRange(range, false);
-    }
-
-    public static List<Sprite> GetSpritesInRange(Rectangle range, bool fullEnclosures)
-    {
-        List<Sprite> retSprites = new List<Sprite>();
-
-        foreach (Sprite sprite in _spriteList)
-        {
-            // check if sprite in range
-            if (fullEnclosures)
-            {
-                if (range.Contains(sprite.DrawLocation))
-                    retSprites.Add(sprite);
-            }
-            else
-            {
-                if (sprite.DrawLocation.IntersectsWith(range))
-                    retSprites.Add(sprite);
-            }
-        }
-
-        return retSprites;
-    }
-
-    public static List<Sprite> GetSpritesInRange(Rectangle range, SceneLayer sceneLayer, bool fullEnclosures = false)
+    // world
+    /// <summary>
+    /// Gets all sprites within the specified world rectangle range.
+    /// </summary>
+    /// <param name="worldRect">The world rectangle to search within.</param>
+    /// <param name="sceneLayer">Optional scene layer to filter by. If null, searches all layers.</param>
+    /// <param name="fullEnclosures">If true, only returns sprites fully contained within the rectangle. If false, returns sprites that intersect with the rectangle.</param>
+    /// <returns>A list of sprites within the specified range.</returns>
+    public static List<Sprite> GetSpritesInWorldRectRange(Rectangle worldRect, SceneLayer? sceneLayer = null, bool fullEnclosures = false)
     {
         List<Sprite> retSprites = new List<Sprite>();
 
         foreach (Sprite sprite in _spriteList)
         {
-            if (sprite.SceneLayer == sceneLayer)
+            if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
                 // check if sprite in range
                 if (fullEnclosures)
                 {
-                    if (range.Contains(sprite.DrawLocation))
+                    if (worldRect.Contains(sprite.DrawLocationWorld))
                         retSprites.Add(sprite);
                 }
                 else
                 {
-                    if (sprite.DrawLocation.IntersectsWith(range))
+                    if (sprite.DrawLocationWorld.IntersectsWith(worldRect))
                         retSprites.Add(sprite);
                 }
             }
@@ -139,29 +162,65 @@ public static class SpriteManager
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPixel(Point pxlPt)
+    // screen
+    /// <summary>
+    /// Gets all sprites within the specified view rectangle range.
+    /// </summary>
+    /// <param name="view">The view to use for coordinate transformation.</param>
+    /// <param name="viewRectPx">The view rectangle in pixels to search within.</param>
+    /// <param name="sceneLayer">Optional scene layer to filter by. If null, searches all layers.</param>
+    /// <param name="fullEnclosures">If true, only returns sprites fully contained within the rectangle. If false, returns sprites that intersect with the rectangle.</param>
+    /// <returns>A list of sprites within the specified view range.</returns>
+    public static List<Sprite> GetSpritesInViewRectRange(
+        View view,
+        Rectangle viewRectPx,
+        SceneLayer? sceneLayer = null,
+        bool fullEnclosures = false)
     {
-        List<Sprite> retSprites = new List<Sprite>();
+        var retSprites = new List<Sprite>();
 
-        foreach (Sprite sprite in _spriteList)
+        foreach (var sprite in _spriteList)
         {
-            // check if sprite at Point
-            if (sprite.DrawLocation.Contains(pxlPt))
-                retSprites.Add(sprite);
+            if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
+            {
+                var rectScreen = sprite.GetDrawLocationScreen(view).ToPixelAlignedRect();
+
+                if (fullEnclosures)
+                {
+                    if (viewRectPx.Contains(rectScreen))
+                        retSprites.Add(sprite);
+                }
+                else
+                {
+                    if (rectScreen.IntersectsWith(viewRectPx))
+                        retSprites.Add(sprite);
+                }
+            }
         }
 
         return retSprites;
     }
 
-    public static List<Sprite> GetSpritesAtPixel(Point pxlPt, SceneLayer sceneLayer)
+    // screen
+    /// <summary>
+    /// Gets all sprites at the specified view pixel coordinate.
+    /// </summary>
+    /// <param name="view">The view to use for coordinate transformation.</param>
+    /// <param name="viewPxlPt">The pixel coordinate in the view to check.</param>
+    /// <param name="sceneLayer">Optional scene layer to filter by. If null, searches all layers.</param>
+    /// <returns>A list of sprites at the specified pixel location.</returns>
+    public static List<Sprite> GetSpritesAtViewPixel(View view, Point viewPxlPt, SceneLayer? sceneLayer = null)
     {
-        List<Sprite> retSprites = new List<Sprite>();
+        var retSprites = new List<Sprite>();
 
         foreach (Sprite sprite in _spriteList)
         {
-            // check if sprite at Point
-            if ((sprite.SceneLayer == sceneLayer) && (sprite.DrawLocation.Contains(pxlPt)))
-                retSprites.Add(sprite);
+            if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
+            {
+                // check if sprite at Point
+                if (sprite.GetDrawLocationScreen(view).Contains(viewPxlPt))
+                    retSprites.Add(sprite);
+            }
         }
 
         return retSprites;
@@ -170,132 +229,6 @@ public static class SpriteManager
     #endregion public methods
 
     #region internal methods
-
-    internal static Rectangle GetDrawLocation(Sprite sprite, SceneLayer grid, PointF coord, Size size)
-    {
-        // if Sprite hasn't been placed on SceneLayer, this is moot
-        if (grid == null)
-            return new Rectangle();
-
-        // get the "top left" of the Sprite gridCoordinates value
-        Point pxlPt = grid.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(grid, coord);
-
-        // adjust X coord
-        switch (sprite.HorizAlign)
-        {
-            case HorizontalAlignment.Left:
-                // no adjustment necessary
-                break;
-
-            case HorizontalAlignment.Center:
-                // shift right by half the difference between Tile Width values
-                // if Sprite Width > GridPt Width, Sprite will shift left
-                pxlPt.X += (grid.SceneLayerTileWidth - size.Width) / 2;
-                break;
-
-            case HorizontalAlignment.Right:
-                // shift right by the entire difference between Tile Width values
-                // if Sprite Width > GridPt Width, Sprite will shift left
-                pxlPt.X += (grid.SceneLayerTileWidth - size.Width);
-                break;
-
-            default:
-                // shouldn't get here...
-                break;
-        }
-
-        // adjust Y coord
-        switch (sprite.VertAlign)
-        {
-            case VerticalAlignment.Top:
-                // no adjustment necessary
-                break;
-
-            case VerticalAlignment.Middle:
-                // shift down by half the difference between Tile Height values
-                // if Sprite Height > GridPt Height, Sprite will shift up
-                pxlPt.Y += (grid.SceneLayerTileHeight - size.Height) / 2;
-                break;
-
-            case VerticalAlignment.Bottom:
-                // shift down by the entire difference between Tile Height values
-                // if Sprite Height > GridPt Height, Sprite will shift up
-                pxlPt.Y += (grid.SceneLayerTileHeight - size.Height);
-                break;
-
-            default:
-                // shouldn't get here...
-                break;
-        }
-
-        pxlPt.X += sprite.NudgeX;
-        pxlPt.Y += sprite.NudgeY;
-
-        return new Rectangle(pxlPt, size);
-    }
-
-    // TODO: how is this used differently from Sprite.GridCoordinates?
-    internal static PointF GridCoordinates(Sprite sprite, SceneLayer grid, Rectangle drawLocation)
-    {
-        // if Sprite hasn't been placed on SceneLayer, this is moot
-        if (grid == null)
-            return new PointF();
-
-        // work the Sprites.DrawLocation method backwards...
-        drawLocation.X -= sprite.NudgeX;
-        drawLocation.Y -= sprite.NudgeY;
-
-        // adjust X coord
-        switch (sprite.HorizAlign)
-        {
-            case HorizontalAlignment.Left:
-                // no adjustment necessary
-                break;
-
-            case HorizontalAlignment.Center:
-                // shift left by half the difference between Tile Width values
-                // if Sprite Width > GridPt Width, Sprite will shift right
-                drawLocation.X -= (grid.SceneLayerTileWidth - drawLocation.Width) / 2;
-                break;
-
-            case HorizontalAlignment.Right:
-                // shift left by the entire difference between Tile Width values
-                // if Sprite Width > GridPt Width, Sprite will shift right
-                drawLocation.X -= (grid.SceneLayerTileWidth - drawLocation.Width);
-                break;
-
-            default:
-                // shouldn't get here...
-                break;
-        }
-
-        // adjust Y coord
-        switch (sprite.VertAlign)
-        {
-            case VerticalAlignment.Top:
-                // no adjustment necessary
-                break;
-
-            case VerticalAlignment.Middle:
-                // shift up by half the difference between Tile Height values
-                // if Sprite Height > GridPt Height, Sprite will shift down
-                drawLocation.Y -= (grid.SceneLayerTileHeight - drawLocation.Height) / 2;
-                break;
-
-            case VerticalAlignment.Bottom:
-                // shift up by the entire difference between Tile Height values
-                // if Sprite Height > GridPt Height, Sprite will shift down
-                drawLocation.Y -= (grid.SceneLayerTileHeight - drawLocation.Height);
-                break;
-
-            default:
-                // shouldn't get here...
-                break;
-        }
-
-        // find and return the grid coordinates after the Sprite adjustments have been considered
-        return grid.CoordinateSystem.GetSceneLayerCoordinatesAtPixel(grid, drawLocation.Location);
-    }
 
     internal static void MoveSprites(long tick)
     {

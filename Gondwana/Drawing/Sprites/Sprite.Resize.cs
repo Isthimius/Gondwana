@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using Gondwana.Drawing.Collisions;
+using Gondwana.Collisions;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -39,7 +39,7 @@ public partial class Sprite
 
         var next = new Size(Math.Max(1, w), Math.Max(1, h));
 
-        if (next != renderSize)
+        if (next != _renderSize)
         {
             RenderSize = next;                 // invalidation happens here (your setter)
             ApplyScaledCollisionAdjust(next);   // keep collision proportional
@@ -70,6 +70,8 @@ public partial class Sprite
     /// <summary>
     /// Smoothly resize the sprite to an absolute pixel size over the given duration (seconds).
     /// </summary>
+    /// <param name="targetSize">The target size in pixels to resize to.</param>
+    /// <param name="durationSeconds">The duration of the resize animation in seconds.</param>
     public void ResizeTo(Size targetSize, float durationSeconds)
     {
         _resizeStart = RenderSize;
@@ -81,15 +83,14 @@ public partial class Sprite
         // collision baseline
         _resizeStartCollisionAdjust = AdjustCollisionArea;
         _resizeStartSizeForCollision = RenderSize;
-
-        // Make sure we repaint right away if something changes on first tick
-        QueueRefreshArea(Rectangle.Union(this.DrawLocation, SpriteManager.GetDrawLocation(this, _sceneLayer, sceneLayerCoordinates, targetSize)));
     }
 
     /// <summary>
     /// Scale to a factor relative to current RenderSize over the given duration (seconds).
     /// factor > 1 grows; factor < 1 shrinks.
     /// </summary>
+    /// <param name="factor">The scaling factor. Values greater than 1 grow the sprite, values less than 1 shrink it.</param>
+    /// <param name="durationSeconds">The duration of the scaling animation in seconds.</param>
     public void ScaleBy(float factor, float durationSeconds)
     {
         factor = MathF.Max(0.01f, factor);

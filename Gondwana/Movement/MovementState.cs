@@ -3,6 +3,11 @@ using Gondwana.Movement.Scripted;
 
 namespace Gondwana.Movement;
 
+/// <summary>
+/// Represents the current motion state of an <see cref="IMovable"/> object, including velocity, acceleration,
+/// damping, and active scripted movements. This structure is used by <see cref="MovementController"/> to
+/// track and manage both physics-based (integrated) and scripted motion behaviors.
+/// </summary>
 public struct MovementState
 {
     /// <summary>
@@ -52,7 +57,7 @@ public struct MovementState
     /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
     /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
     /// coordinate space of <see cref="MovementSpace.Grid"/>.</returns>
-    internal static MovementState ForSceneLayer(Vector2 position, float linearDampening = 0f) => new()
+    internal static MovementState ForSceneLayer(float linearDampening = 0f) => new()
     {
         MovementSpace = MovementSpace.Grid,
         LinearDamping = linearDampening
@@ -66,7 +71,7 @@ public struct MovementState
     /// <param name="linearDampening">The linear damping factor to apply to the movement. Defaults to <see langword="0f"/> if not specified.</param>
     /// <returns>A new <see cref="MovementState"/> instance configured with the specified position, linear damping, and a
     /// coordinate space of <see cref="MovementSpace.Pixel"/>.</returns>
-    internal static MovementState ForPixel(Vector2 position, float linearDampening = 0f) => new()
+    internal static MovementState ForPixel(float linearDampening = 0f) => new()
     {
         MovementSpace = MovementSpace.Pixel,
         LinearDamping = linearDampening

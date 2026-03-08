@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['bottom_0',['Bottom',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a82f5089eaccee407c611cde6e92cf28aa2ad9d63b69c4a10a5cc9cad923133bc4',1,'Gondwana.Drawing.Direct.TextBlock.Bottom'],['../namespace_gondwana_1_1_drawing_1_1_sprites.html#aaea16d478d36b47862f55443c2ac3587a2ad9d63b69c4a10a5cc9cad923133bc4',1,'Gondwana.Drawing.Sprites.Bottom']]],
+  ['bottomtotop_1',['BottomToTop',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a',1,'Gondwana::Drawing::Direct::DirectDrawingBase']]]
+];

@@ -290,6 +290,12 @@ public sealed class AssetsFile : IDisposable
         LoadZip();
     }
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="AssetsFile"/> instance.
+    /// </summary>
+    /// <remarks>This method closes the underlying zip file, clears the loaded state, and removes this
+    /// instance from the global collection of asset files. After calling this method, the instance should
+    /// not be used further.</remarks>
     public void Dispose()
     {
         _zipFile?.Close();

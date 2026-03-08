@@ -61,6 +61,27 @@ public sealed class Timer : IDisposable
 
     internal void RaiseTickEvent() => Tick?.Invoke();
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="Timer"/> and removes it from the collection of active timers.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method performs cleanup of the timer instance, including:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>Removing the timer from the internal collection of active timers</description></item>
+    ///   <item><description>Clearing all event subscribers from the <see cref="Tick"/> event</description></item>
+    ///   <item><description>Marking the timer as disposed to prevent further use</description></item>
+    /// </list>
+    /// <para>
+    /// After disposal, the timer will no longer raise <see cref="Tick"/> events and cannot be reused.
+    /// Calling <see cref="Dispose"/> multiple times is safe and will have no effect after the first call.
+    /// </para>
+    /// <para>
+    /// This method suppresses finalization to prevent the finalizer from running, as cleanup has
+    /// already been performed.
+    /// </para>
+    /// </remarks>
     public void Dispose()
     {
         if (_disposed) return;
@@ -70,6 +91,15 @@ public sealed class Timer : IDisposable
         _disposed = true;
     }
 
+    /// <summary>
+    /// Finalizes an instance of the <see cref="Timer"/> class, releasing resources if the timer
+    /// was not explicitly disposed.
+    /// </summary>
+    /// <remarks>
+    /// This finalizer ensures that timer resources are cleaned up even if <see cref="Dispose"/>
+    /// is not called explicitly. However, it is recommended to always call <see cref="Dispose"/>
+    /// or use the timer in a <c>using</c> statement to ensure deterministic cleanup.
+    /// </remarks>
     ~Timer() => Dispose();
 
     #region static members
@@ -143,6 +173,23 @@ public sealed class Timer : IDisposable
     /// </summary>
     public static string[] TimerIDs => _timers.Keys.ToArray();
 
+    /// <summary>
+    /// Removes and disposes all active timers, clearing the entire timer collection.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method iterates through all active timers, disposes each one, and removes it from
+    /// the internal collection. After calling this method, the timer collection will be empty
+    /// and all previously active timers will no longer raise events.
+    /// </para>
+    /// <para>
+    /// This method is typically called during engine shutdown or when resetting the engine state.
+    /// It ensures proper cleanup of all timer resources and event subscriptions.
+    /// </para>
+    /// <para>
+    /// This method is thread-safe and can be called from any thread.
+    /// </para>
+    /// </remarks>
     public static void ClearAll()
     {
         foreach (var key in _timers.Keys.ToArray())

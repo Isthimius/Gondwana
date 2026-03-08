@@ -6,6 +6,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Movement.Scripted;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace Slider
             adjustedSize = new Size(adjWidth, adjHeight);
 
             matrixes = new Scene();
-            matrixes.AddLayer(numColumns, numRows, tileWidth, tileHeight, 0, 1, CoordinateSystemTypes.SquareIso);
+            matrixes.AddLayer(numColumns, numRows, tileWidth, tileHeight, 0, 1, CoordinateSystemTypes.Orthogonal);
 
             //surface = new VisibleSurface(size.Width, size.Height, matrixes);
             //surface = new VisibleSurface(size.Width, size.Height);
@@ -143,7 +144,7 @@ namespace Slider
                 {
                     Point spriteLoc = new Point((int)sprite.SceneLayerCoordinates.X, (int)sprite.SceneLayerCoordinates.Y);
 
-                    if (spriteLoc == ParseSpriteCoordID(sprite.ID))
+                    if (spriteLoc == ParseSpriteCoordID(sprite.Nickname))
                         totalCorrect++;
                 }
 
@@ -216,7 +217,7 @@ namespace Slider
 
         public PointF GetGridCoordinates(int pxlX, int pxlY)
         {
-            var view = _renderSurfaceHost.ViewRenderer.Views[0];
+            var view = _renderSurfaceHost.ViewManager.Views[0];
             var worldPx = view.ScreenPxToWorldPx(matrixes[0], new PointF(pxlX, pxlY));
             return matrixes[0].WorldPxToGrid(worldPx);
         }
@@ -274,7 +275,7 @@ namespace Slider
             foreach (SceneLayerTile gPt in adjGridPts)
             {
                 if (gPt != null)
-                    adjSprites.AddRange(SpriteManager.GetSpritesInRange(gPt.DrawLocation));
+                    adjSprites.AddRange(SpriteManager.GetSpritesInWorldRectRange(gPt.DrawLocationWorld));
             }
 
             return adjSprites;

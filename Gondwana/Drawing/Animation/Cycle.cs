@@ -14,12 +14,21 @@ public class Cycle : ICloneable, IDisposable
 {
     #region fields
 
+    /// <summary>
+    /// The frame sequence used by this animation cycle
+    /// </summary>
     [JsonProperty]
     public FrameSequence Sequence;
 
+    /// <summary>
+    /// The unique identifier key for this cycle
+    /// </summary>
     [JsonProperty]
     public readonly string CycleKey;
 
+    /// <summary>
+    /// Indicates whether the tile should be hidden when the cycle completes
+    /// </summary>
     [JsonProperty]
     public readonly bool HideTileOnCycleEnd;
 
@@ -29,6 +38,13 @@ public class Cycle : ICloneable, IDisposable
 
     #region constructors / destructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Cycle"/> class
+    /// </summary>
+    /// <param name="sequence">The frame sequence to animate through</param>
+    /// <param name="throttleTime">The time in seconds between frame transitions</param>
+    /// <param name="cycleKey">The unique identifier for this cycle</param>
+    /// <param name="hideTileOnCycleEnd">If true, hides the tile when the cycle completes. Default is false.</param>
     public Cycle(FrameSequence sequence, double throttleTime, string cycleKey, bool hideTileOnCycleEnd = false)
     {
         Sequence = sequence;
@@ -66,6 +82,9 @@ public class Cycle : ICloneable, IDisposable
 
     private double _throttleTime;
 
+    /// <summary>
+    /// Gets or sets the time in seconds between frame transitions in the animation cycle
+    /// </summary>
     [JsonProperty]
     public double ThrottleTime
     {
@@ -106,6 +125,9 @@ public class Cycle : ICloneable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the next cycle to transition to when this cycle completes
+    /// </summary>
     [JsonProperty]
     public Cycle NextCycle { get; set; }
 
@@ -113,6 +135,10 @@ public class Cycle : ICloneable, IDisposable
 
     #region ICloneable Members
 
+    /// <summary>
+    /// Creates a shallow copy of the current <see cref="Cycle"/> instance
+    /// </summary>
+    /// <returns>A new <see cref="Cycle"/> object that is a copy of this instance</returns>
     public object Clone()
     {
         return new Cycle(this);
@@ -122,6 +148,9 @@ public class Cycle : ICloneable, IDisposable
 
     #region IDisposable Members
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="Cycle"/> and removes it from the static cycle collection
+    /// </summary>
     public void Dispose()
     {
         GC.SuppressFinalize(this);
@@ -141,12 +170,28 @@ public class Cycle : ICloneable, IDisposable
 
     internal static readonly Dictionary<string, Cycle> _cycles = new();
 
+    /// <summary>
+    /// Gets the total number of animation cycles currently registered
+    /// </summary>
     public static int Count => _cycles.Count;
 
+    /// <summary>
+    /// Retrieves a list of all registered animation cycle keys
+    /// </summary>
+    /// <returns>A list containing all cycle keys</returns>
     public static List<string> GetAnimationCycleKeys() => new List<string>(_cycles.Keys);
 
+    /// <summary>
+    /// Retrieves a list of all registered animation cycles
+    /// </summary>
+    /// <returns>A list containing all registered <see cref="Cycle"/> instances</returns>
     public static List<Cycle> GetAnimationCycles() => new List<Cycle>(_cycles.Values);
 
+    /// <summary>
+    /// Retrieves a clone of the animation cycle with the specified key
+    /// </summary>
+    /// <param name="cycleKey">The unique identifier of the cycle to retrieve</param>
+    /// <returns>A cloned <see cref="Cycle"/> instance if found; otherwise, null</returns>
     public static Cycle GetAnimationCycle(string cycleKey)
     {
         if (_cycles.ContainsKey(cycleKey))
@@ -155,12 +200,19 @@ public class Cycle : ICloneable, IDisposable
             return null;
     }
 
+    /// <summary>
+    /// Removes and disposes the animation cycle with the specified key
+    /// </summary>
+    /// <param name="cycleKey">The unique identifier of the cycle to clear</param>
     public static void ClearAnimationCycle(string cycleKey)
     {
         if (_cycles.ContainsKey(cycleKey))
             _cycles[cycleKey].Dispose();
     }
 
+    /// <summary>
+    /// Removes and disposes all registered animation cycles
+    /// </summary>
     public static void ClearAllAnimationCycles()
     {
         var tempCycles = new List<Cycle>(_cycles.Values);

@@ -1,4 +1,5 @@
-﻿using Gondwana.Input.Keyboard;
+﻿using System.Runtime.CompilerServices;
+using Gondwana.Input.Keyboard;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.WinForms.Input.Keyboard;
@@ -10,32 +11,32 @@ namespace Gondwana.WinForms.Input.Keyboard;
 /// </summary>
 public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, IDisposable
 {
-    private readonly Control _lifetimeOwner; // just so we know when to auto-dispose
-    private readonly HashSet<string> _pressedKeys = new(StringComparer.OrdinalIgnoreCase);
-    private KeyboardModifierState _mods;
+    private readonly Control _lifetimeOwner;
+
+    // Windows VK codes are 0..255
+    private readonly int[] _down = new int[256];
+
+    // modifier bits published lock-free
+    private int _modsBits;
+
     private bool _isDisposed;
 
-    public ICollection<string> PressedKeys => _pressedKeys;
-
-    public KeyboardModifierState CurrentKeyboardModifiers => _mods;
+    public KeyboardModifierState CurrentKeyboardModifiers =>
+        (KeyboardModifierState)Volatile.Read(ref _modsBits);
 
     internal WinFormsKeyboardAdapter(Control lifetimeOwner)
     {
         _lifetimeOwner = lifetimeOwner ?? throw new ArgumentNullException(nameof(lifetimeOwner));
 
-        // Listen to all key messages at the application level.
         Application.AddMessageFilter(this);
         _lifetimeOwner.Disposed += OnOwnerDisposed;
 
         Engine.Logger.LogInformation("WinFormsKeyboardAdapter initialized. Using IMessageFilter for key polling.");
     }
 
-    private void OnOwnerDisposed(object? sender, EventArgs e)
-    {
-        Dispose();
-    }
+    private void OnOwnerDisposed(object? sender, EventArgs e) => Dispose();
 
-    // IMessageFilter: called for every Windows message before normal dispatch.
+    // IMessageFilter: called on UI thread for each message.
     public bool PreFilterMessage(ref Message m)
     {
         const int WM_KEYDOWN = 0x0100;
@@ -50,46 +51,52 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
         {
             case WM_KEYDOWN:
             case WM_SYSKEYDOWN:
-                HandleKeyDown((Keys)(m.WParam.ToInt32() & 0xFFFF));
+                SetDown(ExtractVk(m), true);
                 break;
 
             case WM_KEYUP:
             case WM_SYSKEYUP:
-                HandleKeyUp((Keys)(m.WParam.ToInt32() & 0xFFFF));
+                SetDown(ExtractVk(m), false);
                 break;
         }
 
-        // Never eat the message; let WinForms do whatever it wants too.
         return false;
     }
 
-    private void HandleKeyDown(Keys keyCode)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsDown(int keyCode)
     {
-        _pressedKeys.Add(NormalizeKey(keyCode));
-        RecomputeModifiers();
+        int idx = keyCode & 0xFF;
+        return Volatile.Read(ref _down[idx]) != 0;
     }
 
-    private void HandleKeyUp(Keys keyCode)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetDown(int keyCode, bool down)
     {
-        _pressedKeys.Remove(NormalizeKey(keyCode));
-        RecomputeModifiers();
+        int idx = keyCode & 0xFF;
+        Volatile.Write(ref _down[idx], down ? 1 : 0);
+        UpdateMods();
     }
 
-    private void RecomputeModifiers()
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void UpdateMods()
     {
-        _mods = KeyboardModifierState.None;
+        int mods = 0;
+        var mk = Control.ModifierKeys;
 
-        if ((Control.ModifierKeys & Keys.Shift) != 0)
-            _mods |= KeyboardModifierState.Shift;
+        if ((mk & Keys.Shift) != 0) mods |= (int)KeyboardModifierState.Shift;
+        if ((mk & Keys.Control) != 0) mods |= (int)KeyboardModifierState.Ctrl;
+        if ((mk & Keys.Alt) != 0) mods |= (int)KeyboardModifierState.Alt;
 
-        if ((Control.ModifierKeys & Keys.Control) != 0)
-            _mods |= KeyboardModifierState.Ctrl;
-
-        if ((Control.ModifierKeys & Keys.Alt) != 0)
-            _mods |= KeyboardModifierState.Alt;
+        Volatile.Write(ref _modsBits, mods);
     }
 
-    private static string NormalizeKey(Keys keyCode) => keyCode.ToString();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int ExtractVk(in Message m)
+    {
+        // WParam contains VK. Clamp to 16 bits and then the low 8 bits are standard VK range.
+        return m.WParam.ToInt32() & 0xFFFF;
+    }
 
     public void Dispose()
     {

@@ -1,8 +1,22 @@
 ﻿namespace Gondwana.Input.Gamepad;
 
+/// <summary>
+/// Represents the state of an analog stick on a gamepad, including both normalized floating-point
+/// values for convenient use in game logic and raw integer values from the underlying input system.
+/// This immutable struct provides methods for deadzone processing, direction detection, and magnitude calculation.
+/// </summary>
 public readonly struct GamepadStickState
 {
+    /// <summary>
+    /// Gets the normalized horizontal position of the analog stick in the range [-1, 1],
+    /// where -1 represents full left, 0 represents center, and 1 represents full right.
+    /// </summary>
     public float X { get; }
+
+    /// <summary>
+    /// Gets the normalized vertical position of the analog stick in the range [-1, 1],
+    /// where -1 represents full down, 0 represents center, and 1 represents full up.
+    /// </summary>
     public float Y { get; }
 
     /// <summary>
@@ -15,6 +29,24 @@ public readonly struct GamepadStickState
     /// </summary>
     public int RawY { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GamepadStickState"/> struct with the specified
+    /// normalized and optional raw values.
+    /// </summary>
+    /// <param name="x">
+    /// The normalized horizontal position in the range [-1, 1], where -1 is full left,
+    /// 0 is center, and 1 is full right.
+    /// </param>
+    /// <param name="y">
+    /// The normalized vertical position in the range [-1, 1], where -1 is full down,
+    /// 0 is center, and 1 is full up.
+    /// </param>
+    /// <param name="rawX">
+    /// The raw horizontal value from the underlying input system. Default is 0.
+    /// </param>
+    /// <param name="rawY">
+    /// The raw vertical value from the underlying input system. Default is 0.
+    /// </param>
     public GamepadStickState(float x, float y, int rawX = 0, int rawY = 0)
     {
         X = x;
@@ -95,5 +127,10 @@ public readonly struct GamepadStickState
         return IsEngaged(threshold) ? this : new GamepadStickState(0, 0, RawX, RawY);
     }
 
+    /// <summary>
+    /// Returns a string representation of the normalized stick position showing the X and Y values
+    /// formatted to two decimal places in the format "(X, Y)".
+    /// </summary>
+    /// <returns>A string in the format "(X, Y)" where X and Y are formatted to two decimal places.</returns>
     public override string ToString() => $"({X:0.00}, {Y:0.00})";
 }

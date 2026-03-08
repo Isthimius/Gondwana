@@ -28,14 +28,14 @@ internal interface ISceneLayerCoordinates
     /// Converts a pixel-space point into its corresponding grid-space
     /// layer coordinate (column, row) within the specified SceneLayer.
     /// </summary>
-    PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt);
+    PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF worldPixelPt);
 
     /// <summary>
     /// Returns a list of all layer points whose rendered pixel areas intersect
     /// the specified pixel-space rectangle, optionally including tiles with visual
     /// overhang regions (e.g., tall sprites or hexes that extend beyond their cell).
     /// </summary>
-    List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle pixelRange, bool includeOverhang);
+    List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang);
 
     /// <summary>
     /// Gets the pixel-space rectangle occupied by a given tile, optionally

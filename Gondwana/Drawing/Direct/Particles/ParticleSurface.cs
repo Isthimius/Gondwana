@@ -1,9 +1,12 @@
-﻿using Gondwana.Rendering;
-using Gondwana.Timers;
-using SkiaSharp;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
+using Gondwana.Timers;
+using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct.Particles;
 
@@ -26,8 +29,8 @@ namespace Gondwana.Drawing.Direct.Particles;
 /// </para>
 /// <para>
 /// Internally, the particle pool is compacted each update to avoid GC churn.
-/// Rendering uses Skia’s <see cref="SKBlendMode.Plus"/> for additive blending,
-/// making it suitable for “glowy” effects such as fire, sparks, and magical auras.
+/// Rendering uses Skia's <see cref="SKBlendMode.Plus"/> for additive blending,
+/// making it suitable for "glowy" effects such as fire, sparks, and magical auras.
 /// </para>
 /// </remarks>
 ///
@@ -126,7 +129,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     public float GlobalEmitScale { get; set; } = 1f;
 
     /// <summary>
-    /// Global tint color multiplied against every particle’s own color
+    /// Global tint color multiplied against every particle's own color
     /// during rendering.
     /// </summary>
     /// <remarks>
@@ -179,12 +182,72 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// </summary>
     public float CullingMarginY { get; set; } = 32f;
 
-    public ParticleSurface(RenderSurfaceHostBase host, Rectangle bounds, int maxParticles = 2000, SKBitmap? particleSprite = null)
-        : base(host, bounds)
+    private ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
+                           DirectDrawingMode mode,
+                           SceneLayer? sceneLayer,
+                           View? view,
+                           Rectangle? screenBounds,
+                           Rectangle? worldBounds,
+                           string? nickname = null,
+                           int maxParticles = 2000,
+                           SKBitmap? particleSprite = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         _particles = ArrayPool<Particle>.Shared.Rent(maxParticles);
         _particleSprite = particleSprite;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParticleSurface"/> class for scene layer rendering
+    /// with world-space coordinate bounds.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The render surface host managing this particle system.</param>
+    /// <param name="sceneLayer">The scene layer to render particles on.</param>
+    /// <param name="worldBounds">The world-space bounds for the particle system, or <c>null</c> for unbounded.</param>
+    /// <param name="nickname">An optional friendly name for debugging and identification.</param>
+    /// <param name="maxParticles">The maximum number of particles this system can manage simultaneously. Default is 2000.</param>
+    /// <param name="particleSprite">An optional bitmap texture to use for particles instead of circles.</param>
+    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
+                           SceneLayer sceneLayer,
+                           Rectangle? worldBounds,
+                           string? nickname = null,
+                           int maxParticles = 2000,
+                           SKBitmap? particleSprite = null)
+        : this(renderSurfaceHost,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer,
+               null,
+               null,
+               worldBounds,
+               nickname,
+               maxParticles,
+               particleSprite) { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParticleSurface"/> class for view-based rendering
+    /// with screen-space coordinate bounds.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The render surface host managing this particle system.</param>
+    /// <param name="view">The view to render particles on.</param>
+    /// <param name="screenBounds">The screen-space bounds for the particle system, or <c>null</c> for unbounded.</param>
+    /// <param name="nickname">An optional friendly name for debugging and identification.</param>
+    /// <param name="maxParticles">The maximum number of particles this system can manage simultaneously. Default is 2000.</param>
+    /// <param name="particleSprite">An optional bitmap texture to use for particles instead of circles.</param>
+    public ParticleSurface (RenderSurfaceHostBase renderSurfaceHost,
+                            View view,
+                            Rectangle? screenBounds,
+                            string? nickname = null,
+                            int maxParticles = 2000,
+                            SKBitmap? particleSprite = null)
+        : this(renderSurfaceHost,
+              DirectDrawingMode.View,
+              null,
+              view,
+              screenBounds,
+              null,
+              nickname,
+              maxParticles,
+              particleSprite) { }
 
     /// <summary>
     /// Immediately spawns a fixed number of particles from the given emitter.
@@ -207,6 +270,10 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// </example>
     public void Burst(ParticleEmitter emitter, int count) => EmitFrom(emitter, count);
 
+    /// <summary>
+    /// Releases the particle array back to the pool and disposes managed resources.
+    /// </summary>
+    /// <param name="disposing">True if disposing managed resources; false if called from finalizer.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -287,10 +354,14 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             p.Life -= dt;
 
             // cull if out of bounds (with margin)
-            bool isInView = p.X >= Bounds.Left - CullingMarginX
-                         && p.X <= Bounds.Right + CullingMarginX
-                         && p.Y >= Bounds.Top - CullingMarginY
-                         && p.Y <= Bounds.Bottom + CullingMarginY;
+            Rectangle cullBounds = (Mode == DirectDrawingMode.SceneLayer)
+                ? WorldBounds
+                : ScreenBounds;
+
+            bool isInView = p.X >= cullBounds.Left - CullingMarginX
+                         && p.X <= cullBounds.Right + CullingMarginX
+                         && p.Y >= cullBounds.Top - CullingMarginY
+                         && p.Y <= cullBounds.Bottom + CullingMarginY;
 
             if (p.Life > 0 && isInView)
                 _particles[write++] = p;
@@ -312,9 +383,9 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// (<see cref="SkiaSharp.SKBlendMode.Plus"/>) by default for bright/glowy effects.
     /// </para>
     /// <para>
-    /// You normally don’t call this directly. Once the system is registered with
+    /// Do not call this directly. Once the system is registered with
     /// <see cref="DirectDrawingManager"/>, the manager invokes <c>Render()</c>
-    /// during the host’s render pass.
+    /// during the host's render pass.
     /// </para>
     /// </remarks>
     /// <example>
@@ -329,12 +400,24 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// particles.Invalidate();       // mark dirty so the manager re-renders
     /// </code>
     /// </example>
-    protected internal override void Draw()
+    protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
+        var canvas = backbuffer.Canvas;
 
         // e.g., default blend; you may switch per-emitter later if you add BlendMode there
         _paint.BlendMode = SKBlendMode.Plus;
+
+        // Source bounds in the particle coordinate space
+        Rectangle srcBounds = (Mode == DirectDrawingMode.SceneLayer)
+            ? WorldBounds
+            : ScreenBounds;
+
+        // Guard against divide-by-zero (shouldn't happen, but cheap insurance)
+        float sx = (srcBounds.Width > 0) ? (destRectScreen.Width / srcBounds.Width) : 1f;
+        float sy = (srcBounds.Height > 0) ? (destRectScreen.Height / srcBounds.Height) : 1f;
+
+        // Usually uniform; if not, pick one (or average) for size scaling
+        float sSize = (sx + sy) * 0.5f;
 
         for (int i = 0; i < _alive; i++)
         {
@@ -350,21 +433,23 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
             // apply global tint
             _paint.Color = ApplyTint(p.Color, a, tint);
 
+            // Map particle position from srcBounds space -> destRectScreen space
+            float x = destRectScreen.Left + (p.X - srcBounds.Left) * sx;
+            float y = destRectScreen.Top + (p.Y - srcBounds.Top) * sy;
+
             if (p.ParticleSprite is null)
             {
-                // circle primitive
-                float size = p.Size * (1f + 0.5f * t);
-                canvas.DrawCircle(p.X, p.Y, size, _paint);
+                float size = (p.Size * sSize) * (1f + 0.5f * t);
+                canvas.DrawCircle(x, y, size, _paint);
             }
             else
             {
-                // textured quad
-                float s = p.Size;
-                var dst = new SKRect(p.X - s * 0.5f, p.Y - s * 0.5f,
-                                     p.X + s * 0.5f, p.Y + s * 0.5f);
+                float s = p.Size * sSize;
+                var dst = new SKRect(x - s * 0.5f, y - s * 0.5f,
+                                     x + s * 0.5f, y + s * 0.5f);
 
                 canvas.Save();
-                canvas.RotateDegrees(p.Rotation, p.X, p.Y);
+                canvas.RotateDegrees(p.Rotation, x, y);
                 canvas.DrawBitmap(p.ParticleSprite, dst, _paint);
                 canvas.Restore();
             }

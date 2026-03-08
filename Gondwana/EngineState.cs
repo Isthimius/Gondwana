@@ -14,9 +14,21 @@ using System.Reflection;
 
 namespace Gondwana;
 
+/// <summary>
+/// Represents the complete serializable state of the game engine, including assets, scenes, sprites,
+/// audio resources, and custom data. This class provides functionality to save and load engine state
+/// to/from files with support for selective state management, compression, and merge operations.
+/// The state can be persisted as JSON and optionally compressed using GZip compression.
+/// </summary>
 [JsonObject(IsReference = true)]
 public sealed class EngineState
 {
+    /// <summary>
+    /// Gets or sets the JSON serializer settings used for serializing and deserializing engine state.
+    /// These settings are configured to handle type information, preserve object references, and
+    /// produce indented (human-readable) JSON output. The default configuration uses automatic type
+    /// name handling and preserves all object references to maintain complex object graphs.
+    /// </summary>
     public static JsonSerializerSettings JsonSerializerSettings { get; set; }
         = new JsonSerializerSettings
         {
@@ -25,21 +37,52 @@ public sealed class EngineState
             PreserveReferencesHandling = PreserveReferencesHandling.All
         };
 
+    /// <summary>
+    /// Gets the collection of all loaded asset files (resource archives) currently registered with the engine.
+    /// Asset files contain packed game resources such as images, audio, and data files that have been
+    /// loaded into memory. This property provides a snapshot of the current asset files for serialization purposes.
+    /// </summary>
     [JsonProperty]
     public IEnumerable<AssetsFile> AssetsFiles => AssetsFile.AllAssetsFiles;
 
+    /// <summary>
+    /// Gets a dictionary of all registered tilesheets, keyed by their unique identifiers.
+    /// Tilesheets contain tile graphics and metadata used for rendering tile-based game worlds.
+    /// This property provides access to the current tilesheet registry for serialization and state management.
+    /// </summary>
     [JsonProperty]
     public IDictionary<string, Tilesheet> Tilesheets => TilesheetRegistry.Instance.GetAll().ToDictionary();
 
+    /// <summary>
+    /// Gets the dictionary of all registered animation cycles, keyed by their unique identifiers.
+    /// Animation cycles define sprite animation sequences including frame data, timing, and playback behavior.
+    /// This property provides direct access to the cycle registry for serialization purposes.
+    /// </summary>
     [JsonProperty]
     public Dictionary<string, Cycle> Cycles => Cycle._cycles;
 
+    /// <summary>
+    /// Gets the list of all scenes currently registered with the engine.
+    /// Scenes represent distinct game locations or levels, containing layers, entities, and scene-specific data.
+    /// This property provides direct access to the scene collection for serialization and state management.
+    /// </summary>
     [JsonProperty]
     public List<Scene> Scenes => Scene._allScenes;
 
+    /// <summary>
+    /// Gets the list of all active sprites currently managed by the sprite manager.
+    /// Sprites are visual game entities that can be positioned, animated, and rendered on screen.
+    /// This property provides direct access to the sprite collection for serialization purposes.
+    /// </summary>
     [JsonProperty]
     public List<Sprite> Sprites => SpriteManager._spriteList;
 
+    /// <summary>
+    /// Gets the dictionary of all registered audio resources, keyed by their unique identifiers.
+    /// Audio resources include sound effects, music tracks, and their associated playback settings
+    /// such as volume, pan, and looping behavior. This property provides access to the audio resource
+    /// registry for serialization and state management.
+    /// </summary>
     [JsonProperty]
     public Dictionary<string, AudioResource> SoundResources => AudioResourceManager.Instance.GetAll();
 
@@ -75,6 +118,12 @@ public sealed class EngineState
     [JsonProperty]
     public TypedValueBag ValueBag { get; set; } = new();
 
+    /// <summary>
+    /// Clears all engine state components, including assets, tilesheets, animation cycles, scenes,
+    /// sprites, audio resources, and custom value bag data. This method resets the engine to a clean state
+    /// by disposing or clearing all registered resources and collections. Use this when you need to
+    /// completely reset the engine state, such as when loading a new game or returning to a main menu.
+    /// </summary>
     internal void Clear()
     {
         AssetsFile.ClearAll();
@@ -87,21 +136,24 @@ public sealed class EngineState
     }
 
     /// <summary>
-    /// Serializes the current engine state (or a selected subset of it) to disk as JSON.
+    /// Saves the current engine state to a file in JSON format with optional compression and selective
+    /// state component inclusion. The saved state can later be loaded using <see cref="LoadFromFile"/>
+    /// or merged using <see cref="MergeFromFile"/>.
     /// </summary>
     /// <param name="path">
-    /// Destination file path for the saved engine state.
+    /// The file path where the engine state should be saved. The directory must exist and be writable.
+    /// If the file already exists, it will be overwritten.
     /// </param>
     /// <param name="compress">
-    /// If <c>true</c>, the JSON payload is written using GZip compression; otherwise it is written as plain text.
+    /// If <c>true</c>, the JSON output will be compressed using GZip compression, reducing file size
+    /// at the cost of additional processing time. If <c>false</c>, the JSON is written as plain text.
+    /// Default is <c>false</c>.
     /// </param>
     /// <param name="parts">
-    /// Specifies which portions of the engine state should be included in the snapshot.
+    /// Specifies which parts of the engine state should be included in the saved file. Use bitwise
+    /// flags from <see cref="EngineStateParts"/> to select specific components, or use
+    /// <see cref="EngineStateParts.All"/> to save the complete state. Default is <see cref="EngineStateParts.All"/>.
     /// </param>
-    /// <remarks>
-    /// This method captures a snapshot of the live engine registries and persists it in a format
-    /// suitable for later restoration or merging.
-    /// </remarks>
     public void SaveToFile(string path, bool compress = false, EngineStateParts parts = EngineStateParts.All)
     {
         var snapshot = BuildSnapshot(parts);
@@ -122,21 +174,25 @@ public sealed class EngineState
     }
 
     /// <summary>
-    /// Loads an engine state snapshot from disk and replaces the current live engine state.
+    /// Loads engine state from a file, replacing the current engine state with the saved state.
+    /// This method clears existing state components before loading, providing a clean slate for the
+    /// loaded data. Dependencies between state parts (such as tilesheets depending on asset files)
+    /// are automatically handled.
     /// </summary>
     /// <param name="path">
-    /// Path to the engine state file to load.
+    /// The file path from which to load the engine state. The file must exist and contain valid
+    /// serialized engine state data in JSON format.
     /// </param>
     /// <param name="compressed">
-    /// Indicates whether the file is stored in compressed (GZip) form.
+    /// If <c>true</c>, the file is expected to be GZip-compressed and will be decompressed before
+    /// deserialization. If <c>false</c>, the file is read as plain text JSON. Default is <c>false</c>.
     /// </param>
     /// <param name="parts">
-    /// Specifies which portions of the engine state should be applied from the snapshot.
+    /// Specifies which parts of the engine state should be loaded from the file. Use bitwise flags
+    /// from <see cref="EngineStateParts"/> to select specific components. Note that dependencies
+    /// are automatically included (e.g., loading tilesheets will also load asset files).
+    /// Default is <see cref="EngineStateParts.All"/>.
     /// </param>
-    /// <remarks>
-    /// Existing engine state data is cleared before the snapshot is applied.
-    /// This operation is destructive and should typically be used during startup or full resets.
-    /// </remarks>
     public static void LoadFromFile(string path, bool compressed = false, EngineStateParts parts = EngineStateParts.All)
     {
         string json = ReadJsonFile(path, compressed);
@@ -152,25 +208,30 @@ public sealed class EngineState
     }
 
     /// <summary>
-    /// Loads an engine state snapshot from disk and merges it into the current live engine state.
+    /// Loads engine state from a file and merges it with the current engine state, optionally
+    /// overwriting existing items with matching identifiers. Unlike <see cref="LoadFromFile"/>,
+
+    /// this method does not clear existing state before loading, allowing incremental state updates
+    /// and data patching scenarios.
     /// </summary>
     /// <param name="path">
-    /// Path to the engine state file to merge.
+    /// The file path from which to load the engine state. The file must exist and contain valid
+    /// serialized engine state data in JSON format.
     /// </param>
     /// <param name="compressed">
-    /// Indicates whether the file is stored in compressed (GZip) form.
+    /// If <c>true</c>, the file is expected to be GZip-compressed and will be decompressed before
+    /// deserialization. If <c>false</c>, the file is read as plain text JSON. Default is <c>false</c>.
     /// </param>
     /// <param name="overwriteExisting">
-    /// If <c>true</c>, existing entries in the engine state may be replaced by values from the snapshot.
+    /// If <c>true</c>, items from the loaded state will replace existing items with the same
+    /// identifiers (such as scene IDs or sprite nicknames). If <c>false</c>, existing items are
+    /// preserved and only new items from the loaded state are added. Default is <c>false</c>.
     /// </param>
     /// <param name="parts">
-    /// Specifies which portions of the engine state should be merged.
+    /// Specifies which parts of the engine state should be merged from the file. Use bitwise flags
+    /// from <see cref="EngineStateParts"/> to select specific components. Dependencies are
+    /// automatically included. Default is <see cref="EngineStateParts.All"/>.
     /// </param>
-    /// <remarks>
-    /// Unlike <see cref="LoadFromFile"/>, this method preserves existing engine state data
-    /// unless explicitly overwritten. It is intended for incremental updates, mod loading,
-    /// or layered state composition.
-    /// </remarks>
     public static void MergeFromFile(string path, bool compressed = false, bool overwriteExisting = false, EngineStateParts parts = EngineStateParts.All)
     {
         string json = ReadJsonFile(path, compressed);
@@ -258,7 +319,7 @@ public sealed class EngineState
     }
 
     /// <summary>
-    /// Single “apply” path used by both LoadFromFile and MergeFromFile.
+    /// Single "apply" path used by both LoadFromFile and MergeFromFile.
     /// DRY: reads snapshot, loads assets, then merges/rehydrates everything in a consistent order.
     /// </summary>
     private static void ApplySnapshot(
@@ -533,7 +594,7 @@ public sealed class EngineState
         var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
         for (int i = 0; i < SpriteManager._spriteList.Count; i++)
         {
-            var id = SpriteManager._spriteList[i].ID;
+            var id = SpriteManager._spriteList[i].Nickname;
             if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
                 existingIndexById.Add(id, i);
         }
@@ -545,16 +606,16 @@ public sealed class EngineState
             if (incoming is null)
                 continue;
 
-            if (string.IsNullOrWhiteSpace(incoming.ID))
-                incoming.ID = Guid.NewGuid().ToString();
+            if (string.IsNullOrWhiteSpace(incoming.Nickname))
+                incoming.Nickname = Guid.NewGuid().ToString();
 
-            if (!seenIncoming.Add(incoming.ID))
+            if (!seenIncoming.Add(incoming.Nickname))
             {
                 // Same-ID appears again in the incoming list: last one wins.
                 overwriteExisting = true;
             }
 
-            if (existingIndexById.TryGetValue(incoming.ID, out int existingIndex))
+            if (existingIndexById.TryGetValue(incoming.Nickname, out int existingIndex))
             {
                 if (!overwriteExisting)
                     continue;
@@ -563,7 +624,7 @@ public sealed class EngineState
             }
             else
             {
-                existingIndexById[incoming.ID] = SpriteManager._spriteList.Count;
+                existingIndexById[incoming.Nickname] = SpriteManager._spriteList.Count;
                 SpriteManager._spriteList.Add(incoming);
             }
         }

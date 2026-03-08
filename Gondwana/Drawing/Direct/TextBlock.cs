@@ -1,11 +1,13 @@
-using System;
-using Gondwana.Rendering;
-using Gondwana.SkiaSharp;
-using Gondwana.Timers;
-using SkiaSharp;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
+using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
+using Gondwana.Timers;
+using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -129,11 +131,42 @@ public class TextBlock : DirectDrawingMovableBase
     /// </summary>
     /// <param name="renderSurfaceHost">The target render surface host responsible for drawing.</param>
     /// <param name="bounds">The outer bounds (in pixels) where the text will be laid out and rendered.</param>
-    public TextBlock(RenderSurfaceHostBase renderSurfaceHost, Rectangle bounds)
-        : base(renderSurfaceHost, bounds)
+    private TextBlock(RenderSurfaceHostBase renderSurfaceHost,
+                     DirectDrawingMode mode,
+                     SceneLayer? sceneLayer,
+                     View? view,
+                     Rectangle? screenBounds,
+                     Rectangle? worldBounds,
+                     string? nickname = null)
+        : base(renderSurfaceHost, mode, sceneLayer, view, screenBounds, worldBounds, nickname)
     {
         _resolvedForeColor = _foreColor;
     }
+
+    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
+                     SceneLayer sceneLayer,
+                     View? view,
+                     Rectangle worldBounds,
+                     string? nickname = null)
+        : this(renderSurfaceHost,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer,
+               view,
+               screenBounds: null,
+               worldBounds: worldBounds,
+               nickname: nickname) { }
+
+    public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
+                     View view,
+                     Rectangle screenBounds,
+                     string? nickname = null)
+        : this(renderSurfaceHost,
+               DirectDrawingMode.View,
+               sceneLayer: null,
+               view: view,
+               screenBounds: screenBounds,
+               worldBounds: null,
+               nickname: nickname) { }
 
     /// <summary>
     /// Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing).
@@ -559,7 +592,6 @@ public class TextBlock : DirectDrawingMovableBase
                         _revealAccum -= PauseFor(_text[i]);
 
                     // Mark dirty + redraw
-                    _dirty = true;
                     ForceRefresh();
 
                     // Fire TextRevealed with the cumulative revealed text
@@ -598,7 +630,6 @@ public class TextBlock : DirectDrawingMovableBase
                     if (_revealCharCount > 0)
                         _revealAccum -= PauseFor(_text[_revealCharCount - 1]);
 
-                    _dirty = true;
                     ForceRefresh();
 
                     // Fire TextRevealed with the cumulative revealed text
@@ -622,10 +653,34 @@ public class TextBlock : DirectDrawingMovableBase
         base.Update(tick);
     }
 
-    protected internal override void Draw()
+    protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
-        var canvas = RenderSurfaceHost.Backbuffer.Canvas;
-        var rect = Bounds.ToSKRect();
+        var canvas = backbuffer.Canvas;
+        var rect = destRectScreen.ToSKRect();
+
+        float zoom;
+
+        if (Mode == DirectDrawingMode.SceneLayer)
+        {
+            // SceneLayer-mode has View == null by design; use the ambient render context.
+            var contextZoom = RenderContext.Current?.ViewportZoom ?? 1f;
+            zoom = (contextZoom > 0f)
+                ? (1f / contextZoom)
+                : 1f;
+        }
+        else
+        {
+            // View-mode is screen/UI; do not compensate for camera zoom.
+            zoom = 1f;
+        }
+
+        // Scale "pixel-like" adornments with zoom so text behaves like other world-space drawables.
+        float hPad = HorizontalPadding * zoom;
+        float vPad = VerticalPadding * zoom;
+        float shadowDx = _shadowDx * zoom;
+        float shadowDy = _shadowDy * zoom;
+        float shadowBlur = _shadowBlurSigma * zoom;
+        float outlineWidth = 1.5f * zoom;
 
         // Background
         if (_backColor.Alpha != 0)
@@ -637,11 +692,11 @@ public class TextBlock : DirectDrawingMovableBase
         // Ensure typeface
         _typeface ??= SKTypeface.Default;
 
-        // Build a paint we can reuse for layout + draw
+        // Build a paint we can reuse for layout + draw (TEXT SIZE IS IN SCREEN PIXELS)
         using var paint = new SKPaint
         {
             Typeface = _typeface ?? SKTypeface.Default,
-            TextSize = _fontSize,
+            TextSize = _fontSize * zoom,
             Color = _resolvedForeColor,   // resolved (pulsed) color
             IsAntialias = true,
             IsStroke = false,
@@ -649,21 +704,26 @@ public class TextBlock : DirectDrawingMovableBase
         };
 
         // Auto-shrink: reflow until it fits height (if min size provided)
-        float fontSize = _fontSize;
-        float innerW = Math.Max(0, rect.Width - HorizontalPadding * 2f);
-        float innerH = Math.Max(0, rect.Height - VerticalPadding * 2f);
+        float fontSize = _fontSize * zoom;
+        float minFontSize = _minFontSize.HasValue ? _minFontSize.Value * zoom : 0f;
+
+        float innerW = Math.Max(0, rect.Width - hPad * 2f);
+        float innerH = Math.Max(0, rect.Height - vPad * 2f);
 
         while (true)
         {
             paint.TextSize = fontSize;
-            if (_layoutDirty) RebuildLayout(paint, innerW);
+
+            // Rebuild when flagged, and also whenever zoom is in play so wrap/line-height stay correct.
+            if (_layoutDirty || zoom != 1f)
+                RebuildLayout(paint, innerW);
 
             int drawableLines = _maxLines.HasValue ? Math.Min(_lines.Count, _maxLines.Value) : _lines.Count;
             float totalH = drawableLines * _lineHeight;
 
-            if (_minFontSize.HasValue && totalH > innerH && fontSize > _minFontSize.Value)
+            if (_minFontSize.HasValue && totalH > innerH && fontSize > minFontSize)
             {
-                fontSize -= 1f;                 // step down and retry
+                fontSize -= 1f;                 // step down and retry (in screen-px units)
                 _layoutDirty = true;
                 continue;
             }
@@ -715,15 +775,15 @@ public class TextBlock : DirectDrawingMovableBase
         float contentH = linesToDraw * _lineHeight;
         float yStart = _vAlign switch
         {
-            VerticalAlign.Center => rect.Top + VerticalPadding + Math.Max(0, (innerH - contentH) * 0.5f),
-            VerticalAlign.Bottom => rect.Bottom - VerticalPadding - contentH,
-            _ => rect.Top + VerticalPadding
+            VerticalAlign.Center => rect.Top + vPad + Math.Max(0, (innerH - contentH) * 0.5f),
+            VerticalAlign.Bottom => rect.Bottom - vPad - contentH,
+            _ => rect.Top + vPad
         };
 
         // Horizontal anchor per line
-        float xAnchorLeft = rect.Left + HorizontalPadding;
+        float xAnchorLeft = rect.Left + hPad;
         float xAnchorCenter = rect.MidX;
-        float xAnchorRight = rect.Right - HorizontalPadding;
+        float xAnchorRight = rect.Right - hPad;
 
         float y = yStart;
         for (int i = 0; i < linesToDraw; i++)
@@ -740,18 +800,20 @@ public class TextBlock : DirectDrawingMovableBase
             {
                 using var shadow = paint.Clone();
                 shadow.IsStroke = false;
-                shadow.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, _shadowBlurSigma);
+                shadow.MaskFilter = shadowBlur > 0f
+                    ? SKMaskFilter.CreateBlur(SKBlurStyle.Normal, shadowBlur)
+                    : null;
                 shadow.Color = new SKColor(0, 0, 0, _shadowAlpha);
 
                 // manually offset
-                canvas.DrawText(line, x + _shadowDx, y + baselineShift + _shadowDy, shadow);
+                canvas.DrawText(line, x + shadowDx, y + baselineShift + shadowDy, shadow);
             }
 
             if (_useOutline)
             {
                 using var outline = paint.Clone();
                 outline.IsStroke = true;
-                outline.StrokeWidth = 1.5f;
+                outline.StrokeWidth = outlineWidth;
                 outline.Color = SKColors.Black;
                 canvas.DrawText(line, x, y + baselineShift, outline);
             }

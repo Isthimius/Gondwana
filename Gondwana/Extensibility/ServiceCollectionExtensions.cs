@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Extensibility;
 
+/// <summary>
+/// Provides extension methods for configuring Gondwana services in an <see cref="IServiceCollection"/>.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>

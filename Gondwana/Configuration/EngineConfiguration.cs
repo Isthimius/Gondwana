@@ -1,4 +1,5 @@
-﻿using Gondwana.Timers;
+﻿using Gondwana.Logging;
+using Gondwana.Timers;
 using Newtonsoft.Json;
 
 namespace Gondwana.Configuration;
@@ -61,6 +62,51 @@ public partial class EngineConfiguration
     /// Default is 0.03 seconds (30 milliseconds).
     /// </summary>
     public double TimeBetweenMouseEvents { get; set; } = 0.03;
+
+    /// <summary>
+    /// Controls whether engine logging operations are performed synchronously or asynchronously.
+    /// </summary>
+    /// <remarks>
+    /// When set to <see cref="EngineLoggingMode.Asynchronous"/>, log entries are enqueued and
+    /// processed on a background thread as a fire-and-forget operation. This avoids blocking
+    /// the engine's main loop but may drop log records if the queue is saturated.
+    ///
+    /// When set to <see cref="EngineLoggingMode.Synchronous"/>, log entries are written immediately
+    /// on the calling thread. This guarantees ordering and delivery but may negatively impact
+    /// engine performance, especially when logging to the console.
+    /// </remarks>
+    /// <value>
+    /// The logging execution mode. The default value is <see cref="EngineLoggingMode.Asynchronous"/>.
+    /// </value>
+    public EngineLoggingMode LoggingMode { get; set; } = EngineLoggingMode.Asynchronous;
+
+    private int _loggingQueueCapacity = 8192;
+
+    /// <summary>
+    /// Maximum number of queued log events when <see cref="LoggingMode"/> is
+    /// <see cref="EngineLoggingMode.Asynchronous"/>.
+    /// When full, log events are dropped (fire-and-forget).
+    /// Default is 8192.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when attempting to set a value less than or equal to 0.
+    /// </exception>
+    public int LoggingQueueCapacity
+    {
+        get => _loggingQueueCapacity;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "Capacity must be > 0.");
+            _loggingQueueCapacity = value;
+        }
+    }
+
+    /// <summary>
+    /// If true, the engine will attempt to flush queued async log events during shutdown.
+    /// Default is true.
+    /// </summary>
+    public bool FlushAsyncLogsOnShutdown { get; set; } = true;
 
     /// <summary>
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.

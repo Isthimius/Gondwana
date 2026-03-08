@@ -1,25 +1,57 @@
-﻿using Gondwana.Drawing;
+﻿using Gondwana.Collisions;
 
-namespace Gondwana.Collision;
+namespace Gondwana.Drawing.Collisions;
 
+/// <summary>
+/// Provides collision detection capabilities for a <see cref="Tile"/> by implementing the <see cref="ICollider"/> interface.
+/// </summary>
 public sealed class TileCollider : ICollider
 {
     private readonly Tile _tile;
-    private readonly int _layerMask;
-    private readonly int _collidesWithMask;
-    private readonly bool _isStatic;
 
-    public TileCollider(Tile tile, int layerMask, int collidesWithMask, bool isStatic = false)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TileCollider"/> class for the specified tile.
+    /// </summary>
+    /// <param name="tile">The tile to provide collision detection for.</param>
+    /// <param name="collisionGroup">The bitmask identifying what this collider is (e.g., Player = 1, World = 2).</param>
+    /// <param name="collidesWith">The bitmask of collision groups this collider interacts with.</param>
+    /// <param name="responseType">The type of collision response. Defaults to <see cref="CollisionResponseType.Solid"/>.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="tile"/> is <c>null</c>.</exception>
+    public TileCollider(Tile tile, int collisionGroup, int collidesWith, CollisionResponseType responseType = CollisionResponseType.Solid)
     {
         _tile = tile ?? throw new ArgumentNullException(nameof(tile));
-        _layerMask = layerMask;
-        _collidesWithMask = collidesWithMask;
-        _isStatic = isStatic;
+        CollisionGroup = collisionGroup;
+        CollidesWith = collidesWith;
+        ResponseType = responseType;
     }
 
+    /// <summary>
+    /// Gets the world-space axis-aligned bounding box in scene world pixels.
+    /// </summary>
     public Aabb BoundsWorldPx => Aabb.FromRectangle(_tile.CollisionArea);
-    public bool IsStatic => _isStatic;
-    public int LayerMask => _layerMask;
-    public int CollidesWithMask => _collidesWithMask;
-    public Tile Owner => _tile;
+    
+    /// <summary>
+    /// Gets the tile that owns this collider.
+    /// </summary>
+    public ICollisionEntity Owner => _tile;
+    
+    /// <summary>
+    /// Gets a value indicating whether this is a static, non-moving collider based on the tile's fixed position state.
+    /// </summary>
+    public bool IsStatic => _tile.IsPositionFixed;
+    
+    /// <summary>
+    /// Gets or sets the bitmask identifying what this collider is (e.g., Player = 1, World = 2, Enemy = 4).
+    /// </summary>
+    public int CollisionGroup { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the bitmask of collision groups this collider interacts with.
+    /// </summary>
+    public int CollidesWith { get; set; }
+    
+    /// <summary>
+    /// Gets or sets how this collider responds to collisions (Solid blocks movement, Trigger reports only).
+    /// </summary>
+    public CollisionResponseType ResponseType { get; set; }
 }

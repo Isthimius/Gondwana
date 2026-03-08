@@ -1,5 +1,12 @@
 ﻿namespace Gondwana.Configuration;
 
+/// <summary>
+/// Represents the configuration for mounting a state file used to restore or merge engine state components.
+/// </summary>
+/// <remarks>Use this type to specify how a state file should be loaded into the engine, including file location,
+/// compression format, merge behavior, and which parts of the engine state to restore. This record is typically used
+/// when orchestrating state restoration or migration operations, allowing fine-grained control over the
+/// process.</remarks>
 public sealed record StateFileMount
 {
     /// <summary>
