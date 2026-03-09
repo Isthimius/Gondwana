@@ -8,7 +8,7 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 - 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
 - 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
-- 📦 **NuGet** - [https://www.nuget.org/packages/Gondwana}(https://www.nuget.org/packages/Gondwana)
+- 📦 **NuGet** - [https://www.nuget.org/packages/Gondwana](https://www.nuget.org/packages/Gondwana)
 
 ---
 
