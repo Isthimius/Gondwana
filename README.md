@@ -8,6 +8,7 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 - 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
 - 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
+- 📦 **NuGet** - [https://www.nuget.org/packages/Gondwana}(https://www.nuget.org/packages/Gondwana)
 
 ---
 
@@ -82,30 +83,6 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 - **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports (or multiplayer split views) are natural, not bolted on.
 - **Adapters at the edges**: Platform projects (WinForms/Web) host the render surface and input wiring, while the core engine stays platform-agnostic.
 - **Deterministic ordering**: Where ordering matters (views, layers, drawables), the engine uses stable sort rules so rendering remains predictable and debuggable.
-
----
-
-## 📦 Prerequisites
-
-The Gondwana Core library depends on the following NuGet packages:
-
-- **Microsoft.Extensions.Configuration** (10.0.1)  
-- **Microsoft.Extensions.Configuration.Binder** (10.0.1)  
-- **Microsoft.Extensions.Configuration.Json** (10.0.1)  
-- **Microsoft.Extensions.Logging.Console** (10.0.1)  
-- **Microsoft.Extensions.Logging.Debug** (10.0.1)  
-- **NAudio** (2.2.1) — audio playback and mixing  
-- **Newtonsoft.Json** (13.0.4) — JSON serialization  
-- **SharpZipLib** (1.4.2) — archive and compression support  
-- **SkiaSharp** (3.119.1) — 2D rendering backend  
-- **SkiaSharp.HarfBuzz** (3.119.1) — advanced text shaping/rendering
-
-
-## 🔧 Development & Build Tooling
-
-The following packages are required only when building Gondwana from source:
-
-- Nerdbank.GitVersioning (3.9.50) — deterministic versioning based on Git history
 
 ---
 
