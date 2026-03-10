@@ -4,6 +4,9 @@ using SkiaSharp.Views.Desktop;
 
 namespace Gondwana.WinForms.Rendering;
 
+/// <summary>
+/// Provides a render surface adapter for Windows Forms using SKControl and bitmap-based rendering.
+/// </summary>
 public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly SKControl _control;
@@ -29,6 +32,11 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         Color = SKColors.Black
     };
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WinFormBitmapRenderSurfaceAdapter"/> class.
+    /// </summary>
+    /// <param name="control">The SKControl to use as the render target.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is null.</exception>
     public WinFormBitmapRenderSurfaceAdapter(SKControl control)
         : base(control.ClientSize.Width, control.ClientSize.Height)
     {
@@ -47,6 +55,9 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
 
     private void OnSizeChanged(object? s, EventArgs e) => RefreshDestinationSize();
 
+    /// <summary>
+    /// Refreshes the destination size based on the current client size of the control.
+    /// </summary>
     public void RefreshDestinationSize()
     {
         if (_control.IsDisposed || !_control.IsHandleCreated) return;
@@ -55,6 +66,12 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         SetDestinationSize(sz.Width, sz.Height);          // ← base will invoke Resized
     }
 
+    /// <summary>
+    /// Presents the specified buffer image to the render surface.
+    /// </summary>
+    /// <param name="bufferImage">The image to present.</param>
+    /// <param name="bufferRect">The source rectangle within the buffer image.</param>
+    /// <param name="destRect">The destination rectangle on the render surface.</param>
     public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
         // No UI target — dispose immediately to avoid leak
@@ -108,6 +125,9 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             _toDispose.Dequeue().Dispose();
     }
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="WinFormBitmapRenderSurfaceAdapter"/>.
+    /// </summary>
     public void Dispose()
     {
         if (!_control.IsDisposed)

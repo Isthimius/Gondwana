@@ -4,11 +4,14 @@ using SkiaSharp.Views.Desktop;
 
 namespace Gondwana.WinForms.Rendering;
 
+/// <summary>
+/// Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl.
+/// </summary>
 public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly SKGLControl _glControl;
 
-    // The image we’ll draw this frame (should be created/snapshotted off the SAME GRContext)
+    // The image we'll draw this frame (should be created/snapshotted off the SAME GRContext)
     private SKImage? _currentImage;
 
     // Previous image to dispose AFTER it has been drawn on the GL thread
@@ -17,13 +20,21 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     private SKRectI _sourceRect;
     private SKRect _destRect;
 
+    /// <summary>
+    /// Gets or sets the color used to clear the surface before rendering.
+    /// </summary>
     public SKColor ClearColor { get; set; } = SKColors.Black;
 
     /// <summary>
-    /// The GL/Skia GPU context you MUST share with your GpuBackbuffer.
+    /// Gets the GL/Skia GPU context that should be shared with the GpuBackbuffer.
     /// </summary>
     public GRContext? GrContext { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WinFormGpuRenderSurfaceAdapter"/> class.
+    /// </summary>
+    /// <param name="gl">The SKGLControl to use as the render target.</param>
+    /// <exception cref="NotImplementedException">This constructor is not yet implemented.</exception>
     public WinFormGpuRenderSurfaceAdapter(SKGLControl gl)
         : base(gl.Width, gl.Height)
     {
@@ -40,8 +51,12 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     }
 
     /// <summary>
-    /// Render gets an SKImage from your GpuBackbuffer (ideally texture-backed off the same GRContext).
+    /// Presents the specified GPU buffer image to the render surface.
+    /// The image should be texture-backed and created from the same GRContext for optimal zero-copy rendering.
     /// </summary>
+    /// <param name="bufferImage">The GPU image to present.</param>
+    /// <param name="bufferRect">The source rectangle within the buffer image.</param>
+    /// <param name="destRect">The destination rectangle on the render surface.</param>
     public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
         // If the control can't paint, dispose immediately to avoid a leak.
@@ -105,12 +120,15 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         _glControl.GRContext?.Flush();
     }
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="WinFormGpuRenderSurfaceAdapter"/>.
+    /// </summary>
     public void Dispose()
     {
         if (!_glControl.IsDisposed) _glControl.PaintSurface -= OnPaintSurface;
 
         // These MUST be disposed on the GL thread; do a last paint if needed.
-        // If you’re disposing off the UI thread at shutdown, it’s usually fine
+        // If you're disposing off the UI thread at shutdown, it's usually fine
         // because the context is being torn down; still, we null them here.
         _prevToDispose?.Dispose();
         _currentImage?.Dispose();

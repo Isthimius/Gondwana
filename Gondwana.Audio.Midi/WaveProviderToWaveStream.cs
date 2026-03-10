@@ -2,6 +2,9 @@
 
 namespace Gondwana.Audio.Midi;
 
+/// <summary>
+/// Wraps an <see cref="IWaveProvider"/> as a <see cref="WaveStream"/> with support for length and seeking.
+/// </summary>
 public class WaveProviderToWaveStream : WaveStream
 {
     private readonly IWaveProvider source;
@@ -12,6 +15,12 @@ public class WaveProviderToWaveStream : WaveStream
     // Delegate for seeking into the underlying synthesizer
     private readonly Action<TimeSpan>? _seekHandler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WaveProviderToWaveStream"/> class.
+    /// </summary>
+    /// <param name="source">The underlying wave provider to wrap.</param>
+    /// <param name="durationSeconds">The duration of the audio stream in seconds.</param>
+    /// <param name="seekHandler">Optional callback handler for seeking operations. If null, seeking will not be supported.</param>
     public WaveProviderToWaveStream(IWaveProvider source, double durationSeconds, Action<TimeSpan>? seekHandler)
     {
         this.source = source;
@@ -20,10 +29,20 @@ public class WaveProviderToWaveStream : WaveStream
         _seekHandler = seekHandler;
     }
 
+    /// <summary>
+    /// Gets the wave format of the stream.
+    /// </summary>
     public override WaveFormat WaveFormat => waveFormat;
 
+    /// <summary>
+    /// Gets the length of the stream in bytes.
+    /// </summary>
     public override long Length => _midiLengthBytes;
 
+    /// <summary>
+    /// Gets or sets the current position in the stream in bytes.
+    /// </summary>
+    /// <exception cref="NotSupportedException">Thrown when attempting to set the position without a seek handler.</exception>
     public override long Position
     {
         get => position;
@@ -44,6 +63,13 @@ public class WaveProviderToWaveStream : WaveStream
         }
     }
 
+    /// <summary>
+    /// Reads audio data from the underlying wave provider.
+    /// </summary>
+    /// <param name="buffer">The buffer to read data into.</param>
+    /// <param name="offset">The offset in the buffer to start writing data.</param>
+    /// <param name="count">The maximum number of bytes to read.</param>
+    /// <returns>The number of bytes actually read.</returns>
     public override int Read(byte[] buffer, int offset, int count)
     {
         int read = source.Read(buffer, offset, count);

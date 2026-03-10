@@ -3,6 +3,9 @@ using Gondwana.Input.Mouse;
 
 namespace Gondwana.WinForms.Input.Mouse;
 
+/// <summary>
+/// Provides a mouse input adapter for WinForms applications, tracking mouse position, button states, and scroll events.
+/// </summary>
 public sealed class WinFormsMouseAdapter : IMouseAdapter
 {
     private readonly HashSet<MouseButton> _pressed = new();
@@ -10,11 +13,31 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter
     private KeyboardModifierState _modifiers;
     private int _scrollDelta;
 
+    /// <summary>
+    /// Gets the current position of the mouse cursor.
+    /// </summary>
     public Point CurrentPosition => _currentPosition;
+    
+    /// <summary>
+    /// Gets the set of currently pressed mouse buttons.
+    /// </summary>
     public HashSet<MouseButton> PressedButtons => _pressed;
+    
+    /// <summary>
+    /// Gets the current state of keyboard modifiers (Shift, Ctrl, Alt).
+    /// </summary>
     public KeyboardModifierState CurrentKeyboardModifiers => _modifiers;
+    
+    /// <summary>
+    /// Gets the accumulated scroll wheel delta since the last read, then resets it to zero.
+    /// </summary>
     public int ScrollDelta => Interlocked.Exchange(ref _scrollDelta, 0); // one-time read & reset
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WinFormsMouseAdapter"/> class attached to the specified control.
+    /// </summary>
+    /// <param name="control">The control to monitor for mouse events.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is <see langword="null"/>.</exception>
     public WinFormsMouseAdapter(Control control)
     {
         if (control == null)

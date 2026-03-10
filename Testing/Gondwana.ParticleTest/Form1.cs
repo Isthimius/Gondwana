@@ -54,11 +54,17 @@ public partial class Form1 : Form
         Engine.Instance.Configuration.TargetFPS = 60;
 
         _particleSurface = new ParticleSurface(renderSurface,renderSurface.ViewManager.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
-        _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
-        _particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
-        _particleSurface.Emitters.Add(GetRain(adapter.Width));
-        _particleSurface.Emitters.Add(GetSnow(adapter.Width));
-        _particleSurface.Emitters.Add(GetSmoke(adapter.Width, adapter.Height));
+        _particleSurface.CullingMarginX = 1300f;
+        //_particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
+        //_particleSurface.Emitters.Add(GetRain(adapter.Width));
+        //_particleSurface.Emitters.Add(GetSnow(adapter.Width));
+        //_particleSurface.Emitters.Add(GetSmoke(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetClouds(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetCampfireSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetCampfire(adapter.Width, adapter.Height));
+        //_particleSurface.Emitters.Add(GetCampfireSmoke(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetCampfireEmbers(adapter.Width, adapter.Height));
 
         //_particleSurface.FadeOut(15f);
         //_particleSurface.FadeToCompleted += (s, e) => _particleSurface.Dispose();
@@ -244,6 +250,201 @@ public partial class Form1 : Form
             SizeRange = (8f, 16f),
             Color = new SKColor(80, 80, 80, 200),
             GravityY = -20f // slight upward drift
+        };
+    }
+
+    private ParticleEmitter GetClouds(float width, float height)
+    {
+        return new ParticleEmitter
+        {
+            Position = new PointF(width * 1.1f, height * 0.5f),
+            JitterY = height * 0.5f, // vertical jitter across the middle half of the view
+
+            EmitRate = 2,
+            LifeRange = (100f, 200f),
+
+            VelocityRangeX = (-20f, -10f),
+            VelocityRangeY = (-1f, 1f),
+
+            SizeRange = (40f, 80f),
+
+            Color = new SKColor(80, 80, 80, 30),
+
+            GravityY = 0f
+        };
+    }
+
+    private ParticleEmitter GetCampfire(float width, float height)
+    {
+        var rng = new Random();
+
+        var fire = new ParticleEmitter
+        {
+            Position = new PointF(width / 2f, height),
+
+            JitterX = 18f,
+            JitterY = 6f,
+
+            EmitRate = 90,
+
+            LifeRange = (0.35f, 0.8f),
+
+            VelocityRangeX = (-20f, 20f),
+            VelocityRangeY = (-140f, -70f),
+
+            SizeRange = (6f, 14f),
+
+            GravityY = -60f,
+
+            Color = new SKColor(255, 150, 60, 240), // default fallback
+
+            OnSpawn = (ref Particle p) =>
+            {
+                // Slight turbulence
+                p.VX += (float)(rng.NextDouble() * 30f - 15f);
+
+                // Random flame color
+                int r = rng.Next(4);
+
+                switch (r)
+                {
+                    case 0:
+                        p.Color = new SKColor(255, 90, 20, 240);   // deep orange/red
+                        break;
+
+                    case 1:
+                        p.Color = new SKColor(255, 140, 40, 240);  // orange
+                        break;
+
+                    case 2:
+                        p.Color = new SKColor(255, 190, 60, 240);  // bright flame
+                        break;
+
+                    default:
+                        p.Color = new SKColor(255, 230, 120, 240); // hot yellow tip
+                        p.Size *= 0.7f;
+                        break;
+                }
+
+                byte alpha = (byte)(200 + rng.Next(55));
+                p.Color = p.Color.WithAlpha(alpha);
+            }
+        };
+
+        return fire;
+    }
+
+    private ParticleEmitter GetCampfireSmoke(float width, float height)
+    {
+        var rng = new Random();
+
+        var smoke = new ParticleEmitter
+        {
+            // slightly above the flame base
+            Position = new PointF(width / 2f, height - 50f),
+
+            JitterX = 10f,
+            JitterY = 6f,
+
+            EmitRate = 10,
+
+            LifeRange = (2.0f, 3.5f),
+
+            VelocityRangeX = (-10f, 10f),
+            VelocityRangeY = (-50f, -25f),
+
+            SizeRange = (14f, 30f),
+
+            GravityY = -15f,
+
+            Color = new SKColor(70, 70, 70, 140),
+
+            OnSpawn = (ref Particle p) =>
+            {
+                // slight drifting turbulence
+                p.VX += (float)(rng.NextDouble() * 20f - 10f);
+            }
+        };
+
+        return smoke;
+    }
+
+    private ParticleEmitter GetCampfireSparks(float width, float height)
+    {
+        return new ParticleEmitter
+        {
+            Position = new PointF(width / 2f, height),
+
+            JitterX = 12f,
+            JitterY = 6f,
+
+            EmitRate = 12,
+
+            LifeRange = (0.6f, 1.4f),
+
+            VelocityRangeX = (-35f, 35f),
+            VelocityRangeY = (-180f, -120f),
+
+            SizeRange = (2f, 4f),
+
+            Color = new SKColor(255, 210, 120, 255),
+
+            GravityY = -20f
+        };
+    }
+
+    private ParticleEmitter GetCampfireEmbers(float width, float height)
+    {
+        var rng = new Random();
+
+        return new ParticleEmitter
+        {
+            Position = new PointF(width / 2f, height - 4f),
+
+            JitterX = 14f,
+            JitterY = 4f,
+
+            EmitRate = 45f,
+
+            LifeRange = (0.25f, 0.7f),
+
+            VelocityRangeX = (-12f, 12f),
+            VelocityRangeY = (-35f, -10f),
+
+            SizeRange = (3f, 7f),
+
+            GravityY = -10f,
+
+            Color = new SKColor(255, 120, 40, 180),
+
+            OnSpawn = (ref Particle p) =>
+            {
+                int roll = rng.Next(5);
+
+                switch (roll)
+                {
+                    case 0:
+                        p.Color = new SKColor(255, 80, 20, (byte)(160 + rng.Next(60)));
+                        break;
+
+                    case 1:
+                    case 2:
+                        p.Color = new SKColor(255, 110, 30, (byte)(170 + rng.Next(60)));
+                        break;
+
+                    case 3:
+                        p.Color = new SKColor(255, 150, 50, (byte)(180 + rng.Next(50)));
+                        break;
+
+                    default:
+                        p.Color = new SKColor(255, 200, 80, (byte)(140 + rng.Next(40)));
+                        p.Size *= 0.8f;
+                        break;
+                }
+
+                // tiny turbulence
+                p.VX += (float)(rng.NextDouble() * 10f - 5f);
+            }
         };
     }
 }

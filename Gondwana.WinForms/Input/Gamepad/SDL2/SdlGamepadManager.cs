@@ -4,12 +4,21 @@ using static SDL2.SDL;
 
 namespace Gondwana.WinForms.Input.Gamepad.SDL2;
 
+/// <summary>
+/// Manages SDL2-based gamepad connections, disconnections, and state updates for the application.
+/// </summary>
 public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
 {
+    /// <summary>
+    /// Gets the singleton instance of the <see cref="SdlGamepadManager"/>, if it has been started.
+    /// </summary>
     public static SdlGamepadManager? Instance { get; private set; }
 
     private readonly Dictionary<int, SdlGamepadAdapter> _connected = new();
 
+    /// <summary>
+    /// Gets the collection of currently connected gamepad adapters.
+    /// </summary>
     public IReadOnlyCollection<SdlGamepadAdapter> ConnectedAdapters => _connected.Values;
 
     private SdlGamepadManager()
@@ -20,6 +29,10 @@ public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
         Engine.Logger.LogInformation("SdlGamepadManager initialized. Polling enabled.");
     }
 
+    /// <summary>
+    /// Starts the SDL gamepad manager and returns the singleton instance.
+    /// </summary>
+    /// <returns>The singleton <see cref="SdlGamepadManager"/> instance.</returns>
     public static SdlGamepadManager Start()
     {
         if (Instance == null)
@@ -28,6 +41,9 @@ public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
         return Instance;
     }
 
+    /// <summary>
+    /// Stops the SDL gamepad manager, disposes all connected gamepad adapters, and clears the singleton instance.
+    /// </summary>
     public static void Stop()
     {
         if (Instance != null)
@@ -42,6 +58,10 @@ public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
         }
     }
 
+    /// <summary>
+    /// Updates the gamepad manager by polling SDL for controller state changes, detecting new connections, 
+    /// and handling disconnections.
+    /// </summary>
     public void Update()
     {
         SDL_GameControllerUpdate();

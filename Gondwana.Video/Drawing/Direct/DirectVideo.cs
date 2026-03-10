@@ -173,6 +173,16 @@ public sealed class DirectVideo : DirectDrawingBase
     /// <summary>
     /// Use this when you already have an IVideoPlayer instance (e.g., resolved via DI).
     /// </summary>
+    /// <param name="player">The video player instance responsible for decoding and providing frames.</param>
+    /// <param name="source">The URI of the video source to play.</param>
+    /// <param name="renderSurfaceHost">The render surface host that will display the video.</param>
+    /// <param name="mode">The drawing mode that determines coordinate system behavior.</param>
+    /// <param name="sceneLayer">The scene layer to attach to, or <c>null</c> if using view mode.</param>
+    /// <param name="view">The view to attach to, or <c>null</c> if using scene layer mode.</param>
+    /// <param name="screenBounds">The bounds in screen coordinates, or <c>null</c> if using world bounds.</param>
+    /// <param name="worldBounds">The bounds in world coordinates, or <c>null</c> if using screen bounds.</param>
+    /// <param name="name">An optional name for this video instance.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="player"/> is <c>null</c>.</exception>
     private DirectVideo(IVideoPlayer player,
                        Uri source,
                        RenderSurfaceHostBase renderSurfaceHost,
@@ -251,6 +261,16 @@ public sealed class DirectVideo : DirectDrawingBase
     /// Use this when you have a factory that abstracts platform differences.
     /// e.g., desktop/mobile -> VLC impl, web -> HTML5/WebCodecs impl.
     /// </summary>
+    /// <param name="playerFactory">A factory function that creates and returns an <see cref="IVideoPlayer"/> instance.</param>
+    /// <param name="source">The URI of the video source to play.</param>
+    /// <param name="renderSurfaceHost">The render surface host that will display the video.</param>
+    /// <param name="mode">The drawing mode that determines coordinate system behavior.</param>
+    /// <param name="sceneLayer">The scene layer to attach to, or <c>null</c> if using view mode.</param>
+    /// <param name="view">The view to attach to, or <c>null</c> if using scene layer mode.</param>
+    /// <param name="screenBounds">The bounds in screen coordinates, or <c>null</c> if using world bounds.</param>
+    /// <param name="worldBounds">The bounds in world coordinates, or <c>null</c> if using screen bounds.</param>
+    /// <param name="name">An optional name for this video instance.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="playerFactory"/> is <c>null</c>.</exception>
     private DirectVideo(Func<IVideoPlayer> playerFactory,
                        Uri source,
                        RenderSurfaceHostBase renderSurfaceHost,
@@ -334,12 +354,20 @@ public sealed class DirectVideo : DirectDrawingBase
                 null, view,
                 screenBounds, null, name) { }
 
+    /// <summary>
+    /// Subscribes to the player's events for frame delivery and playback lifecycle.
+    /// </summary>
     private void HookPlayer()
     {
         _player.FrameReady += OnFrameReady;
         _player.Ended += (_, __) => { /* engine could fire a scene event here if needed */ };
     }
 
+    /// <summary>
+    /// Renders the current video frame to the backbuffer at the specified destination rectangle.
+    /// </summary>
+    /// <param name="backbuffer">The backbuffer to draw onto.</param>
+    /// <param name="destRectScreen">The destination rectangle in screen coordinates.</param>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         SKBitmap? bmp;
@@ -353,6 +381,14 @@ public sealed class DirectVideo : DirectDrawingBase
         canvas.DrawBitmap(bmp, dest, paint);
     }
 
+    /// <summary>
+    /// Computes the destination rectangle for rendering based on the stretch mode and source dimensions.
+    /// </summary>
+    /// <param name="bounds">The target bounds in screen coordinates.</param>
+    /// <param name="srcW">The source video width in pixels.</param>
+    /// <param name="srcH">The source video height in pixels.</param>
+    /// <param name="mode">The stretch mode to apply.</param>
+    /// <returns>The computed destination rectangle.</returns>
     private static SKRect ComputeDestRect(RectangleF bounds, int srcW, int srcH, StretchMode mode)
     {
         var b = bounds;
@@ -395,6 +431,11 @@ public sealed class DirectVideo : DirectDrawingBase
 
     // --- frame ingestion ---
 
+    /// <summary>
+    /// Handles incoming video frames from the player and updates the internal bitmap.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The frame data containing pixel buffer, dimensions, and stride.</param>
     private void OnFrameReady(object? sender, VideoFrameReadyEventArgs e)
     {
         // Copy the RGBA buffer into a reusable SKBitmap.
@@ -421,6 +462,15 @@ public sealed class DirectVideo : DirectDrawingBase
         ForceRefresh();
     }
 
+    /// <summary>
+    /// Copies pixel data from the video frame buffer to the SKBitmap.
+    /// Uses unsafe pointers when available for performance, otherwise falls back to row-by-row marshaling.
+    /// </summary>
+    /// <param name="srcPixels">Pointer to the source pixel buffer.</param>
+    /// <param name="srcStride">The number of bytes per row in the source buffer.</param>
+    /// <param name="dst">The destination SKBitmap to copy into.</param>
+    /// <param name="width">The width of the frame in pixels.</param>
+    /// <param name="height">The height of the frame in pixels.</param>
     private static void CopyFrameToBitmap(IntPtr srcPixels, int srcStride, SKBitmap dst, int width, int height)
     {
 #if !BROWSER && !NO_UNSAFE
@@ -520,6 +570,10 @@ public sealed class DirectVideo : DirectDrawingBase
 
     // --- cleanup ---
 
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="DirectVideo"/> and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);

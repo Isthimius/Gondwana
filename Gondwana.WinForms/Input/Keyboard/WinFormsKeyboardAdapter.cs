@@ -21,6 +21,9 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
 
     private bool _isDisposed;
 
+    /// <summary>
+    /// Gets the current state of keyboard modifiers (Shift, Ctrl, Alt).
+    /// </summary>
     public KeyboardModifierState CurrentKeyboardModifiers =>
         (KeyboardModifierState)Volatile.Read(ref _modsBits);
 
@@ -36,6 +39,11 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
 
     private void OnOwnerDisposed(object? sender, EventArgs e) => Dispose();
 
+    /// <summary>
+    /// Filters Windows messages to capture keyboard state changes for all key events.
+    /// </summary>
+    /// <param name="m">The Windows message to filter.</param>
+    /// <returns>Always returns <see langword="false"/> to allow the message to continue processing.</returns>
     // IMessageFilter: called on UI thread for each message.
     public bool PreFilterMessage(ref Message m)
     {
@@ -63,6 +71,11 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
         return false;
     }
 
+    /// <summary>
+    /// Determines whether the specified key is currently pressed.
+    /// </summary>
+    /// <param name="keyCode">The virtual key code to check.</param>
+    /// <returns><see langword="true"/> if the key is currently pressed; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsDown(int keyCode)
     {
@@ -98,6 +111,9 @@ public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, 
         return m.WParam.ToInt32() & 0xFFFF;
     }
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="WinFormsKeyboardAdapter"/> and removes the message filter.
+    /// </summary>
     public void Dispose()
     {
         if (_isDisposed)
