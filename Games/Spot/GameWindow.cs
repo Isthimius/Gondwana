@@ -7,7 +7,7 @@ namespace HWG.Spot;
 
 public partial class GameWindow : Form
 {
-    private Game? _game;
+    private SpotGameHost? _gameHost;
     private static readonly Size DefaultWindowSize = new(1280, 720);
 
     public GameWindow()
@@ -36,7 +36,7 @@ public partial class GameWindow : Form
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        _game = new Game(renderSurface);
+        _gameHost = new SpotGameHost(renderSurface);
     }
 
     protected override void OnShown(EventArgs e)
@@ -47,14 +47,14 @@ public partial class GameWindow : Form
         this.StartPosition = FormStartPosition.CenterScreen;
         this.ClientSize = DefaultWindowSize;
 
-        _game!.InitializeGame();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost!.Initialize();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         // Clean shutdown
-        _game?.Dispose();
-        _game = null;
+        _gameHost?.Dispose();
+        _gameHost = null;
 
         base.OnFormClosed(e);
     }

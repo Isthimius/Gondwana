@@ -11,10 +11,22 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="dorian.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="dorian.mid">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tada.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gondwana.Audio.Midi\Gondwana.Audio.Midi.csproj" />
+    <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
     <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
