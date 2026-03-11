@@ -59,7 +59,11 @@ public class SynthesizerSampleProvider : ISampleProvider
     /// by detecting silence in the synthesizer output and manually restarting the sequencer when needed.
     /// </para>
     /// </remarks>
-    public SynthesizerSampleProvider(MidiFileSequencer sequencer, Synthesizer synth, MeltySynth.MidiFile midiFile, bool loop)
+    public SynthesizerSampleProvider(
+        MidiFileSequencer sequencer,
+        Synthesizer synth,
+        MeltySynth.MidiFile midiFile,
+        bool loop)
     {
         _sequencer = sequencer;
         _synthesizer = synth;
@@ -125,17 +129,24 @@ public class SynthesizerSampleProvider : ISampleProvider
         {
             int remaining = framesRequested - framesRendered;
             int renderCount = Math.Min(remaining, _left.Length);
+
             var leftSpan = _left.AsSpan(0, renderCount);
             var rightSpan = _right.AsSpan(0, renderCount);
 
-            _synthesizer.Render(leftSpan, rightSpan);
+            // IMPORTANT: render via the sequencer, not directly via the synth.
+            _sequencer.Render(leftSpan, rightSpan);
 
             bool silent = true;
+
             for (int i = 0; i < renderCount; i++)
             {
-                buffer[offset++] = leftSpan[i];
-                buffer[offset++] = rightSpan[i];
-                if (Math.Abs(leftSpan[i]) > Tolerance || Math.Abs(rightSpan[i]) > Tolerance)
+                float left = leftSpan[i];
+                float right = rightSpan[i];
+
+                buffer[offset++] = left;
+                buffer[offset++] = right;
+
+                if (Math.Abs(left) > Tolerance || Math.Abs(right) > Tolerance)
                     silent = false;
             }
 
@@ -198,10 +209,14 @@ public class SynthesizerSampleProvider : ISampleProvider
         _sequencer.Play(_midiFile, loop: false);
 
         int framesToSkip = (int)(time.TotalSeconds * _synthesizer.SampleRate);
+
         while (framesToSkip > 0)
         {
             int chunk = Math.Min(framesToSkip, _seekLeft.Length);
-            _synthesizer.Render(_seekLeft.AsSpan(0, chunk), _seekRight.AsSpan(0, chunk));
+
+            // IMPORTANT: seek-forward must also advance through the sequencer.
+            _sequencer.Render(_seekLeft.AsSpan(0, chunk), _seekRight.AsSpan(0, chunk));
+
             framesToSkip -= chunk;
         }
     }

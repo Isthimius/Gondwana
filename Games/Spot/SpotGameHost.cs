@@ -66,12 +66,6 @@ public sealed class SpotGameHost : WinFormsGameHost
         return scene;
     }
 
-    protected override void CreateInitialViews()
-    {
-        // Implementation for creating views
-        // Leave empty to use the default full render-surface view.
-    }
-
     protected override void CreateSprites()
     {
         // Implementation for creating sprites goes here
@@ -84,6 +78,7 @@ public sealed class SpotGameHost : WinFormsGameHost
 
     protected override void OnStartEngine()
     {
+        _dorian.Volume = 1f;
         _dorian.Play();
         //_tada.Play();
     }
