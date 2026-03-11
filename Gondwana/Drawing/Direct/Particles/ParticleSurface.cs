@@ -404,9 +404,6 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     {
         var canvas = backbuffer.Canvas;
 
-        // e.g., default blend; you may switch per-emitter later if you add BlendMode there
-        _paint.BlendMode = SKBlendMode.Plus;
-
         // Source bounds in the particle coordinate space
         Rectangle srcBounds = (Mode == DirectDrawingMode.SceneLayer)
             ? WorldBounds
@@ -422,6 +419,9 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
         for (int i = 0; i < _alive; i++)
         {
             ref var p = ref _particles[i];
+
+            // blend mode
+            _paint.BlendMode = p.BlendMode;
 
             // life-based fade
             float t = 1f - (p.Life / p.MaxLife);
@@ -500,6 +500,9 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
 
             // max speed clamp
             p.MaxVelocity = em.MaxVelocity ?? 0f;      // 0 = no clamp
+
+            // blend mode
+            p.BlendMode = em.BlendMode;
 
             // User hook for last-mile per-particle tweaks
             em.OnSpawn?.Invoke(ref p);

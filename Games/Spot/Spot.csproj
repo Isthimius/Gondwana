@@ -11,10 +11,26 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\clouds_slice.png" />
+    <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3" />
+    <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.txt" />
+    <None Remove="assets\spot.png" />
     <None Remove="dorian.mid" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\clouds_slice.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\dorian.mid">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\spot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\tada.wav">

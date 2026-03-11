@@ -13,6 +13,7 @@ public partial class GameWindow : Form
     public GameWindow()
     {
         InitializeComponent();
+        CreateMenu();
 
         renderSurface.Dock = DockStyle.Fill;
 
@@ -21,12 +22,15 @@ public partial class GameWindow : Form
         this.StartPosition = FormStartPosition.CenterScreen;
         this.ClientSize = DefaultWindowSize;
 
+        this.MinimizeBox = false;
+        this.MaximizeBox = false;
+
         this.KeyPreview = true;
         this.KeyDown += (_, e) =>
         {
             if (e.KeyCode == Keys.Escape)
             {
-                Engine.Instance.Stop();
+                _gameHost.Engine.Stop();
                 this.Close();
             }
         };
@@ -43,7 +47,7 @@ public partial class GameWindow : Form
     {
         base.OnShown(e);
 
-        this.FormBorderStyle = FormBorderStyle.None;
+        this.FormBorderStyle = FormBorderStyle.FixedSingle;
         this.StartPosition = FormStartPosition.CenterScreen;
         this.ClientSize = DefaultWindowSize;
 
@@ -57,5 +61,22 @@ public partial class GameWindow : Form
         _gameHost = null;
 
         base.OnFormClosed(e);
+    }
+
+    private void CreateMenu()
+    {
+        var menuStrip = new MenuStrip();
+        var gameMenu = new ToolStripMenuItem("Game");
+        var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => OpenNewGameDialog());
+        var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => this.Close());
+        gameMenu.DropDownItems.Add(newGameMenuItem);
+        gameMenu.DropDownItems.Add(exitMenuItem);
+        menuStrip.Items.Add(gameMenu);
+        this.MainMenuStrip = menuStrip;
+        this.Controls.Add(menuStrip);
+    }
+
+    private void OpenNewGameDialog()
+    {
     }
 }
