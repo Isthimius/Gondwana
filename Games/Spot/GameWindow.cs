@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Gondwana;
+using Spot;
 
 namespace HWG.Spot;
 
@@ -69,14 +70,21 @@ public partial class GameWindow : Form
         var gameMenu = new ToolStripMenuItem("Game");
         var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => OpenNewGameDialog());
         var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => this.Close());
+        
         gameMenu.DropDownItems.Add(newGameMenuItem);
         gameMenu.DropDownItems.Add(exitMenuItem);
+        
         menuStrip.Items.Add(gameMenu);
+        
         this.MainMenuStrip = menuStrip;
         this.Controls.Add(menuStrip);
     }
 
     private void OpenNewGameDialog()
     {
+        using (var dialog = new NewGameDialog())
+        {
+            dialog.ShowDialog(this);
+        }
     }
 }

@@ -34,7 +34,7 @@ partial class GameWindow
     private void InitializeComponent()
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameWindow));
-        renderSurface = new Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl();
+        renderSurface = new WinFormBitmapRenderSurfaceControl();
         SuspendLayout();
         // 
         // renderSurface
@@ -53,7 +53,7 @@ partial class GameWindow
         Controls.Add(renderSurface);
         Icon = (Icon)resources.GetObject("$this.Icon");
         Name = "GameWindow";
-        Text = "GameWindow";
+        Text = "Spot!";
         ResumeLayout(false);
     }
 
