@@ -8,7 +8,7 @@ namespace HWG.Spot;
 public partial class GameWindow : Form
 {
     private SpotGameHost? _gameHost;
-    private static readonly Size DefaultWindowSize = new(1280, 720);
+    private static readonly Size DefaultWindowSize = new(769, 769);
 
     public GameWindow()
     {

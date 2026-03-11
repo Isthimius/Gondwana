@@ -3,8 +3,10 @@ using Gondwana.Audio;
 using Gondwana.Audio.Midi;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes;
+using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
+using System.Drawing;
 
 namespace HWG.Spot;
 
@@ -19,10 +21,10 @@ public sealed class SpotGameHost : WinFormsGameHost
     protected override void LoadAssets()
     {
         // load asset files
-        _dorian = AudioResourceManager.Instance.LoadFromFile("dorian", "dorian.mid");
+        _dorian = AudioResourceManager.Instance.LoadFromFile("dorian", "assets\\dorian.mid");
         _dorian.IsLooping = true;
 
-        _tada = AudioResourceManager.Instance.LoadFromFile("tada", "tada.wav");
+        _tada = AudioResourceManager.Instance.LoadFromFile("tada", "assets\\tada.wav");
         _tada.IsLooping = true;
 
         // load standalone audio files
@@ -66,6 +68,12 @@ public sealed class SpotGameHost : WinFormsGameHost
         return scene;
     }
 
+    protected override void CreateSceneGraph()
+    {
+        base.CreateSceneGraph();
+        RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
+    }
+
     protected override void CreateSprites()
     {
         // Implementation for creating sprites goes here
@@ -85,7 +93,7 @@ public sealed class SpotGameHost : WinFormsGameHost
 
     protected override void OnConfigurePlatform()
     {
-        Engine.Instance.InitializeMidiAudioFormats();
+        Engine.InitializeMidiAudioFormats();
     }
 
     protected override void OnMouseAdapterInitialized()

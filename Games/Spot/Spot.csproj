@@ -14,10 +14,10 @@
     <None Remove="dorian.mid" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="dorian.mid">
+    <Content Include="assets\dorian.mid">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="tada.wav">
+    <Content Include="assets\tada.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
