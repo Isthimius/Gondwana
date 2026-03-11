@@ -20,7 +20,7 @@ public sealed class SpotGameHost : WinFormsGameHost
     {
         // load asset files
         _dorian = AudioResourceManager.Instance.LoadFromFile("dorian", "dorian.mid");
-        //_dorian.IsLooping = true;
+        _dorian.IsLooping = true;
 
         _tada = AudioResourceManager.Instance.LoadFromFile("tada", "tada.wav");
         _tada.IsLooping = true;
