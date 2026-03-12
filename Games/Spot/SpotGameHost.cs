@@ -21,7 +21,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal AudioResource _tada;
     internal AudioResource _music;
 
-    internal SpotGame SpotGame { get; private set; } = new SpotGame();
+    internal SpotGame SpotGame { get; private set; }
 
     internal SpotGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
@@ -77,10 +77,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         sceneLayer1.ShowGridLines = false;
 
-        // Example:
-        // var sourceTilesheet = TilesheetRegistry.Instance.GetAll()["tiles"];
-        // sceneLayer1[0, 0] = new Tile(sourceTilesheet, 0);
-
         return scene;
     }
 
@@ -88,6 +84,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         base.CreateSceneGraph();
         RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
+        SpotGame = new SpotGame(Scene);
     }
 
     protected override void CreateSprites()

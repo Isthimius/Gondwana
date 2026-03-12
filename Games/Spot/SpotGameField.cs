@@ -10,7 +10,10 @@ internal class SpotGameField : SceneLayer
         public static readonly ValueKey<SpotGameField.Cell> Cell = new("Spot.Cell");
     }
 
-    private Player[] _players;
+    internal class Cell
+    {
+        internal Player? OccupiedBy { get; set; } = null;
+    }
 
     private SpotGameField(int width, int height) : base(width, height, 64, 64) { }
 
@@ -25,8 +28,6 @@ internal class SpotGameField : SceneLayer
                 field[x, y].ValueBag.Set(SpotFieldKeys.Cell, new Cell());
             }
         }
-
-        field._players = players;
 
         // upper left
         if (players.Length >= 1)
@@ -47,33 +48,8 @@ internal class SpotGameField : SceneLayer
         return field;
     }
 
-    public int GetPlayerScore(Player player)
-    {
-        int score = 0;
-
-        for (int x = 0; x < this.GridColumnCount; x++)
-        {
-            for (int y = 0; y < this.GridRowCount; y++)
-            {
-                var cell = GetCell(x, y);
-                if (cell.OccupiedBy.HasValue)
-                {
-                    if (cell.OccupiedBy.Value.Equals(player))
-                        score++;
-                }
-            }
-        }
-
-        return score;
-    }
-
     public Cell GetCell(int x, int y)
     {
         return this[x, y].ValueBag.Get(SpotFieldKeys.Cell);
-    }
-
-    internal class Cell
-    {
-        internal Player? OccupiedBy { get; set; } = null;
     }
 }
