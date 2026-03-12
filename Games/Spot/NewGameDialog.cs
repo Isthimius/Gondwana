@@ -34,6 +34,8 @@ namespace HWG.Spot
             this.ShowInTaskbar = false;
 
             cboPlayerCount.SelectedIndex = 2; // default to 4 players
+            cboWidth.SelectedIndex = 9;       // default to 12
+            cboHeight.SelectedIndex = 9;      // default to 12
 
             cboPlayerType1.SelectedIndex = 0; // default to human
             cboPlayerType2.SelectedIndex = 1; // default to AI
@@ -48,6 +50,9 @@ namespace HWG.Spot
             cboColor3.SelectedIndex = 2;
             BuildColorComboBox(cboColor4);
             cboColor4.SelectedIndex = 3;
+
+            this.AcceptButton = cmdStart;
+            this.CancelButton = cmdCancel;
         }
 
         private void BuildColorComboBox(ComboBox cboColor)
@@ -170,11 +175,6 @@ namespace HWG.Spot
         private void textBox4_TextChanged(object sender, System.EventArgs e)
         {
             groupBox4.Text = textBox4.Text;
-        }
-
-        private void cmdCancel_Click(object sender, System.EventArgs e)
-        {
-            this.Close();
         }
 
         private void cboPlayerCount_SelectedIndexChanged(object sender, System.EventArgs e)

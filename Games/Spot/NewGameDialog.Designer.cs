@@ -48,6 +48,9 @@
             cboPlayerType4 = new System.Windows.Forms.ComboBox();
             textBox4 = new System.Windows.Forms.TextBox();
             label1 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            cboWidth = new System.Windows.Forms.ComboBox();
+            cboHeight = new System.Windows.Forms.ComboBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -57,23 +60,24 @@
             // cmdStart
             // 
             cmdStart.DialogResult = System.Windows.Forms.DialogResult.OK;
+            cmdStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             cmdStart.Location = new System.Drawing.Point(12, 293);
             cmdStart.Name = "cmdStart";
             cmdStart.Size = new System.Drawing.Size(229, 23);
-            cmdStart.TabIndex = 0;
+            cmdStart.TabIndex = 7;
             cmdStart.Text = "Start";
             cmdStart.UseVisualStyleBackColor = true;
             // 
             // cmdCancel
             // 
             cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             cmdCancel.Location = new System.Drawing.Point(244, 293);
             cmdCancel.Name = "cmdCancel";
             cmdCancel.Size = new System.Drawing.Size(229, 23);
-            cmdCancel.TabIndex = 1;
+            cmdCancel.TabIndex = 8;
             cmdCancel.Text = "Cancel";
             cmdCancel.UseVisualStyleBackColor = true;
-            cmdCancel.Click += cmdCancel_Click;
             // 
             // cboPlayerCount
             // 
@@ -84,7 +88,7 @@
             cboPlayerCount.Location = new System.Drawing.Point(66, 12);
             cboPlayerCount.Name = "cboPlayerCount";
             cboPlayerCount.Size = new System.Drawing.Size(42, 23);
-            cboPlayerCount.TabIndex = 2;
+            cboPlayerCount.TabIndex = 0;
             cboPlayerCount.SelectedIndexChanged += cboPlayerCount_SelectedIndexChanged;
             // 
             // groupBox1
@@ -107,7 +111,7 @@
             cboColor1.Location = new System.Drawing.Point(330, 22);
             cboColor1.Name = "cboColor1";
             cboColor1.Size = new System.Drawing.Size(121, 23);
-            cboColor1.TabIndex = 2;
+            cboColor1.TabIndex = 7;
             // 
             // cboPlayerType1
             // 
@@ -118,14 +122,14 @@
             cboPlayerType1.Location = new System.Drawing.Point(203, 22);
             cboPlayerType1.Name = "cboPlayerType1";
             cboPlayerType1.Size = new System.Drawing.Size(121, 23);
-            cboPlayerType1.TabIndex = 1;
+            cboPlayerType1.TabIndex = 6;
             // 
             // textBox1
             // 
             textBox1.Location = new System.Drawing.Point(6, 22);
             textBox1.Name = "textBox1";
             textBox1.Size = new System.Drawing.Size(191, 23);
-            textBox1.TabIndex = 0;
+            textBox1.TabIndex = 5;
             textBox1.Text = "Player 1";
             textBox1.TextChanged += textBox1_TextChanged;
             // 
@@ -149,7 +153,7 @@
             cboColor2.Location = new System.Drawing.Point(330, 22);
             cboColor2.Name = "cboColor2";
             cboColor2.Size = new System.Drawing.Size(121, 23);
-            cboColor2.TabIndex = 2;
+            cboColor2.TabIndex = 10;
             // 
             // cboPlayerType2
             // 
@@ -160,14 +164,14 @@
             cboPlayerType2.Location = new System.Drawing.Point(203, 22);
             cboPlayerType2.Name = "cboPlayerType2";
             cboPlayerType2.Size = new System.Drawing.Size(121, 23);
-            cboPlayerType2.TabIndex = 1;
+            cboPlayerType2.TabIndex = 9;
             // 
             // textBox2
             // 
             textBox2.Location = new System.Drawing.Point(6, 22);
             textBox2.Name = "textBox2";
             textBox2.Size = new System.Drawing.Size(191, 23);
-            textBox2.TabIndex = 0;
+            textBox2.TabIndex = 8;
             textBox2.Text = "Player 2";
             textBox2.TextChanged += textBox2_TextChanged;
             // 
@@ -179,7 +183,7 @@
             groupBox3.Location = new System.Drawing.Point(12, 167);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new System.Drawing.Size(461, 57);
-            groupBox3.TabIndex = 4;
+            groupBox3.TabIndex = 5;
             groupBox3.TabStop = false;
             groupBox3.Text = "Player 3";
             // 
@@ -191,7 +195,7 @@
             cboColor3.Location = new System.Drawing.Point(330, 22);
             cboColor3.Name = "cboColor3";
             cboColor3.Size = new System.Drawing.Size(121, 23);
-            cboColor3.TabIndex = 2;
+            cboColor3.TabIndex = 13;
             // 
             // cboPlayerType3
             // 
@@ -202,14 +206,14 @@
             cboPlayerType3.Location = new System.Drawing.Point(203, 22);
             cboPlayerType3.Name = "cboPlayerType3";
             cboPlayerType3.Size = new System.Drawing.Size(121, 23);
-            cboPlayerType3.TabIndex = 1;
+            cboPlayerType3.TabIndex = 12;
             // 
             // textBox3
             // 
             textBox3.Location = new System.Drawing.Point(6, 22);
             textBox3.Name = "textBox3";
             textBox3.Size = new System.Drawing.Size(191, 23);
-            textBox3.TabIndex = 0;
+            textBox3.TabIndex = 11;
             textBox3.Text = "Player 3";
             textBox3.TextChanged += textBox3_TextChanged;
             // 
@@ -221,7 +225,7 @@
             groupBox4.Location = new System.Drawing.Point(12, 230);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new System.Drawing.Size(461, 57);
-            groupBox4.TabIndex = 4;
+            groupBox4.TabIndex = 6;
             groupBox4.TabStop = false;
             groupBox4.Text = "Player 4";
             // 
@@ -233,7 +237,7 @@
             cboColor4.Location = new System.Drawing.Point(330, 22);
             cboColor4.Name = "cboColor4";
             cboColor4.Size = new System.Drawing.Size(121, 23);
-            cboColor4.TabIndex = 2;
+            cboColor4.TabIndex = 16;
             // 
             // cboPlayerType4
             // 
@@ -244,14 +248,14 @@
             cboPlayerType4.Location = new System.Drawing.Point(203, 22);
             cboPlayerType4.Name = "cboPlayerType4";
             cboPlayerType4.Size = new System.Drawing.Size(121, 23);
-            cboPlayerType4.TabIndex = 1;
+            cboPlayerType4.TabIndex = 15;
             // 
             // textBox4
             // 
             textBox4.Location = new System.Drawing.Point(6, 22);
             textBox4.Name = "textBox4";
             textBox4.Size = new System.Drawing.Size(191, 23);
-            textBox4.TabIndex = 0;
+            textBox4.TabIndex = 14;
             textBox4.Text = "Player 4";
             textBox4.TextChanged += textBox4_TextChanged;
             // 
@@ -261,8 +265,39 @@
             label1.Location = new System.Drawing.Point(12, 15);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(44, 15);
-            label1.TabIndex = 5;
+            label1.TabIndex = 0;
             label1.Text = "Players";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(176, 15);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(61, 15);
+            label2.TabIndex = 1;
+            label2.Text = "Board Size";
+            // 
+            // cboWidth
+            // 
+            cboWidth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cboWidth.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            cboWidth.FormattingEnabled = true;
+            cboWidth.Items.AddRange(new object[] { "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
+            cboWidth.Location = new System.Drawing.Point(246, 12);
+            cboWidth.Name = "cboWidth";
+            cboWidth.Size = new System.Drawing.Size(42, 23);
+            cboWidth.TabIndex = 1;
+            // 
+            // cboHeight
+            // 
+            cboHeight.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cboHeight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            cboHeight.FormattingEnabled = true;
+            cboHeight.Items.AddRange(new object[] { "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
+            cboHeight.Location = new System.Drawing.Point(294, 12);
+            cboHeight.Name = "cboHeight";
+            cboHeight.Size = new System.Drawing.Size(42, 23);
+            cboHeight.TabIndex = 2;
             // 
             // NewGameDialog
             // 
@@ -270,6 +305,9 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.CornflowerBlue;
             ClientSize = new System.Drawing.Size(490, 331);
+            Controls.Add(cboHeight);
+            Controls.Add(label2);
+            Controls.Add(cboWidth);
             Controls.Add(label1);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);
@@ -314,5 +352,8 @@
         private System.Windows.Forms.ComboBox cboPlayerType4;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox cboWidth;
+        private System.Windows.Forms.ComboBox cboHeight;
     }
 }
