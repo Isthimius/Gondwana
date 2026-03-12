@@ -53,8 +53,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
         var splash = new Tilesheet("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        var clouds = new Tilesheet("clouds", "assets\\clouds_slice.png");
-        clouds.ApplyMask(Color.Black.ToSKColor());
+        //var clouds = new Tilesheet("clouds", "assets\\clouds_slice.png");
+        //clouds.ApplyMask(Color.Black.ToSKColor());
     }
 
     protected override void LoadAnimationCycles()
@@ -67,10 +67,10 @@ internal sealed class SpotGameHost : WinFormsGameHost
         var scene = new Scene();
 
         var sceneLayer1 = scene.AddLayer(
-            columnCount: 12,
-            rowCount: 12,
-            width: 64,
-            height: 64,
+            columnCount: 1,
+            rowCount: 1,
+            width: 768,
+            height: 768,
             zOrder: 10,
             parallax: 1f,
             coordinateSystem: CoordinateSystemTypes.Orthogonal);
@@ -84,7 +84,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         base.CreateSceneGraph();
         RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
-        SpotGame = new SpotGame(Scene);
+        SpotGame = new SpotGame(this);
     }
 
     protected override void CreateSprites()
@@ -121,7 +121,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
             SKColors.Blue,
             SKColors.Yellow,
             SKColors.Green,
-            //SKColors.Purple
+            SKColors.Violet
         };
 
         return new ParticleEmitter

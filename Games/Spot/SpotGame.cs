@@ -1,4 +1,5 @@
-﻿using Gondwana.Scenes;
+﻿using Gondwana.Drawing.Direct;
+using Gondwana.Scenes;
 using System;
 using System.Collections.Generic;
 
@@ -6,17 +7,17 @@ namespace HWG.Spot;
 
 internal class SpotGame
 {
-    internal Player[] Players { get; set; } = Array.Empty<Player>();
-
-    internal Scene Scene { get; private set; }
+    internal SpotGameHost GameHost { get; private set; }
 
     internal SpotGameField SpotGameField { get; set; } = SpotGameField.Create(12, 12, Array.Empty<Player>());
 
+    internal Player[] Players { get; set; } = Array.Empty<Player>();
+
     private int _currentPlayerIndex = 0;
 
-    internal SpotGame(Scene scene)
+    internal SpotGame(SpotGameHost host)
     {
-        Scene = scene;
+        GameHost = host;
     }
 
     internal Player CurrentPlayer => Players[_currentPlayerIndex];
@@ -41,12 +42,17 @@ internal class SpotGame
         if (width > 12 || height > 12)
             throw new ArgumentException("The game field cannot be larger than 12x12 in size.", nameof(width));
 
+        DirectDrawingManager.Instance.ClearAll();
+        GameHost.Scene.RemoveAllLayers();
+
         SpotGameField = SpotGameField.Create(width, height, players);
         Players = players;
         _currentPlayerIndex = 0;
+
+        GameHost.Scene.AddLayer(SpotGameField);
     }
 
-    public int GetPlayerScore(Player player)
+    internal int GetPlayerScore(Player player)
     {
         int score = 0;
 
@@ -66,7 +72,7 @@ internal class SpotGame
         return score;
     }
 
-    public Dictionary<Player, int> GetAllPlayerScores()
+    internal Dictionary<Player, int> GetAllPlayerScores()
     {
         var scores = new Dictionary<Player, int>();
         foreach (var player in Players)

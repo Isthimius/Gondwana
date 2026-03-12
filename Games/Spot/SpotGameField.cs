@@ -15,6 +15,12 @@ internal class SpotGameField : SceneLayer
         internal Player? OccupiedBy { get; set; } = null;
     }
 
+    internal enum MovementType
+    {
+        Clone,
+        Jump
+    }
+
     private SpotGameField(int width, int height) : base(width, height, 64, 64) { }
 
     internal static SpotGameField Create(int width, int height, Player[] players)
@@ -45,10 +51,12 @@ internal class SpotGameField : SceneLayer
         if (players.Length >= 4)
             field.GetCell(0, height - 1).OccupiedBy = players[3];
 
+        field.ShowGridLines = true;
+
         return field;
     }
 
-    public Cell GetCell(int x, int y)
+    internal Cell GetCell(int x, int y)
     {
         return this[x, y].ValueBag.Get(SpotFieldKeys.Cell);
     }

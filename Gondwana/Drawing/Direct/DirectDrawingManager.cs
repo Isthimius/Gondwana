@@ -43,7 +43,7 @@ public sealed class DirectDrawingManager
     private static readonly Lazy<DirectDrawingManager> _instance =
         new(() => new DirectDrawingManager());
 
-    internal static DirectDrawingManager Instance => _instance.Value;
+    public static DirectDrawingManager Instance => _instance.Value;
 
     // ---- Storage (instance-level) ----
     private readonly ConcurrentDictionary<string, IDirectDrawable> _directDrawings =
