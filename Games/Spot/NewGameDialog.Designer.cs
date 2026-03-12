@@ -67,6 +67,7 @@
             cmdStart.TabIndex = 7;
             cmdStart.Text = "Start";
             cmdStart.UseVisualStyleBackColor = true;
+            cmdStart.Click += cmdStart_Click;
             // 
             // cmdCancel
             // 

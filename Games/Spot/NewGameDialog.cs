@@ -7,6 +7,8 @@ namespace HWG.Spot
 {
     public partial class NewGameDialog : Form
     {
+        public NewGameOptions Options { get; private set; }
+
         private class ColorItem
         {
             public string Name { get; }
@@ -34,8 +36,8 @@ namespace HWG.Spot
             this.ShowInTaskbar = false;
 
             cboPlayerCount.SelectedIndex = 2; // default to 4 players
-            cboWidth.SelectedIndex = 9;       // default to 12
-            cboHeight.SelectedIndex = 9;      // default to 12
+            cboWidth.SelectedIndex = 5;       // default to 8
+            cboHeight.SelectedIndex = 5;      // default to 8
 
             cboPlayerType1.SelectedIndex = 0; // default to human
             cboPlayerType2.SelectedIndex = 1; // default to AI
@@ -196,6 +198,34 @@ namespace HWG.Spot
                 default:
                     break;
             }
+        }
+
+        private void cmdStart_Click(object sender, EventArgs e)
+        {
+            Options = new NewGameOptions
+            {
+                PlayerCount = int.Parse(cboPlayerCount.Text),
+                BoardWidth = int.Parse(cboWidth.SelectedItem.ToString()),
+                BoardHeight = int.Parse(cboHeight.SelectedItem.ToString())
+            };
+
+            var playerNames = new[] { textBox1, textBox2, textBox3, textBox4 };
+            var playerTypes = new[] { cboPlayerType1, cboPlayerType2, cboPlayerType3, cboPlayerType4 };
+            var playerColors = new[] { cboColor1, cboColor2, cboColor3, cboColor4 };
+
+            for (int i = 0; i < Options.PlayerCount; i++)
+            {
+                var colorItem = (ColorItem)playerColors[i].SelectedItem;
+
+                Options.Players.Add(new PlayerOptions
+                {
+                    Name = playerNames[i].Text,
+                    Type = playerTypes[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
+                    Color = colorItem.Name
+                });
+            }
+
+            DialogResult = DialogResult.OK;
         }
     }
 }

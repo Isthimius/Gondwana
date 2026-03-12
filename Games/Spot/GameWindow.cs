@@ -1,8 +1,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Gondwana;
-using Spot;
 
 namespace HWG.Spot;
 
@@ -84,7 +82,11 @@ public partial class GameWindow : Form
     {
         using (var dialog = new NewGameDialog())
         {
-            dialog.ShowDialog(this);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                var options = dialog.Options;
+                //_gameHost?.SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players);
+            }
         }
     }
 }
