@@ -6,4 +6,5 @@ internal struct Player
 {
     public string Name { get; set; }
     public Sprite Sprite { get; set; }
+    public bool IsHuman { get; set; }
 }

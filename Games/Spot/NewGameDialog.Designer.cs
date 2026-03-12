@@ -1,4 +1,4 @@
-﻿namespace Spot
+﻿namespace HWG.Spot
 {
     partial class NewGameDialog
     {

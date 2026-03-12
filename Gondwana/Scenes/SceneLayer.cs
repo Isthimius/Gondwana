@@ -142,12 +142,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region constructors / finalizer
 
-    internal SceneLayer(int columnCount,
-                        int rowCount,
-                        int width = 32,
-                        int height = 32,
-                        float parallax = 1,
-                        CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
+    protected internal SceneLayer(int columnCount,
+                                  int rowCount,
+                                  int width = 32,
+                                  int height = 32,
+                                  float parallax = 1,
+                                  CoordinateSystemTypes coordinateSystem = CoordinateSystemTypes.Orthogonal)
     {
         var tileArray = new SceneLayerTile[columnCount, rowCount];
 

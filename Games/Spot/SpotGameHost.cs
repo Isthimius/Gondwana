@@ -15,13 +15,15 @@ using System.Drawing;
 
 namespace HWG.Spot;
 
-public sealed class SpotGameHost : WinFormsGameHost
+internal sealed class SpotGameHost : WinFormsGameHost
 {
-    public AudioResource _dorian;
-    public AudioResource _tada;
-    public AudioResource _music;
+    internal AudioResource _dorian;
+    internal AudioResource _tada;
+    internal AudioResource _music;
 
-    public SpotGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
+    internal SpotGame SpotGame { get; private set; } = new SpotGame();
+
+    internal SpotGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
 
     protected override void LoadAssets()

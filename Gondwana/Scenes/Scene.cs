@@ -343,6 +343,14 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         return sceneLayer;
     }
 
+    public SceneLayer AddLayer(SceneLayer sceneLayer)
+    {
+        _sceneLayers.Add(sceneLayer);
+        OnSceneLayerAdded(sceneLayer);
+        FullRefreshNeeded = true;
+        return sceneLayer;
+    }
+
     /// <summary>
     /// Removes all layers from this scene.
     /// </summary>
