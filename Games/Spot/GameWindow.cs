@@ -109,7 +109,7 @@ public partial class GameWindow : Form
 
     private void SoundEffectsMenuItem_CheckedChanged(object? sender, EventArgs e)
     {
-        _gameHost.SetSoundEffectsEnabled(_soundEffectsMenuItem!.Checked);
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetSoundEffectsEnabled(_soundEffectsMenuItem!.Checked));
     }
 
     private void OpenNewGameDialog()

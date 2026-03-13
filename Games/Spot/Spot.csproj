@@ -12,6 +12,11 @@
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\bubble-blue.png" />
+    <None Remove="assets\bubble-green.png" />
+    <None Remove="assets\bubble-pink.png" />
+    <None Remove="assets\bubble-red.png" />
+    <None Remove="assets\bubble-yellow.png" />
     <None Remove="assets\clouds_slice.png" />
     <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3" />
     <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.txt" />
@@ -19,6 +24,21 @@
     <None Remove="dorian.mid" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\bubble-blue.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\bubble-green.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\bubble-pink.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\bubble-red.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\bubble-yellow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\clouds_slice.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

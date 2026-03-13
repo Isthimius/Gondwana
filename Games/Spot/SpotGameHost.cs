@@ -116,7 +116,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         SKColor[] colors =
         {
-            SKColors.White,
+            //SKColors.White,
             SKColors.Red,
             SKColors.Blue,
             SKColors.Yellow,

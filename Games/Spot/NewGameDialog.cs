@@ -66,7 +66,7 @@ namespace HWG.Spot
                 new ColorItem("Yellow", SKColors.Yellow),
                 new ColorItem("Green", SKColors.Green),
                 new ColorItem("Violet", SKColors.Violet),
-                new ColorItem("White", SKColors.White)
+                //new ColorItem("White", SKColors.White)
             };
 
             cboColor.DrawMode = DrawMode.OwnerDrawFixed;

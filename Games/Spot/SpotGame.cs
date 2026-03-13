@@ -1,5 +1,4 @@
 ﻿using Gondwana.Drawing.Direct;
-using Gondwana.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
