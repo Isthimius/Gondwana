@@ -1,4 +1,12 @@
 # Gondwana Game Engine
+[![NuGet](https://img.shields.io/nuget/v/Gondwana)](https://www.nuget.org/packages/Gondwana)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Gondwana)](https://www.nuget.org/packages/Gondwana)
+[![License](https://img.shields.io/github/license/Isthimius/Gondwana)](https://github.com/Isthimius/Gondwana/blob/master/LICENSE)
+[![Docs](https://img.shields.io/badge/docs-wiki-blue)](https://github.com/Isthimius/Gondwana/wiki)
+[![API](https://img.shields.io/badge/api-reference-blue)](https://isthimius.github.io/Gondwana/)
+![.NET](https://img.shields.io/badge/.NET-8.0-purple)
+![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-blue)
+
 <img src="https://github.com/user-attachments/assets/64372678-7d38-47f8-b01a-511c3ef407cc"
      alt="Gondwana" align="left" width="40%" />
 
