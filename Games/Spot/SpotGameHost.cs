@@ -209,4 +209,17 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _ = worldFromGrid;
         _ = screenFromGrid;
     }
+
+    internal void SetMusicEnabled(bool enabled)
+    {
+        if (enabled)
+            _music.Play();
+        else
+            _music.Stop();
+    }
+
+    internal void SetSoundEffectsEnabled(bool enabled)
+    {
+        // AudioManager.SoundEffectsEnabled = enabled;
+    }
 }

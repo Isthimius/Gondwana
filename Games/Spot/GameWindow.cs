@@ -61,21 +61,55 @@ public partial class GameWindow : Form
 
         base.OnFormClosed(e);
     }
+    private ToolStripMenuItem? _musicMenuItem;
+    private ToolStripMenuItem? _soundEffectsMenuItem;
 
     private void CreateMenu()
     {
         var menuStrip = new MenuStrip();
+
         var gameMenu = new ToolStripMenuItem("Game");
         var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => OpenNewGameDialog());
-        var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => this.Close());
-        
+        var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => Close());
+
         gameMenu.DropDownItems.Add(newGameMenuItem);
+        gameMenu.DropDownItems.Add(new ToolStripSeparator());
         gameMenu.DropDownItems.Add(exitMenuItem);
-        
+
+        var audioMenu = new ToolStripMenuItem("Audio");
+
+        _musicMenuItem = new ToolStripMenuItem("Music")
+        {
+            CheckOnClick = true,
+            Checked = true
+        };
+        _musicMenuItem.CheckedChanged += MusicMenuItem_CheckedChanged;
+
+        _soundEffectsMenuItem = new ToolStripMenuItem("Sound Effects")
+        {
+            CheckOnClick = true,
+            Checked = true
+        };
+        _soundEffectsMenuItem.CheckedChanged += SoundEffectsMenuItem_CheckedChanged;
+
+        audioMenu.DropDownItems.Add(_musicMenuItem);
+        audioMenu.DropDownItems.Add(_soundEffectsMenuItem);
+
         menuStrip.Items.Add(gameMenu);
-        
-        this.MainMenuStrip = menuStrip;
-        this.Controls.Add(menuStrip);
+        menuStrip.Items.Add(audioMenu);
+
+        MainMenuStrip = menuStrip;
+        Controls.Add(menuStrip);
+    }
+
+    private void MusicMenuItem_CheckedChanged(object? sender, EventArgs e)
+    {
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetMusicEnabled(_musicMenuItem!.Checked));
+    }
+
+    private void SoundEffectsMenuItem_CheckedChanged(object? sender, EventArgs e)
+    {
+        _gameHost.SetSoundEffectsEnabled(_soundEffectsMenuItem!.Checked);
     }
 
     private void OpenNewGameDialog()
