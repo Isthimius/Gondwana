@@ -209,7 +209,7 @@ public sealed class DirectDrawingManager
         if (drawing is null)
             throw new ArgumentNullException(nameof(drawing));
 
-        var name = drawing.Id.ToString();
+        var name = drawing.Nickname!.ToString();
 
         _directDrawings.AddOrUpdate(
             name,
@@ -251,7 +251,7 @@ public sealed class DirectDrawingManager
 
     private void OnDrawingDisposing(object? sender, IDirectDrawable drawing)
     {
-        _directDrawings.TryRemove(drawing.Nickname, out _);
+        _directDrawings.TryRemove(drawing.Nickname!, out _);
         drawing.Disposing -= OnDrawingDisposing;
     }
 

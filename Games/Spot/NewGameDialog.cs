@@ -7,7 +7,7 @@ namespace HWG.Spot
 {
     public partial class NewGameDialog : Form
     {
-        public NewGameOptions Options { get; private set; }
+        internal NewGameOptions Options { get; private set; }
 
         private class ColorItem
         {
@@ -217,7 +217,7 @@ namespace HWG.Spot
             {
                 var colorItem = (ColorItem)playerColors[i].SelectedItem;
 
-                Options.Players.Add(new PlayerOptions
+                Options.Players.Add(new Player
                 {
                     Name = playerNames[i].Text,
                     Type = playerTypes[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,

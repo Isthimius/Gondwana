@@ -199,7 +199,7 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         Mode = mode;
         SceneLayer = sceneLayer;
         View = view;
-        Nickname = nickname;
+        Nickname = nickname ?? Id.ToString();
 
         if (mode == DirectDrawingMode.SceneLayer)
         {

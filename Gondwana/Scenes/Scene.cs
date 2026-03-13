@@ -343,6 +343,17 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         return sceneLayer;
     }
 
+    /// <summary>
+    /// Adds an existing <see cref="SceneLayer"/> to this scene.
+    /// </summary>
+    /// <param name="sceneLayer">The <see cref="SceneLayer"/> to add to the scene.</param>
+    /// <returns>The added <see cref="SceneLayer"/>.</returns>
+    /// <remarks>
+    /// This method adds a pre-existing layer to the scene's layer collection and triggers
+    /// the <see cref="SceneLayerAdded"/> event. The scene is marked for full refresh to ensure
+    /// the new layer is rendered. Use this method when you need to add a layer that was
+    /// created separately or transferred from another scene.
+    /// </remarks>
     public SceneLayer AddLayer(SceneLayer sceneLayer)
     {
         _sceneLayers.Add(sceneLayer);
@@ -422,10 +433,17 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     }
 
     /// <summary>
-    /// Computes a world-space pixel bounding rectangle that encloses all layers
-    /// in the Scene. Each layer reports its own bounds via GetLayerBoundsPx(),
-    /// and this method unions them together.
+    /// Computes a world-space pixel bounding rectangle that encloses all layers in the scene.
     /// </summary>
+    /// <returns>
+    /// A <see cref="RectangleF"/> representing the union of all layer bounds in pixel coordinates,
+    /// or <see cref="RectangleF.Empty"/> if the scene has no layers or all layers have empty bounds.
+    /// </returns>
+    /// <remarks>
+    /// Each layer reports its own bounds via <c>GetLayerBoundsPx()</c>, and this method unions
+    /// them together to produce a single bounding rectangle that encompasses the entire scene.
+    /// This is useful for determining camera limits, culling regions, or overall scene dimensions.
+    /// </remarks>
     public RectangleF GetWorldBoundsPx()
     {
         if (_sceneLayers.Count == 0)

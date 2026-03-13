@@ -2,6 +2,7 @@
 using Gondwana.Scenes;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace HWG.Spot;
 
@@ -28,7 +29,7 @@ internal class SpotGame
         return CurrentPlayer;
     }
 
-    internal void NewGame(int width, int height, params Player[] players)
+    internal void NewGame(int width, int height, Player[] players)
     {
         if (players.Length < 2)
             throw new ArgumentException("At least two players are required to start a game.", nameof(players));
@@ -50,6 +51,12 @@ internal class SpotGame
         _currentPlayerIndex = 0;
 
         GameHost.Scene.AddLayer(SpotGameField);
+        GameHost._music.Volume = 0.1f;
+
+        // shift the Origin of the game field to the center of the scene
+        var horizShift = (12 - width) * 32;
+        var vertShift = (12 - height) * 32;
+        SpotGameField.OriginPx = new Point(-horizShift, -vertShift);
     }
 
     internal int GetPlayerScore(Player player)

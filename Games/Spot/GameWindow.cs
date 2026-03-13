@@ -6,7 +6,7 @@ namespace HWG.Spot;
 
 public partial class GameWindow : Form
 {
-    private SpotGameHost? _gameHost;
+    private SpotGameHost _gameHost;
     private static readonly Size DefaultWindowSize = new(769, 769);
 
     public GameWindow()
@@ -80,13 +80,11 @@ public partial class GameWindow : Form
 
     private void OpenNewGameDialog()
     {
-        using (var dialog = new NewGameDialog())
+        using var dialog = new NewGameDialog();
+        if (dialog.ShowDialog(this) == DialogResult.OK)
         {
-            if (dialog.ShowDialog(this) == DialogResult.OK)
-            {
-                var options = dialog.Options;
-                //_gameHost?.SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players);
-            }
+            var options = dialog.Options;
+            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SpotGame.NewGame(options.BoardWidth, options.BoardHeight, [.. options.Players]));
         }
     }
 }
