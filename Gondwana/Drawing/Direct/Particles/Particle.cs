@@ -54,6 +54,12 @@ public struct Particle
     public SKColor Color;
 
     /// <summary>
+    /// Blend mode used when rendering this particle.
+    /// Defaults to <see cref="SKBlendMode.Plus"/> for additive/glowy effects.
+    /// </summary>
+    public SKBlendMode BlendMode;
+
+    /// <summary>
     /// The current rotation angle of the particle, in degrees.
     /// </summary>
     public float Rotation;

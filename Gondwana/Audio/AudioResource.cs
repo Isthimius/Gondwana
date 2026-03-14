@@ -19,6 +19,8 @@ public class AudioResource : IDisposable
     private PanningSampleProvider? monoPanProvider;         // for mono sources only
     private StereoPanSampleProvider? stereoPanProvider;     // for stereo sources only
     private VolumeSampleProvider? volumeProvider;           // final stage
+    
+    private bool _stopRequested;
     private bool disposed;
 
     #region events
@@ -273,6 +275,8 @@ public class AudioResource : IDisposable
     /// to start from the beginning; otherwise, playback resumes from the current position.</param>
     public void Play(bool fromStart = true)
     {
+        _stopRequested = false;
+
         if (fromStart)
         {
             if (IsPlaying)
@@ -335,7 +339,11 @@ public class AudioResource : IDisposable
     /// <summary>
     /// Stops the output device, halting any ongoing audio playback.
     /// </summary>
-    public void Stop() => outputDevice.Stop();
+    public void Stop()
+    {
+        _stopRequested = true;
+        outputDevice.Stop();
+    }
 
     /// <summary>
     /// Ensures this audio resource is loaded into <see cref="AudioResourceManager"/> from its persisted source.
@@ -407,9 +415,17 @@ public class AudioResource : IDisposable
     {
         try
         {
-            if (IsLooping)
+            if (_stopRequested)
             {
-                Play();
+                _stopRequested = false;
+                return;
+            }
+
+            bool reachedEnd = waveStream.Position >= waveStream.Length;
+
+            if (IsLooping && reachedEnd)
+            {
+                Play(true);
             }
             else
             {

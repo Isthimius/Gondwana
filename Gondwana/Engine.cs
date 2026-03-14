@@ -1,6 +1,5 @@
 using Gondwana.Configuration;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Gamepad;

@@ -115,6 +115,12 @@ public sealed class ParticleEmitter
     public SKColor Color { get; set; } = new SKColor(200, 200, 255, 255);
 
     /// <summary>
+    /// Blend mode used when rendering particles from this emitter.
+    /// Defaults to <see cref="SKBlendMode.Plus"/> for additive/glowy effects.
+    /// </summary>
+    public SKBlendMode BlendMode { get; set; } = SKBlendMode.Plus;
+
+    /// <summary>
     /// Gets or sets the horizontal jitter value for spawning particles, which represents a random offset applied along the X-axis.
     /// </summary>
     public float JitterX { get; set; } = 0f;

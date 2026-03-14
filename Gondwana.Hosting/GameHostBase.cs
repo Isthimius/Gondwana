@@ -10,6 +10,11 @@ namespace Gondwana.Hosting;
 public abstract class GameHostBase : IDisposable
 {
     /// <summary>
+    /// Gets the singleton instance of the engine.
+    /// </summary>
+    public Engine Engine => Engine.Instance;
+
+    /// <summary>
     /// Gets the current active scene.
     /// </summary>
     public Scene? Scene { get; protected set; }
@@ -185,14 +190,6 @@ public abstract class GameHostBase : IDisposable
     protected virtual void OnStartEngine() { }
 
     /// <summary>
-    /// Saves the current game state to a file during disposal. Override to customize save behavior.
-    /// </summary>
-    protected virtual void SaveStateOnDispose()
-    {
-        Engine.Instance.State.SaveToFile("game.json");
-    }
-
-    /// <summary>
     /// Unhooks event handlers during disposal. Override to clean up custom event subscriptions.
     /// </summary>
     protected virtual void UnhookEvents() { }
@@ -234,7 +231,6 @@ public abstract class GameHostBase : IDisposable
         if (disposing)
         {
             UnhookEvents();
-            SaveStateOnDispose();
             StopEngine();
             DisposeEngine();
         }

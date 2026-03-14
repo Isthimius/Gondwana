@@ -1,18 +1,18 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Gondwana;
 
 namespace HWG.Spot;
 
 public partial class GameWindow : Form
 {
-    private SpotGameHost? _gameHost;
-    private static readonly Size DefaultWindowSize = new(1280, 720);
+    private SpotGameHost _gameHost;
+    private static readonly Size DefaultWindowSize = new(769, 769);
 
     public GameWindow()
     {
         InitializeComponent();
+        CreateMenu();
 
         renderSurface.Dock = DockStyle.Fill;
 
@@ -21,12 +21,15 @@ public partial class GameWindow : Form
         this.StartPosition = FormStartPosition.CenterScreen;
         this.ClientSize = DefaultWindowSize;
 
+        this.MinimizeBox = false;
+        this.MaximizeBox = false;
+
         this.KeyPreview = true;
         this.KeyDown += (_, e) =>
         {
             if (e.KeyCode == Keys.Escape)
             {
-                Engine.Instance.Stop();
+                _gameHost.Engine.Stop();
                 this.Close();
             }
         };
@@ -43,7 +46,7 @@ public partial class GameWindow : Form
     {
         base.OnShown(e);
 
-        this.FormBorderStyle = FormBorderStyle.None;
+        this.FormBorderStyle = FormBorderStyle.FixedSingle;
         this.StartPosition = FormStartPosition.CenterScreen;
         this.ClientSize = DefaultWindowSize;
 
@@ -57,5 +60,65 @@ public partial class GameWindow : Form
         _gameHost = null;
 
         base.OnFormClosed(e);
+    }
+    private ToolStripMenuItem? _musicMenuItem;
+    private ToolStripMenuItem? _soundEffectsMenuItem;
+
+    private void CreateMenu()
+    {
+        var menuStrip = new MenuStrip();
+
+        var gameMenu = new ToolStripMenuItem("Game");
+        var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => OpenNewGameDialog());
+        var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => Close());
+
+        gameMenu.DropDownItems.Add(newGameMenuItem);
+        gameMenu.DropDownItems.Add(new ToolStripSeparator());
+        gameMenu.DropDownItems.Add(exitMenuItem);
+
+        var audioMenu = new ToolStripMenuItem("Audio");
+
+        _musicMenuItem = new ToolStripMenuItem("Music")
+        {
+            CheckOnClick = true,
+            Checked = true
+        };
+        _musicMenuItem.CheckedChanged += MusicMenuItem_CheckedChanged;
+
+        _soundEffectsMenuItem = new ToolStripMenuItem("Sound Effects")
+        {
+            CheckOnClick = true,
+            Checked = true
+        };
+        _soundEffectsMenuItem.CheckedChanged += SoundEffectsMenuItem_CheckedChanged;
+
+        audioMenu.DropDownItems.Add(_musicMenuItem);
+        audioMenu.DropDownItems.Add(_soundEffectsMenuItem);
+
+        menuStrip.Items.Add(gameMenu);
+        menuStrip.Items.Add(audioMenu);
+
+        MainMenuStrip = menuStrip;
+        Controls.Add(menuStrip);
+    }
+
+    private void MusicMenuItem_CheckedChanged(object? sender, EventArgs e)
+    {
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetMusicEnabled(_musicMenuItem!.Checked));
+    }
+
+    private void SoundEffectsMenuItem_CheckedChanged(object? sender, EventArgs e)
+    {
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetSoundEffectsEnabled(_soundEffectsMenuItem!.Checked));
+    }
+
+    private void OpenNewGameDialog()
+    {
+        using var dialog = new NewGameDialog();
+        if (dialog.ShowDialog(this) == DialogResult.OK)
+        {
+            var options = dialog.Options;
+            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SpotGame.NewGame(options.BoardWidth, options.BoardHeight, [.. options.Players]));
+        }
     }
 }
