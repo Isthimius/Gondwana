@@ -206,7 +206,6 @@ public sealed class EngineState
     /// <summary>
     /// Loads engine state from a file and merges it with the current engine state, optionally
     /// overwriting existing items with matching identifiers. Unlike <see cref="LoadFromFile"/>,
-
     /// this method does not clear existing state before loading, allowing incremental state updates
     /// and data patching scenarios.
     /// </summary>
