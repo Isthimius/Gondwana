@@ -17,9 +17,11 @@ namespace HWG.Spot;
 
 internal sealed class SpotGameHost : WinFormsGameHost
 {
-    internal AudioResource _dorian;
-    internal AudioResource _tada;
     internal AudioResource _music;
+    internal AudioResource _velcro;
+    internal AudioResource _drop;
+    internal AudioResource _gameWin;
+    internal AudioResource _gameLose;
 
     internal SpotGame SpotGame { get; private set; }
 
@@ -29,16 +31,15 @@ internal sealed class SpotGameHost : WinFormsGameHost
     protected override void LoadAssets()
     {
         // load asset files
-        //_dorian = AudioResourceManager.Instance.LoadFromFile("dorian", "assets\\dorian.mid");
-        //_dorian.IsLooping = true;
 
-        _tada = AudioResourceManager.Instance.LoadFromFile("tada", "assets\\tada.wav");
-        _tada.IsLooping = false;
-
+        // load standalone audio files
         _music = AudioResourceManager.Instance.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
         _music.IsLooping = true;
 
-        // load standalone audio files
+        _velcro = AudioResourceManager.Instance.LoadFromFile("velcro", "assets\\freesound_community-velcro_fast-91558.mp3");
+        _drop = AudioResourceManager.Instance.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
+        _gameWin = AudioResourceManager.Instance.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
+        _gameLose = AudioResourceManager.Instance.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
 
         // load standalone image files
 
@@ -52,9 +53,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         // Implementation for loading tilesheets goes here
         var splash = new Tilesheet("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
-
-        //var clouds = new Tilesheet("clouds", "assets\\clouds_slice.png");
-        //clouds.ApplyMask(Color.Black.ToSKColor());
     }
 
     protected override void LoadAnimationCycles()
@@ -152,9 +150,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     protected override void OnStartEngine()
     {
-        //_dorian.Volume = 1f;
-        //_dorian.Play();
-        //_tada.Play();
         _music.Volume = 0.2f;
         _music.Play();
     }

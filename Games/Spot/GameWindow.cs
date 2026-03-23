@@ -7,7 +7,7 @@ namespace HWG.Spot;
 public partial class GameWindow : Form
 {
     private SpotGameHost _gameHost;
-    private static readonly Size DefaultWindowSize = new(769, 769);
+    private static readonly Size DefaultWindowSize = new(769, 793);
 
     public GameWindow()
     {
@@ -61,6 +61,7 @@ public partial class GameWindow : Form
 
         base.OnFormClosed(e);
     }
+
     private ToolStripMenuItem? _musicMenuItem;
     private ToolStripMenuItem? _soundEffectsMenuItem;
 

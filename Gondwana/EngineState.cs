@@ -466,7 +466,7 @@ public sealed class EngineState
                     }
                 }
 
-                AudioResourceManager.Instance.LoadFromEngineResourceFile(af);
+                AudioResourceManager.Instance.LoadFromEngineAssetsFile(af);
             }
         }
 
