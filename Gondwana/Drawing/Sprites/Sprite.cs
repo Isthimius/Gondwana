@@ -65,7 +65,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _nudgeY = 0;
         CurrentFrame = frame;
 
-        if (SpriteManager.SizeNewSpritesToSceneLayer)
+        if (SpriteManager.Instance.SizeNewSpritesToSceneLayer)
             _renderSize = new Size(_sceneLayer.TileWidth, _sceneLayer.TileHeight);
         else
             _renderSize = CurrentFrame.Tilesheet.TileSize;
@@ -76,7 +76,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
-        SpriteManager._spriteList.Add(this);
+        SpriteManager.Instance._spriteList.Add(this);
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     internal Sprite(Sprite sprite)
     {
         animator = new Animator(this);
-        SpriteManager._spriteList.Add(this);
+        SpriteManager.Instance._spriteList.Add(this);
 
         _sceneLayer = sprite._sceneLayer;
         frame = sprite.frame;
@@ -125,7 +125,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
 
-        SpriteManager._spriteList.Add(this);
+        SpriteManager.Instance._spriteList.Add(this);
     }
 
     #endregion constructors / finalizer
@@ -499,8 +499,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
 
-        if (SpriteManager._spriteList.IndexOf(this) != -1)
-            SpriteManager._spriteList.Remove(this);
+        if (SpriteManager.Instance._spriteList.IndexOf(this) != -1)
+            SpriteManager.Instance._spriteList.Remove(this);
 
         // clear the events
         SpriteMoved = null;

@@ -71,7 +71,7 @@ public sealed class EngineState
     /// This property provides direct access to the sprite collection for serialization purposes.
     /// </summary>
     [JsonProperty]
-    public List<Sprite> Sprites => SpriteManager._spriteList;
+    public List<Sprite> Sprites => SpriteManager.Instance._spriteList;
 
     /// <summary>
     /// Gets the dictionary of all registered audio resources, keyed by their unique identifiers.
@@ -126,7 +126,7 @@ public sealed class EngineState
         TilesheetRegistry.Instance.Clear();
         Cycle.ClearAllAnimationCycles();
         Scene.ClearAllScenes();
-        SpriteManager.Clear();
+        SpriteManager.Instance.Clear();
         AudioResourceManager.Instance.Dispose();
         ValueBag.Clear();
     }
@@ -366,7 +366,7 @@ public sealed class EngineState
             Scene.ClearAllScenes();
 
         if (parts.HasFlag(EngineStateParts.Sprites))
-            SpriteManager.Clear();
+            SpriteManager.Instance.Clear();
 
         if (parts.HasFlag(EngineStateParts.Audio))
             AudioResourceManager.Instance.Dispose();
@@ -585,9 +585,9 @@ public sealed class EngineState
             return;
 
         var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
-        for (int i = 0; i < SpriteManager._spriteList.Count; i++)
+        for (int i = 0; i < SpriteManager.Instance._spriteList.Count; i++)
         {
-            var id = SpriteManager._spriteList[i].Nickname;
+            var id = SpriteManager.Instance._spriteList[i].Nickname;
             if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
                 existingIndexById.Add(id, i);
         }
@@ -613,12 +613,12 @@ public sealed class EngineState
                 if (!overwriteExisting)
                     continue;
 
-                SpriteManager._spriteList[existingIndex] = incoming;
+                SpriteManager.Instance._spriteList[existingIndex] = incoming;
             }
             else
             {
-                existingIndexById[incoming.Nickname] = SpriteManager._spriteList.Count;
-                SpriteManager._spriteList.Add(incoming);
+                existingIndexById[incoming.Nickname] = SpriteManager.Instance._spriteList.Count;
+                SpriteManager.Instance._spriteList.Add(incoming);
             }
         }
     }

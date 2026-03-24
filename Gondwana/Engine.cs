@@ -739,7 +739,7 @@ public sealed class Engine : IDisposable
             Tile.TilesAnimating[i].TileAnimator.CycleAnimation(tick);
 
         // advance Sprite Movement paths
-        SpriteManager.MoveSprites(tick);
+        SpriteManager.Instance.MoveSprites(tick);
 
         // resolve collisions after movement
         foreach (var scene in Scenes.Scene.GetAllScenes())
