@@ -70,7 +70,7 @@ namespace Slider
 
                 Engine.Instance.InitializeWinFormsKeyboardAdapter(winFormBitmapRenderSurfaceControl1);
                 Engine.Instance.InitializeWinFormsMouseAdapter(winFormBitmapRenderSurfaceControl1);
-                Engine.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
+                Engine.Instance.Input.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
             }
         }
 

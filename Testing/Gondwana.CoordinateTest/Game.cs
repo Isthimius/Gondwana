@@ -287,17 +287,17 @@ public class Game : IDisposable
     private void ConfigureKeyboardInput()
     {
         Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
-        Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.W, "W");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.A, "A");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.S, "S");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.D, "D");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left, "Left");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right, "Right");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up, "Up");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down, "Down");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp, "PageUp");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown, "PageDown");
+        Engine.Instance.Input.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.W, "W");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.A, "A");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.S, "S");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.D, "D");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left, "Left");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right, "Right");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up, "Up");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down, "Down");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp, "PageUp");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown, "PageDown");
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
@@ -373,8 +373,8 @@ public class Game : IDisposable
     private void ConfigureMouseInput()
     {
         Engine.Instance.InitializeWinFormsMouseAdapter(RenderSurface);
-        Engine.MouseEventPoller!.MouseEvent += MouseEventPoller_MouseEvent;
-        Engine.MouseEventPoller.StartMonitoringMouse();
+        Engine.Instance.Input.MouseEventPoller!.MouseEvent += MouseEventPoller_MouseEvent;
+        Engine.Instance.Input.MouseEventPoller.StartMonitoringMouse();
     }
 
     private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
@@ -475,11 +475,11 @@ public class Game : IDisposable
         //Engine.Instance.InitializeSdlGamepadManager();
 
         Engine.Instance.InitializeXInputGamepadManager();
-        Engine.GamepadEventPoller!.ButtonDown += GamepadEventPoller_ButtonDown;
+        Engine.Instance.Input.GamepadEventPoller!.ButtonDown += GamepadEventPoller_ButtonDown;
 
-        foreach (var gamepadAdapter in Engine.GamepadManager!.ConnectedAdapters)
+        foreach (var gamepadAdapter in Engine.Instance.Input.GamepadManager!.ConnectedAdapters)
         {
-            Engine.GamepadEventPoller.StartMonitoringButton(gamepadAdapter.GamepadId, "");
+            Engine.Instance.Input.GamepadEventPoller.StartMonitoringButton(gamepadAdapter.GamepadId, "");
         }
     }
 
@@ -502,9 +502,9 @@ public class Game : IDisposable
             {
                 Engine.Instance.State.SaveToFile("game.json");
 
-                Engine.KeyboardEventPoller!.KeyDown -= KeyboardEventPoller_KeyDown;
-                Engine.MouseEventPoller!.MouseEvent -= MouseEventPoller_MouseEvent;
-                Engine.GamepadEventPoller!.ButtonDown -= GamepadEventPoller_ButtonDown;
+                Engine.Instance.Input.KeyboardEventPoller!.KeyDown -= KeyboardEventPoller_KeyDown;
+                Engine.Instance.Input.MouseEventPoller!.MouseEvent -= MouseEventPoller_MouseEvent;
+                Engine.Instance.Input.GamepadEventPoller!.ButtonDown -= GamepadEventPoller_ButtonDown;
 
                 // Dispose managed resources
                 Engine.Instance.Stop();

@@ -29,7 +29,7 @@ public static class EngineExtensions
     /// <param name="engine">The engine instance to configure.</param>
     public static void InitializeSdlGamepadManager(this Engine engine)
     {
-        Engine.GamepadManager = SdlGamepadManager.Start();
+        Engine.Instance.Input.GamepadManager = SdlGamepadManager.Start();
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public static class EngineExtensions
     /// <param name="engine">The engine instance to configure.</param>
     public static void InitializeXInputGamepadManager(this Engine engine)
     {
-        Engine.GamepadManager = XInputGamepadManager.Start();
+        Engine.Instance.Input.GamepadManager = XInputGamepadManager.Start();
     }
 
     /// <summary>

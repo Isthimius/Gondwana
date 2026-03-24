@@ -55,63 +55,6 @@ public sealed class Engine : IDisposable
     /// </remarks>
     public static ILogger<Engine> Logger => EngineLogger.GetLogger<Engine>();
 
-    /// <summary>
-    /// Gets the keyboard event polling subsystem, if initialized.
-    /// </summary>
-    /// <value>
-    /// The <see cref="Gondwana.Input.Keyboard.KeyboardEventPoller"/> instance if initialized;
-    /// otherwise, <c>null</c>.
-    /// </value>
-    /// <remarks>
-    /// This property provides access to the keyboard input subsystem. The poller must be
-    /// initialized via <see cref="Initialize"/> with a valid <see cref="IKeyboardAdapter"/>
-    /// before use.
-    /// </remarks>
-    public static KeyboardEventPoller? KeyboardEventPoller => KeyboardEventPoller.Instance ?? null;
-
-    /// <summary>
-    /// Gets the mouse event polling subsystem, if initialized.
-    /// </summary>
-    /// <value>
-    /// The <see cref="Gondwana.Input.Mouse.MouseEventPoller"/> instance if initialized;
-    /// otherwise, <c>null</c>.
-    /// </value>
-    /// <remarks>
-    /// This property provides access to the mouse input subsystem. The poller must be
-    /// initialized via <see cref="Initialize"/> with a valid <see cref="IMouseAdapter"/>
-    /// before use.
-    /// </remarks>
-    public static MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
-
-    private static IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
-
-    /// <summary>
-    /// Gets or sets the gamepad manager responsible for handling gamepad input.
-    /// </summary>
-    /// <remarks>Setting this property attaches an update callback to the engine cycle, polling attached adapters</remarks>
-    public static IGamepadManager<IGamepadAdapter>? GamepadManager
-    {
-        get => _gamepadManager;
-        set
-        {
-            GamepadEventPoller.Initialize(value?.ConnectedAdapters);
-            _gamepadManager = value;
-        }
-    }
-
-    /// <summary>
-    /// Gets the gamepad event polling subsystem, if initialized.
-    /// </summary>
-    /// <value>
-    /// The <see cref="Gondwana.Input.Gamepad.GamepadEventPoller"/> instance if initialized;
-    /// otherwise, <c>null</c>.
-    /// </value>
-    /// <remarks>
-    /// This property provides access to the gamepad input subsystem. The poller is
-    /// automatically initialized when a <see cref="GamepadManager"/> is assigned.
-    /// </remarks>
-    public static GamepadEventPoller? GamepadEventPoller => GamepadEventPoller.Instance;
-
     #endregion
 
     #region private fields
@@ -264,8 +207,7 @@ public sealed class Engine : IDisposable
 
     #endregion events
 
-    private Engine()
-    { }
+    private Engine() { }
 
     private volatile bool _isInitialized = false;
     private volatile bool _isInitializing = false;
@@ -359,7 +301,7 @@ public sealed class Engine : IDisposable
         if (mouseAdapter != null)
             MouseEventPoller.Initialize(mouseAdapter);
 
-        GamepadManager = gamepadManager;
+        Input.GamepadManager = gamepadManager;
 
         if (UiDispatcher == null)
             PostInitialization?.Invoke();
@@ -624,16 +566,6 @@ public sealed class Engine : IDisposable
     public double FramesPerSecond => _netFPS;
 
     /// <summary>
-    /// Gets a value indicating whether the engine has been disposed.
-    /// </summary>
-    /// <value><c>true</c> if <see cref="Dispose"/> has completed; otherwise, <c>false</c>.</value>
-    /// <remarks>
-    /// Once this property is <c>true</c>, the engine instance should not be used further.
-    /// All managed resources have been released and subsystems have been shut down.
-    /// </remarks>
-    public bool IsDisposed { get; private set; } = false;
-
-    /// <summary>
     /// Gets the engine's persistent state container for storing arbitrary key-value data.
     /// </summary>
     /// <value>An <see cref="EngineState"/> instance that persists across engine sessions.</value>
@@ -672,6 +604,26 @@ public sealed class Engine : IDisposable
         get => Volatile.Read(ref _config!);
         private set => Volatile.Write(ref _config, value);
     }
+
+    /// <summary>
+    /// Provides ergonomic access to the collection of manager components used by the engine.
+    /// </summary>
+    /// <remarks>Use this property to access and configure the various managers that control engine
+    /// subsystems. The returned collection is read-only; individual managers can be accessed and modified, but the
+    /// collection itself cannot be replaced.</remarks>
+    public EngineManagers Managers { get; } = new();
+
+    public EngineInputSystems Input { get; } = new();
+
+    /// <summary>
+    /// Gets a value indicating whether the engine has been disposed.
+    /// </summary>
+    /// <value><c>true</c> if <see cref="Dispose"/> has completed; otherwise, <c>false</c>.</value>
+    /// <remarks>
+    /// Once this property is <c>true</c>, the engine instance should not be used further.
+    /// All managed resources have been released and subsystems have been shut down.
+    /// </remarks>
+    public bool IsDisposed { get; private set; } = false;
 
     /// <summary>
     /// Gets a value indicating whether the engine is currently executing its disposal sequence.
@@ -774,7 +726,7 @@ public sealed class Engine : IDisposable
             surface.PresentBackbufferToAdapter();
 
         // update state of gamepad(s)
-        GamepadManager?.Update();
+        Input.GamepadManager?.Update();
 
         // raise event
         AfterFrameRender?.Invoke();
@@ -856,12 +808,12 @@ public sealed class Engine : IDisposable
                     SafeInvoke(Disposing);
 
                 // managed cleanup...
-                KeyboardEventPoller?.StopMonitoringAllKeys();
-                MouseEventPoller?.StopMonitoringMouse();
+                Input.KeyboardEventPoller?.StopMonitoringAllKeys();
+                Input.MouseEventPoller?.StopMonitoringMouse();
 
-                if (GamepadManager is not null)
-                    foreach (var gamepadAdapter in GamepadManager.ConnectedAdapters)
-                        GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
+                if (Input.GamepadManager is not null)
+                    foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)
+                        Input.GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
 
                 if (Configuration.LoggingMode == EngineLoggingMode.Asynchronous && Configuration.FlushAsyncLogsOnShutdown)
                     EngineLogger.StopAsyncLogging(flush: true);

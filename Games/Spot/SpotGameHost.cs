@@ -166,17 +166,17 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     protected override void OnMouseAdapterInitialized()
     {
-        if (Engine.MouseEventPoller is null)
+        if (Engine.Input.MouseEventPoller is null)
             return;
 
-        Engine.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
-        Engine.MouseEventPoller.StartMonitoringMouse();
+        Engine.Input.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
+        Engine.Input.MouseEventPoller.StartMonitoringMouse();
     }
 
     protected override void UnhookEvents()
     {
-        if (Engine.MouseEventPoller is not null)
-            Engine.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
+        if (Engine.Input.MouseEventPoller is not null)
+            Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
     }
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
