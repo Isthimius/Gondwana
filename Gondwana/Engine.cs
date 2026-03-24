@@ -606,13 +606,38 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>
-    /// Provides ergonomic access to the collection of manager components used by the engine.
+    /// Gets the collection of resource managers for audio, sprites, fonts, tilesheets, and direct drawing.
     /// </summary>
-    /// <remarks>Use this property to access and configure the various managers that control engine
-    /// subsystems. The returned collection is read-only; individual managers can be accessed and modified, but the
-    /// collection itself cannot be replaced.</remarks>
+    /// <value>An <see cref="EngineManagers"/> instance providing access to all engine resource managers.</value>
+    /// <remarks>
+    /// <para>
+    /// This property provides centralized access to subsystem managers responsible for loading
+    /// and managing various types of game resources. Use the nested properties to access
+    /// specific managers such as <see cref="EngineManagers.AudioResources"/>, 
+    /// <see cref="EngineManagers.Sprites"/>, <see cref="EngineManagers.Fonts"/>, 
+    /// <see cref="EngineManagers.Tilesheets"/>, and <see cref="EngineManagers.DirectDrawings"/>.
+    /// </para>
+    /// </remarks>
     public EngineManagers Managers { get; } = new();
 
+    /// <summary>
+    /// Gets the collection of input subsystems for keyboard, mouse, and gamepad input.
+    /// </summary>
+    /// <value>An <see cref="EngineInputSystems"/> instance providing access to all input subsystems.</value>
+    /// <remarks>
+    /// <para>
+    /// This property provides centralized access to input event pollers and managers
+    /// for keyboard, mouse, and gamepad devices. Use the nested properties to access
+    /// specific subsystems such as <see cref="EngineInputSystems.KeyboardEventPoller"/>, 
+    /// <see cref="EngineInputSystems.MouseEventPoller"/>, 
+    /// <see cref="EngineInputSystems.GamepadEventPoller"/>, and 
+    /// <see cref="EngineInputSystems.GamepadManager"/>.
+    /// </para>
+    /// <para>
+    /// Input adapters must be provided during <see cref="Initialize"/> for the
+    /// corresponding input subsystems to become available.
+    /// </para>
+    /// </remarks>
     public EngineInputSystems Input { get; } = new();
 
     /// <summary>
