@@ -16,6 +16,8 @@ public partial class Sprite
     private bool _resizeReturnToStart;
     private float _resizeReturnDurationSeconds;
     private Size _resizeOriginalStart;
+    private bool _resizeLoop;
+    private Size _resizePeak;
 
     // --- Collision adjustment tween baseline ---
     private CollisionDetectionAdjustment _resizeStartCollisionAdjust;
@@ -69,12 +71,23 @@ public partial class Sprite
         {
             if (_resizeReturnToStart)
             {
+                // grow → shrink
                 StartResizeLeg(
                     start: RenderSize,
                     target: _resizeOriginalStart,
                     durationSeconds: _resizeReturnDurationSeconds,
                     returnToStart: false,
                     returnDurationSeconds: 0f);
+            }
+            else if (_resizeLoop)
+            {
+                // shrink → grow again
+                StartResizeLeg(
+                    start: RenderSize,
+                    target: _resizePeak,
+                    durationSeconds: _resizeDurationSeconds,
+                    returnToStart: true,
+                    returnDurationSeconds: _resizeReturnDurationSeconds);
             }
             else
             {
@@ -170,13 +183,16 @@ public partial class Sprite
     /// <param name="targetSize">The peak size in pixels.</param>
     /// <param name="growDurationSeconds">Seconds to reach the peak size.</param>
     /// <param name="shrinkDurationSeconds">Seconds to return to the original size.</param>
-    public void PulseTo(Size targetSize, float growDurationSeconds, float shrinkDurationSeconds)
+    /// <param name="loop">Whether to continuously loop the pulse animation.</param>
+    public void PulseTo(Size targetSize, float growDurationSeconds, float shrinkDurationSeconds, bool loop = false)
     {
         targetSize = new Size(
             Math.Max(1, targetSize.Width),
             Math.Max(1, targetSize.Height));
 
         _resizeOriginalStart = RenderSize;
+        _resizePeak = targetSize;
+        _resizeLoop = loop;
 
         StartResizeLeg(
             start: RenderSize,
@@ -187,14 +203,14 @@ public partial class Sprite
     }
 
     /// <summary>
-    /// Perform a full pulse relative to the current RenderSize:
-    /// grow by the factor, then return to the original size.
-    /// Collision adjustment scales physically during both legs.
+    /// Perform a pulse animation by scaling the sprite by a factor relative to its current size,
+    /// then returning to the original size. The sprite can optionally loop this animation continuously.
     /// </summary>
-    /// <param name="factor">Scale factor. Greater than 1 grows, less than 1 shrinks.</param>
-    /// <param name="growDurationSeconds">Seconds to reach the peak size.</param>
-    /// <param name="shrinkDurationSeconds">Seconds to return to the original size.</param>
-    public void PulseBy(float factor, float growDurationSeconds, float shrinkDurationSeconds)
+    /// <param name="factor">The scaling factor for the pulse. Values greater than 1 grow the sprite, values less than 1 shrink it.</param>
+    /// <param name="growDurationSeconds">The duration in seconds to reach the peak size.</param>
+    /// <param name="shrinkDurationSeconds">The duration in seconds to return to the original size.</param>
+    /// <param name="loop">Whether to continuously loop the pulse animation.</param>
+    public void PulseBy(float factor, float growDurationSeconds, float shrinkDurationSeconds, bool loop = false)
     {
         factor = MathF.Max(0.01f, factor);
 
@@ -204,7 +220,23 @@ public partial class Sprite
         PulseTo(
             new Size(Math.Max(1, w), Math.Max(1, h)),
             growDurationSeconds,
-            shrinkDurationSeconds);
+            shrinkDurationSeconds,
+            loop);
+    }
+
+    /// <summary>
+    /// Stops the current pulse animation, optionally snapping the sprite back to its original size.
+    /// </summary>
+    /// <param name="snapBack">Whether to animate the sprite back to its original size.</param>
+    /// <param name="returnDuration">The duration in seconds for the return animation. If 0, the sprite snaps back instantly.</param>
+    public void StopPulse(bool snapBack = true, float returnDuration = 0f)
+    {
+        CancelResize();
+
+        if (snapBack)
+        {
+            ResizeTo(_resizeOriginalStart, returnDuration);
+        }
     }
 
     /// <summary>
