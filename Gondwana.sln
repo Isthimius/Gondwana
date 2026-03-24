@@ -63,6 +63,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{0855DC
 		assets\clouds.jpg = assets\clouds.jpg
 		assets\clouds_slice.png = assets\clouds_slice.png
 		assets\dorian.mid = assets\dorian.mid
+		assets\gondwana-icon.png = assets\gondwana-icon.png
 	EndProjectSection
 EndProject
 Global

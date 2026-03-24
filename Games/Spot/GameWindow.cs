@@ -7,7 +7,8 @@ namespace HWG.Spot;
 public partial class GameWindow : Form
 {
     private SpotGameHost _gameHost;
-    private static readonly Size DefaultWindowSize = new(769, 793);
+    private static readonly Size DefaultWindowSize = new(769, 769);
+    private MenuStrip _menuStrip;
 
     public GameWindow()
     {
@@ -17,7 +18,7 @@ public partial class GameWindow : Form
         renderSurface.Dock = DockStyle.Fill;
 
         // Normal window, centered
-        this.FormBorderStyle = FormBorderStyle.Sizable; // or FixedSingle
+        this.FormBorderStyle = FormBorderStyle.FixedSingle;
         this.StartPosition = FormStartPosition.CenterScreen;
         this.ClientSize = DefaultWindowSize;
 
@@ -46,9 +47,8 @@ public partial class GameWindow : Form
     {
         base.OnShown(e);
 
-        this.FormBorderStyle = FormBorderStyle.FixedSingle;
-        this.StartPosition = FormStartPosition.CenterScreen;
-        this.ClientSize = DefaultWindowSize;
+        // resize client area to include the menu strip
+        this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
         _gameHost!.Initialize();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }
@@ -67,7 +67,7 @@ public partial class GameWindow : Form
 
     private void CreateMenu()
     {
-        var menuStrip = new MenuStrip();
+        _menuStrip = new MenuStrip();
 
         var gameMenu = new ToolStripMenuItem("Game");
         var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => OpenNewGameDialog());
@@ -96,11 +96,11 @@ public partial class GameWindow : Form
         audioMenu.DropDownItems.Add(_musicMenuItem);
         audioMenu.DropDownItems.Add(_soundEffectsMenuItem);
 
-        menuStrip.Items.Add(gameMenu);
-        menuStrip.Items.Add(audioMenu);
+        _menuStrip.Items.Add(gameMenu);
+        _menuStrip.Items.Add(audioMenu);
 
-        MainMenuStrip = menuStrip;
-        Controls.Add(menuStrip);
+        MainMenuStrip = _menuStrip;
+        Controls.Add(_menuStrip);
     }
 
     private void MusicMenuItem_CheckedChanged(object? sender, EventArgs e)
