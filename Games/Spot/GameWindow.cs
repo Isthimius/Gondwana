@@ -48,7 +48,7 @@ public partial class GameWindow : Form
         base.OnShown(e);
 
         // resize client area to include the menu strip
-        this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
+        this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height + _gameHost.ScoreHeight);
 
         _gameHost!.Initialize();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }

@@ -246,5 +246,6 @@ public partial class Sprite
     {
         _isResizing = false;
         _resizeReturnToStart = false;
+        _resizeLoop = false;
     }
 }

@@ -25,6 +25,7 @@
     <None Remove="assets\bubble-yellow.png" />
     <None Remove="assets\clouds_slice.png" />
     <None Remove="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3" />
+    <None Remove="assets\freesound_community-bump-7-92964.mp3" />
     <None Remove="assets\freesound_community-velcro_fast-91558.mp3" />
     <None Remove="assets\freesound_community-water-drip-45622.mp3" />
     <None Remove="assets\gondwana-icon.png" />
@@ -72,6 +73,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\freesound_community-bump-7-92964.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\freesound_community-velcro_fast-91558.mp3">

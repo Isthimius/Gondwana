@@ -23,7 +23,10 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal AudioResource _drop;
     internal AudioResource _gameWin;
     internal AudioResource _gameLose;
+    internal AudioResource _bump;
     internal SKTypeface _font;
+
+    internal int ScoreHeight = 80;
 
     internal SpotGame SpotGame { get; private set; }
 
@@ -42,6 +45,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _drop = AudioResourceManager.Instance.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
         _gameWin = AudioResourceManager.Instance.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
         _gameLose = AudioResourceManager.Instance.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
+        _bump = AudioResourceManager.Instance.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
 
         // load standalone image files
 
@@ -101,16 +105,16 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         if (TilesheetRegistry.Instance.TryGet("splash", out tilesheet))
         {
-            var directImage = new DirectImage(tilesheet.SkBitmap, RenderSurface.Host, Scene[0], new Rectangle(0, 0, 769, 769));
+            var directImage = new DirectImage(tilesheet.SkBitmap, RenderSurface.Host, Scene[0], new Rectangle(0, 0, 769, 769 + ScoreHeight));
             directImage.ZOrder = 100;
             directImage.SetScaleMode(DirectImage.ScaleMode.Fit);
         }
 
-        var particleSurface = new ParticleSurface(RenderSurface.Host, Scene[0], new Rectangle(0, 0, 769, 769));
+        var particleSurface = new ParticleSurface(RenderSurface.Host, Scene[0], new Rectangle(0, 0, 769, 769 + ScoreHeight));
         particleSurface.CullingMarginX = 1300f;
         particleSurface.ZOrder = 50;
         var spriteBmp = tilesheet.SkBitmap;
-        particleSurface.Emitters.Add(GetSpots(769, 769));
+        particleSurface.Emitters.Add(GetSpots(769, 769 + ScoreHeight));
     }
 
     private static readonly Random _rng = new();
@@ -132,7 +136,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
             Position = new PointF(width * 1.1f, height * 0.5f),
             JitterY = height * 0.5f,
 
-            EmitRate = 0.5f,
+            EmitRate = 0.65f,
             LifeRange = (1000f, 2000f),
 
             VelocityRangeX = (-100f, -50f),
