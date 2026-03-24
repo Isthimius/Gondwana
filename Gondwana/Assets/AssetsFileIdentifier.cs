@@ -43,8 +43,7 @@ public sealed class AssetsFileIdentifier
     /// Initializes a new instance of the <see cref="AssetsFileIdentifier"/> class.
     /// </summary>
     /// <remarks>This parameterless constructor is primarily used for JSON deserialization.</remarks>
-    public AssetsFileIdentifier()
-    { }
+    public AssetsFileIdentifier() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AssetsFileIdentifier"/> class with the specified asset file, type, and name.
@@ -63,6 +62,5 @@ public sealed class AssetsFileIdentifier
     /// Returns a string representation of this asset identifier.
     /// </summary>
     /// <returns>A string containing the asset file path, asset type, and asset name.</returns>
-    public override string ToString() =>
-        $"Asset File {AssetsFile?.FilePath} / {AssetType} / {AssetName}";
+    public override string ToString() => $"Asset File {AssetsFile?.FilePath} / {AssetType} / {AssetName}";
 }

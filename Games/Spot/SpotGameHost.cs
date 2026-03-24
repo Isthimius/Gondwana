@@ -5,6 +5,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Rendering.Text;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
@@ -22,6 +23,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal AudioResource _drop;
     internal AudioResource _gameWin;
     internal AudioResource _gameLose;
+    internal SKTypeface _font;
 
     internal SpotGame SpotGame { get; private set; }
 
@@ -44,6 +46,9 @@ internal sealed class SpotGameHost : WinFormsGameHost
         // load standalone image files
 
         // load standalone video files
+
+        // load standalone font files
+        _font = FontManager.Instance.LoadFromFile("main", "assets\\ArchitectsDaughter-Regular.ttf");
 
         // load standalone cursor files
     }
