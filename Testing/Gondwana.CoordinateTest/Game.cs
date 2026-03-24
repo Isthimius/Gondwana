@@ -105,11 +105,11 @@ public class Game : IDisposable
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
         
-        var sprite1 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
+        var sprite1 = SpriteManager.Instance.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
         sprite1.Visible = true;
         sprite1.CollisionsEnabled = true;
 
-        var sprite2 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2");
+        var sprite2 = SpriteManager.Instance.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2");
         sprite2.Visible = true;
         sprite2.SetPosition(new Vector2(5, 0));
         sprite2.CollisionsEnabled = true;
@@ -170,7 +170,7 @@ public class Game : IDisposable
                                                        null,
                                                        new Rectangle(0, 0, 150, 30));
         _spriteNameTag.SetColors(Color.Blue, Color.White).SetText("Mister Rooster").ZOrder = 20;
-        _spriteNameTag.Movement.FollowTileSoft(SpriteManager.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
+        _spriteNameTag.Movement.FollowTileSoft(SpriteManager.Instance.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
     }
 
     private void InitializeParticles()
@@ -304,7 +304,7 @@ public class Game : IDisposable
     {
         var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
         var curPos = camera.PositionPx;
-        var sprite = SpriteManager.GetSpriteByID("rooster_1");
+        var sprite = SpriteManager.Instance.GetSpriteByID("rooster_1");
 
         // Parse the received key string into the Keys enum (case-insensitive)
         if (!Enum.TryParse<Keys>(args.KeyConfig.Key, ignoreCase: true, out var key))
