@@ -12,6 +12,7 @@
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\ArchitectsDaughter-Regular.ttf" />
     <None Remove="assets\bubble-blue-happy.png" />
     <None Remove="assets\bubble-blue.png" />
     <None Remove="assets\bubble-green-happy.png" />
@@ -37,6 +38,9 @@
     <None Remove="dorian.mid" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\ArchitectsDaughter-Regular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\bubble-blue-happy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
