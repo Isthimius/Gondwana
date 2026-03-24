@@ -512,9 +512,7 @@ public sealed class EngineState
             if (!overwriteExisting && registry.ContainsKey(key))
                 continue;
 
-            var rebuilt = RebuildTilesheetFromSaved(key, saved);
-            if (rebuilt is null) continue;
-            // ctor / registry side-effects already register the tilesheet
+            RebuildTilesheetFromSaved(key, saved);
         }
     }
 

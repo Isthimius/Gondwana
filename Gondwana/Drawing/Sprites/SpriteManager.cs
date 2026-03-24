@@ -24,6 +24,7 @@ public static class SpriteManager
     /// Gets a read-only collection of all sprites currently managed by the sprite manager.
     /// </summary>
     public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
+
     /// <summary>
     /// Gets or sets a value indicating whether new sprites should be automatically sized to their scene layer.
     /// </summary>

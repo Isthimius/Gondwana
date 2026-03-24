@@ -60,6 +60,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.WinForms.Hosting",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{0855DCA7-B21B-4C1A-BED9-D962837CED0E}"
 	ProjectSection(SolutionItems) = preProject
+		assets\Architects_Daughter,Comic_Neue.zip = assets\Architects_Daughter,Comic_Neue.zip
 		assets\clouds.jpg = assets\clouds.jpg
 		assets\clouds_slice.png = assets\clouds_slice.png
 		assets\dorian.mid = assets\dorian.mid
