@@ -24,6 +24,11 @@ public sealed class EngineManagers
     public DirectDrawingManager DirectDrawings { get; } = DirectDrawingManager.Instance;
 
     /// <summary>
+    /// Gets the font manager for loading and managing font resources.
+    /// </summary>
+    public FontManager Fonts { get; } = FontManager.Instance;
+
+    /// <summary>
     /// Gets the sprite manager for managing sprite assets and rendering.
     /// </summary>
     public SpriteManager Sprites { get; } = SpriteManager.Instance;
@@ -32,9 +37,4 @@ public sealed class EngineManagers
     /// Gets the tilesheet registry for managing tilesheet resources.
     /// </summary>
     public TilesheetRegistry Tilesheets { get; } = TilesheetRegistry.Instance;
-
-    /// <summary>
-    /// Gets the font manager for loading and managing font resources.
-    /// </summary>
-    public FontManager Fonts { get; } = FontManager.Instance;
 }
