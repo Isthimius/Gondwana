@@ -1,13 +1,13 @@
 ﻿using Gondwana;
 using Gondwana.Scenes;
 
-namespace HWG.Spot;
+namespace Spot.Game;
 
 internal class SpotGameField : SceneLayer
 {
     internal static class SpotFieldKeys
     {
-        public static readonly ValueKey<SpotGameField.Cell> Cell = new("Spot.Cell");
+        public static readonly ValueKey<Cell> Cell = new("Spot.Cell");
     }
 
     internal class Cell

@@ -25,15 +25,15 @@ public partial class GameWindow : Form
         this.MinimizeBox = false;
         this.MaximizeBox = false;
 
-        this.KeyPreview = true;
-        this.KeyDown += (_, e) =>
-        {
-            if (e.KeyCode == Keys.Escape)
-            {
-                _gameHost.Engine.Stop();
-                this.Close();
-            }
-        };
+        //this.KeyPreview = true;
+        //this.KeyDown += (_, e) =>
+        //{
+        //    if (e.KeyCode == Keys.Escape)
+        //    {
+        //        _gameHost.Engine.Stop();
+        //        this.Close();
+        //    }
+        //};
     }
 
     // create the Game (and thereby start the engine) once the form & controls are ready

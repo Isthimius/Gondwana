@@ -1,9 +1,10 @@
 ﻿using Gondwana.Drawing.Direct;
+using HWG.Spot;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace HWG.Spot;
+namespace Spot.Game;
 
 internal class SpotGame
 {
