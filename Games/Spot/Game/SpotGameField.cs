@@ -56,8 +56,5 @@ internal class SpotGameField : SceneLayer
         return field;
     }
 
-    internal Cell GetCell(int x, int y)
-    {
-        return this[x, y].ValueBag.Get(SpotFieldKeys.Cell);
-    }
+    internal Cell GetCell(int x, int y) => this[x, y].ValueBag.Get(SpotFieldKeys.Cell);
 }
