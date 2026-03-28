@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Spot.Game;
+namespace HWG.Spot.Game;
 
 internal class SpotGame
 {
@@ -68,11 +68,8 @@ internal class SpotGame
             for (int y = 0; y < SpotGameField.GridRowCount; y++)
             {
                 var cell = SpotGameField.GetCell(x, y);
-                if (cell.OccupiedBy.HasValue)
-                {
-                    if (cell.OccupiedBy.Value.Equals(player))
-                        score++;
-                }
+                if (cell.OccupiedBy != null && cell.OccupiedBy.Equals(player))
+                    score++;
             }
         }
 

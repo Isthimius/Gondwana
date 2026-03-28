@@ -1,10 +1,9 @@
 ﻿using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
 using SkiaSharp;
 
-namespace Spot.Game;
+namespace HWG.Spot.Game;
 
-internal struct Player
+internal sealed class Player
 {
     internal string Name { get; set; }
     internal PlayerType Type { get; set; }

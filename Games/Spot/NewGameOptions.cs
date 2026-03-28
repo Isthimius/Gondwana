@@ -1,4 +1,4 @@
-﻿using Spot.Game;
+﻿using HWG.Spot.Game;
 using System.Collections.Generic;
 
 namespace HWG.Spot;

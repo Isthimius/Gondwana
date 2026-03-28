@@ -1,4 +1,4 @@
-﻿namespace Spot.Game;
+﻿namespace HWG.Spot.Game;
 
 internal enum PlayerType
 {
