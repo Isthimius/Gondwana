@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36930.0
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11520.95 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
@@ -9,8 +9,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spot", "Games\Spot\Spot.csproj", "{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gondwana.Design", "Gondwana.Design\Gondwana.Design.csproj", "{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC217C36-1278-4820-86D5-951EFEF6E28D}"
 	ProjectSection(SolutionItems) = preProject
@@ -57,7 +55,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{0855DCA7-B21B-4C1A-BED9-D962837CED0E}"
 	ProjectSection(SolutionItems) = preProject
 		assets\2.mov = assets\2.mov
+		assets\appfile.ico = assets\appfile.ico
 		assets\Architects_Daughter,Comic_Neue.zip = assets\Architects_Daughter,Comic_Neue.zip
+		assets\bitmap.ico = assets\bitmap.ico
 		assets\Castle4_Simon.mid = assets\Castle4_Simon.mid
 		assets\chicken-1.wav = assets\chicken-1.wav
 		assets\clouds.jpg = assets\clouds.jpg
@@ -68,31 +68,49 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{0855DC
 		assets\Copy of original.bmp = assets\Copy of original.bmp
 		assets\Copy of original_mask.bmp = assets\Copy of original_mask.bmp
 		assets\Copy of systems.wav = assets\Copy of systems.wav
+		assets\cursor.ico = assets\cursor.ico
+		assets\cycle.ico = assets\cycle.ico
 		assets\dorian.mid = assets\dorian.mid
 		assets\explosion-01.wav = assets\explosion-01.wav
+		assets\file.ico = assets\file.ico
+		assets\folder.ico = assets\folder.ico
 		assets\fox-wtc7.wmv = assets\fox-wtc7.wmv
 		assets\glass.wmv = assets\glass.wmv
 		assets\gondwana-icon.png = assets\gondwana-icon.png
+		assets\grid.ico = assets\grid.ico
+		assets\grid2.ico = assets\grid2.ico
 		assets\house.wma = assets\house.wma
 		assets\Image1.bmp = assets\Image1.bmp
 		assets\jeanne.wma = assets\jeanne.wma
 		assets\laure.wma = assets\laure.wma
 		assets\laure_multi.wma = assets\laure_multi.wma
+		assets\layers.ico = assets\layers.ico
+		assets\media.ico = assets\media.ico
 		assets\mellow.wma = assets\mellow.wma
 		assets\multilang.wma = assets\multilang.wma
+		assets\multimedia.ico = assets\multimedia.ico
+		assets\multimedia2.ico = assets\multimedia2.ico
 		assets\original.bmp = assets\original.bmp
 		assets\original_mask.bmp = assets\original_mask.bmp
+		assets\project.ico = assets\project.ico
+		assets\project2.ico = assets\project2.ico
 		assets\Raton.asx = assets\Raton.asx
 		assets\rendering.asf = assets\rendering.asf
+		assets\resource.ico = assets\resource.ico
+		assets\resource2.ico = assets\resource2.ico
 		assets\rooster.bmp = assets\rooster.bmp
 		assets\rooster_mask.bmp = assets\rooster_mask.bmp
 		assets\rooster_mask_solidshadow.bmp = assets\rooster_mask_solidshadow.bmp
 		assets\seattle.wmv = assets\seattle.wmv
 		assets\smooth.wmv = assets\smooth.wmv
+		assets\sprite.ico = assets\sprite.ico
+		assets\sprite2.ico = assets\sprite2.ico
 		assets\systems.wav = assets\systems.wav
 		assets\tada.wav = assets\tada.wav
 		assets\tilesets.xml = assets\tilesets.xml
+		assets\tilesheet.ico = assets\tilesheet.ico
 		assets\tsunami-worldpropagation2004.mpeg = assets\tsunami-worldpropagation2004.mpeg
+		assets\wav.ico = assets\wav.ico
 		assets\XMLFile1.xml = assets\XMLFile1.xml
 		assets\XMLFile2.xml = assets\XMLFile2.xml
 	EndProjectSection
@@ -127,16 +145,6 @@ Global
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Release|Mixed Platforms.Build.0 = Release|x86
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Release|x86.ActiveCfg = Release|x86
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Release|x86.Build.0 = Release|x86
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|x86.ActiveCfg = Release|Any CPU
 		{208754FD-B132-EEBD-A1C1-FC105730B970}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{208754FD-B132-EEBD-A1C1-FC105730B970}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{208754FD-B132-EEBD-A1C1-FC105730B970}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
