@@ -222,7 +222,8 @@ namespace HWG.Spot
                 {
                     Name = playerNames[i].Text,
                     Type = playerTypes[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
-                    Color = colorItem.Name
+                    ColorText = colorItem.Name,
+                    Color = colorItem.Color,
                 });
             }
 
