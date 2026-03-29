@@ -1,6 +1,6 @@
 ﻿namespace HWG.Spot.Game;
 
-internal readonly record struct PlayerMovementType(
+internal readonly record struct PlayerMovement(
     Player? Player,
     MovementType MovementType,
     int FromX,

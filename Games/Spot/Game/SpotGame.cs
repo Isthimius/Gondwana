@@ -6,8 +6,14 @@ using System.Drawing;
 
 namespace HWG.Spot.Game;
 
-internal class SpotGame
+internal class SpotGame : IDisposable
 {
+    #region events
+
+    internal event Action<>? GameStarted;
+
+    #endregion
+
     internal SpotGameHost GameHost { get; private set; }
 
     internal SpotGameField SpotGameField { get; set; } = SpotGameField.Create(12, 12, Array.Empty<Player>());
@@ -84,5 +90,10 @@ internal class SpotGame
             scores[player] = GetPlayerScore(player);
         }
         return scores;
+    }
+
+    public void Dispose()
+    {
+        GameStarted = null;
     }
 }

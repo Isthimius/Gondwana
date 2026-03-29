@@ -89,19 +89,7 @@ internal partial class SpotGameField : SceneLayer
         return adjacentCells;
     }
 
-    internal void CaptureAdjacentCells(int x, int y, Player player)
-    {
-        var adjacentCells = GetAdjacentCells(x, y);
-        foreach (var cell in adjacentCells)
-        {
-            if (cell.OccupiedBy != null && cell.OccupiedBy != player)
-            {
-                cell.OccupiedBy = player;
-            }
-        }
-    }
-
-    internal PlayerMovementType GetMovementType(int fromX, int fromY, int destX, int destY)
+    internal PlayerMovement GetMovementType(int fromX, int fromY, int destX, int destY)
     {
         MovementType movementType;
 
@@ -134,9 +122,9 @@ internal partial class SpotGameField : SceneLayer
         return new(player, movementType, fromX, fromY, destX, destY);
     }
 
-    internal List<PlayerMovementType> GetAllValidMoves()
+    internal List<PlayerMovement> GetAllValidMoves()
     {
-        var validMoves = new List<PlayerMovementType>();
+        var validMoves = new List<PlayerMovement>();
 
         for (int fromX = 0; fromX < GridColumnCount; fromX++)
         {
@@ -162,7 +150,7 @@ internal partial class SpotGameField : SceneLayer
         return validMoves;
     }
 
-    internal List<PlayerMovementType> GetAllValidMoves(Player player)
+    internal List<PlayerMovement> GetAllValidMoves(Player player)
     {
         return GetAllValidMoves().Where(move => move.Player == player).ToList();
     }
@@ -179,11 +167,11 @@ internal partial class SpotGameField : SceneLayer
         return adjacentCells.Count(cell => cell.OccupiedBy == movingPlayer);
     }
 
-    internal List<PlayerMovementType> GetBestMovesForPlayer(Player player)
+    internal List<PlayerMovement> GetBestMovesForPlayer(Player player)
     {
         var validMoves = GetAllValidMoves(player);
         int bestNetSquaresGained = int.MinValue;
-        var bestMoves = new List<PlayerMovementType>();
+        var bestMoves = new List<PlayerMovement>();
      
         foreach (var move in validMoves)
         {
@@ -204,6 +192,18 @@ internal partial class SpotGameField : SceneLayer
         }
 
         return bestMoves;
+    }
+
+    internal void CaptureAdjacentCells(int x, int y, Player player)
+    {
+        var adjacentCells = GetAdjacentCells(x, y);
+        foreach (var cell in adjacentCells)
+        {
+            if (cell.OccupiedBy != null && cell.OccupiedBy != player)
+            {
+                cell.OccupiedBy = player;
+            }
+        }
     }
 
     #endregion game logic
