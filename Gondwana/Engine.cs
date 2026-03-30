@@ -469,7 +469,7 @@ public sealed class Engine : IDisposable
     /// </value>
     /// <remarks>
     /// This dispatcher is established when <see cref="Start(SynchronizationContext)"/> is called
-    /// and is used internally to post events and operations that must execute on the UI thread.
+    /// and is used to post events and operations that must execute on the UI thread.
     /// </remarks>
     public IUiDispatcher? UiDispatcher { get; private set; }
 
@@ -810,7 +810,10 @@ public sealed class Engine : IDisposable
                 IsDisposing = true;
 
                 // stop the loop first so handlers don't race the cycle thread
-                try { Stop(); }
+                try
+                {
+                    Stop();
+                }
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Unhandled exception calling Stop()");

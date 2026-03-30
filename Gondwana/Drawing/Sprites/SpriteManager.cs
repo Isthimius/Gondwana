@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace Gondwana.Drawing.Sprites;
 
-public sealed class SpriteManager
+public sealed class SpriteManager : IDisposable
 {
     private static readonly Lazy<SpriteManager> _instance = new(() => new SpriteManager());
 
@@ -254,4 +254,9 @@ public sealed class SpriteManager
     }
 
     #endregion internal methods
+
+    public void Dispose()
+    {
+        Clear();
+    }
 }

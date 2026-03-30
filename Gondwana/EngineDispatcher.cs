@@ -35,8 +35,7 @@ public sealed class EngineDispatcher : IEngineDispatcher
     /// allowing for optimizations such as inline execution. This method is typically called
     /// by the engine's main loop initialization code.
     /// </remarks>
-    public void BindToCurrentThread()
-        => _engineThreadId = Environment.CurrentManagedThreadId;
+    public void BindToCurrentThread() => _engineThreadId = Environment.CurrentManagedThreadId;
 
     /// <summary>
     /// Gets a value indicating whether the current thread is the engine thread to which
@@ -52,8 +51,7 @@ public sealed class EngineDispatcher : IEngineDispatcher
     /// It can also be used by external code to determine if thread-safe access to engine
     /// state is required.
     /// </remarks>
-    public bool IsOnEngineThread
-        => Environment.CurrentManagedThreadId == _engineThreadId;
+    public bool IsOnEngineThread => Environment.CurrentManagedThreadId == _engineThreadId;
 
     /// <summary>
     /// Posts an action to be executed on the engine thread. If the current thread is already

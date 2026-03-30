@@ -10,9 +10,10 @@ using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
-using SkiaSharp;
 using HWG.Spot.Game;
+using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace HWG.Spot;
@@ -20,6 +21,7 @@ namespace HWG.Spot;
 internal sealed class SpotGameHost : WinFormsGameHost
 {
     internal AudioResource _music;
+    internal AudioResource _spotSelected;
     internal AudioResource _velcro;
     internal AudioResource _drop;
     internal AudioResource _gameWin;
@@ -30,6 +32,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal int ScoreHeight = 80;
 
     internal SpotGame SpotGame { get; private set; }
+
+    private static readonly Random _rng = new();
 
     internal SpotGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
@@ -42,6 +46,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _music = AudioResourceManager.Instance.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
         _music.IsLooping = true;
 
+        //_spotSelected = gotta find it
         _velcro = AudioResourceManager.Instance.LoadFromFile("velcro", "assets\\freesound_community-velcro_fast-91558.mp3");
         _drop = AudioResourceManager.Instance.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
         _gameWin = AudioResourceManager.Instance.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
@@ -60,7 +65,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     protected override void LoadTilesheets()
     {
-        // Implementation for loading tilesheets goes here
         var splash = new Tilesheet("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
     }
@@ -92,7 +96,9 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         base.CreateSceneGraph();
         RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
-        SpotGame = new SpotGame(this);
+
+        SpotGame = new SpotGame();
+        HookSpotGameEvents();
     }
 
     protected override void CreateSprites()
@@ -106,19 +112,25 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         if (TilesheetRegistry.Instance.TryGet("splash", out tilesheet))
         {
-            var directImage = new DirectImage(tilesheet.SkBitmap, RenderSurface.Host, Scene[0], new Rectangle(0, 0, 769, 769 + ScoreHeight));
+            var directImage = new DirectImage(
+                tilesheet.SkBitmap,
+                RenderSurface.Host,
+                Scene[0],
+                new Rectangle(0, 0, 769, 769 + ScoreHeight));
+
             directImage.ZOrder = 100;
             directImage.SetScaleMode(DirectImage.ScaleMode.Fit);
         }
 
-        var particleSurface = new ParticleSurface(RenderSurface.Host, Scene[0], new Rectangle(0, 0, 769, 769 + ScoreHeight));
+        var particleSurface = new ParticleSurface(
+            RenderSurface.Host,
+            Scene[0],
+            new Rectangle(0, 0, 769, 769 + ScoreHeight));
+
         particleSurface.CullingMarginX = 1300f;
         particleSurface.ZOrder = 50;
-        var spriteBmp = tilesheet.SkBitmap;
         particleSurface.Emitters.Add(GetSpots(769, 769 + ScoreHeight));
     }
-
-    private static readonly Random _rng = new();
 
     private ParticleEmitter GetSpots(float width, float height)
     {
@@ -151,8 +163,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
             OnSpawn = (ref Particle p) =>
             {
                 var baseColor = colors[_rng.Next(colors.Length)];
-
-                // keep the same transparency you had before
                 p.Color = baseColor.WithAlpha(255);
             }
         };
@@ -182,6 +192,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         if (Engine.Input.MouseEventPoller is not null)
             Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
+
+        UnhookSpotGameEvents();
     }
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
@@ -223,8 +235,146 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _music.Stop();
     }
 
+    internal bool SoundEffectsEnabled { get; private set; } = true;
+
     internal void SetSoundEffectsEnabled(bool enabled)
     {
-        // AudioManager.SoundEffectsEnabled = enabled;
+        SoundEffectsEnabled = enabled;
     }
+
+    internal void StartNewGame(NewGameOptions options)
+    {
+        Engine.Managers.DirectDrawings.ClearAll();
+        Scene.RemoveAllLayers();
+
+        var gameField = SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players.ToArray());
+
+        Scene.AddLayer(gameField);
+        _music.Volume = 0.1f;
+    }
+
+    #region SpotGame event handlers
+
+    private void HookSpotGameEvents()
+    {
+        if (SpotGame is null)
+            return;
+
+        SpotGame.GameStarted += OnGameStarted;
+        SpotGame.PlayerTurnStarted += OnPlayerTurnStarted;
+        SpotGame.PlayerTurnEnded += OnPlayerTurnEnded;
+
+        SpotGame.SpotSelected += OnSpotSelected;
+        SpotGame.SpotDeselected += OnSpotDeselected;
+        SpotGame.InvalidSelectionAttempted += OnInvalidSelectionAttempted;
+        SpotGame.InvalidMoveAttempted += OnInvalidMoveAttempted;
+        SpotGame.PlayerMoved += OnPlayerMoved;
+        SpotGame.CellsCaptured += OnCellsCaptured;
+        SpotGame.NoValidMovesAvailable += OnNoValidMovesAvailable;
+        SpotGame.GameOver += OnGameOver;
+    }
+
+    private void UnhookSpotGameEvents()
+    {
+        if (SpotGame is null)
+            return;
+
+        SpotGame.GameStarted -= OnGameStarted;
+        SpotGame.PlayerTurnStarted -= OnPlayerTurnStarted;
+        SpotGame.PlayerTurnEnded -= OnPlayerTurnEnded;
+
+        SpotGame.SpotSelected -= OnSpotSelected;
+        SpotGame.SpotDeselected -= OnSpotDeselected;
+        SpotGame.InvalidSelectionAttempted -= OnInvalidSelectionAttempted;
+        SpotGame.InvalidMoveAttempted -= OnInvalidMoveAttempted;
+        SpotGame.PlayerMoved -= OnPlayerMoved;
+        SpotGame.CellsCaptured -= OnCellsCaptured;
+        SpotGame.NoValidMovesAvailable -= OnNoValidMovesAvailable;
+        SpotGame.GameOver -= OnGameOver;
+    }
+
+    private void OnGameStarted(SpotGame game)
+    {
+        // Intentionally left minimal.
+        // Hook for host-level reactions if needed later.
+    }
+
+    private void OnPlayerTurnStarted(Player player)
+    {
+        // Intentionally left minimal.
+    }
+
+    private void OnPlayerTurnEnded(Player player)
+    {
+        // Intentionally left minimal.
+    }
+
+    private void OnSpotSelected(SpotGameField.Cell cell)
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        if (_spotSelected is not null)
+            _spotSelected.Play();
+        else
+            _drop?.Play();
+    }
+
+    private void OnSpotDeselected(SpotGameField.Cell cell)
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        _drop?.Play();
+    }
+
+    private void OnInvalidSelectionAttempted(SpotGameField.Cell cell)
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        _bump?.Play();
+    }
+
+    private void OnInvalidMoveAttempted(SpotGameField.Cell cell)
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        _bump?.Play();
+    }
+
+    private void OnPlayerMoved(PlayerMovement movement)
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        _velcro?.Play();
+    }
+
+    private void OnCellsCaptured(List<SpotGameField.Cell> cells)
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        _drop?.Play();
+    }
+
+    private void OnNoValidMovesAvailable(Player player)
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        _bump?.Play();
+    }
+
+    private void OnGameOver()
+    {
+        if (!SoundEffectsEnabled)
+            return;
+
+        _gameWin?.Play();
+    }
+
+    #endregion SpotGame event handlers
 }

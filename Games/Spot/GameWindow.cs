@@ -24,16 +24,6 @@ public partial class GameWindow : Form
 
         this.MinimizeBox = false;
         this.MaximizeBox = false;
-
-        //this.KeyPreview = true;
-        //this.KeyDown += (_, e) =>
-        //{
-        //    if (e.KeyCode == Keys.Escape)
-        //    {
-        //        _gameHost.Engine.Stop();
-        //        this.Close();
-        //    }
-        //};
     }
 
     // create the Game (and thereby start the engine) once the form & controls are ready
@@ -119,7 +109,7 @@ public partial class GameWindow : Form
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
             var options = dialog.Options;
-            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SpotGame.NewGame(options.BoardWidth, options.BoardHeight, [.. options.Players]));
+            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.StartNewGame(options));
         }
     }
 }

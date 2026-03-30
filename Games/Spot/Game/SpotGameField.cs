@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gondwana;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 
 namespace HWG.Spot.Game;
@@ -17,7 +18,8 @@ internal partial class SpotGameField : SceneLayer
     {
         internal int X { get; set; }
         internal int Y { get; set; }
-        internal Player? OccupiedBy { get; set; } = null;
+        internal Player OccupiedBy { get; set; } = null;
+        internal Sprite Sprite { get; set; } = null;        // TODO: need to set this
     }
 
     private SpotGameField(int width, int height) : base(width, height, 64, 64) { }
@@ -85,7 +87,7 @@ internal partial class SpotGameField : SceneLayer
                 }
             }
         }
-        
+
         return adjacentCells;
     }
 
@@ -95,9 +97,9 @@ internal partial class SpotGameField : SceneLayer
 
         var player = GetCell(fromX, fromY).OccupiedBy;
 
-        // if there's no player at the source cell, it's illegal;
-        // out of bounds from is illegal;
-        // out of bounds destination is illegal;
+        // if there's no player at the source cell, it's illegal
+        // out of bounds from is illegal
+        // out of bounds destination is illegal
         // if destination cell is occupied, it's illegal
         if ((player == null) ||
             (fromX < 0 || fromX >= GridColumnCount || fromY < 0 || fromY >= GridRowCount) ||
@@ -118,7 +120,7 @@ internal partial class SpotGameField : SceneLayer
             else
                 movementType = MovementType.Illegal;
         }
-         
+
         return new(player, movementType, fromX, fromY, destX, destY);
     }
 
@@ -172,13 +174,13 @@ internal partial class SpotGameField : SceneLayer
         var validMoves = GetAllValidMoves(player);
         int bestNetSquaresGained = int.MinValue;
         var bestMoves = new List<PlayerMovement>();
-     
+
         foreach (var move in validMoves)
         {
             int squaresTaken = SquaresTakenIfJumpTo(player, move.DestX, move.DestY);
             int squaresOpen = SquaresOpenIfJumpFrom(player, move.FromX, move.FromY);
             int netSquaresGained = squaresTaken - squaresOpen;
-        
+
             if (netSquaresGained > bestNetSquaresGained)
             {
                 bestNetSquaresGained = netSquaresGained;
@@ -194,15 +196,31 @@ internal partial class SpotGameField : SceneLayer
         return bestMoves;
     }
 
-    internal void CaptureAdjacentCells(int x, int y, Player player)
+    internal List<Cell> CaptureAdjacentCells(int x, int y, Player player)
     {
+        var capturedCells = new List<Cell>();
+
         var adjacentCells = GetAdjacentCells(x, y);
         foreach (var cell in adjacentCells)
         {
             if (cell.OccupiedBy != null && cell.OccupiedBy != player)
             {
                 cell.OccupiedBy = player;
+                capturedCells.Add(cell);
             }
+        }
+
+        return capturedCells;
+    }
+
+    internal bool IsGameOver
+    {
+        get
+        {
+            if (GetAllValidMoves().Any())
+                return false;
+
+            return true;
         }
     }
 

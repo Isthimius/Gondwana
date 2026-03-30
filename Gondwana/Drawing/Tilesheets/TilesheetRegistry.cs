@@ -6,7 +6,7 @@ namespace Gondwana.Drawing.Tilesheets;
 /// <summary>
 /// Thread-safe singleton registry for <see cref="Tilesheet"/> instances.
 /// </summary>
-public sealed class TilesheetRegistry
+public sealed class TilesheetRegistry : IDisposable
 {
     private readonly object _gate = new();
     private readonly Dictionary<string, Tilesheet> _sheets = new(StringComparer.Ordinal);
@@ -243,5 +243,10 @@ public sealed class TilesheetRegistry
 
         if (disposeReplaced && replaced is not null)
             replaced.Dispose();
+    }
+
+    public void Dispose()
+    {
+        Clear();
     }
 }
