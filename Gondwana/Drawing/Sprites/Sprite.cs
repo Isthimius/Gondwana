@@ -144,7 +144,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     public Vector2 GetPosition() => new Vector2(_sceneLayerCoordinates.X, _sceneLayerCoordinates.Y);
 
     /// <summary>
-    /// Sets the position of the sprite in scene layer coordinates and updates the display.
+    /// Sets the position of the sprite in scene layer grid coordinates and updates the display.
     /// </summary>
     /// <param name="pos">The new position for the sprite.</param>
     public void SetPosition(Vector2 pos)

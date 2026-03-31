@@ -19,7 +19,7 @@ internal partial class SpotGameField : SceneLayer
         internal int X { get; set; }
         internal int Y { get; set; }
         internal Player OccupiedBy { get; set; } = null;
-        internal Sprite Sprite { get; set; } = null;        // TODO: need to set this
+        internal Sprite Sprite { get; set; } = null;
     }
 
     private SpotGameField(int columns, int rows) : base(columns, rows, 64, 64) { }
