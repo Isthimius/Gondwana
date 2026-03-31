@@ -32,7 +32,7 @@ internal class SpotGame : IDisposable
 
     internal SpotGame() { }
 
-    internal SpotGameField NewGame(int width, int height, Player[] players)
+    internal SpotGameField NewGame(int columns, int rows, Player[] players)
     {
         if (players.Length < 2)
             throw new ArgumentException("At least two players are required to start a game.", nameof(players));
@@ -40,20 +40,20 @@ internal class SpotGame : IDisposable
         if (players.Length > 4)
             throw new ArgumentException("No more than four players can play at the same time.", nameof(players));
 
-        if (width < 3 || height < 3)
-            throw new ArgumentException("The game field must be at least 3x3 in size.", nameof(width));
+        if (columns < 3 || rows < 3)
+            throw new ArgumentException("The game field must be at least 3x3 in size.", nameof(columns));
 
-        if (width > 12 || height > 12)
-            throw new ArgumentException("The game field cannot be larger than 12x12 in size.", nameof(width));
+        if (columns > 12 || rows > 12)
+            throw new ArgumentException("The game field cannot be larger than 12x12 in size.", nameof(columns));
 
-        SpotGameField = SpotGameField.Create(width, height, players);
+        SpotGameField = SpotGameField.Create(columns, rows, players);
         Players = players;
         IsGameOver = false;
         _currentPlayerIndex = 0;
 
         // shift the Origin of the game field to the center of the scene
-        var horizShift = (12 - width) * 32;
-        var vertShift = (12 - height) * 32;
+        var horizShift = (12 - columns) * 32;
+        var vertShift = (12 - rows) * 32;
         SpotGameField.OriginPx = new Point(-horizShift, -vertShift);
 
         GameStarted?.Invoke(this);

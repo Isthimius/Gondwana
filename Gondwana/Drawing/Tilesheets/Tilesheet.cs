@@ -169,7 +169,7 @@ public sealed class Tilesheet : IDisposable
     private Size _tileSize;
 
     /// <summary>
-    /// Gets or sets the size of each individual tile in the tilesheet (without overhang).
+    /// Gets or sets the size of each individual tile in the tilesheet.
     /// Setting this property rebuilds the internal tile cache.
     /// </summary>
     [JsonIgnore]
@@ -184,7 +184,8 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries.
+    /// Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries;
+    /// i.e., how much of the tile should be considered the "overhang" portion when rendering.
     /// </summary>
     [JsonProperty]
     public Overhang OverhangPixels { get; set; } = Overhang.None;

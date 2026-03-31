@@ -10,20 +10,6 @@ namespace HWG.Spot
     {
         internal NewGameOptions Options { get; private set; }
 
-        private class ColorItem
-        {
-            public string Name { get; }
-            public SKColor Color { get; }
-
-            public ColorItem(string name, SKColor color)
-            {
-                Name = name;
-                Color = color;
-            }
-
-            public override string ToString() => Name;
-        }
-
         public NewGameDialog()
         {
             InitializeComponent();
@@ -222,8 +208,7 @@ namespace HWG.Spot
                 {
                     Name = playerNames[i].Text,
                     Type = playerTypes[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
-                    ColorText = colorItem.Name,
-                    Color = colorItem.Color,
+                    ColorItem = colorItem
                 });
             }
 

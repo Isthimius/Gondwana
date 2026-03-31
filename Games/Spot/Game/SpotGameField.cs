@@ -22,15 +22,15 @@ internal partial class SpotGameField : SceneLayer
         internal Sprite Sprite { get; set; } = null;        // TODO: need to set this
     }
 
-    private SpotGameField(int width, int height) : base(width, height, 64, 64) { }
+    private SpotGameField(int columns, int rows) : base(columns, rows, 64, 64) { }
 
-    internal static SpotGameField Create(int width, int height, Player[] players)
+    internal static SpotGameField Create(int columns, int rows, Player[] players)
     {
-        var field = new SpotGameField(width, height);
+        var field = new SpotGameField(columns, rows);
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < columns; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < rows; y++)
             {
                 var cell = new Cell { X = x, Y = y, OccupiedBy = null };
                 field[x, y].ValueBag.Set(SpotFieldKeys.Cell, cell);
@@ -39,19 +39,43 @@ internal partial class SpotGameField : SceneLayer
 
         // upper left
         if (players.Length >= 1)
-            field.GetCell(0, 0).OccupiedBy = players[0];
+        { 
+            var cell = field.GetCell(0, 0);
+            cell.OccupiedBy = players[0];
+            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[0].DefaultFrame);
+            cell.Sprite.SetPosition(new(0, 0));
+            cell.Sprite.Visible = true;
+        }
 
         // lower right
         if (players.Length >= 2)
-            field.GetCell(width - 1, height - 1).OccupiedBy = players[1];
+        {
+            var cell = field.GetCell(columns - 1, rows - 1);
+            cell.OccupiedBy = players[1];
+            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[1].DefaultFrame);
+            cell.Sprite.SetPosition(new(columns - 1, rows - 1));
+            cell.Sprite.Visible = true;
+        }
 
         // upper right
         if (players.Length >= 3)
-            field.GetCell(width - 1, 0).OccupiedBy = players[2];
+        {
+            var cell = field.GetCell(columns - 1, 0);
+            cell.OccupiedBy = players[2];
+            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[2].DefaultFrame);
+            cell.Sprite.SetPosition(new(columns - 1, 0));
+            cell.Sprite.Visible = true;
+        }
 
         // lower left
         if (players.Length >= 4)
-            field.GetCell(0, height - 1).OccupiedBy = players[3];
+        {
+            var cell = field.GetCell(0, rows - 1);
+            cell.OccupiedBy = players[3];
+            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[3].DefaultFrame);
+            cell.Sprite.SetPosition(new(0, rows - 1));
+            cell.Sprite.Visible = true;
+        }
 
         field.ShowGridLines = true;
 

@@ -90,6 +90,35 @@ public sealed class TilesheetRegistry : IDisposable
     }
 
     /// <summary>
+    /// Gets the <see cref="Tilesheet"/> associated with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the tilesheet to retrieve. Cannot be <see langword="null"/>.</param>
+    /// <returns>The <see cref="Tilesheet"/> associated with the specified name.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="name"/> is <see langword="null"/>.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when a tilesheet with the specified name is not found in the registry.</exception>
+    /// <remarks>
+    /// This indexer is thread-safe and provides direct access to tilesheets by name using bracket notation.
+    /// If you need to check for existence without throwing an exception, use <see cref="TryGet"/> or 
+    /// <see cref="GetOrNull"/> instead.
+    /// </remarks>
+    public Tilesheet this[string name]
+    {
+        get
+        {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            lock (_gate)
+            {
+                if (_sheets.TryGetValue(name, out var sheet))
+                    return sheet;
+
+                throw new KeyNotFoundException($"Tilesheet with name '{name}' was not found in the registry.");
+            }
+        }
+    }
+
+    /// <summary>
     /// Removes the tilesheet with the specified name from the collection.
     /// </summary>
     /// <param name="name">The name of the tilesheet to remove. Cannot be <see langword="null"/>.</param>

@@ -1,6 +1,7 @@
 ﻿using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Audio.Midi;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
@@ -21,12 +22,25 @@ namespace HWG.Spot;
 internal sealed class SpotGameHost : WinFormsGameHost
 {
     internal AudioResource _music;
+
     internal AudioResource _spotSelected;
     internal AudioResource _velcro;
     internal AudioResource _drop;
     internal AudioResource _gameWin;
     internal AudioResource _gameLose;
     internal AudioResource _bump;
+
+    internal Tilesheet _blueSpot;
+    internal Tilesheet _greenSpot;
+    internal Tilesheet _pinkSpot;
+    internal Tilesheet _redSpot;
+    internal Tilesheet _yellowSpot;
+    internal Tilesheet _blueSpotHappy;
+    internal Tilesheet _greenSpotHappy;
+    internal Tilesheet _pinkSpotHappy;
+    internal Tilesheet _redSpotHappy;
+    internal Tilesheet _yellowSpotHappy;
+
     internal SKTypeface _font;
 
     internal int ScoreHeight = 80;
@@ -37,6 +51,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     internal SpotGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
+
+    #region overrides
 
     protected override void LoadAssets()
     {
@@ -65,13 +81,46 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     protected override void LoadTilesheets()
     {
+        // splash logo
         var splash = new Tilesheet("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
-    }
 
-    protected override void LoadAnimationCycles()
-    {
-        // Implementation for loading animation cycles goes here
+        // defautl sprites
+        _blueSpot = new Tilesheet("blueSpot", "assets\\bubble-blue.png");
+        _blueSpot.TileSize = new Size(92, 96);
+
+        _greenSpot = new Tilesheet("greenSpot", "assets\\bubble-green.png");
+        _greenSpot.TileSize = new Size(92, 96);
+        
+        _pinkSpot = new Tilesheet("pinkSpot", "assets\\bubble-pink.png");
+        _pinkSpot.TileSize = new Size(92, 96);
+        
+        _redSpot = new Tilesheet("redSpot", "assets\\bubble-red.png");
+        _redSpot.TileSize = new Size(92, 96);
+        
+        _yellowSpot = new Tilesheet("yellowSpot", "assets\\bubble-yellow.png");
+        _yellowSpot.TileSize = new Size(92, 96);
+
+        // selected sprites
+        _blueSpotHappy = new Tilesheet("blueSpotHappy", "assets\\bubble-blue-happy.png");
+        _blueSpotHappy.TileSize = new Size(1024, 1024);
+        _blueSpotHappy.ApplyMask(Color.Black.ToSKColor());
+
+        _greenSpotHappy = new Tilesheet("greenSpotHappy", "assets\\bubble-green-happy.png");
+        _greenSpotHappy.TileSize = new Size(1024, 1024);
+        _greenSpotHappy.ApplyMask(Color.Black.ToSKColor());
+        
+        _pinkSpotHappy = new Tilesheet("pinkSpotHappy", "assets\\bubble-pink-happy.png");
+        _pinkSpotHappy.TileSize = new Size(1024, 1024);
+        _pinkSpotHappy.ApplyMask(Color.Black.ToSKColor()); 
+        
+        _redSpotHappy = new Tilesheet("redSpotHappy", "assets\\bubble-red-happy.png");
+        _redSpotHappy.TileSize = new Size(1024, 1024);
+        _redSpotHappy.ApplyMask(Color.Black.ToSKColor()); 
+        
+        _yellowSpotHappy = new Tilesheet("yellowSpotHappy", "assets\\bubble-yellow-happy.png");
+        _yellowSpotHappy.TileSize = new Size(1024, 1024);
+        _yellowSpotHappy.ApplyMask(Color.Black.ToSKColor());
     }
 
     protected override Scene CreateInitialScene()
@@ -101,11 +150,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         HookSpotGameEvents();
     }
 
-    protected override void CreateSprites()
-    {
-        // Implementation for creating sprites goes here
-    }
-
     protected override void CreateDirectDrawings()
     {
         Tilesheet tilesheet;
@@ -131,6 +175,36 @@ internal sealed class SpotGameHost : WinFormsGameHost
         particleSurface.ZOrder = 50;
         particleSurface.Emitters.Add(GetSpots(769, 769 + ScoreHeight));
     }
+
+    protected override void OnStartEngine()
+    {
+        _music.Volume = 0.2f;
+        _music.Play();
+    }
+
+    protected override void OnConfigurePlatform()
+    {
+        Engine.InitializeMidiAudioFormats();
+    }
+
+    protected override void OnMouseAdapterInitialized()
+    {
+        if (Engine.Input.MouseEventPoller is null)
+            return;
+
+        Engine.Input.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
+        Engine.Input.MouseEventPoller.StartMonitoringMouse();
+    }
+
+    protected override void UnhookEvents()
+    {
+        if (Engine.Input.MouseEventPoller is not null)
+            Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
+
+        UnhookSpotGameEvents();
+    }
+
+    #endregion overrides
 
     private ParticleEmitter GetSpots(float width, float height)
     {
@@ -166,34 +240,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
                 p.Color = baseColor.WithAlpha(255);
             }
         };
-    }
-
-    protected override void OnStartEngine()
-    {
-        _music.Volume = 0.2f;
-        _music.Play();
-    }
-
-    protected override void OnConfigurePlatform()
-    {
-        Engine.InitializeMidiAudioFormats();
-    }
-
-    protected override void OnMouseAdapterInitialized()
-    {
-        if (Engine.Input.MouseEventPoller is null)
-            return;
-
-        Engine.Input.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
-        Engine.Input.MouseEventPoller.StartMonitoringMouse();
-    }
-
-    protected override void UnhookEvents()
-    {
-        if (Engine.Input.MouseEventPoller is not null)
-            Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
-
-        UnhookSpotGameEvents();
     }
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
@@ -245,12 +291,47 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal void StartNewGame(NewGameOptions options)
     {
         Engine.Managers.DirectDrawings.ClearAll();
+        Engine.Managers.Sprites.Clear();
         Scene.RemoveAllLayers();
+
+        SetPlayerFrames(options.Players);
 
         var gameField = SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players.ToArray());
 
         Scene.AddLayer(gameField);
         _music.Volume = 0.1f;
+    }
+
+    private void SetPlayerFrames(List<Player> players)
+    {
+        foreach (var player in players)
+        {
+            switch (player.ColorItem.Name)
+            {
+                case "Blue":
+                    player.DefaultFrame = new Frame(_blueSpot, 0, 0);
+                    player.ActiveFrame = new Frame(_blueSpotHappy, 0, 0);
+                    break;
+                case "Green":
+                    player.DefaultFrame = new Frame(_greenSpot, 0, 0);
+                    player.ActiveFrame = new Frame(_greenSpotHappy, 0, 0);
+                    break;
+                case "Pink":
+                    player.DefaultFrame = new Frame(_pinkSpot, 0, 0);
+                    player.ActiveFrame = new Frame(_pinkSpotHappy, 0, 0);
+                    break;
+                case "Red":
+                    player.DefaultFrame = new Frame(_redSpot, 0, 0);
+                    player.ActiveFrame = new Frame(_redSpotHappy, 0, 0);
+                    break;
+                case "Yellow":
+                    player.DefaultFrame = new Frame(_yellowSpot, 0, 0);
+                    player.ActiveFrame = new Frame(_yellowSpotHappy, 0, 0);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     #region SpotGame event handlers
