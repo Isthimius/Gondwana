@@ -316,7 +316,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
                     player.DefaultFrame = new Frame(_greenSpot, 0, 0);
                     player.ActiveFrame = new Frame(_greenSpotHappy, 0, 0);
                     break;
-                case "Pink":
+                case "Violet":
                     player.DefaultFrame = new Frame(_pinkSpot, 0, 0);
                     player.ActiveFrame = new Frame(_pinkSpotHappy, 0, 0);
                     break;
