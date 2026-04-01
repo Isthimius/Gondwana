@@ -93,13 +93,13 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         _greenSpot = new Tilesheet("greenSpot", "assets\\bubble-green.png");
         _greenSpot.TileSize = new Size(92, 96);
-        
+
         _pinkSpot = new Tilesheet("pinkSpot", "assets\\bubble-pink.png");
         _pinkSpot.TileSize = new Size(92, 96);
-        
+
         _redSpot = new Tilesheet("redSpot", "assets\\bubble-red.png");
         _redSpot.TileSize = new Size(92, 96);
-        
+
         _yellowSpot = new Tilesheet("yellowSpot", "assets\\bubble-yellow.png");
         _yellowSpot.TileSize = new Size(92, 96);
 
@@ -111,15 +111,15 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _greenSpotHappy = new Tilesheet("greenSpotHappy", "assets\\bubble-green-happy.png");
         _greenSpotHappy.TileSize = new Size(1024, 1024);
         _greenSpotHappy.ApplyMask(Color.Black.ToSKColor());
-        
+
         _pinkSpotHappy = new Tilesheet("pinkSpotHappy", "assets\\bubble-pink-happy.png");
         _pinkSpotHappy.TileSize = new Size(1024, 1024);
-        _pinkSpotHappy.ApplyMask(Color.Black.ToSKColor()); 
-        
+        _pinkSpotHappy.ApplyMask(Color.Black.ToSKColor());
+
         _redSpotHappy = new Tilesheet("redSpotHappy", "assets\\bubble-red-happy.png");
         _redSpotHappy.TileSize = new Size(1024, 1024);
-        _redSpotHappy.ApplyMask(Color.Black.ToSKColor()); 
-        
+        _redSpotHappy.ApplyMask(Color.Black.ToSKColor());
+
         _yellowSpotHappy = new Tilesheet("yellowSpotHappy", "assets\\bubble-yellow-happy.png");
         _yellowSpotHappy.TileSize = new Size(1024, 1024);
         _yellowSpotHappy.ApplyMask(Color.Black.ToSKColor());
@@ -260,7 +260,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         if (args.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
         {
             var selectedCoord = view.ScreenPxToGrid(layer, screenPos);
-            
+
             if (selectedCoord.X >= 0 && selectedCoord.X < layer.GridColumnCount &&
                 selectedCoord.Y >= 0 && selectedCoord.Y < layer.GridRowCount)
             {
@@ -393,21 +393,17 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnSpotSelected(SpotGameField.Cell cell)
     {
-        if (!SoundEffectsEnabled)
-            return;
+        if (SoundEffectsEnabled)
+            _spotSelected?.Play();
 
-        if (_spotSelected is not null)
-            _spotSelected.Play();
-        else
-            _drop?.Play();
+        cell.Sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
+        cell.Sprite.PulseBy(0.9f, 0.8f, 0.8f, true);
     }
 
     private void OnSpotDeselected(SpotGameField.Cell cell)
     {
-        if (!SoundEffectsEnabled)
-            return;
-
-        _drop?.Play();
+        cell.Sprite.CurrentFrame = cell.OccupiedBy.DefaultFrame;
+        cell.Sprite.StopPulse(true, 0.2f);
     }
 
     private void OnInvalidSelectionAttempted(SpotGameField.Cell cell)

@@ -23,8 +23,8 @@ internal partial class SpotGameField : SceneLayer
         internal int Y { get; set; }
         [JsonProperty] 
         internal Player OccupiedBy { get; set; } = null;
-        //[JsonProperty] 
-        //internal Sprite Sprite { get; set; } = null;
+        [JsonProperty] 
+        internal Sprite Sprite { get; set; } = null;
     }
 
     private SpotGameField(int columns, int rows) : base(columns, rows, 64, 64) { }
@@ -50,7 +50,8 @@ internal partial class SpotGameField : SceneLayer
             var sprite = SpriteManager.Instance.CreateSprite(field, players[0].DefaultFrame);
             sprite.SetPosition(new(0, 0));
             sprite.Visible = true;
-            field.SetCell(0, 0, cell);
+            cell.Sprite = sprite;
+            //field.SetCell(0, 0, cell);
         }
 
         // lower right
@@ -61,6 +62,7 @@ internal partial class SpotGameField : SceneLayer
             var sprite = SpriteManager.Instance.CreateSprite(field, players[1].DefaultFrame);
             sprite.SetPosition(new(columns - 1, rows - 1));
             sprite.Visible = true;
+            cell.Sprite = sprite;
         }
 
         // upper right
@@ -71,6 +73,7 @@ internal partial class SpotGameField : SceneLayer
             var sprite = SpriteManager.Instance.CreateSprite(field, players[2].DefaultFrame);
             sprite.SetPosition(new(columns - 1, 0));
             sprite.Visible = true;
+            cell.Sprite = sprite;
         }
 
         // lower left
@@ -81,6 +84,7 @@ internal partial class SpotGameField : SceneLayer
             var sprite = SpriteManager.Instance.CreateSprite(field, players[3].DefaultFrame);
             sprite.SetPosition(new(0, rows - 1));
             sprite.Visible = true;
+            cell.Sprite = sprite;
         }
 
         field.ShowGridLines = true;
