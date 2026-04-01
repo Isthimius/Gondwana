@@ -3,11 +3,11 @@ using SkiaSharp;
 
 namespace HWG.Spot.Game;
 
-internal sealed class Player
+public sealed class Player
 {
-    internal string Name { get; set; }
-    internal PlayerType Type { get; set; }
-    internal ColorItem ColorItem { get; set; }
-    internal Frame DefaultFrame { get; set; }
-    internal Frame ActiveFrame { get; set; }
+    public string Name { get; set; }
+    public PlayerType Type { get; set; }
+    public ColorItem ColorItem { get; set; }
+    public Frame DefaultFrame { get; set; }
+    public Frame ActiveFrame { get; set; }
 }

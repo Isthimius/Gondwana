@@ -45,6 +45,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
     #region constructors / finalizer
 
+    [JsonConstructor]
+    private Sprite() { }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Sprite"/> class with the specified scene layer and frame.
     /// </summary>

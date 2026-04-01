@@ -4,6 +4,7 @@ using System.Linq;
 using Gondwana;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
+using Newtonsoft.Json;
 
 namespace HWG.Spot.Game;
 
@@ -16,10 +17,14 @@ internal partial class SpotGameField : SceneLayer
 
     internal class Cell
     {
+        [JsonProperty]
         internal int X { get; set; }
+        [JsonProperty] 
         internal int Y { get; set; }
+        [JsonProperty] 
         internal Player OccupiedBy { get; set; } = null;
-        internal Sprite Sprite { get; set; } = null;
+        //[JsonProperty] 
+        //internal Sprite Sprite { get; set; } = null;
     }
 
     private SpotGameField(int columns, int rows) : base(columns, rows, 64, 64) { }
@@ -42,9 +47,10 @@ internal partial class SpotGameField : SceneLayer
         { 
             var cell = field.GetCell(0, 0);
             cell.OccupiedBy = players[0];
-            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[0].DefaultFrame);
-            cell.Sprite.SetPosition(new(0, 0));
-            cell.Sprite.Visible = true;
+            var sprite = SpriteManager.Instance.CreateSprite(field, players[0].DefaultFrame);
+            sprite.SetPosition(new(0, 0));
+            sprite.Visible = true;
+            field.SetCell(0, 0, cell);
         }
 
         // lower right
@@ -52,9 +58,9 @@ internal partial class SpotGameField : SceneLayer
         {
             var cell = field.GetCell(columns - 1, rows - 1);
             cell.OccupiedBy = players[1];
-            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[1].DefaultFrame);
-            cell.Sprite.SetPosition(new(columns - 1, rows - 1));
-            cell.Sprite.Visible = true;
+            var sprite = SpriteManager.Instance.CreateSprite(field, players[1].DefaultFrame);
+            sprite.SetPosition(new(columns - 1, rows - 1));
+            sprite.Visible = true;
         }
 
         // upper right
@@ -62,9 +68,9 @@ internal partial class SpotGameField : SceneLayer
         {
             var cell = field.GetCell(columns - 1, 0);
             cell.OccupiedBy = players[2];
-            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[2].DefaultFrame);
-            cell.Sprite.SetPosition(new(columns - 1, 0));
-            cell.Sprite.Visible = true;
+            var sprite = SpriteManager.Instance.CreateSprite(field, players[2].DefaultFrame);
+            sprite.SetPosition(new(columns - 1, 0));
+            sprite.Visible = true;
         }
 
         // lower left
@@ -72,9 +78,9 @@ internal partial class SpotGameField : SceneLayer
         {
             var cell = field.GetCell(0, rows - 1);
             cell.OccupiedBy = players[3];
-            cell.Sprite = SpriteManager.Instance.CreateSprite(field, players[3].DefaultFrame);
-            cell.Sprite.SetPosition(new(0, rows - 1));
-            cell.Sprite.Visible = true;
+            var sprite = SpriteManager.Instance.CreateSprite(field, players[3].DefaultFrame);
+            sprite.SetPosition(new(0, rows - 1));
+            sprite.Visible = true;
         }
 
         field.ShowGridLines = true;
@@ -83,6 +89,8 @@ internal partial class SpotGameField : SceneLayer
     }
 
     internal Cell GetCell(int x, int y) => this[x, y].ValueBag.Get(SpotFieldKeys.Cell);
+
+    internal void SetCell(int x, int y, Cell cell) => this[x, y].ValueBag.Set(SpotFieldKeys.Cell, cell);
 
     #region game logic
 

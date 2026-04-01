@@ -12,10 +12,12 @@ using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using HWG.Spot.Game;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace HWG.Spot;
 
@@ -255,22 +257,21 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         var screenPos = args.CurrentPosition;
 
-        // 1) screen -> world
-        var worldFromScreen = view.ScreenPxToWorldPx(layer, screenPos);
+        if (args.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
+        {
+            var selectedCoord = view.ScreenPxToGrid(layer, screenPos);
+            
+            if (selectedCoord.X >= 0 && selectedCoord.X < layer.GridColumnCount &&
+                selectedCoord.Y >= 0 && selectedCoord.Y < layer.GridRowCount)
+            {
+                var cell = SpotGame.SpotGameField.GetCell((int)selectedCoord.X, (int)selectedCoord.Y);
 
-        // 2) screen -> grid
-        var gridFromScreen = view.ScreenPxToGrid(layer, screenPos);
-
-        // 3) grid -> world
-        var worldFromGrid = layer.GridToWorldPx(gridFromScreen);
-
-        // 4) world -> screen
-        var screenFromGrid = view.WorldPxToScreenPx(layer, worldFromGrid);
-
-        _ = worldFromScreen;
-        _ = gridFromScreen;
-        _ = worldFromGrid;
-        _ = screenFromGrid;
+                if (SpotGame.AttemptSelectCell(cell, out var playerMovement))
+                {
+                    //SpotGame.ExecutePlayerMovement(playerMovement);
+                }
+            }
+        }
     }
 
     internal void SetMusicEnabled(bool enabled)

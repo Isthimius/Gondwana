@@ -1,11 +1,15 @@
-﻿using SkiaSharp;
+﻿using System.Text.Json.Serialization;
+using SkiaSharp;
 
 namespace HWG.Spot;
 
-internal class ColorItem
+public class ColorItem
 {
-    internal string Name { get; }
-    internal SKColor Color { get; }
+    [JsonConstructor]
+    private ColorItem() { }
+
+    public string Name { get; }
+    public SKColor Color { get; }
 
     internal ColorItem(string name, SKColor color)
     {
