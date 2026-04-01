@@ -3,19 +3,17 @@ using SkiaSharp;
 
 namespace HWG.Spot;
 
-public class ColorItem
+internal class ColorItem
 {
     [JsonConstructor]
     private ColorItem() { }
 
-    public string Name { get; }
-    public SKColor Color { get; }
+    internal string Name { get; }
+    internal SKColor Color { get; }
 
     internal ColorItem(string name, SKColor color)
     {
         Name = name;
         Color = color;
     }
-
-    public override string ToString() => Name;
 }

@@ -397,7 +397,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _spotSelected?.Play();
 
         cell.Sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
-        cell.Sprite.PulseBy(0.9f, 0.8f, 0.8f, true);
+        cell.Sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
     }
 
     private void OnSpotDeselected(SpotGameField.Cell cell)

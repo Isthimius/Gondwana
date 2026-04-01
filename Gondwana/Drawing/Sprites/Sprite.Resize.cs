@@ -12,12 +12,18 @@ public partial class Sprite
     private Size _resizeStart;
     private Size _resizeTarget;
 
-    // --- Optional return leg (pulse back to original) ---
+    // --- Optional return leg (for one-shot pulse-style resize) ---
     private bool _resizeReturnToStart;
     private float _resizeReturnDurationSeconds;
     private Size _resizeOriginalStart;
-    private bool _resizeLoop;
     private Size _resizePeak;
+
+    // --- Explicit pulse loop state ---
+    private bool _isPulseMode;
+    private bool _pulseLoop;
+    private bool _pulseForward; // true = original -> peak, false = peak -> original
+    private float _pulseGrowDurationSeconds;
+    private float _pulseShrinkDurationSeconds;
 
     // --- Collision adjustment tween baseline ---
     private CollisionDetectionAdjustment _resizeStartCollisionAdjust;
@@ -32,21 +38,7 @@ public partial class Sprite
         {
             RenderSize = _resizeTarget;
             ApplyScaledCollisionAdjust(RenderSize);
-
-            if (_resizeReturnToStart)
-            {
-                StartResizeLeg(
-                    start: RenderSize,
-                    target: _resizeOriginalStart,
-                    durationSeconds: _resizeReturnDurationSeconds,
-                    returnToStart: false,
-                    returnDurationSeconds: 0f);
-            }
-            else
-            {
-                _isResizing = false;
-            }
-
+            CompleteResizeLeg();
             return;
         }
 
@@ -63,36 +55,68 @@ public partial class Sprite
 
         if (next != _renderSize)
         {
-            RenderSize = next;               // invalidation happens in setter
+            RenderSize = next;                // invalidation happens in setter
             ApplyScaledCollisionAdjust(next); // physical pulse: collision scales too
         }
 
         if (t >= 1f)
         {
-            if (_resizeReturnToStart)
+            CompleteResizeLeg();
+        }
+    }
+
+    private void CompleteResizeLeg()
+    {
+        // Snap exactly to the target at the end of the leg
+        RenderSize = _resizeTarget;
+        ApplyScaledCollisionAdjust(RenderSize);
+
+        if (_isPulseMode)
+        {
+            if (_pulseForward)
             {
-                // grow → shrink
+                // Original -> Peak finished; now go Peak -> Original
+                _pulseForward = false;
                 StartResizeLeg(
-                    start: RenderSize,
+                    start: _resizePeak,
                     target: _resizeOriginalStart,
-                    durationSeconds: _resizeReturnDurationSeconds,
+                    durationSeconds: _pulseShrinkDurationSeconds,
                     returnToStart: false,
                     returnDurationSeconds: 0f);
+                return;
             }
-            else if (_resizeLoop)
+
+            // Peak -> Original finished
+            if (_pulseLoop)
             {
-                // shrink → grow again
+                // Start next cycle
+                _pulseForward = true;
                 StartResizeLeg(
-                    start: RenderSize,
+                    start: _resizeOriginalStart,
                     target: _resizePeak,
-                    durationSeconds: _resizeDurationSeconds,
-                    returnToStart: true,
-                    returnDurationSeconds: _resizeReturnDurationSeconds);
+                    durationSeconds: _pulseGrowDurationSeconds,
+                    returnToStart: false,
+                    returnDurationSeconds: 0f);
+                return;
             }
-            else
-            {
-                _isResizing = false;
-            }
+
+            _isPulseMode = false;
+            _isResizing = false;
+            return;
+        }
+
+        if (_resizeReturnToStart)
+        {
+            StartResizeLeg(
+                start: RenderSize,
+                target: _resizeOriginalStart,
+                durationSeconds: _resizeReturnDurationSeconds,
+                returnToStart: false,
+                returnDurationSeconds: 0f);
+        }
+        else
+        {
+            _isResizing = false;
         }
     }
 
@@ -113,21 +137,19 @@ public partial class Sprite
         _resizeReturnDurationSeconds = Math.Max(0f, returnDurationSeconds);
 
         // Re-baseline collision scaling for this leg so proportional adjustment
-        // stays correct in both the outward and return trip.
+        // stays correct in both directions.
         _resizeStartCollisionAdjust = AdjustCollisionArea;
         _resizeStartSizeForCollision = start;
     }
 
     private void ApplyScaledCollisionAdjust(Size currentSize)
     {
-        // Guard: avoid divide-by-zero and nonsense
         if (_resizeStartSizeForCollision.Width <= 0 || _resizeStartSizeForCollision.Height <= 0)
             return;
 
         float sx = (float)currentSize.Width / _resizeStartSizeForCollision.Width;
         float sy = (float)currentSize.Height / _resizeStartSizeForCollision.Height;
 
-        // Scale horizontal adjustments by sx, vertical by sy
         AdjustCollisionArea = new CollisionDetectionAdjustment(
             top: (int)MathF.Round(_resizeStartCollisionAdjust.Top * sy),
             bottom: (int)MathF.Round(_resizeStartCollisionAdjust.Bottom * sy),
@@ -148,6 +170,9 @@ public partial class Sprite
             Math.Max(1, targetSize.Width),
             Math.Max(1, targetSize.Height));
 
+        _isPulseMode = false;
+        _pulseLoop = false;
+
         _resizeOriginalStart = RenderSize;
 
         StartResizeLeg(
@@ -160,7 +185,7 @@ public partial class Sprite
 
     /// <summary>
     /// Scale to a factor relative to current RenderSize over the given duration (seconds).
-    /// factor > 1 grows; factor < 1 shrinks.
+    /// factor greater than 1 grows; factor less than 1 shrinks.
     /// This is a one-way resize only.
     /// </summary>
     /// <param name="factor">The scaling factor. Values greater than 1 grow the sprite, values less than 1 shrink it.</param>
@@ -176,8 +201,8 @@ public partial class Sprite
     }
 
     /// <summary>
-    /// Perform a full pulse: grow/shrink to the specified absolute target size,
-    /// then return to the original size.
+    /// Perform a full pulse: resize to the specified absolute target size, then return to the original size.
+    /// If loop is true, this continues indefinitely until stopped.
     /// Collision adjustment scales physically during both legs.
     /// </summary>
     /// <param name="targetSize">The peak size in pixels.</param>
@@ -192,14 +217,19 @@ public partial class Sprite
 
         _resizeOriginalStart = RenderSize;
         _resizePeak = targetSize;
-        _resizeLoop = loop;
+
+        _isPulseMode = true;
+        _pulseLoop = loop;
+        _pulseForward = true;
+        _pulseGrowDurationSeconds = Math.Max(0f, growDurationSeconds);
+        _pulseShrinkDurationSeconds = Math.Max(0f, shrinkDurationSeconds);
 
         StartResizeLeg(
-            start: RenderSize,
-            target: targetSize,
-            durationSeconds: growDurationSeconds,
-            returnToStart: true,
-            returnDurationSeconds: shrinkDurationSeconds);
+            start: _resizeOriginalStart,
+            target: _resizePeak,
+            durationSeconds: _pulseGrowDurationSeconds,
+            returnToStart: false,
+            returnDurationSeconds: 0f);
     }
 
     /// <summary>
@@ -227,15 +257,26 @@ public partial class Sprite
     /// <summary>
     /// Stops the current pulse animation, optionally snapping the sprite back to its original size.
     /// </summary>
-    /// <param name="snapBack">Whether to animate the sprite back to its original size.</param>
+    /// <param name="snapBack">Whether to return the sprite to its original size.</param>
     /// <param name="returnDuration">The duration in seconds for the return animation. If 0, the sprite snaps back instantly.</param>
     public void StopPulse(bool snapBack = true, float returnDuration = 0f)
     {
+        Size originalSize = _resizeOriginalStart;
+        var originalCollisionAdjust = _resizeStartCollisionAdjust;
+
         CancelResize();
 
         if (snapBack)
         {
-            ResizeTo(_resizeOriginalStart, returnDuration);
+            if (returnDuration <= 0f)
+            {
+                RenderSize = originalSize;
+                AdjustCollisionArea = originalCollisionAdjust;
+            }
+            else
+            {
+                ResizeTo(originalSize, returnDuration);
+            }
         }
     }
 
@@ -246,6 +287,9 @@ public partial class Sprite
     {
         _isResizing = false;
         _resizeReturnToStart = false;
-        _resizeLoop = false;
+
+        _isPulseMode = false;
+        _pulseLoop = false;
+        _pulseForward = false;
     }
 }

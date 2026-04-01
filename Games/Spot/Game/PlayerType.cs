@@ -1,6 +1,6 @@
 ﻿namespace HWG.Spot.Game;
 
-public enum PlayerType
+internal enum PlayerType
 {
     Human,
     Computer

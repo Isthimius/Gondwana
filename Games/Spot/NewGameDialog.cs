@@ -6,11 +6,11 @@ using System.Windows.Forms;
 
 namespace HWG.Spot;
 
-public partial class NewGameDialog : Form
+internal partial class NewGameDialog : Form
 {
     internal NewGameOptions Options { get; private set; }
 
-    public NewGameDialog()
+    internal NewGameDialog()
     {
         InitializeComponent();
 

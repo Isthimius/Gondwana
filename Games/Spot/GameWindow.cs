@@ -4,13 +4,13 @@ using System.Windows.Forms;
 
 namespace HWG.Spot;
 
-public partial class GameWindow : Form
+internal partial class GameWindow : Form
 {
     private SpotGameHost _gameHost;
     private static readonly Size DefaultWindowSize = new(769, 769);
     private MenuStrip _menuStrip;
 
-    public GameWindow()
+    internal GameWindow()
     {
         InitializeComponent();
         CreateMenu();

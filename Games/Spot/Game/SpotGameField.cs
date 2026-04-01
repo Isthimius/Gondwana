@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Gondwana;
 using Gondwana.Drawing.Sprites;
@@ -12,18 +13,14 @@ internal partial class SpotGameField : SceneLayer
 {
     internal static class SpotFieldKeys
     {
-        public static readonly ValueKey<Cell> Cell = new ValueKey<Cell>("Spot.Cell");
+        internal static readonly ValueKey<Cell> Cell = new ValueKey<Cell>("Spot.Cell");
     }
 
     internal class Cell
     {
-        [JsonProperty]
         internal int X { get; set; }
-        [JsonProperty] 
         internal int Y { get; set; }
-        [JsonProperty] 
         internal Player OccupiedBy { get; set; } = null;
-        [JsonProperty] 
         internal Sprite Sprite { get; set; } = null;
     }
 
@@ -49,9 +46,10 @@ internal partial class SpotGameField : SceneLayer
             cell.OccupiedBy = players[0];
             var sprite = SpriteManager.Instance.CreateSprite(field, players[0].DefaultFrame);
             sprite.SetPosition(new(0, 0));
+            sprite.RenderSize = new Size(56, 56);
+            sprite.VertAlign = VerticalAlignment.Middle;
             sprite.Visible = true;
             cell.Sprite = sprite;
-            //field.SetCell(0, 0, cell);
         }
 
         // lower right
@@ -61,6 +59,8 @@ internal partial class SpotGameField : SceneLayer
             cell.OccupiedBy = players[1];
             var sprite = SpriteManager.Instance.CreateSprite(field, players[1].DefaultFrame);
             sprite.SetPosition(new(columns - 1, rows - 1));
+            sprite.RenderSize = new Size(56, 56);
+            sprite.VertAlign = VerticalAlignment.Middle;
             sprite.Visible = true;
             cell.Sprite = sprite;
         }
@@ -72,6 +72,8 @@ internal partial class SpotGameField : SceneLayer
             cell.OccupiedBy = players[2];
             var sprite = SpriteManager.Instance.CreateSprite(field, players[2].DefaultFrame);
             sprite.SetPosition(new(columns - 1, 0));
+            sprite.RenderSize = new Size(56, 56);
+            sprite.VertAlign = VerticalAlignment.Middle;
             sprite.Visible = true;
             cell.Sprite = sprite;
         }
@@ -83,6 +85,8 @@ internal partial class SpotGameField : SceneLayer
             cell.OccupiedBy = players[3];
             var sprite = SpriteManager.Instance.CreateSprite(field, players[3].DefaultFrame);
             sprite.SetPosition(new(0, rows - 1));
+            sprite.RenderSize = new Size(56, 56);
+            sprite.VertAlign = VerticalAlignment.Middle;
             sprite.Visible = true;
             cell.Sprite = sprite;
         }
