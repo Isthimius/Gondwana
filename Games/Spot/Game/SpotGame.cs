@@ -112,7 +112,7 @@ internal class SpotGame : IDisposable
 
     internal bool AttemptSelectCell(SpotGameField.Cell cell, out PlayerMovement? playerMovement)
     {
-        if (cell.OccupiedBy.Name == CurrentPlayer.Name)
+        if (cell.OccupiedBy == CurrentPlayer)
         {
             // if clicking the already selected cell, deselect it
             if (cell.X == SelectedCell?.X && cell.Y == SelectedCell?.Y)
