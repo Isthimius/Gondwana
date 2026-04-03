@@ -1,7 +1,7 @@
 ﻿using Gondwana.Input.Gamepad;
 using static SDL2.SDL;
 
-namespace Gondwana.WinForms.Input.Gamepad.SDL2;
+namespace Gondwana.Input.Gamepad.SDL2;
 
 /// <summary>
 /// Provides a gamepad adapter implementation using SDL2 for cross-platform gamepad input support.

@@ -52,6 +52,13 @@ public sealed class SpriteManager : IDisposable
     }
 
     /// <summary>
+    /// Creates a copy of the specified sprite, preserving its current scene layer.
+    /// </summary>
+    /// <param name="sprite">The sprite to clone. Cannot be null.</param>
+    /// <returns>A new Sprite instance that is a copy of the specified sprite, assigned to the same scene layer.</returns>
+    public Sprite CloneSprite(Sprite sprite) => CloneSprite(sprite, sprite.SceneLayer);
+
+    /// <summary>
     /// Creates a clone of the specified sprite on the given scene layer.
     /// </summary>
     /// <param name="sprite">The sprite to clone.</param>

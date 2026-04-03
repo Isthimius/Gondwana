@@ -45,7 +45,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     internal SKTypeface _font;
 
-    internal int ScoreHeight = 80;
+    //internal int ScoreHeight = 80;
 
     internal SpotGame SpotGame { get; private set; }
 
@@ -106,23 +106,18 @@ internal sealed class SpotGameHost : WinFormsGameHost
         // selected sprites
         _blueSpotHappy = new Tilesheet("blueSpotHappy", "assets\\bubble-blue-happy.png");
         _blueSpotHappy.TileSize = new Size(1024, 1024);
-        _blueSpotHappy.ApplyMask(Color.Black.ToSKColor());
 
         _greenSpotHappy = new Tilesheet("greenSpotHappy", "assets\\bubble-green-happy.png");
         _greenSpotHappy.TileSize = new Size(1024, 1024);
-        _greenSpotHappy.ApplyMask(Color.Black.ToSKColor());
 
         _pinkSpotHappy = new Tilesheet("pinkSpotHappy", "assets\\bubble-pink-happy.png");
         _pinkSpotHappy.TileSize = new Size(1024, 1024);
-        _pinkSpotHappy.ApplyMask(Color.Black.ToSKColor());
 
         _redSpotHappy = new Tilesheet("redSpotHappy", "assets\\bubble-red-happy.png");
         _redSpotHappy.TileSize = new Size(1024, 1024);
-        _redSpotHappy.ApplyMask(Color.Black.ToSKColor());
 
         _yellowSpotHappy = new Tilesheet("yellowSpotHappy", "assets\\bubble-yellow-happy.png");
         _yellowSpotHappy.TileSize = new Size(1024, 1024);
-        _yellowSpotHappy.ApplyMask(Color.Black.ToSKColor());
     }
 
     protected override Scene CreateInitialScene()
@@ -162,7 +157,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
                 tilesheet.SkBitmap,
                 RenderSurface.Host,
                 Scene[0],
-                new Rectangle(0, 0, 769, 769 + ScoreHeight));
+                new Rectangle(0, 0, 769, 769));
 
             directImage.ZOrder = 100;
             directImage.SetScaleMode(DirectImage.ScaleMode.Fit);
@@ -171,11 +166,11 @@ internal sealed class SpotGameHost : WinFormsGameHost
         var particleSurface = new ParticleSurface(
             RenderSurface.Host,
             Scene[0],
-            new Rectangle(0, 0, 769, 769 + ScoreHeight));
+            new Rectangle(0, 0, 769, 769));
 
         particleSurface.CullingMarginX = 1300f;
         particleSurface.ZOrder = 50;
-        particleSurface.Emitters.Add(GetSpots(769, 769 + ScoreHeight));
+        particleSurface.Emitters.Add(GetSpots(769, 769));
     }
 
     protected override void OnStartEngine()
@@ -268,7 +263,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
                 if (SpotGame.AttemptSelectCell(cell, out var playerMovement))
                 {
-                    //SpotGame.ExecutePlayerMovement(playerMovement);
+                    if (playerMovement != null)
+                        SpotGame.ExecuteMove(playerMovement.Value);
                 }
             }
         }

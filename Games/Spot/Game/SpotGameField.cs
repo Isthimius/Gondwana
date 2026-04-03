@@ -5,7 +5,6 @@ using System.Linq;
 using Gondwana;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
-using Newtonsoft.Json;
 
 namespace HWG.Spot.Game;
 
@@ -135,7 +134,8 @@ internal partial class SpotGameField : SceneLayer
     {
         MovementType movementType;
 
-        var player = GetCell(fromX, fromY).OccupiedBy;
+        var cell = GetCell(fromX, fromY);
+        var player = cell.OccupiedBy;
 
         // if there's no player at the source cell, it's illegal
         // out of bounds from is illegal
@@ -161,7 +161,7 @@ internal partial class SpotGameField : SceneLayer
                 movementType = MovementType.Illegal;
         }
 
-        return new(player, movementType, fromX, fromY, destX, destY);
+        return new(player, movementType, cell, fromX, fromY, destX, destY);
     }
 
     internal List<PlayerMovement> GetAllValidMoves()

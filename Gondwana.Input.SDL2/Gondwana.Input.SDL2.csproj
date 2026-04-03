@@ -1,18 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="TimGM6mb.sf2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MeltySynth" Version="2.4.1" />
-    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="ppy.SDL2-CS" Version="1.0.82" />
   </ItemGroup>
 
   <ItemGroup>

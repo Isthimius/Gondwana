@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Gondwana;
+using Gondwana.Drawing.Sprites;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -155,6 +157,49 @@ internal class SpotGame : IDisposable
                     // valid move requested
                     return true;
             }
+        }
+    }
+
+    internal void ExecuteMove(PlayerMovement playerMovement)
+    {
+        var sprite = playerMovement.FromCell.Sprite;
+        var fromCell = playerMovement.FromCell;
+        var toCell = SpotGameField.GetCell(playerMovement.DestX, playerMovement.DestY);
+
+        //sprite.Movement.ScriptedMovementStopped += (_) =>
+        //{
+        //    // update the game state to reflect the move
+        //    toCell.OccupiedBy = playerMovement.Player;
+        //    fromCell.OccupiedBy = null;
+        //    // capture any adjacent cells
+        //    var capturedCells = SpotGameField.CaptureAdjacentCells(playerMovement.DestX, playerMovement.DestY, playerMovement.Player);
+        //    PlayerMoved?.Invoke(playerMovement);
+        //    if (capturedCells.Count > 0)
+        //        CellsCaptured?.Invoke(capturedCells);
+        //};
+
+        switch (playerMovement.MovementType)
+        {
+            case MovementType.Clone:
+                sprite.StopPulse();
+                var clonedSprite = Engine.Instance.Managers.Sprites.CloneSprite(sprite);
+                clonedSprite.Movement.MoveTo(new(playerMovement.DestX, playerMovement.DestY),
+                                             0.4f,
+                                             Gondwana.Movement.Easing.EasingKind.SmootherStep,
+                                             0.1f);
+                break;
+            
+            case MovementType.Jump:
+                sprite.StopPulse();
+                sprite.Movement.MoveTo(new(playerMovement.DestX, playerMovement.DestY),
+                                       0.4f,
+                                       Gondwana.Movement.Easing.EasingKind.SmootherStep,
+                                       0.1f);
+                break;
+            
+            case MovementType.Illegal:
+            default:
+                return;
         }
     }
 

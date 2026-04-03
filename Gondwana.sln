@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.3.11520.95 d18.3
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37027.9 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
@@ -114,6 +114,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{0855DC
 		assets\XMLFile1.xml = assets\XMLFile1.xml
 		assets\XMLFile2.xml = assets\XMLFile2.xml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Input.SDL2", "Gondwana.Input.SDL2\Gondwana.Input.SDL2.csproj", "{46216497-3C9B-48A6-A03F-970B64DFFCCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -241,6 +243,18 @@ Global
 		{FEEB1002-3DC0-453D-87F6-9DC665C4097B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FEEB1002-3DC0-453D-87F6-9DC665C4097B}.Release|x86.ActiveCfg = Release|Any CPU
 		{FEEB1002-3DC0-453D-87F6-9DC665C4097B}.Release|x86.Build.0 = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|x86.Build.0 = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|x86.ActiveCfg = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,8 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\MikeAdkins\.nuget\packages\ppy.sdl2-cs\1.0.82\contentFiles\any\netstandard2.0\app.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
-    <PackageReference Include="ppy.SDL2-CS" Version="1.0.82" />
     <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.2" />
   </ItemGroup>
 

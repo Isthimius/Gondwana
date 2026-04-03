@@ -1,7 +1,6 @@
 ﻿using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.WinForms.Audio;
-using Gondwana.WinForms.Input.Gamepad.SDL2;
 using Gondwana.WinForms.Input.Gamepad.XInput;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Input.Mouse;
@@ -15,21 +14,12 @@ namespace Gondwana.WinForms;
 public static class EngineExtensions
 {
     /// <summary>
-    /// Registers support for extended audio formats including OGG, OGA, MOGG (Vorbis), WMA, and M4A.
+    /// Registers support for extended audio formats including OGG, OGA, MOGG (Vorbis), WMA, and M4A (Media Foundation).
     /// </summary>
     /// <param name="engine">The engine instance to configure.</param>
     public static void InitializeWinFormsAudioFormats(this Engine engine)
     {
         WinFormsAudioSupport.RegisterExtendedAudioFormats();
-    }
-
-    /// <summary>
-    /// Initializes and starts the SDL2 gamepad manager for cross-platform gamepad support.
-    /// </summary>
-    /// <param name="engine">The engine instance to configure.</param>
-    public static void InitializeSdlGamepadManager(this Engine engine)
-    {
-        Engine.Instance.Input.GamepadManager = SdlGamepadManager.Start();
     }
 
     /// <summary>

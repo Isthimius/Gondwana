@@ -1,8 +1,7 @@
-﻿using Gondwana.Input.Gamepad;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using static SDL2.SDL;
 
-namespace Gondwana.WinForms.Input.Gamepad.SDL2;
+namespace Gondwana.Input.Gamepad.SDL2;
 
 /// <summary>
 /// Manages SDL2-based gamepad connections, disconnections, and state updates for the application.
