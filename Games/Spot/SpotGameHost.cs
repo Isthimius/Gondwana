@@ -12,7 +12,6 @@ using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using HWG.Spot.Game;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -293,9 +292,10 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         SetPlayerFrames(options.Players);
 
-        var gameField = SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players.ToArray());
+        var newGameResult = SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players.ToArray());
 
-        Scene.AddLayer(gameField);
+        Scene.AddLayer(newGameResult.Field);
+        Scene.AddLayer(newGameResult.BackgroundField);
         _music.Volume = 0.1f;
     }
 
@@ -341,7 +341,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         SpotGame.GameStarted += OnGameStarted;
         SpotGame.PlayerTurnStarted += OnPlayerTurnStarted;
         SpotGame.PlayerTurnEnded += OnPlayerTurnEnded;
-
         SpotGame.SpotSelected += OnSpotSelected;
         SpotGame.SpotDeselected += OnSpotDeselected;
         SpotGame.InvalidSelectionAttempted += OnInvalidSelectionAttempted;
@@ -360,7 +359,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         SpotGame.GameStarted -= OnGameStarted;
         SpotGame.PlayerTurnStarted -= OnPlayerTurnStarted;
         SpotGame.PlayerTurnEnded -= OnPlayerTurnEnded;
-
         SpotGame.SpotSelected -= OnSpotSelected;
         SpotGame.SpotDeselected -= OnSpotDeselected;
         SpotGame.InvalidSelectionAttempted -= OnInvalidSelectionAttempted;
@@ -420,10 +418,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnPlayerMoved(PlayerMovement movement)
     {
-        if (!SoundEffectsEnabled)
-            return;
-
-        _velcro?.Play();
+        SpotGame.NextPlayer();
     }
 
     private void OnCellsCaptured(List<SpotGameField.Cell> cells)

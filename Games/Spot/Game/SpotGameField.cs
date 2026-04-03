@@ -25,9 +25,26 @@ internal partial class SpotGameField : SceneLayer
 
     private SpotGameField(int columns, int rows) : base(columns, rows, 64, 64) { }
 
-    internal static SpotGameField Create(int columns, int rows, Player[] players)
+    internal static (SpotGameField Field, SpotGameField BackgroundField) Create(int columns, int rows, Player[] players)
     {
+        if (players.Length < 2)
+            throw new ArgumentException("At least two players are required to start a game.", nameof(players));
+
+        if (players.Length > 4)
+            throw new ArgumentException("No more than four players can play at the same time.", nameof(players));
+
+        if (columns < 3 || rows < 3)
+            throw new ArgumentException("The game field must be at least 3x3 in size.", nameof(columns));
+
+        if (columns > 12 || rows > 12)
+            throw new ArgumentException("The game field cannot be larger than 12x12 in size.", nameof(columns));
+
+        var backgroundField = new SpotGameField(columns, rows);
+        backgroundField.ShowGridLines = true;
+        backgroundField.ZOrder = 0;
+
         var field = new SpotGameField(columns, rows);
+        field.ZOrder = 10;
 
         for (int x = 0; x < columns; x++)
         {
@@ -90,9 +107,7 @@ internal partial class SpotGameField : SceneLayer
             cell.Sprite = sprite;
         }
 
-        field.ShowGridLines = true;
-
-        return field;
+        return (field, backgroundField);
     }
 
     internal Cell GetCell(int x, int y) => this[x, y].ValueBag.Get(SpotFieldKeys.Cell);

@@ -255,6 +255,7 @@ public sealed class SpriteManager : IDisposable
         {
             sprite.Movement.AdvanceMovement(duration);
             sprite.AdvanceResize(duration);
+            sprite.AdvanceJiggle(duration);
         }
 
         _lastTick = tick;

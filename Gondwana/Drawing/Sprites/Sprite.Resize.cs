@@ -247,8 +247,7 @@ public partial class Sprite
         int w = (int)MathF.Round(RenderSize.Width * factor);
         int h = (int)MathF.Round(RenderSize.Height * factor);
 
-        PulseTo(
-            new Size(Math.Max(1, w), Math.Max(1, h)),
+        PulseTo(new Size(Math.Max(1, w), Math.Max(1, h)),
             growDurationSeconds,
             shrinkDurationSeconds,
             loop);
