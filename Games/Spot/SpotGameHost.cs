@@ -457,8 +457,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnNoValidMovesAvailable(Player player)
     {
-        if (SoundEffectsEnabled)
-            _bump?.Play();
+        SpotGame.NextPlayer();
     }
 
     private void OnGameOver()
