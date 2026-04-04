@@ -251,6 +251,13 @@ internal partial class SpotGameField : SceneLayer
         return bestMoves;
     }
 
+    internal List<Cell> GetAllCellsForPlayer(Player player)
+    {
+        return this.Select(tile => GetCell((int)tile.SceneLayerCoordinates.X, (int)tile.SceneLayerCoordinates.Y))
+                    .Where(cell => cell.OccupiedBy == player)
+                    .ToList();
+    }
+
     internal List<Cell> CaptureAdjacentCells(int x, int y, Player player)
     {
         var capturedCells = new List<Cell>();

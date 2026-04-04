@@ -29,6 +29,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal AudioResource _gameWin;
     internal AudioResource _gameLose;
     internal AudioResource _bump;
+    internal AudioResource _knock;
+    internal AudioResource _spotCaptured;
 
     internal Tilesheet _blueSpot;
     internal Tilesheet _greenSpot;
@@ -68,8 +70,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
         _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
         _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
-
-        // load standalone image files
+        //_knock = gotta find it
+        //_spotCaptured = gotta find it
 
         // load standalone video files
 
@@ -270,11 +272,15 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     internal void SetMusicEnabled(bool enabled)
     {
+        MusicEnabled = enabled;
+
         if (enabled)
             _music.Play();
         else
             _music.Stop();
     }
+
+    internal bool MusicEnabled { get; private set; } = true;
 
     internal bool SoundEffectsEnabled { get; private set; } = true;
 
@@ -370,18 +376,27 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnGameStarted(SpotGame game)
     {
-        // Intentionally left minimal.
-        // Hook for host-level reactions if needed later.
+        if (MusicEnabled)
+        {
+            if (!_music.IsPlaying) 
+                _music.Play();
+        }
     }
 
     private void OnPlayerTurnStarted(Player player)
     {
-        // Intentionally left minimal.
+        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+        {
+            cell.Sprite.StartJiggle(loop: true);
+        }
     }
 
     private void OnPlayerTurnEnded(Player player)
     {
-        // Intentionally left minimal.
+        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+        {
+            cell.Sprite.StopJiggle();
+        }
     }
 
     private void OnSpotSelected(SpotGameField.Cell cell)
@@ -389,59 +404,72 @@ internal sealed class SpotGameHost : WinFormsGameHost
         if (SoundEffectsEnabled)
             _spotSelected?.Play();
 
+        cell.Sprite.StopJiggle();
         cell.Sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
         cell.Sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
     }
 
     private void OnSpotDeselected(SpotGameField.Cell cell)
     {
+        cell.Sprite.StartJiggle(loop: true);
         cell.Sprite.CurrentFrame = cell.OccupiedBy.DefaultFrame;
         cell.Sprite.StopPulse(true, 0.2f);
     }
 
     private void OnInvalidSelectionAttempted(SpotGameField.Cell cell)
     {
-        if (!SoundEffectsEnabled)
-            return;
-
-        _bump?.Play();
+        if (SoundEffectsEnabled)
+            _bump?.Play();
     }
 
     private void OnInvalidMoveAttempted(SpotGameField.Cell cell)
     {
-        if (!SoundEffectsEnabled)
-            return;
-
-        _bump?.Play();
+        if (SoundEffectsEnabled)
+            _knock?.Play();
     }
 
     private void OnPlayerMoved(PlayerMovement movement)
     {
+        if (movement.MovementType == MovementType.Jump)
+        {
+            if (SoundEffectsEnabled)
+                _velcro?.Play();
+        }
+
+        if (movement.MovementType == MovementType.Clone)
+        {
+            if (SoundEffectsEnabled)
+                _drop?.Play();
+        }
+
         SpotGame.NextPlayer();
     }
 
     private void OnCellsCaptured(List<SpotGameField.Cell> cells)
     {
-        if (!SoundEffectsEnabled)
-            return;
-
-        _drop?.Play();
+        if (SoundEffectsEnabled)
+            _spotCaptured?.Play();
     }
 
     private void OnNoValidMovesAvailable(Player player)
     {
-        if (!SoundEffectsEnabled)
-            return;
-
-        _bump?.Play();
+        if (SoundEffectsEnabled)
+            _bump?.Play();
     }
 
     private void OnGameOver()
     {
-        if (!SoundEffectsEnabled)
-            return;
+        var winner = SpotGame.Players.OrderByDescending(p => SpotGame.GetPlayerScore(p)).FirstOrDefault();
 
-        _gameWin?.Play();
+        if (MusicEnabled)
+        {
+            _music?.Stop();
+
+            if (winner.Type == PlayerType.Human)
+                _gameWin?.Play();
+            else
+                _gameLose?.Play();
+        }
     }
 
     #endregion SpotGame event handlers
