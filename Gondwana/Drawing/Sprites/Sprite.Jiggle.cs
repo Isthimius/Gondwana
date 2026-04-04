@@ -10,6 +10,7 @@ public partial class Sprite
 
     private bool _isJiggling;
     private float _jiggleElapsedSeconds;
+    private double _jiggleAccumulatedSeconds;
 
     private float _jiggleIntensityX;
     private float _jiggleIntensityY;
@@ -139,9 +140,24 @@ public partial class Sprite
         if (!_isJiggling)
             return;
 
+        // Determine target update rate
+        int targetFps = Engine.Instance.Configuration.TargetFPS;
+        float step = (targetFps > 0) ? (1f / targetFps) : deltaSeconds; // if uncapped, just run
+
+        _jiggleAccumulatedSeconds += deltaSeconds;
+
+        // Only advance at most once per "frame step"
+        if (_jiggleAccumulatedSeconds < step)
+            return;
+
+        // Consume one step (don’t loop; keep it cheap and stable)
+        float dt = step;
+        _jiggleAccumulatedSeconds -= step;
+
         _prevJiggleOffsetX = _jiggleOffsetX;
         _prevJiggleOffsetY = _jiggleOffsetY;
-        _jiggleElapsedSeconds += deltaSeconds;
+
+        _jiggleElapsedSeconds += dt;
 
         if (!_jiggleLoop && _jiggleDurationSeconds > 0f && _jiggleElapsedSeconds >= _jiggleDurationSeconds)
         {
@@ -167,7 +183,6 @@ public partial class Sprite
 
         float t = _jiggleElapsedSeconds * _jiggleSpeed;
 
-        // Layer a few frequencies to fake randomness without harsh frame-to-frame jumps
         float xWave =
             MathF.Sin(t + _jigglePhaseX1) +
             (0.5f * MathF.Sin((t * 2.37f) + _jigglePhaseX2));
@@ -176,7 +191,6 @@ public partial class Sprite
             MathF.Cos((t * 1.13f) + _jigglePhaseY1) +
             (0.5f * MathF.Cos((t * 2.91f) + _jigglePhaseY2));
 
-        // Normalize the layered wave somewhat
         _jiggleOffsetX = xWave * 0.6667f * intensityX;
         _jiggleOffsetY = yWave * 0.6667f * intensityY;
 
@@ -195,8 +209,9 @@ public partial class Sprite
             _jiggleScale = 1f;
         }
 
-        bool changed = Math.Abs(_jiggleOffsetX - _prevJiggleOffsetX) > 0.01f ||
-                       Math.Abs(_jiggleOffsetY - _prevJiggleOffsetY) > 0.01f;
+        bool changed =
+            Math.Abs(_jiggleOffsetX - _prevJiggleOffsetX) > 0.01f ||
+            Math.Abs(_jiggleOffsetY - _prevJiggleOffsetY) > 0.01f;
 
         if (changed && _sceneLayer != null)
         {

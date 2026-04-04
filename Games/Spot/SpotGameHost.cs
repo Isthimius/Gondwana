@@ -6,6 +6,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
@@ -52,7 +53,10 @@ internal sealed class SpotGameHost : WinFormsGameHost
     private static readonly Random _rng = new();
 
     internal SpotGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
-        : base(renderSurface) { }
+        : base(renderSurface)
+    {
+        ((BitmapBackbuffer)renderSurface.Host.Backbuffer).FilterQuality = SKFilterQuality.High;
+    }
 
     #region overrides
 
