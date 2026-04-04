@@ -6,7 +6,6 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Rendering.Text;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
@@ -60,22 +59,22 @@ internal sealed class SpotGameHost : WinFormsGameHost
         // load asset files
 
         // load standalone audio files
-        _music = AudioResourceManager.Instance.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
+        _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
         _music.IsLooping = true;
 
         //_spotSelected = gotta find it
-        _velcro = AudioResourceManager.Instance.LoadFromFile("velcro", "assets\\freesound_community-velcro_fast-91558.mp3");
-        _drop = AudioResourceManager.Instance.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
-        _gameWin = AudioResourceManager.Instance.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
-        _gameLose = AudioResourceManager.Instance.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
-        _bump = AudioResourceManager.Instance.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
+        _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", "assets\\freesound_community-velcro_fast-91558.mp3");
+        _drop = Engine.Managers.AudioResources.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
+        _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
+        _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
+        _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
 
         // load standalone image files
 
         // load standalone video files
 
         // load standalone font files
-        _font = FontManager.Instance.LoadFromFile("main", "assets\\ArchitectsDaughter-Regular.ttf");
+        _font = Engine.Managers.Fonts.LoadFromFile("main", "assets\\ArchitectsDaughter-Regular.ttf");
 
         // load standalone cursor files
     }
