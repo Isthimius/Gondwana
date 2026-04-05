@@ -54,8 +54,8 @@ internal partial class NewGameDialog : Form
             new ColorItem("Red", SKColors.Red),
             new ColorItem("Blue", SKColors.Blue),
             new ColorItem("Yellow", SKColors.Yellow),
-            new ColorItem("Green", SKColors.Green),
             new ColorItem("Violet", SKColors.Violet),
+            new ColorItem("Green", SKColors.Green),
             //new ColorItem("White", SKColors.White)
         };
 
