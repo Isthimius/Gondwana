@@ -219,7 +219,7 @@ internal partial class SpotGameField : SceneLayer
     internal int SquaresOpenIfJumpFrom(Player movingPlayer, int fromX, int fromY)
     {
         var adjacentCells = GetAdjacentCells(fromX, fromY);
-        return adjacentCells.Count(cell => cell.OccupiedBy == movingPlayer);
+        return adjacentCells.Count(cell => cell.OccupiedBy == movingPlayer) + 1;
     }
 
     internal List<PlayerMovement> GetBestMovesForPlayer(Player player)
@@ -232,7 +232,17 @@ internal partial class SpotGameField : SceneLayer
         {
             int squaresTaken = SquaresTakenIfJumpTo(player, move.DestX, move.DestY);
             int squaresOpen = SquaresOpenIfJumpFrom(player, move.FromX, move.FromY);
-            int netSquaresGained = squaresTaken - squaresOpen;
+            int netSquaresGained;
+
+            if (move.MovementType == MovementType.Clone)
+            {
+                // for clone moves, we only gain squares and never lose any, so we don't need to consider squaresOpen
+                netSquaresGained = squaresTaken;
+            }
+            else
+            {
+                netSquaresGained = squaresTaken - squaresOpen;
+            }
 
             if (netSquaresGained > bestNetSquaresGained)
             {
@@ -271,17 +281,6 @@ internal partial class SpotGameField : SceneLayer
         }
 
         return capturedCells;
-    }
-
-    internal bool IsGameOver
-    {
-        get
-        {
-            if (GetAllValidMoves().Any())
-                return false;
-
-            return true;
-        }
     }
 
     #endregion game logic

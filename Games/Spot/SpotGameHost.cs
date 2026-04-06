@@ -5,10 +5,10 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Movement.Scripted;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
+using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using HWG.Spot.Game;
@@ -409,9 +409,33 @@ internal sealed class SpotGameHost : WinFormsGameHost
         StartPlayerJiggle(player);
 
         if (player.Type == PlayerType.Human)
+        {
             _handleHumanInput = true;
+        }
         else
+        {
             _handleHumanInput = false;
+
+            // start a short timer before computer moves
+            var timer = Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+            timer.Tick += () =>
+            {
+                timer.Dispose();
+
+                var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
+                var bestMove = moves[Random.Shared.Next(moves.Count)];
+
+                SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
+
+                // small delay before executing move to allow for selection animation
+                var moveTimer = Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+                moveTimer.Tick += () =>
+                {
+                    moveTimer.Dispose();
+                    SpotGame.ExecuteMove(bestMove);
+                };
+            };
+        }
     }
 
     private void OnPlayerTurnEnded(Player player)

@@ -3,6 +3,7 @@ using Gondwana.Movement.Scripted;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace HWG.Spot.Game;
 
@@ -81,6 +82,23 @@ internal class SpotGame : IDisposable
             scores[player] = GetPlayerScore(player);
         }
         return scores;
+    }
+
+    internal bool IsGameOver
+    {
+        get
+        {
+            // no more valid moves means board is full
+            if (!SpotGameField.GetAllValidMoves().Any())
+                return true;
+
+            // if only one player remains, game is over
+            var allScores = GetAllPlayerScores();
+            if (allScores.Count(score => score.Value > 0) <= 1)
+                return true;
+
+            return false;
+        }
     }
 
     #region player turn logic
@@ -199,7 +217,7 @@ internal class SpotGame : IDisposable
         if (capturedCells.Count > 0)
             CellsCaptured?.Invoke(capturedCells);
 
-        if (SpotGameField.IsGameOver)
+        if (IsGameOver)
             GameOver?.Invoke();
         else
             PlayerMoved?.Invoke(playerMovement);
