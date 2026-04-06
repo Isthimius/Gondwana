@@ -107,7 +107,6 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gondwana.Audio.Midi\Gondwana.Audio.Midi.csproj" />
     <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
     <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
     <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />

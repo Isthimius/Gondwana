@@ -5,6 +5,14 @@ namespace Gondwana.Drawing.Sprites;
 
 public partial class Sprite
 {
+    /// <summary>
+    /// Event is raised when a resize or pulse animation completes its current leg. For a one-shot resize,
+    /// this is when the target size is reached. For a pulse, this is raised at the end of each leg (original->peak and peak->original).
+    /// If the pulse is not looping, then the event is raised at the end of the full cycle (back to original).
+    /// This event is also raised if the resize is cancelled.
+    /// </summary>
+    public event Action? ResizeComplete;
+
     // --- RenderSize tween state ---
     private bool _isResizing;
     private float _resizeElapsedSeconds;
@@ -102,6 +110,8 @@ public partial class Sprite
 
             _isPulseMode = false;
             _isResizing = false;
+
+            ResizeComplete?.Invoke();
             return;
         }
 
@@ -117,6 +127,7 @@ public partial class Sprite
         else
         {
             _isResizing = false;
+            ResizeComplete?.Invoke();
         }
     }
 
@@ -290,5 +301,7 @@ public partial class Sprite
         _isPulseMode = false;
         _pulseLoop = false;
         _pulseForward = false;
+
+        ResizeComplete?.Invoke();
     }
 }

@@ -38,6 +38,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     private int _nudgeY;
     private Size _renderSize;
 
+    internal bool _pendingDispose = false;
+
     [JsonProperty("SceneLayerCoordinates")]
     private PointF _sceneLayerCoordinates;
 
@@ -303,6 +305,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
                 var oldRect = this.DrawLocationWorld;
                 _renderSize = value;
                 var newRect = this.DrawLocationWorld;
+                
                 _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
             }
             else
@@ -491,6 +494,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// </summary>
     public override void Dispose()
     {
+        _pendingDispose = true;
+    }
+
+    internal void DisposeImmediate()
+    {
         GC.SuppressFinalize(this);
 
         Disposing?.Invoke(this);
@@ -501,9 +509,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             // DrawLocation should already be a world-space rectangle.
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
-
-        if (SpriteManager.Instance._spriteList.IndexOf(this) != -1)
-            SpriteManager.Instance._spriteList.Remove(this);
 
         // clear the events
         SpriteMoved = null;

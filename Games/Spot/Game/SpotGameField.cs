@@ -112,8 +112,6 @@ internal partial class SpotGameField : SceneLayer
 
     internal Cell GetCell(int x, int y) => this[x, y].ValueBag.Get(SpotFieldKeys.Cell);
 
-    internal void SetCell(int x, int y, Cell cell) => this[x, y].ValueBag.Set(SpotFieldKeys.Cell, cell);
-
     #region game logic
 
     /// <summary>

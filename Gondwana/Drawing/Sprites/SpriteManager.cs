@@ -251,14 +251,40 @@ public sealed class SpriteManager : IDisposable
 
         float duration = HighResTimer.GetDuration(_lastTick, tick);
 
-        foreach (var sprite in _spriteList)
+        for (int i = 0; i < _spriteList.Count; i++)
         {
+            var sprite = _spriteList[i];
+
+            if (sprite._pendingDispose)
+                continue;
+
             sprite.Movement.AdvanceMovement(duration);
             sprite.AdvanceResize(duration);
             sprite.AdvanceJiggle(duration);
         }
 
+        SweepDisposedSprites();
+
         _lastTick = tick;
+    }
+
+    private void SweepDisposedSprites()
+    {
+        int i = 0;
+        while (i < _spriteList.Count)
+        {
+            if (!_spriteList[i]._pendingDispose)
+            {
+                i++;
+                continue;
+            }
+
+            _spriteList[i].DisposeImmediate();
+
+            int last = _spriteList.Count - 1;
+            _spriteList[i] = _spriteList[last];
+            _spriteList.RemoveAt(last);
+        }
     }
 
     #endregion internal methods

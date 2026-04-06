@@ -154,6 +154,7 @@ internal class SpotGame : IDisposable
             case MovementType.Clone:
                 sprite.StopPulse();
                 var clonedSprite = Engine.Instance.Managers.Sprites.CloneSprite(sprite);
+                clonedSprite.ZOrder++;
                 sprite.CurrentFrame = playerMovement.Player.DefaultFrame;
 
                 sprite = clonedSprite;
@@ -190,13 +191,13 @@ internal class SpotGame : IDisposable
                 return;
         }
 
-        //var capturedCells = SpotGameField.CaptureAdjacentCells(
-        //    playerMovement.DestX,
-        //    playerMovement.DestY,
-        //    playerMovement.Player);
+        var capturedCells = SpotGameField.CaptureAdjacentCells(
+            playerMovement.DestX,
+            playerMovement.DestY,
+            playerMovement.Player);
 
-        //if (capturedCells.Count > 0)
-        //    CellsCaptured?.Invoke(capturedCells);
+        if (capturedCells.Count > 0)
+            CellsCaptured?.Invoke(capturedCells);
 
         if (SpotGameField.IsGameOver)
             GameOver?.Invoke();

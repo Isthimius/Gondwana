@@ -1,12 +1,11 @@
 ﻿using Gondwana;
 using Gondwana.Audio;
-using Gondwana.Audio.Midi;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Logging;
+using Gondwana.Movement.Scripted;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
@@ -24,6 +23,8 @@ namespace HWG.Spot;
 
 internal sealed class SpotGameHost : WinFormsGameHost
 {
+    private bool _handleHumanInput = false;
+
     internal AudioResource _music;
 
     internal AudioResource _spotSelected;
@@ -47,8 +48,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal Tilesheet _yellowSpotHappy;
 
     internal SKTypeface _font;
-
-    //internal int ScoreHeight = 80;
 
     internal SpotGame SpotGame { get; private set; }
 
@@ -185,11 +184,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _music.Play();
     }
 
-    protected override void OnConfigurePlatform()
-    {
-        Engine.InitializeMidiAudioFormats();
-    }
-
     protected override void OnMouseAdapterInitialized()
     {
         if (Engine.Input.MouseEventPoller is null)
@@ -213,7 +207,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         SKColor[] colors =
         {
-            //SKColors.White,
             SKColors.Red,
             SKColors.Blue,
             SKColors.Yellow,
@@ -247,6 +240,9 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
+        if (!_handleHumanInput)
+            return;
+
         if (Scene is null || Scene.SceneLayers.Count == 0)
             return;
 
@@ -342,6 +338,22 @@ internal sealed class SpotGameHost : WinFormsGameHost
         }
     }
 
+    private void StartPlayerJiggle(Player player)
+    {
+        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+        {
+            cell.Sprite.StartJiggle(loop: true);
+        }
+    }
+
+    private void StopPlayerJiggle(Player player)
+    {
+        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+        {
+            cell.Sprite.StopJiggle();
+        }
+    }
+
     #region SpotGame event handlers
 
     private void HookSpotGameEvents()
@@ -394,21 +406,18 @@ internal sealed class SpotGameHost : WinFormsGameHost
     private void OnPlayerTurnStarted(Player player)
     {
         Engine.Logger.LogDebug("Player {0}'s turn started", player.Name);
+        StartPlayerJiggle(player);
 
-        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
-        {
-            cell.Sprite.StartJiggle(loop: true);
-        }
+        if (player.Type == PlayerType.Human)
+            _handleHumanInput = true;
+        else
+            _handleHumanInput = false;
     }
 
     private void OnPlayerTurnEnded(Player player)
     {
         Engine.Logger.LogDebug("Player {0}'s turn ended", player.Name);
-
-        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
-        {
-            cell.Sprite.StopJiggle();
-        }
+        StopPlayerJiggle(player);
     }
 
     private void OnSpotSelected(SpotGameField.Cell cell)
@@ -471,12 +480,30 @@ internal sealed class SpotGameHost : WinFormsGameHost
         SpotGame.NextPlayer();
     }
 
-    private void OnCellsCaptured(List<SpotGameField.Cell> cells)
+    private void OnCellsCaptured(List<SpotGameField.Cell> cellsCaptured)
     {
-        Engine.Logger.LogDebug("{0} cells captured", cells.Count);
+        Engine.Logger.LogDebug("{0} cells captured", cellsCaptured.Count);
 
         if (SoundEffectsEnabled)
             _spotCaptured?.Play();
+
+        foreach (var cell in cellsCaptured)
+        {
+            var oldSprite = cell.Sprite;
+            if (oldSprite == null)
+                continue;
+
+            Action? handler = null;
+            handler = () =>
+            {
+                oldSprite.ResizeComplete -= handler;
+                oldSprite.CurrentFrame = cell.OccupiedBy.DefaultFrame;
+                oldSprite.ResizeTo(new(56, 56), 0.2f);
+            };
+
+            oldSprite.ResizeComplete += handler;
+            oldSprite.ResizeTo(new(1, 1), 0.2f);
+        }
     }
 
     private void OnNoValidMovesAvailable(Player player)
@@ -490,13 +517,22 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         Engine.Logger.LogDebug("Game over");
 
-        var winner = SpotGame.Players.OrderByDescending(p => SpotGame.GetPlayerScore(p)).FirstOrDefault();
+        _handleHumanInput = false;
+
+        StopPlayerJiggle(SpotGame.CurrentPlayer);
+
+        var allScores = SpotGame.GetAllPlayerScores();
+        var maxScore = allScores.Values.Max();
+        var winnersWithScores = allScores
+            .Where(kvp => kvp.Value == maxScore)
+            .ToList();
 
         if (MusicEnabled)
         {
             _music?.Stop();
 
-            if (winner.Type == PlayerType.Human)
+            var isHumanWinner = winnersWithScores.Any(kvp => kvp.Key.Type == PlayerType.Human);
+            if (isHumanWinner)
                 _gameWin?.Play();
             else
                 _gameLose?.Play();
