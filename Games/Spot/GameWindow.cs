@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -40,7 +41,7 @@ internal partial class GameWindow : Form
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
-        _gameHost!.Initialize();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost!.Initialize(logLevel: LogLevel.Debug);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)

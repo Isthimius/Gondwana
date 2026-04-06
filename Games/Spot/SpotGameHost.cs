@@ -6,12 +6,14 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Logging;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using HWG.Spot.Game;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -380,15 +382,19 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnGameStarted(SpotGame game)
     {
+        Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
+
         if (MusicEnabled)
         {
-            if (!_music.IsPlaying) 
+            if (!_music.IsPlaying)
                 _music.Play();
         }
     }
 
     private void OnPlayerTurnStarted(Player player)
     {
+        Engine.Logger.LogDebug("Player {0}'s turn started", player.Name);
+
         foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
         {
             cell.Sprite.StartJiggle(loop: true);
@@ -397,6 +403,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnPlayerTurnEnded(Player player)
     {
+        Engine.Logger.LogDebug("Player {0}'s turn ended", player.Name);
+
         foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
         {
             cell.Sprite.StopJiggle();
@@ -405,6 +413,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnSpotSelected(SpotGameField.Cell cell)
     {
+        Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy.Name);
+
         if (SoundEffectsEnabled)
             _spotSelected?.Play();
 
@@ -415,6 +425,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnSpotDeselected(SpotGameField.Cell cell)
     {
+        Engine.Logger.LogDebug("Cell at ({0}, {1}) deselected", cell.X, cell.Y);
+
         cell.Sprite.StartJiggle(loop: true);
         cell.Sprite.CurrentFrame = cell.OccupiedBy.DefaultFrame;
         cell.Sprite.StopPulse(true, 0.2f);
@@ -422,18 +434,28 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnInvalidSelectionAttempted(SpotGameField.Cell cell)
     {
+        Engine.Logger.LogDebug("Invalid selection attempted at cell ({0}, {1})", cell.X, cell.Y);
+
         if (SoundEffectsEnabled)
             _bump?.Play();
     }
 
     private void OnInvalidMoveAttempted(SpotGameField.Cell cell)
     {
+        Engine.Logger.LogDebug("Invalid move attempted to cell ({0}, {1})", cell.X, cell.Y);
+
         if (SoundEffectsEnabled)
             _knock?.Play();
     }
 
     private void OnPlayerMoved(PlayerMovement movement)
     {
+        Engine.Logger.LogDebug("Player {0} performed a {1} move from ({2}, {3}) to ({4}, {5})",
+            movement.Player.Name,
+            movement.MovementType,
+            movement.FromX, movement.FromY,
+            movement.DestX, movement.DestY);
+
         if (movement.MovementType == MovementType.Jump)
         {
             if (SoundEffectsEnabled)
@@ -451,17 +473,23 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnCellsCaptured(List<SpotGameField.Cell> cells)
     {
+        Engine.Logger.LogDebug("{0} cells captured", cells.Count);
+
         if (SoundEffectsEnabled)
             _spotCaptured?.Play();
     }
 
     private void OnNoValidMovesAvailable(Player player)
     {
+        Engine.Logger.LogDebug("No valid moves available for player {0}", player.Name);
+
         SpotGame.NextPlayer();
     }
 
     private void OnGameOver()
     {
+        Engine.Logger.LogDebug("Game over");
+
         var winner = SpotGame.Players.OrderByDescending(p => SpotGame.GetPlayerScore(p)).FirstOrDefault();
 
         if (MusicEnabled)

@@ -190,9 +190,9 @@ internal partial class SpotGameField : SceneLayer
                 if (GetCell(fromX, fromY).OccupiedBy == null)
                     continue;
 
-                for (int destX = fromX - 1; destX < fromX + 1; destX++)
+                for (int destX = fromX - 2; destX <= fromX + 2; destX++)
                 {
-                    for (int destY = fromY - 1; destY < fromY + 1; destY++)
+                    for (int destY = fromY - 2; destY <= fromY + 2; destY++)
                     {
                         var playerMoveType = GetMovementType(fromX, fromY, destX, destY);
                         if (playerMoveType.MovementType != MovementType.Illegal)
