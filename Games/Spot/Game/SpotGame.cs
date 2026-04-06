@@ -165,6 +165,19 @@ internal class SpotGame : IDisposable
         {
             sprite.Movement.ScriptedMovementStopped -= handler;
             sprite.CurrentFrame = playerMovement.Player.DefaultFrame;
+
+            var capturedCells = SpotGameField.CaptureAdjacentCells(
+                playerMovement.DestX,
+                playerMovement.DestY,
+                playerMovement.Player);
+
+            if (capturedCells.Count > 0)
+                CellsCaptured?.Invoke(capturedCells);
+
+            if (IsGameOver)
+                GameOver?.Invoke();
+            else
+                PlayerMoved?.Invoke(playerMovement);
         };
 
         switch (playerMovement.MovementType)
@@ -208,19 +221,6 @@ internal class SpotGame : IDisposable
             default:
                 return;
         }
-
-        var capturedCells = SpotGameField.CaptureAdjacentCells(
-            playerMovement.DestX,
-            playerMovement.DestY,
-            playerMovement.Player);
-
-        if (capturedCells.Count > 0)
-            CellsCaptured?.Invoke(capturedCells);
-
-        if (IsGameOver)
-            GameOver?.Invoke();
-        else
-            PlayerMoved?.Invoke(playerMovement);
     }
 
     internal Player NextPlayer()
