@@ -1,3 +1,4 @@
+using Gondwana;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
@@ -42,6 +43,11 @@ internal partial class GameWindow : Form
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
         _gameHost!.Initialize(logLevel: LogLevel.Debug);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+
+        _gameHost.Engine.CPSCalculated += (cps) =>
+        {
+            Engine.Logger.LogTrace("{CPS}", cps.ToString());
+        };
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
