@@ -18,12 +18,20 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace HWG.Spot;
 
 internal sealed class SpotGameHost : WinFormsGameHost
 {
     private bool _handleHumanInput = false;
+    private bool _showScores = true;
+
+    internal TextBlock _player1Text;
+    internal TextBlock _player2Text;
+    internal TextBlock _player3Text = null;
+    internal TextBlock _player4Text = null;
+    internal TextBlock _gameMessageText;
 
     internal AudioResource _music;
 
@@ -34,7 +42,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal AudioResource _gameLose;
     internal AudioResource _bump;
     internal AudioResource _knock;
-    internal AudioResource _spotCaptured;
 
     internal Tilesheet _blueSpot;
     internal Tilesheet _greenSpot;
@@ -76,7 +83,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
         _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
         //_knock = gotta find it
-        //_spotCaptured = gotta find it
 
         // load standalone video files
 
@@ -193,10 +199,44 @@ internal sealed class SpotGameHost : WinFormsGameHost
         Engine.Input.MouseEventPoller.StartMonitoringMouse();
     }
 
+    protected override void OnKeyboardAdapterInitialized()
+    {
+        if (Engine.Input.KeyboardEventPoller is null)
+            return;
+
+        Engine.Input.KeyboardEventPoller.KeyDown += KeyboardEventPoller_KeyDown;
+        Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.S);
+    }
+
+    private void KeyboardEventPoller_KeyDown(Gondwana.Input.Keyboard.KeyDownEventArgs args)
+    {
+        if (args.KeyAction != Gondwana.Input.Keyboard.KeyAction.Pressed)
+            return;
+
+        // Parse the received key string into the Keys enum (case-insensitive)
+        if (!Enum.TryParse<Keys>(args.KeyConfig.Key, ignoreCase: true, out var key))
+        {
+            // If parsing fails, ignore — preserves existing behavior for any non-standard strings
+            return;
+        }
+
+        switch (key)
+        {
+            case Keys.S:
+                SetScoreVisible(!_showScores);
+                break;
+            default:
+                break;
+        }
+    }
+
     protected override void UnhookEvents()
     {
         if (Engine.Input.MouseEventPoller is not null)
             Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
+
+        if (Engine.Input.KeyboardEventPoller is not null)
+            Engine.Input.KeyboardEventPoller.KeyDown -= KeyboardEventPoller_KeyDown;
 
         UnhookSpotGameEvents();
     }
@@ -304,6 +344,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
         Scene.AddLayer(newGameResult.Field);
         Scene.AddLayer(newGameResult.BackgroundField);
         _music.Volume = 0.1f;
+
+        CreateTextBlockFields();
     }
 
     private void SetPlayerFrames(List<Player> players)
@@ -336,6 +378,88 @@ internal sealed class SpotGameHost : WinFormsGameHost
                     break;
             }
         }
+    }
+
+    private void CreateTextBlockFields()
+    {
+        // upper left
+        _player1Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+            new Rectangle(10, 10, 200, 50));
+        _player1Text.SetFont(_font, 24);
+        _player1Text.SetColors(SpotGame.Players[0].ColorItem.Color, SKColors.Transparent);
+        _player1Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
+        _player1Text.SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]));
+
+        // bottom right
+        _player2Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+            new Rectangle(RenderSurface.Width - 210, RenderSurface.Height - 60, 200, 50));
+        _player2Text.SetFont(_font, 24);
+        _player2Text.SetColors(SpotGame.Players[1].ColorItem.Color, SKColors.Transparent);
+        _player2Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
+        _player2Text.SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]));
+
+        if (SpotGame.Players.Length >= 3)
+        {
+            // upper right
+            _player3Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+                new Rectangle(RenderSurface.Width - 210, 10, 200, 50));
+            _player3Text.SetFont(_font, 24);
+            _player3Text.SetColors(SpotGame.Players[2].ColorItem.Color, SKColors.Transparent);
+            _player3Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
+            _player3Text.SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]));
+        }
+
+        if (SpotGame.Players.Length >= 4)
+        {
+            // bottom left
+            _player4Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+                new Rectangle(10, RenderSurface.Height - 60, 200, 50));
+            _player4Text.SetFont(_font, 24);
+            _player4Text.SetColors(SpotGame.Players[3].ColorItem.Color, SKColors.Transparent);
+            _player4Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
+            _player4Text.SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
+        }
+
+        if (SpotGame.SpotGameField.GridColumnCount > 10 || SpotGame.SpotGameField.GridRowCount > 10)
+        {
+            _showScores = false;
+            SetScoreVisible(false);
+        }
+    }
+
+    private void SetScoreVisible(bool visible)
+    {
+        _showScores = visible;
+
+        if (_player1Text is not null)
+            _player1Text.Visible = visible;
+
+        if (_player2Text is not null)
+            _player2Text.Visible = visible;
+
+        if (_player3Text is not null)
+            _player3Text.Visible = visible;
+
+        if (_player4Text is not null)
+            _player4Text.Visible = visible;
+
+        if (visible)
+            SetPlayerScores();
+    }
+
+    private void SetPlayerScores()
+    {
+        if (_player1Text is not null)
+            _player1Text.SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]));
+
+        if (_player2Text is not null)
+            _player2Text.SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]));
+
+        if (SpotGame.Players.Length >= 3)
+            _player3Text.SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]));
+
+        if (SpotGame.Players.Length >= 4)
+            _player4Text.SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
     }
 
     private void StartPlayerJiggle(Player player)
@@ -417,7 +541,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _handleHumanInput = false;
 
             // start a short timer before computer moves
-            var timer = Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+            var timer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
             timer.Tick += () =>
             {
                 timer.Dispose();
@@ -428,7 +552,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
                 SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
 
                 // small delay before executing move to allow for selection animation
-                var moveTimer = Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+                var moveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
                 moveTimer.Tick += () =>
                 {
                     moveTimer.Dispose();
@@ -501,15 +625,15 @@ internal sealed class SpotGameHost : WinFormsGameHost
                 _drop?.Play();
         }
 
+        if (_showScores)
+            SetPlayerScores();
+
         SpotGame.NextPlayer();
     }
 
     private void OnCellsCaptured(List<SpotGameField.Cell> cellsCaptured)
     {
         Engine.Logger.LogDebug("{0} cells captured", cellsCaptured.Count);
-
-        if (SoundEffectsEnabled)
-            _spotCaptured?.Play();
 
         foreach (var cell in cellsCaptured)
         {
