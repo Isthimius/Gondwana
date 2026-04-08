@@ -667,6 +667,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         _handleHumanInput = false;
 
+        SetScoreVisible(true);
+        SetPlayerScores();
         StopPlayerJiggle(SpotGame.CurrentPlayer);
 
         var allScores = SpotGame.GetAllPlayerScores();
