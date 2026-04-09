@@ -776,8 +776,15 @@ public class TextBlock : DirectDrawingMovableBase
             }
         }
 
+        bool wasTruncatedByMaxLines = _maxLines.HasValue && drawLines.Count > _maxLines.Value;
+
         // Apply max-lines cap at draw time
         int linesToDraw = _maxLines.HasValue ? Math.Min(drawLines.Count, _maxLines.Value) : drawLines.Count;
+
+        if (linesToDraw > 0 && wasTruncatedByMaxLines)
+        {
+            drawLines[linesToDraw - 1] = FitLineWithEllipsis(paint, drawLines[linesToDraw - 1], innerW);
+        }
 
         // Vertical start (Skia draws at baseline, so apply ascent shift)
         var fm = paint.FontMetrics;
@@ -842,6 +849,7 @@ public class TextBlock : DirectDrawingMovableBase
 
         canvas.Restore();
     }
+
     private void RebuildLayout(SKPaint paint, float maxWidth)
     {
         _lines.Clear();
@@ -938,6 +946,33 @@ public class TextBlock : DirectDrawingMovableBase
         byte bl = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte al = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
         return new SKColor(r, g, bl, al);
+    }
+
+    private static string FitLineWithEllipsis(SKPaint paint, string text, float maxWidth)
+    {
+        const string ellipsis = "...";
+
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        if (paint.MeasureText(text) <= maxWidth)
+            return text;
+
+        float ellipsisWidth = paint.MeasureText(ellipsis);
+        if (ellipsisWidth > maxWidth)
+            return string.Empty;
+
+        int length = text.Length;
+        while (length > 0)
+        {
+            string candidate = text.Substring(0, length).TrimEnd() + ellipsis;
+            if (paint.MeasureText(candidate) <= maxWidth)
+                return candidate;
+
+            length--;
+        }
+
+        return ellipsisWidth <= maxWidth ? ellipsis : string.Empty;
     }
 
     #region public readonly properties

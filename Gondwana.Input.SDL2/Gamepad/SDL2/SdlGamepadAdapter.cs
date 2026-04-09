@@ -1,5 +1,4 @@
-﻿using Gondwana.Input.Gamepad;
-using static SDL2.SDL;
+﻿using static SDL2.SDL;
 
 namespace Gondwana.Input.Gamepad.SDL2;
 
