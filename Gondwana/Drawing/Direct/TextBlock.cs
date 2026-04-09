@@ -689,7 +689,6 @@ public class TextBlock : DirectDrawingMovableBase
             canvas.DrawRect(rect, bg);
         }
 
-        // Ensure typeface
         _typeface ??= SKTypeface.Default;
 
         // Build a paint we can reuse for layout + draw (TEXT SIZE IS IN SCREEN PIXELS)
@@ -697,7 +696,7 @@ public class TextBlock : DirectDrawingMovableBase
         {
             Typeface = _typeface ?? SKTypeface.Default,
             TextSize = _fontSize * zoom,
-            Color = _resolvedForeColor,   // resolved (pulsed) color
+            Color = _resolvedForeColor,
             IsAntialias = true,
             IsStroke = false,
             TextAlign = _hAlign
@@ -721,12 +720,22 @@ public class TextBlock : DirectDrawingMovableBase
             int drawableLines = _maxLines.HasValue ? Math.Min(_lines.Count, _maxLines.Value) : _lines.Count;
             float totalH = drawableLines * _lineHeight;
 
-            if (_minFontSize.HasValue && totalH > innerH && fontSize > minFontSize)
+            bool exceedsHeight = totalH > innerH;
+            bool exceedsWidth = _lines.Any(line => paint.MeasureText(line) > innerW);
+
+            if (_minFontSize.HasValue &&
+                (exceedsHeight || exceedsWidth) &&
+                fontSize > minFontSize)
             {
-                fontSize -= 1f;                 // step down and retry (in screen-px units)
+                fontSize = Math.Max(minFontSize, fontSize - 1f);
                 _layoutDirty = true;
+
+                if (fontSize <= minFontSize)
+                    break;
+
                 continue;
             }
+
             break;
         }
 
@@ -737,7 +746,7 @@ public class TextBlock : DirectDrawingMovableBase
 
         // Build the set of lines to draw from the already-laid-out _lines,
         // truncating at 'visibleChars' so wrapping and alignment still work.
-        List<string> drawLines = new List<string>(_lines.Count);
+        List<string> drawLines = new(_lines.Count);
         if (visibleChars <= 0)
         {
             // nothing to show
@@ -751,7 +760,9 @@ public class TextBlock : DirectDrawingMovableBase
             int remaining = visibleChars;
             foreach (var ln in _lines)
             {
-                if (remaining <= 0) break;
+                if (remaining <= 0)
+                    break;
+
                 if (ln.Length <= remaining)
                 {
                     drawLines.Add(ln);
@@ -784,6 +795,9 @@ public class TextBlock : DirectDrawingMovableBase
         float xAnchorLeft = rect.Left + hPad;
         float xAnchorCenter = rect.MidX;
         float xAnchorRight = rect.Right - hPad;
+
+        canvas.Save();
+        canvas.ClipRect(rect);
 
         float y = yStart;
         for (int i = 0; i < linesToDraw; i++)
@@ -821,10 +835,13 @@ public class TextBlock : DirectDrawingMovableBase
             canvas.DrawText(line, x, y + baselineShift, paint);
             y += _lineHeight;
 
-            if (y > rect.Bottom) break; // safety clip
+            // safety clip
+            if (y > rect.Bottom)
+                break;
         }
-    }
 
+        canvas.Restore();
+    }
     private void RebuildLayout(SKPaint paint, float maxWidth)
     {
         _lines.Clear();
@@ -842,29 +859,58 @@ public class TextBlock : DirectDrawingMovableBase
                 continue;
             }
 
-            // if wrapping is disabled, keep the paragraph as a single line
             if (!_wrapText)
             {
                 _lines.Add(para);
                 continue;
             }
 
-            // word wrap
-            var words = para.Split(' ');
+            var words = para.Split(' ', StringSplitOptions.None);
             var current = string.Empty;
 
             foreach (var word in words)
             {
                 string candidate = string.IsNullOrEmpty(current) ? word : current + " " + word;
-                float w = paint.MeasureText(candidate);
+                float candidateWidth = paint.MeasureText(candidate);
 
-                if (w <= maxWidth || string.IsNullOrEmpty(current))
+                if (candidateWidth <= maxWidth)
+                {
                     current = candidate;
-                else
+                    continue;
+                }
+
+                // If current already has content, commit it first and retry this word on a new line.
+                if (!string.IsNullOrEmpty(current))
                 {
                     _lines.Add(current);
-                    current = word;
+                    current = string.Empty;
                 }
+
+                // If the single word fits on its own line, use it.
+                if (paint.MeasureText(word) <= maxWidth)
+                {
+                    current = word;
+                    continue;
+                }
+
+                // Fallback: hard-break an overlong word by character.
+                var chunk = string.Empty;
+                foreach (char ch in word)
+                {
+                    string next = chunk + ch;
+                    if (paint.MeasureText(next) <= maxWidth || string.IsNullOrEmpty(chunk))
+                    {
+                        chunk = next;
+                    }
+                    else
+                    {
+                        _lines.Add(chunk);
+                        chunk = ch.ToString();
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(chunk))
+                    current = chunk;
             }
 
             if (!string.IsNullOrEmpty(current))

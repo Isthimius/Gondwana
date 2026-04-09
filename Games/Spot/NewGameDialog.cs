@@ -51,12 +51,11 @@ internal partial class NewGameDialog : Form
     {
         var colors = new[]
         {
-            new ColorItem("Red", SKColors.Red),
-            new ColorItem("Blue", SKColors.Blue),
-            new ColorItem("Yellow", SKColors.Yellow),
-            new ColorItem("Violet", SKColors.Violet),
-            new ColorItem("Green", SKColors.Green),
-            //new ColorItem("White", SKColors.White)
+            new ColorItem("Red", SKColors.Red, SKColors.White),
+            new ColorItem("Blue", SKColors.Blue, SKColors.White),
+            new ColorItem("Yellow", SKColors.Yellow, SKColors.Blue),
+            new ColorItem("Violet", SKColors.Violet, SKColors.White),
+            new ColorItem("Green", SKColors.Green, SKColors.Black)
         };
 
         cboColor.DrawMode = DrawMode.OwnerDrawFixed;

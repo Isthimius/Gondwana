@@ -1,4 +1,11 @@
-﻿using Gondwana;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+using Microsoft.Extensions.Logging;
+using SkiaSharp;
+using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
@@ -12,13 +19,6 @@ using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using HWG.Spot.Game;
-using Microsoft.Extensions.Logging;
-using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
 
 namespace HWG.Spot;
 
@@ -30,11 +30,11 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal TextBlock _player1Text;
     internal DirectRectangle _player1Rectangle;
     internal TextBlock _player2Text;
-    internal DirectRectangle _player2Rectangle; 
-    internal TextBlock _player3Text = null;
-    internal DirectRectangle _player3Rectangle; 
-    internal TextBlock _player4Text = null;
-    internal DirectRectangle _player4Rectangle; 
+    internal DirectRectangle _player2Rectangle;
+    internal TextBlock _player3Text;
+    internal DirectRectangle _player3Rectangle;
+    internal TextBlock _player4Text;
+    internal DirectRectangle _player4Rectangle;
     internal TextBlock _gameMessageText;
     internal DirectRectangle _gameMessageRectangle;
 
@@ -103,7 +103,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         var splash = new Tilesheet("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        // defautl sprites
+        // default sprites
         _blueSpot = new Tilesheet("blueSpot", "assets\\bubble-blue.png");
         _blueSpot.TileSize = new Size(92, 96);
 
@@ -213,6 +213,45 @@ internal sealed class SpotGameHost : WinFormsGameHost
         Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.S);
     }
 
+    protected override void UnhookEvents()
+    {
+        if (Engine.Input.MouseEventPoller is not null)
+            Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
+
+        if (Engine.Input.KeyboardEventPoller is not null)
+            Engine.Input.KeyboardEventPoller.KeyDown -= KeyboardEventPoller_KeyDown;
+
+        UnhookSpotGameEvents();
+    }
+
+    #endregion WinFormsGameHost overrides
+
+    internal bool MusicEnabled { get; private set; } = true;
+
+    internal bool SoundEffectsEnabled { get; private set; } = true;
+
+    internal void SetSoundEffectsEnabled(bool enabled)
+    {
+        SoundEffectsEnabled = enabled;
+    }
+
+    internal void StartNewGame(NewGameOptions options)
+    {
+        Engine.Managers.DirectDrawings.ClearAll();
+        Engine.Managers.Sprites.Clear();
+        Scene.RemoveAllLayers();
+
+        SetPlayerFrames(options.Players);
+
+        var newGameResult = SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players.ToArray());
+
+        Scene.AddLayer(newGameResult.Field);
+        Scene.AddLayer(newGameResult.BackgroundField);
+        _music.Volume = 0.1f;
+
+        CreateTextBlockFields();
+    }
+
     private void KeyboardEventPoller_KeyDown(Gondwana.Input.Keyboard.KeyDownEventArgs args)
     {
         if (args.KeyAction != Gondwana.Input.Keyboard.KeyAction.Pressed)
@@ -233,54 +272,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
             default:
                 break;
         }
-    }
-
-    protected override void UnhookEvents()
-    {
-        if (Engine.Input.MouseEventPoller is not null)
-            Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
-
-        if (Engine.Input.KeyboardEventPoller is not null)
-            Engine.Input.KeyboardEventPoller.KeyDown -= KeyboardEventPoller_KeyDown;
-
-        UnhookSpotGameEvents();
-    }
-
-    #endregion WinFormsGameHost overrides
-
-    private ParticleEmitter GetSpots(float width, float height)
-    {
-        SKColor[] colors =
-        {
-            SKColors.Red,
-            SKColors.Blue,
-            SKColors.Yellow,
-            SKColors.Green,
-            SKColors.Violet
-        };
-
-        return new ParticleEmitter
-        {
-            Position = new PointF(width * 1.1f, height * 0.5f),
-            JitterY = height * 0.5f,
-
-            EmitRate = 0.65f,
-            LifeRange = (1000f, 2000f),
-
-            VelocityRangeX = (-100f, -50f),
-            VelocityRangeY = (-1f, 1f),
-
-            SizeRange = (40f, 80f),
-
-            GravityY = 0f,
-            BlendMode = SKBlendMode.SrcOver,
-
-            OnSpawn = (ref Particle p) =>
-            {
-                var baseColor = colors[_rng.Next(colors.Length)];
-                p.Color = baseColor.WithAlpha(255);
-            }
-        };
     }
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
@@ -327,32 +318,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _music.Stop();
     }
 
-    internal bool MusicEnabled { get; private set; } = true;
-
-    internal bool SoundEffectsEnabled { get; private set; } = true;
-
-    internal void SetSoundEffectsEnabled(bool enabled)
-    {
-        SoundEffectsEnabled = enabled;
-    }
-
-    internal void StartNewGame(NewGameOptions options)
-    {
-        Engine.Managers.DirectDrawings.ClearAll();
-        Engine.Managers.Sprites.Clear();
-        Scene.RemoveAllLayers();
-
-        SetPlayerFrames(options.Players);
-
-        var newGameResult = SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players.ToArray());
-
-        Scene.AddLayer(newGameResult.Field);
-        Scene.AddLayer(newGameResult.BackgroundField);
-        _music.Volume = 0.1f;
-
-        CreateTextBlockFields();
-    }
-
     private void SetPlayerFrames(List<Player> players)
     {
         foreach (var player in players)
@@ -385,6 +350,88 @@ internal sealed class SpotGameHost : WinFormsGameHost
         }
     }
 
+    private void StartPlayerJiggle(Player player)
+    {
+        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+        {
+            cell.Sprite.StartJiggle(loop: true);
+        }
+    }
+
+    private void StopPlayerJiggle(Player player)
+    {
+        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+        {
+            cell.Sprite.StopJiggle();
+        }
+    }
+
+    #region particle emitters
+
+    private ParticleEmitter GetSpots(float width, float height)
+    {
+        SKColor[] colors =
+        {
+            SKColors.Red,
+            SKColors.Blue,
+            SKColors.Yellow,
+            SKColors.Green,
+            SKColors.Violet
+        };
+
+        return new ParticleEmitter
+        {
+            Position = new PointF(width * 1.1f, height * 0.5f),
+            JitterY = height * 0.5f,
+
+            EmitRate = 0.65f,
+            LifeRange = (1000f, 2000f),
+
+            VelocityRangeX = (-100f, -50f),
+            VelocityRangeY = (-1f, 1f),
+
+            SizeRange = (40f, 80f),
+
+            GravityY = 0f,
+            BlendMode = SKBlendMode.SrcOver,
+
+            OnSpawn = (ref Particle p) =>
+            {
+                var baseColor = colors[_rng.Next(colors.Length)];
+                p.Color = baseColor.WithAlpha(255);
+            }
+        };
+    }
+
+    private ParticleEmitter GetClouds(float width, float height)
+    {
+        return null;
+        //return new ParticleEmitter
+        //{
+        //    Position = new PointF(width * 1.1f, height * 0.5f),
+        //    JitterY = height * 0.5f,
+
+        //    EmitRate = 0.65f,
+        //    LifeRange = (1000f, 2000f),
+
+        //    VelocityRangeX = (-100f, -50f),
+        //    VelocityRangeY = (-1f, 1f),
+
+        //    SizeRange = (40f, 80f),
+
+        //    GravityY = 0f,
+        //    BlendMode = SKBlendMode.SrcOver,
+
+        //    OnSpawn = (ref Particle p) =>
+        //    {
+        //        var baseColor = colors[_rng.Next(colors.Length)];
+        //        p.Color = baseColor.WithAlpha(255);
+        //    }
+        //};
+    }
+
+    #endregion particle emitters
+
     #region score display
 
     private void CreateTextBlockFields()
@@ -394,46 +441,57 @@ internal sealed class SpotGameHost : WinFormsGameHost
                                      RenderSurface.Host.ViewManager.Views[0],
                                      new Rectangle(10, 10, 200, 50));
         _player1Text.SetFont(_font, 24)
-                    .SetColors(SKColors.White, SKColors.Transparent)
+                    .SetColors(SpotGame.Players[0].ColorItem.TextColor, SKColors.Transparent)
                     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                    .SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]));
+                    .SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]))
+                    .UseShadow()
+                    .SetShadow(3, 3, 200, 3.0f);
         _player1Text.ZOrder = 20;
 
         _player1Rectangle = new DirectRectangle(SpotGame.Players[0].ColorItem.Color.ToColor(),
-                                                RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+                                                RenderSurface.Host,
+                                                RenderSurface.Host.ViewManager.Views[0],
                                                 _player1Text.ScreenBounds);
         _player1Rectangle.SetCornerRadius(30)
                          .SetFilled(true);
 
         // bottom right
-        _player2Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
-            new Rectangle(RenderSurface.Width - 210, RenderSurface.Height - 60, 200, 50));
+        _player2Text = new TextBlock(RenderSurface.Host,
+                                     RenderSurface.Host.ViewManager.Views[0],
+                                     new Rectangle(RenderSurface.Width - 210, RenderSurface.Height - 60, 200, 50));
         _player2Text.SetFont(_font, 24)
-                    .SetColors(SKColors.White, SKColors.Transparent)
+                    .SetColors(SpotGame.Players[1].ColorItem.TextColor, SKColors.Transparent)
                     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                    .SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]));
+                    .SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]))
+                    .UseShadow()
+                    .SetShadow(3, 3, 200, 3.0f);
         _player2Text.ZOrder = 20;
 
         _player2Rectangle = new DirectRectangle(SpotGame.Players[1].ColorItem.Color.ToColor(),
-                                        RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
-                                        _player2Text.ScreenBounds);
+                                                RenderSurface.Host,
+                                                RenderSurface.Host.ViewManager.Views[0],
+                                                _player2Text.ScreenBounds);
         _player2Rectangle.SetCornerRadius(30)
                          .SetFilled(true);
 
         if (SpotGame.Players.Length >= 3)
         {
             // upper right
-            _player3Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
-                new Rectangle(RenderSurface.Width - 210, 10, 200, 50));
+            _player3Text = new TextBlock(RenderSurface.Host,
+                                         RenderSurface.Host.ViewManager.Views[0],
+                                         new Rectangle(RenderSurface.Width - 210, 10, 200, 50));
             _player3Text.SetFont(_font, 24)
-                        .SetColors(SKColors.White, SKColors.Transparent)
+                        .SetColors(SpotGame.Players[2].ColorItem.TextColor, SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                        .SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]));
+                        .SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]))
+                        .UseShadow()
+                        .SetShadow(3, 3, 200, 3.0f);
             _player3Text.ZOrder = 20;
 
             _player3Rectangle = new DirectRectangle(SpotGame.Players[2].ColorItem.Color.ToColor(),
-                                        RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
-                                        _player3Text.ScreenBounds);
+                                                    RenderSurface.Host,
+                                                    RenderSurface.Host.ViewManager.Views[0],
+                                                    _player3Text.ScreenBounds);
             _player3Rectangle.SetCornerRadius(30)
                              .SetFilled(true);
         }
@@ -441,17 +499,22 @@ internal sealed class SpotGameHost : WinFormsGameHost
         if (SpotGame.Players.Length >= 4)
         {
             // bottom left
-            _player4Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
-                new Rectangle(10, RenderSurface.Height - 60, 200, 50));
+            _player4Text = new TextBlock(RenderSurface.Host,
+                                         RenderSurface.Host.ViewManager.Views[0],
+                                         new Rectangle(10, RenderSurface.Height - 60, 200, 50));
             _player4Text.SetFont(_font, 24)
-                        .SetColors(SKColors.White, SKColors.Transparent)
+                        .SetColors(SpotGame.Players[3].ColorItem.TextColor, SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
-                        .SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
+                        .SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]))
+                        .UseShadow()
+                        .SetShadow(3, 3, 200, 3.0f);
+
             _player4Text.ZOrder = 20;
 
             _player4Rectangle = new DirectRectangle(SpotGame.Players[3].ColorItem.Color.ToColor(),
-                                        RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
-                                        _player4Text.ScreenBounds);
+                                                    RenderSurface.Host,
+                                                    RenderSurface.Host.ViewManager.Views[0],
+                                                    _player4Text.ScreenBounds);
             _player4Rectangle.SetCornerRadius(30)
                              .SetFilled(true);
         }
@@ -509,23 +572,69 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _player4Text.SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
     }
 
+    private void CreateGameOverText(List<Player> winningPlayers)
+    {
+        bool multipleWinners;
+        string message;
+
+        Color primaryTextColor = winningPlayers[0].ColorItem.TextColor.ToColor();
+        Color? secondaryTextColor = null;
+        Color primaryFillColor = winningPlayers[0].ColorItem.Color.ToColor();
+        Color? secondaryFillColor = null;
+
+        if (winningPlayers.Count == 1)
+        {
+            multipleWinners = false;
+            message = winningPlayers[0].Name + " wins!";
+        }
+        else
+        {
+            multipleWinners = true;
+            message = winningPlayers[0].Name + " wins!";
+
+            var names = winningPlayers.Select(p => p.Name).ToList();
+            var formatted = names.Count == 2
+                ? string.Join(" and ", names)
+                : string.Join(", ", names.Take(names.Count - 1)) + $", and {names.Last()}";
+
+            message = $"{formatted} tie!";
+
+            secondaryTextColor = winningPlayers[1].ColorItem.TextColor.ToColor();
+            secondaryFillColor = winningPlayers[1].ColorItem.Color.ToColor();
+        }
+
+        _gameMessageText = new TextBlock(RenderSurface.Host,
+                                         RenderSurface.Host.ViewManager.Views[0],
+                                         new Rectangle(RenderSurface.Width / 2 - 225, RenderSurface.Height / 2 - 40, 450, 80));
+        _gameMessageText.SetFont(_font, 48, 16)
+                        .SetColors(primaryTextColor.ToSKColor(), SKColors.Transparent)
+                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                        .SetText(message)
+                        .UseShadow()
+                        .SetShadow(5, 5, 200, 3.0f)
+                        .EnableWrapping();
+
+        _gameMessageText.ZOrder = 20;
+
+        _gameMessageRectangle = new DirectRectangle(primaryFillColor,
+                                                    RenderSurface.Host,
+                                                    RenderSurface.Host.ViewManager.Views[0],
+                                                    _gameMessageText.ScreenBounds);
+        _gameMessageRectangle.SetCornerRadius(40)
+                             .SetFilled(true)
+                             .SetColor(primaryFillColor)
+                             .SetBorderColor(Color.White)
+                             .SetStrokeWidth(2f)
+                             .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside);
+
+        if (multipleWinners)
+        {
+            _gameMessageText.PulseColor(primaryTextColor, secondaryTextColor.Value, 1.75f);
+            _gameMessageRectangle.PulseFill(primaryFillColor, secondaryFillColor.Value, 1.25f);
+        }
+    }
+
     #endregion score display
-
-    private void StartPlayerJiggle(Player player)
-    {
-        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
-        {
-            cell.Sprite.StartJiggle(loop: true);
-        }
-    }
-
-    private void StopPlayerJiggle(Player player)
-    {
-        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
-        {
-            cell.Sprite.StopJiggle();
-        }
-    }
 
     #region SpotGame event handlers
 
@@ -724,13 +833,16 @@ internal sealed class SpotGameHost : WinFormsGameHost
         var maxScore = allScores.Values.Max();
         var winnersWithScores = allScores
             .Where(kvp => kvp.Value == maxScore)
+            .Select(kvp => kvp.Key)
             .ToList();
+
+        CreateGameOverText(winnersWithScores);
 
         if (MusicEnabled)
         {
-            _music?.Stop();
+            _music.Volume = 0.05f;
 
-            var isHumanWinner = winnersWithScores.Any(kvp => kvp.Key.Type == PlayerType.Human);
+            var isHumanWinner = winnersWithScores.Any(winner => winner.Type == PlayerType.Human);
             if (isHumanWinner)
                 _gameWin?.Play();
             else
