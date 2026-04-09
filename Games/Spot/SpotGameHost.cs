@@ -827,7 +827,12 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         SetScoreVisible(true);
         SetPlayerScores();
-        StopPlayerJiggle(SpotGame.CurrentPlayer);
+        //StopPlayerJiggle(SpotGame.CurrentPlayer);
+
+        foreach (var player in SpotGame.Players)
+        {
+            StartPlayerJiggle(player);
+        }
 
         var allScores = SpotGame.GetAllPlayerScores();
         var maxScore = allScores.Values.Max();
