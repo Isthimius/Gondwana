@@ -28,10 +28,15 @@ internal sealed class SpotGameHost : WinFormsGameHost
     private bool _showScores = true;
 
     internal TextBlock _player1Text;
+    internal DirectRectangle _player1Rectangle;
     internal TextBlock _player2Text;
+    internal DirectRectangle _player2Rectangle; 
     internal TextBlock _player3Text = null;
+    internal DirectRectangle _player3Rectangle; 
     internal TextBlock _player4Text = null;
+    internal DirectRectangle _player4Rectangle; 
     internal TextBlock _gameMessageText;
+    internal DirectRectangle _gameMessageRectangle;
 
     internal AudioResource _music;
 
@@ -383,30 +388,52 @@ internal sealed class SpotGameHost : WinFormsGameHost
     private void CreateTextBlockFields()
     {
         // upper left
-        _player1Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
-            new Rectangle(10, 10, 200, 50));
-        _player1Text.SetFont(_font, 24);
-        _player1Text.SetColors(SpotGame.Players[0].ColorItem.Color, SKColors.Transparent);
-        _player1Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
-        _player1Text.SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]));
+        _player1Text = new TextBlock(RenderSurface.Host,
+                                     RenderSurface.Host.ViewManager.Views[0],
+                                     new Rectangle(10, 10, 200, 50));
+        _player1Text.SetFont(_font, 24)
+                    .SetColors(SKColors.White, SKColors.Transparent)
+                    .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                    .SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]));
+        _player1Text.ZOrder = 20;
+
+        _player1Rectangle = new DirectRectangle(SpotGame.Players[0].ColorItem.Color.ToColor(),
+                                                RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+                                                _player1Text.ScreenBounds);
+        _player1Rectangle.SetCornerRadius(30)
+                         .SetFilled(true);
 
         // bottom right
         _player2Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
             new Rectangle(RenderSurface.Width - 210, RenderSurface.Height - 60, 200, 50));
-        _player2Text.SetFont(_font, 24);
-        _player2Text.SetColors(SpotGame.Players[1].ColorItem.Color, SKColors.Transparent);
-        _player2Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
-        _player2Text.SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]));
+        _player2Text.SetFont(_font, 24)
+                    .SetColors(SKColors.White, SKColors.Transparent)
+                    .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                    .SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]));
+        _player2Text.ZOrder = 20;
+
+        _player2Rectangle = new DirectRectangle(SpotGame.Players[1].ColorItem.Color.ToColor(),
+                                        RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+                                        _player2Text.ScreenBounds);
+        _player2Rectangle.SetCornerRadius(30)
+                         .SetFilled(true);
 
         if (SpotGame.Players.Length >= 3)
         {
             // upper right
             _player3Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
                 new Rectangle(RenderSurface.Width - 210, 10, 200, 50));
-            _player3Text.SetFont(_font, 24);
-            _player3Text.SetColors(SpotGame.Players[2].ColorItem.Color, SKColors.Transparent);
-            _player3Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
-            _player3Text.SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]));
+            _player3Text.SetFont(_font, 24)
+                        .SetColors(SKColors.White, SKColors.Transparent)
+                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                        .SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]));
+            _player3Text.ZOrder = 20;
+
+            _player3Rectangle = new DirectRectangle(SpotGame.Players[2].ColorItem.Color.ToColor(),
+                                        RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+                                        _player3Text.ScreenBounds);
+            _player3Rectangle.SetCornerRadius(30)
+                             .SetFilled(true);
         }
 
         if (SpotGame.Players.Length >= 4)
@@ -414,15 +441,21 @@ internal sealed class SpotGameHost : WinFormsGameHost
             // bottom left
             _player4Text = new TextBlock(RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
                 new Rectangle(10, RenderSurface.Height - 60, 200, 50));
-            _player4Text.SetFont(_font, 24);
-            _player4Text.SetColors(SpotGame.Players[3].ColorItem.Color, SKColors.Transparent);
-            _player4Text.SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center);
-            _player4Text.SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
+            _player4Text.SetFont(_font, 24)
+                        .SetColors(SKColors.White, SKColors.Transparent)
+                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                        .SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
+            _player4Text.ZOrder = 20;
+
+            _player4Rectangle = new DirectRectangle(SpotGame.Players[3].ColorItem.Color.ToColor(),
+                                        RenderSurface.Host, RenderSurface.Host.ViewManager.Views[0],
+                                        _player4Text.ScreenBounds);
+            _player4Rectangle.SetCornerRadius(30)
+                             .SetFilled(true);
         }
 
         if (SpotGame.SpotGameField.GridColumnCount > 10 || SpotGame.SpotGameField.GridRowCount > 10)
         {
-            _showScores = false;
             SetScoreVisible(false);
         }
     }
@@ -432,16 +465,28 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _showScores = visible;
 
         if (_player1Text is not null)
+        {
             _player1Text.Visible = visible;
+            _player1Rectangle.Visible = visible;
+        }
 
         if (_player2Text is not null)
+        {
             _player2Text.Visible = visible;
+            _player2Rectangle.Visible = visible;
+        }
 
         if (_player3Text is not null)
+        {
             _player3Text.Visible = visible;
+            _player3Rectangle.Visible = visible;
+        }
 
         if (_player4Text is not null)
+        {
             _player4Text.Visible = visible;
+            _player4Rectangle.Visible = visible;
+        }
 
         if (visible)
             SetPlayerScores();

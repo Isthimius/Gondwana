@@ -975,10 +975,10 @@ public class TextBlock : DirectDrawingMovableBase
     public bool PuctuationPauseEnabled => _pauseEnabled;
 
     /// <summary>Gets the long punctuation pause duration (seconds) used for '.', '!', '?'.</summary>
-    public float PunctiationPauseLongSec => _pauseLongSec;
+    public float PunctuationPauseLongSec => _pauseLongSec;
 
     /// <summary>Gets the short punctuation pause duration (seconds) used for ',', ';', ':'.</summary>
-    public float PunctiationPauseShortSec => _pauseShortSec;
+    public float PunctuationPauseShortSec => _pauseShortSec;
 
     /// <summary>Gets the currently resolved (effective) foreground color used for drawing.</summary>
     public SKColor ResovedForeColor => _resolvedForeColor;
