@@ -71,7 +71,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         ((BitmapBackbuffer)renderSurface.Host.Backbuffer).FilterQuality = SKFilterQuality.High;
     }
 
-    #region overrides
+    #region WinFormsGameHost overrides
 
     protected override void LoadAssets()
     {
@@ -246,7 +246,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         UnhookSpotGameEvents();
     }
 
-    #endregion overrides
+    #endregion WinFormsGameHost overrides
 
     private ParticleEmitter GetSpots(float width, float height)
     {
@@ -385,6 +385,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
         }
     }
 
+    #region score display
+
     private void CreateTextBlockFields()
     {
         // upper left
@@ -506,6 +508,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
         if (SpotGame.Players.Length >= 4)
             _player4Text.SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
     }
+
+    #endregion score display
 
     private void StartPlayerJiggle(Player player)
     {
