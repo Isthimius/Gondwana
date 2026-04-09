@@ -306,7 +306,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
                 _renderSize = value;
                 var newRect = this.DrawLocationWorld;
                 
-                _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
+                var unionRect = Rectangle.Union(oldRect, newRect);
+                unionRect.Inflate(3, 3);
+                _sceneLayer.RefreshQueue.AddWorldRect(unionRect);
             }
             else
                 _renderSize = value;
