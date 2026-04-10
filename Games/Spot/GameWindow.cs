@@ -42,7 +42,7 @@ internal partial class GameWindow : Form
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
-        _gameHost!.Initialize(logLevel: LogLevel.Trace);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost!.Initialize(logLevel: LogLevel.Warning);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
 
         _gameHost.Engine.CPSCalculated += (cps) =>
         {

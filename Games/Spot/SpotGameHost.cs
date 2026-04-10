@@ -454,7 +454,9 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _particleSurface = new ParticleSurface(
             RenderSurface.Host,
             SpotGame.BackgroundGameField,
-            new Rectangle(0, 0, 769, 769));
+            new Rectangle(0, 0, 769, 769),
+            "cloudSurface",
+            4);
 
         _particleSurface.CullingMarginX = 1300f;
         _particleSurface.ZOrder = 50;
@@ -468,7 +470,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
             Position = new PointF(width * 1.4f, height * 0.5f),
             JitterY = height * 0.5f,
 
-            EmitRate = 0.1f,
+            EmitRate = 0.075f,
             LifeRange = (2000f, 2000f),
 
             VelocityRangeX = (-50f, -25f),
@@ -893,12 +895,12 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         SetScoreVisible(true);
         SetPlayerScores();
-        //StopPlayerJiggle(SpotGame.CurrentPlayer);
+        StopPlayerJiggle(SpotGame.CurrentPlayer);
 
-        foreach (var player in SpotGame.Players)
-        {
-            StartPlayerJiggle(player);
-        }
+        //foreach (var player in SpotGame.Players)
+        //{
+        //    StartPlayerJiggle(player);
+        //}
 
         var allScores = SpotGame.GetAllPlayerScores();
         var maxScore = allScores.Values.Max();

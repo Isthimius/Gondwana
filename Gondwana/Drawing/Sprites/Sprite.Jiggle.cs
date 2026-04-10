@@ -217,8 +217,8 @@ public partial class Sprite
         {
             var rect = DrawLocationWorld;
 
-            int inflateX = (int)MathF.Ceiling(_jiggleIntensityX + 5f);
-            int inflateY = (int)MathF.Ceiling(_jiggleIntensityY + 5f);
+            int inflateX = (int)MathF.Ceiling(_jiggleIntensityX);
+            int inflateY = (int)MathF.Ceiling(_jiggleIntensityY);
 
             rect.Inflate(inflateX, inflateY);
 
