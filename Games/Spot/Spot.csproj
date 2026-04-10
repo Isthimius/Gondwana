@@ -23,6 +23,8 @@
     <None Remove="assets\bubble-red.png" />
     <None Remove="assets\bubble-yellow-happy.png" />
     <None Remove="assets\bubble-yellow.png" />
+    <None Remove="assets\clouds.jpg" />
+    <None Remove="assets\clouds.png" />
     <None Remove="assets\clouds_slice.png" />
     <None Remove="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3" />
     <None Remove="assets\freesound_community-bump-7-92964.mp3" />
@@ -71,6 +73,9 @@
     </Content>
     <Content Include="assets\bubble-yellow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clouds.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

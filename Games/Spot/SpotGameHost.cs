@@ -27,6 +27,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
     private bool _handleHumanInput = false;
     private bool _showScores = true;
 
+    private ParticleSurface _particleSurface;
+
     internal TextBlock _player1Text;
     internal DirectRectangle _player1Rectangle;
     internal TextBlock _player2Text;
@@ -58,6 +60,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
     internal Tilesheet _pinkSpotHappy;
     internal Tilesheet _redSpotHappy;
     internal Tilesheet _yellowSpotHappy;
+    internal Tilesheet _clouds;
 
     internal SKTypeface _font;
 
@@ -134,6 +137,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         _yellowSpotHappy = new Tilesheet("yellowSpotHappy", "assets\\bubble-yellow-happy.png");
         _yellowSpotHappy.TileSize = new Size(1024, 1024);
+
+        _clouds = new Tilesheet("clouds", "assets\\clouds.png");
     }
 
     protected override Scene CreateInitialScene()
@@ -226,13 +231,55 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     #endregion WinFormsGameHost overrides
 
+    #region game settings
+
     internal bool MusicEnabled { get; private set; } = true;
+
+    internal void SetMusicEnabled(bool enabled)
+    {
+        MusicEnabled = enabled;
+
+        if (enabled)
+            _music.Play();
+        else
+            _music.Stop();
+    }
 
     internal bool SoundEffectsEnabled { get; private set; } = true;
 
     internal void SetSoundEffectsEnabled(bool enabled)
     {
         SoundEffectsEnabled = enabled;
+    }
+
+    internal bool JiggleEnabled { get; private set; } = true;
+
+    internal void SetJiggleEnabled(bool enabled)
+    {
+        JiggleEnabled = enabled;
+        if (!enabled)
+        {
+            foreach (var player in SpotGame.Players)
+            {
+                StopPlayerJiggle(player);
+            }
+        }
+    }
+
+    internal bool CloudsEnabled { get; private set; } = true;
+
+    internal void SetCloudsEnabled(bool enabled)
+    {
+        CloudsEnabled = enabled;
+
+        if (enabled)
+        {
+            AddClouds();
+        }
+        else if (!enabled)
+        {
+            _particleSurface.Dispose();
+        }
     }
 
     internal void StartNewGame(NewGameOptions options)
@@ -251,6 +298,10 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         CreateTextBlockFields();
     }
+
+    #endregion game settings
+
+    #region private methods
 
     private void KeyboardEventPoller_KeyDown(Gondwana.Input.Keyboard.KeyDownEventArgs args)
     {
@@ -308,16 +359,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         }
     }
 
-    internal void SetMusicEnabled(bool enabled)
-    {
-        MusicEnabled = enabled;
-
-        if (enabled)
-            _music.Play();
-        else
-            _music.Stop();
-    }
-
     private void SetPlayerFrames(List<Player> players)
     {
         foreach (var player in players)
@@ -352,9 +393,12 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void StartPlayerJiggle(Player player)
     {
-        foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+        if (JiggleEnabled)
         {
-            cell.Sprite.StartJiggle(loop: true);
+            foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
+            {
+                cell.Sprite.StartJiggle(loop: true);
+            }
         }
     }
 
@@ -365,6 +409,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
             cell.Sprite.StopJiggle();
         }
     }
+
+    #endregion private methods
 
     #region particle emitters
 
@@ -403,31 +449,47 @@ internal sealed class SpotGameHost : WinFormsGameHost
         };
     }
 
+    private void AddClouds()
+    {
+        _particleSurface = new ParticleSurface(
+            RenderSurface.Host,
+            SpotGame.BackgroundGameField,
+            new Rectangle(0, 0, 769, 769));
+
+        _particleSurface.CullingMarginX = 1300f;
+        _particleSurface.ZOrder = 50;
+        _particleSurface.Emitters.Add(GetClouds(769, 769));
+    }
+
     private ParticleEmitter GetClouds(float width, float height)
     {
-        return null;
-        //return new ParticleEmitter
-        //{
-        //    Position = new PointF(width * 1.1f, height * 0.5f),
-        //    JitterY = height * 0.5f,
+        return new ParticleEmitter
+        {
+            Position = new PointF(width * 1.4f, height * 0.5f),
+            JitterY = height * 0.5f,
 
-        //    EmitRate = 0.65f,
-        //    LifeRange = (1000f, 2000f),
+            EmitRate = 0.1f,
+            LifeRange = (2000f, 2000f),
 
-        //    VelocityRangeX = (-100f, -50f),
-        //    VelocityRangeY = (-1f, 1f),
+            VelocityRangeX = (-50f, -25f),
+            VelocityRangeY = (-1f, 1f),
 
-        //    SizeRange = (40f, 80f),
+            SizeRange = (200f, 500f),
 
-        //    GravityY = 0f,
-        //    BlendMode = SKBlendMode.SrcOver,
+            GravityY = 0f,
+            BlendMode = SKBlendMode.SrcOver,
 
-        //    OnSpawn = (ref Particle p) =>
-        //    {
-        //        var baseColor = colors[_rng.Next(colors.Length)];
-        //        p.Color = baseColor.WithAlpha(255);
-        //    }
-        //};
+            ParticleSprite = _clouds.SkBitmap,
+
+            OnSpawn = (ref Particle p) =>
+            {
+                p.AngularVel = 0;
+                p.Rotation = 0;
+
+                byte alpha = (byte)Random.Shared.Next(100, 180);
+                p.Tint = new SKColor(255, 255, 255, alpha);
+            }
+        };
     }
 
     #endregion particle emitters
@@ -605,7 +667,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         _gameMessageText = new TextBlock(RenderSurface.Host,
                                          RenderSurface.Host.ViewManager.Views[0],
-                                         new Rectangle(RenderSurface.Width / 2 - 225, RenderSurface.Height / 2 - 40, 450, 80));
+                                         new Rectangle(RenderSurface.Width / 2 - 200, RenderSurface.Height / 2 - 40, 400, 80));
         _gameMessageText.SetFont(_font, 48, 16)
                         .SetColors(primaryTextColor.ToSKColor(), SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
@@ -623,7 +685,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _gameMessageRectangle.SetCornerRadius(40)
                              .SetFilled(true)
                              .SetColor(primaryFillColor)
-                             .SetBorderColor(Color.White)
+                             .SetBorderColor(primaryTextColor)
                              .SetStrokeWidth(2f)
                              .SetStrokeAlign(DirectRectangle.StrokeAlign.Outside);
 
@@ -631,6 +693,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         {
             _gameMessageText.PulseColor(primaryTextColor, secondaryTextColor.Value, 1.75f);
             _gameMessageRectangle.PulseFill(primaryFillColor, secondaryFillColor.Value, 1.25f);
+            _gameMessageRectangle.PulseBorder(primaryTextColor, secondaryTextColor.Value, 0.75f);
         }
     }
 
@@ -683,6 +746,9 @@ internal sealed class SpotGameHost : WinFormsGameHost
             if (!_music.IsPlaying)
                 _music.Play();
         }
+
+        if (CloudsEnabled)
+            AddClouds();
     }
 
     private void OnPlayerTurnStarted(Player player)

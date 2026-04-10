@@ -42,7 +42,7 @@ internal partial class GameWindow : Form
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
-        _gameHost!.Initialize(logLevel: LogLevel.Debug);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost!.Initialize(logLevel: LogLevel.Trace);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
 
         _gameHost.Engine.CPSCalculated += (cps) =>
         {
@@ -61,6 +61,8 @@ internal partial class GameWindow : Form
 
     private ToolStripMenuItem? _musicMenuItem;
     private ToolStripMenuItem? _soundEffectsMenuItem;
+    private ToolStripMenuItem? _jiggleMenuItem;
+    private ToolStripMenuItem? _cloudsMenuItem;
 
     private void CreateMenu()
     {
@@ -74,7 +76,7 @@ internal partial class GameWindow : Form
         gameMenu.DropDownItems.Add(new ToolStripSeparator());
         gameMenu.DropDownItems.Add(exitMenuItem);
 
-        var audioMenu = new ToolStripMenuItem("Audio");
+        var optionsMenu = new ToolStripMenuItem("Options");
 
         _musicMenuItem = new ToolStripMenuItem("Music")
         {
@@ -90,11 +92,27 @@ internal partial class GameWindow : Form
         };
         _soundEffectsMenuItem.CheckedChanged += SoundEffectsMenuItem_CheckedChanged;
 
-        audioMenu.DropDownItems.Add(_musicMenuItem);
-        audioMenu.DropDownItems.Add(_soundEffectsMenuItem);
+        _jiggleMenuItem = new ToolStripMenuItem("Jiggle")
+        {
+            CheckOnClick = true,
+            Checked = true
+        };
+        _jiggleMenuItem.CheckedChanged += JiggleMenuItem_CheckedChanged;
+
+        _cloudsMenuItem = new ToolStripMenuItem("Clouds")
+        {
+            CheckOnClick = true,
+            Checked = true
+        };
+        _cloudsMenuItem.CheckedChanged += CloudsMenuItem_CheckedChanged;
+
+        optionsMenu.DropDownItems.Add(_musicMenuItem);
+        optionsMenu.DropDownItems.Add(_soundEffectsMenuItem);
+        optionsMenu.DropDownItems.Add(_jiggleMenuItem);
+        optionsMenu.DropDownItems.Add(_cloudsMenuItem);
 
         _menuStrip.Items.Add(gameMenu);
-        _menuStrip.Items.Add(audioMenu);
+        _menuStrip.Items.Add(optionsMenu);
 
         MainMenuStrip = _menuStrip;
         Controls.Add(_menuStrip);
@@ -108,6 +126,16 @@ internal partial class GameWindow : Form
     private void SoundEffectsMenuItem_CheckedChanged(object? sender, EventArgs e)
     {
         _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetSoundEffectsEnabled(_soundEffectsMenuItem!.Checked));
+    }
+
+    private void JiggleMenuItem_CheckedChanged(object? sender, EventArgs e)
+    {
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetJiggleEnabled(_jiggleMenuItem!.Checked));
+    }
+
+    private void CloudsMenuItem_CheckedChanged(object? sender, EventArgs e)
+    {
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetCloudsEnabled(_cloudsMenuItem!.Checked));
     }
 
     private void OpenNewGameDialog()
