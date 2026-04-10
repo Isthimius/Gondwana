@@ -504,10 +504,11 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _player1Text = new TextBlock(RenderSurface.Host,
                                      RenderSurface.Host.ViewManager.Views[0],
                                      new Rectangle(10, 10, 200, 50));
-        _player1Text.SetFont(_font, 24)
+        _player1Text.SetFont(_font, 24, 12)
                     .SetColors(SpotGame.Players[0].ColorItem.TextColor, SKColors.Transparent)
                     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
                     .SetText(SpotGame.Players[0].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[0]))
+                    .SetMaxLines(1)
                     .UseShadow()
                     .SetShadow(3, 3, 200, 3.0f);
         _player1Text.ZOrder = 20;
@@ -523,10 +524,11 @@ internal sealed class SpotGameHost : WinFormsGameHost
         _player2Text = new TextBlock(RenderSurface.Host,
                                      RenderSurface.Host.ViewManager.Views[0],
                                      new Rectangle(RenderSurface.Width - 210, RenderSurface.Height - 60, 200, 50));
-        _player2Text.SetFont(_font, 24)
+        _player2Text.SetFont(_font, 24, 12)
                     .SetColors(SpotGame.Players[1].ColorItem.TextColor, SKColors.Transparent)
                     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
                     .SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]))
+                    .SetMaxLines(1)
                     .UseShadow()
                     .SetShadow(3, 3, 200, 3.0f);
         _player2Text.ZOrder = 20;
@@ -544,10 +546,11 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _player3Text = new TextBlock(RenderSurface.Host,
                                          RenderSurface.Host.ViewManager.Views[0],
                                          new Rectangle(RenderSurface.Width - 210, 10, 200, 50));
-            _player3Text.SetFont(_font, 24)
+            _player3Text.SetFont(_font, 24, 12)
                         .SetColors(SpotGame.Players[2].ColorItem.TextColor, SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
                         .SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]))
+                        .SetMaxLines(1)
                         .UseShadow()
                         .SetShadow(3, 3, 200, 3.0f);
             _player3Text.ZOrder = 20;
@@ -566,10 +569,11 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _player4Text = new TextBlock(RenderSurface.Host,
                                          RenderSurface.Host.ViewManager.Views[0],
                                          new Rectangle(10, RenderSurface.Height - 60, 200, 50));
-            _player4Text.SetFont(_font, 24)
+            _player4Text.SetFont(_font, 24, 12)
                         .SetColors(SpotGame.Players[3].ColorItem.TextColor, SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
                         .SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]))
+                        .SetMaxLines(1)
                         .UseShadow()
                         .SetShadow(3, 3, 200, 3.0f);
 
@@ -654,7 +658,6 @@ internal sealed class SpotGameHost : WinFormsGameHost
         else
         {
             multipleWinners = true;
-            message = winningPlayers[0].Name + " wins!";
 
             var names = winningPlayers.Select(p => p.Name).ToList();
             var formatted = names.Count == 2
@@ -669,7 +672,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         _gameMessageText = new TextBlock(RenderSurface.Host,
                                          RenderSurface.Host.ViewManager.Views[0],
-                                         new Rectangle(RenderSurface.Width / 2 - 200, RenderSurface.Height / 2 - 40, 400, 80));
+                                         new Rectangle(RenderSurface.Width / 2 - 180, RenderSurface.Height / 2 - 40, 360, 80));
         _gameMessageText.SetFont(_font, 48, 16)
                         .SetColors(primaryTextColor.ToSKColor(), SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)

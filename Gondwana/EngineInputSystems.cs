@@ -4,6 +4,9 @@ using Gondwana.Input.Mouse;
 
 namespace Gondwana;
 
+/// <summary>
+/// Provides centralized access to all the input systems of the engine, including gamepad, keyboard, and mouse input.
+/// </summary>
 public sealed class EngineInputSystems
 {
     internal EngineInputSystems() { }
