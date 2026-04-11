@@ -172,21 +172,78 @@ public sealed class AssetsFile : IDisposable
     }
 
     /// <summary>
-    /// Adds a asset file to the engine with the specified type and file path.
+    /// Adds an asset file to the engine with the specified type and file path.
     /// </summary>
-    /// <remarks>This method associates the asset file with the specified type and prepares it for use by
-    /// the engine. The file is identified by its name, derived from the file path without the extension.</remarks>
+    /// <remarks>
+    /// This method associates the asset file with the specified type and prepares it for use by the engine.
+    /// The asset is stored using its full file name, including extension (e.g., "player.png").
+    /// 
+    /// <para>
+    /// Retaining the file extension allows the engine to preserve format information (e.g., for decoding)
+    /// and improves transparency when inspecting the underlying asset archive.
+    /// </para>
+    /// 
+    /// <para>
+    /// The asset can later be retrieved using either the full file name (e.g., "player.png") or the base
+    /// name without extension (e.g., "player"). When using the base name, a fallback lookup will attempt to
+    /// match any asset of the same type with a corresponding file name.
+    /// </para>
+    /// 
+    /// <para>
+    /// <b>Important:</b> If multiple assets of the same type share the same base name but differ by extension
+    /// (e.g., "player.png" and "player.webp"), retrieving by base name is ambiguous and may return an
+    /// unintended result. In such cases, the full file name should be used.
+    /// </para>
+    /// </remarks>
     /// <param name="type">The type of the asset file to add.</param>
     /// <param name="filePath">The full path to the asset file. Must not be null or empty.</param>
     public void Add(AssetTypes type, string filePath)
     {
-        // Audio assets must retain their extension so the correct decoder can be selected.
-        var name =
-            type == AssetTypes.Audio
-                ? Path.GetFileName(filePath)                 // keep file extension
-                : Path.GetFileNameWithoutExtension(filePath);
-
+        var name = Path.GetFileName(filePath);
         Add(type, name, () => File.OpenRead(filePath));
+    }
+
+    /// <summary>
+    /// Adds an asset file entry to the collection with the specified type, name, and source stream.
+    /// </summary>
+    /// <remarks>
+    /// The provided <paramref name="stream"/> is read immediately and its contents are buffered in memory.
+    /// Subsequent access to the asset will return new read-only streams over the buffered data.
+    /// 
+    /// <para>
+    /// This approach ensures that the original stream does not need to remain open after this method completes,
+    /// and avoids issues related to stream lifetime or disposal.
+    /// </para>
+    /// 
+    /// <para>
+    /// <b>Important:</b> The entire contents of the stream are loaded into memory. For large assets, this may
+    /// have a noticeable memory impact. In such cases, consider using the <see cref="Add(AssetTypes, string, Func{Stream})"/>
+    /// overload instead to defer stream creation.
+    /// </para>
+    /// 
+    /// <para>
+    /// If an entry with the same type and name already exists, it will be replaced with the new data.
+    /// </para>
+    /// </remarks>
+    /// <param name="type">The type of the asset file to add.</param>
+    /// <param name="name">The name of the asset file to add. Cannot be null or empty.</param>
+    /// <param name="stream">The source stream containing the asset data. Must be readable.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="stream"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="name"/> is null or empty.</exception>
+    public void Add(AssetTypes type, string name, Stream stream)
+    {
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Asset name cannot be null or empty.", nameof(name));
+
+        // Copy stream into memory buffer
+        using var ms = new MemoryStream();
+        stream.CopyTo(ms);
+        var data = ms.ToArray();
+
+        Add(type, name, () => new MemoryStream(data, writable: false));
     }
 
     /// <summary>
@@ -220,23 +277,68 @@ public sealed class AssetsFile : IDisposable
     /// <summary>
     /// Retrieves a stream for the specified asset type and name.
     /// </summary>
-    /// <remarks>The method returns a stream that allows access to the asset data. Ensure that the asset
-    /// type and name provided match an existing entry. If no matching asset is found, the method returns <see
-    /// langword="null"/>.</remarks>
+    /// <remarks>
+    /// This method attempts to resolve the asset in two steps:
+    /// <list type="number">
+    /// <item>
+    /// Performs an exact match using the provided <paramref name="name"/> (e.g., "player.png").
+    /// </item>
+    /// <item>
+    /// If no exact match is found, performs a fallback lookup by comparing the base file name
+    /// (without extension), allowing queries such as "player" to match entries like "player.png".
+    /// </item>
+    /// </list>
+    /// 
+    /// <para>
+    /// <b>Important:</b> If multiple assets of the same <paramref name="type"/> share the same base name
+    /// but differ by extension (e.g., "player.png" and "player.webp"), the fallback behavior will return
+    /// the first match encountered. This is non-deterministic and depends on internal collection ordering.
+    /// </para>
+    /// 
+    /// <para>
+    /// To avoid ambiguous results, it is recommended to:
+    /// <list type="bullet">
+    /// <item>Ensure unique base names per asset type, or</item>
+    /// <item>Use the full file name (including extension) when retrieving assets.</item>
+    /// </list>
+    /// </para>
+    /// 
+    /// <para>
+    /// If no matching asset is found, the method returns <see langword="null"/>.
+    /// </para>
+    /// </remarks>
     /// <param name="type">The type of the asset to retrieve.</param>
-    /// <param name="name">The name of the asset to retrieve.</param>
-    /// <returns>A <see cref="Stream"/> containing the asset data if the asset is found; otherwise, <see langword="null"/>.</returns>
+    /// <param name="name">The name of the asset to retrieve. May include or omit the file extension.</param>
+    /// <returns>
+    /// A <see cref="Stream"/> containing the asset data if a match is found; otherwise, <see langword="null"/>.
+    /// </returns>
     public Stream? Get(AssetTypes type, string name)
     {
         EnsureLoaded();
 
-        var key = new AssetsFileEntry
+        // 1. Exact match first: "player.png"
+        var exactKey = new AssetsFileEntry
         {
             AssetType = type,
             AssetName = name
         };
 
-        return _zipEntries.TryGetValue(key, out var getStream) ? getStream() : null;
+        if (_zipEntries.TryGetValue(exactKey, out var getExactStream))
+            return getExactStream();
+
+        // 2. Fallback: if caller asked for "player", try matching "player.*"
+        var requestedBaseName = Path.GetFileNameWithoutExtension(name);
+
+        var match = _zipEntries.Keys.FirstOrDefault(k =>
+            k.AssetType == type &&
+            string.Equals(
+                Path.GetFileNameWithoutExtension(k.AssetName),
+                requestedBaseName,
+                StringComparison.OrdinalIgnoreCase));
+
+        return match != null && _zipEntries.TryGetValue(match, out var getFallbackStream)
+            ? getFallbackStream()
+            : null;
     }
 
     /// <summary>
