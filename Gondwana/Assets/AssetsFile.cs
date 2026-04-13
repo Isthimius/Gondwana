@@ -197,10 +197,11 @@ public sealed class AssetsFile : IDisposable
     /// </remarks>
     /// <param name="type">The type of the asset file to add.</param>
     /// <param name="filePath">The full path to the asset file. Must not be null or empty.</param>
-    public void Add(AssetTypes type, string filePath)
+    /// <param name="name">The name to use for the asset file. If null, the file name will be used.</param>
+    public void Add(AssetTypes type, string filePath, string? name = null)
     {
-        var name = Path.GetFileName(filePath);
-        Add(type, name, () => File.OpenRead(filePath));
+        var nameToUse = name ?? Path.GetFileName(filePath);
+        Add(type, nameToUse, () => File.OpenRead(filePath));
     }
 
     /// <summary>
