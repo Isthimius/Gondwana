@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Runtime.Serialization;
 using Gondwana.Collisions;
 using Gondwana.Drawing.Coordinates;
 using Newtonsoft.Json;
