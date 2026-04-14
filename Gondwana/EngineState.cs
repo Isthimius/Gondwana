@@ -111,7 +111,7 @@ public sealed class EngineState
     /// var hp = engineState.ValueBag.Get(NpcHitPoints, new Dictionary&lt;string, int&gt;());
     /// </code>
     /// </example>
-    [JsonProperty]
+    [JsonIgnore]
     public TypedValueBag ValueBag { get; set; } = new();
 
     /// <summary>

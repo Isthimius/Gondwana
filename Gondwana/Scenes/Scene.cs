@@ -84,6 +84,19 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         Init();
     }
 
+    [JsonConstructor]
+    protected Scene(List<SceneLayer>? sceneLayers,
+                    string? id,
+                    CollisionGroupRegistry? collisionGroups)
+    {
+        _sceneLayers = sceneLayers ?? new List<SceneLayer>();
+        ID = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString() : id;
+        CollisionGroups = collisionGroups ?? new CollisionGroupRegistry();
+        ValueBag = new TypedValueBag();
+
+        Init();
+    }
+
     /// <summary>
     /// Finalizes an instance of the <see cref="Scene"/> class, releasing resources if the scene
     /// was not explicitly disposed.
@@ -96,12 +109,6 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     ~Scene()
     {
         Dispose();
-    }
-
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
-    {
-        Init();
     }
 
     private void Init()
@@ -129,8 +136,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// without modifying the core <see cref="Scene"/> class. Values are accessed using
     /// strongly-typed <see cref="ValueKey{T}"/> instances and are included in scene serialization.
     /// </remarks>
-    [JsonProperty]
-    public TypedValueBag ValueBag { get; } = new();
+    [JsonIgnore]
+    public TypedValueBag ValueBag { get; private set; } = new();
 
     /// <summary>
     /// Gets or sets the unique identifier for this scene.
@@ -249,8 +256,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// <remarks>Use this property to access the collection of collision groups for efficient grouping and
     /// handling of collision logic. The registry is initialized automatically and provides methods for adding,
     /// removing, and querying collision groups as needed.</remarks>
-    [JsonIgnore]
-    public CollisionGroupRegistry CollisionGroups { get; } = new();
+    [JsonProperty]
+    public CollisionGroupRegistry CollisionGroups { get; private set; } = new();
 
     #endregion public properties
 

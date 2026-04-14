@@ -256,7 +256,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// Gets the value bag for storing arbitrary typed values associated with this tile.
     /// Useful for attaching custom game-specific data without subclassing.
     /// </summary>
-    [JsonProperty]
+    [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
 
     #region IComparable<Tile> Members

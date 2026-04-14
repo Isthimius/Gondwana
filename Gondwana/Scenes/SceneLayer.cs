@@ -187,7 +187,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// are accessed using strongly-typed <see cref="ValueKey{T}"/> instances and are included
     /// in layer serialization.
     /// </remarks>
-    [JsonProperty]
+    [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
 
     [JsonIgnore]

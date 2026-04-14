@@ -1,4 +1,6 @@
-﻿namespace Gondwana;
+﻿using Newtonsoft.Json;
+
+namespace Gondwana;
 
 /// <summary>
 /// Represents a strongly-typed key used to access values in a <see cref="TypedValueBag"/>.
@@ -48,8 +50,8 @@ public interface IDeepCloneable<out T>
 }
 
 /// <summary>
-/// A flexible, strongly-typed value container intended for save-state extensibility and
-/// runtime-attached metadata.
+/// A flexible, strongly-typed value container intended for runtime-attached metadata and
+/// ephemeral engine state.
 /// <para>
 /// Values are stored internally as plain CLR objects keyed by string identifiers, but they are
 /// accessed externally through strongly-typed <see cref="ValueKey{T}"/> instances. This preserves
@@ -59,7 +61,13 @@ public interface IDeepCloneable<out T>
 /// <para>
 /// Unlike a JSON-token-based implementation, this class does not serialize or deserialize values
 /// on every set/get operation. It behaves as an in-memory typed bag first, with persistence concerns
-/// expected to be handled at the boundaries of the engine or application.
+/// expected to be handled explicitly at the boundaries of the engine or application.
+/// </para>
+/// <para>
+/// Values stored in a <see cref="TypedValueBag"/> are not preserved by JSON serialization. The bag is
+/// intended for runtime, transient, or otherwise non-persisted values, and engine-core properties that
+/// expose a <see cref="TypedValueBag"/> should typically be marked with <see cref="JsonIgnoreAttribute"/>.
+/// If an instance of this class is serialized directly, its contents are also intentionally ignored.
 /// </para>
 /// <para>
 /// Cloning behavior is best-effort:
@@ -103,7 +111,11 @@ public sealed class TypedValueBag : ICloneable
     /// This field intentionally stores runtime objects directly rather than serialized surrogates,
     /// allowing the bag to function without any dependency on JSON libraries or token models.
     /// </para>
+    /// <para>
+    /// This data is intentionally not preserved by JSON serialization.
+    /// </para>
     /// </summary>
+    [JsonIgnore]
     private readonly Dictionary<string, object?> _data = new();
 
     /// <summary>
@@ -128,7 +140,7 @@ public sealed class TypedValueBag : ICloneable
     /// Thrown if <paramref name="other"/> is <c>null</c>.
     /// </exception>
     /// <remarks>
-    /// This constructor is intended for scenarios such as save-state duplication, snapshot creation,
+    /// This constructor is intended for scenarios such as runtime duplication, snapshot creation,
     /// undo/redo support, and general engine-state isolation. The exact depth of the copy depends on
     /// the clone capabilities of the stored values themselves.
     /// </remarks>
@@ -385,8 +397,8 @@ public sealed class TypedValueBag : ICloneable
     /// <summary>
     /// Produces a shallow snapshot of the bag's current contents.
     /// <para>
-    /// This method is primarily intended for diagnostics, inspection, or external serialization
-    /// code that wants a plain dictionary view of the stored values.
+    /// This method is primarily intended for diagnostics, inspection, or external code
+    /// that wants a plain dictionary view of the stored runtime values.
     /// </para>
     /// </summary>
     /// <returns>

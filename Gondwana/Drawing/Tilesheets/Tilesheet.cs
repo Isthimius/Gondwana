@@ -265,7 +265,7 @@ public sealed class Tilesheet : IDisposable
     /// <summary>
     /// Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.
     /// </summary>
-    [JsonProperty]
+    [JsonIgnore]
     public TypedValueBag ValueBag { get; set; } = new();
 
     /// <summary>
