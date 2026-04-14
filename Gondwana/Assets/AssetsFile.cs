@@ -367,8 +367,7 @@ public sealed class AssetsFile : IDisposable
             FilePath,
             UseEncryption);
 
-        // We already have the authoritative in-memory copy.
-        // No need to immediately reopen and reload the file.
+        // Keep the in-memory copy as the source of truth.
         _isLoaded = true;
     }
 
