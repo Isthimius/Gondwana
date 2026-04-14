@@ -55,12 +55,12 @@ public partial class Form1 : Form
 
         _particleSurface = new ParticleSurface(renderSurface,renderSurface.ViewManager.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
         _particleSurface.CullingMarginX = 1300f;
-        //_particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
+        _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
-        //_particleSurface.Emitters.Add(GetRain(adapter.Width));
+        _particleSurface.Emitters.Add(GetRain(adapter.Width));
         //_particleSurface.Emitters.Add(GetSnow(adapter.Width));
         //_particleSurface.Emitters.Add(GetSmoke(adapter.Width, adapter.Height));
-        _particleSurface.Emitters.Add(GetClouds(adapter.Width, adapter.Height));
+        //_particleSurface.Emitters.Add(GetClouds(adapter.Width, adapter.Height));
         _particleSurface.Emitters.Add(GetCampfireSparks(adapter.Width, adapter.Height));
         _particleSurface.Emitters.Add(GetCampfire(adapter.Width, adapter.Height));
         //_particleSurface.Emitters.Add(GetCampfireSmoke(adapter.Width, adapter.Height));
