@@ -12,11 +12,14 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Input.Keyboard;
+using Gondwana.Input.Mouse;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
+using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Rendering;
 using HWG.Spot.Game;
 
@@ -303,18 +306,12 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     #region private methods
 
-    private void KeyboardEventPoller_KeyDown(Gondwana.Input.Keyboard.KeyDownEventArgs args)
+    private void KeyboardEventPoller_KeyDown(KeyDownEventArgs args)
     {
-        if (args.KeyAction != Gondwana.Input.Keyboard.KeyAction.Pressed)
+        if (args.KeyAction != KeyAction.Pressed)
             return;
 
-        // Parse the received key string into the Keys enum (case-insensitive)
-        if (!Enum.TryParse<Keys>(args.KeyConfig.Key, ignoreCase: true, out var key))
-        {
-            // If parsing fails, ignore — preserves existing behavior for any non-standard strings
-            return;
-        }
-
+        var key = WinFormsKeyboardAdapter.GetKeyFromString(args.KeyConfig.Key);
         switch (key)
         {
             case Keys.S:
@@ -341,7 +338,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
         var screenPos = args.CurrentPosition;
 
-        if (args.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
+        if (args.LeftButtonJustPressed)
         {
             var selectedCoord = view.ScreenPxToGrid(layer, screenPos);
 

@@ -123,4 +123,131 @@ public sealed class MouseEventArgs : EventArgs
         CurrentPosition = currentPosition;
         ScrollDelta = scrollDelta;
     }
+
+    /// <summary>
+    /// Determines whether the specified mouse button is currently in the down (pressed) state.
+    /// </summary>
+    /// <param name="button">The mouse button to evaluate.</param>
+    /// <returns>
+    /// <c>true</c> if the specified button is currently pressed; otherwise, <c>false</c>.
+    /// Returns <c>false</c> if the button is not present in the tracked state collection.
+    /// </returns>
+    /// <remarks>
+    /// This method provides a safe and convenient way to query button state without directly accessing
+    /// the <see cref="ButtonStates"/> dictionary. It avoids exceptions that could occur if a button
+    /// is not present and centralizes lookup logic.
+    /// </remarks>
+    public bool IsButtonDown(MouseButton button)
+        => ButtonStates.TryGetValue(button, out var state) && state.IsDown;
+
+    /// <summary>
+    /// Determines whether the specified mouse button was pressed during the current polling interval.
+    /// </summary>
+    /// <param name="button">The mouse button to evaluate.</param>
+    /// <returns>
+    /// <c>true</c> if the specified button transitioned from up to down in the current event; otherwise, <c>false</c>.
+    /// Returns <c>false</c> if the button is not present in the tracked state collection.
+    /// </returns>
+    /// <remarks>
+    /// This method is useful for detecting discrete click actions without triggering repeatedly while the button
+    /// is held down. The <c>JustPressed</c> state is only <c>true</c> for a single polling cycle.
+    /// </remarks>
+    public bool IsButtonJustPressed(MouseButton button)
+        => ButtonStates.TryGetValue(button, out var state) && state.JustPressed;
+
+    /// <summary>
+    /// Determines whether the specified mouse button was released during the current polling interval.
+    /// </summary>
+    /// <param name="button">The mouse button to evaluate.</param>
+    /// <returns>
+    /// <c>true</c> if the specified button transitioned from down to up in the current event; otherwise, <c>false</c>.
+    /// Returns <c>false</c> if the button is not present in the tracked state collection.
+    /// </returns>
+    /// <remarks>
+    /// This method is useful for detecting the completion of a click or drag action. The <c>JustReleased</c>
+    /// state is only <c>true</c> for a single polling cycle.
+    /// </remarks>
+    public bool IsButtonJustReleased(MouseButton button)
+        => ButtonStates.TryGetValue(button, out var state) && state.JustReleased;
+
+    /// <summary>
+    /// Gets a value indicating whether the left mouse button is currently pressed.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonDown(MouseButton)"/> for the commonly used
+    /// primary mouse button.
+    /// </remarks>
+    public bool LeftButtonDown => IsButtonDown(MouseButton.Left);
+
+    /// <summary>
+    /// Gets a value indicating whether the left mouse button was pressed during the current polling interval.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonJustPressed(MouseButton)"/> and is commonly
+    /// used for detecting primary click actions.
+    /// </remarks>
+    public bool LeftButtonJustPressed => IsButtonJustPressed(MouseButton.Left);
+
+    /// <summary>
+    /// Gets a value indicating whether the left mouse button was released during the current polling interval.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonJustReleased(MouseButton)"/> and is commonly
+    /// used for detecting the end of click or drag operations.
+    /// </remarks>
+    public bool LeftButtonJustReleased => IsButtonJustReleased(MouseButton.Left);
+
+    /// <summary>
+    /// Gets a value indicating whether the right mouse button is currently pressed.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonDown(MouseButton)"/> for the secondary mouse button,
+    /// typically used for context actions.
+    /// </remarks>
+    public bool RightButtonDown => IsButtonDown(MouseButton.Right);
+
+    /// <summary>
+    /// Gets a value indicating whether the right mouse button was pressed during the current polling interval.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonJustPressed(MouseButton)"/> and is commonly
+    /// used for context menu or alternate interaction triggers.
+    /// </remarks>
+    public bool RightButtonJustPressed => IsButtonJustPressed(MouseButton.Right);
+
+    /// <summary>
+    /// Gets a value indicating whether the right mouse button was released during the current polling interval.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonJustReleased(MouseButton)"/> and is commonly
+    /// used to detect the completion of context interactions.
+    /// </remarks>
+    public bool RightButtonJustReleased => IsButtonJustReleased(MouseButton.Right);
+
+    /// <summary>
+    /// Gets a value indicating whether the middle mouse button is currently pressed.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonDown(MouseButton)"/> for the middle mouse button,
+    /// often associated with scroll wheel clicks or special actions.
+    /// </remarks>
+    public bool MiddleButtonDown => IsButtonDown(MouseButton.Middle);
+
+    /// <summary>
+    /// Gets a value indicating whether the middle mouse button was pressed during the current polling interval.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonJustPressed(MouseButton)"/> and can be used
+    /// for specialized interactions such as panning or alternate controls.
+    /// </remarks>
+    public bool MiddleButtonJustPressed => IsButtonJustPressed(MouseButton.Middle);
+
+    /// <summary>
+    /// Gets a value indicating whether the middle mouse button was released during the current polling interval.
+    /// </summary>
+    /// <remarks>
+    /// This is a convenience wrapper around <see cref="IsButtonJustReleased(MouseButton)"/> and is useful
+    /// for detecting the completion of middle-button interactions.
+    /// </remarks>
+    public bool MiddleButtonJustReleased => IsButtonJustReleased(MouseButton.Middle);
 }
