@@ -5,43 +5,46 @@ using Newtonsoft.Json;
 namespace Gondwana.Assets;
 
 /// <summary>
-/// Represents a asset file used by the engine, providing functionality to load, manage, and save assets.
+/// Represents an asset file used by the engine, providing functionality to load, manage, and save assets.
 /// </summary>
-/// <remarks>The <see cref="AssetsFile"/> class allows for the creation, loading, and management of
+/// <remarks>
+/// The <see cref="AssetsFile"/> class allows for the creation, loading, and management of
 /// asset files used by the engine. It supports encryption, asset retrieval by type and name, and saving assets
 /// to a zip file. Instances of this class are tracked globally and can be accessed via the static
-/// <see cref="AllAssetsFiles"/> property.</remarks>
+/// <see cref="AllAssetsFiles"/> property.
+/// </remarks>
 [JsonObject(IsReference = true)]
 public sealed class AssetsFile : IDisposable
 {
-    private static List<AssetsFile> _allAssetsFiles = new();
+    private static readonly List<AssetsFile> _allAssetsFiles = new();
 
     /// <summary>
-    /// Gets a read-only list of all instantiated <see cref="AssetsFile"/> instances."/>
+    /// Gets a read-only list of all instantiated <see cref="AssetsFile"/> instances.
     /// </summary>
     public static IReadOnlyList<AssetsFile> AllAssetsFiles => _allAssetsFiles.AsReadOnly();
 
     /// <summary>
     /// Releases all assets held by the application and clears the internal collection of asset files.
     /// </summary>
-    /// <remarks>This method disposes of all asset files currently tracked by the application.  After
-    /// calling this method, the internal collection of asset files will be empty. Ensure that no further operations
-    /// are performed on the disposed assets.</remarks>
     public static void ClearAll()
     {
         foreach (var assetFile in _allAssetsFiles.ToList())
-        {
             assetFile.Dispose();
-        }
     }
 
     private ZipFile? _zipFile;
-    private readonly Dictionary<AssetsFileEntry, Func<Stream>> _zipEntries = new();
-    private bool _isLoaded = false;
+
+    // In-memory source of truth.
+    // Each entry stores its complete bytes independently of any live ZipFile handle.
+    private readonly Dictionary<AssetsFileEntry, byte[]> _zipEntries = new();
+
+    private bool _isLoaded;
 
     [JsonConstructor]
     private AssetsFile()
-    { _allAssetsFiles.Add(this); }
+    {
+        _allAssetsFiles.Add(this);
+    }
 
     /// <summary>
     /// Loads an existing asset file from the specified path or creates a new one if the file does not exist.
@@ -65,6 +68,8 @@ public sealed class AssetsFile : IDisposable
 
         if (File.Exists(path))
             assetFile.LoadZip();
+        else
+            assetFile._isLoaded = true;
 
         return assetFile;
     }
@@ -79,13 +84,13 @@ public sealed class AssetsFile : IDisposable
     /// Gets the password associated with the current instance.
     /// </summary>
     [JsonProperty]
-    public string? Password { get; private set; } = null;
+    public string? Password { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether encryption is enabled for the current operation.
     /// </summary>
     [JsonProperty]
-    public bool UseEncryption { get; private set; } = false;
+    public bool UseEncryption { get; private set; }
 
     private void EnsureLoaded()
     {
@@ -103,20 +108,27 @@ public sealed class AssetsFile : IDisposable
             Engine.Logger.LogInformation("Loading assets file: {FilePath}", FilePath);
 
             _zipFile?.Close();
+            _zipFile = null;
+            _zipEntries.Clear();
+
+            if (!File.Exists(FilePath))
+            {
+                _isLoaded = true;
+                return;
+            }
+
             _zipFile = new ZipFile(File.OpenRead(FilePath));
 
             if (!string.IsNullOrEmpty(Password))
                 _zipFile.Password = Password;
 
-            // Test decryption on first entry to validate password early
+            // Force decryption on the first entry so a bad password fails early.
             var testEntry = _zipFile.Cast<ZipEntry>().FirstOrDefault(e => e.IsFile);
             if (testEntry != null)
             {
                 using var testStream = _zipFile.GetInputStream(testEntry);
-                testStream.ReadByte(); // force decryption
+                testStream.ReadByte();
             }
-
-            _zipEntries.Clear();
 
             foreach (ZipEntry entry in _zipFile)
             {
@@ -130,11 +142,11 @@ public sealed class AssetsFile : IDisposable
                     continue;
                 }
 
-                _zipEntries[key] = () =>
-                {
-                    var zipEntry = _zipFile.GetEntry(key.ToString());
-                    return zipEntry != null ? _zipFile!.GetInputStream(zipEntry) : Stream.Null;
-                };
+                using var entryStream = _zipFile.GetInputStream(entry);
+                using var ms = new MemoryStream();
+                entryStream.CopyTo(ms);
+
+                _zipEntries[key] = ms.ToArray();
             }
 
             _isLoaded = true;
@@ -149,82 +161,60 @@ public sealed class AssetsFile : IDisposable
             Engine.Logger.LogError(ex, "Failed to load asset file.");
             throw;
         }
+        finally
+        {
+            // Once contents are buffered, no need to keep the file handle open.
+            _zipFile?.Close();
+            _zipFile = null;
+        }
     }
 
     /// <summary>
-    /// Adds a asset file entry to the collection with the specified type, name, and stream factory.
+    /// Adds an asset file entry to the collection with the specified type, name, and stream factory.
     /// </summary>
-    /// <remarks>If an entry with the same type and name already exists, it will be replaced with the new
-    /// stream factory.</remarks>
+    /// <remarks>
+    /// If an entry with the same type and name already exists, it will be replaced with the new stream data.
+    /// The provided factory is invoked immediately and its contents are buffered in memory.
+    /// </remarks>
     /// <param name="type">The type of the asset file to add.</param>
     /// <param name="name">The name of the asset file to add. Cannot be null or empty.</param>
-    /// <param name="streamFactory">A factory method that provides a <see cref="Stream"/> for the asset file.  The factory is invoked when the
-    /// asset is accessed.</param>
+    /// <param name="streamFactory">A factory method that provides a <see cref="Stream"/> for the asset file.</param>
     public void Add(AssetTypes type, string name, Func<Stream> streamFactory)
     {
-        var key = new AssetsFileEntry
-        {
-            AssetType = type,
-            AssetName = name
-        };
+        if (streamFactory == null)
+            throw new ArgumentNullException(nameof(streamFactory));
 
-        _zipEntries[key] = streamFactory;
+        EnsureLoaded();
+
+        using var stream = streamFactory();
+        Add(type, name, stream);
     }
 
     /// <summary>
     /// Adds an asset file to the engine with the specified type and file path.
     /// </summary>
     /// <remarks>
-    /// This method associates the asset file with the specified type and prepares it for use by the engine.
-    /// The asset is stored using its full file name, including extension (e.g., "player.png").
-    /// 
-    /// <para>
-    /// Retaining the file extension allows the engine to preserve format information (e.g., for decoding)
-    /// and improves transparency when inspecting the underlying asset archive.
-    /// </para>
-    /// 
-    /// <para>
-    /// The asset can later be retrieved using either the full file name (e.g., "player.png") or the base
-    /// name without extension (e.g., "player"). When using the base name, a fallback lookup will attempt to
-    /// match any asset of the same type with a corresponding file name.
-    /// </para>
-    /// 
-    /// <para>
-    /// <b>Important:</b> If multiple assets of the same type share the same base name but differ by extension
-    /// (e.g., "player.png" and "player.webp"), retrieving by base name is ambiguous and may return an
-    /// unintended result. In such cases, the full file name should be used.
-    /// </para>
+    /// The asset is stored using its full file name, including extension, unless an explicit name is provided.
     /// </remarks>
     /// <param name="type">The type of the asset file to add.</param>
     /// <param name="filePath">The full path to the asset file. Must not be null or empty.</param>
     /// <param name="name">The name to use for the asset file. If null, the file name will be used.</param>
     public void Add(AssetTypes type, string filePath, string? name = null)
     {
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("File path cannot be null or empty.", nameof(filePath));
+
         var nameToUse = name ?? Path.GetFileName(filePath);
-        Add(type, nameToUse, () => File.OpenRead(filePath));
+        using var stream = File.OpenRead(filePath);
+        Add(type, nameToUse, stream);
     }
 
     /// <summary>
     /// Adds an asset file entry to the collection with the specified type, name, and source stream.
     /// </summary>
     /// <remarks>
-    /// The provided <paramref name="stream"/> is read immediately and its contents are buffered in memory.
-    /// Subsequent access to the asset will return new read-only streams over the buffered data.
-    /// 
-    /// <para>
-    /// This approach ensures that the original stream does not need to remain open after this method completes,
-    /// and avoids issues related to stream lifetime or disposal.
-    /// </para>
-    /// 
-    /// <para>
-    /// <b>Important:</b> The entire contents of the stream are loaded into memory. For large assets, this may
-    /// have a noticeable memory impact. In such cases, consider using the <see cref="Add(AssetTypes, string, Func{Stream})"/>
-    /// overload instead to defer stream creation.
-    /// </para>
-    /// 
-    /// <para>
-    /// If an entry with the same type and name already exists, it will be replaced with the new data.
-    /// </para>
+    /// The provided <paramref name="stream"/> is read immediately and buffered in memory.
+    /// Subsequent access returns a new read-only stream over the buffered bytes.
     /// </remarks>
     /// <param name="type">The type of the asset file to add.</param>
     /// <param name="name">The name of the asset file to add. Cannot be null or empty.</param>
@@ -239,23 +229,34 @@ public sealed class AssetsFile : IDisposable
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Asset name cannot be null or empty.", nameof(name));
 
-        // Copy stream into memory buffer
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
+
+        EnsureLoaded();
+
+        var key = new AssetsFileEntry
+        {
+            AssetType = type,
+            AssetName = name
+        };
+
         using var ms = new MemoryStream();
         stream.CopyTo(ms);
-        var data = ms.ToArray();
-
-        Add(type, name, () => new MemoryStream(data, writable: false));
+        _zipEntries[key] = ms.ToArray();
     }
 
     /// <summary>
     /// Removes the specified asset file entry from the collection.
     /// </summary>
-    /// <remarks>This method removes the asset file entry identified by the specified type and name from
-    /// the internal collection. If the entry does not exist, no action is taken.</remarks>
     /// <param name="type">The type of the asset file to remove.</param>
     /// <param name="name">The name of the asset file to remove. Cannot be null or empty.</param>
     public void Remove(AssetTypes type, string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Asset name cannot be null or empty.", nameof(name));
+
+        EnsureLoaded();
+
         var key = new AssetsFileEntry
         {
             AssetType = type,
@@ -268,45 +269,16 @@ public sealed class AssetsFile : IDisposable
     /// <summary>
     /// Gets the stream associated with the specified asset type and name.
     /// </summary>
-    /// <remarks>Use this indexer to access assets by specifying their type and name.  If the asset does
-    /// not exist, the indexer returns <see langword="null"/>.</remarks>
     /// <param name="type">The type of the asset file to retrieve.</param>
     /// <param name="name">The name of the asset within the specified type.</param>
-    /// <returns></returns>
+    /// <returns>A readable stream if found; otherwise, <see langword="null"/>.</returns>
     public Stream? this[AssetTypes type, string name] => Get(type, name);
 
     /// <summary>
     /// Retrieves a stream for the specified asset type and name.
     /// </summary>
     /// <remarks>
-    /// This method attempts to resolve the asset in two steps:
-    /// <list type="number">
-    /// <item>
-    /// Performs an exact match using the provided <paramref name="name"/> (e.g., "player.png").
-    /// </item>
-    /// <item>
-    /// If no exact match is found, performs a fallback lookup by comparing the base file name
-    /// (without extension), allowing queries such as "player" to match entries like "player.png".
-    /// </item>
-    /// </list>
-    /// 
-    /// <para>
-    /// <b>Important:</b> If multiple assets of the same <paramref name="type"/> share the same base name
-    /// but differ by extension (e.g., "player.png" and "player.webp"), the fallback behavior will return
-    /// the first match encountered. This is non-deterministic and depends on internal collection ordering.
-    /// </para>
-    /// 
-    /// <para>
-    /// To avoid ambiguous results, it is recommended to:
-    /// <list type="bullet">
-    /// <item>Ensure unique base names per asset type, or</item>
-    /// <item>Use the full file name (including extension) when retrieving assets.</item>
-    /// </list>
-    /// </para>
-    /// 
-    /// <para>
-    /// If no matching asset is found, the method returns <see langword="null"/>.
-    /// </para>
+    /// Attempts exact match first, then falls back to base-name matching without extension.
     /// </remarks>
     /// <param name="type">The type of the asset to retrieve.</param>
     /// <param name="name">The name of the asset to retrieve. May include or omit the file extension.</param>
@@ -315,19 +287,20 @@ public sealed class AssetsFile : IDisposable
     /// </returns>
     public Stream? Get(AssetTypes type, string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            return null;
+
         EnsureLoaded();
 
-        // 1. Exact match first: "player.png"
         var exactKey = new AssetsFileEntry
         {
             AssetType = type,
             AssetName = name
         };
 
-        if (_zipEntries.TryGetValue(exactKey, out var getExactStream))
-            return getExactStream();
+        if (_zipEntries.TryGetValue(exactKey, out var exactData))
+            return new MemoryStream(exactData, writable: false);
 
-        // 2. Fallback: if caller asked for "player", try matching "player.*"
         var requestedBaseName = Path.GetFileNameWithoutExtension(name);
 
         var match = _zipEntries.Keys.FirstOrDefault(k =>
@@ -337,73 +310,77 @@ public sealed class AssetsFile : IDisposable
                 requestedBaseName,
                 StringComparison.OrdinalIgnoreCase));
 
-        return match != null && _zipEntries.TryGetValue(match, out var getFallbackStream)
-            ? getFallbackStream()
+        return match != null && _zipEntries.TryGetValue(match, out var fallbackData)
+            ? new MemoryStream(fallbackData, writable: false)
             : null;
     }
 
     /// <summary>
     /// Retrieves all entries from the asset file.
     /// </summary>
-    /// <remarks>This method ensures that the asset file is loaded before returning the entries.</remarks>
     /// <returns>An <see cref="IEnumerable{T}"/> containing all entries in the asset file.</returns>
     public IEnumerable<AssetsFileEntry> GetAllEntries()
     {
         EnsureLoaded();
-        return _zipEntries.Keys;
+        return _zipEntries.Keys.ToList();
     }
 
     /// <summary>
     /// Saves the current set of entries to a zip file at the specified file path.
     /// </summary>
-    /// <remarks>This method creates a zip archive containing all entries currently stored in the collection.
-    /// If a password is provided, the zip file will be encrypted using AES-256 encryption.  The method clears the
-    /// current entries after saving and reloads the zip file to ensure consistency.</remarks>
     public void Save()
     {
-        using var fs = File.Create(FilePath);
-        using var zipStream = new ZipOutputStream(fs)
-        {
-            IsStreamOwner = true
-        };
+        EnsureLoaded();
 
-        if (!string.IsNullOrEmpty(Password))
-            zipStream.Password = Password;
+        _zipFile?.Close();
+        _zipFile = null;
+        _isLoaded = false;
 
-        foreach (var (key, getStream) in _zipEntries)
+        using (var fs = File.Create(FilePath))
+        using (var zipStream = new ZipOutputStream(fs) { IsStreamOwner = true })
         {
-            var entry = new ZipEntry(key.ToString())
+            if (!string.IsNullOrEmpty(Password))
+                zipStream.Password = Password;
+
+            foreach (var (key, data) in _zipEntries)
             {
-                DateTime = DateTime.Now
-            };
+                var entry = new ZipEntry(key.ToString())
+                {
+                    DateTime = DateTime.Now
+                };
 
-            if (UseEncryption && !string.IsNullOrEmpty(Password))
-                entry.AESKeySize = 256;
+                if (UseEncryption && !string.IsNullOrEmpty(Password))
+                    entry.AESKeySize = 256;
 
-            zipStream.PutNextEntry(entry);
+                zipStream.PutNextEntry(entry);
 
-            using var inputStream = getStream();
-            inputStream.CopyTo(zipStream);
-            zipStream.CloseEntry();
+                using var inputStream = new MemoryStream(data, writable: false);
+                inputStream.CopyTo(zipStream);
+                zipStream.CloseEntry();
+            }
+
+            zipStream.Finish();
         }
 
-        Engine.Logger.LogInformation("Assets file saved: {FilePath} (Encrypted: {Encrypted})", FilePath, UseEncryption);
-        _zipEntries.Clear();
-        _isLoaded = false;
-        LoadZip();
+        Engine.Logger.LogInformation(
+            "Assets file saved: {FilePath} (Encrypted: {Encrypted})",
+            FilePath,
+            UseEncryption);
+
+        // We already have the authoritative in-memory copy.
+        // No need to immediately reopen and reload the file.
+        _isLoaded = true;
     }
 
     /// <summary>
     /// Releases all resources used by the <see cref="AssetsFile"/> instance.
     /// </summary>
-    /// <remarks>This method closes the underlying zip file, clears the loaded state, and removes this
-    /// instance from the global collection of asset files. After calling this method, the instance should
-    /// not be used further.</remarks>
     public void Dispose()
     {
         _zipFile?.Close();
         _zipFile = null;
         _isLoaded = false;
+        _zipEntries.Clear();
         _allAssetsFiles.Remove(this);
     }
 }
