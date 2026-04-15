@@ -16,6 +16,7 @@ into .NET applications.
 -   Collision detection
 -   Particle effects
 -   SkiaSharp-based rendering
+-   NAudio-based audio playback
 -   Cross-platform architecture
 
 ## Installation
@@ -37,7 +38,12 @@ dotnet add package Gondwana
 
 ## Related Packages
 
+-   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
+-   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
+-   `Gondwana.Input.SDL2` --- SDL2-based input handling
+-   `Gondwana.Video` --- Video playback support
 -   `Gondwana.WinForms` --- WinForms rendering and input adapters
+-   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle
 
 ## License
 

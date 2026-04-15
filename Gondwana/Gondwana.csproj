@@ -5,10 +5,6 @@
 		<Product>Gondwana Game Engine</Product>
 		<Authors>Michael Adkins</Authors>
 
-		<!-- Assembly/package versioning -->
-		<Version>2.1.0</Version>
-		<FileVersion>2.1.0.0</FileVersion>
-		<InformationalVersion>2.1.0</InformationalVersion>
 
 		<TargetFramework>net8.0</TargetFramework>
 		<OutputType>Library</OutputType>
@@ -16,7 +12,6 @@
 		<AssemblyName>Gondwana</AssemblyName>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
 		<!-- NuGet packaging -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
