@@ -1062,7 +1062,7 @@ public class TextBlock : DirectDrawingMovableBase
     public float PunctuationPauseShortSec => _pauseShortSec;
 
     /// <summary>Gets the currently resolved (effective) foreground color used for drawing.</summary>
-    public SKColor ResovedForeColor => _resolvedForeColor;
+    public SKColor ResolvedForeColor => _resolvedForeColor;
 
     #endregion public readonly properties
 
