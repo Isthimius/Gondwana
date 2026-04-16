@@ -4,21 +4,18 @@
 - Updated multiple NuGet dependencies and versioning configuration
 
 ## Core Engine Enhancements
-- Introduced centralized engine systems:
+- Introduced centralized `EngineManagers` and `EngineInputSystems` aggregation layers:
   - `Engine.Managers` for resource management
   - `Engine.Input` for unified input handling
 - Refactored **SpriteManager** from static usage to a singleton instance model
-- Added `EngineManagers` and `EngineInputSystems` aggregation layers
 - Improved engine initialization, dispatching, and logging defaults
-
-## Hosting & Application Structure
 - Introduced new **Gondwana.Hosting** project:
   - Provides cross-platform host lifecycle abstraction
   - Standardizes engine initialization, input, content loading, and shutdown
 - Added **Gondwana.WinForms.Hosting** project:
   - WinForms-specific host implementation
   - Simplifies wiring of input, audio, and rendering for desktop apps
-- Refactored Spot sample game to use new hosting model
+- Removed legacy bootstrap code
 
 ## Rendering & Particles
 - Extended particle system:
@@ -32,7 +29,6 @@
 - Improved **TextBlock rendering**:
   - Better wrapping, clipping, and layout fitting
   - Ellipsis support for truncated text
-- Applied jiggle effects at render time for better performance
 
 ## Input System Updates
 - Centralized input handling via `Engine.Input`
@@ -92,8 +88,8 @@
   - Rendering adapters and engine extensions
 - Improved clarity of lifecycle, disposal, and polling behaviors
 
-## Spot Sample Game
-- Added new **SpotGameHost** using hosting system
+## Spot Demo Game
+- Added new **SpotGameHost** using new hosting system
 - Rebuilt Spot game structure:
   - SceneLayer-based game field
   - Player model and game state management
@@ -102,10 +98,6 @@
   - Menu options for new game and audio toggles
   - Improved window initialization and resource handling
 - Added new assets (bubble sprites, icon, audio attribution)
-
-## General Cleanup
-- Removed unused imports and legacy bootstrap code
-- Updated solution structure to include new hosting projects
 
 ---
 
