@@ -35,7 +35,9 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 
 		<!-- Release notes -->
-		<PackageReleaseNotes>Embedded README and package icon, XML documentation in package, Source Link support, symbol package, and NuGet metadata polish.</PackageReleaseNotes>
+		<PackageReleaseNotes>
+			<None Include="CHANGELOG.md" Pack="true" PackagePath="" />
+		</PackageReleaseNotes>
 
 		<!-- XML docs -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
