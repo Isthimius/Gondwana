@@ -11,7 +11,21 @@
 - Added `EngineManagers` and `EngineInputSystems` aggregation layers
 - Improved engine initialization, dispatching, and logging defaults
 
-## Rendering & Visual Systems
+## Hosting & Application Structure
+- Introduced new **Gondwana.Hosting** project:
+  - Provides cross-platform host lifecycle abstraction
+  - Standardizes engine initialization, input, content loading, and shutdown
+- Added **Gondwana.WinForms.Hosting** project:
+  - WinForms-specific host implementation
+  - Simplifies wiring of input, audio, and rendering for desktop apps
+- Refactored Spot sample game to use new hosting model
+
+## Rendering & Particles
+- Extended particle system:
+  - Added **per-emitter blend modes**
+  - Added **per-particle blend modes**
+  - Improved visual flexibility during rendering
+- Updated particle rendering pipeline to respect blend modes at draw time
 - Added **ImageInstanceLayer** for efficient direct-drawing of reusable/movable bitmap instances
 - Introduced **sprite jiggle system** (visual-only offsets and scaling effects)
 - Expanded sprite resizing into **pulse/loop behaviors** with completion events
@@ -46,12 +60,52 @@
 - Improved handling and serialization of collision groups
 
 ## Tilesheets & Drawing
+- Improved DirectDrawing infrastructure:
+  - Made `DirectDrawingManager` singleton publicly accessible
+  - Updated internal registration/keying behavior
+  - Defaulted `Nickname` to `Id` when not explicitly set (across drawing types)
 - Added disposal support and indexing improvements to `TilesheetRegistry`
 - General documentation and structural improvements across drawing systems
 
-## Audio
+## Scene & Layer Enhancements
+- Made `SceneLayer` constructor `protected internal` to support external inheritance
+- Added `Scene.AddLayer(SceneLayer)` overload for more flexible layer composition
+- Improved XML documentation for scene bounds and usage
+
+## Audio & Video
+- Enhanced video subsystem documentation and API clarity
+- Improved MIDI playback internals:
+  - Fixed rendering/seek-forward behavior
+  - Expanded SoundFont and reader documentation
+- Improved audio playback control:
+  - Prevented unintended looping/restart when manually stopping audio
+  - Added internal tracking for stop requests
 - Updated MIDI/audio dependencies
 - Clarified supported audio formats in WinForms adapter
+
+## Documentation Improvements
+- Expanded XML documentation across:
+  - WinForms input adapters (keyboard, mouse, gamepad)
+  - SDL2 and XInput integrations
+  - Video playback APIs (LibVLCSharp)
+  - MIDI/audio systems
+  - Rendering adapters and engine extensions
+- Improved clarity of lifecycle, disposal, and polling behaviors
+
+## Spot Sample Game
+- Added new **SpotGameHost** using hosting system
+- Rebuilt Spot game structure:
+  - SceneLayer-based game field
+  - Player model and game state management
+  - New game dialog with color selection
+- Updated UI:
+  - Menu options for new game and audio toggles
+  - Improved window initialization and resource handling
+- Added new assets (bubble sprites, icon, audio attribution)
+
+## General Cleanup
+- Removed unused imports and legacy bootstrap code
+- Updated solution structure to include new hosting projects
 
 ---
 
