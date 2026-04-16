@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -103,14 +103,15 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectDrawingMovableBase:</div>
  <div class="center">
   <img src="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.png" usemap="#Gondwana_2EDrawing_2EDirect_2EDirectDrawingMovableBase_map" alt=""/>
   <map id="Gondwana_2EDrawing_2EDirect_2EDirectDrawingMovableBase_map" name="Gondwana_2EDrawing_2EDirect_2EDirectDrawingMovableBase_map">
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi..." alt="Gondwana.Drawing.Direct.DirectDrawingBase" shape="rect" coords="333,112,656,136"/>
-<area href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space." alt="Gondwana.Movement.IMovable" shape="rect" coords="666,112,989,136"/>
-<area href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="166,56,489,80"/>
-<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,323,24"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,323,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,224,656,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="666,224,989,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="999,224,1322,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi..." alt="Gondwana.Drawing.Direct.DirectDrawingBase" shape="rect" coords="537,112,885,136"/>
+<area href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space." alt="Gondwana.Movement.IMovable" shape="rect" coords="895,112,1243,136"/>
+<area href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="358,56,706,80"/>
+<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="179,0,527,24"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,348,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="358,224,706,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html" title="Represents a lightweight image-instance layer that manages and renders a collection of independently ..." alt="Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer" shape="rect" coords="716,224,1064,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="1074,224,1422,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="1432,224,1780,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -258,6 +259,8 @@ Frame-rate independent physics with accumulator and substep clamping to prevent 
 <p>The class uses a fixed-timestep update loop (240 Hz / ~4.16ms per step) to advance movement physics, ensuring consistent behavior regardless of the application frame rate. Each frame's variable delta time is accumulated and subdivided into fixed steps, with a maximum substep limit to prevent performance degradation during frame rate drops. </p>
 <p>Derived classes must implement <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this direct drawing to the backbuffer.">DirectDrawingBase.OnDraw</a> to perform the actual rendering. The base class handles position updates and ensures drawing bounds remain synchronized with the <a class="el" href="namespace_gondwana_1_1_movement.html">Movement</a> controller's position. </p>
 <p>Thread safety: This class is not thread-safe. All operations should be performed on the UI thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_movable_base_8cs_source.html#l00045">45</a> of file <a class="el" href="_direct_drawing_movable_base_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4d10b2bba4ecae5961ae1e39dc2f3c0e" name="a4d10b2bba4ecae5961ae1e39dc2f3c0e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4d10b2bba4ecae5961ae1e39dc2f3c0e">&#9670;&#160;</a></span>DirectDrawingMovableBase()</h2>
@@ -334,6 +337,8 @@ Frame-rate independent physics with accumulator and substep clamping to prevent 
 <p>The constructor initializes the <a class="el" href="namespace_gondwana_1_1_movement.html">Movement</a> controller with the drawing's initial position extracted from the provided bounds (either <em>worldBounds</em>  or <em>screenBounds</em>  depending on the mode). The movement controller is configured for pixel-space movement matching the drawing's coordinate system. </p>
 <p>After construction, use the <a class="el" href="namespace_gondwana_1_1_movement.html">Movement</a> property to configure velocity, acceleration, friction, and other movement parameters. The drawing's position will automatically update each frame based on the movement controller's physics simulation. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_movable_base_8cs_source.html#l00081">81</a> of file <a class="el" href="_direct_drawing_movable_base_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -398,6 +403,8 @@ Marks the new position as dirty to ensure rendering occurs at the updated locati
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html#a0c95ba0fddb24cf1adc6ca07ae705633">Gondwana.Movement.IMovable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_movable_base_8cs_source.html#l00188">188</a> of file <a class="el" href="_direct_drawing_movable_base_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a156e583528d8e747636d70e4972b81db" name="a156e583528d8e747636d70e4972b81db"></a>
@@ -448,7 +455,9 @@ Calls <code>base.Update(tick)</code> to perform fade and reveal animations from 
 
 <p>Reimplemented from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a52ae59743dbd89bda3f0c721321939f0">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
 
-<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#a801c259d59c101239fd5947109e542f1">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a00256efd1a1f3ba03842fe5fff21ca19">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aeeafdc57fe4de1b8b742fe4b31aa8ad7">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#a801c259d59c101239fd5947109e542f1">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html#a32a603730f9086d770ec6888b4ac8525">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a00256efd1a1f3ba03842fe5fff21ca19">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aeeafdc57fe4de1b8b742fe4b31aa8ad7">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_movable_base_8cs_source.html#l00246">246</a> of file <a class="el" href="_direct_drawing_movable_base_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 
 </div>
 </div>
@@ -488,6 +497,8 @@ Enable or disable movement integration. </li>
 <p>The controller is automatically integrated each frame by <a class="el" href="#a156e583528d8e747636d70e4972b81db" title="Performs per-frame update logic, including fixed-timestep physics integration for movement.">Update</a> using a fixed timestep (240 Hz). Position changes from the controller are synchronized to the drawing's bounds, triggering dirty-rectangle updates as needed. </p>
 <p>The controller operates in pixel space (MovementSpace.Pixel), matching the coordinate system used by the drawing's bounds (either world or screen coordinates depending on the mode). </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_movable_base_8cs_source.html#l00124">124</a> of file <a class="el" href="_direct_drawing_movable_base_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a7bf07b6c0b52e8bb2fd86252d8aae953" name="a7bf07b6c0b52e8bb2fd86252d8aae953"></a>
@@ -515,6 +526,8 @@ Enable or disable movement integration. </li>
 <p>This property is part of the <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> interface contract. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html">Direct</a> drawings always use pixel-space positioning, regardless of whether they are in scene-layer mode (world pixels) or view mode (screen pixels). </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html#a827e9b8e9a80f237c951e6b2fe550dbf">Gondwana.Movement.IMovable</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_movable_base_8cs_source.html#l00137">137</a> of file <a class="el" href="_direct_drawing_movable_base_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 
 </div>
 </div>

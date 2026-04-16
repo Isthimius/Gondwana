@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hidetileoncycleend_0',['HideTileOnCycleEnd',['../class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#aa8d214d9dcc85f9ac8990a61149816b5',1,'Gondwana::Drawing::Animation::Cycle']]]
+  ['grosscps_0',['GrossCPS',['../class_gondwana_1_1_cycles_per_second_calculated_event_args.html#a037cfb72bc48bb3952d4a5c74572bb7d',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]]
 ];

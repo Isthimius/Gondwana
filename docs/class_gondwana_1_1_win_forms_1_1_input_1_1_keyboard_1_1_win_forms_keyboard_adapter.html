@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -110,17 +110,26 @@ Inheritance diagram for Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a64a2c27a73493304a4424c192ba424c1" id="r_a64a2c27a73493304a4424c192ba424c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64a2c27a73493304a4424c192ba424c1">PreFilterMessage</a> (ref Message m)</td></tr>
+<tr class="memdesc:a64a2c27a73493304a4424c192ba424c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filters Windows messages to capture keyboard state changes for all key events.  <br /></td></tr>
 <tr class="memitem:a22ff076ad85b9dc1b10ff4fab0ff4d90" id="r_a22ff076ad85b9dc1b10ff4fab0ff4d90"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22ff076ad85b9dc1b10ff4fab0ff4d90">IsDown</a> (int keyCode)</td></tr>
-<tr class="memdesc:a22ff076ad85b9dc1b10ff4fab0ff4d90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the specified platform-agnostic key code is currently down. Key codes should be stable integers agreed upon by the adapter and the engine. For <a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a>, this should be the Windows Virtual-Key code (0..255).  <br /></td></tr>
+<tr class="memdesc:a22ff076ad85b9dc1b10ff4fab0ff4d90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the specified key is currently pressed.  <br /></td></tr>
 <tr class="memitem:a476f818b2ffab018cd1dec46870da891" id="r_a476f818b2ffab018cd1dec46870da891"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a476f818b2ffab018cd1dec46870da891">Dispose</a> ()</td></tr>
+<tr class="memdesc:a476f818b2ffab018cd1dec46870da891"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html" title="Global WinForms key state collector that feeds the KeyboardHandler. Uses IMessageFilter so it sees AL...">WinFormsKeyboardAdapter</a> and removes the message filter.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:adc3e18b48a141885b7931518ec53b009" id="r_adc3e18b48a141885b7931518ec53b009"><td class="memItemLeft" align="right" valign="top">static ? Keys&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc3e18b48a141885b7931518ec53b009">GetKeyFromString</a> (string keyName)</td></tr>
+<tr class="memdesc:adc3e18b48a141885b7931518ec53b009"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to convert a string representation of a key into its corresponding Keys value.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a3e9b6bc38dcd22f6ba500c95ec2ef56f" id="r_a3e9b6bc38dcd22f6ba500c95ec2ef56f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e9b6bc38dcd22f6ba500c95ec2ef56f">CurrentKeyboardModifiers</a><code> [get]</code></td></tr>
-<tr class="memdesc:a3e9b6bc38dcd22f6ba500c95ec2ef56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of modifier keys, such as Shift, Ctrl, and Alt. Must be safe to read from the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> thread at high frequency.  <br /></td></tr>
+<tr class="memdesc:a3e9b6bc38dcd22f6ba500c95ec2ef56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of keyboard modifiers (Shift, Ctrl, Alt).  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Global <a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a> key state collector that feeds the KeyboardHandler. Uses IMessageFilter so it sees ALL key messages (including arrows), regardless of which control has focus or how <a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a> classifies them. </p>
+
+<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00012">12</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a476f818b2ffab018cd1dec46870da891" name="a476f818b2ffab018cd1dec46870da891"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a476f818b2ffab018cd1dec46870da891">&#9670;&#160;</a></span>Dispose()</h2>
@@ -136,6 +145,47 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html" title="Global WinForms key state collector that feeds the KeyboardHandler. Uses IMessageFilter so it sees AL...">WinFormsKeyboardAdapter</a> and removes the message filter. </p>
+
+<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00142">142</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
+
+</div>
+</div>
+<a id="adc3e18b48a141885b7931518ec53b009" name="adc3e18b48a141885b7931518ec53b009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc3e18b48a141885b7931518ec53b009">&#9670;&#160;</a></span>GetKeyFromString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">? Keys Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter.GetKeyFromString </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>keyName</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attempts to convert a string representation of a key into its corresponding Keys value. </p>
+<p>The comparison is case-insensitive. If the provided <em>keyName</em>  does not match a valid Keys enumeration value, a warning is logged and <code>null</code> is returned. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keyName</td><td>The name of the key to parse. This should match a value from the Keys enumeration (e.g., "A", "Enter", "Escape"). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A nullable Keys value representing the parsed key if successful; otherwise, <code>null</code> if the input string is not a valid key name. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00029">29</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -154,9 +204,18 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns true if the specified platform-agnostic key code is currently down. Key codes should be stable integers agreed upon by the adapter and the engine. For <a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a>, this should be the Windows Virtual-Key code (0..255). </p>
+<p>Determines whether the specified key is currently pressed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keyCode</td><td>The virtual key code to check.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the key is currently pressed; otherwise, <code>false</code>.</dd></dl>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html#ad3017d9edeed5d51a700adfa470dc045">Gondwana.Input.Keyboard.IKeyboardAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00105">105</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -174,6 +233,17 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Filters Windows messages to capture keyboard state changes for all key events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The Windows message to filter.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Always returns <code>false</code> to allow the message to continue processing.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00073">73</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -198,9 +268,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the current state of modifier keys, such as Shift, Ctrl, and Alt. Must be safe to read from the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> thread at high frequency. </p>
+<p>Gets the current state of keyboard modifiers (Shift, Ctrl, Alt). </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html#a0c8aab115cdc36a183313a23aff78ab3">Gondwana.Input.Keyboard.IKeyboardAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html#l00052">52</a> of file <a class="el" href="_win_forms_keyboard_adapter_8cs_source.html">WinFormsKeyboardAdapter.cs</a>.</p>
 
 </div>
 </div>

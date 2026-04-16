@@ -3,6 +3,7 @@ var struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle =
     [ "AngularVel", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#a66406cf643202c7241c9918faa2393ef", null ],
     [ "AX", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#a538b822b7843ffec2f05adb326d30318", null ],
     [ "AY", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#a24febb21f2566fe4b575595ffbc0e135", null ],
+    [ "BlendMode", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#ae381032a87aa7d1c48f16a3258628ce2", null ],
     [ "Color", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#ac03a9581e3197c8c93684332376c666a", null ],
     [ "Life", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#a173f4cab10e283e789d44f96154c11bf", null ],
     [ "MaxLife", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#a6ef712973e17e328a7f198aac616bb81", null ],

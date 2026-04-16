@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -109,6 +109,8 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the current and transitional state of a mouse button, tracking whether the button is currently held down and whether press or release events occurred in the current polling interval. This structure is typically used to detect button state changes and differentiate between continuous button holds and momentary press/release actions. </p>
+
+<p class="definition">Definition at line <a class="el" href="_mouse_button_state_8cs_source.html#l00009">9</a> of file <a class="el" href="_mouse_button_state_8cs_source.html">MouseButtonState.cs</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a54f8c9045f97a0a34280b6dfa880ad3d" name="a54f8c9045f97a0a34280b6dfa880ad3d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a54f8c9045f97a0a34280b6dfa880ad3d">&#9670;&#160;</a></span>IsDown</h2>
@@ -123,6 +125,8 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Indicates whether the mouse button is currently in the down (pressed) state. This value remains true for the entire duration that the button is held down, from the initial press until the button is released. </p>
+
+<p class="definition">Definition at line <a class="el" href="_mouse_button_state_8cs_source.html#l00016">16</a> of file <a class="el" href="_mouse_button_state_8cs_source.html">MouseButtonState.cs</a>.</p>
 
 </div>
 </div>
@@ -140,6 +144,8 @@ Public Attributes</h2></td></tr>
 
 <p>Indicates whether the mouse button transitioned from up to down (was pressed) during the current polling interval. This is true only for the single frame or poll where the button press occurred, making it useful for detecting the exact moment of a button press without responding repeatedly while the button is held down. </p>
 
+<p class="definition">Definition at line <a class="el" href="_mouse_button_state_8cs_source.html#l00024">24</a> of file <a class="el" href="_mouse_button_state_8cs_source.html">MouseButtonState.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae938c31a8f18ded729b57529d7f205de" name="ae938c31a8f18ded729b57529d7f205de"></a>
@@ -155,6 +161,8 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Indicates whether the mouse button transitioned from down to up (was released) during the current polling interval. This is true only for the single frame or poll where the button release occurred, making it useful for detecting the exact moment of a button release and responding to completed click actions. </p>
+
+<p class="definition">Definition at line <a class="el" href="_mouse_button_state_8cs_source.html#l00032">32</a> of file <a class="el" href="_mouse_button_state_8cs_source.html">MouseButtonState.cs</a>.</p>
 
 </div>
 </div>

@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -126,6 +126,8 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides data for events that report calculated cycles per second (CPS) performance metrics. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames. </p>
+
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00011">11</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af10277cacdc753884d4205c68be5563b" name="af10277cacdc753884d4205c68be5563b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af10277cacdc753884d4205c68be5563b">&#9670;&#160;</a></span>CyclesPerSecondCalculatedEventArgs()</h2>
@@ -173,6 +175,8 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00067">67</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -194,6 +198,8 @@ Public Attributes</h2></td></tr>
 <p>Returns a formatted string representation of the performance metrics, including total cycle counts, sampling time, and calculated rates. This provides a human-readable summary of all performance data suitable for logging, debugging, or display purposes. </p>
 <dl class="section return"><dt>Returns</dt><dd>A multi-line string containing formatted performance metrics with the following information: total gross cycles, total net cycles, sampling time in seconds, gross CPS, and net CPS (FPS). </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00085">85</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -211,6 +217,8 @@ Public Attributes</h2></td></tr>
 
 <p>The calculated gross cycles per second rate, representing how many engine cycles occurred per second during the sampling period. This includes all cycles regardless of whether they produced rendered output. </p>
 
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00033">33</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a id="a1c87063c8632163cc66fd59e827dbe61" name="a1c87063c8632163cc66fd59e827dbe61"></a>
@@ -226,6 +234,8 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The calculated net cycles per second rate, representing the effective frame rate (FPS). This value indicates how many rendered frames or meaningful engine cycles occurred per second during the sampling period, providing the most relevant performance metric for visual smoothness. </p>
+
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00040">40</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -243,6 +253,8 @@ Public Attributes</h2></td></tr>
 
 <p>The duration of the sampling period in seconds over which the cycle counts and rates were measured. This time window determines the granularity and accuracy of the CPS calculations. </p>
 
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00046">46</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a id="a20034b542a1e5fa8af5675d982ef3568" name="a20034b542a1e5fa8af5675d982ef3568"></a>
@@ -259,6 +271,8 @@ Public Attributes</h2></td></tr>
 
 <p>The total number of gross cycles counted during the sampling period. Gross cycles represent all engine update cycles, including those that may not have resulted in a rendered frame. This value provides insight into the engine's overall processing activity. </p>
 
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00019">19</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a id="a89ac609fc26ace2c12b4316c24aa9e6c" name="a89ac609fc26ace2c12b4316c24aa9e6c"></a>
@@ -274,6 +288,8 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The total number of net cycles counted during the sampling period. Net cycles typically represent engine update cycles that resulted in rendered frames, providing a more accurate measure of visible performance and frame delivery. </p>
+
+<p class="definition">Definition at line <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html#l00026">26</a> of file <a class="el" href="_cycles_per_second_calculated_event_args_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>

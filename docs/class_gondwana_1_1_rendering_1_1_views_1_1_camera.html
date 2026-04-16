@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -149,6 +149,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a world-space camera for a <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a>. The camera tracks a world-space upper-left position in pixels and is used by <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> to determine which part of the <a class="el" href="class_gondwana_1_1_scenes_1_1_scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> is visible. It supports snapping, smooth follow, dead zones, and clamping to world bounds. </p>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00016">16</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a4ff77567709299bc35c86bb803a3c2c2" name="a4ff77567709299bc35c86bb803a3c2c2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4ff77567709299bc35c86bb803a3c2c2">&#9670;&#160;</a></span>AnimateCenterOnGrid()</h2>
@@ -181,6 +183,8 @@ Properties</h2></td></tr>
 
 <p>Smoothly pans the camera until the specified grid tile is centered in the view. Uses the given follow speed for the motion. </p>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00153">153</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="a7ae2188de1edff562ece539033cb75dc" name="a7ae2188de1edff562ece539033cb75dc"></a>
@@ -205,6 +209,8 @@ Properties</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00100">100</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -234,6 +240,8 @@ Properties</h2></td></tr>
 
 <p>Instantly centers the camera on the specified tile in the given <a class="el" href="class_gondwana_1_1_scenes_1_1_scene_layer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. The tile's visual center is placed at the center of the view. </p>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00112">112</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6e833771207933086408610b4c50c5b2" name="a6e833771207933086408610b4c50c5b2"></a>
@@ -252,6 +260,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Clears any active follow or pan targets; the camera remains at its current position until moved again. </p>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00468">468</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -283,6 +293,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00342">342</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="a45edc63ad6a2ab528d6992b6b9469035" name="a45edc63ad6a2ab528d6992b6b9469035"></a>
@@ -310,6 +322,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Makes the camera follow an IMovable-on-SceneLayer so that the object stays centered in the view. Supports both grid-space and pixel-space movement, using the current coordinate system for the layer. </p>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00367">367</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -339,6 +353,8 @@ Properties</h2></td></tr>
 
 <p>Smoothly follows an <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it horizontally only. Vertical camera position is left unchanged. </p>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00392">392</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="a58ae46c4104f3905f4d6d4b066543445" name="a58ae46c4104f3905f4d6d4b066543445"></a>
@@ -367,6 +383,8 @@ Properties</h2></td></tr>
 
 <p>Smoothly follows an <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it vertically only. Horizontal camera position is left unchanged. </p>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00430">430</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="abefaa18f075ae51b56ee2a23305902f1" name="abefaa18f075ae51b56ee2a23305902f1"></a>
@@ -393,6 +411,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00356">356</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae49406b652e17dd718e8b9399bcec323" name="ae49406b652e17dd718e8b9399bcec323"></a>
@@ -411,6 +431,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 </div><div class="memdoc">
 
 <p>Instantly pans the camera by the given offset in world-space pixels. This adds the offset to the current camera position without changing any follow or pan targets. </p>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00321">321</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -442,6 +464,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00140">140</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6bc4d9a3853420841d9f039081f3e098" name="a6bc4d9a3853420841d9f039081f3e098"></a>
@@ -471,6 +495,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00206">206</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -502,6 +528,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00273">273</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae1f3712f1ccf72cdc5408c7a6d481f9e" name="ae1f3712f1ccf72cdc5408c7a6d481f9e"></a>
@@ -531,6 +559,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00175">175</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -574,6 +604,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00301">301</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="abb52e521de612f2b995cacf222c7bee9" name="abb52e521de612f2b995cacf222c7bee9"></a>
@@ -604,6 +636,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00233">233</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="a45fa0711e7409bb9b947df1cbd090a3d" name="a45fa0711e7409bb9b947df1cbd090a3d"></a>
@@ -628,6 +662,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00087">87</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -654,6 +690,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 <p>Size of the dead zone, in pixels, around the center of the view where the follow target is allowed to move without forcing the camera to track it. A larger dead zone produces a looser, less reactive camera. </p>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00060">60</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="a44856449f475bd2c38c8910206eaa23a" name="a44856449f475bd2c38c8910206eaa23a"></a>
@@ -677,6 +715,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 </div><div class="memdoc">
 
 <p>Controls how quickly the camera moves toward its follow target when smooth follow is enabled. Interpreted as a lerp factor per second: higher values feel snappier, lower values feel more floaty. </p>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00067">67</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -702,6 +742,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 <p>Gets or sets the camera's world-space position in pixels, interpreted as the upper-left corner of the visible region. All world-to-screen projections for this camera are based on this position. </p>
 
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00033">33</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
+
 </div>
 </div>
 <a id="ad5075dc2214fb86d602df53f6d6347ff" name="ad5075dc2214fb86d602df53f6d6347ff"></a>
@@ -725,6 +767,8 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 </div><div class="memdoc">
 
 <p>World-space rectangle (in pixels) that the camera is allowed to move within. Clamping logic uses this to prevent the view from scrolling past the edges of the world or map. </p>
+
+<p class="definition">Definition at line <a class="el" href="_camera_8cs_source.html#l00053">53</a> of file <a class="el" href="_camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>

@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -142,9 +142,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a93ae6a42470c6e5c37e99ef34619fedd" id="r_a93ae6a42470c6e5c37e99ef34619fedd"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a93ae6a42470c6e5c37e99ef34619fedd">Name</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a93ae6a42470c6e5c37e99ef34619fedd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the name of this tilesheet. Changing the name updates the tilesheet's registration in the <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet_registry.html" title="Thread-safe singleton registry for Tilesheet instances.">TilesheetRegistry</a>.  <br /></td></tr>
 <tr class="memitem:ad0261337508ae6519512757b1b4bbc72" id="r_ad0261337508ae6519512757b1b4bbc72"><td class="memItemLeft" align="right" valign="top">Size&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0261337508ae6519512757b1b4bbc72">TileSize</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:ad0261337508ae6519512757b1b4bbc72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the size of each individual tile in the tilesheet (without overhang). Setting this property rebuilds the internal tile cache.  <br /></td></tr>
+<tr class="memdesc:ad0261337508ae6519512757b1b4bbc72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the size of each individual tile in the tilesheet. Setting this property rebuilds the internal tile cache.  <br /></td></tr>
 <tr class="memitem:a090f3d18fd676e5dcd7608c404b9f41d" id="r_a090f3d18fd676e5dcd7608c404b9f41d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_drawing.html#a6fce70584993e761e53ab83006f77912">Overhang</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a090f3d18fd676e5dcd7608c404b9f41d">OverhangPixels</a> = Overhang.None<code> [get, set]</code></td></tr>
-<tr class="memdesc:a090f3d18fd676e5dcd7608c404b9f41d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries.  <br /></td></tr>
+<tr class="memdesc:a090f3d18fd676e5dcd7608c404b9f41d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries; i.e., how much of the tile should be considered the "overhang" portion when rendering.  <br /></td></tr>
 <tr class="memitem:a5cb4014ea43f6e9b7ea8fdaa7bfd7804" id="r_a5cb4014ea43f6e9b7ea8fdaa7bfd7804"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cb4014ea43f6e9b7ea8fdaa7bfd7804">InitialOffsetX</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a5cb4014ea43f6e9b7ea8fdaa7bfd7804"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the horizontal offset (in pixels) from the left edge of the tilesheet to the first tile. Setting this property rebuilds the internal tile cache.  <br /></td></tr>
 <tr class="memitem:a97fe6a57319b45a6b39dcf0025573986" id="r_a97fe6a57319b45a6b39dcf0025573986"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97fe6a57319b45a6b39dcf0025573986">InitialOffsetY</a><code> [get, set]</code></td></tr>
@@ -175,6 +175,8 @@ Events</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a tilesheet image and metadata for rendering tiles. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00014">14</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6188d744e6154a7f6855727cadaa45aa" name="a6188d744e6154a7f6855727cadaa45aa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6188d744e6154a7f6855727cadaa45aa">&#9670;&#160;</a></span>Tilesheet() <span class="overload">[1/5]</span></h2>
@@ -203,6 +205,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00043">43</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -240,6 +244,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00057">57</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a02e4784d4e3ade7fb28b32f3787292cd" name="a02e4784d4e3ade7fb28b32f3787292cd"></a>
@@ -275,6 +281,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00066">66</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -314,6 +322,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00080">80</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="acd75c0030e5c721f4ebb053cc3c1c747" name="acd75c0030e5c721f4ebb053cc3c1c747"></a>
@@ -349,6 +359,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00115">115</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -387,6 +399,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00313">313</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4d352c40b4c8e243323726fc60396909" name="a4d352c40b4c8e243323726fc60396909"></a>
@@ -412,6 +426,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00357">357</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a8048a44ff4133047244f5f4e9e7b7876" name="a8048a44ff4133047244f5f4e9e7b7876"></a>
@@ -430,6 +446,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Releases all resources used by this tilesheet, including cached tiles, bitmaps, and registration in the <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet_registry.html" title="Thread-safe singleton registry for Tilesheet instances.">TilesheetRegistry</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00583">583</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -451,6 +469,8 @@ Events</h2></td></tr>
 <p>Retrieves all tile bitmaps from the tilesheet as a dictionary indexed by their coordinates. </p>
 <dl class="section return"><dt>Returns</dt><dd>A dictionary where keys are (x, y) tuples representing tile coordinates and values are the corresponding SKBitmap instances. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00510">510</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a5bd0b7ebf333b9250ff64889f74356f3" name="a5bd0b7ebf333b9250ff64889f74356f3"></a>
@@ -470,6 +490,8 @@ Events</h2></td></tr>
 
 <p>Retrieves all tile images from the tilesheet as a dictionary indexed by their coordinates. </p>
 <dl class="section return"><dt>Returns</dt><dd>A dictionary where keys are (x, y) tuples representing tile coordinates and values are the corresponding SKImage instances. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00542">542</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -502,6 +524,8 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The SKBitmap for the specified tile, or <code>null</code> if the coordinates are out of bounds or the tile cache is not initialized. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00489">489</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a56cdf6270513999df3f56ddcabab821e" name="a56cdf6270513999df3f56ddcabab821e"></a>
@@ -532,6 +556,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The SKImage for the specified tile, or <code>null</code> if the coordinates are out of bounds or the tile cache is not initialized. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00466">466</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -570,6 +596,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00376">376</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -595,6 +623,8 @@ Events</h2></td></tr>
 
 <p>Gets the asset identifier if this tilesheet was loaded from an assets file. Returns <code>null</code> if the tilesheet was loaded from another source. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00276">276</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab128d8f8c07a397659c042d22f38bb7a" name="ab128d8f8c07a397659c042d22f38bb7a"></a>
@@ -618,6 +648,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the file path of the image file if this tilesheet was loaded from a file. Returns an empty string if the tilesheet was loaded from another source. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00283">283</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -643,6 +675,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets the horizontal offset (in pixels) from the left edge of the tilesheet to the first tile. Setting this property rebuilds the internal tile cache. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00201">201</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a97fe6a57319b45a6b39dcf0025573986" name="a97fe6a57319b45a6b39dcf0025573986"></a>
@@ -666,6 +700,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the vertical offset (in pixels) from the top edge of the tilesheet to the first tile. Setting this property rebuilds the internal tile cache. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00219">219</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -691,6 +727,8 @@ Events</h2></td></tr>
 
 <p>Gets the color used for alpha masking, if <a class="el" href="#a319188d2d81776215ec095aa8ae92f0b" title="Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent,...">ApplyMask</a> has been called. Returns <code>null</code> if no mask has been applied. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00290">290</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a49ad16968a869fdcc37342cb3a8a62c4" name="a49ad16968a869fdcc37342cb3a8a62c4"></a>
@@ -714,6 +752,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the tolerance value used when applying the alpha mask. This determines how closely pixels must match the mask color to be made transparent. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00297">297</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -739,6 +779,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets the name of this tilesheet. Changing the name updates the tilesheet's registration in the <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet_registry.html" title="Thread-safe singleton registry for Tilesheet instances.">TilesheetRegistry</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00154">154</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a090f3d18fd676e5dcd7608c404b9f41d" name="a090f3d18fd676e5dcd7608c404b9f41d"></a>
@@ -761,7 +803,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries. </p>
+<p>Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries; i.e., how much of the tile should be considered the "overhang" portion when rendering. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00191">191</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -787,6 +831,8 @@ Events</h2></td></tr>
 
 <p>Gets a value indicating whether the bitmap has been premultiplied with its alpha channel. This is <code>true</code> after calling <a class="el" href="#a319188d2d81776215ec095aa8ae92f0b" title="Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent,...">ApplyMask</a> or <a class="el" href="#a4d352c40b4c8e243323726fc60396909" title="Premultiplies the alpha channel of the bitmap, improving rendering performance and quality....">ApplyPremultiplyAlpha</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00304">304</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac09643888382111a32e3bc8cc5fd0b47" name="ac09643888382111a32e3bc8cc5fd0b47"></a>
@@ -811,6 +857,8 @@ Events</h2></td></tr>
 
 <p>Gets the <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a> bitmap containing the tilesheet image. This may be a modified version if alpha masking or premultiplication has been applied. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00137">137</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab812c3b15d2a42afb089120be989d36a" name="ab812c3b15d2a42afb089120be989d36a"></a>
@@ -834,6 +882,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the original <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a> bitmap before any alpha masking or premultiplication was applied. Returns <code>null</code> if no modifications have been made. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00144">144</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -866,6 +916,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00574">574</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="ad0261337508ae6519512757b1b4bbc72" name="ad0261337508ae6519512757b1b4bbc72"></a>
@@ -888,7 +940,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the size of each individual tile in the tilesheet (without overhang). Setting this property rebuilds the internal tile cache. </p>
+<p>Gets or sets the size of each individual tile in the tilesheet. Setting this property rebuilds the internal tile cache. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00176">176</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -914,6 +968,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00269">269</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a id="a24ba38a23f29b3e5a48295e191f78921" name="a24ba38a23f29b3e5a48295e191f78921"></a>
@@ -937,6 +993,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the horizontal spacing (in pixels) between tiles in the tilesheet. Setting this property rebuilds the internal tile cache. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00237">237</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -962,6 +1020,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets the vertical spacing (in pixels) between tiles in the tilesheet. Setting this property rebuilds the internal tile cache. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00255">255</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -978,6 +1038,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Occurs when this tilesheet is disposed. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_8cs_source.html#l00033">33</a> of file <a class="el" href="_tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>

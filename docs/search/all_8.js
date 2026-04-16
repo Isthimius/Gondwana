@@ -7,9 +7,8 @@ var searchData=
   ['hexaxialpointedtop_4',['HexAxialPointedTop',['../namespace_gondwana_1_1_drawing_1_1_coordinates.html#ab877f6c99482c3923c816533c12f9ab3aafcf21d2b376f26d04f8ec7022d86e8e',1,'Gondwana::Drawing::Coordinates']]],
   ['hidetileoncycleend_5',['HideTileOnCycleEnd',['../class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#aa8d214d9dcc85f9ac8990a61149816b5',1,'Gondwana::Drawing::Animation::Cycle']]],
   ['hidewhenfullytransparent_6',['HideWhenFullyTransparent',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a3a1c304b55d725c4f002a15556ab79cc',1,'Gondwana::Drawing::Direct::DirectDrawingBase']]],
-  ['high_20level_7',['Core Namespaces (high level)',['../X:/github/isthimius/Gondwana/README.md#autotoc_md8',1,'']]],
-  ['horizalign_8',['HorizAlign',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#aa0c9cb286ffdd480798244f9e07a66ab',1,'Gondwana::Drawing::Sprites::Sprite']]],
-  ['horizontalalignment_9',['HorizontalAlignment',['../namespace_gondwana_1_1_drawing_1_1_sprites.html#ab3dde0a5b955ae7bce32212444fdf778',1,'Gondwana::Drawing::Sprites']]],
-  ['horizontalpadding_10',['HorizontalPadding',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a34b030cbc1c2cb02b7018546f027c662',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['host_11',['Host',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_control.html#a3248b336b58d8d9203687ea77e5a3bf1',1,'Gondwana::WinForms::Rendering::WinFormBitmapRenderSurfaceControl']]]
+  ['horizalign_7',['HorizAlign',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#aa0c9cb286ffdd480798244f9e07a66ab',1,'Gondwana::Drawing::Sprites::Sprite']]],
+  ['horizontalalignment_8',['HorizontalAlignment',['../namespace_gondwana_1_1_drawing_1_1_sprites.html#ab3dde0a5b955ae7bce32212444fdf778',1,'Gondwana::Drawing::Sprites']]],
+  ['horizontalpadding_9',['HorizontalPadding',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a34b030cbc1c2cb02b7018546f027c662',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['host_10',['Host',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_control.html#a3248b336b58d8d9203687ea77e5a3bf1',1,'Gondwana::WinForms::Rendering::WinFormBitmapRenderSurfaceControl']]]
 ];

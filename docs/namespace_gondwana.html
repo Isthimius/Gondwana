@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -103,6 +103,7 @@ Namespaces</h2></td></tr>
 <tr class="memitem:Configuration" id="r_Configuration"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_configuration.html">Configuration</a></td></tr>
 <tr class="memitem:Drawing" id="r_Drawing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_drawing.html">Drawing</a></td></tr>
 <tr class="memitem:Extensibility" id="r_Extensibility"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_extensibility.html">Extensibility</a></td></tr>
+<tr class="memitem:Hosting" id="r_Hosting"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_hosting.html">Hosting</a></td></tr>
 <tr class="memitem:Input" id="r_Input"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_input.html">Input</a></td></tr>
 <tr class="memitem:Logging" id="r_Logging"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_logging.html">Logging</a></td></tr>
 <tr class="memitem:Movement" id="r_Movement"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_movement.html">Movement</a></td></tr>
@@ -123,14 +124,20 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides thread-safe dispatching of actions to the engine's background thread. This dispatcher allows external code to safely post work items that should execute on the engine's dedicated update loop thread, ensuring thread-safe access to engine state.  <a href="class_gondwana_1_1_engine_dispatcher.html#details">More...</a><br /></td></tr>
 <tr class="memitem:EngineInfo" id="r_EngineInfo"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>EngineInfo</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides static information about the <a class="el" href="namespace_gondwana.html">Gondwana</a> engine, including version details. This class offers convenient access to engine metadata derived from assembly attributes and file version information. <br /></td></tr>
+<tr class="memitem:EngineInputSystems" id="r_EngineInputSystems"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_engine_input_systems.html">EngineInputSystems</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides centralized access to all the input systems of the engine, including gamepad, keyboard, and mouse input.  <a href="class_gondwana_1_1_engine_input_systems.html#details">More...</a><br /></td></tr>
+<tr class="memitem:EngineManagers" id="r_EngineManagers"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_engine_managers.html">EngineManagers</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides centralized access to all engine resource managers.  <a href="class_gondwana_1_1_engine_managers.html#details">More...</a><br /></td></tr>
 <tr class="memitem:EngineState" id="r_EngineState"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_engine_state.html">EngineState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the complete serializable state of the game engine, including assets, scenes, sprites, audio resources, and custom data. This class provides functionality to save and load engine state to/from files with support for selective state management, compression, and merge operations. The state can be persisted as JSON and optionally compressed using GZip compression.  <a href="class_gondwana_1_1_engine_state.html#details">More...</a><br /></td></tr>
+<tr class="memitem:IDeepCloneable_3C_20out_20T_20_3E" id="r_IDeepCloneable_3C_20out_20T_20_3E"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_i_deep_cloneable-1-g.html">IDeepCloneable&lt; out T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a lightweight contract for values that can produce an explicit deep clone of themselves.  <a href="interface_gondwana_1_1_i_deep_cloneable-1-g.html#details">More...</a><br /></td></tr>
 <tr class="memitem:IEngineDispatcher" id="r_IEngineDispatcher"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_i_engine_dispatcher.html">IEngineDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a contract for dispatching actions to the engine's background thread in a thread-safe manner. Implementations of this interface provide mechanisms for posting work items from any thread to be executed on the engine's dedicated update loop thread, ensuring thread-safe access to engine state.  <a href="interface_gondwana_1_1_i_engine_dispatcher.html#details">More...</a><br /></td></tr>
 <tr class="memitem:IUiDispatcher" id="r_IUiDispatcher"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_i_ui_dispatcher.html">IUiDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a contract for dispatching actions to the UI thread in a thread-safe manner. Implementations of this interface provide mechanisms for posting or sending work items from any thread to be executed on the application's main UI thread, ensuring thread-safe access to UI components and controls.  <a href="interface_gondwana_1_1_i_ui_dispatcher.html#details">More...</a><br /></td></tr>
 <tr class="memitem:TypedValueBag" id="r_TypedValueBag"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A flexible, strongly-typed value container intended for save-state extensibility.  <a href="class_gondwana_1_1_typed_value_bag.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engine state.  <a href="class_gondwana_1_1_typed_value_bag.html#details">More...</a><br /></td></tr>
 <tr class="memitem:UiDispatcher" id="r_UiDispatcher"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_ui_dispatcher.html">UiDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a concrete implementation of <a class="el" href="interface_gondwana_1_1_i_ui_dispatcher.html" title="Defines a contract for dispatching actions to the UI thread in a thread-safe manner....">IUiDispatcher</a> for dispatching actions to the UI thread using a SynchronizationContext. This class enables thread-safe marshalling of operations from background threads to the application's main UI thread.  <a href="class_gondwana_1_1_ui_dispatcher.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
@@ -155,7 +162,7 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aaea774e0d5709f3c95b3bb8e843c97e3" id="r_aaea774e0d5709f3c95b3bb8e843c97e3"><td class="memTemplParams" colspan="2">readonly record struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaea774e0d5709f3c95b3bb8e843c97e3">ValueKey&lt; T &gt;</a> (string Name)</td></tr>
-<tr class="memdesc:aaea774e0d5709f3c95b3bb8e843c97e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a strongly-typed key used to access values in a <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a>.  <br /></td></tr>
+<tr class="memdesc:aaea774e0d5709f3c95b3bb8e843c97e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a strongly-typed key used to access values in a <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a>.  <br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
 <a id="a41a5393997f1467717cf9a6ca9281575" name="a41a5393997f1467717cf9a6ca9281575"></a>
@@ -192,6 +199,8 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
+<p class="definition">Definition at line <a class="el" href="_engine_state_parts_8cs_source.html#l00011">11</a> of file <a class="el" href="_engine_state_parts_8cs_source.html">EngineStateParts.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
@@ -210,11 +219,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Represents a strongly-typed key used to access values in a <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a>. </p>
-<p>The generic type parameter <em>T</em>  defines the expected value type associated with the key, enabling compile-time type safety while allowing the underlying storage to remain flexible. </p>
+<p>Represents a strongly-typed key used to access values in a <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a>. </p>
+<p>The generic type parameter <em>T</em>  defines the expected runtime type associated with the key. This allows the value bag to remain flexible internally while still providing compile-time type safety to callers. </p>
+<p>In practical terms, a ValueKey&lt;T&gt; is the contract between the caller and the bag: the caller declares, up front, the type that is intended to be stored and later retrieved for a given logical name. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">T</td><td>The type of value associated with this key. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Name</td><td>The unique logical name of the value. </td></tr>
   </table>
   </dd>
 </dl>

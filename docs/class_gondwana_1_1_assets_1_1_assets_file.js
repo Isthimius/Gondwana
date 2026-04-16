@@ -1,7 +1,8 @@
 var class_gondwana_1_1_assets_1_1_assets_file =
 [
-    [ "Add", "class_gondwana_1_1_assets_1_1_assets_file.html#aee0aaf93af833a17b1c670cbd5d05baf", null ],
+    [ "Add", "class_gondwana_1_1_assets_1_1_assets_file.html#ac4e3708f6785b483285b2e56866095cb", null ],
     [ "Add", "class_gondwana_1_1_assets_1_1_assets_file.html#afc1146dc0f499bbb78b1fe276f960ad6", null ],
+    [ "Add", "class_gondwana_1_1_assets_1_1_assets_file.html#a379a1724f6a74018b39756b46a758f0d", null ],
     [ "Dispose", "class_gondwana_1_1_assets_1_1_assets_file.html#a724db91fd9088bfdd49e7e5a4942580f", null ],
     [ "Get", "class_gondwana_1_1_assets_1_1_assets_file.html#af83feec6975360ffad01a659951dd7c9", null ],
     [ "GetAllEntries", "class_gondwana_1_1_assets_1_1_assets_file.html#af8bb8694cce3766a02ba24f6877af7d3", null ],

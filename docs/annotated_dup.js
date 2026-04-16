@@ -2,6 +2,9 @@ var annotated_dup =
 [
     [ "Gondwana", "namespace_gondwana.html", [
       [ "Assets", "namespace_gondwana_1_1_assets.html", [
+        [ "WinForms", "namespace_gondwana_1_1_assets_1_1_win_forms.html", [
+          [ "MainForm", "class_gondwana_1_1_assets_1_1_win_forms_1_1_main_form.html", "class_gondwana_1_1_assets_1_1_win_forms_1_1_main_form" ]
+        ] ],
         [ "AssetsFile", "class_gondwana_1_1_assets_1_1_assets_file.html", "class_gondwana_1_1_assets_1_1_assets_file" ],
         [ "AssetsFileEntry", "class_gondwana_1_1_assets_1_1_assets_file_entry.html", "class_gondwana_1_1_assets_1_1_assets_file_entry" ],
         [ "AssetsFileIdentifier", "class_gondwana_1_1_assets_1_1_assets_file_identifier.html", "class_gondwana_1_1_assets_1_1_assets_file_identifier" ]
@@ -40,6 +43,10 @@ var annotated_dup =
           [ "TileCollider", "class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider.html", "class_gondwana_1_1_drawing_1_1_collisions_1_1_tile_collider" ]
         ] ],
         [ "Direct", "namespace_gondwana_1_1_drawing_1_1_direct.html", [
+          [ "ImageLayer", "namespace_gondwana_1_1_drawing_1_1_direct_1_1_image_layer.html", [
+            [ "ImageInstance", "class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance.html", "class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance" ],
+            [ "ImageInstanceLayer", "class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html", "class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer" ]
+          ] ],
           [ "Particles", "namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html", [
             [ "Particle", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html", "struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle" ],
             [ "ParticleEmitter", "class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html", "class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter" ],
@@ -58,6 +65,7 @@ var annotated_dup =
         [ "Sprites", "namespace_gondwana_1_1_drawing_1_1_sprites.html", [
           [ "CompositeSprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite" ],
           [ "Sprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite" ],
+          [ "SpriteManager", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_manager.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_manager" ],
           [ "SpriteMovedEventArgs", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_moved_event_args.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_moved_event_args" ]
         ] ],
         [ "Tilesheets", "namespace_gondwana_1_1_drawing_1_1_tilesheets.html", [
@@ -69,8 +77,15 @@ var annotated_dup =
         [ "IDrawable", "interface_gondwana_1_1_drawing_1_1_i_drawable.html", "interface_gondwana_1_1_drawing_1_1_i_drawable" ],
         [ "Tile", "class_gondwana_1_1_drawing_1_1_tile.html", "class_gondwana_1_1_drawing_1_1_tile" ]
       ] ],
+      [ "Hosting", "namespace_gondwana_1_1_hosting.html", [
+        [ "GameHostBase", "class_gondwana_1_1_hosting_1_1_game_host_base.html", "class_gondwana_1_1_hosting_1_1_game_host_base" ]
+      ] ],
       [ "Input", "namespace_gondwana_1_1_input.html", [
         [ "Gamepad", "namespace_gondwana_1_1_input_1_1_gamepad.html", [
+          [ "SDL2", "namespace_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2.html", [
+            [ "SdlGamepadAdapter", "class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter" ],
+            [ "SdlGamepadManager", "class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager" ]
+          ] ],
           [ "GamepadButtonDownEventArgs", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_down_event_args.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_down_event_args" ],
           [ "GamepadButtonEventConfiguration", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration" ],
           [ "GamepadEventPoller", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller" ],
@@ -111,6 +126,9 @@ var annotated_dup =
           [ "BitmapBackbuffer", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer" ],
           [ "GpuBackbuffer", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer.html", "class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer" ]
         ] ],
+        [ "Text", "namespace_gondwana_1_1_rendering_1_1_text.html", [
+          [ "FontManager", "class_gondwana_1_1_rendering_1_1_text_1_1_font_manager.html", "class_gondwana_1_1_rendering_1_1_text_1_1_font_manager" ]
+        ] ],
         [ "Views", "namespace_gondwana_1_1_rendering_1_1_views.html", [
           [ "Camera", "class_gondwana_1_1_rendering_1_1_views_1_1_camera.html", "class_gondwana_1_1_rendering_1_1_views_1_1_camera" ],
           [ "View", "class_gondwana_1_1_rendering_1_1_views_1_1_view.html", "class_gondwana_1_1_rendering_1_1_views_1_1_view" ],
@@ -140,12 +158,11 @@ var annotated_dup =
         [ "VlcVideoPlayer", "class_gondwana_1_1_video_1_1_vlc_video_player.html", "class_gondwana_1_1_video_1_1_vlc_video_player" ]
       ] ],
       [ "WinForms", "namespace_gondwana_1_1_win_forms.html", [
+        [ "Hosting", "namespace_gondwana_1_1_win_forms_1_1_hosting.html", [
+          [ "WinFormsGameHost", "class_gondwana_1_1_win_forms_1_1_hosting_1_1_win_forms_game_host.html", "class_gondwana_1_1_win_forms_1_1_hosting_1_1_win_forms_game_host" ]
+        ] ],
         [ "Input", "namespace_gondwana_1_1_win_forms_1_1_input.html", [
           [ "Gamepad", "namespace_gondwana_1_1_win_forms_1_1_input_1_1_gamepad.html", [
-            [ "SDL2", "namespace_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2.html", [
-              [ "SdlGamepadAdapter", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter" ],
-              [ "SdlGamepadManager", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager" ]
-            ] ],
             [ "XInput", "namespace_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input.html", [
               [ "XInputGamepadAdapter", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter" ],
               [ "XInputGamepadManager", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html", "class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager" ]
@@ -168,7 +185,10 @@ var annotated_dup =
       [ "CyclesPerSecondCalculatedEventArgs", "class_gondwana_1_1_cycles_per_second_calculated_event_args.html", "class_gondwana_1_1_cycles_per_second_calculated_event_args" ],
       [ "Engine", "class_gondwana_1_1_engine.html", "class_gondwana_1_1_engine" ],
       [ "EngineDispatcher", "class_gondwana_1_1_engine_dispatcher.html", "class_gondwana_1_1_engine_dispatcher" ],
+      [ "EngineInputSystems", "class_gondwana_1_1_engine_input_systems.html", "class_gondwana_1_1_engine_input_systems" ],
+      [ "EngineManagers", "class_gondwana_1_1_engine_managers.html", "class_gondwana_1_1_engine_managers" ],
       [ "EngineState", "class_gondwana_1_1_engine_state.html", "class_gondwana_1_1_engine_state" ],
+      [ "IDeepCloneable< out T >", "interface_gondwana_1_1_i_deep_cloneable-1-g.html", "interface_gondwana_1_1_i_deep_cloneable-1-g" ],
       [ "IEngineDispatcher", "interface_gondwana_1_1_i_engine_dispatcher.html", "interface_gondwana_1_1_i_engine_dispatcher" ],
       [ "IUiDispatcher", "interface_gondwana_1_1_i_ui_dispatcher.html", "interface_gondwana_1_1_i_ui_dispatcher" ],
       [ "TypedValueBag", "class_gondwana_1_1_typed_value_bag.html", "class_gondwana_1_1_typed_value_bag" ],

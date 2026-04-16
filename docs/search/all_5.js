@@ -24,14 +24,17 @@ var searchData=
   ['enablefog_21',['EnableFog',['../class_gondwana_1_1_drawing_1_1_tile.html#a0862275089f09bfb25738641365856f6',1,'Gondwana::Drawing::Tile']]],
   ['enablewrapping_22',['EnableWrapping',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a62f638ca17a897a139546d7e3efa1c1b',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['ended_23',['Ended',['../interface_gondwana_1_1_video_1_1_i_video_player.html#aaf84952557188d186564bd1dc7ac240a',1,'Gondwana.Video.IVideoPlayer.Ended'],['../class_gondwana_1_1_video_1_1_vlc_video_player.html#a6325567a53b7a36a6a32003ef520c242',1,'Gondwana.Video.VlcVideoPlayer.Ended']]],
-  ['engine_24',['Engine',['../class_gondwana_1_1_engine.html',1,'Gondwana.Engine'],['../X:/github/isthimius/Gondwana/README.md#autotoc_md0',1,'Gondwana Game Engine']]],
+  ['engine_24',['Engine',['../class_gondwana_1_1_engine.html',1,'Gondwana.Engine'],['../class_gondwana_1_1_hosting_1_1_game_host_base.html#aea7f4a44e1f5292bc86f8b75c9ba791c',1,'Gondwana.Hosting.GameHostBase.Engine']]],
   ['engineconfig_25',['EngineConfig',['../class_gondwana_1_1_configuration_1_1_engine_configuration_file.html#a617d6e239ab02a1a645fa237857fb751',1,'Gondwana::Configuration::EngineConfigurationFile']]],
   ['engineconfiguration_26',['EngineConfiguration',['../class_gondwana_1_1_configuration_1_1_engine_configuration.html',1,'Gondwana::Configuration']]],
   ['engineconfigurationfile_27',['EngineConfigurationFile',['../class_gondwana_1_1_configuration_1_1_engine_configuration_file.html',1,'Gondwana::Configuration']]],
   ['enginedispatcher_28',['EngineDispatcher',['../class_gondwana_1_1_engine_dispatcher.html',1,'Gondwana.EngineDispatcher'],['../class_gondwana_1_1_engine.html#a6d9a264fa4828437d36fe82e77cafc04',1,'Gondwana.Engine.EngineDispatcher']]],
-  ['engineloggingmode_29',['EngineLoggingMode',['../namespace_gondwana_1_1_logging.html#a13d81980428de8344a144441d03b249d',1,'Gondwana::Logging']]],
-  ['enginestate_30',['EngineState',['../class_gondwana_1_1_engine_state.html',1,'Gondwana']]],
-  ['enginestateparts_31',['EngineStateParts',['../namespace_gondwana.html#a41a5393997f1467717cf9a6ca9281575',1,'Gondwana']]],
-  ['equals_32',['Equals',['../class_gondwana_1_1_assets_1_1_assets_file_entry.html#a410fc050c35f7a98ed937eb00b0ebb5b',1,'Gondwana.Assets.AssetsFileEntry.Equals(AssetsFileEntry? other)'],['../class_gondwana_1_1_assets_1_1_assets_file_entry.html#a07cfe4332ee3da419526faef9b1e573a',1,'Gondwana.Assets.AssetsFileEntry.Equals(object? obj)'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aa3708fe5956d7eedb4bef2ed9befda3a',1,'Gondwana.Drawing.Direct.DirectDrawingBase.Equals()']]],
-  ['exception_33',['Exception',['../class_gondwana_1_1_logging_1_1_logging_error_event_args.html#a67ee3791cd338e43da1594fb1fa0dd15',1,'Gondwana::Logging::LoggingErrorEventArgs']]]
+  ['engineinputsystems_29',['EngineInputSystems',['../class_gondwana_1_1_engine_input_systems.html',1,'Gondwana']]],
+  ['engineloggingmode_30',['EngineLoggingMode',['../namespace_gondwana_1_1_logging.html#a13d81980428de8344a144441d03b249d',1,'Gondwana::Logging']]],
+  ['enginemanagers_31',['EngineManagers',['../class_gondwana_1_1_engine_managers.html',1,'Gondwana']]],
+  ['enginestate_32',['EngineState',['../class_gondwana_1_1_engine_state.html',1,'Gondwana']]],
+  ['enginestateparts_33',['EngineStateParts',['../namespace_gondwana.html#a41a5393997f1467717cf9a6ca9281575',1,'Gondwana']]],
+  ['ensurenotdisposed_34',['EnsureNotDisposed',['../class_gondwana_1_1_hosting_1_1_game_host_base.html#af4aac743545c0e74b854d768b69167e5',1,'Gondwana::Hosting::GameHostBase']]],
+  ['equals_35',['Equals',['../class_gondwana_1_1_assets_1_1_assets_file_entry.html#a410fc050c35f7a98ed937eb00b0ebb5b',1,'Gondwana.Assets.AssetsFileEntry.Equals(AssetsFileEntry? other)'],['../class_gondwana_1_1_assets_1_1_assets_file_entry.html#a07cfe4332ee3da419526faef9b1e573a',1,'Gondwana.Assets.AssetsFileEntry.Equals(object? obj)'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#aa3708fe5956d7eedb4bef2ed9befda3a',1,'Gondwana.Drawing.Direct.DirectDrawingBase.Equals()']]],
+  ['exception_36',['Exception',['../class_gondwana_1_1_logging_1_1_logging_error_event_args.html#a67ee3791cd338e43da1594fb1fa0dd15',1,'Gondwana::Logging::LoggingErrorEventArgs']]]
 ];

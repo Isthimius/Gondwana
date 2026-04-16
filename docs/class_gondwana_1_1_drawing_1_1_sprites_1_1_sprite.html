@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -95,7 +95,7 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html
 </div><!--header-->
 <div class="contents">
 
-<p>Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html">Sprites</a> support alignment, positioning, animation, and can be managed through the SpriteManager.  
+<p>Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html">Sprites</a> support alignment, positioning, animation, and can be managed through the <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_manager.html">SpriteManager</a>.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Sprites.Sprite:</div>
@@ -116,17 +116,29 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aecb27b5190b87273097228a1aa4b5806" id="r_aecb27b5190b87273097228a1aa4b5806"><td class="memItemLeft" align="right" valign="top">Vector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecb27b5190b87273097228a1aa4b5806">GetPosition</a> ()</td></tr>
 <tr class="memdesc:aecb27b5190b87273097228a1aa4b5806"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of the sprite in scene layer coordinates.  <br /></td></tr>
 <tr class="memitem:a65e329846630306b9db34241ff8dd670" id="r_a65e329846630306b9db34241ff8dd670"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65e329846630306b9db34241ff8dd670">SetPosition</a> (Vector2 pos)</td></tr>
-<tr class="memdesc:a65e329846630306b9db34241ff8dd670"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the position of the sprite in scene layer coordinates and updates the display.  <br /></td></tr>
+<tr class="memdesc:a65e329846630306b9db34241ff8dd670"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the position of the sprite in scene layer grid coordinates and updates the display.  <br /></td></tr>
 <tr class="memitem:a0786f02005a6fa9358a26bcfe30b5144" id="r_a0786f02005a6fa9358a26bcfe30b5144"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0786f02005a6fa9358a26bcfe30b5144">TranslateWorldPx</a> (int dx, int dy)</td></tr>
 <tr class="memdesc:a0786f02005a6fa9358a26bcfe30b5144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a world-pixel translation. Used by collision resolution.  <br /></td></tr>
 <tr class="memitem:aa3c760f6aeae24f2a907da2f254cc84a" id="r_aa3c760f6aeae24f2a907da2f254cc84a"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3c760f6aeae24f2a907da2f254cc84a">Dispose</a> ()</td></tr>
 <tr class="memdesc:aa3c760f6aeae24f2a907da2f254cc84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the sprite and removes it from the sprite manager.  <br /></td></tr>
+<tr class="memitem:a64553874904dcff4bb976658aa997f87" id="r_a64553874904dcff4bb976658aa997f87"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64553874904dcff4bb976658aa997f87">StartJiggle</a> (float intensityX=2f, float intensityY=2f, float speed=8f, float durationSeconds=0.25f, bool loop=false, bool affectsScale=false, float scaleIntensity=0.02f, bool decay=true)</td></tr>
+<tr class="memdesc:a64553874904dcff4bb976658aa997f87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts a smooth, randomized-looking jiggle animation. This jiggle is visual only and does not modify RenderSize or collision bounds.  <br /></td></tr>
+<tr class="memitem:a5a16d8a24446be95e56def6420f79b5e" id="r_a5a16d8a24446be95e56def6420f79b5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a16d8a24446be95e56def6420f79b5e">StopJiggle</a> ()</td></tr>
+<tr class="memdesc:a5a16d8a24446be95e56def6420f79b5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the current jiggle effect.  <br /></td></tr>
+<tr class="memitem:aec5d4cc99383140c12970518953c2d51" id="r_aec5d4cc99383140c12970518953c2d51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec5d4cc99383140c12970518953c2d51">JiggleOnce</a> (float intensityX=2f, float intensityY=2f, float speed=12f, float durationSeconds=0.18f, bool affectsScale=false, float scaleIntensity=0.015f)</td></tr>
+<tr class="memdesc:aec5d4cc99383140c12970518953c2d51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts a one-shot impact-style jiggle. Handy for hits, invalid selections, bump feedback, and similar moments.  <br /></td></tr>
 <tr class="memitem:a41ec4bfa5ce9b186ce66b2b36df56426" id="r_a41ec4bfa5ce9b186ce66b2b36df56426"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41ec4bfa5ce9b186ce66b2b36df56426">ResizeTo</a> (Size targetSize, float durationSeconds)</td></tr>
-<tr class="memdesc:a41ec4bfa5ce9b186ce66b2b36df56426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly resize the sprite to an absolute pixel size over the given duration (seconds).  <br /></td></tr>
+<tr class="memdesc:a41ec4bfa5ce9b186ce66b2b36df56426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly resize the sprite to an absolute pixel size over the given duration (seconds). This is a one-way resize only.  <br /></td></tr>
 <tr class="memitem:a756c3be01e25b9662a47bdc151466052" id="r_a756c3be01e25b9662a47bdc151466052"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a756c3be01e25b9662a47bdc151466052">ScaleBy</a> (float factor, float durationSeconds)</td></tr>
-<tr class="memdesc:a756c3be01e25b9662a47bdc151466052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale to a factor relative to current RenderSize over the given duration (seconds). factor &gt; 1 grows; factor &lt; 1 shrinks.  <br /></td></tr>
+<tr class="memdesc:a756c3be01e25b9662a47bdc151466052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale to a factor relative to current RenderSize over the given duration (seconds). factor greater than 1 grows; factor less than 1 shrinks. This is a one-way resize only.  <br /></td></tr>
+<tr class="memitem:ac2ebb697c9b81542117ad1eccf6cbe5b" id="r_ac2ebb697c9b81542117ad1eccf6cbe5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2ebb697c9b81542117ad1eccf6cbe5b">PulseTo</a> (Size targetSize, float growDurationSeconds, float shrinkDurationSeconds, bool loop=false)</td></tr>
+<tr class="memdesc:ac2ebb697c9b81542117ad1eccf6cbe5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform a full pulse: resize to the specified absolute target size, then return to the original size. If loop is true, this continues indefinitely until stopped. Collision adjustment scales physically during both legs.  <br /></td></tr>
+<tr class="memitem:a3778b20a48b8eee1a04c0dd3d9aac288" id="r_a3778b20a48b8eee1a04c0dd3d9aac288"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3778b20a48b8eee1a04c0dd3d9aac288">PulseBy</a> (float factor, float growDurationSeconds, float shrinkDurationSeconds, bool loop=false)</td></tr>
+<tr class="memdesc:a3778b20a48b8eee1a04c0dd3d9aac288"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform a pulse animation by scaling the sprite by a factor relative to its current size, then returning to the original size. The sprite can optionally loop this animation continuously.  <br /></td></tr>
+<tr class="memitem:aded93c9ff0f1fef37fc1957e90d72a57" id="r_aded93c9ff0f1fef37fc1957e90d72a57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aded93c9ff0f1fef37fc1957e90d72a57">StopPulse</a> (bool snapBack=true, float returnDuration=0f)</td></tr>
+<tr class="memdesc:aded93c9ff0f1fef37fc1957e90d72a57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the current pulse animation, optionally snapping the sprite back to its original size.  <br /></td></tr>
 <tr class="memitem:ac6e9df3779449c4b2e6874eed9169c26" id="r_ac6e9df3779449c4b2e6874eed9169c26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6e9df3779449c4b2e6874eed9169c26">CancelResize</a> ()</td></tr>
-<tr class="memdesc:ac6e9df3779449c4b2e6874eed9169c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel any in-progress resize.  <br /></td></tr>
+<tr class="memdesc:ac6e9df3779449c4b2e6874eed9169c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel any in-progress resize or pulse.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_gondwana_1_1_drawing_1_1_tile"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_gondwana_1_1_drawing_1_1_tile')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile" id="r_a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a2c2d0e6d13d966cf1faca72bd05a85c9">GetDrawLocationScreen</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
 <tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the tile's world location to screen coordinates based on the specified view.  <br /></td></tr>
@@ -163,6 +175,12 @@ Properties</h2></td></tr>
 <tr class="memdesc:adf54b801271083c8d120f6290277dc99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer that this sprite is attached to.  <br /></td></tr>
 <tr class="memitem:a263cdfc878e8fe4426ba3547c50ded2a" id="r_a263cdfc878e8fe4426ba3547c50ded2a"><td class="memItemLeft" align="right" valign="top">virtual new int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a263cdfc878e8fe4426ba3547c50ded2a">ZOrder</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a263cdfc878e8fe4426ba3547c50ded2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the Z-order (depth) of the sprite for rendering. Higher values are drawn on top. Minimum value is 1.  <br /></td></tr>
+<tr class="memitem:ab1f0bea84e224141f396048c6fa6b8d9" id="r_ab1f0bea84e224141f396048c6fa6b8d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1f0bea84e224141f396048c6fa6b8d9">IsJiggling</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab1f0bea84e224141f396048c6fa6b8d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the sprite is currently jiggling.  <br /></td></tr>
+<tr class="memitem:aa7eed15009b4b4471d7d287a7ce93ece" id="r_aa7eed15009b4b4471d7d287a7ce93ece"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7eed15009b4b4471d7d287a7ce93ece">JiggleOffset</a><code> [get]</code></td></tr>
+<tr class="memdesc:aa7eed15009b4b4471d7d287a7ce93ece"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current visual jiggle offset in screen/world pixels, depending on how the sprite is being drawn.  <br /></td></tr>
+<tr class="memitem:abb6776d5c801d8a943e429d0cf0c284d" id="r_abb6776d5c801d8a943e429d0cf0c284d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb6776d5c801d8a943e429d0cf0c284d">JiggleScale</a><code> [get]</code></td></tr>
+<tr class="memdesc:abb6776d5c801d8a943e429d0cf0c284d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current visual jiggle scale multiplier. This is intended to be applied at draw time only.  <br /></td></tr>
 <tr class="inherit_header properties_class_gondwana_1_1_drawing_1_1_tile"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_class_gondwana_1_1_drawing_1_1_tile')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:ac3ae883651077bbeed079cd372670fcd inherit properties_class_gondwana_1_1_drawing_1_1_tile" id="r_ac3ae883651077bbeed079cd372670fcd"><td class="memItemLeft" align="right" valign="top">static List&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html">Tile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#ac3ae883651077bbeed079cd372670fcd">TilesAnimating</a> = new()<code> [get]</code></td></tr>
 <tr class="memdesc:ac3ae883651077bbeed079cd372670fcd inherit properties_class_gondwana_1_1_drawing_1_1_tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of all tiles that are currently animating in the scene. Used to track and update animated tiles during the render cycle.  <br /></td></tr>
@@ -211,6 +229,8 @@ Events</h2></td></tr>
 <tr class="memdesc:a4d4ae3cd00aac852e64f8e3d49a41170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the sprite has moved to a new position on the scene layer.  <br /></td></tr>
 <tr class="memitem:a2518d4feddc38b4ee9cd509f7ccc5b2b" id="r_a2518d4feddc38b4ee9cd509f7ccc5b2b"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html">Sprite</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2518d4feddc38b4ee9cd509f7ccc5b2b">Disposing</a></td></tr>
 <tr class="memdesc:a2518d4feddc38b4ee9cd509f7ccc5b2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the sprite is being disposed.  <br /></td></tr>
+<tr class="memitem:af86cda257f1816701516db876fc64453" id="r_af86cda257f1816701516db876fc64453"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af86cda257f1816701516db876fc64453">ResizeComplete</a></td></tr>
+<tr class="memdesc:af86cda257f1816701516db876fc64453"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event is raised when a resize or pulse animation completes its current leg. For a one-shot resize, this is when the target size is reached. For a pulse, this is raised at the end of each leg (original-&gt;peak and peak-&gt;original). If the pulse is not looping, then the event is raised at the end of the full cycle (back to original). This event is also raised if the resize is cancelled.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -219,7 +239,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1 inherit pro_attribs_class_gondwana_1_1_drawing_1_1_tile" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html">Sprites</a> support alignment, positioning, animation, and can be managed through the SpriteManager. </p>
+<div class="textblock"><p>Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_sprites.html">Sprites</a> support alignment, positioning, animation, and can be managed through the <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_manager.html">SpriteManager</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00018">18</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ac6e9df3779449c4b2e6874eed9169c26" name="ac6e9df3779449c4b2e6874eed9169c26"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6e9df3779449c4b2e6874eed9169c26">&#9670;&#160;</a></span>CancelResize()</h2>
@@ -236,7 +258,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Cancel any in-progress resize. </p>
+<p>Cancel any in-progress resize or pulse. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_resize_8cs_source.html#l00296">296</a> of file <a class="el" href="_sprite_8_resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -267,6 +291,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html#a6ca4859d010ae75a57af442c51e83022">Gondwana.Drawing.Tile</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00497">497</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a id="aecb27b5190b87273097228a1aa4b5806" name="aecb27b5190b87273097228a1aa4b5806"></a>
@@ -289,6 +315,139 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="aec5d4cc99383140c12970518953c2d51" name="aec5d4cc99383140c12970518953c2d51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec5d4cc99383140c12970518953c2d51">&#9670;&#160;</a></span>JiggleOnce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.JiggleOnce </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>intensityX</em></span><span class="paramdefsep"> = </span><span class="paramdefval">2f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>intensityY</em></span><span class="paramdefsep"> = </span><span class="paramdefval">2f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>speed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">12f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>durationSeconds</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0::18f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>affectsScale</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>scaleIntensity</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0::015f</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Starts a one-shot impact-style jiggle. Handy for hits, invalid selections, bump feedback, and similar moments. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_jiggle_8cs_source.html#l00261">261</a> of file <a class="el" href="_sprite_8_jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+
+</div>
+</div>
+<a id="a3778b20a48b8eee1a04c0dd3d9aac288" name="a3778b20a48b8eee1a04c0dd3d9aac288"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3778b20a48b8eee1a04c0dd3d9aac288">&#9670;&#160;</a></span>PulseBy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.PulseBy </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>factor</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>growDurationSeconds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>shrinkDurationSeconds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>loop</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform a pulse animation by scaling the sprite by a factor relative to its current size, then returning to the original size. The sprite can optionally loop this animation continuously. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">factor</td><td>The scaling factor for the pulse. Values greater than 1 grow the sprite, values less than 1 shrink it.</td></tr>
+    <tr><td class="paramname">growDurationSeconds</td><td>The duration in seconds to reach the peak size.</td></tr>
+    <tr><td class="paramname">shrinkDurationSeconds</td><td>The duration in seconds to return to the original size.</td></tr>
+    <tr><td class="paramname">loop</td><td>Whether to continuously loop the pulse animation.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_resize_8cs_source.html#l00254">254</a> of file <a class="el" href="_sprite_8_resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+
+</div>
+</div>
+<a id="ac2ebb697c9b81542117ad1eccf6cbe5b" name="ac2ebb697c9b81542117ad1eccf6cbe5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ebb697c9b81542117ad1eccf6cbe5b">&#9670;&#160;</a></span>PulseTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.PulseTo </td>
+          <td>(</td>
+          <td class="paramtype">Size</td>          <td class="paramname"><span class="paramname"><em>targetSize</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>growDurationSeconds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>shrinkDurationSeconds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>loop</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform a full pulse: resize to the specified absolute target size, then return to the original size. If loop is true, this continues indefinitely until stopped. Collision adjustment scales physically during both legs. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">targetSize</td><td>The peak size in pixels.</td></tr>
+    <tr><td class="paramname">growDurationSeconds</td><td>Seconds to reach the peak size.</td></tr>
+    <tr><td class="paramname">shrinkDurationSeconds</td><td>Seconds to return to the original size.</td></tr>
+    <tr><td class="paramname">loop</td><td>Whether to continuously loop the pulse animation.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_resize_8cs_source.html#l00223">223</a> of file <a class="el" href="_sprite_8_resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+
+</div>
+</div>
 <a id="a41ec4bfa5ce9b186ce66b2b36df56426" name="a41ec4bfa5ce9b186ce66b2b36df56426"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a41ec4bfa5ce9b186ce66b2b36df56426">&#9670;&#160;</a></span>ResizeTo()</h2>
 
@@ -308,7 +467,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Smoothly resize the sprite to an absolute pixel size over the given duration (seconds). </p>
+<p>Smoothly resize the sprite to an absolute pixel size over the given duration (seconds). This is a one-way resize only. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">targetSize</td><td>The target size in pixels to resize to.</td></tr>
@@ -316,6 +475,8 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_resize_8cs_source.html#l00178">178</a> of file <a class="el" href="_sprite_8_resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -338,7 +499,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Scale to a factor relative to current RenderSize over the given duration (seconds). factor &gt; 1 grows; factor &lt; 1 shrinks. </p>
+<p>Scale to a factor relative to current RenderSize over the given duration (seconds). factor greater than 1 grows; factor less than 1 shrinks. This is a one-way resize only. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">factor</td><td>The scaling factor. Values greater than 1 grow the sprite, values less than 1 shrink it.</td></tr>
@@ -346,6 +507,8 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_resize_8cs_source.html#l00204">204</a> of file <a class="el" href="_sprite_8_resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -364,13 +527,136 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the position of the sprite in scene layer coordinates and updates the display. </p>
+<p>Sets the position of the sprite in scene layer grid coordinates and updates the display. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">pos</td><td>The new position for the sprite.</td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00155">155</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="a64553874904dcff4bb976658aa997f87" name="a64553874904dcff4bb976658aa997f87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64553874904dcff4bb976658aa997f87">&#9670;&#160;</a></span>StartJiggle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.StartJiggle </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>intensityX</em></span><span class="paramdefsep"> = </span><span class="paramdefval">2f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>intensityY</em></span><span class="paramdefsep"> = </span><span class="paramdefval">2f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>speed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">8f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>durationSeconds</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0::25f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>loop</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>affectsScale</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>scaleIntensity</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0::02f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>decay</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Starts a smooth, randomized-looking jiggle animation. This jiggle is visual only and does not modify RenderSize or collision bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">intensityX</td><td>Maximum horizontal jiggle in pixels.</td></tr>
+    <tr><td class="paramname">intensityY</td><td>Maximum vertical jiggle in pixels.</td></tr>
+    <tr><td class="paramname">speed</td><td>How quickly the jiggle animates.</td></tr>
+    <tr><td class="paramname">durationSeconds</td><td>Duration of the jiggle. Ignored if loop is true. </td></tr>
+    <tr><td class="paramname">loop</td><td>Whether the jiggle should continue indefinitely.</td></tr>
+    <tr><td class="paramname">affectsScale</td><td>Whether to add a subtle visual size wobble during the jiggle. </td></tr>
+    <tr><td class="paramname">scaleIntensity</td><td>Maximum scale wobble amount. Example: 0.03 = about ±3%. </td></tr>
+    <tr><td class="paramname">decay</td><td>Whether the jiggle should gradually fade out over its duration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_jiggle_8cs_source.html#l00081">81</a> of file <a class="el" href="_sprite_8_jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+
+</div>
+</div>
+<a id="a5a16d8a24446be95e56def6420f79b5e" name="a5a16d8a24446be95e56def6420f79b5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a16d8a24446be95e56def6420f79b5e">&#9670;&#160;</a></span>StopJiggle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.StopJiggle </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stops the current jiggle effect. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_jiggle_8cs_source.html#l00122">122</a> of file <a class="el" href="_sprite_8_jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+
+</div>
+</div>
+<a id="aded93c9ff0f1fef37fc1957e90d72a57" name="aded93c9ff0f1fef37fc1957e90d72a57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aded93c9ff0f1fef37fc1957e90d72a57">&#9670;&#160;</a></span>StopPulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.StopPulse </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>snapBack</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>returnDuration</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0f</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stops the current pulse animation, optionally snapping the sprite back to its original size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapBack</td><td>Whether to return the sprite to its original size.</td></tr>
+    <tr><td class="paramname">returnDuration</td><td>The duration in seconds for the return animation. If 0, the sprite snaps back instantly.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_resize_8cs_source.html#l00272">272</a> of file <a class="el" href="_sprite_8_resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -404,6 +690,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collision_movable_entity.html#a68cbb7534fb9961e9f46560bfaf616cf">Gondwana.Collisions.ICollisionMovableEntity</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00179">179</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -429,6 +717,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the world-space pixel rectangle where the sprite will be drawn, taking into account alignment, size, and nudge offsets. </p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00322">322</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a id="aa0c9cb286ffdd480798244f9e07a66ab" name="aa0c9cb286ffdd480798244f9e07a66ab"></a>
@@ -452,6 +742,34 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the horizontal alignment of the sprite relative to its scene layer coordinates. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00209">209</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="ab1f0bea84e224141f396048c6fa6b8d9" name="ab1f0bea84e224141f396048c6fa6b8d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1f0bea84e224141f396048c6fa6b8d9">&#9670;&#160;</a></span>IsJiggling</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Drawing.Sprites.Sprite.IsJiggling</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether the sprite is currently jiggling. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_jiggle_8cs_source.html#l00046">46</a> of file <a class="el" href="_sprite_8_jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
 
 </div>
 </div>
@@ -477,6 +795,60 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets a value indicating whether the sprite's position is fixed. Always returns false for sprites. </p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00388">388</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="aa7eed15009b4b4471d7d287a7ce93ece" name="aa7eed15009b4b4471d7d287a7ce93ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7eed15009b4b4471d7d287a7ce93ece">&#9670;&#160;</a></span>JiggleOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">PointF Gondwana.Drawing.Sprites.Sprite.JiggleOffset</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current visual jiggle offset in screen/world pixels, depending on how the sprite is being drawn. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_jiggle_8cs_source.html#l00052">52</a> of file <a class="el" href="_sprite_8_jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+
+</div>
+</div>
+<a id="abb6776d5c801d8a943e429d0cf0c284d" name="abb6776d5c801d8a943e429d0cf0c284d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb6776d5c801d8a943e429d0cf0c284d">&#9670;&#160;</a></span>JiggleScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Drawing.Sprites.Sprite.JiggleScale</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current visual jiggle scale multiplier. This is intended to be applied at draw time only. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_jiggle_8cs_source.html#l00058">58</a> of file <a class="el" href="_sprite_8_jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+
 </div>
 </div>
 <a id="a3fcf8c4787dc72a87346f30983c3264f" name="a3fcf8c4787dc72a87346f30983c3264f"></a>
@@ -500,6 +872,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the movement controller for this sprite. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00203">203</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -525,6 +899,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the horizontal pixel offset (nudge) to apply to the sprite's position. </p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00253">253</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6d50639219eaa417989f21de25b2c9a0" name="a6d50639219eaa417989f21de25b2c9a0"></a>
@@ -548,6 +924,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the vertical pixel offset (nudge) to apply to the sprite's position. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00275">275</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -573,6 +951,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the movement space used by this sprite. </p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00143">143</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a id="a49679223aa6a45895bb3be4f4eed76f9" name="a49679223aa6a45895bb3be4f4eed76f9"></a>
@@ -596,6 +976,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the size at which the sprite will be rendered. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00297">297</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -621,6 +1003,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the scene layer that this sprite is attached to. </p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00400">400</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a id="ad340d5603c3fea7f053bbfb81e310399" name="ad340d5603c3fea7f053bbfb81e310399"></a>
@@ -645,6 +1029,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the scene layer coordinates of the sprite. </p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00394">394</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a id="a328f0ff2cff30af2cba9390f828323ee" name="a328f0ff2cff30af2cba9390f828323ee"></a>
@@ -668,6 +1054,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the vertical alignment of the sprite relative to its scene layer coordinates. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00231">231</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -695,6 +1083,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00407">407</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -712,6 +1102,26 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Occurs when the sprite is being disposed. </p>
 
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00028">28</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="af86cda257f1816701516db876fc64453" name="af86cda257f1816701516db876fc64453"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af86cda257f1816701516db876fc64453">&#9670;&#160;</a></span>ResizeComplete</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Action? Gondwana.Drawing.Sprites.Sprite.ResizeComplete</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Event is raised when a resize or pulse animation completes its current leg. For a one-shot resize, this is when the target size is reached. For a pulse, this is raised at the end of each leg (original-&gt;peak and peak-&gt;original). If the pulse is not looping, then the event is raised at the end of the full cycle (back to original). This event is also raised if the resize is cancelled. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8_resize_8cs_source.html#l00014">14</a> of file <a class="el" href="_sprite_8_resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4d4ae3cd00aac852e64f8e3d49a41170" name="a4d4ae3cd00aac852e64f8e3d49a41170"></a>
@@ -727,6 +1137,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Occurs when the sprite has moved to a new position on the scene layer. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sprite_8cs_source.html#l00023">23</a> of file <a class="el" href="_sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>

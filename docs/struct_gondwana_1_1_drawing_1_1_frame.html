@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -127,6 +127,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the source Tilesheet and its coordinates to render on a destination. </p>
+
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00011">11</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="abb6185314c900dc1669db5aeb8b69538" name="abb6185314c900dc1669db5aeb8b69538"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abb6185314c900dc1669db5aeb8b69538">&#9670;&#160;</a></span>Frame()</h2>
@@ -162,6 +164,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00037">37</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -179,6 +183,8 @@ Properties</h2></td></tr>
 
 <p>The tilesheet that contains the source bitmap for this frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00017">17</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab51bd0c4cc46a9b63a7d998ff4506fa8" name="ab51bd0c4cc46a9b63a7d998ff4506fa8"></a>
@@ -195,6 +201,8 @@ Properties</h2></td></tr>
 
 <p>The horizontal tile coordinate (column index) within the tilesheet. </p>
 
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00023">23</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
+
 </div>
 </div>
 <a id="a9193680c068a561792d57fcdd0770db4" name="a9193680c068a561792d57fcdd0770db4"></a>
@@ -210,6 +218,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The vertical tile coordinate (row index) within the tilesheet. </p>
+
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00029">29</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -236,6 +246,8 @@ Properties</h2></td></tr>
 
 <p>Gets the base tile size (without overhang) from the tilesheet. Returns Size.Empty if the tilesheet is not available. </p>
 
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00063">63</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
+
 </div>
 </div>
 <a id="a9c2ed2e18f4848fdd0c3e28454d69277" name="a9c2ed2e18f4848fdd0c3e28454d69277"></a>
@@ -259,6 +271,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the overhang dimensions (in pixels) that extend beyond the base tile boundaries. Returns Overhang.None if the tilesheet is not available. </p>
+
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00070">70</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -284,6 +298,8 @@ Properties</h2></td></tr>
 
 <p>Gets the <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a> bitmap for this frame at the specified tile coordinates. Returns <code>null</code> if the tilesheet is not available. </p>
 
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00049">49</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab53f41f950e96e17b2c06986fff37739" name="ab53f41f950e96e17b2c06986fff37739"></a>
@@ -308,6 +324,8 @@ Properties</h2></td></tr>
 
 <p>Gets the <a class="el" href="namespace_gondwana_1_1_skia_sharp.html">SkiaSharp</a> image for this frame at the specified tile coordinates. Returns <code>null</code> if the tilesheet is not available. </p>
 
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00056">56</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
+
 </div>
 </div>
 <a id="a33e4ca4ae3c4c5e1bb3c5a1e26d814c4" name="a33e4ca4ae3c4c5e1bb3c5a1e26d814c4"></a>
@@ -331,6 +349,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the total tile size including overhang pixels in all directions. This is calculated as the base tile size plus the left, right, top, and bottom overhang values. </p>
+
+<p class="definition">Definition at line <a class="el" href="_frame_8cs_source.html#l00077">77</a> of file <a class="el" href="_frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>

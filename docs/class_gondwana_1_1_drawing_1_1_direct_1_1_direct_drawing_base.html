@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -103,14 +103,15 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectDrawingBase:</div>
  <div class="center">
   <img src="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.png" usemap="#Gondwana_2EDrawing_2EDirect_2EDirectDrawingBase_map" alt=""/>
   <map id="Gondwana_2EDrawing_2EDirect_2EDirectDrawingBase_map" name="Gondwana_2EDrawing_2EDirect_2EDirectDrawingBase_map">
-<area href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="499,56,822,80"/>
-<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="333,0,656,24"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,168,822,192"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer..." alt="Gondwana.Drawing.Direct.DirectVideo" shape="rect" coords="832,168,1155,192"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,323,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,224,656,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="666,224,989,248"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="999,224,1322,248"/>
+<area href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="716,56,1064,80"/>
+<area href="interface_gondwana_1_1_drawing_1_1_i_drawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="537,0,885,24"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="716,168,1064,192"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer..." alt="Gondwana.Drawing.Direct.DirectVideo" shape="rect" coords="1074,168,1422,192"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,348,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="358,224,706,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html" title="Represents a lightweight image-instance layer that manages and renders a collection of independently ..." alt="Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer" shape="rect" coords="716,224,1064,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="1074,224,1422,248"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="1432,224,1780,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -245,6 +246,8 @@ Events</h2></td></tr>
 </ul>
 <p>This class is abstract. Derived classes must implement <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs the concrete drawing for this direct drawing to the backbuffer.">OnDraw</a> to perform the actual drawing operations. The base class handles visibility, opacity, fade transitions, reveal animations, and dirty-rectangle management. </p>
 <p>Thread safety: This class is not thread-safe. All operations should be performed on the UI thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00038">38</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 </div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="adac29c23b9e8e0590930df0a3957d141" name="adac29c23b9e8e0590930df0a3957d141"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adac29c23b9e8e0590930df0a3957d141">&#9670;&#160;</a></span>RevealDirection</h2>
@@ -270,6 +273,8 @@ Events</h2></td></tr>
 <tr><td class="fieldname"><a id="adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a" name="adac29c23b9e8e0590930df0a3957d141a63dc349be51108dcfd197c7ab02b486a"></a>BottomToTop&#160;</td><td class="fielddoc"><p>Reveals the drawing from the bottom edge toward the top edge. </p>
 </td></tr>
 </table>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l01059">1059</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -358,6 +363,8 @@ Events</h2></td></tr>
 </dl>
 <p>The constructor automatically registers this direct drawing with the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a> and marks the appropriate regions as dirty to ensure the drawing appears on the next frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00173">173</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -379,6 +386,8 @@ Events</h2></td></tr>
 <p>Cancels any active fade transition, leaving the opacity at its current value. </p>
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
 <p>After calling this method, the fade animation stops immediately and <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> remains at its current value. The <a class="el" href="#ae8aa5e0085dabebdd9bcd900f69f533b" title="Occurs when a fade transition initiated by FadeTo, FadeIn, or FadeOut completes.">FadeToCompleted</a> event will not be raised for the cancelled fade. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00688">688</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -428,6 +437,8 @@ Events</h2></td></tr>
 <p>This method unregisters the direct drawing from the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a>, marks affected regions as dirty, and raises the <a class="el" href="#a911321b64ad973d2ed9d3e9b39f2fc4d" title="Occurs when this direct drawing is being disposed.">Disposing</a> event. After disposal, the object should not be used. </p>
 <p>Calling <a class="el" href="#a397f33126e99162c868cc5195529f2d7" title="Releases all resources used by this DirectDrawingBase instance.">Dispose()</a> multiple times is safe and has no additional effect. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00907">907</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="ad239dc0e99d67621d35385086d91e98f" name="ad239dc0e99d67621d35385086d91e98f"></a>
@@ -470,7 +481,9 @@ Clears all event handlers to prevent memory leaks. </li>
 </ul>
 <p>Override this method in derived classes to release additional resources. Always call <code>base.Dispose(disposing)</code> to ensure proper cleanup of the base class. </p>
 
-<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html#a30dd937e42296bdf2952a6368bd31bc5">Gondwana.Drawing.Direct.DirectVideo</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a20056eedc80de1146bb183ce93af0179">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html#a30dd937e42296bdf2952a6368bd31bc5">Gondwana.Drawing.Direct.DirectVideo</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html#a05ae37f19bc436a11451bebeb0b2a22a">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a20056eedc80de1146bb183ce93af0179">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00934">934</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -515,6 +528,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 </ol>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a40510f10e51009f80d0d3c9957337973">Gondwana.Drawing.IDrawable</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00482">482</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -570,6 +585,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
 <p>This is a convenience method equivalent to calling <code>FadeTo(1.0f, durationSec)</code>. If the current opacity is already zero or very close to zero, it is set to exactly 0 before starting the fade to ensure a clean transition from invisible to visible. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00650">650</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a29317bb9883c2d4b47a464b5d9284700" name="a29317bb9883c2d4b47a464b5d9284700"></a>
@@ -597,6 +614,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
 <p>This is a convenience method equivalent to calling <code>FadeTo(0.0f, durationSec)</code>. If <a class="el" href="#a3a1c304b55d725c4f002a15556ab79cc" title="Gets or sets a value indicating whether this direct drawing should be automatically hidden when its o...">HideWhenFullyTransparent</a> is enabled, the object will be automatically hidden when the fade completes. </p>
 <p>Use this for smooth disappearance effects. Combine with the <a class="el" href="#ae8aa5e0085dabebdd9bcd900f69f533b" title="Occurs when a fade transition initiated by FadeTo, FadeIn, or FadeOut completes.">FadeToCompleted</a> event to perform cleanup or trigger subsequent logic after the fade-out finishes. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00674">674</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -632,6 +651,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <p>If the target opacity is greater than zero, <a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67" title="Gets or sets a value indicating whether this direct drawing is visible and should be rendered.">Visible</a> is automatically set to <code>true</code> to ensure the object is rendered during the fade. If <a class="el" href="#a3a1c304b55d725c4f002a15556ab79cc" title="Gets or sets a value indicating whether this direct drawing should be automatically hidden when its o...">HideWhenFullyTransparent</a> is enabled and the target is zero, the object will be hidden when the fade completes. </p>
 <p>Starting a new fade cancels any previous fade operation. To cancel a fade without starting a new one, call <a class="el" href="#abbc8721e4dec41025c7c55aa1855b3ce" title="Cancels any active fade transition, leaving the opacity at its current value.">CancelFade</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00624">624</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a5b34671e7d7598452fff9d87a97bf53c" name="a5b34671e7d7598452fff9d87a97bf53c"></a>
@@ -660,6 +681,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <p>This method is used internally by the rendering pipeline to determine the destination rectangle for drawing operations. It accounts for camera position, zoom, and parallax for scene-layer mode drawings. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a8da83689234405828f7f6ed1f2062ec3">Gondwana.Drawing.IDrawable</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00446">446</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -996,6 +1019,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <p>The reveal animation is updated each frame by <a class="el" href="#a52ae59743dbd89bda3f0c721321939f0" title="Performs per-frame update logic for this direct drawing, including fade and reveal animations.">Update</a>. The easing function, if provided, allows custom animation curves such as ease-in, ease-out, or elastic effects. </p>
 <p>Starting a new reveal animation cancels any previous reveal operation. The animation starts from the current reveal value and interpolates to the target. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00755">755</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae959d8a569f2f225afce49860a7ea618" name="ae959d8a569f2f225afce49860a7ea618"></a>
@@ -1022,6 +1047,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
 <p>This is equivalent to setting the <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> property directly. It is provided for fluent-style API usage and method chaining. The value is clamped to the 0..1 range. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00596">596</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1051,6 +1078,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <p>The reveal effect progressively clips the rendering based on the <a class="el" href="#a07fbf01c483da1f18dc5efa30299c3f1" title="Sets the direction from which the reveal animation progresses.">SetRevealDirection</a>. At 0.0, the entire drawing is clipped; at 1.0, the full drawing is visible. Values are clamped to the 0..1 range. </p>
 <p>This method sets the reveal progress immediately. For animated reveal transitions, use <a class="el" href="#a15fd13ea5e88a25cfd4dc2130765852d" title="Initiates a smooth reveal animation to the specified target progress over the given duration,...">RevealTo</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00710">710</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a07fbf01c483da1f18dc5efa30299c3f1" name="a07fbf01c483da1f18dc5efa30299c3f1"></a>
@@ -1077,6 +1106,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance for method chaining.</dd></dl>
 <p>The reveal direction determines how the clip rectangle grows as the reveal progresses from 0 to 1. For example, <a class="el" href="#adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c" title="Reveals the drawing from the left edge toward the right edge.">RevealDirection.LeftToRight</a> reveals the drawing from the left edge first, progressively showing more to the right as the reveal value increases. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00727">727</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1116,7 +1147,9 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a5029de36d13fc531afd74430035a5133">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
-<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#a801c259d59c101239fd5947109e542f1">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a00256efd1a1f3ba03842fe5fff21ca19">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aeeafdc57fe4de1b8b742fe4b31aa8ad7">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+<p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#a801c259d59c101239fd5947109e542f1">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html#a32a603730f9086d770ec6888b4ac8525">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a00256efd1a1f3ba03842fe5fff21ca19">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#aeeafdc57fe4de1b8b742fe4b31aa8ad7">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00831">831</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1143,6 +1176,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 
 <p>The last engine tick value used for delta-time calculations in <a class="el" href="#a52ae59743dbd89bda3f0c721321939f0" title="Performs per-frame update logic for this direct drawing, including fade and reveal animations.">Update</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00087">87</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a832738f21474bf7f3e6df3f62be90f4f" name="a832738f21474bf7f3e6df3f62be90f4f"></a>
@@ -1166,6 +1201,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 </div><div class="memdoc">
 
 <p>The render surface host that manages this direct drawing's rendering pipeline. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00062">62</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1191,6 +1228,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 
 <p>The current screen-space bounds for view-mode direct drawings, in pixels. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00067">67</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4de2014d25d69ade262b1cd77feb33da" name="a4de2014d25d69ade262b1cd77feb33da"></a>
@@ -1214,6 +1253,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 </div><div class="memdoc">
 
 <p>Indicates whether this direct drawing is currently visible and should be rendered. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00082">82</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1239,6 +1280,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 
 <p>The current world-space bounds for scene-layer-mode direct drawings, in pixels. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00072">72</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a237b8677ab14b6efe4bc7aa3b3257032" name="a237b8677ab14b6efe4bc7aa3b3257032"></a>
@@ -1262,6 +1305,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 </div><div class="memdoc">
 
 <p>The Z-order used for draw sorting. Higher values draw later (on top). </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00077">77</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1289,6 +1334,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <p>Gets or sets a value indicating whether this direct drawing should be automatically hidden when its opacity reaches zero during fade transitions. </p>
 <p><code>true</code> to automatically hide when fully transparent (default); <code>false</code> to keep the object visible even at zero opacity. </p>
 <p>When enabled, setting <a class="el" href="#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">Opacity</a> to 0 or completing a <a class="el" href="#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a> will set <a class="el" href="#a547a165d0ea6d4a8e2c2214d390adc67" title="Gets or sets a value indicating whether this direct drawing is visible and should be rendered.">Visible</a> to <code>false</code>. Conversely, increasing opacity above zero will restore visibility. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00110">110</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1318,6 +1365,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#ae2a09ae0aeb04bce1333130f416584fb">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00363">363</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="abfcad8df441dd7d68d712adcf6ba7217" name="abfcad8df441dd7d68d712adcf6ba7217"></a>
@@ -1346,6 +1395,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a3053a83e9a1aa6841bf39e90238d6fec">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00243">243</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a83e823bebb8dd1b4e77e0686afda2319" name="a83e823bebb8dd1b4e77e0686afda2319"></a>
@@ -1373,6 +1424,8 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 <p>Nicknames are useful for logging, debugging, and identifying objects in diagnostic output. They are not required to be unique. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82">Gondwana.Drawing.IDrawable</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00375">375</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1407,6 +1460,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 </ul>
 <p>For animated opacity transitions, use <a class="el" href="#a7d590a5c40e61c145c9cfdde85b145e9" title="Initiates a smooth fade transition to the specified target opacity over the given duration.">FadeTo</a>, <a class="el" href="#aa9d915bb297d19580548340b4f4e9f3f" title="Fades this direct drawing from its current opacity to fully opaque over the specified duration.">FadeIn</a>, or <a class="el" href="#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00567">567</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a9b2f37ddc3934b796eb6ea593abd08f4" name="a9b2f37ddc3934b796eb6ea593abd08f4"></a>
@@ -1434,6 +1489,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a4deea683f9c17340cea7c22e000faaab">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00229">229</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab464e191526e772a9cf74077c7f36f55" name="ab464e191526e772a9cf74077c7f36f55"></a>
@@ -1459,6 +1516,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 <p>Gets the scene layer to which this direct drawing is attached, or <code>null</code> if the drawing is in view mode. </p>
 <p>The <a class="el" href="#ab464e191526e772a9cf74077c7f36f55" title="Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...">SceneLayer</a> instance for scene-layer mode drawings; <code>null</code> for view mode drawings. </p>
 <p>Scene-layer mode drawings are positioned in the world coordinate space of the specified layer and are affected by the layer's parallax factor and the view's camera position. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00257">257</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1489,6 +1548,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#a227e62e198129037c15f7b2f5f30cf73">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00292">292</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a46bc48e23fdf660435d5d969efa73092" name="a46bc48e23fdf660435d5d969efa73092"></a>
@@ -1512,8 +1573,10 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 </div><div class="memdoc">
 
 <p>Gets the extensible value bag for storing arbitrary key-value data associated with this direct drawing. </p>
-<p>A <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> instance for storing custom metadata, state, or configuration. </p>
+<p>A <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> instance for storing custom metadata, state, or configuration. </p>
 <p>Use the value bag to attach game-specific data to direct drawings without modifying the base class. Values are strongly typed and accessed via ValueKey&lt;T&gt; instances. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00349">349</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1540,6 +1603,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 <p>Gets the view to which this direct drawing is attached, or <code>null</code> if the drawing is in scene-layer mode. </p>
 <p>The <a class="el" href="#a45228a4aba8bc2629472cb6560b8d554" title="Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...">View</a> instance for view mode drawings; <code>null</code> for scene-layer mode drawings. </p>
 <p>View mode drawings are positioned in screen coordinates relative to the specified view's viewport and remain fixed on screen regardless of camera movement. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00271">271</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1570,6 +1635,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00419">419</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="abe9d1f20a5271daf8d6a926fe41b10ec" name="abe9d1f20a5271daf8d6a926fe41b10ec"></a>
@@ -1599,6 +1666,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#ab802bd3152d036e9bf183858e8330d6f">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00325">325</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a0ff816d3ac12017ee6caff6e522e8cea" name="a0ff816d3ac12017ee6caff6e522e8cea"></a>
@@ -1627,6 +1696,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00389">389</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -1645,6 +1716,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 <p>Occurs when this direct drawing is being disposed. </p>
 <p>Subscribe to this event to perform cleanup operations when the direct drawing is removed. The event is raised before the object is fully disposed. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00047">47</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae8aa5e0085dabebdd9bcd900f69f533b" name="ae8aa5e0085dabebdd9bcd900f69f533b"></a>
@@ -1661,6 +1734,8 @@ Increasing opacity above 0 automatically sets <a class="el" href="#a547a165d0ea6
 
 <p>Occurs when a fade transition initiated by <a class="el" href="#a7d590a5c40e61c145c9cfdde85b145e9" title="Initiates a smooth fade transition to the specified target opacity over the given duration.">FadeTo</a>, <a class="el" href="#aa9d915bb297d19580548340b4f4e9f3f" title="Fades this direct drawing from its current opacity to fully opaque over the specified duration.">FadeIn</a>, or <a class="el" href="#a29317bb9883c2d4b47a464b5d9284700" title="Fades this direct drawing from its current opacity to fully transparent over the specified duration.">FadeOut</a> completes. </p>
 <p>This event is raised on the frame where the fade animation reaches its target opacity. Use this to chain animations or trigger logic after fade transitions. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_base_8cs_source.html#l00057">57</a> of file <a class="el" href="_direct_drawing_base_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>

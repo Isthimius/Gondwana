@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -95,7 +95,7 @@ $(function(){initNavTree('interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad
 </div><!--header-->
 <div class="contents">
 
-<p>Interface to track a collection of <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">gamepad adapters."/&gt; </a> 
+<p>Interface to track a collection of <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html" title="Defines an adapter interface for accessing gamepad input state and information.">IGamepadAdapter</a> gamepad adapters."/&gt;  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Gamepad.IGamepadManager&lt; out T &gt;:</div>
@@ -103,15 +103,15 @@ Inheritance diagram for Gondwana.Input.Gamepad.IGamepadManager&lt; out T &gt;:</
  <div class="center">
   <img src="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.png" usemap="#Gondwana_2EInput_2EGamepad_2EIGamepadManager_3C_20out_20T_20_3E_map" alt=""/>
   <map id="Gondwana_2EInput_2EGamepad_2EIGamepadManager_3C_20out_20T_20_3E_map" name="Gondwana_2EInput_2EGamepad_2EIGamepadManager_3C_20out_20T_20_3E_map">
-<area href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html" alt="Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadManager" shape="rect" coords="0,56,404,80"/>
-<area href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html" alt="Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager" shape="rect" coords="414,56,818,80"/>
+<area href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html" title="Manages SDL2-based gamepad connections, disconnections, and state updates for the application." alt="Gondwana.Input.Gamepad.SDL2.SdlGamepadManager" shape="rect" coords="0,56,404,80"/>
+<area href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html" title="Manages XInput-based gamepad connections and state updates for Xbox controllers on Windows." alt="Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager" shape="rect" coords="414,56,818,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab042232254ee55f61b6ed1178efcba83" id="r_ab042232254ee55f61b6ed1178efcba83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab042232254ee55f61b6ed1178efcba83">Update</a> ()</td></tr>
-<tr class="memdesc:ab042232254ee55f61b6ed1178efcba83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the <a class="el" href="#a5d4c6afdc7f15fc74d8d31b902c9da07">of all connected gamepads. This will be called every frame to ensure the gamepad state is up-to-date. </a> <br /></td></tr>
+<tr class="memdesc:ab042232254ee55f61b6ed1178efcba83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the <a class="el" href="#a5d4c6afdc7f15fc74d8d31b902c9da07" title="Gets the list of currently connected gamepad adapters.">ConnectedAdapters</a> of all connected gamepads. This will be called every frame to ensure the gamepad state is up-to-date.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -119,7 +119,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:a5d4c6afdc7f15fc74d8d31b902c9da07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the list of currently connected gamepad adapters.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Interface to track a collection of <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">gamepad adapters."/&gt; </a></p>
+<div class="textblock"><p>Interface to track a collection of <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html" title="Defines an adapter interface for accessing gamepad input state and information.">IGamepadAdapter</a> gamepad adapters."/&gt; </p>
 <div class="typeconstraint">
 <dl><dt><b>Type Constraints</b></dt><dd>
 <table border="0" cellspacing="2" cellpadding="0">
@@ -128,6 +128,8 @@ Properties</h2></td></tr>
 </dd>
 </dl>
 </div>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_manager_8cs_source.html#l00006">6</a> of file <a class="el" href="_i_gamepad_manager_8cs_source.html">IGamepadManager.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ab042232254ee55f61b6ed1178efcba83" name="ab042232254ee55f61b6ed1178efcba83"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab042232254ee55f61b6ed1178efcba83">&#9670;&#160;</a></span>Update()</h2>
@@ -144,10 +146,10 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Updates the <a class="el" href="#a5d4c6afdc7f15fc74d8d31b902c9da07">of all connected gamepads. This will be called every frame to ensure the gamepad state is up-to-date. </a></p>
+<p>Updates the <a class="el" href="#a5d4c6afdc7f15fc74d8d31b902c9da07" title="Gets the list of currently connected gamepad adapters.">ConnectedAdapters</a> of all connected gamepads. This will be called every frame to ensure the gamepad state is up-to-date. </p>
 <p>*** DO NOT CALL THIS WITHOUT THROTTLING; LIMIT TO ENGINE FRAMERATE ***</p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html#a0ffb3222130f5aed06e77c0a110937e4">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadManager</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html#a4b2749a69f3f9c717a06a5982b98ecc1">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html#ae65132ef4ca5796cc02867214fdf416b">Gondwana.Input.Gamepad.SDL2.SdlGamepadManager</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html#a4b2749a69f3f9c717a06a5982b98ecc1">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager</a>.</p>
 
 </div>
 </div>
@@ -174,7 +176,9 @@ Properties</h2></td></tr>
 
 <p>Gets the list of currently connected gamepad adapters. </p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html#ad1cc723e91b29c7e6ec561e3402a4b67">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadManager</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html#a6a29adb5a47631fdd0b01bb4f607c293">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_manager.html#aa5087ab192875046aa49e28fa90596d3">Gondwana.Input.Gamepad.SDL2.SdlGamepadManager</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_manager.html#a6a29adb5a47631fdd0b01bb4f607c293">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_manager_8cs_source.html#l00011">11</a> of file <a class="el" href="_i_gamepad_manager_8cs_source.html">IGamepadManager.cs</a>.</p>
 
 </div>
 </div>

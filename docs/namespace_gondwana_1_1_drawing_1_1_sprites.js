@@ -2,6 +2,7 @@ var namespace_gondwana_1_1_drawing_1_1_sprites =
 [
     [ "CompositeSprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite" ],
     [ "Sprite", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite" ],
+    [ "SpriteManager", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_manager.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_manager" ],
     [ "SpriteMovedEventArgs", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_moved_event_args.html", "class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_moved_event_args" ],
     [ "CompositeAnchorMode", "namespace_gondwana_1_1_drawing_1_1_sprites.html#aac527e726cd61575ba7724154d7b2119", [
       [ "TopLeft", "namespace_gondwana_1_1_drawing_1_1_sprites.html#aac527e726cd61575ba7724154d7b2119ab32beb056fbfe36afbabc6c88c81ab36", null ],

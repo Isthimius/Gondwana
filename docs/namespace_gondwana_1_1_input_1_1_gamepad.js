@@ -1,5 +1,6 @@
 var namespace_gondwana_1_1_input_1_1_gamepad =
 [
+    [ "SDL2", "namespace_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2.html", "namespace_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2" ],
     [ "GamepadButtonDownEventArgs", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_down_event_args.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_down_event_args" ],
     [ "GamepadButtonEventConfiguration", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_button_event_configuration" ],
     [ "GamepadEventPoller", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller" ],

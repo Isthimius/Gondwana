@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -95,10 +95,14 @@ $(function(){initNavTree('namespace_gondwana_1_1_assets.html','',''); });
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:WinForms" id="r_WinForms"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_gondwana_1_1_assets_1_1_win_forms.html">WinForms</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:AssetsFile" id="r_AssetsFile"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html">AssetsFile</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a asset file used by the engine, providing functionality to load, manage, and save assets.  <a href="class_gondwana_1_1_assets_1_1_assets_file.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an asset file used by the engine, providing functionality to load, manage, and save assets.  <a href="class_gondwana_1_1_assets_1_1_assets_file.html#details">More...</a><br /></td></tr>
 <tr class="memitem:AssetsFileEntry" id="r_AssetsFileEntry"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_entry.html">AssetsFileEntry</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an entry for an engine asset file, including its type and name.  <a href="class_gondwana_1_1_assets_1_1_assets_file_entry.html#details">More...</a><br /></td></tr>
 <tr class="memitem:AssetsFileIdentifier" id="r_AssetsFileIdentifier"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html">AssetsFileIdentifier</a></td></tr>
@@ -112,7 +116,8 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#ad9ccdf6978e9837ddaa40da0e669cdb1a34e2d1989a1dbf75cd631596133ee5ee">Video</a> = 2
 , <a class="el" href="#ad9ccdf6978e9837ddaa40da0e669cdb1a9abdae4fa5d93330363a88ed8a5e7946">Cursor</a> = 3
 , <br />
-&#160;&#160;<a class="el" href="#ad9ccdf6978e9837ddaa40da0e669cdb1a74248c725e00bf9fe04df4e35b249a19">Misc</a> = 4
+&#160;&#160;<a class="el" href="#ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d">Font</a> = 4
+, <a class="el" href="#ad9ccdf6978e9837ddaa40da0e669cdb1a74248c725e00bf9fe04df4e35b249a19">Misc</a> = 5
 <br />
  }</td></tr>
 <tr class="memdesc:ad9ccdf6978e9837ddaa40da0e669cdb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the types of assets that can be stored and managed by the engine.  <a href="#ad9ccdf6978e9837ddaa40da0e669cdb1">More...</a><br /></td></tr>
@@ -131,7 +136,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Defines the types of assets that can be stored and managed by the engine. </p>
-<p>This enumeration is used to categorize assets in <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> and related asset management components.</p>
+<p>This enumeration is used to categorize assets in <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> and related asset management components.</p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad9ccdf6978e9837ddaa40da0e669cdb1abe53a0541a6d36f6ecb879fa2c584b08" name="ad9ccdf6978e9837ddaa40da0e669cdb1abe53a0541a6d36f6ecb879fa2c584b08"></a>Image&#160;</td><td class="fielddoc"><p>Represents an image file type. </p>
 </td></tr>
@@ -141,9 +146,13 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ad9ccdf6978e9837ddaa40da0e669cdb1a9abdae4fa5d93330363a88ed8a5e7946" name="ad9ccdf6978e9837ddaa40da0e669cdb1a9abdae4fa5d93330363a88ed8a5e7946"></a>Cursor&#160;</td><td class="fielddoc"><p>Mouse cursor; not currently supported. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d" name="ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d"></a>Font&#160;</td><td class="fielddoc"><p>Specifies that the content type is a font. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="ad9ccdf6978e9837ddaa40da0e669cdb1a74248c725e00bf9fe04df4e35b249a19" name="ad9ccdf6978e9837ddaa40da0e669cdb1a74248c725e00bf9fe04df4e35b249a19"></a>Misc&#160;</td><td class="fielddoc"><p>not currently supported </p>
 </td></tr>
 </table>
+
+<p class="definition">Definition at line <a class="el" href="_asset_types_8cs_source.html#l00007">7</a> of file <a class="el" href="_asset_types_8cs_source.html">AssetTypes.cs</a>.</p>
 
 </div>
 </div>

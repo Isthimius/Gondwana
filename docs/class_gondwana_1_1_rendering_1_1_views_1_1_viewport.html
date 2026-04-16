@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -129,6 +129,8 @@ Events</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A rectangular window on the render target with its own zoom and placement. <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html" title="A rectangular window on the render target with its own zoom and placement. Viewport never moves the w...">Viewport</a> never moves the world; it only scales and positions the drawing. </p>
+
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00010">10</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ab1039ac3f028ede03e76de06101434c4" name="ab1039ac3f028ede03e76de06101434c4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab1039ac3f028ede03e76de06101434c4">&#9670;&#160;</a></span>Resize()</h2>
@@ -158,6 +160,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00053">53</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
+
 </div>
 </div>
 <a id="a569c6ea221b84c888da260db2257878f" name="a569c6ea221b84c888da260db2257878f"></a>
@@ -176,6 +180,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Instantly sets the zoom level, raising the ZoomChanged event. </p>
+
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00089">89</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -200,6 +206,8 @@ Events</h2></td></tr>
 
 <p>Smoothly animates the zoom toward a target level using an exponential lerp rate in "per second" units. Values &lt;= 0 snap immediately. </p>
 
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00100">100</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
+
 </div>
 </div>
 <a id="a3666c8df5d79073a11b064a1ca878399" name="a3666c8df5d79073a11b064a1ca878399"></a>
@@ -222,6 +230,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Smoothly animates the zoom so that it reaches ~99% of the target level over approximately the given duration in seconds. Values &lt;= 0 snap. </p>
+
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00116">116</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -248,6 +258,8 @@ Events</h2></td></tr>
 
 <p>Optional per-view HUD/safe-area offset in screen pixels. </p>
 
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00079">79</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
+
 </div>
 </div>
 <a id="a0d4e101c1fb24cdb66fb7e41d05ab172" name="a0d4e101c1fb24cdb66fb7e41d05ab172"></a>
@@ -271,6 +283,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Screen-space rectangle (in SCREEN / RenderSurface pixels) where this view is drawn. This defines the on-screen position and size of the viewport for this view. </p>
+
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00032">32</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -296,6 +310,8 @@ Events</h2></td></tr>
 
 <p>World size visible through this viewport (used for <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_camera.html" title="Represents a world-space camera for a Scene. The camera tracks a world-space upper-left position in p...">Camera</a> clamping). </p>
 
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00082">82</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae97ac7d7cb7ecff94eac8ae3cc3c01fe" name="ae97ac7d7cb7ecff94eac8ae3cc3c01fe"></a>
@@ -320,6 +336,8 @@ Events</h2></td></tr>
 
 <p>Zoom factor applied to the world when rendering this view. Values greater than 1 zoom in, values between 0 and 1 zoom out. Used when converting between screen-space and world-space pixels. </p>
 
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00064">64</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -337,6 +355,8 @@ Events</h2></td></tr>
 
 <p>Fired whenever <a class="el" href="#a0d4e101c1fb24cdb66fb7e41d05ab172" title="Screen-space rectangle (in SCREEN / RenderSurface pixels) where this view is drawn....">TargetRectPx</a> changes (viewport resized or moved). Provides the <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html" title="A rectangular window on the render target with its own zoom and placement. Viewport never moves the w...">Viewport</a> instance and the old and new rectangles. </p>
 
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00021">21</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4f5aef8bc475b99ca51e1e38ba76d1f5" name="a4f5aef8bc475b99ca51e1e38ba76d1f5"></a>
@@ -352,6 +372,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Occurs when the zoom level of the viewport changes. </p>
+
+<p class="definition">Definition at line <a class="el" href="_viewport_8cs_source.html#l00026">26</a> of file <a class="el" href="_viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>

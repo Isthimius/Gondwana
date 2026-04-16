@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -123,6 +123,8 @@ Properties</h2></td></tr>
 <div class="textblock"><p>Defines a contract for dispatching actions to the UI thread in a thread-safe manner. Implementations of this interface provide mechanisms for posting or sending work items from any thread to be executed on the application's main UI thread, ensuring thread-safe access to UI components and controls. </p>
 <p>The UI dispatcher pattern is essential for cross-thread communication in applications with a dedicated UI thread. It allows background threads (such as the engine's update loop) to safely schedule UI updates without causing threading violations. </p>
 <p>Most operations should use <a class="el" href="#abf90e59f92882784bb5f5c0ad03bb560" title="Asynchronously posts an action to be executed on the UI thread. This method queues the action and ret...">Post</a> (asynchronous) rather than <a class="el" href="#a269f327aa5290839fabe0270962971f5" title="Synchronously sends an action to be executed on the UI thread, blocking the calling thread until the ...">Send</a> (synchronous) to avoid potential deadlocks and improve responsiveness. </p>
+
+<p class="definition">Definition at line <a class="el" href="_i_ui_dispatcher_8cs_source.html#l00020">20</a> of file <a class="el" href="_i_ui_dispatcher_8cs_source.html">IUiDispatcher.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="abf90e59f92882784bb5f5c0ad03bb560" name="abf90e59f92882784bb5f5c0ad03bb560"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abf90e59f92882784bb5f5c0ad03bb560">&#9670;&#160;</a></span>Post()</h2>
@@ -211,6 +213,8 @@ Properties</h2></td></tr>
 <p>This property can be used to optimize action execution by running UI updates inline when already on the UI thread, avoiding unnecessary marshalling overhead. It also allows code to determine if cross-thread marshalling is required before accessing UI components. </p>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_ui_dispatcher.html#a998a7eb1a8418281070150f020f1c0d8">Gondwana.UiDispatcher</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_ui_dispatcher_8cs_source.html#l00034">34</a> of file <a class="el" href="_i_ui_dispatcher_8cs_source.html">IUiDispatcher.cs</a>.</p>
 
 </div>
 </div>

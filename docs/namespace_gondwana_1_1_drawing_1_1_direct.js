@@ -1,5 +1,6 @@
 var namespace_gondwana_1_1_drawing_1_1_direct =
 [
+    [ "ImageLayer", "namespace_gondwana_1_1_drawing_1_1_direct_1_1_image_layer.html", "namespace_gondwana_1_1_drawing_1_1_direct_1_1_image_layer" ],
     [ "Particles", "namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html", "namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles" ],
     [ "DirectComposite", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite" ],
     [ "DirectDrawingBase", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html", "class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" ],

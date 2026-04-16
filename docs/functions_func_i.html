@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -94,9 +94,17 @@ $(function(){initNavTree('functions_func_i.html','',''); });
 <div class="textblock">Here is a list of all functions with links to the classes they belong to:</div>
 
 <h3 class="doxsection"><a id="index_i" name="index_i"></a>- i -</h3><ul>
-<li>Initialize()&#160;:&#160;<a class="el" href="class_gondwana_1_1_engine.html#a5ae8238a801cebbc26d97088d8398f8e">Gondwana.Engine</a>, <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html#a8ba162b2728d8986a5fd5caf987b1cd5">Gondwana.Input.Gamepad.GamepadEventPoller</a>, <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html#a7fb962a9db32bbc2a547461215b1a423">Gondwana.Input.Keyboard.KeyboardEventPoller</a>, <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html#a863a32be78e3091effe86a1fdf090ddc">Gondwana.Input.Mouse.MouseEventPoller</a></li>
+<li>ImageInstanceLayer()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html#a99fc8cad5a93854460928c1807171e17">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a></li>
+<li>Initialize()&#160;:&#160;<a class="el" href="class_gondwana_1_1_engine.html#a5ae8238a801cebbc26d97088d8398f8e">Gondwana.Engine</a>, <a class="el" href="class_gondwana_1_1_hosting_1_1_game_host_base.html#ab63602dc2516ef99709438934a64b874">Gondwana.Hosting.GameHostBase</a>, <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html#a8ba162b2728d8986a5fd5caf987b1cd5">Gondwana.Input.Gamepad.GamepadEventPoller</a>, <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html#a7fb962a9db32bbc2a547461215b1a423">Gondwana.Input.Keyboard.KeyboardEventPoller</a>, <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html#a863a32be78e3091effe86a1fdf090ddc">Gondwana.Input.Mouse.MouseEventPoller</a></li>
+<li>InitializeEngine()&#160;:&#160;<a class="el" href="class_gondwana_1_1_hosting_1_1_game_host_base.html#a28a03243190365a39516a9113a221840">Gondwana.Hosting.GameHostBase</a></li>
+<li>InitializeGameContent()&#160;:&#160;<a class="el" href="class_gondwana_1_1_hosting_1_1_game_host_base.html#a69edbdbc859406c360e64aa8a5ba0db9">Gondwana.Hosting.GameHostBase</a></li>
+<li>InitializeInstances()&#160;:&#160;<a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html#a7d830227802b73f01f003b2635701f9a">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a></li>
+<li>InitializeSceneObjects()&#160;:&#160;<a class="el" href="class_gondwana_1_1_hosting_1_1_game_host_base.html#a9b5c0c68aa8db2208c018b920b8ccb98">Gondwana.Hosting.GameHostBase</a></li>
 <li>InputEventConfigurationBase()&#160;:&#160;<a class="el" href="class_gondwana_1_1_input_1_1_input_event_configuration_base.html#a2b228e52c05559f5c8886dc612007172">Gondwana.Input.InputEventConfigurationBase</a></li>
 <li>Intersects()&#160;:&#160;<a class="el" href="struct_gondwana_1_1_collisions_1_1_aabb.html#a982c4646e60b63c11c42fc0c4ba403df">Gondwana.Collisions.Aabb</a></li>
+<li>IsButtonDown()&#160;:&#160;<a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html#a19f14214db61f9e1341903ebc6eac807">Gondwana.Input.Mouse.MouseEventArgs</a></li>
+<li>IsButtonJustPressed()&#160;:&#160;<a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html#ae85741e89979984f55843ee5e10cc914">Gondwana.Input.Mouse.MouseEventArgs</a></li>
+<li>IsButtonJustReleased()&#160;:&#160;<a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_args.html#a6fd11dc855f82e505fc37f03d0c4062e">Gondwana.Input.Mouse.MouseEventArgs</a></li>
 <li>IsDown()&#160;:&#160;<a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html#ad3017d9edeed5d51a700adfa470dc045">Gondwana.Input.Keyboard.IKeyboardAdapter</a>, <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html#a22ff076ad85b9dc1b10ff4fab0ff4d90">Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter</a></li>
 <li>IsEngaged()&#160;:&#160;<a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html#a4b457c1f841d41a2d2794f256492b4bd">Gondwana.Input.Gamepad.GamepadStickState</a></li>
 </ul>

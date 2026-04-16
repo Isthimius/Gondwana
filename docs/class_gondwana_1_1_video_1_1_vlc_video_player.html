@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -94,59 +94,93 @@ $(function(){initNavTree('class_gondwana_1_1_video_1_1_vlc_video_player.html',''
   <div class="headertitle"><div class="title">Gondwana.Video.VlcVideoPlayer Class Reference<span class="mlabels"><span class="mlabel sealed">sealed</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides a video player implementation using LibVLC for video playback and frame rendering.  
+ <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Video.VlcVideoPlayer:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="class_gondwana_1_1_video_1_1_vlc_video_player.png" usemap="#Gondwana_2EVideo_2EVlcVideoPlayer_map" alt=""/>
   <map id="Gondwana_2EVideo_2EVlcVideoPlayer_map" name="Gondwana_2EVideo_2EVlcVideoPlayer_map">
-<area href="interface_gondwana_1_1_video_1_1_i_video_player.html" alt="Gondwana.Video.IVideoPlayer" shape="rect" coords="0,56,202,80"/>
+<area href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content." alt="Gondwana.Video.IVideoPlayer" shape="rect" coords="0,56,202,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a77571cf049db3a8de6a68d3508054195" id="r_a77571cf049db3a8de6a68d3508054195"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77571cf049db3a8de6a68d3508054195">VlcVideoPlayer</a> (string[]? vlcArgs=null, int initialWidth=1280, int initialHeight=720)</td></tr>
+<tr class="memdesc:a77571cf049db3a8de6a68d3508054195"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_video_1_1_vlc_video_player.html" title="Provides a video player implementation using LibVLC for video playback and frame rendering.">VlcVideoPlayer</a> class.  <br /></td></tr>
 <tr class="memitem:acbd8a802692ed8f9a69384735f923baf" id="r_acbd8a802692ed8f9a69384735f923baf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbd8a802692ed8f9a69384735f923baf">Open</a> (Uri source)</td></tr>
+<tr class="memdesc:acbd8a802692ed8f9a69384735f923baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a video from the specified URI for playback.  <br /></td></tr>
 <tr class="memitem:ac72ccb66897dd749a66b5b18329136ac" id="r_ac72ccb66897dd749a66b5b18329136ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac72ccb66897dd749a66b5b18329136ac">Play</a> ()</td></tr>
+<tr class="memdesc:ac72ccb66897dd749a66b5b18329136ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts or resumes video playback.  <br /></td></tr>
 <tr class="memitem:aebc3d3073452d11fc8b6782909214241" id="r_aebc3d3073452d11fc8b6782909214241"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aebc3d3073452d11fc8b6782909214241">Pause</a> ()</td></tr>
+<tr class="memdesc:aebc3d3073452d11fc8b6782909214241"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses video playback.  <br /></td></tr>
 <tr class="memitem:a2a33f791e4cfec33bbe76007dfb0717f" id="r_a2a33f791e4cfec33bbe76007dfb0717f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a33f791e4cfec33bbe76007dfb0717f">Stop</a> ()</td></tr>
+<tr class="memdesc:a2a33f791e4cfec33bbe76007dfb0717f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops video playback and resets the position.  <br /></td></tr>
 <tr class="memitem:ab60614b068b7bb24287408e091f9e12a" id="r_ab60614b068b7bb24287408e091f9e12a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab60614b068b7bb24287408e091f9e12a">Seek</a> (TimeSpan position)</td></tr>
+<tr class="memdesc:ab60614b068b7bb24287408e091f9e12a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seeks to the specified position in the video.  <br /></td></tr>
 <tr class="memitem:a81ef2ae82616f41ad144d2663bad9fb3" id="r_a81ef2ae82616f41ad144d2663bad9fb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81ef2ae82616f41ad144d2663bad9fb3">SetRate</a> (double rate)</td></tr>
+<tr class="memdesc:a81ef2ae82616f41ad144d2663bad9fb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the playback rate (speed) of the video.  <br /></td></tr>
 <tr class="memitem:a706b1928a3619a6a101581beee02921f" id="r_a706b1928a3619a6a101581beee02921f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a706b1928a3619a6a101581beee02921f">Dispose</a> ()</td></tr>
+<tr class="memdesc:a706b1928a3619a6a101581beee02921f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="class_gondwana_1_1_video_1_1_vlc_video_player.html" title="Provides a video player implementation using LibVLC for video playback and frame rendering.">VlcVideoPlayer</a>.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aa13a8e64004d374e511640f904768407" id="r_aa13a8e64004d374e511640f904768407"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa13a8e64004d374e511640f904768407">width</a></td></tr>
+<tr class="memdesc:aa13a8e64004d374e511640f904768407"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the natural size (width and height) of the video in pixels.  <br /></td></tr>
 <tr class="inherit_header pub_attribs_interface_gondwana_1_1_video_1_1_i_video_player"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_interface_gondwana_1_1_video_1_1_i_video_player')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">Gondwana.Video.IVideoPlayer</a></td></tr>
 <tr class="memitem:af80d673d5888b32d16d6732985cbde08 inherit pub_attribs_interface_gondwana_1_1_video_1_1_i_video_player" id="r_af80d673d5888b32d16d6732985cbde08"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#af80d673d5888b32d16d6732985cbde08">width</a></td></tr>
+<tr class="memdesc:af80d673d5888b32d16d6732985cbde08 inherit pub_attribs_interface_gondwana_1_1_video_1_1_i_video_player"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the natural size (width and height) of the video in pixels.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a1db48c5f04fd7bf310c353bd8dbf4b33" id="r_a1db48c5f04fd7bf310c353bd8dbf4b33"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1db48c5f04fd7bf310c353bd8dbf4b33">Loop</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a1db48c5f04fd7bf310c353bd8dbf4b33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the video should loop when playback ends.  <br /></td></tr>
 <tr class="memitem:a13c85c9dbcc9e4a27c1fa250afb5fd1c" id="r_a13c85c9dbcc9e4a27c1fa250afb5fd1c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13c85c9dbcc9e4a27c1fa250afb5fd1c">IsPlaying</a><code> [get]</code></td></tr>
+<tr class="memdesc:a13c85c9dbcc9e4a27c1fa250afb5fd1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the video is currently playing.  <br /></td></tr>
 <tr class="memitem:acf4e193b2436f1fa2c7eba75bda64d1d" id="r_acf4e193b2436f1fa2c7eba75bda64d1d"><td class="memItemLeft" align="right" valign="top">TimeSpan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf4e193b2436f1fa2c7eba75bda64d1d">Duration</a><code> [get]</code></td></tr>
+<tr class="memdesc:acf4e193b2436f1fa2c7eba75bda64d1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total duration of the currently loaded video.  <br /></td></tr>
 <tr class="memitem:ab33b54f6159b932915f92b439c5d6e88" id="r_ab33b54f6159b932915f92b439c5d6e88"><td class="memItemLeft" align="right" valign="top">TimeSpan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab33b54f6159b932915f92b439c5d6e88">Position</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab33b54f6159b932915f92b439c5d6e88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current playback position of the video.  <br /></td></tr>
 <tr class="memitem:a2aefcf29438ced796438b4213914ff95" id="r_a2aefcf29438ced796438b4213914ff95"><td class="memItemLeft" align="right" valign="top">int int height&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2aefcf29438ced796438b4213914ff95">NaturalSize</a><code> [get]</code></td></tr>
 <tr class="memitem:a7014c183df70614ad2cc3181626c7359" id="r_a7014c183df70614ad2cc3181626c7359"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7014c183df70614ad2cc3181626c7359">HasAudio</a> = true<code> [get]</code></td></tr>
+<tr class="memdesc:a7014c183df70614ad2cc3181626c7359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the currently loaded media has an audio track.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a07117d25378d618f5a45e9b0cf9c0e51" id="r_a07117d25378d618f5a45e9b0cf9c0e51"><td class="memItemLeft" align="right" valign="top">EventHandler?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07117d25378d618f5a45e9b0cf9c0e51">Started</a></td></tr>
+<tr class="memdesc:a07117d25378d618f5a45e9b0cf9c0e51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when video playback has started.  <br /></td></tr>
 <tr class="memitem:ace51acd0e3dc454abb7b3340cf64d3dc" id="r_ace51acd0e3dc454abb7b3340cf64d3dc"><td class="memItemLeft" align="right" valign="top">EventHandler?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace51acd0e3dc454abb7b3340cf64d3dc">Paused</a></td></tr>
+<tr class="memdesc:ace51acd0e3dc454abb7b3340cf64d3dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when video playback has been paused.  <br /></td></tr>
 <tr class="memitem:a65df0784f059714d46cb4a112cd0f3b8" id="r_a65df0784f059714d46cb4a112cd0f3b8"><td class="memItemLeft" align="right" valign="top">EventHandler?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65df0784f059714d46cb4a112cd0f3b8">Stopped</a></td></tr>
+<tr class="memdesc:a65df0784f059714d46cb4a112cd0f3b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when video playback has been stopped.  <br /></td></tr>
 <tr class="memitem:a6325567a53b7a36a6a32003ef520c242" id="r_a6325567a53b7a36a6a32003ef520c242"><td class="memItemLeft" align="right" valign="top">EventHandler?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6325567a53b7a36a6a32003ef520c242">Ended</a></td></tr>
+<tr class="memdesc:a6325567a53b7a36a6a32003ef520c242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when video playback has reached the end of the media.  <br /></td></tr>
 <tr class="memitem:a6594dbaf6e554a50070a101e65f5e313" id="r_a6594dbaf6e554a50070a101e65f5e313"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="class_gondwana_1_1_video_1_1_video_state_changed_event_args.html">VideoStateChangedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6594dbaf6e554a50070a101e65f5e313">StateChanged</a></td></tr>
+<tr class="memdesc:a6594dbaf6e554a50070a101e65f5e313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video player state changes.  <br /></td></tr>
 <tr class="memitem:a2c20ea7d7c2e929e185f60bdcfebb93e" id="r_a2c20ea7d7c2e929e185f60bdcfebb93e"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="class_gondwana_1_1_video_1_1_video_frame_ready_event_args.html">VideoFrameReadyEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c20ea7d7c2e929e185f60bdcfebb93e">FrameReady</a></td></tr>
+<tr class="memdesc:a2c20ea7d7c2e929e185f60bdcfebb93e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a new video frame is ready for rendering.  <br /></td></tr>
 <tr class="inherit_header events_interface_gondwana_1_1_video_1_1_i_video_player"><td colspan="2" onclick="javascript:dynsection.toggleInherit('events_interface_gondwana_1_1_video_1_1_i_video_player')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Events inherited from <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">Gondwana.Video.IVideoPlayer</a></td></tr>
 <tr class="memitem:aa928ee0cbfa70d52de13b69cdb590e6a inherit events_interface_gondwana_1_1_video_1_1_i_video_player" id="r_aa928ee0cbfa70d52de13b69cdb590e6a"><td class="memItemLeft" align="right" valign="top">EventHandler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#aa928ee0cbfa70d52de13b69cdb590e6a">Started</a></td></tr>
+<tr class="memdesc:aa928ee0cbfa70d52de13b69cdb590e6a inherit events_interface_gondwana_1_1_video_1_1_i_video_player"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video playback starts.  <br /></td></tr>
 <tr class="memitem:aae6530fb0a5d8999473ceaee12379d28 inherit events_interface_gondwana_1_1_video_1_1_i_video_player" id="r_aae6530fb0a5d8999473ceaee12379d28"><td class="memItemLeft" align="right" valign="top">EventHandler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#aae6530fb0a5d8999473ceaee12379d28">Paused</a></td></tr>
+<tr class="memdesc:aae6530fb0a5d8999473ceaee12379d28 inherit events_interface_gondwana_1_1_video_1_1_i_video_player"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video playback is paused.  <br /></td></tr>
 <tr class="memitem:a2bdb0600f631a13e91a5c71246aa9e72 inherit events_interface_gondwana_1_1_video_1_1_i_video_player" id="r_a2bdb0600f631a13e91a5c71246aa9e72"><td class="memItemLeft" align="right" valign="top">EventHandler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a2bdb0600f631a13e91a5c71246aa9e72">Stopped</a></td></tr>
+<tr class="memdesc:a2bdb0600f631a13e91a5c71246aa9e72 inherit events_interface_gondwana_1_1_video_1_1_i_video_player"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video playback is stopped.  <br /></td></tr>
 <tr class="memitem:aaf84952557188d186564bd1dc7ac240a inherit events_interface_gondwana_1_1_video_1_1_i_video_player" id="r_aaf84952557188d186564bd1dc7ac240a"><td class="memItemLeft" align="right" valign="top">EventHandler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#aaf84952557188d186564bd1dc7ac240a">Ended</a></td></tr>
+<tr class="memdesc:aaf84952557188d186564bd1dc7ac240a inherit events_interface_gondwana_1_1_video_1_1_i_video_player"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video playback reaches the end.  <br /></td></tr>
 <tr class="memitem:a5b82ef74e8cd0508efc69e3b54084540 inherit events_interface_gondwana_1_1_video_1_1_i_video_player" id="r_a5b82ef74e8cd0508efc69e3b54084540"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="class_gondwana_1_1_video_1_1_video_state_changed_event_args.html">VideoStateChangedEventArgs</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a5b82ef74e8cd0508efc69e3b54084540">StateChanged</a></td></tr>
+<tr class="memdesc:a5b82ef74e8cd0508efc69e3b54084540 inherit events_interface_gondwana_1_1_video_1_1_i_video_player"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video state changes.  <br /></td></tr>
 <tr class="memitem:a5884aac4123ba1047432a9a0fd409fd4 inherit events_interface_gondwana_1_1_video_1_1_i_video_player" id="r_a5884aac4123ba1047432a9a0fd409fd4"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="class_gondwana_1_1_video_1_1_video_frame_ready_event_args.html">VideoFrameReadyEventArgs</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a5884aac4123ba1047432a9a0fd409fd4">FrameReady</a></td></tr>
+<tr class="memdesc:a5884aac4123ba1047432a9a0fd409fd4 inherit events_interface_gondwana_1_1_video_1_1_i_video_player"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a decoded video frame is ready for rendering.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides a video player implementation using LibVLC for video playback and frame rendering. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00009">9</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a77571cf049db3a8de6a68d3508054195" name="a77571cf049db3a8de6a68d3508054195"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a77571cf049db3a8de6a68d3508054195">&#9670;&#160;</a></span>VlcVideoPlayer()</h2>
 
@@ -171,6 +205,18 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_video_1_1_vlc_video_player.html" title="Provides a video player implementation using LibVLC for video playback and frame rendering.">VlcVideoPlayer</a> class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vlcArgs</td><td>Optional command-line arguments to pass to LibVLC.</td></tr>
+    <tr><td class="paramname">initialWidth</td><td>The initial width of the video frame buffer in pixels. Default is 1280.</td></tr>
+    <tr><td class="paramname">initialHeight</td><td>The initial height of the video frame buffer in pixels. Default is 720.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00094">94</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -189,6 +235,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_video_1_1_vlc_video_player.html" title="Provides a video player implementation using LibVLC for video playback and frame rendering.">VlcVideoPlayer</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00244">244</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
+
 </div>
 </div>
 <a id="acbd8a802692ed8f9a69384735f923baf" name="acbd8a802692ed8f9a69384735f923baf"></a>
@@ -206,7 +256,17 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Opens a video from the specified URI for playback. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The URI of the video source to open.</td></tr>
+  </table>
+  </dd>
+</dl>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#afae982201b1096b5500576f6f2ab9d7d">Gondwana.Video.IVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00149">149</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -224,6 +284,8 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Pauses video playback. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a3b76918587808d0a0acdf0fdbefcce92">Gondwana.Video.IVideoPlayer</a>.</p>
 
@@ -244,6 +306,8 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Starts or resumes video playback. </p>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a42d62a49d09e85da1759425f5617945c">Gondwana.Video.IVideoPlayer</a>.</p>
 
 </div>
@@ -262,6 +326,14 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Seeks to the specified position in the video. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>The target position to seek to.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#adb699fcf067feb86fdd1ed5598837e30">Gondwana.Video.IVideoPlayer</a>.</p>
 
@@ -282,6 +354,14 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Sets the playback rate (speed) of the video. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rate</td><td>The playback rate multiplier (e.g., 1.0 for normal speed, 2.0 for double speed).</td></tr>
+  </table>
+  </dd>
+</dl>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a4478c6c2683a9efff7c0044e06d5f92f">Gondwana.Video.IVideoPlayer</a>.</p>
 
 </div>
@@ -301,6 +381,8 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Stops video playback and resets the position. </p>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#acb0e33bc6b8b1e8edd46d9cf05f42f8d">Gondwana.Video.IVideoPlayer</a>.</p>
 
 </div>
@@ -317,6 +399,10 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Gets the natural size (width and height) of the video in pixels. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00049">49</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -341,7 +427,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the total duration of the currently loaded video. </p>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a53feaa0611ae5017b263236332806e64">Gondwana.Video.IVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00039">39</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -365,7 +455,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a value indicating whether the currently loaded media has an audio track. </p>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a714353983bcfeb11a8db94be1aa42b1e">Gondwana.Video.IVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00054">54</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -389,7 +483,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets a value indicating whether the video is currently playing. </p>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a7a6df989c41bd7efde838edde8a6faa4">Gondwana.Video.IVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00034">34</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -413,7 +511,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets or sets a value indicating whether the video should loop when playback ends. </p>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#aaf5a59666b46c648f49828bdf7339184">Gondwana.Video.IVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00029">29</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -439,6 +541,8 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a284aa180c33f05e06b1be663e2ffc446">Gondwana.Video.IVideoPlayer</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00049">49</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab33b54f6159b932915f92b439c5d6e88" name="ab33b54f6159b932915f92b439c5d6e88"></a>
@@ -461,7 +565,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Gets the current playback position of the video. </p>
+
 <p>Implements <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html#a0e5b1117eb5ba547f7afeef8c7092793">Gondwana.Video.IVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00044">44</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -478,6 +586,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when video playback has reached the end of the media. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00074">74</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
+
 </div>
 </div>
 <a id="a2c20ea7d7c2e929e185f60bdcfebb93e" name="a2c20ea7d7c2e929e185f60bdcfebb93e"></a>
@@ -491,6 +603,10 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when a new video frame is ready for rendering. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00084">84</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -506,6 +622,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when video playback has been paused. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00064">64</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
+
 </div>
 </div>
 <a id="a07117d25378d618f5a45e9b0cf9c0e51" name="a07117d25378d618f5a45e9b0cf9c0e51"></a>
@@ -519,6 +639,10 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when video playback has started. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00059">59</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -534,6 +658,10 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Occurs when the video player state changes. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00079">79</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
+
 </div>
 </div>
 <a id="a65df0784f059714d46cb4a112cd0f3b8" name="a65df0784f059714d46cb4a112cd0f3b8"></a>
@@ -547,6 +675,10 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Occurs when video playback has been stopped. </p>
+
+<p class="definition">Definition at line <a class="el" href="_vlc_video_player_8cs_source.html#l00069">69</a> of file <a class="el" href="_vlc_video_player_8cs_source.html">VlcVideoPlayer.cs</a>.</p>
 
 </div>
 </div>

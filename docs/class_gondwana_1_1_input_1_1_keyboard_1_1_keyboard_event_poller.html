@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -132,6 +132,8 @@ Events</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Cross-platform singleton keyboard handler with throttling and manual input state feeding. </p>
+
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00009">9</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a7fb962a9db32bbc2a547461215b1a423" name="a7fb962a9db32bbc2a547461215b1a423"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7fb962a9db32bbc2a547461215b1a423">&#9670;&#160;</a></span>Initialize()</h2>
@@ -163,6 +165,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00024">24</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -197,6 +201,8 @@ Events</h2></td></tr>
 
 <p>Primary API: monitor by platform-agnostic key code. Platform layers (<a class="el" href="namespace_gondwana_1_1_win_forms.html">WinForms</a>, SDL, etc.) are responsible for mapping their key enums/names to key codes. </p>
 
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00125">125</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
+
 </div>
 </div>
 <a id="a123f622a2f5b19616cf4404d91538764" name="a123f622a2f5b19616cf4404d91538764"></a>
@@ -215,6 +221,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Unregisters all keys from event monitoring, clearing all key configurations and state tracking. After calling this method, no keys will generate events until they are registered again using <a class="el" href="#ab243f1d9ae1ef9f7906e536d25fe6efc" title="Primary API: monitor by platform-agnostic key code. Platform layers (WinForms, SDL,...">StartMonitoringKey</a>. This is useful for resetting the keyboard state when changing game modes or screens. </p>
+
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00181">181</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -241,6 +249,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00151">151</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
+
 </div>
 </div>
 <a id="a7ba2fcaefc68a556bf46e943ae2f25ea" name="a7ba2fcaefc68a556bf46e943ae2f25ea"></a>
@@ -265,6 +275,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00169">169</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -291,6 +303,8 @@ Events</h2></td></tr>
 
 <p>Gets the current keyboard adapter in use. </p>
 
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00054">54</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
+
 </div>
 </div>
 <a id="a269d2e83e88424c413729444b15b3e17" name="a269d2e83e88424c413729444b15b3e17"></a>
@@ -314,6 +328,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Exposes monitored key configurations. Treat as engine-thread-only unless you add external synchronization. </p>
+
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00193">193</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -339,6 +355,8 @@ Events</h2></td></tr>
 
 <p>Singleton instance of the <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html" title="Cross-platform singleton keyboard handler with throttling and manual input state feeding.">KeyboardEventPoller</a> class. </p>
 
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00014">14</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
+
 </div>
 </div>
 <a id="a1ed51464f2db3bd405771f760d913d35" name="a1ed51464f2db3bd405771f760d913d35"></a>
@@ -363,6 +381,8 @@ Events</h2></td></tr>
 
 <p>Pauses all key events globally. </p>
 
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00059">59</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -379,6 +399,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Occurs when a monitored keyboard key is pressed, released, or repeated based on its configuration and throttling settings. Subscribe to this event to handle keyboard input in your application. The event provides information about the key action (pressed, released, or repeated) and current keyboard modifier states. </p>
+
+<p class="definition">Definition at line <a class="el" href="_keyboard_event_poller_8cs_source.html#l00035">35</a> of file <a class="el" href="_keyboard_event_poller_8cs_source.html">KeyboardEventPoller.cs</a>.</p>
 
 </div>
 </div>
