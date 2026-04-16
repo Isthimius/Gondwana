@@ -56,7 +56,29 @@
 ---
 
 # v2.0.1
-## stuff I did
+## Versioning & Packaging
+- Bumped engine and package version to **2.0.1**
+- Updated Nerdbank.GitVersioning configuration (including assembly version)
+
+## NuGet Packaging Improvements
+- Enhanced NuGet package metadata:
+  - Added README for package display
+  - Added package icon
+  - Included Source Link support
+  - Enabled symbol packages and XML documentation output
+- Added supporting package assets for improved distribution and documentation
+
+## Dependencies
+- Updated core dependencies:
+  - SkiaSharp
+  - Microsoft.Extensions.*
+  - LibVLCSharp
+- Updated WinForms adapter dependency:
+  - `SkiaSharp.Views.WindowsForms` to latest version
+
+## Project Updates
+- Updated Gondwana core project (`Gondwana.csproj`) with improved packaging configuration
+- Updated Gondwana.WinForms and Gondwana.Video project dependencies
 
 ---
 
