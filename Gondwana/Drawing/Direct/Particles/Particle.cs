@@ -81,7 +81,7 @@ public struct Particle
     public SKColor? Tint;
 
     /// <summary>
-    /// Per-particle speed cap (px/s). MaxVelocity <= 0 means no cap.
+    /// Per-particle speed cap (px/s). MaxVelocity &lt;= 0 means no cap.
     /// </summary>
     public float MaxVelocity;
 }
