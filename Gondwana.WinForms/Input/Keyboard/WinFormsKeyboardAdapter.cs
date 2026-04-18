@@ -11,6 +11,31 @@ namespace Gondwana.WinForms.Input.Keyboard;
 /// </summary>
 public sealed class WinFormsKeyboardAdapter : IKeyboardAdapter, IMessageFilter, IDisposable
 {
+    /// <summary>
+    /// Attempts to convert a string representation of a key into its corresponding <see cref="Keys"/> value.
+    /// </summary>
+    /// <remarks>
+    /// The comparison is case-insensitive. If the provided <paramref name="keyName"/> does not match a valid
+    /// <see cref="Keys"/> enumeration value, a warning is logged and <c>null</c> is returned.
+    /// </remarks>
+    /// <param name="keyName">
+    /// The name of the key to parse. This should match a value from the <see cref="Keys"/> enumeration
+    /// (e.g., "A", "Enter", "Escape").
+    /// </param>
+    /// <returns>
+    /// A nullable <see cref="Keys"/> value representing the parsed key if successful; otherwise, <c>null</c>
+    /// if the input string is not a valid key name.
+    /// </returns>
+    public static Keys? GetKeyFromString(string keyName)
+    {
+        // Parse the received key string into the Keys enum (case-insensitive)
+        if (Enum.TryParse<Keys>(keyName, true, out var key))
+            return key;
+
+        Engine.Logger.LogWarning("Invalid key name: {KeyName}", keyName);
+        return null;
+    }
+
     private readonly Control _lifetimeOwner;
 
     // Windows VK codes are 0..255

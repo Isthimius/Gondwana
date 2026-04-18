@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -115,6 +115,8 @@ Properties</h2></td></tr>
 <tr class="memitem:ab1af5e07e974ce19e635fe249d78ad2f" id="r_ab1af5e07e974ce19e635fe249d78ad2f"><td class="memItemLeft" align="right" valign="top">float float Max&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1af5e07e974ce19e635fe249d78ad2f">SizeRange</a> = (3f, 7f)<code> [get, set]</code></td></tr>
 <tr class="memitem:a1cd6d1a34e45bff6efbf97cc4163a0d0" id="r_a1cd6d1a34e45bff6efbf97cc4163a0d0"><td class="memItemLeft" align="right" valign="top">SKColor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cd6d1a34e45bff6efbf97cc4163a0d0">Color</a> = new SKColor(200, 200, 255, 255)<code> [get, set]</code></td></tr>
 <tr class="memdesc:a1cd6d1a34e45bff6efbf97cc4163a0d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base color. Alpha will be modulated by lifetime fade. You can randomize in OnSpawn if desired.  <br /></td></tr>
+<tr class="memitem:a4698392a7a76ef87261fd87afa082b5a" id="r_a4698392a7a76ef87261fd87afa082b5a"><td class="memItemLeft" align="right" valign="top">SKBlendMode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4698392a7a76ef87261fd87afa082b5a">BlendMode</a> = SKBlendMode.Plus<code> [get, set]</code></td></tr>
+<tr class="memdesc:a4698392a7a76ef87261fd87afa082b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blend mode used when rendering particles from this emitter. Defaults to SKBlendMode.Plus for additive/glowy effects.  <br /></td></tr>
 <tr class="memitem:a28ba373cdc2f4fd0eb22ed8062ecbc9a" id="r_a28ba373cdc2f4fd0eb22ed8062ecbc9a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28ba373cdc2f4fd0eb22ed8062ecbc9a">JitterX</a> = 0f<code> [get, set]</code></td></tr>
 <tr class="memdesc:a28ba373cdc2f4fd0eb22ed8062ecbc9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the horizontal jitter value for spawning particles, which represents a random offset applied along the X-axis.  <br /></td></tr>
 <tr class="memitem:ae2855cb3bf53237456a7571d3ee8ea93" id="r_ae2855cb3bf53237456a7571d3ee8ea93"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae2855cb3bf53237456a7571d3ee8ea93">JitterY</a> = 0f<code> [get, set]</code></td></tr>
@@ -189,16 +191,18 @@ Properties</h2></td></tr>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Register with the manager</span></div>
 <div class="line">directDrawingManager.AddOrReplace(particles);</div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html"><div class="ttname"><a href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html">Gondwana.Drawing.Direct.Particles.ParticleEmitter</a></div><div class="ttdoc">Configures how particles are spawned over time at a given location.</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:93</div></div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a12da9eba9822148ff543e07b5d17141a"><div class="ttname"><a href="#a12da9eba9822148ff543e07b5d17141a">Gondwana.Drawing.Direct.Particles.ParticleEmitter.VelocityRangeY</a></div><div class="ttdeci">float float Max VelocityRangeY</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:107</div></div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a1cd6d1a34e45bff6efbf97cc4163a0d0"><div class="ttname"><a href="#a1cd6d1a34e45bff6efbf97cc4163a0d0">Gondwana.Drawing.Direct.Particles.ParticleEmitter.Color</a></div><div class="ttdeci">SKColor Color</div><div class="ttdoc">Base color. Alpha will be modulated by lifetime fade. You can randomize in OnSpawn if desired.</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:115</div></div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a216cc1469aa24a85e0d165f6e408f1f6"><div class="ttname"><a href="#a216cc1469aa24a85e0d165f6e408f1f6">Gondwana.Drawing.Direct.Particles.ParticleEmitter.EmitRate</a></div><div class="ttdeci">float EmitRate</div><div class="ttdoc">Particles per second to spawn (fractional allowed).</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:98</div></div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a6ce7260d4794c21980d798b517516ebb"><div class="ttname"><a href="#a6ce7260d4794c21980d798b517516ebb">Gondwana.Drawing.Direct.Particles.ParticleEmitter.Position</a></div><div class="ttdeci">PointF Position</div><div class="ttdoc">RenderHost / adapter pixel position where particles originate.</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:95</div></div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a8ccf332abc3fb08ff7985b98385f1d81"><div class="ttname"><a href="#a8ccf332abc3fb08ff7985b98385f1d81">Gondwana.Drawing.Direct.Particles.ParticleEmitter.LifeRange</a></div><div class="ttdeci">float float Max LifeRange</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:101</div></div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_ab1af5e07e974ce19e635fe249d78ad2f"><div class="ttname"><a href="#ab1af5e07e974ce19e635fe249d78ad2f">Gondwana.Drawing.Direct.Particles.ParticleEmitter.SizeRange</a></div><div class="ttdeci">float float Max SizeRange</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:110</div></div>
-<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_ad1849d5bd88701feb06bbad9c7adafcb"><div class="ttname"><a href="#ad1849d5bd88701feb06bbad9c7adafcb">Gondwana.Drawing.Direct.Particles.ParticleEmitter.VelocityRangeX</a></div><div class="ttdeci">float float Max VelocityRangeX</div><div class="ttdef"><b>Definition</b> ParticleEmitter.cs:104</div></div>
-<div class="ttc" id="anamespace_gondwana_1_1_drawing_1_1_direct_1_1_particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdoc">Particles are spawned uniformly within a rectangular area. This is the default distribution.</div><div class="ttdef"><b>Definition</b> ParticleSpawnDistribution.cs:11</div></div>
-</div><!-- fragment --> </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html"><div class="ttname"><a href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html">Gondwana.Drawing.Direct.Particles.ParticleEmitter</a></div><div class="ttdoc">Configures how particles are spawned over time at a given location.</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00092">ParticleEmitter.cs:93</a></div></div>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a12da9eba9822148ff543e07b5d17141a"><div class="ttname"><a href="#a12da9eba9822148ff543e07b5d17141a">Gondwana.Drawing.Direct.Particles.ParticleEmitter.VelocityRangeY</a></div><div class="ttdeci">float float Max VelocityRangeY</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00107">ParticleEmitter.cs:107</a></div></div>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a1cd6d1a34e45bff6efbf97cc4163a0d0"><div class="ttname"><a href="#a1cd6d1a34e45bff6efbf97cc4163a0d0">Gondwana.Drawing.Direct.Particles.ParticleEmitter.Color</a></div><div class="ttdeci">SKColor Color</div><div class="ttdoc">Base color. Alpha will be modulated by lifetime fade. You can randomize in OnSpawn if desired.</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00115">ParticleEmitter.cs:115</a></div></div>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a216cc1469aa24a85e0d165f6e408f1f6"><div class="ttname"><a href="#a216cc1469aa24a85e0d165f6e408f1f6">Gondwana.Drawing.Direct.Particles.ParticleEmitter.EmitRate</a></div><div class="ttdeci">float EmitRate</div><div class="ttdoc">Particles per second to spawn (fractional allowed).</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00098">ParticleEmitter.cs:98</a></div></div>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a6ce7260d4794c21980d798b517516ebb"><div class="ttname"><a href="#a6ce7260d4794c21980d798b517516ebb">Gondwana.Drawing.Direct.Particles.ParticleEmitter.Position</a></div><div class="ttdeci">PointF Position</div><div class="ttdoc">RenderHost / adapter pixel position where particles originate.</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00095">ParticleEmitter.cs:95</a></div></div>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_a8ccf332abc3fb08ff7985b98385f1d81"><div class="ttname"><a href="#a8ccf332abc3fb08ff7985b98385f1d81">Gondwana.Drawing.Direct.Particles.ParticleEmitter.LifeRange</a></div><div class="ttdeci">float float Max LifeRange</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00101">ParticleEmitter.cs:101</a></div></div>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_ab1af5e07e974ce19e635fe249d78ad2f"><div class="ttname"><a href="#ab1af5e07e974ce19e635fe249d78ad2f">Gondwana.Drawing.Direct.Particles.ParticleEmitter.SizeRange</a></div><div class="ttdeci">float float Max SizeRange</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00110">ParticleEmitter.cs:110</a></div></div>
+<div class="ttc" id="aclass_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter_html_ad1849d5bd88701feb06bbad9c7adafcb"><div class="ttname"><a href="#ad1849d5bd88701feb06bbad9c7adafcb">Gondwana.Drawing.Direct.Particles.ParticleEmitter.VelocityRangeX</a></div><div class="ttdeci">float float Max VelocityRangeX</div><div class="ttdef"><b>Definition</b> <a href="_particle_emitter_8cs_source.html#l00104">ParticleEmitter.cs:104</a></div></div>
+<div class="ttc" id="anamespace_gondwana_1_1_drawing_1_1_direct_1_1_particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdoc">Particles are spawned uniformly within a rectangular area. This is the default distribution.</div><div class="ttdef"><b>Definition</b> <a href="_particle_spawn_distribution_8cs_source.html#l00011">ParticleSpawnDistribution.cs:11</a></div></div>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00092">92</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="abd56e6d67bf59d132cf0768420eea4a9" name="abd56e6d67bf59d132cf0768420eea4a9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abd56e6d67bf59d132cf0768420eea4a9">&#9670;&#160;</a></span>Min</h2>
 
@@ -216,9 +220,37 @@ Properties</h2></td></tr>
 <p>Initial Y velocity range in px/s (min, max). Negative shoots upward.</p>
 <p>Initial X velocity range in px/s (min, max). </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00101">101</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a id="a4698392a7a76ef87261fd87afa082b5a" name="a4698392a7a76ef87261fd87afa082b5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4698392a7a76ef87261fd87afa082b5a">&#9670;&#160;</a></span>BlendMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">SKBlendMode Gondwana.Drawing.Direct.Particles.ParticleEmitter.BlendMode = SKBlendMode.Plus</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Blend mode used when rendering particles from this emitter. Defaults to SKBlendMode.Plus for additive/glowy effects. </p>
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00121">121</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
+</div>
+</div>
 <a id="a1cd6d1a34e45bff6efbf97cc4163a0d0" name="a1cd6d1a34e45bff6efbf97cc4163a0d0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1cd6d1a34e45bff6efbf97cc4163a0d0">&#9670;&#160;</a></span>Color</h2>
 
@@ -240,6 +272,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Base color. Alpha will be modulated by lifetime fade. You can randomize in OnSpawn if desired. </p>
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00115">115</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -265,6 +299,8 @@ Properties</h2></td></tr>
 
 <p><a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html">Particles</a> per second to spawn (fractional allowed). </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00098">98</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac31f78030af367a77419d292d89a30b5" name="ac31f78030af367a77419d292d89a30b5"></a>
@@ -288,6 +324,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>For Gaussian distribution: standard deviation as a fraction of outer radius. Typical values: 0.25 to 0.5. Higher spreads wider. </p>
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00180">180</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -313,6 +351,8 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the horizontal component of the gravity vector in pixels per second squared (px/s²). Negative values pull left, positive values pull right. If null, the emitter uses the global gravity setting from the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a>. Default <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a902e6b3d20c47de94948c1e7718346ed" title="Gets or sets the horizontal component of gravity, measured in pixels per second squared....">ParticleSurface.GravityX</a> is 0."/&gt; </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00138">138</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="a316c9ccbea0460ac5a853ff0e1a8bc34" name="a316c9ccbea0460ac5a853ff0e1a8bc34"></a>
@@ -336,6 +376,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the vertical component of the gravity vector in pixels per second squared (px/s²). Negative values pull up, positive values pull down. If null, the emitter uses the global gravity setting from the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw...">ParticleSurface</a>. Default <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html#a097410af3acfe301f3a15d5e4f3d2f04" title="Gets or sets the gravitational acceleration along the Y-axis, measured in pixels per second squared....">ParticleSurface.GravityY</a> is 400."/&gt; </p>
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00145">145</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -361,6 +403,8 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the horizontal jitter value for spawning particles, which represents a random offset applied along the X-axis. </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00126">126</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae2855cb3bf53237456a7571d3ee8ea93" name="ae2855cb3bf53237456a7571d3ee8ea93"></a>
@@ -385,6 +429,8 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the vertical jitter value for spawning particles, which represents a random offset applied along the Y-axis. </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00131">131</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="a8ccf332abc3fb08ff7985b98385f1d81" name="a8ccf332abc3fb08ff7985b98385f1d81"></a>
@@ -406,6 +452,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00101">101</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -431,6 +479,8 @@ Properties</h2></td></tr>
 
 <p>Optional per-emitter maximum speed in px/s. If set, particle velocity will be clamped to this magnitude after acceleration is applied each update. </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00163">163</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab20099561004cbc5f3ac7a759431fcf8" name="ab20099561004cbc5f3ac7a759431fcf8"></a>
@@ -454,6 +504,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Optional per-particle customization hook (e.g., perlin drift, hue jitter). </p>
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00183">183</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -479,6 +531,8 @@ Properties</h2></td></tr>
 
 <p>Optional per-frame callback to tweak emitter (e.g., move with an object). </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00186">186</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4e68665333ac4f5a99fd910b439ff87e" name="a4e68665333ac4f5a99fd910b439ff87e"></a>
@@ -502,6 +556,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Optional sprite used for particles spawned by this emitter. If null, the particle surface’s default sprite is used (or a circle if none). </p>
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00151">151</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -527,6 +583,8 @@ Properties</h2></td></tr>
 
 <p>RenderHost / adapter pixel position where particles originate. </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00095">95</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="a34d35b47802acbd11d8cd6b7c67e4042" name="a34d35b47802acbd11d8cd6b7c67e4042"></a>
@@ -551,6 +609,8 @@ Properties</h2></td></tr>
 
 <p>For Ring distribution: inner radius as a fraction of the outer radius [0..1]. 0 = filled disk, 0.8 = thin-ish ring, 0.95 = very thin ring. </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00174">174</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab1af5e07e974ce19e635fe249d78ad2f" name="ab1af5e07e974ce19e635fe249d78ad2f"></a>
@@ -572,6 +632,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00110">110</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>
@@ -597,6 +659,8 @@ Properties</h2></td></tr>
 
 <p>Controls the random spawn distribution used by JitterX/JitterY. </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00168">168</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="a084a996450b91ef98a4fccad81daddef" name="a084a996450b91ef98a4fccad81daddef"></a>
@@ -621,6 +685,8 @@ Properties</h2></td></tr>
 
 <p>Optional per-emitter tint. If set, it overrides the particle system's <code>GlobalColorTint</code> for particles spawned by this emitter. </p>
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00157">157</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="ad1849d5bd88701feb06bbad9c7adafcb" name="ad1849d5bd88701feb06bbad9c7adafcb"></a>
@@ -643,6 +709,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00104">104</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
+
 </div>
 </div>
 <a id="a12da9eba9822148ff543e07b5d17141a" name="a12da9eba9822148ff543e07b5d17141a"></a>
@@ -664,6 +732,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_particle_emitter_8cs_source.html#l00107">107</a> of file <a class="el" href="_particle_emitter_8cs_source.html">ParticleEmitter.cs</a>.</p>
 
 </div>
 </div>

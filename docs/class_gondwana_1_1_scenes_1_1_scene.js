@@ -1,7 +1,9 @@
 var class_gondwana_1_1_scenes_1_1_scene =
 [
     [ "Scene", "class_gondwana_1_1_scenes_1_1_scene.html#a254272a432b1d3a737e48a52750cdeff", null ],
+    [ "Scene", "class_gondwana_1_1_scenes_1_1_scene.html#a40436a537d12b76716f02996202a9138", null ],
     [ "AddLayer", "class_gondwana_1_1_scenes_1_1_scene.html#aad4dc2ff1930c42d3ac8dc39bf89d084", null ],
+    [ "AddLayer", "class_gondwana_1_1_scenes_1_1_scene.html#a2c3a916c1541e0479a108d5a0fb29310", null ],
     [ "Dispose", "class_gondwana_1_1_scenes_1_1_scene.html#a835d902d5621935b14b107c41acd8da2", null ],
     [ "GetEnumerator", "class_gondwana_1_1_scenes_1_1_scene.html#ac090c4952ede7665ad957ce4f65e47f5", null ],
     [ "GetSceneLayerByID", "class_gondwana_1_1_scenes_1_1_scene.html#a0bd8ee56ed5fc05b4f5a52dc8ced7063", null ],

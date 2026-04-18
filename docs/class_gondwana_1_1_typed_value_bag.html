@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -95,7 +95,7 @@ $(function(){initNavTree('class_gondwana_1_1_typed_value_bag.html','','class_gon
 </div><!--header-->
 <div class="contents">
 
-<p>A flexible, strongly-typed value container intended for save-state extensibility.  
+<p>A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engine state.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.TypedValueBag:</div>
@@ -107,11 +107,9 @@ Inheritance diagram for Gondwana.TypedValueBag:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a37b2e5a4289bb731a75ea77fb904f481" id="r_a37b2e5a4289bb731a75ea77fb904f481"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37b2e5a4289bb731a75ea77fb904f481">TypedValueBag</a> ()</td></tr>
-<tr class="memdesc:a37b2e5a4289bb731a75ea77fb904f481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> class using the default JSON serializer settings.  <br /></td></tr>
-<tr class="memitem:adc939859720374aeafe82603ea10faa5" id="r_adc939859720374aeafe82603ea10faa5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc939859720374aeafe82603ea10faa5">TypedValueBag</a> (JsonSerializer serializer)</td></tr>
-<tr class="memdesc:adc939859720374aeafe82603ea10faa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> class using a custom JSON serializer.  <br /></td></tr>
+<tr class="memdesc:a37b2e5a4289bb731a75ea77fb904f481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> class.  <br /></td></tr>
 <tr class="memitem:a5e409a408522f7d09d19e2e0f7dc8cb9" id="r_a5e409a408522f7d09d19e2e0f7dc8cb9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e409a408522f7d09d19e2e0f7dc8cb9">TypedValueBag</a> (<a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a> other)</td></tr>
-<tr class="memdesc:a5e409a408522f7d09d19e2e0f7dc8cb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> class by performing a deep copy of another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a>.  <br /></td></tr>
+<tr class="memdesc:a5e409a408522f7d09d19e2e0f7dc8cb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> class by performing a copy of another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a>.  <br /></td></tr>
 <tr class="memitem:af67e6dfa811e2c976fd2a55ee19f364b" id="r_af67e6dfa811e2c976fd2a55ee19f364b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af67e6dfa811e2c976fd2a55ee19f364b">Set&lt; T &gt;</a> (ValueKey&lt; T &gt; key, T value)</td></tr>
 <tr class="memdesc:af67e6dfa811e2c976fd2a55ee19f364b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores a value in the bag under the specified key.  <br /></td></tr>
 <tr class="memitem:a31034c42886d93f50f6d0d0bde6c9be7" id="r_a31034c42886d93f50f6d0d0bde6c9be7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31034c42886d93f50f6d0d0bde6c9be7">TryGet&lt; T &gt;</a> (ValueKey&lt; T &gt; key, out T? value)</td></tr>
@@ -123,17 +121,38 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aec90b25e36a728090cecf4b6a410b94a" id="r_aec90b25e36a728090cecf4b6a410b94a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec90b25e36a728090cecf4b6a410b94a">Clear</a> ()</td></tr>
 <tr class="memdesc:aec90b25e36a728090cecf4b6a410b94a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all values from the bag.  <br /></td></tr>
 <tr class="memitem:a9fb1c3d69507270040aa919c4bb81137" id="r_a9fb1c3d69507270040aa919c4bb81137"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fb1c3d69507270040aa919c4bb81137">MergeFrom</a> (<a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>? incoming, bool overwriteExisting=false)</td></tr>
-<tr class="memdesc:a9fb1c3d69507270040aa919c4bb81137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges values from another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> into this instance.  <br /></td></tr>
+<tr class="memdesc:a9fb1c3d69507270040aa919c4bb81137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges values from another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> into this instance.  <br /></td></tr>
+<tr class="memitem:a1aecaf38c23c6f2702f1c92c2f298918" id="r_a1aecaf38c23c6f2702f1c92c2f298918"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1aecaf38c23c6f2702f1c92c2f298918">Contains</a> (string keyName)</td></tr>
+<tr class="memdesc:a1aecaf38c23c6f2702f1c92c2f298918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the bag contains a value for the specified key name, regardless of type.  <br /></td></tr>
+<tr class="memitem:a6eeaddfdfcf347f163ec6b1175b2b306" id="r_a6eeaddfdfcf347f163ec6b1175b2b306"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6eeaddfdfcf347f163ec6b1175b2b306">Contains&lt; T &gt;</a> (ValueKey&lt; T &gt; key)</td></tr>
+<tr class="memdesc:a6eeaddfdfcf347f163ec6b1175b2b306"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the bag contains a value for the specified typed key.  <br /></td></tr>
 <tr class="memitem:a4789210939144a6f8ac01beadaf647d2" id="r_a4789210939144a6f8ac01beadaf647d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_typed_value_bag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4789210939144a6f8ac01beadaf647d2">Clone</a> ()</td></tr>
-<tr class="memdesc:a4789210939144a6f8ac01beadaf647d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a deep copy of this <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> (tokens are cloned).  <br /></td></tr>
+<tr class="memdesc:a4789210939144a6f8ac01beadaf647d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a copy of this <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a>.  <br /></td></tr>
+<tr class="memitem:a8bdc9933dad81e8bb0b3ffed08b40dce" id="r_a8bdc9933dad81e8bb0b3ffed08b40dce"><td class="memItemLeft" align="right" valign="top">Dictionary&lt; string, object?&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bdc9933dad81e8bb0b3ffed08b40dce">ToDictionary</a> ()</td></tr>
+<tr class="memdesc:a8bdc9933dad81e8bb0b3ffed08b40dce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produces a shallow snapshot of the bag's current contents.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A flexible, strongly-typed value container intended for save-state extensibility. </p>
-<p>Values are stored internally as JSON tokens keyed by string identifiers, but accessed externally via strongly-typed ValueKey&lt;T&gt; instances to ensure compile-time safety. </p>
-<p>This class is designed to be serialized as part of an engine or game save file, while allowing individual projects or modules to attach arbitrary structured data without modifying core engine state. </p>
+<div class="textblock"><p>A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engine state. </p>
+<p>Values are stored internally as plain CLR objects keyed by string identifiers, but they are accessed externally through strongly-typed ValueKey&lt;T&gt; instances. This preserves compile-time safety for callers while avoiding any direct dependency on JSON serialization during ordinary runtime usage. </p>
+<p>Unlike a JSON-token-based implementation, this class does not serialize or deserialize values on every set/get operation. It behaves as an in-memory typed bag first, with persistence concerns expected to be handled explicitly at the boundaries of the engine or application. </p>
+<p>Values stored in a <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> are not preserved by JSON serialization. The bag is intended for runtime, transient, or otherwise non-persisted values, and engine-core properties that expose a <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> should typically be marked with JsonIgnoreAttribute. If an instance of this class is serialized directly, its contents are also intentionally ignored. </p>
+<p>Cloning behavior is best-effort: </p>
+<ul>
+<li>
+If a stored value is <code>null</code>, it remains <code>null</code>.   </li>
+<li>
+If a stored value implements <a class="el" href="interface_gondwana_1_1_i_deep_cloneable-1-g.html" title="Defines a lightweight contract for values that can produce an explicit deep clone of themselves.">IDeepCloneable&lt;T&gt;</a>, that deep-clone path is used.   </li>
+<li>
+If a stored value implements ICloneable, that clone path is used.   </li>
+<li>
+Otherwise, the stored reference is copied as-is (shallow copy).   </li>
+</ul>
+<p>This means immutable values behave exactly as expected, while mutable reference types can opt into stronger cloning semantics by implementing one of the supported clone contracts. </p>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00102">102</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a37b2e5a4289bb731a75ea77fb904f481" name="a37b2e5a4289bb731a75ea77fb904f481"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37b2e5a4289bb731a75ea77fb904f481">&#9670;&#160;</a></span>TypedValueBag() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37b2e5a4289bb731a75ea77fb904f481">&#9670;&#160;</a></span>TypedValueBag() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -147,37 +166,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> class using the default JSON serializer settings. </p>
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> class. </p>
 
-</div>
-</div>
-<a id="adc939859720374aeafe82603ea10faa5" name="adc939859720374aeafe82603ea10faa5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc939859720374aeafe82603ea10faa5">&#9670;&#160;</a></span>TypedValueBag() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Gondwana.TypedValueBag.TypedValueBag </td>
-          <td>(</td>
-          <td class="paramtype">JsonSerializer</td>          <td class="paramname"><span class="paramname"><em>serializer</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> class using a custom JSON serializer. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">serializer</td><td>The serializer to use when converting values to and from JSON tokens. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00124">124</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
 <a id="a5e409a408522f7d09d19e2e0f7dc8cb9" name="a5e409a408522f7d09d19e2e0f7dc8cb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5e409a408522f7d09d19e2e0f7dc8cb9">&#9670;&#160;</a></span>TypedValueBag() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e409a408522f7d09d19e2e0f7dc8cb9">&#9670;&#160;</a></span>TypedValueBag() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,7 +187,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> class by performing a deep copy of another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a>. </p>
+<p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> class by performing a copy of another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a>. </p>
+<p>Values are copied using the bag's internal clone strategy. Where possible, mutable values are cloned; where no supported clone mechanism exists, the original reference is reused. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>The source value bag to copy from. </td></tr>
@@ -204,8 +201,9 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>All values are cloned at the underlying JSON token level, ensuring that the newly created bag does not share mutable state with the source instance. </p>
-<p>This constructor is intended for scenarios such as engine state cloning, snapshot restoration, or asset duplication where isolation between value bags is required. </p>
+<p>This constructor is intended for scenarios such as runtime duplication, snapshot creation, undo/redo support, and general engine-state isolation. The exact depth of the copy depends on the clone capabilities of the stored values themselves. </p>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00147">147</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -227,6 +225,8 @@ Public Member Functions</h2></td></tr>
 
 <p>Removes all values from the bag. </p>
 
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00300">300</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4789210939144a6f8ac01beadaf647d2" name="a4789210939144a6f8ac01beadaf647d2"></a>
@@ -244,7 +244,83 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Creates a deep copy of this <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> (tokens are cloned). </p>
+<p>Creates a copy of this <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a>. </p>
+<p>The resulting bag is independent at the dictionary level. Individual stored values are duplicated according to the bag's clone strategy. </p>
+<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> instance containing copies of the current entries. </dd></dl>
+
+</div>
+</div>
+<a id="a1aecaf38c23c6f2702f1c92c2f298918" name="a1aecaf38c23c6f2702f1c92c2f298918"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1aecaf38c23c6f2702f1c92c2f298918">&#9670;&#160;</a></span>Contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.TypedValueBag.Contains </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>keyName</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determines whether the bag contains a value for the specified key name, regardless of type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keyName</td><td>The logical key name to test. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the bag contains an entry with the specified key name; otherwise, <code>false</code>. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentException</td><td>Thrown if <em>keyName</em>  is null, empty, or whitespace. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00348">348</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6eeaddfdfcf347f163ec6b1175b2b306" name="a6eeaddfdfcf347f163ec6b1175b2b306"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eeaddfdfcf347f163ec6b1175b2b306">&#9670;&#160;</a></span>Contains&lt; T &gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="#a1aecaf38c23c6f2702f1c92c2f298918">Gondwana.TypedValueBag.Contains</a>&lt; T &gt; </td>
+          <td>(</td>
+          <td class="paramtype">ValueKey&lt; T &gt;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determines whether the bag contains a value for the specified typed key. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type associated with the key. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The strongly-typed key to test. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the bag contains an entry with the specified key name; otherwise, <code>false</code>. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentException</td><td>Thrown if the key name is null, empty, or whitespace. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00369">369</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -277,11 +353,20 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>The strongly-typed key identifying the value. </td></tr>
-    <tr><td class="paramname">defaultValue</td><td>The value to return if the key is not found or the stored value is JSON null. </td></tr>
+    <tr><td class="paramname">defaultValue</td><td>The value to return if the key is not found or the stored value is <code>null</code>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The stored value if present; otherwise, <em>defaultValue</em> . </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The stored value if present and non-null; otherwise, <em>defaultValue</em> . </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentException</td><td>Thrown if the key name is null, empty, or whitespace. </td></tr>
+    <tr><td class="paramname">InvalidCastException</td><td>Thrown if a value exists for the specified key but is not compatible with <em>T</em> . </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00269">269</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -304,7 +389,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Merges values from another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for save-state extensibility.">TypedValueBag</a> into this instance. </p>
+<p>Merges values from another <a class="el" href="class_gondwana_1_1_typed_value_bag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> into this instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">incoming</td><td>The source bag whose values will be copied into this bag. If <code>null</code>, the method performs no action. </td></tr>
@@ -312,7 +397,9 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>Values are merged at the underlying token level and cloned before insertion, ensuring the two bags do not share mutable state. </p>
+<p>Values copied from <em>incoming</em>  pass through the same clone strategy used by <a class="el" href="#a4789210939144a6f8ac01beadaf647d2" title="Creates a copy of this TypedValueBag.">Clone()</a>. This avoids unnecessary sharing where the stored types expose a supported clone mechanism. </p>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00322">322</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -345,6 +432,14 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the value was found and removed; otherwise, <code>false</code>. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentException</td><td>Thrown if the key name is null, empty, or whitespace. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00291">291</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -378,10 +473,41 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>The strongly-typed key identifying the value. </td></tr>
-    <tr><td class="paramname">value</td><td>The value to store. A <code>null</code> value is stored explicitly as JSON null. </td></tr>
+    <tr><td class="paramname">value</td><td>The value to store. A <code>null</code> value is stored explicitly. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentException</td><td>Thrown if the key name is null, empty, or whitespace. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00174">174</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
+
+</div>
+</div>
+<a id="a8bdc9933dad81e8bb0b3ffed08b40dce" name="a8bdc9933dad81e8bb0b3ffed08b40dce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bdc9933dad81e8bb0b3ffed08b40dce">&#9670;&#160;</a></span>ToDictionary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Dictionary&lt; string, object?&gt; Gondwana.TypedValueBag.ToDictionary </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Produces a shallow snapshot of the bag's current contents. </p>
+<p>This method is primarily intended for diagnostics, inspection, or external code that wants a plain dictionary view of the stored runtime values. </p>
+<dl class="section return"><dt>Returns</dt><dd>A new dictionary containing the current key/value pairs from the bag. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00407">407</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -414,11 +540,28 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>The strongly-typed key identifying the value. </td></tr>
-    <tr><td class="paramname">value</td><td>When this method returns <code>true</code>, contains the retrieved value or the default value of <em>T</em>  if the stored value is JSON null. </td></tr>
+    <tr><td class="paramname">value</td><td>When this method returns <code>true</code>, contains the retrieved value. If the stored value is <code>null</code>, this output receives the default value of <em>T</em> . When the method returns <code>false</code>, this output also receives the default value of <em>T</em> . </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if a value exists for the specified key; otherwise, <code>false</code>. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentException</td><td>Thrown if the key name is null, empty, or whitespace. </td></tr>
+    <tr><td class="paramname">InvalidCastException</td><td>Thrown if a value exists for the specified key but is not compatible with <em>T</em> . </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This method distinguishes between three cases: </p><ol>
+<li>
+No value exists for the key: returns <code>false</code>.  </li>
+<li>
+A value exists and is <code>null</code>: returns <code>true</code>, with <em>value</em>  set to default.  </li>
+<li>
+A value exists and is non-null: the method verifies type compatibility before returning it.  </li>
+</ol>
+
+<p class="definition">Definition at line <a class="el" href="_typed_value_bag_8cs_source.html#l00219">219</a> of file <a class="el" href="_typed_value_bag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>

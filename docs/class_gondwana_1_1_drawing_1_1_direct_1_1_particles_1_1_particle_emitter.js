@@ -1,6 +1,7 @@
 var class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter =
 [
     [ "Min", "class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#abd56e6d67bf59d132cf0768420eea4a9", null ],
+    [ "BlendMode", "class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a4698392a7a76ef87261fd87afa082b5a", null ],
     [ "Color", "class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a1cd6d1a34e45bff6efbf97cc4163a0d0", null ],
     [ "EmitRate", "class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a216cc1469aa24a85e0d165f6e408f1f6", null ],
     [ "GaussianStdDev01", "class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#ac31f78030af367a77419d292d89a30b5", null ],

@@ -1,21 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <OutputType>Library</OutputType>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Gondwana.WinForms</RootNamespace>
+        <AssemblyName>Gondwana.WinForms</AssemblyName>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
 
-  <ItemGroup>
-    <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
-    <PackageReference Include="ppy.SDL2-CS" Version="1.0.82" />
-    <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.2" />
-  </ItemGroup>
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.WinForms</PackageProjectUrl>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
-  </ItemGroup>
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.WinForms</PackageId>
+        <Title>Gondwana WinForms Platform Support</Title>
+        <Description>WinForms-based platform support for the Gondwana Game Engine, providing rendering, input, and audio integration for Windows desktop applications.</Description>
+        <PackageTags>$(PackageTags) winforms windows desktop rendering input audio</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+        <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
 
 </Project>

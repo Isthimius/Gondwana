@@ -85,7 +85,7 @@ public sealed class AudioResourceManager : IDisposable
     /// <param name="defaultVolume">The default volume level for all loaded audio resources, ranging from 0.0 to 1.0. Defaults to 1.0.</param>
     /// <param name="defaultPan">The default stereo pan position for all loaded audio resources, ranging from -1.0 to 1.0. Defaults to 0.0.</param>
     /// <returns>A list of successfully loaded <see cref="AudioResource"/> instances.</returns>
-    public List<AudioResource> LoadFromEngineResourceFile(AssetsFile resourceFile, float defaultVolume = 1.0f, float defaultPan = 0.0f)
+    public List<AudioResource> LoadFromEngineAssetsFile(AssetsFile resourceFile, float defaultVolume = 1.0f, float defaultPan = 0.0f)
     {
         List<AudioResource> loadedSounds = new();
 

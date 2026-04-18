@@ -26,8 +26,8 @@ public abstract class GameHostBase : IDisposable
     /// </summary>
     /// <param name="configPath">Optional path to the configuration file.</param>
     /// <param name="autoSaveConfig">Optional flag indicating whether to automatically save configuration changes.</param>
-    /// <param name="logLevel">The log level to use for engine logging. Default is <see cref="LogLevel.Trace"/>.</param>
-    public void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Trace)
+    /// <param name="logLevel">The log level to use for engine logging. Default is <see cref="LogLevel.Warning"/>.</param>
+    public void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning)
     {
         EnsureNotDisposed();
 

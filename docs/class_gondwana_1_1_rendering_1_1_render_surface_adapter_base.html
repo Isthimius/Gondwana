@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -100,8 +100,8 @@ Inheritance diagram for Gondwana.Rendering.RenderSurfaceAdapterBase:</div>
  <div class="center">
   <img src="class_gondwana_1_1_rendering_1_1_render_surface_adapter_base.png" usemap="#Gondwana_2ERendering_2ERenderSurfaceAdapterBase_map" alt=""/>
   <map id="Gondwana_2ERendering_2ERenderSurfaceAdapterBase_map" name="Gondwana_2ERendering_2ERenderSurfaceAdapterBase_map">
-<area href="class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_adapter.html" alt="Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceAdapter" shape="rect" coords="0,56,416,80"/>
-<area href="class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_adapter.html" alt="Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter" shape="rect" coords="426,56,842,80"/>
+<area href="class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_adapter.html" title="Provides a render surface adapter for Windows Forms using SKControl and bitmap-based rendering." alt="Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceAdapter" shape="rect" coords="0,56,416,80"/>
+<area href="class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_adapter.html" title="Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl." alt="Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter" shape="rect" coords="426,56,842,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -129,7 +129,10 @@ Events</h2></td></tr>
 <tr class="memitem:aec240b322b995ec0cdf4fca485cfba47" id="r_aec240b322b995ec0cdf4fca485cfba47"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="class_gondwana_1_1_rendering_1_1_render_surface_adapter_resized_event_args.html">RenderSurfaceAdapterResizedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec240b322b995ec0cdf4fca485cfba47">Resized</a></td></tr>
 <tr class="memdesc:aec240b322b995ec0cdf4fca485cfba47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the render surface adapter is resized.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00005">5</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae5ec6cc715ff40b37cad1828c0164868" name="ae5ec6cc715ff40b37cad1828c0164868"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae5ec6cc715ff40b37cad1828c0164868">&#9670;&#160;</a></span>RenderSurfaceAdapterBase()</h2>
 
@@ -165,6 +168,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00033">33</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -251,6 +256,8 @@ Events</h2></td></tr>
 </dl>
 <p>If the specified dimensions are the same as the current dimensions, this method returns without making changes or raising the <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a> event. </p>
 
+<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00047">47</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -277,6 +284,8 @@ Events</h2></td></tr>
 <p>Gets the current height of the render surface in pixels. </p>
 <p>The height of the render surface.</p>
 
+<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00026">26</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a02161b1fcf631174f0b69d7595f5e74f" name="a02161b1fcf631174f0b69d7595f5e74f"></a>
@@ -302,6 +311,8 @@ Events</h2></td></tr>
 <p>Gets the current width of the render surface in pixels. </p>
 <p>The width of the render surface.</p>
 
+<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00020">20</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -319,6 +330,8 @@ Events</h2></td></tr>
 
 <p>Occurs when the render surface adapter is resized. </p>
 <p>This event is raised when the <a class="el" href="#a02161b1fcf631174f0b69d7595f5e74f" title="Gets the current width of the render surface in pixels.">Width</a> or <a class="el" href="#ae84340b8de8d385ce27da526d9a87317" title="Gets the current height of the render surface in pixels.">Height</a> properties change, providing both the old and new dimensions in the event arguments. </p>
+
+<p class="definition">Definition at line <a class="el" href="_render_surface_adapter_base_8cs_source.html#l00014">14</a> of file <a class="el" href="_render_surface_adapter_base_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>

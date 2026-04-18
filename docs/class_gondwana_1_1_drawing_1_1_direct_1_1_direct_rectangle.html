@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -322,7 +322,9 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <div class="line"> </div>
 <div class="line"><span class="comment">// Pulsing alert border</span></div>
 <div class="line">glow.PulseBorder(Color.FromArgb(255, 255, 64, 64), Color.FromArgb(80, 255, 0, 0), 1.2f);</div>
-</div><!-- fragment --> </div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00068">68</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+</div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="a539cd00ff56cd777ffea4ab41303bc1e" name="a539cd00ff56cd777ffea4ab41303bc1e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a539cd00ff56cd777ffea4ab41303bc1e">&#9670;&#160;</a></span>StrokeAlign</h2>
 
@@ -345,6 +347,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <tr><td class="fieldname"><a id="a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd" name="a539cd00ff56cd777ffea4ab41303bc1ea4f1f6016fc9f3f2353c0cc7c67b292bd"></a>Center&#160;</td><td class="fielddoc"><p>Centers the stroke on the rectangle's boundary. Half the stroke width is drawn inside and half outside (default Skia behavior). </p>
 </td></tr>
 </table>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00867">867</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -403,6 +407,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <p>This constructor creates a rectangle positioned in world coordinates that moves with the camera and is affected by the scene layer's parallax factor. Use this for in-game UI elements, selection markers, health bars, and other world-space visuals. </p>
 <p>By default, the rectangle is created unfilled (outline only) with a 1-pixel stroke width. Use <a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a> and <a class="el" href="#a6450dd2544dc00adcebb45a84ef81f20" title="Sets the width (thickness) of the rectangle&#39;s stroke (outline) in pixels.">SetStrokeWidth</a> to customize the appearance. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00136">136</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="acf4a2ff6040e82f45563929a218e2f17" name="acf4a2ff6040e82f45563929a218e2f17"></a>
@@ -459,6 +465,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <p>This constructor creates a rectangle positioned in screen coordinates that remains fixed on screen regardless of camera movement. Use this for HUD panels, buttons, borders, focus indicators, and other screen-space UI elements. </p>
 <p>By default, the rectangle is created unfilled (outline only) with a 1-pixel stroke width. Use <a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a> and <a class="el" href="#a6450dd2544dc00adcebb45a84ef81f20" title="Sets the width (thickness) of the rectangle&#39;s stroke (outline) in pixels.">SetStrokeWidth</a> to customize the appearance. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00163">163</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -482,6 +490,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <p>After calling this method, the rectangle's stroke will be drawn as a solid, continuous line instead of a dashed pattern. </p>
 <p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00385">385</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae15c4f69e1706ba944838f4ab16715ad" name="ae15c4f69e1706ba944838f4ab16715ad"></a>
@@ -503,6 +513,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
 <p>After calling this method, the rectangle's fill will use the solid color set by <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a> instead of the tiled bitmap pattern. The pattern shader is disposed to free resources. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00638">638</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -558,6 +570,8 @@ Draws the stroke (border) with opaque rendering to avoid blend artifacts. </li>
 <p>The stroke is rendered using SKBlendMode.Src (source replace) mode with full opacity to ensure crisp borders without color blending artifacts, regardless of the configured blend mode. This is restored after the stroke is drawn. </p>
 <p>Do not call this method directly from game code. To trigger a redraw, call DirectDrawingBase.ForceRefresh or modify properties that affect appearance. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00748">748</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="adeb285a1ff90fd5c7ba970f1c6c26813" name="adeb285a1ff90fd5c7ba970f1c6c26813"></a>
@@ -609,6 +623,8 @@ Draws the stroke (border) with opaque rendering to avoid blend artifacts. </li>
 <p>The border pulse creates a smooth color transition that repeats continuously. The color interpolates from <em>from</em>  to <em>to</em>  and back, creating an attention-grabbing effect useful for selection indicators, focus outlines, or warning borders. </p>
 <p>The animation is updated each frame via <a class="el" href="#a801c259d59c101239fd5947109e542f1" title="Performs per-frame update logic, including pulse animation advancement and physics integration.">Update</a> and uses high-resolution timing for smooth, consistent animation regardless of frame rate. </p>
 <p>To stop all pulsing (fill and border), call <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a>. Disabling via <em>enabled</em>  = <code>false</code> stops the animation but preserves the settings for later re-enabling. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00534">534</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -662,6 +678,8 @@ Draws the stroke (border) with opaque rendering to avoid blend artifacts. </li>
 <p>The animation is updated each frame via <a class="el" href="#a801c259d59c101239fd5947109e542f1" title="Performs per-frame update logic, including pulse animation advancement and physics integration.">Update</a> and uses high-resolution timing for smooth, consistent animation regardless of frame rate. </p>
 <p>To stop all pulsing (fill and border), call <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a>. Disabling via <em>enabled</em>  = <code>false</code> stops the animation but preserves the settings for later re-enabling. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00494">494</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6819eb1c1fd6aeea32d6a58500147ea3" name="a6819eb1c1fd6aeea32d6a58500147ea3"></a>
@@ -690,6 +708,8 @@ Draws the stroke (border) with opaque rendering to avoid blend artifacts. </li>
 <p>This method modifies only the alpha channel of the base color, preserving the RGB components. It affects the fill transparency and, if no distinct border color is set, also affects the stroke transparency. </p>
 <p>If a distinct border color has been set via <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a>, its alpha remains unchanged by this method. To modify the border alpha independently, call <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a> with a color containing the desired alpha value. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00246">246</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -730,6 +750,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>This mode applies to both the fill and stroke paints. Changing it affects how the rectangle visually interacts with whatever was previously drawn. </p>
 <p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00416">416</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="a476370d59eb61805c4431a509d494ee9" name="a476370d59eb61805c4431a509d494ee9"></a>
@@ -759,6 +781,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>The border color has its own alpha channel, independent of the fill's alpha. To remove the distinct border color and revert to using the base color, call <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a> again without setting a border color, or set the border color to match the base color. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. If border pulsing is active, calling this method will not affect the pulsing animation until <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a> is called. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00219">219</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="a577cf46c75069fe87bad6c68a95f227f" name="a577cf46c75069fe87bad6c68a95f227f"></a>
@@ -786,6 +810,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
 <p>This color is used for the fill when <a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a> is true, and for the stroke (border) unless a distinct border color has been set via <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a>. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. If color pulsing is active, calling this method will not affect the pulsing animation until <a class="el" href="#a311c1cda35145755c37eb74c627fecc5" title="Stops all active color pulsing animations (fill and border), reverting to static colors.">StopPulses</a> is called. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00186">186</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -815,6 +841,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>Rounded corners are applied uniformly to all four corners of the rectangle. The radius specifies how far from the corner the curve begins. If the radius is larger than half the rectangle's width or height, the corners may overlap, producing unexpected results. </p>
 <p>Rounded corners work with both filled and outlined rectangles, as well as with stroke alignment modes. The corner radius is adjusted internally based on stroke alignment to maintain visual consistency. </p>
 <p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00335">335</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -851,6 +879,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>To remove the dash pattern and revert to a solid stroke, call <a class="el" href="#a36855013b12b50df0947f4b2e248b62f" title="Removes any existing dash pattern, reverting to a solid stroke.">ClearDashPattern</a>. </p>
 <p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00364">364</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="a280411ef2d97d45a032015ae9d480541" name="a280411ef2d97d45a032015ae9d480541"></a>
@@ -879,6 +909,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>When filled, the rectangle's interior is drawn using the fill paint (base color or pattern). When not filled, only the stroke (outline) is visible if <a class="el" href="#a6450dd2544dc00adcebb45a84ef81f20" title="Sets the width (thickness) of the rectangle&#39;s stroke (outline) in pixels.">SetStrokeWidth</a> is greater than zero. </p>
 <p>You can combine fill and stroke to create rectangles with both a filled interior and a visible border, which is common for UI panels and buttons. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00278">278</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -941,6 +973,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>This method automatically enables filled mode (<a class="el" href="#a280411ef2d97d45a032015ae9d480541" title="Sets whether the rectangle interior is filled with the base color (or pattern).">SetFilled</a>(true)) to make the pattern visible. The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 <p>To remove the pattern and return to solid color fill, call <a class="el" href="#ae15c4f69e1706ba944838f4ab16715ad" title="Removes the current pattern fill and reverts to solid color rendering.">ClearFillPattern</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00604">604</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="af803e07d9f776a2285b48bd31125b371" name="af803e07d9f776a2285b48bd31125b371"></a>
@@ -978,6 +1012,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>This only affects visible strokes (outlined or bordered rectangles). Filled rectangles are not impacted by stroke alignment. </p>
 <p>No dirty-rectangle marking is performed by this method alone; the effect becomes visible on the next render pass if the rectangle is already dirty from other property changes. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00458">458</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6450dd2544dc00adcebb45a84ef81f20" name="a6450dd2544dc00adcebb45a84ef81f20"></a>
@@ -1007,6 +1043,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <p>For pixel-perfect rendering at 1-pixel width, consider disabling antialiasing or using integer coordinates for the rectangle bounds. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00304">304</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
+
 </div>
 </div>
 <a id="a311c1cda35145755c37eb74c627fecc5" name="a311c1cda35145755c37eb74c627fecc5"></a>
@@ -1028,6 +1066,8 @@ SKBlendMode.Plus – Additive blending; great for light or energy effects. </li>
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,...">DirectRectangle</a> instance for method chaining.</dd></dl>
 <p>After calling this method, the rectangle's fill and border colors are restored to the values set by <a class="el" href="#a577cf46c75069fe87bad6c68a95f227f" title="Sets the base color used for both fill and stroke (unless a distinct border color is specified).">SetColor</a> and <a class="el" href="#a476370d59eb61805c4431a509d494ee9" title="Sets a distinct border (stroke) color, independent of the fill color.">SetBorderColor</a>. The pulse animation state (period, wave type, colors) is preserved but disabled, so you can re-enable it later by calling <a class="el" href="#aa160982417cd8c658e820211741f0030" title="Initiates an animated color transition (pulse) for the rectangle&#39;s fill between two colors.">PulseFill</a> or <a class="el" href="#adeb285a1ff90fd5c7ba970f1c6c26813" title="Initiates an animated color transition (pulse) for the rectangle&#39;s border between two colors.">PulseBorder</a> again. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00559">559</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>
@@ -1079,6 +1119,8 @@ Calls <code>base.Update(tick)</code> to perform physics integration and fade/rev
 <p>Override this method in derived classes to add custom per-frame logic. Always call <code>base.Update(tick)</code> to preserve pulsing, movement, and fade/reveal functionality. </p>
 
 <p>Reimplemented from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_rectangle_8cs_source.html#l00674">674</a> of file <a class="el" href="_direct_rectangle_8cs_source.html">DirectRectangle.cs</a>.</p>
 
 </div>
 </div>

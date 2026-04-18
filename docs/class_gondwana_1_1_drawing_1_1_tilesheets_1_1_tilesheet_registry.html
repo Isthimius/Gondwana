@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -97,6 +97,12 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tileshee
 
 <p>Thread-safe singleton registry for <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html" title="Represents a tilesheet image and metadata for rendering tiles.">Tilesheet</a> instances.  
  <a href="#details">More...</a></p>
+<div class="dynheader">
+Inheritance diagram for Gondwana.Drawing.Tilesheets.TilesheetRegistry:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet_registry.png" alt=""/>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -110,11 +116,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a74458f3eebbda6e057f2a42001bc68a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all tilesheets from the registry and disposes them.  <br /></td></tr>
 <tr class="memitem:afbcd5ba6a9d038ce1035553b273d0be5" id="r_afbcd5ba6a9d038ce1035553b273d0be5"><td class="memItemLeft" align="right" valign="top">IImmutableDictionary&lt; string, <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html">Tilesheet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbcd5ba6a9d038ce1035553b273d0be5">GetAll</a> ()</td></tr>
 <tr class="memdesc:afbcd5ba6a9d038ce1035553b273d0be5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an immutable snapshot of all registered tilesheets as a dictionary.  <br /></td></tr>
+<tr class="memitem:aaa06b10b5ef0f21527d926c487bcc5ce" id="r_aaa06b10b5ef0f21527d926c487bcc5ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa06b10b5ef0f21527d926c487bcc5ce">Dispose</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a560d2fefd50d1e455dc6d425ece6731f" id="r_a560d2fefd50d1e455dc6d425ece6731f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet_registry.html">TilesheetRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a560d2fefd50d1e455dc6d425ece6731f">Instance</a><code> [get]</code></td></tr>
 <tr class="memdesc:a560d2fefd50d1e455dc6d425ece6731f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet_registry.html" title="Thread-safe singleton registry for Tilesheet instances.">TilesheetRegistry</a>.  <br /></td></tr>
+<tr class="memitem:a977a6830cafd2c572bcdf5ad77615465" id="r_a977a6830cafd2c572bcdf5ad77615465"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a977a6830cafd2c572bcdf5ad77615465">this[string name]</a><code> [get]</code></td></tr>
+<tr class="memdesc:a977a6830cafd2c572bcdf5ad77615465"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html" title="Represents a tilesheet image and metadata for rendering tiles.">Tilesheet</a> associated with the specified name.  <br /></td></tr>
 <tr class="memitem:ad0d32dafe4ad23fb542efe5c83f08bda" id="r_ad0d32dafe4ad23fb542efe5c83f08bda"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0d32dafe4ad23fb542efe5c83f08bda">Names</a><code> [get]</code></td></tr>
 <tr class="memdesc:ad0d32dafe4ad23fb542efe5c83f08bda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only list of all tilesheet names currently registered in the registry.  <br /></td></tr>
 <tr class="memitem:a4af09582bf9a8e98d1ff69b0d97c5b08" id="r_a4af09582bf9a8e98d1ff69b0d97c5b08"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4af09582bf9a8e98d1ff69b0d97c5b08">Count</a><code> [get]</code></td></tr>
@@ -122,6 +131,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Thread-safe singleton registry for <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html" title="Represents a tilesheet image and metadata for rendering tiles.">Tilesheet</a> instances. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00009">9</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a74458f3eebbda6e057f2a42001bc68a6" name="a74458f3eebbda6e057f2a42001bc68a6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a74458f3eebbda6e057f2a42001bc68a6">&#9670;&#160;</a></span>Clear()</h2>
@@ -140,6 +151,27 @@ Properties</h2></td></tr>
 
 <p>Removes all tilesheets from the registry and disposes them. </p>
 <p>This method is thread-safe. All tilesheets in the registry are disposed after being removed. Use with caution as any external references to the tilesheets will reference disposed objects. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00186">186</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="aaa06b10b5ef0f21527d926c487bcc5ce" name="aaa06b10b5ef0f21527d926c487bcc5ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa06b10b5ef0f21527d926c487bcc5ce">&#9670;&#160;</a></span>Dispose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Tilesheets.TilesheetRegistry.Dispose </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00277">277</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -161,6 +193,8 @@ Properties</h2></td></tr>
 <p>Gets an immutable snapshot of all registered tilesheets as a dictionary. </p>
 <dl class="section return"><dt>Returns</dt><dd>An immutable dictionary containing all registered tilesheets, keyed by their names.</dd></dl>
 <p>This method is thread-safe and returns a snapshot of the registry at the time of invocation. The returned dictionary uses the same string comparer as the internal collection. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00223">223</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -188,6 +222,8 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The tilesheet associated with the specified name, or <code>null</code> if not found.</dd></dl>
 <p>This method is thread-safe and provides a convenient alternative to <a class="el" href="#a417bf909010f050ba8089b1a7a979432" title="Attempts to retrieve a Tilesheet by its name from the registry.">TryGet</a> when a null return value is acceptable. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00087">87</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -226,6 +262,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00130">130</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
 </div>
 </div>
 <a id="a417bf909010f050ba8089b1a7a979432" name="a417bf909010f050ba8089b1a7a979432"></a>
@@ -258,6 +296,8 @@ Properties</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the tilesheet was found in the registry; otherwise, <code>false</code>.</dd></dl>
 <p>This method is thread-safe. If <em>name</em>  is <code>null</code>, a warning is logged and the method returns <code>false</code>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00065">65</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -285,6 +325,8 @@ Properties</h2></td></tr>
 <p>The total count of registered tilesheets.</p>
 <p>This property is thread-safe. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00238">238</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
 </div>
 </div>
 <a id="a560d2fefd50d1e455dc6d425ece6731f" name="a560d2fefd50d1e455dc6d425ece6731f"></a>
@@ -309,6 +351,8 @@ Properties</h2></td></tr>
 
 <p>Gets the singleton instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet_registry.html" title="Thread-safe singleton registry for Tilesheet instances.">TilesheetRegistry</a>. </p>
 <p>The singleton instance.</p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00022">22</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -335,6 +379,49 @@ Properties</h2></td></tr>
 <p>Gets a read-only list of all tilesheet names currently registered in the registry. </p>
 <p>A read-only list containing the names of all registered tilesheets.</p>
 <p>This property is thread-safe and returns a snapshot of the names at the time of access. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00206">206</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a977a6830cafd2c572bcdf5ad77615465" name="a977a6830cafd2c572bcdf5ad77615465"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a977a6830cafd2c572bcdf5ad77615465">&#9670;&#160;</a></span>this[string name]</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.this[string name]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html" title="Represents a tilesheet image and metadata for rendering tiles.">Tilesheet</a> associated with the specified name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name of the tilesheet to retrieve. Cannot be <code>null</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html" title="Represents a tilesheet image and metadata for rendering tiles.">Tilesheet</a> associated with the specified name.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>name</em>  is <code>null</code>.</td></tr>
+    <tr><td class="paramname">KeyNotFoundException</td><td>Thrown when a tilesheet with the specified name is not found in the registry.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This indexer is thread-safe and provides direct access to tilesheets by name using bracket notation. If you need to check for existence without throwing an exception, use <a class="el" href="#a417bf909010f050ba8089b1a7a979432" title="Attempts to retrieve a Tilesheet by its name from the registry.">TryGet</a> or <a class="el" href="#abe02024e34347962316b1a90d70f78a2" title="Retrieves a Tilesheet by its name from the registry, or null if not found.">GetOrNull</a> instead. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tilesheet_registry_8cs_source.html#l00104">104</a> of file <a class="el" href="_tilesheet_registry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>

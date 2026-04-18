@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -149,6 +149,8 @@ Events</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a high-resolution timer that can trigger events at specified intervals and supports various timer types and cycles. This class is designed to be used within the <a class="el" href="namespace_gondwana.html">Gondwana</a> engine. </p>
 <p>The <a class="el" href="class_gondwana_1_1_timers_1_1_timer.html" title="Represents a high-resolution timer that can trigger events at specified intervals and supports variou...">Timer</a> class provides functionality for creating and managing timers that can trigger events based on a specified duration and cycle type. <a class="el" href="namespace_gondwana_1_1_timers.html">Timers</a> can be paused, resumed, and disposed of when no longer needed. The class also supports managing multiple timers through static methods, such as adding, removing, and retrieving timers by their unique identifiers. This class is thread-safe for managing timers but does not guarantee thread safety for individual timer instances. Use appropriate synchronization if accessing instance members from multiple threads.</p>
+
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00015">15</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ab968d2a08c3b04cf380fb5354f4254b6" name="ab968d2a08c3b04cf380fb5354f4254b6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab968d2a08c3b04cf380fb5354f4254b6">&#9670;&#160;</a></span>Add() <span class="overload">[1/2]</span></h2>
@@ -200,6 +202,8 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The newly created <a class="el" href="class_gondwana_1_1_timers_1_1_timer.html" title="Represents a high-resolution timer that can trigger events at specified intervals and supports variou...">Timer</a> instance.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00124">124</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a id="a2eae4e0782e9693724551a17491f5958" name="a2eae4e0782e9693724551a17491f5958"></a>
@@ -245,6 +249,8 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="class_gondwana_1_1_timers_1_1_timer.html" title="Represents a high-resolution timer that can trigger events at specified intervals and supports variou...">Timer</a> instance representing the newly created timer.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00141">141</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a id="a2d23cde3973017fd8e0ca32c05f0718a" name="a2d23cde3973017fd8e0ca32c05f0718a"></a>
@@ -275,6 +281,8 @@ Events</h2></td></tr>
 <p>This method is typically called during engine shutdown or when resetting the engine state. It ensures proper cleanup of all timer resources and event subscriptions. </p>
 <p>This method is thread-safe and can be called from any thread. </p>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00193">193</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a id="aacf2f5cfe1cc442ac2a4eec84616d7f8" name="aacf2f5cfe1cc442ac2a4eec84616d7f8"></a>
@@ -304,6 +312,8 @@ Marking the timer as disposed to prevent further use </li>
 </ul>
 <p>After disposal, the timer will no longer raise <a class="el" href="#a955a8277b1a780b15bc846207d9dd776" title="Occurs when the timer interval has elapsed.">Tick</a> events and cannot be reused. Calling <a class="el" href="#aacf2f5cfe1cc442ac2a4eec84616d7f8" title="Releases all resources used by the Timer and removes it from the collection of active timers.">Dispose</a> multiple times is safe and will have no effect after the first call. </p>
 <p>This method suppresses finalization to prevent the finalizer from running, as cleanup has already been performed. </p>
+
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00085">85</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
 
 </div>
 </div>
@@ -373,6 +383,8 @@ Marking the timer as disposed to prevent further use </li>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00153">153</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -398,6 +410,8 @@ Marking the timer as disposed to prevent further use </li>
 
 <p>Gets the total number of active timers. </p>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00169">169</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab35c08b756eb3f813af1daf2ec76ab15" name="ab35c08b756eb3f813af1daf2ec76ab15"></a>
@@ -421,6 +435,8 @@ Marking the timer as disposed to prevent further use </li>
 </div><div class="memdoc">
 
 <p>Gets the current timer cycles, representing whether the timer is set to run once or repeatedly. </p>
+
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00033">33</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
 
 </div>
 </div>
@@ -446,6 +462,8 @@ Marking the timer as disposed to prevent further use </li>
 
 <p>Gets the length of the current timer interval in seconds. </p>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00038">38</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a id="a0aca9f4ad50d89a9f3bb55ae4d711941" name="a0aca9f4ad50d89a9f3bb55ae4d711941"></a>
@@ -469,6 +487,8 @@ Marking the timer as disposed to prevent further use </li>
 </div><div class="memdoc">
 
 <p>Gets or sets a value indicating whether the <a class="el" href="class_gondwana_1_1_timers_1_1_timer.html" title="Represents a high-resolution timer that can trigger events at specified intervals and supports variou...">Timer</a> is currently paused. </p>
+
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00048">48</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
 
 </div>
 </div>
@@ -494,6 +514,8 @@ Marking the timer as disposed to prevent further use </li>
 
 <p>Gets or sets a value indicating whether all operations are globally paused. </p>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00112">112</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a id="a42dfa24f46a94640dcd963a8d5e5e3f8" name="a42dfa24f46a94640dcd963a8d5e5e3f8"></a>
@@ -517,6 +539,8 @@ Marking the timer as disposed to prevent further use </li>
 </div><div class="memdoc">
 
 <p>Gets the unique identifier for the <a class="el" href="class_gondwana_1_1_timers_1_1_timer.html" title="Represents a high-resolution timer that can trigger events at specified intervals and supports variou...">Timer</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00043">43</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
 
 </div>
 </div>
@@ -542,6 +566,8 @@ Marking the timer as disposed to prevent further use </li>
 
 <p>Gets an array of timer identifiers currently managed by the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00174">174</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab77c85a918876971373c12ff567a8d75" name="ab77c85a918876971373c12ff567a8d75"></a>
@@ -566,6 +592,8 @@ Marking the timer as disposed to prevent further use </li>
 
 <p>Gets the type of the timer, indicating whether it is a pre-cycle or post-cycle timer. </p>
 
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00028">28</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -583,6 +611,8 @@ Marking the timer as disposed to prevent further use </li>
 
 <p>Occurs when the timer interval has elapsed. </p>
 <p>This event is raised each time the timer completes its interval. Subscribers can handle this event to execute custom logic at regular intervals. Ensure the timer is started and enabled for the event to be raised.</p>
+
+<p class="definition">Definition at line <a class="el" href="_timer_8cs_source.html#l00023">23</a> of file <a class="el" href="_timer_8cs_source.html">Timer.cs</a>.</p>
 
 </div>
 </div>

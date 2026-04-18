@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -173,6 +173,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an abstract base class for drawable tiles in the <a class="el" href="namespace_gondwana.html">Gondwana</a> engine. Provides core functionality for rendering, animation, collision detection, and scene layer integration. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00017">17</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a88e851955c75d87fb4077eb257b32684" name="a88e851955c75d87fb4077eb257b32684"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88e851955c75d87fb4077eb257b32684">&#9670;&#160;</a></span>CompareTo()</h2>
@@ -197,6 +199,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A negative value if this tile should be drawn before the other tile, zero if they have the same draw order, or a positive value if this tile should be drawn after the other tile. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00274">274</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -226,6 +230,8 @@ Properties</h2></td></tr>
 <p>Releases all resources used by the tile, including removing it from animation tracking, disposing its animator, and clearing collision references. </p>
 
 <p>Reimplemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#aa3c760f6aeae24f2a907da2f254cc84a">Gondwana.Drawing.Sprites.Sprite</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00312">312</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -301,6 +307,8 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The tile's collision area in screen space as a rectangle.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00129">129</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a2c2d0e6d13d966cf1faca72bd05a85c9" name="a2c2d0e6d13d966cf1faca72bd05a85c9"></a>
@@ -337,6 +345,8 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a8da83689234405828f7f6ed1f2062ec3">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00119">119</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -360,6 +370,8 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00039">39</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a55b7cf5594bcb95ab5893c3c43842673" name="a55b7cf5594bcb95ab5893c3c43842673"></a>
@@ -381,6 +393,8 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00037">37</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -407,6 +421,8 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the collision area adjustment values that modify the tile's collision boundaries. Use this to fine-tune the collision detection area relative to the tile's visual bounds. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00231">231</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a50bde19a832324893f058b03e14cf7f3" name="a50bde19a832324893f058b03e14cf7f3"></a>
@@ -430,6 +446,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the collider used for collision detection with this tile. Returns null if the tile has no collision detection. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00184">184</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -457,6 +475,8 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_collisions_1_1_i_collision_entity.html#a1a63d7f8a676c9e8388c0920d1097124">Gondwana.Collisions.ICollisionEntity</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00191">191</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a04aecd48929540170b3fbe43cb5e06f8" name="a04aecd48929540170b3fbe43cb5e06f8"></a>
@@ -480,6 +500,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets a value indicating whether collision detection is enabled for this tile. When set to true, the tile's collider is registered with the scene layer's collision system. When set to false, the collider is unregistered and collisions will not be detected. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00241">241</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -505,6 +527,8 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the current frame being displayed for this tile. Setting this property triggers a refresh of both the old and new tile areas to handle size changes. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00155">155</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="aa018700bb26077b44c54a8c0e5f18aaa" name="aa018700bb26077b44c54a8c0e5f18aaa"></a>
@@ -529,6 +553,8 @@ Properties</h2></td></tr>
 
 <p>Gets the tile's draw location in world coordinates as a rectangle. This represents the area occupied by the tile in the game world. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00055">55</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a0862275089f09bfb25738641365856f6" name="a0862275089f09bfb25738641365856f6"></a>
@@ -552,6 +578,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets a value indicating whether fog of war rendering is enabled for this tile. Setting this property triggers a refresh of the tile's screen area. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00209">209</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -579,6 +607,8 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#ae2a09ae0aeb04bce1333130f416584fb">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00075">75</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="af2c80d03dc7693f9ea706e9d426e30b0" name="af2c80d03dc7693f9ea706e9d426e30b0"></a>
@@ -602,6 +632,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets a value indicating whether the tile's position is fixed in screen space (e.g., UI elements) or moves with the world (e.g., game objects). </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00049">49</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -629,6 +661,8 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00081">81</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a56ea85f53ad251db7f223588a341773a" name="a56ea85f53ad251db7f223588a341773a"></a>
@@ -652,6 +686,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Used to determine polygonal area when drawing grid lines or fog. Override this property in a derived class to define custom areas for these effects. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00224">224</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -677,6 +713,8 @@ Properties</h2></td></tr>
 
 <p>Gets the overhang dimensions (in pixels) that extend beyond the tile's primary area. This is typically used for tiles with visual elements that exceed their logical boundaries. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00148">148</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6d1b82d253d8c1f4b21f43ac41487884" name="a6d1b82d253d8c1f4b21f43ac41487884"></a>
@@ -700,6 +738,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets a value indicating whether the tile's animation is currently paused. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00177">177</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -725,6 +765,8 @@ Properties</h2></td></tr>
 
 <p>Gets the scene layer that contains this tile. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00065">65</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="afaa33352c2ade338a6ffd65b907c3794" name="afaa33352c2ade338a6ffd65b907c3794"></a>
@@ -748,6 +790,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the tile's position within its scene layer using the layer's coordinate system. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00060">60</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -773,6 +817,8 @@ Properties</h2></td></tr>
 
 <p>Gets the animator responsible for managing frame transitions and animation sequences for this tile. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00171">171</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac3ae883651077bbeed079cd372670fcd" name="ac3ae883651077bbeed079cd372670fcd"></a>
@@ -797,6 +843,8 @@ Properties</h2></td></tr>
 
 <p>Gets the collection of all tiles that are currently animating in the scene. Used to track and update animated tiles during the render cycle. </p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00025">25</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a809ee69a8d25e7cf843f042c9b6298b6" name="a809ee69a8d25e7cf843f042c9b6298b6"></a>
@@ -820,6 +868,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the value bag for storing arbitrary typed values associated with this tile. Useful for attaching custom game-specific data without subclassing. </p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00260">260</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -847,6 +897,8 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00088">88</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6ea4696cfc6f3998c2cb0dc891a1987b" name="a6ea4696cfc6f3998c2cb0dc891a1987b"></a>
@@ -872,6 +924,8 @@ Properties</h2></td></tr>
 <p>Gets or sets the Z-order (depth) of the tile for rendering priority. Higher values are drawn later (on top of lower values). Setting this property triggers a refresh of the tile's screen area. </p>
 
 <p>Implements <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_tile_8cs_source.html#l00104">104</a> of file <a class="el" href="_tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>

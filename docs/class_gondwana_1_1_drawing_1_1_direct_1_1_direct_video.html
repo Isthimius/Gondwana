@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -95,7 +95,7 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video
 </div><!--header-->
 <div class="contents">
 
-<p>Draws video frames provided by <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespace_gondwana_1_1_audio.html">Audio</a> is handled by the <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">IVideoPlayer</a> implementation (e.g., VLC system output on desktop).  
+<p>Draws video frames provided by <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespace_gondwana_1_1_audio.html">Audio</a> is handled by the <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> implementation (e.g., VLC system output on desktop).  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Direct.DirectVideo:</div>
@@ -162,8 +162,9 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a5faa431369b7b5c55f1097fbd3974da8" id="r_a5faa431369b7b5c55f1097fbd3974da8"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5faa431369b7b5c55f1097fbd3974da8">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memdesc:a5faa431369b7b5c55f1097fbd3974da8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders the current video frame to the backbuffer at the specified destination rectangle.  <br /></td></tr>
 <tr class="memitem:a30dd937e42296bdf2952a6368bd31bc5" id="r_a30dd937e42296bdf2952a6368bd31bc5"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30dd937e42296bdf2952a6368bd31bc5">Dispose</a> (bool disposing)</td></tr>
-<tr class="memdesc:a30dd937e42296bdf2952a6368bd31bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance.  <br /></td></tr>
+<tr class="memdesc:a30dd937e42296bdf2952a6368bd31bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the unmanaged resources used by the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> and optionally releases the managed resources.  <br /></td></tr>
 <tr class="inherit_header pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:a06db448ba75f0d6cf236f3a2a71ea8e4 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base" id="r_a06db448ba75f0d6cf236f3a2a71ea8e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a06db448ba75f0d6cf236f3a2a71ea8e4">OnDraw</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_backbuffer_base.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
 <tr class="memdesc:a06db448ba75f0d6cf236f3a2a71ea8e4 inherit pro_methods_class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the concrete drawing for this direct drawing to the backbuffer.  <br /></td></tr>
@@ -253,16 +254,18 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memdesc:af6121c7773fe8333043c8f4c74f8e97b inherit events_interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the object is being disposed.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Draws video frames provided by <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespace_gondwana_1_1_audio.html">Audio</a> is handled by the <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">IVideoPlayer</a> implementation (e.g., VLC system output on desktop). </p>
-<p>*** Basic Playback (fixed size in a HUD corner): var clip = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(64, 64, 640, 360), playerFactory: () =&gt; videoPlayerFactory.Create(), source: new Uri("file:///C:/media/intro.mp4")) { ZOrder = 100, // above tiles/UI as needed Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d">StretchMode.Uniform</a>, // preserve aspect, fit inside box Loop = false };</p>
-<p>*** Full-bleed Cutscene (cover viewport, crop overflow): var cutscene = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, viewportBounds, () =&gt; videoPlayerFactory.Create(), new Uri("file:///C:/media/cutscene.mkv")) { ZOrder = 1000, Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93ab726f36782df417dfda25a259d6493cf">StretchMode.UniformToFill</a>, // cover the whole bounds Opacity = 1.0f, Loop = false };</p>
-<p>*** Faded Picture-in-Picture (overlay, semi-transparent): var pip = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(20, 20, 320, 180), () =&gt; videoPlayerFactory.Create(), new Uri("file:///C:/media/camfeed.webm")) { ZOrder = 500, Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed">StretchMode.Fill</a>, // ignore AR, fill the box Opacity = 0.75f, Loop = true };</p>
+<div class="textblock"><p>Draws video frames provided by <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespace_gondwana_1_1_audio.html">Audio</a> is handled by the <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> implementation (e.g., VLC system output on desktop). </p>
+<p>*** Basic Playback (fixed size in a HUD corner): var clip = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(64, 64, 640, 360), playerFactory: () =&gt; videoPlayerFactory.Create(), source: new Uri("file:///C:/media/intro.mp4")) { ZOrder = 100, // above tiles/UI as needed Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d" title="Scales the video uniformly to fit inside the bounds while preserving the aspect ratio....">StretchMode.Uniform</a>, // preserve aspect, fit inside box Loop = false };</p>
+<p>*** Full-bleed Cutscene (cover viewport, crop overflow): var cutscene = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, viewportBounds, () =&gt; videoPlayerFactory.Create(), new Uri("file:///C:/media/cutscene.mkv")) { ZOrder = 1000, Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93ab726f36782df417dfda25a259d6493cf" title="Scales the video uniformly to cover the entire bounds while preserving the aspect ratio....">StretchMode.UniformToFill</a>, // cover the whole bounds Opacity = 1.0f, Loop = false };</p>
+<p>*** Faded Picture-in-Picture (overlay, semi-transparent): var pip = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(20, 20, 320, 180), () =&gt; videoPlayerFactory.Create(), new Uri("file:///C:/media/camfeed.webm")) { ZOrder = 500, Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed" title="Stretches the video to fill the entire bounds, ignoring the aspect ratio.">StretchMode.Fill</a>, // ignore AR, fill the box Opacity = 0.75f, Loop = true };</p>
 <p>*** Playback Control (pause/seek/rate) during your update tick: // Pause on a modal if (ui.ShowingModal) pip.Pause();</p>
 <p>// Resume when modal closes if (!ui.ShowingModal &amp;&amp; !pipIsPlaying) pip.Play();</p>
 <p>// Jump to 10s (for scrubbing thumbnails or replays) pip.Seek(TimeSpan.FromSeconds(10));</p>
 <p>// Slow-mo or fast-forward pip.PlaybackRate = 0.5; // half-speed // pip.PlaybackRate = 1.25; // 25% faster</p>
-<p>*** Swap Source (re-use the same player instance path): var trailer = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(80, 80, 960, 540), myExistingIVideoPlayerInstance, new Uri("file:///C:/media/trailer.mp4")) { Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d">StretchMode.Uniform</a>, Opacity = 1.0f };</p>
+<p>*** Swap Source (re-use the same player instance path): var trailer = new <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(80, 80, 960, 540), myExistingIVideoPlayerInstance, new Uri("file:///C:/media/trailer.mp4")) { Stretch = <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d" title="Scales the video uniformly to fit inside the bounds while preserving the aspect ratio....">StretchMode.Uniform</a>, Opacity = 1.0f };</p>
 <p>*** Animated Slide-in (using your engine's movement/scrolling): // Start off-screen, then slide into position over 0.4s cutscene.ScrollToSourceGridPoint(0.4, new Rectangle(0, 0, viewportBounds.Width, viewportBounds.Height));</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00081">81</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aff07be2bd3e22b4c2c4f4dc4d53e5e8a" name="aff07be2bd3e22b4c2c4f4dc4d53e5e8a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aff07be2bd3e22b4c2c4f4dc4d53e5e8a">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[1/4]</span></h2>
@@ -322,6 +325,8 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <p>The video begins playing automatically after initialization. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00220">220</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -384,6 +389,8 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <p>This constructor is useful for HUD overlays, menus, or other UI-aligned video elements. The video begins playing automatically after initialization. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00249">249</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
+
 </div>
 </div>
 <a id="aa46591b35a81ef83fc74a8e384009c61" name="aa46591b35a81ef83fc74a8e384009c61"></a>
@@ -428,7 +435,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class using a factory to create the player, rendering to a specific <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ab464e191526e772a9cf74077c7f36f55" title="Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...">SceneLayer</a> using world coordinates. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">playerFactory</td><td>A factory function that creates and returns an <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">IVideoPlayer</a> instance. This allows for platform-specific player implementations or dependency injection patterns. </td></tr>
+    <tr><td class="paramname">playerFactory</td><td>A factory function that creates and returns an <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> instance. This allows for platform-specific player implementations or dependency injection patterns. </td></tr>
     <tr><td class="paramname">source</td><td>The URI of the video source to play.</td></tr>
     <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that will display the video.</td></tr>
     <tr><td class="paramname">sceneLayer</td><td>The scene layer to which this video will be attached.</td></tr>
@@ -444,6 +451,8 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <p>The factory pattern is useful when the player implementation varies by platform (e.g., VLC on desktop, HTML5 on web). The video begins playing automatically after initialization. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00313">313</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -489,7 +498,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class using a factory to create the player, rendering to a specific <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a45228a4aba8bc2629472cb6560b8d554" title="Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...">View</a> using screen coordinates. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">playerFactory</td><td>A factory function that creates and returns an <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">IVideoPlayer</a> instance. This allows for platform-specific player implementations or dependency injection patterns. </td></tr>
+    <tr><td class="paramname">playerFactory</td><td>A factory function that creates and returns an <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> instance. This allows for platform-specific player implementations or dependency injection patterns. </td></tr>
     <tr><td class="paramname">source</td><td>The URI of the video source to play.</td></tr>
     <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that will display the video.</td></tr>
     <tr><td class="paramname">view</td><td>The view to which this video will be attached.</td></tr>
@@ -505,6 +514,8 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <p>This constructor is useful for HUD overlays, menus, or other UI-aligned video elements. The factory pattern allows for platform-specific implementations. The video begins playing automatically after initialization. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00346">346</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -532,24 +543,17 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Releases resources used by this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instance. </p>
+<p>Releases the unmanaged resources used by the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_video.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> and optionally releases the managed resources. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">disposing</td><td><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources (called from finalizer). </td></tr>
+    <tr><td class="paramname">disposing</td><td><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources.</td></tr>
   </table>
   </dd>
 </dl>
-<p>When <em>disposing</em>  is <code>true</code>, this method: </p><ul>
-<li>
-Marks affected regions as dirty by calling ForceRefresh. </li>
-<li>
-Raises the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a911321b64ad973d2ed9d3e9b39f2fc4d" title="Occurs when this direct drawing is being disposed.">Disposing</a> event. </li>
-<li>
-Clears all event handlers to prevent memory leaks. </li>
-</ul>
-<p>Override this method in derived classes to release additional resources. Always call <code>base.Dispose(disposing)</code> to ensure proper cleanup of the base class. </p>
 
 <p>Reimplemented from <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#ad239dc0e99d67621d35385086d91e98f">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00577">577</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -579,6 +583,17 @@ Clears all event handlers to prevent memory leaks. </li>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Renders the current video frame to the backbuffer at the specified destination rectangle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The backbuffer to draw onto.</td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in screen coordinates.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00371">371</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -699,6 +714,8 @@ Clears all event handlers to prevent memory leaks. </li>
 <p>When set to <code>true</code>, the video will continuously play in a loop. When set to <code>false</code>, playback stops when the video reaches its end. </p>
 <p><code>true</code> to enable looping; otherwise, <code>false</code>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00165">165</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
+
 </div>
 </div>
 <a id="aae3d2e4f49c8d84902cc5bd26ce854df" name="aae3d2e4f49c8d84902cc5bd26ce854df"></a>
@@ -725,6 +742,8 @@ Clears all event handlers to prevent memory leaks. </li>
 <p>This value controls the alpha transparency applied to the entire video frame during rendering. Values are automatically clamped to the valid range. </p>
 <p>A floating-point value between 0.0 (fully transparent) and 1.0 (fully opaque). The default value is 1.0. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00119">119</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
+
 </div>
 </div>
 <a id="a00363050bb2bbde92858ff8d0fbc8bc9" name="a00363050bb2bbde92858ff8d0fbc8bc9"></a>
@@ -748,7 +767,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </div><div class="memdoc">
 
 <p>Gets or sets the playback speed multiplier. </p>
-<p>This property controls the rate at which the video plays relative to its normal speed. Setting this value updates the underlying <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html">IVideoPlayer</a> immediately. </p>
+<p>This property controls the rate at which the video plays relative to its normal speed. Setting this value updates the underlying <a class="el" href="interface_gondwana_1_1_video_1_1_i_video_player.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> immediately. </p>
 <p>Common values: </p><ul>
 <li>
 0.5 - Half speed (slow motion) </li>
@@ -760,6 +779,8 @@ Clears all event handlers to prevent memory leaks. </li>
 2.0 - Double speed </li>
 </ul>
 <p>A multiplier for playback speed. The default value is 1.0 (normal speed).</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00146">146</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -786,15 +807,17 @@ Clears all event handlers to prevent memory leaks. </li>
 <p>Gets or sets the stretch mode that determines how the video frame is scaled to fit within the destination bounds. </p>
 <ul>
 <li>
-<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93a6adf97f83acf6453d4a6a4b1070f3754">StretchMode.None</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> displays at its native resolution. </li>
+<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93a6adf97f83acf6453d4a6a4b1070f3754" title="Draws the video at its native size from the top-left corner of the bounds, without any scaling.">StretchMode.None</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> displays at its native resolution. </li>
 <li>
-<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed">StretchMode.Fill</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> fills the entire bounds, ignoring aspect ratio. </li>
+<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed" title="Stretches the video to fill the entire bounds, ignoring the aspect ratio.">StretchMode.Fill</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> fills the entire bounds, ignoring aspect ratio. </li>
 <li>
-<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d">StretchMode.Uniform</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> scales to fit inside bounds while preserving aspect ratio (letterboxing/pillarboxing as needed). </li>
+<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d" title="Scales the video uniformly to fit inside the bounds while preserving the aspect ratio....">StretchMode.Uniform</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> scales to fit inside bounds while preserving aspect ratio (letterboxing/pillarboxing as needed). </li>
 <li>
-<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93ab726f36782df417dfda25a259d6493cf">StretchMode.UniformToFill</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> scales to fill the entire bounds while preserving aspect ratio (cropping as needed). </li>
+<a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93ab726f36782df417dfda25a259d6493cf" title="Scales the video uniformly to cover the entire bounds while preserving the aspect ratio....">StretchMode.UniformToFill</a> - <a class="el" href="namespace_gondwana_1_1_video.html">Video</a> scales to fill the entire bounds while preserving aspect ratio (cropping as needed). </li>
 </ul>
-<p>The default value is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed">StretchMode.Fill</a>.</p>
+<p>The default value is <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed" title="Stretches the video to fill the entire bounds, ignoring the aspect ratio.">StretchMode.Fill</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_video_8cs_source.html#l00104">104</a> of file <a class="el" href="_direct_video_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>

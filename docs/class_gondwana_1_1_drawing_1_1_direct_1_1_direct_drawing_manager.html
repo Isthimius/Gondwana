@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -97,6 +97,12 @@ $(function(){initNavTree('class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawi
 
 <p>Manages the lifecycle, registration, and retrieval of all direct drawing objects in the <a class="el" href="namespace_gondwana.html">Gondwana</a> engine.  
  <a href="#details">More...</a></p>
+<div class="dynheader">
+Inheritance diagram for Gondwana.Drawing.Direct.DirectDrawingManager:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.png" alt=""/>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -110,9 +116,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9dfe290865d74c13ea157b758b67b09e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all direct drawings associated with a specific scene layer, ordered by Z-order then nickname.  <br /></td></tr>
 <tr class="memitem:a63ee55de587e376f3450e1be4623169a" id="r_a63ee55de587e376f3450e1be4623169a"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html">DirectDrawingBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63ee55de587e376f3450e1be4623169a">GetDrawingsForView</a> (<a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html">View</a> view)</td></tr>
 <tr class="memdesc:a63ee55de587e376f3450e1be4623169a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all direct drawings associated with a specific view, ordered by Z-order then nickname.  <br /></td></tr>
+<tr class="memitem:aed265d2f7613e911dee97e5d7bbc7ed9" id="r_aed265d2f7613e911dee97e5d7bbc7ed9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed265d2f7613e911dee97e5d7bbc7ed9">Dispose</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a3240711887e8dd2c0b7fa87ce3688a40" id="r_a3240711887e8dd2c0b7fa87ce3688a40"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html">DirectDrawingManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3240711887e8dd2c0b7fa87ce3688a40">Instance</a><code> [get]</code></td></tr>
 <tr class="memitem:ab60d137d36f15888c56ae46ada79ecd8" id="r_ab60d137d36f15888c56ae46ada79ecd8"><td class="memItemLeft" align="right" valign="top">ReadOnlyCollection&lt; <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html">IDirectDrawable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab60d137d36f15888c56ae46ada79ecd8">DirectDrawings</a><code> [get]</code></td></tr>
 <tr class="memdesc:ab60d137d36f15888c56ae46ada79ecd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only snapshot of all currently registered direct drawings.  <br /></td></tr>
 <tr class="memitem:a1f58784cc73cf2166b082eac5ff75a5b" id="r_a1f58784cc73cf2166b082eac5ff75a5b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f58784cc73cf2166b082eac5ff75a5b">Count</a><code> [get]</code></td></tr>
@@ -132,8 +140,10 @@ Filtering by scene layer or view for targeted rendering. </li>
 <li>
 Safe concurrent access from rendering and game logic threads. </li>
 </ul>
-<p>Access the singleton instance via Instance. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html">Direct</a> drawings register themselves automatically during construction by calling AddOrReplace internally. </p>
+<p>Access the singleton instance via <a class="el" href="#a3240711887e8dd2c0b7fa87ce3688a40">Instance</a>. <a class="el" href="namespace_gondwana_1_1_drawing_1_1_direct.html">Direct</a> drawings register themselves automatically during construction by calling AddOrReplace internally. </p>
 <p>Thread safety: All public methods are thread-safe. The manager uses ConcurrentDictionary&lt;TKey, TValue&gt; internally and creates snapshots for iteration to avoid race conditions during enumeration. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00040">40</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a4f5e67ff57dffe7e9ef5e8a327305eba" name="a4f5e67ff57dffe7e9ef5e8a327305eba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4f5e67ff57dffe7e9ef5e8a327305eba">&#9670;&#160;</a></span>Clear()</h2>
@@ -160,6 +170,8 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>If a drawing with the specified nickname exists, it is disposed, which automatically triggers its removal from the manager. If no matching drawing is found, or if <em>name</em>  is <code>null</code> or empty, this method does nothing. </p>
 <p>This method uses case-sensitive ordinal comparison. If multiple drawings share the same nickname, only one will be removed. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00152">152</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac5c4c83dd26140b8e33f27db13aacc19" name="ac5c4c83dd26140b8e33f27db13aacc19"></a>
@@ -181,6 +193,27 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>This method creates a snapshot of all current drawings and disposes each one in sequence. Disposal automatically triggers removal from the manager via the <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html#af6121c7773fe8333043c8f4c74f8e97b" title="Occurs when the object is being disposed.">IDirectDrawable.Disposing</a> event handler. </p>
 <p>Use this method to perform a full cleanup, such as when changing scenes or shutting down the engine. After calling this method, <a class="el" href="#a1f58784cc73cf2166b082eac5ff75a5b" title="Gets the current number of registered direct drawings.">Count</a> will be zero. </p>
 <p>This operation is safe to call even if drawings are being added from other threads, though newly added drawings after the snapshot is taken will not be affected. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00130">130</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+
+</div>
+</div>
+<a id="aed265d2f7613e911dee97e5d7bbc7ed9" name="aed265d2f7613e911dee97e5d7bbc7ed9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed265d2f7613e911dee97e5d7bbc7ed9">&#9670;&#160;</a></span>Dispose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Direct.DirectDrawingManager.Dispose </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00348">348</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -209,6 +242,8 @@ Safe concurrent access from rendering and game logic threads. </li>
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,...">IDirectDrawable</a> instance with the specified nickname, or <code>null</code> if no matching drawing is found or <em>name</em>  is <code>null</code>. </dd></dl>
 <p>This method performs a case-sensitive ordinal comparison using the drawing's <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82" title="Optional human-readable name associated with the object.">IDirectDrawable.Nickname</a>. If multiple drawings share the same nickname (which should generally be avoided), only one will be returned. </p>
 <p>For reliable lookup, consider using the drawing's <a class="el" href="interface_gondwana_1_1_drawing_1_1_i_drawable.html#ae2a09ae0aeb04bce1333130f416584fb" title="Auto-assigned unique identifier for the object.">IDirectDrawable.Id</a> instead, which is guaranteed to be unique. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00107">107</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -239,6 +274,8 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>The returned list is a snapshot taken at the time of the call and will not reflect subsequent additions or removals. The sorting ensures consistent draw order when rendering the layer. </p>
 <p>Use this method during rendering to retrieve all drawings that should be rendered as part of a specific scene layer, respecting Z-order for correct layering. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00285">285</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="a63ee55de587e376f3450e1be4623169a" name="a63ee55de587e376f3450e1be4623169a"></a>
@@ -268,6 +305,8 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>The returned list is a snapshot taken at the time of the call and will not reflect subsequent additions or removals. The sorting ensures consistent draw order when rendering view overlays. </p>
 <p>Use this method during rendering to retrieve all drawings that should be rendered on top of a specific view, unaffected by camera movement. Common use cases include UI elements, debug overlays, and screen-space effects. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00330">330</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -295,6 +334,8 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>An integer count of all direct drawings currently managed by this instance. </p>
 <p>This property provides a thread-safe snapshot of the count at the moment of access. The count may change immediately after being read if drawings are added or removed from other threads. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00086">86</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab60d137d36f15888c56ae46ada79ecd8" name="ab60d137d36f15888c56ae46ada79ecd8"></a>
@@ -321,6 +362,32 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>A ReadOnlyCollection&lt;T&gt; containing all direct drawings managed by this instance. The collection is a snapshot taken at the time of access and will not reflect subsequent additions or removals. </p>
 <p>This property creates a new snapshot each time it is accessed, so avoid calling it repeatedly in performance-critical loops. Cache the result if you need to iterate multiple times. </p>
 <p>The returned collection is unordered. For ordered collections filtered by layer or view, use <a class="el" href="#a9dfe290865d74c13ea157b758b67b09e" title="Returns all direct drawings associated with a specific scene layer, ordered by Z-order then nickname.">GetDrawingsForLayer</a> or <a class="el" href="#a63ee55de587e376f3450e1be4623169a" title="Returns all direct drawings associated with a specific view, ordered by Z-order then nickname.">GetDrawingsForView</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00072">72</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+
+</div>
+</div>
+<a id="a3240711887e8dd2c0b7fa87ce3688a40" name="a3240711887e8dd2c0b7fa87ce3688a40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3240711887e8dd2c0b7fa87ce3688a40">&#9670;&#160;</a></span>Instance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_manager.html">DirectDrawingManager</a> Gondwana.Drawing.Direct.DirectDrawingManager.Instance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_direct_drawing_manager_8cs_source.html#l00046">46</a> of file <a class="el" href="_direct_drawing_manager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>

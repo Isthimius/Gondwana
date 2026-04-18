@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -137,6 +137,8 @@ Events</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages animation playback for a <a class="el" href="class_gondwana_1_1_drawing_1_1_tile.html" title="Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...">Tile</a>, controlling animation cycles, frame timing, and raising events during the animation lifecycle. </p>
+
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00008">8</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ab97a014e19cf65dc8df3b6b818bd62b9" name="ab97a014e19cf65dc8df3b6b818bd62b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab97a014e19cf65dc8df3b6b818bd62b9">&#9670;&#160;</a></span>Dispose()</h2>
@@ -154,6 +156,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Releases all event handlers and suppresses finalization. *** DO NOT CALL DIRECTLY! ***. </p>
+
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00203">203</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
 
 </div>
 </div>
@@ -181,6 +185,8 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cycle that was set as the current cycle.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00101">101</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
+
 </div>
 </div>
 <a id="a57d91f3c0ada57776d48e8d09cd8f823" name="a57d91f3c0ada57776d48e8d09cd8f823"></a>
@@ -199,6 +205,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Starts playing the current animation cycle. If no cycle is set, this method has no effect. Raises the <a class="el" href="#a314a6221d984ac059ae6b4af5788f9f6" title="Occurs when an animation starts playing.">Started</a> event when the animation begins. </p>
+
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00112">112</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
 
 </div>
 </div>
@@ -225,6 +233,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00130">130</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
+
 </div>
 </div>
 <a id="aa76e54b08f07d88a0887eaa9c428dc96" name="aa76e54b08f07d88a0887eaa9c428dc96"></a>
@@ -243,6 +253,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Stops the current animation cycle. Raises the <a class="el" href="#a47bd062544a3205996b73987c43ca4aa" title="Occurs when an animation stops playing.">Stopped</a> event and advances to the next cycle if one is configured. If the next cycle is configured to hide the tile on cycle end, the parent tile will be hidden. </p>
+
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00141">141</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
 
 </div>
 </div>
@@ -269,6 +281,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets the current animation cycle being played. </p>
 
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00071">71</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
+
 </div>
 </div>
 <a id="a53e5fe7745f09c7417c6f86550fd6c68" name="a53e5fe7745f09c7417c6f86550fd6c68"></a>
@@ -292,6 +306,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets a value indicating whether the animation is currently cycling. Setting this property to <code>true</code> starts the animation; setting it to <code>false</code> stops it. </p>
+
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00077">77</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
 
 </div>
 </div>
@@ -317,6 +333,8 @@ Events</h2></td></tr>
 
 <p>Gets the tile that owns this animator. </p>
 
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00063">63</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -334,6 +352,8 @@ Events</h2></td></tr>
 
 <p>Occurs each time the animation advances to the next frame in the cycle. </p>
 
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00025">25</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
+
 </div>
 </div>
 <a id="a314a6221d984ac059ae6b4af5788f9f6" name="a314a6221d984ac059ae6b4af5788f9f6"></a>
@@ -350,6 +370,8 @@ Events</h2></td></tr>
 
 <p>Occurs when an animation starts playing. </p>
 
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00015">15</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
+
 </div>
 </div>
 <a id="a47bd062544a3205996b73987c43ca4aa" name="a47bd062544a3205996b73987c43ca4aa"></a>
@@ -365,6 +387,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Occurs when an animation stops playing. </p>
+
+<p class="definition">Definition at line <a class="el" href="_animator_8cs_source.html#l00020">20</a> of file <a class="el" href="_animator_8cs_source.html">Animator.cs</a>.</p>
 
 </div>
 </div>

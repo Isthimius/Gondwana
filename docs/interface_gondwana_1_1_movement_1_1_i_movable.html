@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -103,14 +103,15 @@ Inheritance diagram for Gondwana.Movement.IMovable:</div>
  <div class="center">
   <img src="interface_gondwana_1_1_movement_1_1_i_movable.png" usemap="#Gondwana_2EMovement_2EIMovable_map" alt=""/>
   <map id="Gondwana_2EMovement_2EIMovable_map" name="Gondwana_2EMovement_2EIMovable_map">
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html" title="Represents a composite container that groups multiple direct drawable items together,..." alt="Gondwana.Drawing.Direct.DirectComposite" shape="rect" coords="0,56,323,80"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="499,56,822,80"/>
-<area href="interface_gondwana_1_1_movement_1_1_i_movable_on_scene_layer.html" title="Implemented by grid-space IMovable objects that belong to a specific Scenes.SceneLayer." alt="Gondwana.Movement.IMovableOnSceneLayer" shape="rect" coords="1332,56,1655,80"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,112,323,136"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="333,112,656,136"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="666,112,989,136"/>
-<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="999,112,1322,136"/>
-<area href="class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html" title="Represents a composite sprite that contains multiple child sprites and manages them as a single unit...." alt="Gondwana.Drawing.Sprites.CompositeSprite" shape="rect" coords="1332,112,1655,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html" title="Represents a composite container that groups multiple direct drawable items together,..." alt="Gondwana.Drawing.Direct.DirectComposite" shape="rect" coords="0,56,348,80"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="716,56,1064,80"/>
+<area href="interface_gondwana_1_1_movement_1_1_i_movable_on_scene_layer.html" title="Implemented by grid-space IMovable objects that belong to a specific Scenes.SceneLayer." alt="Gondwana.Movement.IMovableOnSceneLayer" shape="rect" coords="1790,56,2138,80"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,112,348,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="358,112,706,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html" title="Represents a lightweight image-instance layer that manages and renders a collection of independently ..." alt="Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer" shape="rect" coords="716,112,1064,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_surface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="1074,112,1422,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="1432,112,1780,136"/>
+<area href="class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html" title="Represents a composite sprite that contains multiple child sprites and manages them as a single unit...." alt="Gondwana.Drawing.Sprites.CompositeSprite" shape="rect" coords="1790,112,2138,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -129,6 +130,8 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines an object that can be moved within a specific coordinate space. </p>
 <p>The <a class="el" href="interface_gondwana_1_1_movement_1_1_i_movable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> interface provides methods to retrieve and update the position of an object in a defined <a class="el" href="namespace_gondwana_1_1_movement.html#a49b5fa80f99283d647bd189725d7341d" title="Specifies the coordinate system used for movement calculations and updates.">MovementSpace</a>. Implementations of this interface are expected to handle position-related operations consistently within the specified coordinate system.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_movable_8cs_source.html#l00011">11</a> of file <a class="el" href="_i_movable_8cs_source.html">IMovable.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a277dd28e3a5e5eb48235baba05437a65" name="a277dd28e3a5e5eb48235baba05437a65"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a277dd28e3a5e5eb48235baba05437a65">&#9670;&#160;</a></span>GetPosition()</h2>
@@ -196,6 +199,8 @@ Properties</h2></td></tr>
 <p>Which unit system this mover uses for its position. </p>
 
 <p>Implemented in <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_composite.html#ad38e0285605825ffe181f98ba74daef8">Gondwana.Drawing.Direct.DirectComposite</a>, <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_movable_base.html#a7bf07b6c0b52e8bb2fd86252d8aae953">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>, and <a class="el" href="class_gondwana_1_1_drawing_1_1_sprites_1_1_composite_sprite.html#ae74037862ba75535373c653f1cc69ee2">Gondwana.Drawing.Sprites.CompositeSprite</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_movable_8cs_source.html#l00014">14</a> of file <a class="el" href="_i_movable_8cs_source.html">IMovable.cs</a>.</p>
 
 </div>
 </div>

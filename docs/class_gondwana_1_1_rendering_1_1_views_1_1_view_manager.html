@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -129,6 +129,8 @@ Events</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages a collection of views for a render surface, handling view creation, removal, ordering, and multi-viewport layouts. Each view combines a camera and viewport to control what portion of the scene is rendered and where it appears on screen. </p>
+
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00013">13</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aeb0e058d470c9953350fa7e5a86233ae" name="aeb0e058d470c9953350fa7e5a86233ae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeb0e058d470c9953350fa7e5a86233ae">&#9670;&#160;</a></span>AddView()</h2>
@@ -171,6 +173,8 @@ Events</h2></td></tr>
 </dl>
 <p>The newly created view's camera is initially positioned at world origin (0,0) and configured to snap to targets without smoothing. The view is automatically sorted by Z-order after being added. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00070">70</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="a14d83d9b6c216138c0bace1b510acaf0" name="a14d83d9b6c216138c0bace1b510acaf0"></a>
@@ -190,6 +194,8 @@ Events</h2></td></tr>
 
 <p>Removes all views from the manager, unsubscribing from their events and marking the scene as needing a full refresh. </p>
 <p>This method cleanly detaches event handlers from each view's viewport before clearing the collection. After clearing, the scene is flagged for a full refresh to update the rendering state. </p>
+
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00210">210</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
 
 </div>
 </div>
@@ -221,6 +227,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00169">169</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac9a5e8510813ed90687fa219cfc70a2b" name="ac9a5e8510813ed90687fa219cfc70a2b"></a>
@@ -250,6 +258,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00108">108</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
 
 </div>
 </div>
@@ -281,6 +291,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00131">131</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="a2ec1ac278fd13f56bf21417719cad649" name="a2ec1ac278fd13f56bf21417719cad649"></a>
@@ -306,6 +318,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A read-only list of views with higher Z-order than the specified view. Returns an empty collection if the view is not found or is already the top-most view. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00259">259</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
 
 </div>
 </div>
@@ -333,6 +347,8 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A read-only list of views with lower Z-order than the specified view. Returns an empty collection if the view is not found or is already the bottom-most view. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00237">237</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -359,6 +375,8 @@ Events</h2></td></tr>
 <p>Gets a read-only collection of all views currently managed by this view manager. <a class="el" href="namespace_gondwana_1_1_rendering_1_1_views.html">Views</a> are sorted by Z-order, with lower values appearing first (drawn behind). </p>
 <p>A ReadOnlyCollection&lt;T&gt; of <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> instances. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00042">42</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -376,6 +394,8 @@ Events</h2></td></tr>
 
 <p>Occurs after a new <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> is added. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00021">21</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="a57a9b014a2674fa11853ebba71554a3c" name="a57a9b014a2674fa11853ebba71554a3c"></a>
@@ -391,6 +411,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Occurs after a <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> is removed. </p>
+
+<p class="definition">Definition at line <a class="el" href="_view_manager_8cs_source.html#l00026">26</a> of file <a class="el" href="_view_manager_8cs_source.html">ViewManager.cs</a>.</p>
 
 </div>
 </div>

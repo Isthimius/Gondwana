@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -314,7 +314,9 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <div class="line"> </div>
 <div class="line"><span class="comment">// Apply physics-based movement</span></div>
 <div class="line">image.Movement.ApplyImpulse(<span class="keyword">new</span> Vector2(100, -50));</div>
-</div><!-- fragment --> </div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00059">59</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+</div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="afadff1139e7f66fda31ae528c1bc9bc3" name="afadff1139e7f66fda31ae528c1bc9bc3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afadff1139e7f66fda31ae528c1bc9bc3">&#9670;&#160;</a></span>ScaleMode</h2>
 
@@ -341,6 +343,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <tr><td class="fieldname"><a id="afadff1139e7f66fda31ae528c1bc9bc3a1ac6cfc61658bee4cbd8851821d9288d" name="afadff1139e7f66fda31ae528c1bc9bc3a1ac6cfc61658bee4cbd8851821d9288d"></a>PixelPerfect&#160;</td><td class="fielddoc"><p>Scales the image by the largest integer factor that fits within the destination rectangle while preserving aspect ratio. Minimum scale factor is 1 (no scaling down). This mode is ideal for pixel art to avoid sub-pixel rendering artifacts. </p>
 </td></tr>
 </table>
+
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00069">69</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
 
 </div>
 </div>
@@ -399,6 +403,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <p>This constructor creates an image positioned in world coordinates that moves with the camera and is affected by the scene layer's parallax factor. Use this for in-game sprites, background elements, and other world-space visuals. </p>
 <p>The bitmap is converted to SKImage during rendering for optimal performance. The caller must ensure the bitmap remains valid for the lifetime of this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,...">DirectImage</a> instance. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00175">175</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="afd048eb1c3b8d4feda9fabff19596b5b" name="afd048eb1c3b8d4feda9fabff19596b5b"></a>
@@ -454,6 +460,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 </dl>
 <p>This constructor creates an image positioned in screen coordinates that remains fixed on screen regardless of camera movement. Use this for UI elements, HUD overlays, menus, and other screen-space visuals. </p>
 <p>The bitmap is converted to SKImage during rendering for optimal performance. The caller must ensure the bitmap remains valid for the lifetime of this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,...">DirectImage</a> instance. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00200">200</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
 
 </div>
 </div>
@@ -511,6 +519,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <p>This constructor creates an image positioned in world coordinates that moves with the camera and is affected by the scene layer's parallax factor. Use this for in-game sprites, background elements, and other world-space visuals. </p>
 <p>Using SKImage directly is more efficient than SKBitmap for rendering, especially when the same image is used multiple times. The caller must ensure the image remains valid for the lifetime of this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,...">DirectImage</a> instance. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00227">227</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="aa9087292fd6fa604dc8a16f682692126" name="aa9087292fd6fa604dc8a16f682692126"></a>
@@ -567,6 +577,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <p>This constructor creates an image positioned in screen coordinates that remains fixed on screen regardless of camera movement. Use this for UI elements, HUD overlays, menus, and other screen-space visuals. </p>
 <p>Using SKImage directly is more efficient than SKBitmap for rendering, especially when the same image is used multiple times. The caller must ensure the image remains valid for the lifetime of this <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,...">DirectImage</a> instance. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00253">253</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -589,6 +601,8 @@ Physics-based movement via inherited <a class="el" href="class_gondwana_1_1_draw
 <dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_image.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,...">DirectImage</a> instance for method chaining.</dd></dl>
 <p>After calling this method, the image will be rendered with its original colors (equivalent to a white tint). Opacity settings from <a class="el" href="#a99adedcd4f45782378fce3415710260a" title="Sets the overall opacity (alpha transparency) of the image.">SetOpacity</a> remain unaffected. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00406">406</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
 
 </div>
 </div>
@@ -645,6 +659,8 @@ Disposes temporary SKImage instances created from bitmaps. </li>
 </ol>
 <p>Do not call this method directly from game code. To trigger a redraw, call DirectDrawingBase.ForceRefresh or modify properties that affect appearance. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00579">579</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="a0a7adf2ded6fb7e969e7e0677bdcc3db" name="a0a7adf2ded6fb7e969e7e0677bdcc3db"></a>
@@ -686,6 +702,8 @@ Disposes temporary SKImage instances created from bitmaps. </li>
 <p>For example, setting the anchor to (1.0, 0.5) and rotating will cause the image to rotate around its right-center edge, creating a door-opening effect. </p>
 <p>Values outside the 0..1 range are clamped. The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00548">548</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="a971b2841ea0e1c1b697c6630190cb892" name="a971b2841ea0e1c1b697c6630190cb892"></a>
@@ -719,6 +737,8 @@ Disposes temporary SKImage instances created from bitmaps. </li>
 </dl>
 <p>This method replaces the current image source with the specified bitmap. The bitmap is converted to SKImage during rendering for optimal performance. Any previously set SKImage is discarded (but not disposed, as ownership remains with the caller). </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. The caller retains ownership of the bitmap and must ensure it remains valid while in use. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00276">276</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
 
 </div>
 </div>
@@ -756,6 +776,8 @@ SKBlendMode.Multiply - Darkening effect, useful for shadows. </li>
 SKBlendMode.Plus - Additive blending for glow effects. </li>
 </ul>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00458">458</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
 
 </div>
 </div>
@@ -795,6 +817,8 @@ SKFilterQuality.High - Highest quality, slowest performance. </li>
 <p>For pixel art games, use SKFilterQuality.None combined with <a class="el" href="#afadff1139e7f66fda31ae528c1bc9bc3a1ac6cfc61658bee4cbd8851821d9288d" title="Scales the image by the largest integer factor that fits within the destination rectangle while prese...">ScaleMode.PixelPerfect</a> to preserve crisp pixel boundaries. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00491">491</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="a7ac2f81338ea34e15235e72b47f9dd66" name="a7ac2f81338ea34e15235e72b47f9dd66"></a>
@@ -829,6 +853,8 @@ SKFilterQuality.High - Highest quality, slowest performance. </li>
 <p>This method replaces the current image source with the specified SKImage. Any previously set SKBitmap is discarded. Using SKImage directly is more efficient for rendering than converting from SKBitmap. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. The caller retains ownership of the image and must ensure it remains valid while in use. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00301">301</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="a99adedcd4f45782378fce3415710260a" name="a99adedcd4f45782378fce3415710260a"></a>
@@ -858,6 +884,8 @@ SKFilterQuality.High - Highest quality, slowest performance. </li>
 <p>This opacity is independent of the <a class="el" href="class_gondwana_1_1_drawing_1_1_direct_1_1_direct_drawing_base.html#a69c6a77b634d2e70f4b7a4e724ee0596" title="Gets or sets the current opacity of this direct drawing.">DirectDrawingBase.Opacity</a> property inherited from the base class. If both are set, their effects are combined multiplicatively during rendering. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00431">431</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="aecaf2ff6aff3f482168fbdf1d4b52693" name="aecaf2ff6aff3f482168fbdf1d4b52693"></a>
@@ -886,6 +914,8 @@ SKFilterQuality.High - Highest quality, slowest performance. </li>
 <p>The image is rotated around the anchor point specified by <a class="el" href="#a0a7adf2ded6fb7e969e7e0677bdcc3db" title="Sets the rotation and scaling anchor point within the destination rectangle using normalized coordina...">SetAnchor</a>. By default, the anchor is at the center (0.5, 0.5), so the image rotates around its center point. </p>
 <p>A rotation of 0 degrees means no rotation. Values are not clamped; you can specify any angle, and it will wrap around (e.g., 360 degrees is equivalent to 0 degrees). </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00516">516</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
 
 </div>
 </div>
@@ -927,6 +957,8 @@ SKFilterQuality.High - Highest quality, slowest performance. </li>
 </ul>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00360">360</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="af6d8a3ff3b93635bf492510c3f20377e" name="af6d8a3ff3b93635bf492510c3f20377e"></a>
@@ -956,6 +988,8 @@ SKFilterQuality.High - Highest quality, slowest performance. </li>
 <p>The source rectangle dimensions do not need to match the destination rectangle; the specified region will be scaled according to the current <a class="el" href="#a168a435f0b266c71d738e2145e8a16a5" title="Sets how the image is scaled to fit within the destination rectangle.">SetScaleMode</a>. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
 
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00330">330</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
+
 </div>
 </div>
 <a id="a67aabf412d60ad47d2672fa548f5956e" name="a67aabf412d60ad47d2672fa548f5956e"></a>
@@ -984,6 +1018,8 @@ SKFilterQuality.High - Highest quality, slowest performance. </li>
 <p>The tint color is multiplied with each pixel of the source image using SKBlendMode.Modulate. White (<code>SKColors.White</code>) produces no color change, while other colors shift the image's hue. Black will result in a completely black image. </p>
 <p>The alpha channel of the tint color is ignored; use <a class="el" href="#a99adedcd4f45782378fce3415710260a" title="Sets the overall opacity (alpha transparency) of the image.">SetOpacity</a> to control transparency. To remove the tint and restore original colors, call <a class="el" href="#a4e8a68f1d40e82430ad46b67a86e3196" title="Removes any color tint, restoring the image&#39;s original colors.">ClearTint</a>. </p>
 <p>The affected screen regions are automatically marked as dirty to trigger rerendering on the next frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="_direct_image_8cs_source.html#l00386">386</a> of file <a class="el" href="_direct_image_8cs_source.html">DirectImage.cs</a>.</p>
 
 </div>
 </div>

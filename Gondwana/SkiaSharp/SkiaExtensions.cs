@@ -25,6 +25,14 @@ public static class SkiaExtensions
         => new(color.R, color.G, color.B, color.A);
 
     /// <summary>
+    /// Converts a SkiaSharp SKColor to a System.Drawing Color.
+    /// </summary>
+    /// <param name="skcolor">The SKColor to convert.</param>
+    /// <returns>A Color with the same RGBA values.</returns>
+    public static Color ToColor(this SKColor skcolor)
+        => Color.FromArgb(skcolor.Alpha, skcolor.Red, skcolor.Green, skcolor.Blue);
+
+    /// <summary>
     /// Converts a System.Drawing Rectangle to a SkiaSharp SKRect.
     /// </summary>
     /// <param name="rect">The Rectangle to convert.</param>

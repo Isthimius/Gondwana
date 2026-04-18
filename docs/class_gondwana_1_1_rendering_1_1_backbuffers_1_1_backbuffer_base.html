@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -146,6 +146,8 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rendering operations are performed before being presented to the display. </p>
 <p>This abstract class serves as the foundation for backbuffer implementations, offering methods and properties to facilitate rendering operations, manage graphical state, and interact with graphical elements such as tiles. Derived classes must implement the <a class="el" href="#aec9089b369950756218d786c83a59af5" title="Gets the SkiaSharp canvas used for drawing operations on this backbuffer.">Canvas</a>, DrawTileFrame(Tile, RectangleF), and Snapshot members to define specific rendering behavior.</p>
+
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00019">19</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a17a557c2e9c23d280ff2af975fe80f29" name="a17a557c2e9c23d280ff2af975fe80f29"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a17a557c2e9c23d280ff2af975fe80f29">&#9670;&#160;</a></span>BackbufferBase()</h2>
@@ -184,6 +186,8 @@ Properties</h2></td></tr>
 </dl>
 <p>This constructor establishes the initial size of the backbuffer. Derived classes can override RequestResize to implement dynamic resizing behavior if needed. </p>
 
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00036">36</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -215,6 +219,8 @@ Properties</h2></td></tr>
 <p>After disposal, the backbuffer should not be used for further rendering operations. </p>
 
 <p>Reimplemented in <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_bitmap_backbuffer.html#ac70c3a4da0791216d9e7e8947c703b8b">Gondwana.Rendering.Backbuffers.BitmapBackbuffer</a>, and <a class="el" href="class_gondwana_1_1_rendering_1_1_backbuffers_1_1_gpu_backbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Gondwana.Rendering.Backbuffers.GpuBackbuffer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00451">451</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -256,6 +262,8 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A byte array containing the encoded image data.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00430">430</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4bb11aed72f485c90ce42d395cb9678a" name="a4bb11aed72f485c90ce42d395cb9678a"></a>
@@ -296,6 +304,8 @@ Properties</h2></td></tr>
 <p>This method should be called by derived classes after successfully resizing the backbuffer to ensure that the <a class="el" href="#a4363faf5b1440170776c8881fb1e761a" title="Gets the current Backbuffer width in a thread-safe manner.">Width</a> and <a class="el" href="#a904ea16bdee9a1de14718c23ceac671e" title="Gets the current Backbuffer height in a thread-safe manner.">Height</a> properties are updated in a thread-safe manner and subscribers are notified of the size change. </p>
 <p>The method uses volatile writes to ensure visibility across threads and raises the SizeChanged event with the new dimensions. </p>
 
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00251">251</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -326,6 +336,8 @@ Properties</h2></td></tr>
 <div class="line">        FilterQuality = SKFilterQuality.None,</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00266">266</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -354,6 +366,8 @@ Properties</h2></td></tr>
 <p>Derived classes must implement this property to provide access to the underlying drawing canvas. All rendering operations, including tiles, sprites, and direct drawing instances, are performed on this canvas. </p>
 <p>The canvas should be configured with appropriate coordinate transformations, clipping regions, and rendering states before drawing operations begin. </p>
 
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00060">60</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="aaf81a83ca48b73fed9ccf4331977169f" name="aaf81a83ca48b73fed9ccf4331977169f"></a>
@@ -377,6 +391,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the color used to clear the drawing surface. </p>
+
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00277">277</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -408,6 +424,8 @@ Properties</h2></td></tr>
 </div><!-- fragment -->
 <p>Gets or sets the paint settings used to render collision boxes. </p>
 
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00174">174</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6352fc1e08a034964b2776149af72f24" name="a6352fc1e08a034964b2776149af72f24"></a>
@@ -436,6 +454,8 @@ Properties</h2></td></tr>
 <div class="line">    }</div>
 </div><!-- fragment -->
 <p>Gets or sets the paint object used to render fog effects. </p>
+
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00155">155</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -467,6 +487,8 @@ Properties</h2></td></tr>
 </div><!-- fragment -->
 <p>Gets or sets the paint settings used to render grid lines. </p>
 
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00164">164</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a904ea16bdee9a1de14718c23ceac671e" name="a904ea16bdee9a1de14718c23ceac671e"></a>
@@ -491,6 +513,8 @@ Properties</h2></td></tr>
 
 <p>Gets the current Backbuffer height in a thread-safe manner. </p>
 
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00189">189</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
+
 </div>
 </div>
 <a id="a4363faf5b1440170776c8881fb1e761a" name="a4363faf5b1440170776c8881fb1e761a"></a>
@@ -514,6 +538,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the current Backbuffer width in a thread-safe manner. </p>
+
+<p class="definition">Definition at line <a class="el" href="_backbuffer_base_8cs_source.html#l00184">184</a> of file <a class="el" href="_backbuffer_base_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>

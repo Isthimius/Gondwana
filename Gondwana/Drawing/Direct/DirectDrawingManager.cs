@@ -37,7 +37,7 @@ namespace Gondwana.Drawing.Direct;
 /// internally and creates snapshots for iteration to avoid race conditions during enumeration.
 /// </para>
 /// </remarks>
-public sealed class DirectDrawingManager
+public sealed class DirectDrawingManager : IDisposable
 {
     // ---- Singleton ----
     private static readonly Lazy<DirectDrawingManager> _instance =
@@ -343,6 +343,11 @@ public sealed class DirectDrawingManager
 
         result.Sort(_defaultComparer);
         return result;
+    }
+
+    public void Dispose()
+    {
+        ClearAll();
     }
 
     #endregion helper methods

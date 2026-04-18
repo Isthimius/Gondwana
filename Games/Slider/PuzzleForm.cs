@@ -70,7 +70,7 @@ namespace Slider
 
                 Engine.Instance.InitializeWinFormsKeyboardAdapter(winFormBitmapRenderSurfaceControl1);
                 Engine.Instance.InitializeWinFormsMouseAdapter(winFormBitmapRenderSurfaceControl1);
-                Engine.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
+                Engine.Instance.Input.MouseEventPoller.MouseEvent += MouseEventPoller_MouseEvent;
             }
         }
 
@@ -86,9 +86,9 @@ namespace Slider
 
             if (e.ButtonStates.First(s => s.Key == Gondwana.Input.Mouse.MouseButton.Left).Value.JustPressed)
             {
-                if (!Program.puzzle._isShuffling && !SpriteManager.AllSprites.Where(s => s.Movement.MovementState.HasMotion).Any())
+                if (!Program.puzzle._isShuffling && !SpriteManager.Instance.AllSprites.Where(s => s.Movement.MovementState.HasMotion).Any())
                 {
-                    List<Sprite> sprites = SpriteManager.GetSpritesAtViewPixel(winFormBitmapRenderSurfaceControl1.Host.ViewManager.Views[0],
+                    List<Sprite> sprites = SpriteManager.Instance.GetSpritesAtViewPixel(winFormBitmapRenderSurfaceControl1.Host.ViewManager.Views[0],
                         new Point(e.CurrentPosition.X, e.CurrentPosition.Y));
                     if (sprites.Count != 0)
                         Program.puzzle.SlidePiece(sprites[0], 0.15f);

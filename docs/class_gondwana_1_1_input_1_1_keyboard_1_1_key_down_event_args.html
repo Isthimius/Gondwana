@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -126,6 +126,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides data for keyboard key events, including information about the key that was pressed, the action performed (pressed, released, or repeated), and the state of modifier keys at the time of the event. This event args class is used with keyboard input polling to deliver comprehensive keyboard event information to event handlers. </p>
+
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00009">9</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a20128ffccf8cc883e77b1cd0dbf6c6d3" name="a20128ffccf8cc883e77b1cd0dbf6c6d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a20128ffccf8cc883e77b1cd0dbf6c6d3">&#9670;&#160;</a></span>KeyDownEventArgs()</h2>
@@ -161,6 +163,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00070">70</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -186,6 +190,8 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether the Alt modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92eaa2e92861b757ab878312dd57993d60cf" title="The Alt (Alternate) modifier key is currently pressed. This is used for alternate keyboard shortcuts,...">KeyboardModifierState.Alt</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00052">52</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a id="a44cb3b7b6929143f7e1d9b7e0a5b2ca3" name="a44cb3b7b6929143f7e1d9b7e0a5b2ca3"></a>
@@ -209,6 +215,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47" title="The Control (Ctrl) modifier key is currently pressed. This is commonly used for keyboard shortcuts an...">KeyboardModifierState.Ctrl</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00045">45</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -234,6 +242,8 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether the Shift modifier key was pressed at the time this event was generated. This is a convenience property that checks if the <a class="el" href="#a1aff53422c51970c2e611682aa89f8e7" title="Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....">Modifiers</a> flags include <a class="el" href="namespace_gondwana_1_1_input_1_1_keyboard.html#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c" title="The Shift modifier key is currently pressed. This typically modifies character input to produce upper...">KeyboardModifierState.Shift</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00038">38</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a id="aeacbe0f1e54a9dc8673dbf795277901e" name="aeacbe0f1e54a9dc8673dbf795277901e"></a>
@@ -257,6 +267,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the type of action that occurred for this key, indicating whether the key was initially pressed, released, or is being held down and generating repeated events. This allows handlers to respond differently to key press, key release, and key repeat scenarios. </p>
+
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00031">31</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -282,6 +294,8 @@ Properties</h2></td></tr>
 
 <p>Gets the configuration details for the keyboard key that generated this event, including the key identifier, throttling settings, and pause state. This configuration controls how frequently the key can generate events. </p>
 
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00016">16</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
+
 </div>
 </div>
 <a id="a1aff53422c51970c2e611682aa89f8e7" name="a1aff53422c51970c2e611682aa89f8e7"></a>
@@ -305,6 +319,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated. This can be a combination of multiple modifiers when keys like Ctrl+Shift or Ctrl+Alt are pressed together. Use the convenience properties <a class="el" href="#a788bd9c4da3fab30c0062ea098a54ade" title="Gets a value indicating whether the Shift modifier key was pressed at the time this event was generat...">IsShift</a>, <a class="el" href="#a44cb3b7b6929143f7e1d9b7e0a5b2ca3" title="Gets a value indicating whether the Control (Ctrl) modifier key was pressed at the time this event wa...">IsCtrl</a>, and <a class="el" href="#a036cdc248fda34bf9f5276d6577af731" title="Gets a value indicating whether the Alt modifier key was pressed at the time this event was generated...">IsAlt</a> to check for specific modifiers. </p>
+
+<p class="definition">Definition at line <a class="el" href="_key_down_event_args_8cs_source.html#l00024">24</a> of file <a class="el" href="_key_down_event_args_8cs_source.html">KeyDownEventArgs.cs</a>.</p>
 
 </div>
 </div>

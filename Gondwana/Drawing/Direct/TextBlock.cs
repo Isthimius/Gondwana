@@ -130,7 +130,6 @@ public class TextBlock : DirectDrawingMovableBase
     /// Creates a new <see cref="TextBlock"/> bound to a render surface and rectangle.
     /// </summary>
     /// <param name="renderSurfaceHost">The target render surface host responsible for drawing.</param>
-    /// <param name="bounds">The outer bounds (in pixels) where the text will be laid out and rendered.</param>
     private TextBlock(RenderSurfaceHostBase renderSurfaceHost,
                      DirectDrawingMode mode,
                      SceneLayer? sceneLayer,
@@ -689,7 +688,6 @@ public class TextBlock : DirectDrawingMovableBase
             canvas.DrawRect(rect, bg);
         }
 
-        // Ensure typeface
         _typeface ??= SKTypeface.Default;
 
         // Build a paint we can reuse for layout + draw (TEXT SIZE IS IN SCREEN PIXELS)
@@ -697,7 +695,7 @@ public class TextBlock : DirectDrawingMovableBase
         {
             Typeface = _typeface ?? SKTypeface.Default,
             TextSize = _fontSize * zoom,
-            Color = _resolvedForeColor,   // resolved (pulsed) color
+            Color = _resolvedForeColor,
             IsAntialias = true,
             IsStroke = false,
             TextAlign = _hAlign
@@ -721,12 +719,22 @@ public class TextBlock : DirectDrawingMovableBase
             int drawableLines = _maxLines.HasValue ? Math.Min(_lines.Count, _maxLines.Value) : _lines.Count;
             float totalH = drawableLines * _lineHeight;
 
-            if (_minFontSize.HasValue && totalH > innerH && fontSize > minFontSize)
+            bool exceedsHeight = totalH > innerH;
+            bool exceedsWidth = _lines.Any(line => paint.MeasureText(line) > innerW);
+
+            if (_minFontSize.HasValue &&
+                (exceedsHeight || exceedsWidth) &&
+                fontSize > minFontSize)
             {
-                fontSize -= 1f;                 // step down and retry (in screen-px units)
+                fontSize = Math.Max(minFontSize, fontSize - 1f);
                 _layoutDirty = true;
+
+                if (fontSize <= minFontSize)
+                    break;
+
                 continue;
             }
+
             break;
         }
 
@@ -737,7 +745,7 @@ public class TextBlock : DirectDrawingMovableBase
 
         // Build the set of lines to draw from the already-laid-out _lines,
         // truncating at 'visibleChars' so wrapping and alignment still work.
-        List<string> drawLines = new List<string>(_lines.Count);
+        List<string> drawLines = new(_lines.Count);
         if (visibleChars <= 0)
         {
             // nothing to show
@@ -751,7 +759,9 @@ public class TextBlock : DirectDrawingMovableBase
             int remaining = visibleChars;
             foreach (var ln in _lines)
             {
-                if (remaining <= 0) break;
+                if (remaining <= 0)
+                    break;
+
                 if (ln.Length <= remaining)
                 {
                     drawLines.Add(ln);
@@ -765,8 +775,15 @@ public class TextBlock : DirectDrawingMovableBase
             }
         }
 
+        bool wasTruncatedByMaxLines = _maxLines.HasValue && drawLines.Count > _maxLines.Value;
+
         // Apply max-lines cap at draw time
         int linesToDraw = _maxLines.HasValue ? Math.Min(drawLines.Count, _maxLines.Value) : drawLines.Count;
+
+        if (linesToDraw > 0 && wasTruncatedByMaxLines)
+        {
+            drawLines[linesToDraw - 1] = FitLineWithEllipsis(paint, drawLines[linesToDraw - 1], innerW);
+        }
 
         // Vertical start (Skia draws at baseline, so apply ascent shift)
         var fm = paint.FontMetrics;
@@ -784,6 +801,9 @@ public class TextBlock : DirectDrawingMovableBase
         float xAnchorLeft = rect.Left + hPad;
         float xAnchorCenter = rect.MidX;
         float xAnchorRight = rect.Right - hPad;
+
+        canvas.Save();
+        canvas.ClipRect(rect);
 
         float y = yStart;
         for (int i = 0; i < linesToDraw; i++)
@@ -821,8 +841,12 @@ public class TextBlock : DirectDrawingMovableBase
             canvas.DrawText(line, x, y + baselineShift, paint);
             y += _lineHeight;
 
-            if (y > rect.Bottom) break; // safety clip
+            // safety clip
+            if (y > rect.Bottom)
+                break;
         }
+
+        canvas.Restore();
     }
 
     private void RebuildLayout(SKPaint paint, float maxWidth)
@@ -842,29 +866,58 @@ public class TextBlock : DirectDrawingMovableBase
                 continue;
             }
 
-            // if wrapping is disabled, keep the paragraph as a single line
             if (!_wrapText)
             {
                 _lines.Add(para);
                 continue;
             }
 
-            // word wrap
-            var words = para.Split(' ');
+            var words = para.Split(' ', StringSplitOptions.None);
             var current = string.Empty;
 
             foreach (var word in words)
             {
                 string candidate = string.IsNullOrEmpty(current) ? word : current + " " + word;
-                float w = paint.MeasureText(candidate);
+                float candidateWidth = paint.MeasureText(candidate);
 
-                if (w <= maxWidth || string.IsNullOrEmpty(current))
+                if (candidateWidth <= maxWidth)
+                {
                     current = candidate;
-                else
+                    continue;
+                }
+
+                // If current already has content, commit it first and retry this word on a new line.
+                if (!string.IsNullOrEmpty(current))
                 {
                     _lines.Add(current);
-                    current = word;
+                    current = string.Empty;
                 }
+
+                // If the single word fits on its own line, use it.
+                if (paint.MeasureText(word) <= maxWidth)
+                {
+                    current = word;
+                    continue;
+                }
+
+                // Fallback: hard-break an overlong word by character.
+                var chunk = string.Empty;
+                foreach (char ch in word)
+                {
+                    string next = chunk + ch;
+                    if (paint.MeasureText(next) <= maxWidth || string.IsNullOrEmpty(chunk))
+                    {
+                        chunk = next;
+                    }
+                    else
+                    {
+                        _lines.Add(chunk);
+                        chunk = ch.ToString();
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(chunk))
+                    current = chunk;
             }
 
             if (!string.IsNullOrEmpty(current))
@@ -892,6 +945,33 @@ public class TextBlock : DirectDrawingMovableBase
         byte bl = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte al = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
         return new SKColor(r, g, bl, al);
+    }
+
+    private static string FitLineWithEllipsis(SKPaint paint, string text, float maxWidth)
+    {
+        const string ellipsis = "...";
+
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        if (paint.MeasureText(text) <= maxWidth)
+            return text;
+
+        float ellipsisWidth = paint.MeasureText(ellipsis);
+        if (ellipsisWidth > maxWidth)
+            return string.Empty;
+
+        int length = text.Length;
+        while (length > 0)
+        {
+            string candidate = text.Substring(0, length).TrimEnd() + ellipsis;
+            if (paint.MeasureText(candidate) <= maxWidth)
+                return candidate;
+
+            length--;
+        }
+
+        return ellipsisWidth <= maxWidth ? ellipsis : string.Empty;
     }
 
     #region public readonly properties
@@ -975,13 +1055,13 @@ public class TextBlock : DirectDrawingMovableBase
     public bool PuctuationPauseEnabled => _pauseEnabled;
 
     /// <summary>Gets the long punctuation pause duration (seconds) used for '.', '!', '?'.</summary>
-    public float PunctiationPauseLongSec => _pauseLongSec;
+    public float PunctuationPauseLongSec => _pauseLongSec;
 
     /// <summary>Gets the short punctuation pause duration (seconds) used for ',', ';', ':'.</summary>
-    public float PunctiationPauseShortSec => _pauseShortSec;
+    public float PunctuationPauseShortSec => _pauseShortSec;
 
     /// <summary>Gets the currently resolved (effective) foreground color used for drawing.</summary>
-    public SKColor ResovedForeColor => _resolvedForeColor;
+    public SKColor ResolvedForeColor => _resolvedForeColor;
 
     #endregion public readonly properties
 

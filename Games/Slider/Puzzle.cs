@@ -131,7 +131,7 @@ namespace Slider
 
         public int TotalPieces
         {
-            get { return SpriteManager.AllSprites.Count; }
+            get { return SpriteManager.Instance.AllSprites.Count; }
         }
 
         public int TotalPiecesCorrect
@@ -140,7 +140,7 @@ namespace Slider
             {
                 int totalCorrect = 0;
 
-                foreach (Sprite sprite in SpriteManager.AllSprites)
+                foreach (Sprite sprite in SpriteManager.Instance.AllSprites)
                 {
                     Point spriteLoc = new Point((int)sprite.SceneLayerCoordinates.X, (int)sprite.SceneLayerCoordinates.Y);
 
@@ -228,13 +228,13 @@ namespace Slider
 
         private void InitializeSprites(int tileWidth, int tileHeight)
         {
-            SpriteManager.Clear();
+            SpriteManager.Instance.Clear();
 
             for (int x = 0; x < numColumns; x++)
             {
                 for (int y = 0; y < numRows; y++)
                 {
-                    Sprite sprite = SpriteManager.CreateSprite(matrixes[0], new Frame(tilesheet, x, y),
+                    Sprite sprite = SpriteManager.Instance.CreateSprite(matrixes[0], new Frame(tilesheet, x, y),
                         x.ToString() + "-" + y.ToString());
                     sprite.SetPosition(new System.Numerics.Vector2((float)x, (float)y));
                     sprite.Visible = true;
@@ -247,7 +247,7 @@ namespace Slider
             // remove the bottom-right tile; this will be the space for sliding
             int maxX = numColumns - 1;
             int maxY = numRows - 1;
-            SpriteManager.GetSpriteByID(maxX.ToString() + "-" + maxY.ToString()).Dispose();
+            SpriteManager.Instance.GetSpriteByID(maxX.ToString() + "-" + maxY.ToString()).Dispose();
             openSpace = new Point(maxX, maxY);
         }
 
@@ -275,7 +275,7 @@ namespace Slider
             foreach (SceneLayerTile gPt in adjGridPts)
             {
                 if (gPt != null)
-                    adjSprites.AddRange(SpriteManager.GetSpritesInWorldRectRange(gPt.DrawLocationWorld));
+                    adjSprites.AddRange(SpriteManager.Instance.GetSpritesInWorldRectRange(gPt.DrawLocationWorld));
             }
 
             return adjSprites;
@@ -309,7 +309,7 @@ namespace Slider
             GC.SuppressFinalize(this);
             tilesheet.Dispose();
             matrixes.Dispose();
-            SpriteManager.Clear();
+            SpriteManager.Instance.Clear();
         }
 
         #endregion IDisposable Members

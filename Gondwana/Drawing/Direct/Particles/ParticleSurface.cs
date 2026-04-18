@@ -517,8 +517,11 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
         float jy = MathF.Abs(em.JitterY);
 
         // Handle "line" cases cleanly (one axis zero)
-        if (jx == 0f) return (0f, NextRange(-jy, jy));
-        if (jy == 0f) return (NextRange(-jx, jx), 0f);
+        if (jx == 0f)
+            return (0f, NextRange(-jy, jy));
+
+        if (jy == 0f)
+            return (NextRange(-jx, jx), 0f);
 
         switch (em.SpawnDistribution)
         {

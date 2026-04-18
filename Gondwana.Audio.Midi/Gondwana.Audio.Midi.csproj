@@ -1,22 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
 
-  <ItemGroup>
-    <EmbeddedResource Include="TimGM6mb.sf2" />
-  </ItemGroup>
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Audio.Midi</PackageProjectUrl>
 
-  <ItemGroup>
-    <PackageReference Include="MeltySynth" Version="2.4.1" />
-    <PackageReference Include="NAudio" Version="2.2.1" />
-  </ItemGroup>
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.Audio.Midi</PackageId>
+        <Title>Gondwana Audio MIDI Support</Title>
+        <Description>MIDI audio playback support for the Gondwana Game Engine, including integration for loading and playing MIDI files through the engine's audio system.</Description>
+        <PackageTags>$(PackageTags) audio midi adapter playback music sound</PackageTags>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="TimGM6mb.sf2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MeltySynth" Version="2.4.1" />
+        <PackageReference Include="NAudio" Version="2.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
 
 </Project>

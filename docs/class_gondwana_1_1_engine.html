@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -123,14 +123,6 @@ Properties</h2></td></tr>
 <tr class="memdesc:a10ce957685d349193e8268c1421bcec5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a>.  <br /></td></tr>
 <tr class="memitem:a626de1eeb9d5528a11c8e1a6756d252f" id="r_a626de1eeb9d5528a11c8e1a6756d252f"><td class="memItemLeft" align="right" valign="top">static ILogger&lt; <a class="el" href="class_gondwana_1_1_engine.html">Engine</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a><code> [get]</code></td></tr>
 <tr class="memdesc:a626de1eeb9d5528a11c8e1a6756d252f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the logger instance used by the engine for diagnostic and informational messages.  <br /></td></tr>
-<tr class="memitem:ad4d8bba8a42dcfe160378ab32924605e" id="r_ad4d8bba8a42dcfe160378ab32924605e"><td class="memItemLeft" align="right" valign="top">static ? <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html">KeyboardEventPoller</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad4d8bba8a42dcfe160378ab32924605e">KeyboardEventPoller</a><code> [get]</code></td></tr>
-<tr class="memdesc:ad4d8bba8a42dcfe160378ab32924605e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the keyboard event polling subsystem, if initialized.  <br /></td></tr>
-<tr class="memitem:a1568d7eaaecbd4206ca3368530b0d320" id="r_a1568d7eaaecbd4206ca3368530b0d320"><td class="memItemLeft" align="right" valign="top">static ? <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html">MouseEventPoller</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1568d7eaaecbd4206ca3368530b0d320">MouseEventPoller</a><code> [get]</code></td></tr>
-<tr class="memdesc:a1568d7eaaecbd4206ca3368530b0d320"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse event polling subsystem, if initialized.  <br /></td></tr>
-<tr class="memitem:a4daf0eeba87a8565f75a745360094554" id="r_a4daf0eeba87a8565f75a745360094554"><td class="memItemLeft" align="right" valign="top">static ? IGamepadManager&lt; <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4daf0eeba87a8565f75a745360094554">GamepadManager</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a4daf0eeba87a8565f75a745360094554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the gamepad manager responsible for handling gamepad input.  <br /></td></tr>
-<tr class="memitem:ab25174b7ed0d75691b53f7c23c344ceb" id="r_ab25174b7ed0d75691b53f7c23c344ceb"><td class="memItemLeft" align="right" valign="top">static ? <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html">GamepadEventPoller</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab25174b7ed0d75691b53f7c23c344ceb">GamepadEventPoller</a><code> [get]</code></td></tr>
-<tr class="memdesc:ab25174b7ed0d75691b53f7c23c344ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the gamepad event polling subsystem, if initialized.  <br /></td></tr>
 <tr class="memitem:ab77dee07cb432a785afea9b92c28c4b4" id="r_ab77dee07cb432a785afea9b92c28c4b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_i_ui_dispatcher.html">IUiDispatcher</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a><code> [get]</code></td></tr>
 <tr class="memdesc:ab77dee07cb432a785afea9b92c28c4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the UI dispatcher used for marshalling operations to the UI thread.  <br /></td></tr>
 <tr class="memitem:a6d9a264fa4828437d36fe82e77cafc04" id="r_a6d9a264fa4828437d36fe82e77cafc04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_gondwana_1_1_i_engine_dispatcher.html">IEngineDispatcher</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d9a264fa4828437d36fe82e77cafc04">EngineDispatcher</a> = new <a class="el" href="class_gondwana_1_1_engine_dispatcher.html">EngineDispatcher</a>()<code> [get]</code></td></tr>
@@ -149,12 +141,16 @@ Properties</h2></td></tr>
 <tr class="memdesc:a934c3fbfb438d588870d36142030b112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current gross cycles per second rate.  <br /></td></tr>
 <tr class="memitem:a0b52f9a9161095ea518d6b8bc958762c" id="r_a0b52f9a9161095ea518d6b8bc958762c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b52f9a9161095ea518d6b8bc958762c">FramesPerSecond</a><code> [get]</code></td></tr>
 <tr class="memdesc:a0b52f9a9161095ea518d6b8bc958762c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current net frames per second rate.  <br /></td></tr>
-<tr class="memitem:aab46d0dc7d179dc508a5bc35460fa61f" id="r_aab46d0dc7d179dc508a5bc35460fa61f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a> = false<code> [get]</code></td></tr>
-<tr class="memdesc:aab46d0dc7d179dc508a5bc35460fa61f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the engine has been disposed.  <br /></td></tr>
 <tr class="memitem:a32e96d66aa1054ff905343cc8f0dc1ac" id="r_a32e96d66aa1054ff905343cc8f0dc1ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_engine_state.html">EngineState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32e96d66aa1054ff905343cc8f0dc1ac">State</a> = new <a class="el" href="class_gondwana_1_1_engine_state.html">EngineState</a>()<code> [get]</code></td></tr>
 <tr class="memdesc:a32e96d66aa1054ff905343cc8f0dc1ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the engine's persistent state container for storing arbitrary key-value data.  <br /></td></tr>
 <tr class="memitem:ad8821f813581b2d22fabbb4c9c7c3cb2" id="r_ad8821f813581b2d22fabbb4c9c7c3cb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration.html">EngineConfiguration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a><code> [get]</code></td></tr>
 <tr class="memdesc:ad8821f813581b2d22fabbb4c9c7c3cb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current engine configuration settings.  <br /></td></tr>
+<tr class="memitem:a93f6aa01595d787e0eb33e4995afc760" id="r_a93f6aa01595d787e0eb33e4995afc760"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_engine_managers.html">EngineManagers</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a93f6aa01595d787e0eb33e4995afc760">Managers</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a93f6aa01595d787e0eb33e4995afc760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of resource managers for audio, sprites, fonts, tilesheets, and direct drawing.  <br /></td></tr>
+<tr class="memitem:a8cbd2e084b892eb8fd53fb4c75d2ee77" id="r_a8cbd2e084b892eb8fd53fb4c75d2ee77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_engine_input_systems.html">EngineInputSystems</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a8cbd2e084b892eb8fd53fb4c75d2ee77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of input subsystems for keyboard, mouse, and gamepad input.  <br /></td></tr>
+<tr class="memitem:aab46d0dc7d179dc508a5bc35460fa61f" id="r_aab46d0dc7d179dc508a5bc35460fa61f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a> = false<code> [get]</code></td></tr>
+<tr class="memdesc:aab46d0dc7d179dc508a5bc35460fa61f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the engine has been disposed.  <br /></td></tr>
 <tr class="memitem:ad96cc3ca3960fccd5070d4dc53a82329" id="r_ad96cc3ca3960fccd5070d4dc53a82329"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad96cc3ca3960fccd5070d4dc53a82329">IsDisposing</a><code> [get]</code></td></tr>
 <tr class="memdesc:ad96cc3ca3960fccd5070d4dc53a82329"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the engine is currently executing its disposal sequence.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -185,6 +181,8 @@ Events</h2></td></tr>
 <div class="textblock"><p>Represents the core game engine singleton responsible for managing the main update loop, input systems, rendering, timing, and subsystem coordination. </p>
 <p>The <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> class is implemented as a thread-safe singleton and provides centralized access to all major engine subsystems including input polling, scene management, rendering, and collision detection. </p>
 <p>Typical usage involves calling <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> to configure the engine, then <a class="el" href="#a1602914b099f6a520a4ec9a9b6be0792" title="Starts the Engine main loop using the provided SynchronizationContext, initializing the engine if it ...">Start(SynchronizationContext)</a> to begin the main loop, and finally <a class="el" href="#ac7d30da86dbc3b9533d5753330e4b87f" title="Stops the Engine main loop and halts all ongoing processing.">Stop</a> followed by <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose</a> for cleanup. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00032">32</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a747162c754167416264068b5b834114f" name="a747162c754167416264068b5b834114f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a747162c754167416264068b5b834114f">&#9670;&#160;</a></span>Dispose()</h2>
@@ -220,6 +218,8 @@ Clearing timers and state </li>
 Raising the <a class="el" href="#a00b0e4f9d003fbb6e1711f8fadc33bb8" title="Raised after the engine has completed explicit disposal.">Disposed</a> event </li>
 </ul>
 <p>After disposal, the engine instance should not be used. To restart the engine, a new application session is required. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00898">898</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -287,11 +287,13 @@ Events that must run on the UI thread are dispatched through <a class="el" href=
     <tr><td class="paramname">autoSaveConfig</td><td>Optional flag indicating whether configuration changes should be automatically saved back to disk. </td></tr>
     <tr><td class="paramname">keyboardAdapter</td><td>Optional <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html" title="Represents an adapter for keyboard input, providing access to the currently pressed keys and active m...">IKeyboardAdapter</a> instance used to initialize the keyboard input subsystem. </td></tr>
     <tr><td class="paramname">mouseAdapter</td><td>Optional <a class="el" href="interface_gondwana_1_1_input_1_1_mouse_1_1_i_mouse_adapter.html" title="Defines an adapter interface for accessing mouse device state, including cursor position,...">IMouseAdapter</a> instance used to initialize the mouse input subsystem. </td></tr>
-    <tr><td class="paramname">gamepadManager</td><td>Optional <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.html" title="Interface to track a collection of gamepad adapters.&quot;/&gt;">IGamepadManager&lt;T&gt;</a> instance used to initialize the gamepad subsystem. </td></tr>
+    <tr><td class="paramname">gamepadManager</td><td>Optional <a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_manager-1-g.html" title="Interface to track a collection of IGamepadAdapter gamepad adapters.&quot;/&gt;">IGamepadManager&lt;T&gt;</a> instance used to initialize the gamepad subsystem. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#a1602914b099f6a520a4ec9a9b6be0792" title="Starts the Engine main loop using the provided SynchronizationContext, initializing the engine if it ...">Start(SynchronizationContext)</a>, <a class="el" href="#ac7d30da86dbc3b9533d5753330e4b87f" title="Stops the Engine main loop and halts all ongoing processing.">Stop</a>, <a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration.html" title="Settings used by the engine when cycling.">EngineConfiguration</a>, <a class="el" href="class_gondwana_1_1_engine_state.html" title="Represents the complete serializable state of the game engine, including assets, scenes,...">EngineState</a></dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00266">266</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -320,6 +322,8 @@ Events that must run on the UI thread are dispatched through <a class="el" href=
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#a1602914b099f6a520a4ec9a9b6be0792" title="Starts the Engine main loop using the provided SynchronizationContext, initializing the engine if it ...">Start(SynchronizationContext)</a>, <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a>, <a class="el" href="#ac7d30da86dbc3b9533d5753330e4b87f" title="Stops the Engine main loop and halts all ongoing processing.">Stop</a></dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00344">344</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -365,6 +369,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a>, <a class="el" href="#ac7d30da86dbc3b9533d5753330e4b87f" title="Stops the Engine main loop and halts all ongoing processing.">Stop</a>, Cycle, <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ...">UiDispatcher</a></dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00394">394</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac7d30da86dbc3b9533d5753330e4b87f" name="ac7d30da86dbc3b9533d5753330e4b87f"></a>
@@ -388,6 +394,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>To fully clean up and release all managed resources, call <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose</a> after stopping the engine. </p>
 <p>This method is thread-safe and may be called from any thread. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#adb629909790987f304bc63413290160d" title="Starts the Engine using the current thread&#39;s SynchronizationContext.">Start()</a>, Cycle, <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose()</a>, <a class="el" href="#a792f37da86d34e4777fa59a91964ab28" title="Gets a value indicating whether the engine&#39;s main loop is currently executing.">IsRunning</a></dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00456">456</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -417,6 +425,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>This property provides thread-safe access to the engine's configuration, which is loaded during <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> from a configuration file or default values. </p>
 <p><a class="el" href="namespace_gondwana_1_1_configuration.html">Configuration</a> settings control behavior such as target frame rate, logging mode, sampling intervals, and other core engine parameters. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00602">602</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a934c3fbfb438d588870d36142030b112" name="a934c3fbfb438d588870d36142030b112"></a>
@@ -444,6 +454,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>This metric reflects all calls to Cycle, regardless of whether a foreground render was performed. It represents the engine's update frequency for background tasks such as input polling, timers, and animations. </p>
 <p>This value is updated at the interval specified by <a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration.html#ac855c43adbb76108ebf60b3a4e607f37" title="Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1....">EngineConfiguration.SamplingTimeForCPS</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00550">550</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6d9a264fa4828437d36fe82e77cafc04" name="a6d9a264fa4828437d36fe82e77cafc04"></a>
@@ -469,6 +481,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Gets the engine dispatcher used for marshalling operations to the engine's background thread. </p>
 <p>An <a class="el" href="interface_gondwana_1_1_i_engine_dispatcher.html" title="Defines a contract for dispatching actions to the engine&#39;s background thread in a thread-safe manner....">IEngineDispatcher</a> instance bound to the engine's update loop thread.</p>
 <p>This dispatcher allows external code to safely post work items that should execute on the engine's dedicated background thread, ensuring thread-safe access to engine state. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00484">484</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -497,10 +511,12 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>This metric reflects only cycles that resulted in a foreground render operation, as controlled by <a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">EngineConfiguration.TargetFPS</a>. It represents the actual visual frame rate delivered to the user. </p>
 <p>This value is updated at the interval specified by <a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration.html#ac855c43adbb76108ebf60b3a4e607f37" title="Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1....">EngineConfiguration.SamplingTimeForCPS</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00566">566</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
-<a id="ab25174b7ed0d75691b53f7c23c344ceb" name="ab25174b7ed0d75691b53f7c23c344ceb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab25174b7ed0d75691b53f7c23c344ceb">&#9670;&#160;</a></span>GamepadEventPoller</h2>
+<a id="a8cbd2e084b892eb8fd53fb4c75d2ee77" name="a8cbd2e084b892eb8fd53fb4c75d2ee77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cbd2e084b892eb8fd53fb4c75d2ee77">&#9670;&#160;</a></span>Input</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -509,44 +525,22 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">? <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html">GamepadEventPoller</a> Gondwana.Engine.GamepadEventPoller</td>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_engine_input_systems.html">EngineInputSystems</a> Gondwana.Engine.Input = new()</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel get">get</span></span>  </td>
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the gamepad event polling subsystem, if initialized. </p>
-<p>The <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html" title="Provides centralized polling and event management for gamepad button inputs across multiple gamepad d...">Gondwana.Input.Gamepad.GamepadEventPoller</a> instance if initialized; otherwise, <code>null</code>. </p>
-<p>This property provides access to the gamepad input subsystem. The poller is automatically initialized when a <a class="el" href="#a4daf0eeba87a8565f75a745360094554" title="Gets or sets the gamepad manager responsible for handling gamepad input.">GamepadManager</a> is assigned. </p>
+<p>Gets the collection of input subsystems for keyboard, mouse, and gamepad input. </p>
+<p>An <a class="el" href="class_gondwana_1_1_engine_input_systems.html" title="Provides centralized access to all the input systems of the engine, including gamepad,...">EngineInputSystems</a> instance providing access to all input subsystems.</p>
+<p>This property provides centralized access to input event pollers and managers for keyboard, mouse, and gamepad devices. Use the nested properties to access specific subsystems such as <a class="el" href="class_gondwana_1_1_engine_input_systems.html#a42a45d1dff05513a565d6c760e96b75a" title="Gets the keyboard event polling subsystem, if initialized.">EngineInputSystems.KeyboardEventPoller</a>, <a class="el" href="class_gondwana_1_1_engine_input_systems.html#a201f7fdd1abc5ef419a9391f06805119" title="Gets the mouse event polling subsystem, if initialized.">EngineInputSystems.MouseEventPoller</a>, <a class="el" href="class_gondwana_1_1_engine_input_systems.html#ac9312622d39edeaf6df5ff5c318fc6d2" title="Gets the gamepad event polling subsystem, if initialized.">EngineInputSystems.GamepadEventPoller</a>, and <a class="el" href="class_gondwana_1_1_engine_input_systems.html#ae10f8d42f3de55ff3bc18e57d5d93c94" title="Gets or sets the gamepad manager responsible for handling gamepad input.">EngineInputSystems.GamepadManager</a>. </p>
+<p><a class="el" href="namespace_gondwana_1_1_input.html">Input</a> adapters must be provided during <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> for the corresponding input subsystems to become available. </p>
 
-</div>
-</div>
-<a id="a4daf0eeba87a8565f75a745360094554" name="a4daf0eeba87a8565f75a745360094554"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4daf0eeba87a8565f75a745360094554">&#9670;&#160;</a></span>GamepadManager</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">? IGamepadManager&lt;<a class="el" href="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html">IGamepadAdapter</a>&gt; Gondwana.Engine.GamepadManager</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets or sets the gamepad manager responsible for handling gamepad input. </p>
-<p>Setting this property attaches an update callback to the engine cycle, polling attached adapters</p>
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00641">641</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -574,6 +568,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>The globally shared <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> instance.</p>
 <p>This property provides thread-safe access to the engine instance using lazy initialization. The instance is created on first access and persists for the application lifetime. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00046">46</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="aab46d0dc7d179dc508a5bc35460fa61f" name="aab46d0dc7d179dc508a5bc35460fa61f"></a>
@@ -599,6 +595,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Gets a value indicating whether the engine has been disposed. </p>
 <p><code>true</code> if <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose</a> has completed; otherwise, <code>false</code>.</p>
 <p>Once this property is <code>true</code>, the engine instance should not be used further. All managed resources have been released and subsystems have been shut down. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00651">651</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -626,6 +624,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p><code>true</code> if disposal is in progress; otherwise, <code>false</code>.</p>
 <p>This property is set to <code>true</code> at the start of <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose</a> and can be used by subsystems to detect when cleanup is underway. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00661">661</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a15162b48ad9ed7dc8e922da6f78b07fa" name="a15162b48ad9ed7dc8e922da6f78b07fa"></a>
@@ -651,6 +651,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Gets a value indicating whether the engine has completed its initialization sequence. </p>
 <p><code>true</code> if initialization is complete; otherwise, <code>false</code>.</p>
 <p>This property returns <code>true</code> after <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> has successfully completed all setup operations and raised the <a class="el" href="#a759df33a555fca215571dedb17c85228" title="Occurs after all initialization steps and post-initialization logic have completed.">InitializationComplete</a> event. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00494">494</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -678,6 +680,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p><code>true</code> if initialization is in progress; otherwise, <code>false</code>.</p>
 <p>This property is <code>true</code> between the start of <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> and the completion of all initialization steps. It is used to prevent concurrent initialization attempts. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00504">504</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a792f37da86d34e4777fa59a91964ab28" name="a792f37da86d34e4777fa59a91964ab28"></a>
@@ -704,31 +708,7 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p><code>true</code> if the engine loop is active; otherwise, <code>false</code>.</p>
 <p>This property is set to <code>true</code> when <a class="el" href="#a1602914b099f6a520a4ec9a9b6be0792" title="Starts the Engine main loop using the provided SynchronizationContext, initializing the engine if it ...">Start(SynchronizationContext)</a> is called and remains <code>true</code> until <a class="el" href="#ac7d30da86dbc3b9533d5753330e4b87f" title="Stops the Engine main loop and halts all ongoing processing.">Stop</a> is invoked or the engine is disposed. </p>
 
-</div>
-</div>
-<a id="ad4d8bba8a42dcfe160378ab32924605e" name="ad4d8bba8a42dcfe160378ab32924605e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad4d8bba8a42dcfe160378ab32924605e">&#9670;&#160;</a></span>KeyboardEventPoller</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">? <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html">KeyboardEventPoller</a> Gondwana.Engine.KeyboardEventPoller</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel get">get</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets the keyboard event polling subsystem, if initialized. </p>
-<p>The <a class="el" href="class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html" title="Cross-platform singleton keyboard handler with throttling and manual input state feeding.">Gondwana.Input.Keyboard.KeyboardEventPoller</a> instance if initialized; otherwise, <code>null</code>. </p>
-<p>This property provides access to the keyboard input subsystem. The poller must be initialized via <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> with a valid <a class="el" href="interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html" title="Represents an adapter for keyboard input, providing access to the currently pressed keys and active m...">IKeyboardAdapter</a> before use. </p>
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00514">514</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -756,10 +736,12 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>An ILogger&lt;TCategoryName&gt; instance configured for the <a class="el" href="class_gondwana_1_1_engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> type.</p>
 <p>This logger is used internally by the engine to report initialization status, errors, warnings, and other runtime information. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00056">56</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
-<a id="a1568d7eaaecbd4206ca3368530b0d320" name="a1568d7eaaecbd4206ca3368530b0d320"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1568d7eaaecbd4206ca3368530b0d320">&#9670;&#160;</a></span>MouseEventPoller</h2>
+<a id="a93f6aa01595d787e0eb33e4995afc760" name="a93f6aa01595d787e0eb33e4995afc760"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93f6aa01595d787e0eb33e4995afc760">&#9670;&#160;</a></span>Managers</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -768,19 +750,21 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">? <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html">MouseEventPoller</a> Gondwana.Engine.MouseEventPoller</td>
+          <td class="memname"><a class="el" href="class_gondwana_1_1_engine_managers.html">EngineManagers</a> Gondwana.Engine.Managers = new()</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel get">get</span></span>  </td>
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the mouse event polling subsystem, if initialized. </p>
-<p>The <a class="el" href="class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html" title="Provides centralized polling and event management for mouse input, including button presses,...">Gondwana.Input.Mouse.MouseEventPoller</a> instance if initialized; otherwise, <code>null</code>. </p>
-<p>This property provides access to the mouse input subsystem. The poller must be initialized via <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> with a valid <a class="el" href="interface_gondwana_1_1_input_1_1_mouse_1_1_i_mouse_adapter.html" title="Defines an adapter interface for accessing mouse device state, including cursor position,...">IMouseAdapter</a> before use. </p>
+<p>Gets the collection of resource managers for audio, sprites, fonts, tilesheets, and direct drawing. </p>
+<p>An <a class="el" href="class_gondwana_1_1_engine_managers.html" title="Provides centralized access to all engine resource managers.">EngineManagers</a> instance providing access to all engine resource managers.</p>
+<p>This property provides centralized access to subsystem managers responsible for loading and managing various types of game resources. Use the nested properties to access specific managers such as <a class="el" href="class_gondwana_1_1_engine_managers.html#a4d78547eee177a9fee947d75f697de19" title="Gets the audio resource manager for loading and managing audio assets.">EngineManagers.AudioResources</a>, <a class="el" href="class_gondwana_1_1_engine_managers.html#a151b6ca4a77c51657bf3922d1fa1af61" title="Gets the sprite manager for managing sprite assets and rendering.">EngineManagers.Sprites</a>, <a class="el" href="class_gondwana_1_1_engine_managers.html#a3730f4d935be727011143afa01eaf815" title="Gets the font manager for loading and managing font resources.">EngineManagers.Fonts</a>, <a class="el" href="class_gondwana_1_1_engine_managers.html#a017184c71f7eddfee0e41f43a2092fd1" title="Gets the tilesheet registry for managing tilesheet resources.">EngineManagers.Tilesheets</a>, and <a class="el" href="class_gondwana_1_1_engine_managers.html#a2247561795df59bb5d4697f8596e8d3d" title="Gets the direct drawing manager for immediate-mode rendering operations.">EngineManagers.DirectDrawings</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00621">621</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -809,6 +793,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>The <a class="el" href="#a32e96d66aa1054ff905343cc8f0dc1ac" title="Gets the engine&#39;s persistent state container for storing arbitrary key-value data.">State</a> container provides a convenient mechanism for storing game-specific configuration, player progress, or other persistent data that should survive between application runs. </p>
 <p>State can be loaded from and saved to disk using the methods provided by the <a class="el" href="class_gondwana_1_1_engine_state.html" title="Represents the complete serializable state of the game engine, including assets, scenes,...">EngineState</a> class. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00583">583</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="aff8192ad9f289084c19ebbf7ba1d743b" name="aff8192ad9f289084c19ebbf7ba1d743b"></a>
@@ -834,6 +820,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Gets the total number of seconds that have elapsed since the engine started. </p>
 <p>The elapsed time in seconds as a floating-point value.</p>
 <p>This value is derived from <a class="el" href="#a1f43c5236ee7f4625e54bb4098a05353" title="Gets the total number of high-resolution timer ticks that have elapsed since the engine started.">TotalTicksEngineRunning</a> and provides a convenient measure of total runtime duration. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00534">534</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -861,6 +849,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>The elapsed ticks as measured by HighResTimer.</p>
 <p>This value represents elapsed time in the native resolution of the high-resolution timer. Use <a class="el" href="#aff8192ad9f289084c19ebbf7ba1d743b" title="Gets the total number of seconds that have elapsed since the engine started.">TotalSecondsEngineRunning</a> for a time value in seconds. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00524">524</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab77dee07cb432a785afea9b92c28c4b4" name="ab77dee07cb432a785afea9b92c28c4b4"></a>
@@ -885,7 +875,9 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 
 <p>Gets the UI dispatcher used for marshalling operations to the UI thread. </p>
 <p>An <a class="el" href="interface_gondwana_1_1_i_ui_dispatcher.html" title="Defines a contract for dispatching actions to the UI thread in a thread-safe manner....">IUiDispatcher</a> instance if the engine was started with a valid SynchronizationContext; otherwise, <code>null</code>. </p>
-<p>This dispatcher is established when <a class="el" href="#a1602914b099f6a520a4ec9a9b6be0792" title="Starts the Engine main loop using the provided SynchronizationContext, initializing the engine if it ...">Start(SynchronizationContext)</a> is called and is used internally to post events and operations that must execute on the UI thread. </p>
+<p>This dispatcher is established when <a class="el" href="#a1602914b099f6a520a4ec9a9b6be0792" title="Starts the Engine main loop using the provided SynchronizationContext, initializing the engine if it ...">Start(SynchronizationContext)</a> is called and is used to post events and operations that must execute on the UI thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00474">474</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -905,6 +897,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Occurs immediately after DoBackgroundTasks(long) has completed. </p>
 <p>Use this event to perform custom actions or monitoring after all background updates (timers, input, animations, surface refreshes, etc.) have been processed. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00149">149</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a3376a217fab6a271437d14854831a65c" name="a3376a217fab6a271437d14854831a65c"></a>
@@ -921,6 +915,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 
 <p>Occurs immediately after DoForegroundTasks(long) completes within each engine cycle. </p>
 <p>Use this event to perform logic that depends on a completed render frame, such as post-render effects, profiling, or scheduling background jobs. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00171">171</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -939,6 +935,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Occurs immediately before DoBackgroundTasks(long) executes within each engine cycle. </p>
 <p>Use this event to inject custom background logic such as diagnostics, AI updates, or subsystem polling prior to the engine's own background operations. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00138">138</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a058f31467a42fe376b0955967931e476" name="a058f31467a42fe376b0955967931e476"></a>
@@ -955,6 +953,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 
 <p>Occurs immediately before DoForegroundTasks(long) executes within each engine cycle. </p>
 <p>Use this event to perform per-frame setup tasks prior to rendering or to update game state that must occur before foreground drawing. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00160">160</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -974,6 +974,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Raised at a regular interval defined by <a class="el" href="class_gondwana_1_1_configuration_1_1_engine_configuration.html#ac855c43adbb76108ebf60b3a4e607f37" title="Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1....">EngineConfiguration.SamplingTimeForCPS</a>. Provides a snapshot of gross and net cycle rates, total elapsed time, and sample interval through a <a class="el" href="class_gondwana_1_1_cycles_per_second_calculated_event_args.html" title="Provides data for events that report calculated cycles per second (CPS) performance metrics....">CyclesPerSecondCalculatedEventArgs</a> payload. </p>
 <p>This event is posted to the UI thread when a <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ...">UiDispatcher</a> is available. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00186">186</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a00b0e4f9d003fbb6e1711f8fadc33bb8" name="a00b0e4f9d003fbb6e1711f8fadc33bb8"></a>
@@ -990,6 +992,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 
 <p>Raised after the engine has completed explicit disposal. </p>
 <p>Fired only when <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose()</a> is called (never from the finalizer). Indicates all managed cleanup has completed and <a class="el" href="#aab46d0dc7d179dc508a5bc35460fa61f" title="Gets a value indicating whether the engine has been disposed.">IsDisposed</a> is <code>true</code>. If a <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ...">UiDispatcher</a> is available, this event is posted to the UI thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00206">206</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1008,6 +1012,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Raised when <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose()</a> begins the explicit disposal sequence. </p>
 <p>Fired only when <a class="el" href="#a747162c754167416264068b5b834114f" title="Releases all resources used by the Engine and stops all subsystems.">Dispose()</a> is called (never from the finalizer). Handlers run before managed cleanup while engine state is still readable. If a <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ...">UiDispatcher</a> is available, this event is posted to the UI thread. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00196">196</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="a759df33a555fca215571dedb17c85228" name="a759df33a555fca215571dedb17c85228"></a>
@@ -1025,6 +1031,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Occurs after all initialization steps and post-initialization logic have completed. </p>
 <p>This event is raised at the end of <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a>, every time the method is called. It signifies that the engine and its subsystems are fully active and ready for runtime operations. </p>
 <p>If a <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ...">UiDispatcher</a> is available, this event is posted to the UI thread; otherwise, it executes on the calling thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00127">127</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1045,6 +1053,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Use this event for post-initialization logic that depends on fully loaded engine settings but precedes runtime activation. </p>
 <p>If a <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ...">UiDispatcher</a> is available, this event is posted to the UI thread; otherwise, it executes on the calling thread. </p>
 
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00112">112</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
+
 </div>
 </div>
 <a id="aae919c657e9096bec3306b8669d0da14" name="aae919c657e9096bec3306b8669d0da14"></a>
@@ -1062,6 +1072,8 @@ The <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a
 <p>Occurs immediately before the engine begins its internal initialization sequence. </p>
 <p>This event is raised once per engine lifetime, the first time <a class="el" href="#a5ae8238a801cebbc26d97088d8398f8e" title="Performs one-time or on-demand initialization of the Engine instance, loading configuration,...">Initialize</a> is called. It provides an early hook for systems that must perform setup prior to configuration loading or input subsystem initialization. </p>
 <p>If a <a class="el" href="class_gondwana_1_1_ui_dispatcher.html" title="Provides a concrete implementation of IUiDispatcher for dispatching actions to the UI thread using a ...">UiDispatcher</a> is available, this event is posted to the UI thread; otherwise, it executes on the calling thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="_engine_8cs_source.html#l00092">92</a> of file <a class="el" href="_engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>

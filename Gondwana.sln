@@ -1,20 +1,17 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36930.0 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11709.299
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slider", "Games\Slider\Slider.csproj", "{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spot", "Games\Spot\Spot.csproj", "{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gondwana.Design", "Gondwana.Design\Gondwana.Design.csproj", "{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC217C36-1278-4820-86D5-951EFEF6E28D}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		CHANGELOG.md = CHANGELOG.md
 		Directory.Build.props = Directory.Build.props
 		version.json = version.json
 	EndProjectSection
@@ -27,16 +24,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Audio.Midi", "Gond
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video", "Gondwana.Video\Gondwana.Video.csproj", "{8DD90A45-56EC-605B-636B-C5238328283F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-	ProjectSection(SolutionItems) = preProject
-		Solution Items\docs\gondwana-core-diagrams.puml = Solution Items\docs\gondwana-core-diagrams.puml
-		Solution Items\docs\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\docs\Gondwana_Activity_Diagrams_PlantUML.zip
-		Solution Items\docs\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\docs\Gondwana_Sequence_Diagrams_PlantUML.zip
-		Solution Items\docs\Gondwana_UML_PlantUML.zip = Solution Items\docs\Gondwana_UML_PlantUML.zip
-		Solution Items\docs\Screen-World-Grid.puml = Solution Items\docs\Screen-World-Grid.puml
-		Solution Items\docs\World-Screen.puml = Solution Items\docs\World-Screen.puml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "licenses", "licenses", "{3B510C60-8DE3-4B61-A934-5FAB2A699657}"
 	ProjectSection(SolutionItems) = preProject
 		Solution Items\licenses\gondwana.txt = Solution Items\licenses\gondwana.txt
@@ -48,15 +35,88 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.CoordinateTest", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.ParticleTest", "Testing\Gondwana.ParticleTest\Gondwana.ParticleTest.csproj", "{F0FB514C-73FC-48C8-7360-D630D5518620}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GondwanaTest", "Testing\GondwanaTest\GondwanaTest.csproj", "{36D2B628-7A51-F253-622C-7871DB3ECFBB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GondwanaWinTest", "Testing\GondwanaWinTest\GondwanaWinTest.csproj", "{50C7DF52-DA1B-9AA5-6D75-76072390750D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{13232223-B3DF-4EC2-9DBE-EFE36534FB70}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Hosting", "Gondwana.Hosting\Gondwana.Hosting.csproj", "{0B974397-F623-4D66-886C-B02C1ED22A7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.WinForms.Hosting", "Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj", "{FEEB1002-3DC0-453D-87F6-9DC665C4097B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{0855DCA7-B21B-4C1A-BED9-D962837CED0E}"
+	ProjectSection(SolutionItems) = preProject
+		assets\2.mov = assets\2.mov
+		assets\appfile.ico = assets\appfile.ico
+		assets\Architects_Daughter,Comic_Neue.zip = assets\Architects_Daughter,Comic_Neue.zip
+		assets\bitmap.ico = assets\bitmap.ico
+		assets\Castle4_Simon.mid = assets\Castle4_Simon.mid
+		assets\chicken-1.wav = assets\chicken-1.wav
+		assets\clouds.jpg = assets\clouds.jpg
+		assets\clouds_slice.png = assets\clouds_slice.png
+		assets\Copy (2) of original.bmp = assets\Copy (2) of original.bmp
+		assets\Copy (2) of original_mask.bmp = assets\Copy (2) of original_mask.bmp
+		assets\Copy of Castle4_Simon.mid = assets\Copy of Castle4_Simon.mid
+		assets\Copy of original.bmp = assets\Copy of original.bmp
+		assets\Copy of original_mask.bmp = assets\Copy of original_mask.bmp
+		assets\Copy of systems.wav = assets\Copy of systems.wav
+		assets\cursor.ico = assets\cursor.ico
+		assets\cycle.ico = assets\cycle.ico
+		assets\dorian.mid = assets\dorian.mid
+		assets\explosion-01.wav = assets\explosion-01.wav
+		assets\file.ico = assets\file.ico
+		assets\folder.ico = assets\folder.ico
+		assets\fox-wtc7.wmv = assets\fox-wtc7.wmv
+		assets\glass.wmv = assets\glass.wmv
+		assets\gondwana-icon.png = assets\gondwana-icon.png
+		assets\grid.ico = assets\grid.ico
+		assets\grid2.ico = assets\grid2.ico
+		assets\house.wma = assets\house.wma
+		assets\Image1.bmp = assets\Image1.bmp
+		assets\jeanne.wma = assets\jeanne.wma
+		assets\laure.wma = assets\laure.wma
+		assets\laure_multi.wma = assets\laure_multi.wma
+		assets\layers.ico = assets\layers.ico
+		assets\media.ico = assets\media.ico
+		assets\mellow.wma = assets\mellow.wma
+		assets\multilang.wma = assets\multilang.wma
+		assets\multimedia.ico = assets\multimedia.ico
+		assets\multimedia2.ico = assets\multimedia2.ico
+		assets\original.bmp = assets\original.bmp
+		assets\original_mask.bmp = assets\original_mask.bmp
+		assets\project.ico = assets\project.ico
+		assets\project2.ico = assets\project2.ico
+		assets\Raton.asx = assets\Raton.asx
+		assets\rendering.asf = assets\rendering.asf
+		assets\resource.ico = assets\resource.ico
+		assets\resource2.ico = assets\resource2.ico
+		assets\rooster.bmp = assets\rooster.bmp
+		assets\rooster_mask.bmp = assets\rooster_mask.bmp
+		assets\rooster_mask_solidshadow.bmp = assets\rooster_mask_solidshadow.bmp
+		assets\seattle.wmv = assets\seattle.wmv
+		assets\smooth.wmv = assets\smooth.wmv
+		assets\sprite.ico = assets\sprite.ico
+		assets\sprite2.ico = assets\sprite2.ico
+		assets\systems.wav = assets\systems.wav
+		assets\tada.wav = assets\tada.wav
+		assets\tilesets.xml = assets\tilesets.xml
+		assets\tilesheet.ico = assets\tilesheet.ico
+		assets\tsunami-worldpropagation2004.mpeg = assets\tsunami-worldpropagation2004.mpeg
+		assets\wav.ico = assets\wav.ico
+		assets\XMLFile1.xml = assets\XMLFile1.xml
+		assets\XMLFile2.xml = assets\XMLFile2.xml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Input.SDL2", "Gondwana.Input.SDL2\Gondwana.Input.SDL2.csproj", "{46216497-3C9B-48A6-A03F-970B64DFFCCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Assets.WinForms", "Gondwana.Assets.WinForms\Gondwana.Assets.WinForms.csproj", "{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{AD16FE1C-14B5-4F89-83DD-933D044DC211}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{3752648C-1686-442C-B3CB-D6E2DFD260CA}"
+	ProjectSection(SolutionItems) = preProject
+		Solution Items\documentation\gondwana-core-diagrams.puml = Solution Items\documentation\gondwana-core-diagrams.puml
+		Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip
+		Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip
+		Solution Items\documentation\Gondwana_UML_PlantUML.zip = Solution Items\documentation\Gondwana_UML_PlantUML.zip
+		Solution Items\documentation\Screen-World-Grid.puml = Solution Items\documentation\Screen-World-Grid.puml
+		Solution Items\documentation\World-Screen.puml = Solution Items\documentation\World-Screen.puml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,16 +148,6 @@ Global
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Release|Mixed Platforms.Build.0 = Release|x86
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Release|x86.ActiveCfg = Release|x86
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}.Release|x86.Build.0 = Release|x86
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F99B4503-50CC-4255-BB60-4BEEBAF11F4C}.Release|x86.ActiveCfg = Release|Any CPU
 		{208754FD-B132-EEBD-A1C1-FC105730B970}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{208754FD-B132-EEBD-A1C1-FC105730B970}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{208754FD-B132-EEBD-A1C1-FC105730B970}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -170,30 +220,6 @@ Global
 		{F0FB514C-73FC-48C8-7360-D630D5518620}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F0FB514C-73FC-48C8-7360-D630D5518620}.Release|x86.ActiveCfg = Release|Any CPU
 		{F0FB514C-73FC-48C8-7360-D630D5518620}.Release|x86.Build.0 = Release|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Debug|x86.Build.0 = Debug|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Release|x86.ActiveCfg = Release|Any CPU
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB}.Release|x86.Build.0 = Release|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Debug|x86.Build.0 = Debug|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Release|x86.ActiveCfg = Release|Any CPU
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D}.Release|x86.Build.0 = Release|Any CPU
 		{0B974397-F623-4D66-886C-B02C1ED22A7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B974397-F623-4D66-886C-B02C1ED22A7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B974397-F623-4D66-886C-B02C1ED22A7D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -218,19 +244,43 @@ Global
 		{FEEB1002-3DC0-453D-87F6-9DC665C4097B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FEEB1002-3DC0-453D-87F6-9DC665C4097B}.Release|x86.ActiveCfg = Release|Any CPU
 		{FEEB1002-3DC0-453D-87F6-9DC665C4097B}.Release|x86.Build.0 = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Debug|x86.Build.0 = Debug|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|x86.ActiveCfg = Release|Any CPU
+		{46216497-3C9B-48A6-A03F-970B64DFFCCF}.Release|x86.Build.0 = Release|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Debug|x86.Build.0 = Debug|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Release|x86.ActiveCfg = Release|Any CPU
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C} = {5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}
-		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA} = {5FCD0833-527D-4BBA-BCFF-73715C1CEFE7}
-		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
+		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
+		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{3B510C60-8DE3-4B61-A934-5FAB2A699657} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 		{757C399E-8773-053E-A919-24DB11B7766A} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{F0FB514C-73FC-48C8-7360-D630D5518620} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
-		{36D2B628-7A51-F253-622C-7871DB3ECFBB} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
-		{50C7DF52-DA1B-9AA5-6D75-76072390750D} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
+		{0855DCA7-B21B-4C1A-BED9-D962837CED0E} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
+		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
+		{3752648C-1686-442C-B3CB-D6E2DFD260CA} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}

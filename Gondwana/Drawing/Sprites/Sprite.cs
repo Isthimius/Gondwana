@@ -38,12 +38,17 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     private int _nudgeY;
     private Size _renderSize;
 
+    internal bool _pendingDispose = false;
+
     [JsonProperty("SceneLayerCoordinates")]
     private PointF _sceneLayerCoordinates;
 
     #endregion private / internal fields
 
     #region constructors / finalizer
+
+    [JsonConstructor]
+    private Sprite() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Sprite"/> class with the specified scene layer and frame.
@@ -65,7 +70,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _nudgeY = 0;
         CurrentFrame = frame;
 
-        if (SpriteManager.SizeNewSpritesToSceneLayer)
+        if (SpriteManager.Instance.SizeNewSpritesToSceneLayer)
             _renderSize = new Size(_sceneLayer.TileWidth, _sceneLayer.TileHeight);
         else
             _renderSize = CurrentFrame.Tilesheet.TileSize;
@@ -76,7 +81,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
-        SpriteManager._spriteList.Add(this);
+        SpriteManager.Instance._spriteList.Add(this);
     }
 
     /// <summary>
@@ -85,7 +90,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     internal Sprite(Sprite sprite)
     {
         animator = new Animator(this);
-        SpriteManager._spriteList.Add(this);
+        SpriteManager.Instance._spriteList.Add(this);
 
         _sceneLayer = sprite._sceneLayer;
         frame = sprite.frame;
@@ -125,7 +130,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
 
-        SpriteManager._spriteList.Add(this);
+        SpriteManager.Instance._spriteList.Add(this);
     }
 
     #endregion constructors / finalizer
@@ -144,7 +149,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     public Vector2 GetPosition() => new Vector2(_sceneLayerCoordinates.X, _sceneLayerCoordinates.Y);
 
     /// <summary>
-    /// Sets the position of the sprite in scene layer coordinates and updates the display.
+    /// Sets the position of the sprite in scene layer grid coordinates and updates the display.
     /// </summary>
     /// <param name="pos">The new position for the sprite.</param>
     public void SetPosition(Vector2 pos)
@@ -300,7 +305,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
                 var oldRect = this.DrawLocationWorld;
                 _renderSize = value;
                 var newRect = this.DrawLocationWorld;
-                _sceneLayer.RefreshQueue.AddWorldRect(Rectangle.Union(oldRect, newRect));
+                
+                var unionRect = Rectangle.Union(oldRect, newRect);
+                unionRect.Inflate(3, 3);
+                _sceneLayer.RefreshQueue.AddWorldRect(unionRect);
             }
             else
                 _renderSize = value;
@@ -488,6 +496,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// </summary>
     public override void Dispose()
     {
+        _pendingDispose = true;
+    }
+
+    internal void DisposeImmediate()
+    {
         GC.SuppressFinalize(this);
 
         Disposing?.Invoke(this);
@@ -498,9 +511,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             // DrawLocation should already be a world-space rectangle.
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
-
-        if (SpriteManager._spriteList.IndexOf(this) != -1)
-            SpriteManager._spriteList.Remove(this);
 
         // clear the events
         SpriteMoved = null;

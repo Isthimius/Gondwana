@@ -55,7 +55,7 @@ public abstract class WinFormsGameHost : GameHostBase
     /// </summary>
     protected override void ConfigureGamepads()
     {
-        Engine.Instance.InitializeXInputGamepadManager();
+        //Engine.Instance.InitializeXInputGamepadManager();
         OnGamepadManagerInitialized();
     }
 

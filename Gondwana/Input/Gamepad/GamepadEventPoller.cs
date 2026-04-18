@@ -86,7 +86,7 @@ public sealed class GamepadEventPoller
     /// The current game tick or timestamp value, used to calculate elapsed time for event throttling.
     /// This value should be monotonically increasing to ensure correct timing behavior.
     /// </param>
-    public void PollForEvents(long tick)
+    internal void PollForEvents(long tick)
     {
         if (PauseAllInput || ButtonDown is null || Adapters is null) return;
 

@@ -5,6 +5,7 @@ var searchData=
   ['winformbitmaprendersurfacecontrol_2',['WinFormBitmapRenderSurfaceControl',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_control.html',1,'Gondwana::WinForms::Rendering']]],
   ['winformgpurendersurfaceadapter_3',['WinFormGpuRenderSurfaceAdapter',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_adapter.html',1,'Gondwana::WinForms::Rendering']]],
   ['winformgpurendersurfacecontrol_4',['WinFormGpuRenderSurfaceControl',['../class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_control.html',1,'Gondwana::WinForms::Rendering']]],
-  ['winformskeyboardadapter_5',['WinFormsKeyboardAdapter',['../class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html',1,'Gondwana::WinForms::Input::Keyboard']]],
-  ['winformsmouseadapter_6',['WinFormsMouseAdapter',['../class_gondwana_1_1_win_forms_1_1_input_1_1_mouse_1_1_win_forms_mouse_adapter.html',1,'Gondwana::WinForms::Input::Mouse']]]
+  ['winformsgamehost_5',['WinFormsGameHost',['../class_gondwana_1_1_win_forms_1_1_hosting_1_1_win_forms_game_host.html',1,'Gondwana::WinForms::Hosting']]],
+  ['winformskeyboardadapter_6',['WinFormsKeyboardAdapter',['../class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html',1,'Gondwana::WinForms::Input::Keyboard']]],
+  ['winformsmouseadapter_7',['WinFormsMouseAdapter',['../class_gondwana_1_1_win_forms_1_1_input_1_1_mouse_1_1_win_forms_mouse_adapter.html',1,'Gondwana::WinForms::Input::Mouse']]]
 ];

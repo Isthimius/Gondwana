@@ -10,7 +10,7 @@ namespace Gondwana.WinForms.Audio;
 internal static class WinFormsAudioSupport
 {
     /// <summary>
-    /// Registers support for extended audio formats including OGG, OGA, MOGG (Vorbis), WMA, and M4A.
+    /// Registers support for extended audio formats including OGG, OGA, MOGG (Vorbis), WMA, and M4A (Media Foundation).
     /// </summary>
     internal static void RegisterExtendedAudioFormats()
     {

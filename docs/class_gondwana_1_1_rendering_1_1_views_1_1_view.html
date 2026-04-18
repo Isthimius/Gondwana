@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -130,6 +130,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a rendered view of a scene, combining a camera position with a viewport configuration to control what portion of the world is visible and how it is displayed on screen. Multiple views can be used to create split-screen, picture-in-picture, or other multi-viewport rendering scenarios. </p>
+
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00014">14</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aa8ae663f298ee55f3fc813ec3dc7c843" name="aa8ae663f298ee55f3fc813ec3dc7c843"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8ae663f298ee55f3fc813ec3dc7c843">&#9670;&#160;</a></span>ScreenPxToGrid()</h2>
@@ -159,6 +161,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The grid coordinate (column/row or axial) under the screen pixel.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00204">204</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -193,6 +197,8 @@ Properties</h2></td></tr>
 <p>The transformation formula is: </p><div class="fragment"><div class="line">world = camera * parallax + (screen - offset) * zoom</div>
 </div><!-- fragment --><p> This is commonly used for mouse picking and screen-to-world raycasting. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00147">147</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
+
 </div>
 </div>
 <a id="acb47af9b38be41d6a967ff43178c3b4b" name="acb47af9b38be41d6a967ff43178c3b4b"></a>
@@ -216,6 +222,8 @@ Properties</h2></td></tr>
 
 <p>Converts a screen-space rectangle (on the adapter) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor. </p>
 <p>Inverse of: screen = offset + (world - camera * p) / zoom </p>
+
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00256">256</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -250,6 +258,8 @@ Properties</h2></td></tr>
 <p>The transformation formula is: </p><div class="fragment"><div class="line">screen = offset + (world - camera * parallax) / zoom</div>
 </div><!-- fragment --><p> This is commonly used for rendering world objects to screen coordinates and for UI elements that track world positions. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00183">183</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac33dbf74f3317abe54778791aa879865" name="ac33dbf74f3317abe54778791aa879865"></a>
@@ -281,6 +291,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Screen-space rectangle on the render surface.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00220">220</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -324,6 +336,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00087">87</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -350,6 +364,8 @@ Properties</h2></td></tr>
 <p>Gets the camera that controls the world-space position and following behavior for this view. The camera determines which part of the world is visible. </p>
 <p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_camera.html" title="Represents a world-space camera for a Scene. The camera tracks a world-space upper-left position in p...">Views.Camera</a> instance associated with this view. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00031">31</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab5aa81ac0627aab8fea9d74a554751ea" name="ab5aa81ac0627aab8fea9d74a554751ea"></a>
@@ -375,6 +391,8 @@ Properties</h2></td></tr>
 <p>Gets the unique identifier for this view instance. </p>
 <p>A GUID that uniquely identifies this view throughout its lifetime. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00022">22</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
+
 </div>
 </div>
 <a id="a10796ee097b5883682f041f090a32fd7" name="a10796ee097b5883682f041f090a32fd7"></a>
@@ -399,6 +417,8 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the maximum zoom level allowed for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00057">57</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
+
 </div>
 </div>
 <a id="a86d326b72634dd9f9755ad969edd388f" name="a86d326b72634dd9f9755ad969edd388f"></a>
@@ -422,6 +442,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the minimum zoom level allowed for this <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_view.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00052">52</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -448,6 +470,8 @@ Properties</h2></td></tr>
 <p>Gets the viewport that defines the screen-space rectangle, zoom level, and other rendering parameters for this view. The viewport controls how the camera's visible world region is mapped to screen pixels. </p>
 <p>The <a class="el" href="class_gondwana_1_1_rendering_1_1_views_1_1_viewport.html" title="A rectangular window on the render target with its own zoom and placement. Viewport never moves the w...">Views.Viewport</a> instance associated with this view. </p>
 
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00041">41</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac1362dc270142153bf4d756de846ed62" name="ac1362dc270142153bf4d756de846ed62"></a>
@@ -471,6 +495,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Controls the draw order of this view relative to other views. Lower values are drawn first (behind); higher values are drawn later (in front). </p>
+
+<p class="definition">Definition at line <a class="el" href="_view_8cs_source.html#l00047">47</a> of file <a class="el" href="_view_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>

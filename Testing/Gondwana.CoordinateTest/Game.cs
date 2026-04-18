@@ -105,11 +105,11 @@ public class Game : IDisposable
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
         
-        var sprite1 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
+        var sprite1 = SpriteManager.Instance.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
         sprite1.Visible = true;
         sprite1.CollisionsEnabled = true;
 
-        var sprite2 = SpriteManager.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2");
+        var sprite2 = SpriteManager.Instance.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_2");
         sprite2.Visible = true;
         sprite2.SetPosition(new Vector2(5, 0));
         sprite2.CollisionsEnabled = true;
@@ -170,7 +170,7 @@ public class Game : IDisposable
                                                        null,
                                                        new Rectangle(0, 0, 150, 30));
         _spriteNameTag.SetColors(Color.Blue, Color.White).SetText("Mister Rooster").ZOrder = 20;
-        _spriteNameTag.Movement.FollowTileSoft(SpriteManager.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
+        _spriteNameTag.Movement.FollowTileSoft(SpriteManager.Instance.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
     }
 
     private void InitializeParticles()
@@ -287,24 +287,24 @@ public class Game : IDisposable
     private void ConfigureKeyboardInput()
     {
         Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
-        Engine.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.W, "W");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.A, "A");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.S, "S");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.D, "D");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left, "Left");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right, "Right");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up, "Up");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down, "Down");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp, "PageUp");
-        Engine.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown, "PageDown");
+        Engine.Instance.Input.KeyboardEventPoller!.KeyDown += KeyboardEventPoller_KeyDown;
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.W, "W");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.A, "A");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.S, "S");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.D, "D");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left, "Left");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right, "Right");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up, "Up");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down, "Down");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageUp, "PageUp");
+        Engine.Instance.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.PageDown, "PageDown");
     }
 
     private void KeyboardEventPoller_KeyDown(Input.Keyboard.KeyDownEventArgs args)
     {
         var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
         var curPos = camera.PositionPx;
-        var sprite = SpriteManager.GetSpriteByID("rooster_1");
+        var sprite = SpriteManager.Instance.GetSpriteByID("rooster_1");
 
         // Parse the received key string into the Keys enum (case-insensitive)
         if (!Enum.TryParse<Keys>(args.KeyConfig.Key, ignoreCase: true, out var key))
@@ -373,8 +373,8 @@ public class Game : IDisposable
     private void ConfigureMouseInput()
     {
         Engine.Instance.InitializeWinFormsMouseAdapter(RenderSurface);
-        Engine.MouseEventPoller!.MouseEvent += MouseEventPoller_MouseEvent;
-        Engine.MouseEventPoller.StartMonitoringMouse();
+        Engine.Instance.Input.MouseEventPoller!.MouseEvent += MouseEventPoller_MouseEvent;
+        Engine.Instance.Input.MouseEventPoller.StartMonitoringMouse();
     }
 
     private void MouseEventPoller_MouseEvent(Input.Mouse.MouseEventArgs args)
@@ -475,11 +475,11 @@ public class Game : IDisposable
         //Engine.Instance.InitializeSdlGamepadManager();
 
         Engine.Instance.InitializeXInputGamepadManager();
-        Engine.GamepadEventPoller!.ButtonDown += GamepadEventPoller_ButtonDown;
+        Engine.Instance.Input.GamepadEventPoller!.ButtonDown += GamepadEventPoller_ButtonDown;
 
-        foreach (var gamepadAdapter in Engine.GamepadManager!.ConnectedAdapters)
+        foreach (var gamepadAdapter in Engine.Instance.Input.GamepadManager!.ConnectedAdapters)
         {
-            Engine.GamepadEventPoller.StartMonitoringButton(gamepadAdapter.GamepadId, "");
+            Engine.Instance.Input.GamepadEventPoller.StartMonitoringButton(gamepadAdapter.GamepadId, "");
         }
     }
 
@@ -502,9 +502,9 @@ public class Game : IDisposable
             {
                 Engine.Instance.State.SaveToFile("game.json");
 
-                Engine.KeyboardEventPoller!.KeyDown -= KeyboardEventPoller_KeyDown;
-                Engine.MouseEventPoller!.MouseEvent -= MouseEventPoller_MouseEvent;
-                Engine.GamepadEventPoller!.ButtonDown -= GamepadEventPoller_ButtonDown;
+                Engine.Instance.Input.KeyboardEventPoller!.KeyDown -= KeyboardEventPoller_KeyDown;
+                Engine.Instance.Input.MouseEventPoller!.MouseEvent -= MouseEventPoller_MouseEvent;
+                Engine.Instance.Input.GamepadEventPoller!.ButtonDown -= GamepadEventPoller_ButtonDown;
 
                 // Dispose managed resources
                 Engine.Instance.Stop();

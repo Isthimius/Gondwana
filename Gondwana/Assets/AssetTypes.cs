@@ -27,7 +27,12 @@ public enum AssetTypes
     Cursor = 3,
 
     /// <summary>
+    /// Specifies that the content type is a font.
+    /// </summary>
+    Font = 4,
+
+    /// <summary>
     /// not currently supported
     /// </summary>
-    Misc = 4
+    Misc = 5
 }

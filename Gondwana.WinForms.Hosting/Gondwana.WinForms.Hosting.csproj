@@ -1,15 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
-    <ProjectReference Include="..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
-  </ItemGroup>
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.WinForms.Hosting</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.WinForms.Hosting</PackageId>
+        <Title>Gondwana WinForms Hosting</Title>
+        <Description>Windows-specific hosting implementation for the Gondwana Game Engine using WinForms, providing a Windows-specific game host for application startup, lifecycle management, and adapter integration.</Description>
+        <PackageTags>$(PackageTags) winforms windows hosting implementation desktop bootstrap lifecycle game-loop initialization engine-host</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
+        <ProjectReference Include="..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
+        <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
 
 </Project>

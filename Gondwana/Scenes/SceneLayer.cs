@@ -187,7 +187,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// are accessed using strongly-typed <see cref="ValueKey{T}"/> instances and are included
     /// in layer serialization.
     /// </remarks>
-    [JsonProperty]
+    [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
 
     [JsonIgnore]
@@ -813,7 +813,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
 
         // 2) Sprites
-        var sprites = SpriteManager.GetSpritesInWorldRectRange(queryRect, this, fullEnclosures: false);
+        var sprites = SpriteManager.Instance.GetSpritesInWorldRectRange(queryRect, this, fullEnclosures: false);
 
         for (int i = 0; i < sprites.Count; i++)
         {

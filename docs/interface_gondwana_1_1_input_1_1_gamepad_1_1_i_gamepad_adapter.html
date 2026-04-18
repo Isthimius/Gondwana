@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -103,8 +103,8 @@ Inheritance diagram for Gondwana.Input.Gamepad.IGamepadAdapter:</div>
  <div class="center">
   <img src="interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.png" usemap="#Gondwana_2EInput_2EGamepad_2EIGamepadAdapter_map" alt=""/>
   <map id="Gondwana_2EInput_2EGamepad_2EIGamepadAdapter_map" name="Gondwana_2EInput_2EGamepad_2EIGamepadAdapter_map">
-<area href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html" alt="Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter" shape="rect" coords="0,56,398,80"/>
-<area href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html" alt="Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter" shape="rect" coords="408,56,806,80"/>
+<area href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html" title="Provides a gamepad adapter implementation using SDL2 for cross-platform gamepad input support." alt="Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter" shape="rect" coords="0,56,398,80"/>
+<area href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html" title="Provides a gamepad adapter implementation using XInput for Xbox controller support on Windows." alt="Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter" shape="rect" coords="408,56,806,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -125,6 +125,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines an adapter interface for accessing gamepad input state and information. </p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_adapter_8cs_source.html#l00006">6</a> of file <a class="el" href="_i_gamepad_adapter_8cs_source.html">IGamepadAdapter.cs</a>.</p>
 </div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
 <a id="a41b512f417480ddc8a2a79b6eb6336d3" name="a41b512f417480ddc8a2a79b6eb6336d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a41b512f417480ddc8a2a79b6eb6336d3">&#9670;&#160;</a></span>GamepadId</h2>
@@ -148,7 +150,9 @@ Properties</h2></td></tr>
 
 <p>Gets the unique identifier for the gamepad device. </p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a82ed3bac077e75b3208920fee5af7093">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#ae475dc52d2dcf69db58249f3767143e6">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a2246ce12969369d0c4f4ca34d144fcc3">Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#ae475dc52d2dcf69db58249f3767143e6">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_adapter_8cs_source.html#l00011">11</a> of file <a class="el" href="_i_gamepad_adapter_8cs_source.html">IGamepadAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -174,7 +178,9 @@ Properties</h2></td></tr>
 
 <p>Gets the current state of the left analog stick, or null if not available. </p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#ad326df2802f679e0a84dd711cb66cbbc">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a146f581f289ea39a6b0cbfc20d8c1bb2">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#aece5ba6be01fc706f387ba637b1daf38">Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a146f581f289ea39a6b0cbfc20d8c1bb2">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_adapter_8cs_source.html#l00021">21</a> of file <a class="el" href="_i_gamepad_adapter_8cs_source.html">IGamepadAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -200,7 +206,9 @@ Properties</h2></td></tr>
 
 <p>Gets the current pressure value of the left trigger, typically ranging from 0.0 (not pressed) to 1.0 (fully pressed) </p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a7424f60c5c99ec9006c8b4adc19cc28b">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a85a8a5c1a5b536bb013ad3f5d7f2c4a2">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a1c4a10f3ac0b7b185aedb7cf2b272602">Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a85a8a5c1a5b536bb013ad3f5d7f2c4a2">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_adapter_8cs_source.html#l00031">31</a> of file <a class="el" href="_i_gamepad_adapter_8cs_source.html">IGamepadAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -226,7 +234,9 @@ Properties</h2></td></tr>
 
 <p>Gets a read-only collection of button identifiers that are currently pressed on the gamepad. </p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a9ffa9630d5695926dc089e854f3542ff">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a94ba9673deddfc54f6e1ee05d4f63ab1">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#ad30c8a4b3481a17fff49762aea01dd8c">Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a94ba9673deddfc54f6e1ee05d4f63ab1">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_adapter_8cs_source.html#l00016">16</a> of file <a class="el" href="_i_gamepad_adapter_8cs_source.html">IGamepadAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -252,7 +262,9 @@ Properties</h2></td></tr>
 
 <p>Gets the current state of the right analog stick, or null if not available. </p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a271c95baf085da52ecf4c6deeba944d1">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a883ee21427fc42c7211aed47a126892e">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a10971a8094e20801c39032d2722c2a25">Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a883ee21427fc42c7211aed47a126892e">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_adapter_8cs_source.html#l00026">26</a> of file <a class="el" href="_i_gamepad_adapter_8cs_source.html">IGamepadAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -278,7 +290,9 @@ Properties</h2></td></tr>
 
 <p>Gets the current pressure value of the right trigger, typically ranging from 0.0 (not pressed) to 1.0 (fully pressed) </p>
 
-<p>Implemented in <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#aeb60880798268ca97fc0a9a0cea931fd">Gondwana.WinForms.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a6657acaacc48da5a696a4b105c375e17">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+<p>Implemented in <a class="el" href="class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a842480f9d496b75669c1c2b8ceb68a81">Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter</a>, and <a class="el" href="class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a6657acaacc48da5a696a4b105c375e17">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_i_gamepad_adapter_8cs_source.html#l00036">36</a> of file <a class="el" href="_i_gamepad_adapter_8cs_source.html">IGamepadAdapter.cs</a>.</p>
 
 </div>
 </div>

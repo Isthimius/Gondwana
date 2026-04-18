@@ -7,7 +7,7 @@ var class_gondwana_1_1_audio_1_1_audio_resource_manager =
     [ "Get", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#aed6a7106cb338b04d35fd292ca3151b0", null ],
     [ "GetAll", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#ab96be01eb397d3a5725e16602f6a382d", null ],
     [ "GetAllKeys", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#ac10a71c66575d412752ca1cec68b67fa", null ],
-    [ "LoadFromEngineResourceFile", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#a0879ef9c662428255f4fc383615333b9", null ],
+    [ "LoadFromEngineAssetsFile", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#a11f27b4e5417a23b0474e9b176cedd84", null ],
     [ "LoadFromFile", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#a6335363dcc9387def4229649373784fb", null ],
     [ "LoadFromStream", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#aa599a5c5dcfe1da9a70194d21eb58302", null ],
     [ "TryGet", "class_gondwana_1_1_audio_1_1_audio_resource_manager.html#aebbe7942dfbb63dfa6a900d41f0e300e", null ],

@@ -1,9 +1,10 @@
-﻿using System.Drawing;
-using Gondwana.Drawing;
+﻿using Gondwana.Drawing;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.Rendering.Backbuffers;
 
@@ -316,6 +317,10 @@ public abstract class BackbufferBase : IDisposable
                 continue;
 
             var destRectScreen = drawable.GetDrawLocationScreen(view);
+            if (drawable is Sprite sprite)
+            {
+                destRectScreen = sprite.ApplyJiggleToDestRect(destRectScreen);
+            }
             drawable.Draw(this, destRectScreen);
 
             AddToBackbufferDirtyRectangle(destRectScreen.ToPixelAlignedRect());

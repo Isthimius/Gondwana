@@ -7,27 +7,32 @@ using System.Drawing;
 
 namespace Gondwana.Drawing.Sprites;
 
-public static class SpriteManager
+public sealed class SpriteManager : IDisposable
 {
-    internal readonly static List<Sprite> _spriteList = new List<Sprite>();
+    private static readonly Lazy<SpriteManager> _instance = new(() => new SpriteManager());
 
-    private static long _lastTick = HighResTimer.GetCurrentTick();
+    public static SpriteManager Instance => _instance.Value;
+
+    internal readonly List<Sprite> _spriteList = new();
+
+    private long _lastTick = HighResTimer.GetCurrentTick();
 
     /// <summary>
     /// Event raised when a new sprite is created.
     /// </summary>
-    public static event Action<Sprite>? SpriteCreated;
+    public event Action<Sprite>? SpriteCreated;
 
-    static SpriteManager() { }
+    private SpriteManager() { }
 
     /// <summary>
     /// Gets a read-only collection of all sprites currently managed by the sprite manager.
     /// </summary>
-    public static ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
+    public ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
+
     /// <summary>
     /// Gets or sets a value indicating whether new sprites should be automatically sized to their scene layer.
     /// </summary>
-    public static bool SizeNewSpritesToSceneLayer { get; set; } = true;
+    public bool SizeNewSpritesToSceneLayer { get; set; } = true;
 
     #region public methods
 
@@ -38,7 +43,7 @@ public static class SpriteManager
     /// <param name="frame">The frame to use for the sprite.</param>
     /// <param name="id">Optional nickname/identifier for the sprite.</param>
     /// <returns>The newly created sprite.</returns>
-    public static Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string? id = null)
+    public Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string? id = null)
     {
         var sprite = new Sprite(sceneLayer, frame);
         sprite.Nickname = id;
@@ -47,12 +52,19 @@ public static class SpriteManager
     }
 
     /// <summary>
+    /// Creates a copy of the specified sprite, preserving its current scene layer.
+    /// </summary>
+    /// <param name="sprite">The sprite to clone. Cannot be null.</param>
+    /// <returns>A new Sprite instance that is a copy of the specified sprite, assigned to the same scene layer.</returns>
+    public Sprite CloneSprite(Sprite sprite) => CloneSprite(sprite, sprite.SceneLayer);
+
+    /// <summary>
     /// Creates a clone of the specified sprite on the given scene layer.
     /// </summary>
     /// <param name="sprite">The sprite to clone.</param>
     /// <param name="sceneLayer">The scene layer for the cloned sprite.</param>
     /// <returns>The cloned sprite.</returns>
-    public static Sprite CloneSprite(Sprite sprite, SceneLayer sceneLayer)
+    public Sprite CloneSprite(Sprite sprite, SceneLayer sceneLayer)
     {
         Sprite newSprite = new Sprite(sprite);
 
@@ -72,7 +84,7 @@ public static class SpriteManager
     /// <param name="id">The ID/nickname of the sprite to clone.</param>
     /// <param name="sceneLayer">The scene layer for the cloned sprite.</param>
     /// <returns>The cloned sprite, or null if no sprite with the specified ID exists.</returns>
-    public static Sprite? CloneSprite(string id, SceneLayer sceneLayer)
+    public Sprite? CloneSprite(string id, SceneLayer sceneLayer)
     {
         Sprite? sprite = GetSpriteByID(id);
 
@@ -86,9 +98,8 @@ public static class SpriteManager
     /// Removes and disposes the specified sprite.
     /// </summary>
     /// <param name="sprite">The sprite to remove.</param>
-    public static void Remove(Sprite sprite)
+    public void Remove(Sprite sprite)
     {
-        // Dispose method of Sprite adds area to Ref Queue and removes from spriteList
         sprite.Dispose();
     }
 
@@ -96,7 +107,7 @@ public static class SpriteManager
     /// Removes and disposes the sprite with the specified ID.
     /// </summary>
     /// <param name="ID">The ID/nickname of the sprite to remove.</param>
-    public static void Remove(string ID)
+    public void Remove(string ID)
     {
         Sprite? sprite = GetSpriteByID(ID);
         if (sprite != null)
@@ -106,9 +117,9 @@ public static class SpriteManager
     /// <summary>
     /// Removes and disposes all sprites currently managed by the sprite manager.
     /// </summary>
-    public static void Clear()
+    public void Clear()
     {
-        List<Sprite> tempSprites = new List<Sprite>(_spriteList);
+        List<Sprite> tempSprites = new(_spriteList);
         foreach (Sprite sprite in tempSprites)
             Remove(sprite);
     }
@@ -118,7 +129,7 @@ public static class SpriteManager
     /// </summary>
     /// <param name="ID">The ID/nickname of the sprite to retrieve.</param>
     /// <returns>The sprite with the specified ID, or null if not found.</returns>
-    public static Sprite? GetSpriteByID(string ID)
+    public Sprite? GetSpriteByID(string ID)
     {
         foreach (Sprite sprite in _spriteList)
         {
@@ -137,15 +148,17 @@ public static class SpriteManager
     /// <param name="sceneLayer">Optional scene layer to filter by. If null, searches all layers.</param>
     /// <param name="fullEnclosures">If true, only returns sprites fully contained within the rectangle. If false, returns sprites that intersect with the rectangle.</param>
     /// <returns>A list of sprites within the specified range.</returns>
-    public static List<Sprite> GetSpritesInWorldRectRange(Rectangle worldRect, SceneLayer? sceneLayer = null, bool fullEnclosures = false)
+    public List<Sprite> GetSpritesInWorldRectRange(
+        Rectangle worldRect,
+        SceneLayer? sceneLayer = null,
+        bool fullEnclosures = false)
     {
-        List<Sprite> retSprites = new List<Sprite>();
+        List<Sprite> retSprites = new();
 
         foreach (Sprite sprite in _spriteList)
         {
             if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
-                // check if sprite in range
                 if (fullEnclosures)
                 {
                     if (worldRect.Contains(sprite.DrawLocationWorld))
@@ -171,7 +184,7 @@ public static class SpriteManager
     /// <param name="sceneLayer">Optional scene layer to filter by. If null, searches all layers.</param>
     /// <param name="fullEnclosures">If true, only returns sprites fully contained within the rectangle. If false, returns sprites that intersect with the rectangle.</param>
     /// <returns>A list of sprites within the specified view range.</returns>
-    public static List<Sprite> GetSpritesInViewRectRange(
+    public List<Sprite> GetSpritesInViewRectRange(
         View view,
         Rectangle viewRectPx,
         SceneLayer? sceneLayer = null,
@@ -201,7 +214,6 @@ public static class SpriteManager
         return retSprites;
     }
 
-    // screen
     /// <summary>
     /// Gets all sprites at the specified view pixel coordinate.
     /// </summary>
@@ -209,7 +221,10 @@ public static class SpriteManager
     /// <param name="viewPxlPt">The pixel coordinate in the view to check.</param>
     /// <param name="sceneLayer">Optional scene layer to filter by. If null, searches all layers.</param>
     /// <returns>A list of sprites at the specified pixel location.</returns>
-    public static List<Sprite> GetSpritesAtViewPixel(View view, Point viewPxlPt, SceneLayer? sceneLayer = null)
+    public List<Sprite> GetSpritesAtViewPixel(
+        View view,
+        Point viewPxlPt,
+        SceneLayer? sceneLayer = null)
     {
         var retSprites = new List<Sprite>();
 
@@ -217,7 +232,6 @@ public static class SpriteManager
         {
             if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
-                // check if sprite at Point
                 if (sprite.GetDrawLocationScreen(view).Contains(viewPxlPt))
                     retSprites.Add(sprite);
             }
@@ -230,21 +244,53 @@ public static class SpriteManager
 
     #region internal methods
 
-    internal static void MoveSprites(long tick)
+    internal void MoveSprites(long tick)
     {
         if (tick <= _lastTick)
             return;
 
         float duration = HighResTimer.GetDuration(_lastTick, tick);
 
-        foreach (var sprite in _spriteList)
+        for (int i = 0; i < _spriteList.Count; i++)
         {
+            var sprite = _spriteList[i];
+
+            if (sprite._pendingDispose)
+                continue;
+
             sprite.Movement.AdvanceMovement(duration);
             sprite.AdvanceResize(duration);
+            sprite.AdvanceJiggle(duration);
         }
+
+        SweepDisposedSprites();
 
         _lastTick = tick;
     }
 
+    private void SweepDisposedSprites()
+    {
+        int i = 0;
+        while (i < _spriteList.Count)
+        {
+            if (!_spriteList[i]._pendingDispose)
+            {
+                i++;
+                continue;
+            }
+
+            _spriteList[i].DisposeImmediate();
+
+            int last = _spriteList.Count - 1;
+            _spriteList[i] = _spriteList[last];
+            _spriteList.RemoveAt(last);
+        }
+    }
+
     #endregion internal methods
+
+    public void Dispose()
+    {
+        Clear();
+    }
 }

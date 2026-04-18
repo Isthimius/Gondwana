@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -110,7 +110,7 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a595201f176e984d5c36d62dbbbc45da3" id="r_a595201f176e984d5c36d62dbbbc45da3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html">AssetsFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a595201f176e984d5c36d62dbbbc45da3">AssetsFile</a> = null!<code> [get]</code></td></tr>
-<tr class="memdesc:a595201f176e984d5c36d62dbbbc45da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset.  <br /></td></tr>
+<tr class="memdesc:a595201f176e984d5c36d62dbbbc45da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset.  <br /></td></tr>
 <tr class="memitem:a1a1dc4d762cba7907cf07a76455fbdef" id="r_a1a1dc4d762cba7907cf07a76455fbdef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_gondwana_1_1_assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1">AssetTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a1dc4d762cba7907cf07a76455fbdef">AssetType</a><code> [get]</code></td></tr>
 <tr class="memdesc:a1a1dc4d762cba7907cf07a76455fbdef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the type of the asset.  <br /></td></tr>
 <tr class="memitem:a0ed9d30ea3e757a403e63eaf04402ab2" id="r_a0ed9d30ea3e757a403e63eaf04402ab2"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ed9d30ea3e757a403e63eaf04402ab2">AssetName</a> = null!<code> [get]</code></td></tr>
@@ -122,6 +122,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an identifier for a specific asset within a file, including its type and name. </p>
+
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00008">8</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ab962dfdf57165c7d99fd395782844f87" name="ab962dfdf57165c7d99fd395782844f87"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab962dfdf57165c7d99fd395782844f87">&#9670;&#160;</a></span>AssetsFileIdentifier() <span class="overload">[1/2]</span></h2>
@@ -140,6 +142,8 @@ Properties</h2></td></tr>
 
 <p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html" title="Represents an identifier for a specific asset within a file, including its type and name.">AssetsFileIdentifier</a> class. </p>
 <p>This parameterless constructor is primarily used for JSON deserialization.</p>
+
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00046">46</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
 
 </div>
 </div>
@@ -170,12 +174,14 @@ Properties</h2></td></tr>
 <p>Initializes a new instance of the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html" title="Represents an identifier for a specific asset within a file, including its type and name.">AssetsFileIdentifier</a> class with the specified asset file, type, and name. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">resFile</td><td>The <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset.</td></tr>
+    <tr><td class="paramname">resFile</td><td>The <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset.</td></tr>
     <tr><td class="paramname">resType</td><td>The type of the asset.</td></tr>
     <tr><td class="paramname">entry</td><td>The name of the asset entry.</td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00054">54</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
 
 </div>
 </div>
@@ -223,6 +229,8 @@ Properties</h2></td></tr>
 
 <p>Gets the name of the asset. </p>
 
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00026">26</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
+
 </div>
 </div>
 <a id="a595201f176e984d5c36d62dbbbc45da3" name="a595201f176e984d5c36d62dbbbc45da3"></a>
@@ -245,7 +253,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset. </p>
+<p>Gets the <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> that contains the asset. </p>
+
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00014">14</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
 
 </div>
 </div>
@@ -271,6 +281,8 @@ Properties</h2></td></tr>
 
 <p>Gets the type of the asset. </p>
 
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00020">20</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
+
 </div>
 </div>
 <a id="a6f355ca0a323eb3207d461d80d45e28b" name="a6f355ca0a323eb3207d461d80d45e28b"></a>
@@ -294,7 +306,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the stream containing the asset data. </p>
-<p>Returns <code>null</code> if the asset cannot be found in the associated <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.</p>
+<p>Returns <code>null</code> if the asset cannot be found in the associated <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00040">40</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
 
 </div>
 </div>
@@ -320,6 +334,8 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether this asset identifier is valid and can retrieve data. </p>
 <p>An identifier is considered valid if its <a class="el" href="#a6f355ca0a323eb3207d461d80d45e28b" title="Gets the stream containing the asset data.">Data</a> property returns a non-null stream.</p>
+
+<p class="definition">Definition at line <a class="el" href="_assets_file_identifier_8cs_source.html#l00033">33</a> of file <a class="el" href="_assets_file_identifier_8cs_source.html">AssetsFileIdentifier.cs</a>.</p>
 
 </div>
 </div>

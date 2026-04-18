@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -125,9 +125,9 @@ Properties</h2></td></tr>
 <tr class="memitem:ac2ff3dcc26713beaa1f06d64668ce81f" id="r_ac2ff3dcc26713beaa1f06d64668ce81f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2ff3dcc26713beaa1f06d64668ce81f">Y</a><code> [get]</code></td></tr>
 <tr class="memdesc:ac2ff3dcc26713beaa1f06d64668ce81f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the normalized vertical position of the analog stick in the range [-1, 1], where -1 represents full down, 0 represents center, and 1 represents full up.  <br /></td></tr>
 <tr class="memitem:afb2576c804a383349c1d751d68ea1958" id="r_afb2576c804a383349c1d751d68ea1958"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb2576c804a383349c1d751d68ea1958">RawX</a><code> [get]</code></td></tr>
-<tr class="memdesc:afb2576c804a383349c1d751d68ea1958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw horizontal value before normalization (e.g., from XInput or SDL2)  <br /></td></tr>
+<tr class="memdesc:afb2576c804a383349c1d751d68ea1958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw horizontal value before normalization (e.g., from XInput or <a class="el" href="namespace_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2.html">SDL2</a>)  <br /></td></tr>
 <tr class="memitem:a67ccecc4db48e94c9d0d18d5c0425016" id="r_a67ccecc4db48e94c9d0d18d5c0425016"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67ccecc4db48e94c9d0d18d5c0425016">RawY</a><code> [get]</code></td></tr>
-<tr class="memdesc:a67ccecc4db48e94c9d0d18d5c0425016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw vertical value before normalization (e.g., from XInput or SDL2)  <br /></td></tr>
+<tr class="memdesc:a67ccecc4db48e94c9d0d18d5c0425016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw vertical value before normalization (e.g., from XInput or <a class="el" href="namespace_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2.html">SDL2</a>)  <br /></td></tr>
 <tr class="memitem:aaac9de756d80fdd18b386e1ff9ddc3c1" id="r_aaac9de756d80fdd18b386e1ff9ddc3c1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaac9de756d80fdd18b386e1ff9ddc3c1">Magnitude</a><code> [get]</code></td></tr>
 <tr class="memdesc:aaac9de756d80fdd18b386e1ff9ddc3c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the magnitude (0 to 1) of the stick position.  <br /></td></tr>
 <tr class="memitem:a21788ee6c99fc20a99d3fda3e507ec19" id="r_a21788ee6c99fc20a99d3fda3e507ec19"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21788ee6c99fc20a99d3fda3e507ec19">Angle</a><code> [get]</code></td></tr>
@@ -135,6 +135,8 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the state of an analog stick on a gamepad, including both normalized floating-point values for convenient use in game logic and raw integer values from the underlying input system. This immutable struct provides methods for deadzone processing, direction detection, and magnitude calculation. </p>
+
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00008">8</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad07db2c89f236e32eb9f4d84292b6bb6" name="ad07db2c89f236e32eb9f4d84292b6bb6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad07db2c89f236e32eb9f4d84292b6bb6">&#9670;&#160;</a></span>GamepadStickState()</h2>
@@ -176,6 +178,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00050">50</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -195,6 +199,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the primary stick direction(s) based on angle and threshold. </p>
+
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00109">109</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
 
 </div>
 </div>
@@ -236,6 +242,8 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> representing the normalized stick position, with X and Y values clamped to the range [-1, 1], and the original raw values.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00067">67</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
+
 </div>
 </div>
 <a id="a1488e5b0b47cf725791f9c23b4270e99" name="a1488e5b0b47cf725791f9c23b4270e99"></a>
@@ -275,6 +283,8 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html" title="Represents the state of an analog stick on a gamepad, including both normalized floating-point values...">GamepadStickState</a> instance with normalized X and Y values in the range [-1, 1], along with the original raw input values.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00084">84</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
 
 </div>
 </div>
@@ -334,6 +344,8 @@ Properties</h2></td></tr>
 
 <p>Returns a new stick state with a deadzone applied. </p>
 
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00125">125</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -359,6 +371,8 @@ Properties</h2></td></tr>
 
 <p>Returns the angle (in radians) relative to (1, 0). </p>
 
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00099">99</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
+
 </div>
 </div>
 <a id="aaac9de756d80fdd18b386e1ff9ddc3c1" name="aaac9de756d80fdd18b386e1ff9ddc3c1"></a>
@@ -383,6 +397,8 @@ Properties</h2></td></tr>
 
 <p>Returns the magnitude (0 to 1) of the stick position. </p>
 
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00094">94</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
+
 </div>
 </div>
 <a id="afb2576c804a383349c1d751d68ea1958" name="afb2576c804a383349c1d751d68ea1958"></a>
@@ -405,7 +421,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Raw horizontal value before normalization (e.g., from XInput or SDL2) </p>
+<p>Raw horizontal value before normalization (e.g., from XInput or <a class="el" href="namespace_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2.html">SDL2</a>) </p>
+
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00025">25</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
 
 </div>
 </div>
@@ -429,7 +447,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Raw vertical value before normalization (e.g., from XInput or SDL2) </p>
+<p>Raw vertical value before normalization (e.g., from XInput or <a class="el" href="namespace_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2.html">SDL2</a>) </p>
+
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00030">30</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
 
 </div>
 </div>
@@ -455,6 +475,8 @@ Properties</h2></td></tr>
 
 <p>Gets the normalized horizontal position of the analog stick in the range [-1, 1], where -1 represents full left, 0 represents center, and 1 represents full right. </p>
 
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00014">14</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
+
 </div>
 </div>
 <a id="ac2ff3dcc26713beaa1f06d64668ce81f" name="ac2ff3dcc26713beaa1f06d64668ce81f"></a>
@@ -478,6 +500,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the normalized vertical position of the analog stick in the range [-1, 1], where -1 represents full down, 0 represents center, and 1 represents full up. </p>
+
+<p class="definition">Definition at line <a class="el" href="_gamepad_stick_state_8cs_source.html#l00020">20</a> of file <a class="el" href="_gamepad_stick_state_8cs_source.html">GamepadStickState.cs</a>.</p>
 
 </div>
 </div>

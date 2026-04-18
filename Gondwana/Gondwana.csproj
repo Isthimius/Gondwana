@@ -1,89 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Company>Hidden Worlds Games</Company>
-		<Product>Gondwana Game Engine</Product>
-		<Authors>Michael Adkins</Authors>
-
-		<!-- Assembly/package versioning -->
-		<Version>2.0.1</Version>
-		<FileVersion>2.0.1.0</FileVersion>
-		<InformationalVersion>2.0.1</InformationalVersion>
-
 		<TargetFramework>net8.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<RootNamespace>Gondwana</RootNamespace>
 		<AssemblyName>Gondwana</AssemblyName>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-		<!-- NuGet packaging -->
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
 		<PackageId>Gondwana</PackageId>
 		<Title>Gondwana Game Engine</Title>
 		<Description>2D and 2.5D C#/.NET game engine with tile maps, sprites, layered scenes, camera/view systems, and SkiaSharp rendering. Designed for tile-based worlds and practical engine architecture.</Description>
-		<PackageTags>game-engine gamedev 2d 2.5d tilemap tiles sprites csharp dotnet skia skiaSharp engine</PackageTags>
-
-		<!-- URLs / repository -->
-		<PackageProjectUrl>https://github.com/isthimius/Gondwana</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/isthimius/Gondwana</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-
-		<!-- Package assets -->
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>gondwana-icon.png</PackageIcon>
-
-		<!-- License -->
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-
-		<!-- Release notes -->
-		<PackageReleaseNotes>Embedded README and package icon, XML documentation in package, Source Link support, symbol package, and NuGet metadata polish.</PackageReleaseNotes>
-
-		<!-- XML docs -->
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NoWarn>$(NoWarn);1591</NoWarn>
-
-		<!-- Symbols / Source Link -->
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <PackageTags>$(PackageTags) 2d 2.5d tilemap tiles sprites skia skiaSharp engine</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Audio\TimGM6mb.sf2" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.3" />
-		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.6" />
+		<PackageReference Include="NAudio" Version="2.3.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="SharpZipLib" Version="1.4.2" />
 		<PackageReference Include="SkiaSharp" Version="3.119.2" />
 		<PackageReference Include="SkiaSharp.HarfBuzz" Version="3.119.2" />
-
-		<!-- Source Link -->
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="gondwana.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-
-		<!-- NuGet package assets -->
-		<None Include="README.md" Pack="true" PackagePath="\" />
-		<None Include="gondwana-icon.png" Pack="true" PackagePath="\" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Update="Nerdbank.GitVersioning" Version="3.9.50" />
 	</ItemGroup>
 
 </Project>

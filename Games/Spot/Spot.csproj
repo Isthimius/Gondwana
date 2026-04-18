@@ -12,49 +12,99 @@
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\ArchitectsDaughter-Regular.ttf" />
+    <None Remove="assets\bubble-blue-happy.png" />
     <None Remove="assets\bubble-blue.png" />
+    <None Remove="assets\bubble-green-happy.png" />
     <None Remove="assets\bubble-green.png" />
+    <None Remove="assets\bubble-pink-happy.png" />
     <None Remove="assets\bubble-pink.png" />
+    <None Remove="assets\bubble-red-happy.png" />
     <None Remove="assets\bubble-red.png" />
+    <None Remove="assets\bubble-yellow-happy.png" />
     <None Remove="assets\bubble-yellow.png" />
+    <None Remove="assets\clouds.jpg" />
+    <None Remove="assets\clouds.png" />
     <None Remove="assets\clouds_slice.png" />
+    <None Remove="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3" />
+    <None Remove="assets\freesound_community-bump-7-92964.mp3" />
+    <None Remove="assets\freesound_community-velcro_fast-91558.mp3" />
+    <None Remove="assets\freesound_community-water-drip-45622.mp3" />
+    <None Remove="assets\gondwana-icon.png" />
+    <None Remove="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3" />
     <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3" />
     <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.txt" />
+    <None Remove="assets\sources.txt" />
     <None Remove="assets\spot.png" />
+    <None Remove="assets\spot_ico.ico" />
+    <None Remove="assets\spot_ico.png" />
     <None Remove="dorian.mid" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\ArchitectsDaughter-Regular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\bubble-blue-happy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\bubble-blue.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\bubble-green-happy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\bubble-green.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="assets\bubble-pink-happy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\bubble-pink.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\bubble-red-happy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\bubble-red.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="assets\bubble-yellow-happy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\bubble-yellow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\clouds_slice.png">
+    <Content Include="assets\clouds.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\dorian.mid">
+    <Content Include="assets\freesound_community-bump-7-92964.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\freesound_community-velcro_fast-91558.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\freesound_community-water-drip-45622.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.txt">
+    <Content Include="assets\sources.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\spot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\tada.wav">
+    <Content Include="assets\spot_ico.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\spot_ico.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -62,7 +112,6 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gondwana.Audio.Midi\Gondwana.Audio.Midi.csproj" />
     <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
     <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
     <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />

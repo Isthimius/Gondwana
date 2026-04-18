@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -136,9 +136,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a6c3559866140508513b9fc25be885d7e" id="r_a6c3559866140508513b9fc25be885d7e"><td class="memItemLeft" align="right" valign="top">byte?[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c3559866140508513b9fc25be885d7e">OriginalBytes</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6c3559866140508513b9fc25be885d7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the original byte array of the audio data, if available.  <br /></td></tr>
 <tr class="memitem:a9beadb625cef7e1db2f3b990314d45ce" id="r_a9beadb625cef7e1db2f3b990314d45ce"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9beadb625cef7e1db2f3b990314d45ce">SourceFilePath</a><code> [get]</code></td></tr>
-<tr class="memdesc:a9beadb625cef7e1db2f3b990314d45ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original file path when the sound was loaded from disk (loose file). Null when loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.  <br /></td></tr>
+<tr class="memdesc:a9beadb625cef7e1db2f3b990314d45ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original file path when the sound was loaded from disk (loose file). Null when loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.  <br /></td></tr>
 <tr class="memitem:aab2f949e34951643c9b1111157eb0fac" id="r_aab2f949e34951643c9b1111157eb0fac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_assets_1_1_assets_file_identifier.html">AssetsFileIdentifier</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab2f949e34951643c9b1111157eb0fac">AssetIdentifier</a><code> [get]</code></td></tr>
-<tr class="memdesc:aab2f949e34951643c9b1111157eb0fac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset identifier when the sound was loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. Null when loaded from a loose file.  <br /></td></tr>
+<tr class="memdesc:aab2f949e34951643c9b1111157eb0fac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset identifier when the sound was loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. Null when loaded from a loose file.  <br /></td></tr>
 <tr class="memitem:a3794bd2bbe3eb0c4a44cc52ef22d56f9" id="r_a3794bd2bbe3eb0c4a44cc52ef22d56f9"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3794bd2bbe3eb0c4a44cc52ef22d56f9">SourceExtension</a><code> [get]</code></td></tr>
 <tr class="memdesc:a3794bd2bbe3eb0c4a44cc52ef22d56f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalized file extension (".wav", ".mp3", etc) used to select the reader.  <br /></td></tr>
 <tr class="memitem:a49fd7ba5685ad039c9157051cde4221f" id="r_a49fd7ba5685ad039c9157051cde4221f"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49fd7ba5685ad039c9157051cde4221f">TempFilePath</a><code> [get]</code></td></tr>
@@ -169,6 +169,8 @@ Events</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a audio resource that can be played, paused, resumed, and disposed. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00015">15</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a5bf8e7803b0bfd6087a6804fce518595" name="a5bf8e7803b0bfd6087a6804fce518595"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5bf8e7803b0bfd6087a6804fce518595">&#9670;&#160;</a></span>Dispose() <span class="overload">[1/2]</span></h2>
@@ -187,6 +189,8 @@ Events</h2></td></tr>
 
 <p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instance. </p>
 <p>This method stops playback, disposes of the output device and wave stream, deletes any temporary files, and raises the <a class="el" href="#ad6f8322b6569027430afafe0c4ffea45" title="Event that is raised when the audio resource is disposed.">Disposed</a> event. After calling this method, the instance should not be used further.</p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00475">475</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -222,6 +226,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00489">489</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a8df6ef8ad33ddce8ce5060d64a5a65df" name="a8df6ef8ad33ddce8ce5060d64a5a65df"></a>
@@ -241,6 +247,8 @@ Events</h2></td></tr>
 
 <p>Pauses playback if it is currently active. </p>
 <p>This method pauses the playback only if it is currently in progress. If playback is already paused or not started, calling this method has no effect.</p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00297">297</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -268,6 +276,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00276">276</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="ae99615c055d269dcbf5568faf8cb9f80" name="ae99615c055d269dcbf5568faf8cb9f80"></a>
@@ -287,6 +297,8 @@ Events</h2></td></tr>
 
 <p>Resumes playback if the output device is currently paused. </p>
 <p>This method has no effect if the output device is not paused. Ensure that the output device is properly initialized and in a paused state before calling this method.</p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00308">308</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -314,6 +326,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00322">322</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a7cae1d1b45fb5d0a2f1343f90022f2f3" name="a7cae1d1b45fb5d0a2f1343f90022f2f3"></a>
@@ -333,6 +347,8 @@ Events</h2></td></tr>
 
 <p>Stops the output device, halting any ongoing audio playback. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00342">342</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -349,6 +365,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Asynchronous callback that is invoked when playback completes. Will not be invoked if the audio is looping. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00038">38</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -373,7 +391,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Asset identifier when the sound was loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. Null when loaded from a loose file. </p>
+<p>Asset identifier when the sound was loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. Null when loaded from a loose file. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00173">173</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -399,6 +419,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets the current playback position within the audio stream. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00209">209</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a66b3a20750bdfefcb7356094a7595852" name="a66b3a20750bdfefcb7356094a7595852"></a>
@@ -422,6 +444,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the total duration of the audio represented by the wave stream. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00219">219</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -447,6 +471,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets a value indicating whether the playback is set to loop. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00224">224</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a71ccc63599a71f5f834d1a6edbeea569" name="a71ccc63599a71f5f834d1a6edbeea569"></a>
@@ -470,6 +496,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets a value indicating whether the playback is currently paused. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00191">191</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -495,6 +523,8 @@ Events</h2></td></tr>
 
 <p>Gets a value indicating whether audio playback is currently active. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00197">197</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a0a14358601f4af15b55d5d5c4aad4d42" name="a0a14358601f4af15b55d5d5c4aad4d42"></a>
@@ -518,6 +548,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the unique key associated with this audio resource. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00153">153</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -543,6 +575,8 @@ Events</h2></td></tr>
 
 <p>Gets the original byte array of the audio data, if available. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00159">159</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a085ab8d222d61cb35d2d01b3f2b81dc3" name="a085ab8d222d61cb35d2d01b3f2b81dc3"></a>
@@ -566,6 +600,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the stereo pan position of the audio output. -1 is full left, 0 is center, and 1 is full right. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00251">251</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -591,6 +627,8 @@ Events</h2></td></tr>
 
 <p>Normalized file extension (".wav", ".mp3", etc) used to select the reader. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00179">179</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a9beadb625cef7e1db2f3b990314d45ce" name="a9beadb625cef7e1db2f3b990314d45ce"></a>
@@ -613,7 +651,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Original file path when the sound was loaded from disk (loose file). Null when loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. </p>
+<p>Original file path when the sound was loaded from disk (loose file). Null when loaded from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00166">166</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -639,6 +679,8 @@ Events</h2></td></tr>
 
 <p>Gets the current playback state of the output device. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00203">203</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="a49fd7ba5685ad039c9157051cde4221f" name="a49fd7ba5685ad039c9157051cde4221f"></a>
@@ -662,6 +704,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the temporary file path used for WaveReaders that require a file on disk. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00185">185</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -687,6 +731,8 @@ Events</h2></td></tr>
 
 <p>Gets or sets the volume of the audio output. 0.0 is silent, 1.0 is full volume. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00233">233</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -704,6 +750,8 @@ Events</h2></td></tr>
 
 <p>Event that is raised when the audio resource is disposed. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00043">43</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
+
 </div>
 </div>
 <a id="ab3095f4f58ab095465ba6581fd3a787d" name="ab3095f4f58ab095465ba6581fd3a787d"></a>
@@ -719,6 +767,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Event that is raised when playback completes. Will not be raised if the audio is looping. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_8cs_source.html#l00032">32</a> of file <a class="el" href="_audio_resource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>

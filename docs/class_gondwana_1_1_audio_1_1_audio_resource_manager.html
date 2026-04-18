@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -110,8 +110,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6335363dcc9387def4229649373784fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads an audio resource from a file on disk.  <br /></td></tr>
 <tr class="memitem:aa599a5c5dcfe1da9a70194d21eb58302" id="r_aa599a5c5dcfe1da9a70194d21eb58302"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html">AudioResource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa599a5c5dcfe1da9a70194d21eb58302">LoadFromStream</a> (string key, Stream input, string fileExt, float volume=1.0f, float pan=0.0f)</td></tr>
 <tr class="memdesc:aa599a5c5dcfe1da9a70194d21eb58302"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads an audio resource from a stream.  <br /></td></tr>
-<tr class="memitem:a0879ef9c662428255f4fc383615333b9" id="r_a0879ef9c662428255f4fc383615333b9"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html">AudioResource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0879ef9c662428255f4fc383615333b9">LoadFromEngineResourceFile</a> (<a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html">AssetsFile</a> resourceFile, float defaultVolume=1.0f, float defaultPan=0.0f)</td></tr>
-<tr class="memdesc:a0879ef9c662428255f4fc383615333b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads all audio resources from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.  <br /></td></tr>
+<tr class="memitem:a11f27b4e5417a23b0474e9b176cedd84" id="r_a11f27b4e5417a23b0474e9b176cedd84"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html">AudioResource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a11f27b4e5417a23b0474e9b176cedd84">LoadFromEngineAssetsFile</a> (<a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html">AssetsFile</a> resourceFile, float defaultVolume=1.0f, float defaultPan=0.0f)</td></tr>
+<tr class="memdesc:a11f27b4e5417a23b0474e9b176cedd84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads all audio resources from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.  <br /></td></tr>
 <tr class="memitem:ad2f2068ecf21e59743a2177e9d925944" id="r_ad2f2068ecf21e59743a2177e9d925944"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html">AudioResource</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2f2068ecf21e59743a2177e9d925944">Clone</a> (string key, string? newKey=null, float? volume=null, float? pan=null)</td></tr>
 <tr class="memdesc:ad2f2068ecf21e59743a2177e9d925944"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a copy of an existing audio resource with a new key and optionally different settings.  <br /></td></tr>
 <tr class="memitem:a35970a7e27a0ce1f06f609a24d581eb9" id="r_a35970a7e27a0ce1f06f609a24d581eb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35970a7e27a0ce1f06f609a24d581eb9">Unload</a> (string key)</td></tr>
@@ -144,6 +144,8 @@ Events</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages the lifecycle of audio resources, providing loading, retrieval, cloning, and disposal functionality. </p>
 <p>This class implements the singleton pattern to ensure a single instance manages all audio resources throughout the application. It supports loading audio from files, streams, and asset files, and tracks all loaded resources in a thread-safe manner.</p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00013">13</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a4bd9cc8d0e40c05dbe528d73154eeb0e" name="a4bd9cc8d0e40c05dbe528d73154eeb0e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4bd9cc8d0e40c05dbe528d73154eeb0e">&#9670;&#160;</a></span>Clear()</h2>
@@ -161,6 +163,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Clears all sound resources, disposing of each one. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00242">242</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 
 </div>
 </div>
@@ -205,6 +209,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cloned <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> if successful; otherwise, <code>null</code>.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00138">138</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 
 </div>
 </div>
@@ -251,6 +257,8 @@ Events</h2></td></tr>
 
 <p>Releases all resources used by the <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource_manager.html" title="Manages the lifecycle of audio resources, providing loading, retrieval, cloning, and disposal functio...">AudioResourceManager</a>. </p>
 <p>This method clears all managed audio resources, disposing of each one. After disposal, the manager should not be used further.</p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00313">313</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 
 </div>
 </div>
@@ -320,14 +328,14 @@ Events</h2></td></tr>
 
 </div>
 </div>
-<a id="a0879ef9c662428255f4fc383615333b9" name="a0879ef9c662428255f4fc383615333b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0879ef9c662428255f4fc383615333b9">&#9670;&#160;</a></span>LoadFromEngineResourceFile()</h2>
+<a id="a11f27b4e5417a23b0474e9b176cedd84" name="a11f27b4e5417a23b0474e9b176cedd84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11f27b4e5417a23b0474e9b176cedd84">&#9670;&#160;</a></span>LoadFromEngineAssetsFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">List&lt; <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html">AudioResource</a> &gt; Gondwana.Audio.AudioResourceManager.LoadFromEngineResourceFile </td>
+          <td class="memname">List&lt; <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html">AudioResource</a> &gt; Gondwana.Audio.AudioResourceManager.LoadFromEngineAssetsFile </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html">AssetsFile</a></td>          <td class="paramname"><span class="paramname"><em>resourceFile</em></span>, </td>
         </tr>
@@ -344,17 +352,19 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Loads all audio resources from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. </p>
+<p>Loads all audio resources from an <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. </p>
 <p>This method iterates through all audio entries in the asset file and loads them into the manager. Resources that are already loaded will be skipped. Failed loads are logged but do not prevent other resources from being loaded.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">resourceFile</td><td>The <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents a asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> containing audio resources.</td></tr>
+    <tr><td class="paramname">resourceFile</td><td>The <a class="el" href="class_gondwana_1_1_assets_1_1_assets_file.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> containing audio resources.</td></tr>
     <tr><td class="paramname">defaultVolume</td><td>The default volume level for all loaded audio resources, ranging from 0.0 to 1.0. Defaults to 1.0.</td></tr>
     <tr><td class="paramname">defaultPan</td><td>The default stereo pan position for all loaded audio resources, ranging from -1.0 to 1.0. Defaults to 0.0.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A list of successfully loaded <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instances.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00088">88</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 
 </div>
 </div>
@@ -399,6 +409,8 @@ Events</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The loaded <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instance.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00042">42</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 
 </div>
 </div>
@@ -450,6 +462,8 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The loaded <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instance.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00064">64</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="aebbe7942dfbb63dfa6a900d41f0e300e" name="aebbe7942dfbb63dfa6a900d41f0e300e"></a>
@@ -481,6 +495,8 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the audio resource was found; otherwise, <code>false</code>.</dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00257">257</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
+
 </div>
 </div>
 <a id="a35970a7e27a0ce1f06f609a24d581eb9" name="a35970a7e27a0ce1f06f609a24d581eb9"></a>
@@ -505,6 +521,8 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00233">233</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 
 </div>
 </div>
@@ -531,6 +549,8 @@ Events</h2></td></tr>
 
 <p>Singleton instance of the <a class="el" href="class_gondwana_1_1_audio_1_1_audio_resource_manager.html" title="Manages the lifecycle of audio resources, providing loading, retrieval, cloning, and disposal functio...">AudioResourceManager</a>. </p>
 
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00030">30</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
+
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
@@ -547,6 +567,8 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Event that is raised when a sound resource is disposed. </p>
+
+<p class="definition">Definition at line <a class="el" href="_audio_resource_manager_8cs_source.html#l00022">22</a> of file <a class="el" href="_audio_resource_manager_8cs_source.html">AudioResourceManager.cs</a>.</p>
 
 </div>
 </div>
