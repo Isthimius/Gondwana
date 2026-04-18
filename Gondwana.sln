@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.5.11709.299 stable
+VisualStudioVersion = 18.5.11709.299
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
@@ -23,16 +23,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Audio.Midi", "Gondwana.Audio.Midi\Gondwana.Audio.Midi.csproj", "{52B85595-4300-4725-A0C9-87D3AEAAA9AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video", "Gondwana.Video\Gondwana.Video.csproj", "{8DD90A45-56EC-605B-636B-C5238328283F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-	ProjectSection(SolutionItems) = preProject
-		Solution Items\docs\gondwana-core-diagrams.puml = Solution Items\docs\gondwana-core-diagrams.puml
-		Solution Items\docs\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\docs\Gondwana_Activity_Diagrams_PlantUML.zip
-		Solution Items\docs\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\docs\Gondwana_Sequence_Diagrams_PlantUML.zip
-		Solution Items\docs\Gondwana_UML_PlantUML.zip = Solution Items\docs\Gondwana_UML_PlantUML.zip
-		Solution Items\docs\Screen-World-Grid.puml = Solution Items\docs\Screen-World-Grid.puml
-		Solution Items\docs\World-Screen.puml = Solution Items\docs\World-Screen.puml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "licenses", "licenses", "{3B510C60-8DE3-4B61-A934-5FAB2A699657}"
 	ProjectSection(SolutionItems) = preProject
@@ -117,6 +107,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Assets.WinForms", "Gondwana.Assets.WinForms\Gondwana.Assets.WinForms.csproj", "{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{AD16FE1C-14B5-4F89-83DD-933D044DC211}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{3752648C-1686-442C-B3CB-D6E2DFD260CA}"
+	ProjectSection(SolutionItems) = preProject
+		Solution Items\documentation\gondwana-core-diagrams.puml = Solution Items\documentation\gondwana-core-diagrams.puml
+		Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip
+		Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip
+		Solution Items\documentation\Gondwana_UML_PlantUML.zip = Solution Items\documentation\Gondwana_UML_PlantUML.zip
+		Solution Items\documentation\Screen-World-Grid.puml = Solution Items\documentation\Screen-World-Grid.puml
+		Solution Items\documentation\World-Screen.puml = Solution Items\documentation\World-Screen.puml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -275,12 +275,12 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
-		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 		{3B510C60-8DE3-4B61-A934-5FAB2A699657} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 		{757C399E-8773-053E-A919-24DB11B7766A} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{F0FB514C-73FC-48C8-7360-D630D5518620} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{0855DCA7-B21B-4C1A-BED9-D962837CED0E} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 		{E3B3DF06-CF7C-47D6-9F87-499EFCBD4981} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
+		{3752648C-1686-442C-B3CB-D6E2DFD260CA} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
