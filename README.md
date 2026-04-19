@@ -7,7 +7,8 @@
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-blue)
 
-<img alt="gonwana_withText_1a" src="https://github.com/user-attachments/assets/3400d89c-5f45-4235-9382-d61c0dda84c8" align="left" width="40%" />
+<img alt="gondwana-logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
+
 
 **Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.
 
@@ -86,8 +87,8 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 ## 🧭 Key Design Principles
 - **Dirty-region rendering (`RefreshQueue`)**: The engine tracks what changed and redraws only those world-space regions, instead of repainting the whole screen every frame.
 - **World-space first**: The engine reasons in world pixels; views/cameras/viewport transforms convert world → screen at render time. This keeps logic consistent and avoids “screen math” leaking into gameplay code.
-- **Layered scenes**: A Scene is composed of SceneLayers (often with parallax). Each layer maintains its own refresh tracking and draw path.
-- **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports (or multiplayer split views) are natural, not bolted on.
+- **Layered scenes**: A Scene is composed of SceneLayers, with adjustable parallax. Each layer maintains its own refresh tracking and draw path.
+- **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports or multiplayer split views are natural, not bolted on.
 - **Adapters at the edges**: Platform projects (WinForms/Web) host the render surface and input wiring, while the core engine stays platform-agnostic.
 - **Deterministic ordering**: Where ordering matters (views, layers, drawables), the engine uses stable sort rules so rendering remains predictable and debuggable.
 

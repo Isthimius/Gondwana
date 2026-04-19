@@ -4,9 +4,9 @@ VisualStudioVersion = 18.5.11709.299
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slider", "Games\Slider\Slider.csproj", "{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slider", "Demos\Slider\Slider.csproj", "{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spot", "Games\Spot\Spot.csproj", "{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spot", "Demos\Spot\Spot.csproj", "{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC217C36-1278-4820-86D5-951EFEF6E28D}"
 	ProjectSection(SolutionItems) = preProject
@@ -32,9 +32,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "licenses", "licenses", "{3B
 		Solution Items\licenses\skiasharp.txt = Solution Items\licenses\skiasharp.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.CoordinateTest", "Testing\Gondwana.CoordinateTest\Gondwana.CoordinateTest.csproj", "{757C399E-8773-053E-A919-24DB11B7766A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.CoordinateTest", "Demos\Gondwana.CoordinateTest\Gondwana.CoordinateTest.csproj", "{757C399E-8773-053E-A919-24DB11B7766A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.ParticleTest", "Testing\Gondwana.ParticleTest\Gondwana.ParticleTest.csproj", "{F0FB514C-73FC-48C8-7360-D630D5518620}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.ParticleTest", "Demos\Gondwana.ParticleTest\Gondwana.ParticleTest.csproj", "{F0FB514C-73FC-48C8-7360-D630D5518620}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Hosting", "Gondwana.Hosting\Gondwana.Hosting.csproj", "{0B974397-F623-4D66-886C-B02C1ED22A7D}"
 EndProject
