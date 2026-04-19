@@ -34,7 +34,7 @@ jobs:
         run: echo "VERSION=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
 
       - name: Restore
-        run: dotnet restore --nologo
+        run: dotnet restore --nologo /p:EnableWindowsTargeting=true
 
       - name: Build
         run: dotnet build -c Release --no-restore --nologo /p:EnableWindowsTargeting=true
