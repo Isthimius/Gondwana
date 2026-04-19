@@ -149,12 +149,12 @@ jobs:
 
       - name: Inject version into Doxyfile
         run: |
-          sed "s/@PROJECT_VERSION@/${VERSION}/g" docs/doxy/Doxyfile > docs/doxy/Doxyfile.gen
+          sed "s/@PROJECT_VERSION@/${VERSION}/g" docs/doxy/Gondwana_doxy > docs/doxy/Gondwana_doxy.gen
 
       - name: Generate docs
         run: |
           cd docs/doxy
-          doxygen Doxyfile.gen
+          doxygen Gondwana_doxy.gen
 
       - name: Publish docs to gh-pages
         run: |
@@ -162,7 +162,7 @@ jobs:
           git config user.email "actions@github.com"
 
           temp_dir=$(mktemp -d)
-          cp -R docs/doxy/html/. "$temp_dir"/
+          cp -R docs/html/. "$temp_dir"/
 
           git fetch origin gh-pages || true
           if git ls-remote --exit-code --heads origin gh-pages; then
