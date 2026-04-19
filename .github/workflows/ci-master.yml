@@ -1,0 +1,56 @@
+name: CI (master)
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Pack (validation only)
+        run: dotnet pack --configuration Release --no-build
+
+      - name: Publish binaries
+        run: |
+          mkdir -p artifacts
+
+          dotnet publish Gondwana/Gondwana.csproj -c Release -o artifacts/Gondwana
+          dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o artifacts/Gondwana.Audio.Midi
+          dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o artifacts/Gondwana.Hosting
+          dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o artifacts/Gondwana.Input.SDL2
+          dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o artifacts/Gondwana.Video
+          dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o artifacts/Gondwana.WinForms
+          dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o artifacts/Gondwana.WinForms.Hosting
+          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.csproj -c Release -o artifacts/Tooling/Gondwana.Assets.Winforms
+          dotnet publish Demos/Slider/Slider.csproj -c Release -o artifacts/Demos/Slider
+          dotnet publish Demos/Spot/Spot.csproj -c Release -o artifacts/Demos/Spot
+
+      - name: Zip artifacts
+        run: |
+          cd artifacts
+          zip -r ../Gondwana-binaries.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gondwana-binaries
+          path: Gondwana-binaries.zip

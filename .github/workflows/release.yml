@@ -1,0 +1,116 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout (full history for NBGV)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install NBGV
+        run: dotnet tool install -g nbgv
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Get version from NBGV
+        run: echo "VERSION=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Pack
+        run: dotnet pack -c Release --no-build -o ./nupkgs
+
+      - name: Publish binaries
+        run: |
+          mkdir -p artifacts
+
+          dotnet publish Gondwana/Gondwana.csproj -c Release -o artifacts/Gondwana
+          dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o artifacts/Gondwana.Audio.Midi
+          dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o artifacts/Gondwana.Hosting
+          dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o artifacts/Gondwana.Input.SDL2
+          dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o artifacts/Gondwana.Video
+          dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o artifacts/Gondwana.WinForms
+          dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o artifacts/Gondwana.WinForms.Hosting
+          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.csproj -c Release -o artifacts/Tooling/Gondwana.Assets.Winforms
+          dotnet publish Demos/Slider/Slider.csproj -c Release -o artifacts/Demos/Slider
+          dotnet publish Demos/Spot/Spot.csproj -c Release -o artifacts/Demos/Spot
+
+      - name: Zip binaries
+        run: |
+          cd artifacts
+          zip -r ../Gondwana-${{ env.VERSION }}.zip .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Gondwana ${{ env.VERSION }}
+          tag_name: ${{ github.ref_name }}
+          files: Gondwana-${{ env.VERSION }}.zip
+
+      - name: Push packages to NuGet
+        run: |
+          find ./nupkgs -name "*.nupkg" ! -name "*.snupkg" -print0 | \
+          xargs -0 -I {} dotnet nuget push "{}" \
+            --api-key "${{ secrets.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+
+      - name: Install Doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen
+
+      - name: Inject version into Doxyfile
+        run: |
+          sed "s/@PROJECT_VERSION@/${VERSION}/g" docs/doxy/Doxyfile > docs/doxy/Doxyfile.gen
+
+      - name: Generate docs
+        run: |
+          cd docs/doxy
+          doxygen Doxyfile.gen
+
+      - name: Publish docs to gh-pages
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          temp_dir=$(mktemp -d)
+          cp -R docs/doxy/html/. "$temp_dir"/
+
+          git fetch origin gh-pages || true
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git checkout gh-pages || git checkout -b gh-pages origin/gh-pages
+          else
+            git checkout --orphan gh-pages
+          fi
+
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name '.github' \
+            -exec rm -rf {} +
+
+          cp -R "$temp_dir"/. .
+          touch .nojekyll
+
+          git add .
+          git commit -m "Update docs for version $VERSION" || echo "No changes to commit"
+          git push origin gh-pages --force

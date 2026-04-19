@@ -1,0 +1,75 @@
+name: Docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout (full history for NBGV)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install NBGV
+        run: dotnet tool install -g nbgv
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Get version from NBGV
+        run: echo "VERSION=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
+
+      - name: Install Doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen
+
+      - name: Inject version into Doxyfile
+        run: |
+          sed "s/@PROJECT_VERSION@/${VERSION}/g" docs/doxy/Doxyfile > docs/doxy/Doxyfile.gen
+
+      - name: Generate docs
+        run: |
+          cd docs/doxy
+          doxygen Doxyfile.gen
+
+      - name: Publish docs to gh-pages
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          temp_dir=$(mktemp -d)
+          cp -R docs/doxy/html/. "$temp_dir"/
+
+          git fetch origin gh-pages || true
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git checkout gh-pages || git checkout -b gh-pages origin/gh-pages
+          else
+            git checkout --orphan gh-pages
+          fi
+
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name '.github' \
+            -exec rm -rf {} +
+
+          cp -R "$temp_dir"/. .
+          touch .nojekyll
+
+          git add .
+          git commit -m "Manual docs regeneration for $VERSION" || echo "No changes to commit"
+          git push origin gh-pages --force
