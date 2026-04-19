@@ -8,7 +8,7 @@ using static Gondwana.Drawing.Direct.TextBlock;
 using Gondwana.Movement.Easing;
 using System.Numerics;
 
-namespace Gondwana.ParticleTest;
+namespace Gondwana.Demos.ParticleTest;
 
 public partial class Form1 : Form
 {

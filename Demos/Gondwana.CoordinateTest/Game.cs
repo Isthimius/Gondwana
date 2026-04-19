@@ -15,7 +15,7 @@ using Gondwana.Drawing.Sprites;
 using System.Numerics;
 using Gondwana.Drawing.Animation;
 
-namespace Gondwana.CoordinateTest;
+namespace Gondwana.Demos.CoordinateTest;
 
 public class Game : IDisposable
 {

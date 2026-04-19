@@ -1,4 +1,4 @@
-namespace Gondwana.ParticleTest
+namespace Gondwana.Demos.ParticleTest
 {
     internal static class Program
     {

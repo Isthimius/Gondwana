@@ -1,4 +1,4 @@
-namespace Gondwana.CoordinateTest;
+namespace Gondwana.Demos.CoordinateTest;
 
 public partial class GameWindow : Form
 {
