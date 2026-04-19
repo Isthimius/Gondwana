@@ -7,7 +7,8 @@
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-blue)
 
-<img alt="gonwana_withText_1a" src="https://github.com/user-attachments/assets/3400d89c-5f45-4235-9382-d61c0dda84c8" align="left" width="40%" />
+<img alt="gondwana-logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
+
 
 **Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.
 
