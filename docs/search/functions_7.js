@@ -1,8 +1,0 @@
-var searchData=
-[
-  ['initialize_0',['Initialize',['../class_gondwana_1_1_engine.html#a5ae8238a801cebbc26d97088d8398f8e',1,'Gondwana.Engine.Initialize()'],['../class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html#a8ba162b2728d8986a5fd5caf987b1cd5',1,'Gondwana.Input.Gamepad.GamepadEventPoller.Initialize()'],['../class_gondwana_1_1_input_1_1_keyboard_1_1_keyboard_event_poller.html#a7fb962a9db32bbc2a547461215b1a423',1,'Gondwana.Input.Keyboard.KeyboardEventPoller.Initialize()'],['../class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_poller.html#a863a32be78e3091effe86a1fdf090ddc',1,'Gondwana.Input.Mouse.MouseEventPoller.Initialize()']]],
-  ['inputeventconfigurationbase_1',['InputEventConfigurationBase',['../class_gondwana_1_1_input_1_1_input_event_configuration_base.html#a2b228e52c05559f5c8886dc612007172',1,'Gondwana::Input::InputEventConfigurationBase']]],
-  ['intersects_2',['Intersects',['../struct_gondwana_1_1_collisions_1_1_aabb.html#a982c4646e60b63c11c42fc0c4ba403df',1,'Gondwana::Collisions::Aabb']]],
-  ['isdown_3',['IsDown',['../class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html#a22ff076ad85b9dc1b10ff4fab0ff4d90',1,'Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter.IsDown()'],['../interface_gondwana_1_1_input_1_1_keyboard_1_1_i_keyboard_adapter.html#ad3017d9edeed5d51a700adfa470dc045',1,'Gondwana.Input.Keyboard.IKeyboardAdapter.IsDown()']]],
-  ['isengaged_4',['IsEngaged',['../struct_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_stick_state.html#a4b457c1f841d41a2d2794f256492b4bd',1,'Gondwana::Input::Gamepad::GamepadStickState']]]
-];

@@ -1,2 +1,0 @@
-**Skia** © Google Inc., licensed under the BSD 3-Clause License
-https://skia.org/about/
