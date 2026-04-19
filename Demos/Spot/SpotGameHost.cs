@@ -13,7 +13,6 @@ using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
-using Gondwana.Input.Mouse;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
