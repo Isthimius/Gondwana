@@ -1,4 +1,4 @@
-﻿namespace HWG.Spot.Game;
+﻿namespace Gondwana.Demos.Spot.Game;
 
 internal readonly record struct PlayerMovement(
     Player Player,

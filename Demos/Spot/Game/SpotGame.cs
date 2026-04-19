@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace HWG.Spot.Game;
+namespace Gondwana.Demos.Spot.Game;
 
 internal class SpotGame : IDisposable
 {

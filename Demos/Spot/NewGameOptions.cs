@@ -1,7 +1,7 @@
-﻿using HWG.Spot.Game;
+﻿using Gondwana.Demos.Spot.Game;
 using System.Collections.Generic;
 
-namespace HWG.Spot;
+namespace Gondwana.Demos.Spot;
 
 internal class NewGameOptions
 {

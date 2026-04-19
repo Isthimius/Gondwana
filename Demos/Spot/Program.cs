@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace HWG.Spot;
+namespace Gondwana.Demos.Spot;
 
 internal static class Program
 {

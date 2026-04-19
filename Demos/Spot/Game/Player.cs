@@ -1,6 +1,6 @@
 ﻿using Gondwana.Drawing;
 
-namespace HWG.Spot.Game;
+namespace Gondwana.Demos.Spot.Game;
 
 internal sealed class Player
 {

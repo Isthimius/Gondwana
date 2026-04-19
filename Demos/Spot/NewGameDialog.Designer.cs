@@ -1,4 +1,4 @@
-﻿namespace HWG.Spot
+﻿namespace Gondwana.Demos.Spot
 {
     partial class NewGameDialog
     {

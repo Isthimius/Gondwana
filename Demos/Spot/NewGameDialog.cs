@@ -1,10 +1,10 @@
 ﻿using SkiaSharp;
-using HWG.Spot.Game;
+using Gondwana.Demos.Spot.Game;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace HWG.Spot;
+namespace Gondwana.Demos.Spot;
 
 internal partial class NewGameDialog : Form
 {

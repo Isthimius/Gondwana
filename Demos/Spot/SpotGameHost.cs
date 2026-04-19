@@ -20,9 +20,9 @@ using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Rendering;
-using HWG.Spot.Game;
+using Gondwana.Demos.Spot.Game;
 
-namespace HWG.Spot;
+namespace Gondwana.Demos.Spot;
 
 internal sealed class SpotGameHost : WinFormsGameHost
 {

@@ -6,7 +6,7 @@ using Gondwana;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 
-namespace HWG.Spot.Game;
+namespace Gondwana.Demos.Spot.Game;
 
 internal partial class SpotGameField : SceneLayer
 {

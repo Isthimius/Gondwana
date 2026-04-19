@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using SkiaSharp;
 
-namespace HWG.Spot;
+namespace Gondwana.Demos.Spot;
 
 internal class ColorItem
 {

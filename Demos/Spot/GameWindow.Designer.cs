@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using Gondwana.WinForms;
 using Gondwana.WinForms.Rendering;
 
-namespace HWG.Spot;
+namespace Gondwana.Demos.Spot;
 
 partial class GameWindow
 {
