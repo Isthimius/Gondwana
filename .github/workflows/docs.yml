@@ -53,7 +53,7 @@ jobs:
           git config user.email "actions@github.com"
 
           temp_dir=$(mktemp -d)
-          cp -R docs/html/. "$temp_dir"/
+          cp -R docs/. "$temp_dir"/
 
           git fetch origin gh-pages || true
           if git ls-remote --exit-code --heads origin gh-pages; then
