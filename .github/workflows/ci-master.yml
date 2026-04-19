@@ -41,7 +41,7 @@ jobs:
           mkdir -p publish/Gondwana.Video
           mkdir -p publish/Gondwana.WinForms
           mkdir -p publish/Gondwana.WinForms.Hosting
-          mkdir -p publish/Tooling/Gondwana.Assets.Winforms
+          mkdir -p publish/Tooling/Gondwana.Assets.WinForms
           mkdir -p publish/Demos/Slider
           mkdir -p publish/Demos/Spot
 
@@ -52,7 +52,7 @@ jobs:
           dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o publish/Gondwana.Video --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.csproj -c Release -o publish/Tooling/Gondwana.Assets.Winforms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Tooling/Gondwana.Assets.WinForms/Gondwana.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
 
@@ -70,7 +70,7 @@ jobs:
           cp publish/Gondwana.WinForms/Gondwana.WinForms.dll artifacts/
           cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll artifacts/
 
-          cp publish/Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.exe artifacts/Tooling/
+          cp publish/Tooling/Gondwana.Assets.WinForms/Gondwana.Assets.WinForms.exe artifacts/Tooling/
           cp publish/Demos/Slider/Slider.exe artifacts/Demos/
           cp publish/Demos/Spot/Spot.exe artifacts/Demos/
 
