@@ -56,7 +56,7 @@ public class Game : IDisposable
         InitSprites();
         InitDirectDrawings();
 
-        RenderSurface.Host.ViewManager.Views[0].Camera.FollowCentered(SpriteManager.GetSpriteByID("rooster_1")!);
+        RenderSurface.Host.ViewManager.Views[0].Camera.FollowCentered(SpriteManager.Instance.GetSpriteByID("rooster_1")!);
 
         // configure input handling here
         ConfigureKeyboardInput();
