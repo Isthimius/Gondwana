@@ -12,35 +12,6 @@
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="assets\ArchitectsDaughter-Regular.ttf" />
-    <None Remove="assets\bubble-blue-happy.png" />
-    <None Remove="assets\bubble-blue.png" />
-    <None Remove="assets\bubble-green-happy.png" />
-    <None Remove="assets\bubble-green.png" />
-    <None Remove="assets\bubble-pink-happy.png" />
-    <None Remove="assets\bubble-pink.png" />
-    <None Remove="assets\bubble-red-happy.png" />
-    <None Remove="assets\bubble-red.png" />
-    <None Remove="assets\bubble-yellow-happy.png" />
-    <None Remove="assets\bubble-yellow.png" />
-    <None Remove="assets\clouds.jpg" />
-    <None Remove="assets\clouds.png" />
-    <None Remove="assets\clouds_slice.png" />
-    <None Remove="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3" />
-    <None Remove="assets\freesound_community-bump-7-92964.mp3" />
-    <None Remove="assets\freesound_community-velcro_fast-91558.mp3" />
-    <None Remove="assets\freesound_community-water-drip-45622.mp3" />
-    <None Remove="assets\gondwana-icon.png" />
-    <None Remove="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3" />
-    <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3" />
-    <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.txt" />
-    <None Remove="assets\sources.txt" />
-    <None Remove="assets\spot.png" />
-    <None Remove="assets\spot_ico.ico" />
-    <None Remove="assets\spot_ico.png" />
-    <None Remove="dorian.mid" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="assets\ArchitectsDaughter-Regular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

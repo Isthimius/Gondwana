@@ -28,7 +28,7 @@
         <!-- NuGet packaging and assets -->
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageIcon>gondwana-icon.png</PackageIcon>
+        <PackageIcon>gondwana-logo.png</PackageIcon>
         <PackageTags>game-engine gamedev csharp dotnet</PackageTags>
 
         <!-- URLs / repository -->
@@ -45,7 +45,7 @@
     <ItemGroup Condition="'$(IsPackable)' == 'true'">
         <!-- NuGet package assets -->
         <None Include="README.md" Pack="true" PackagePath="" />
-        <None Include="gondwana-icon.png" Pack="true" PackagePath="" />
+        <None Include="gondwana-logo.png" Pack="true" PackagePath="" />
 
         <!-- Release notes -->
         <None Include="$(MSBuildThisFileDirectory)CHANGELOG.md" Pack="true" PackagePath="" Link="CHANGELOG.md" />
