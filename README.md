@@ -87,8 +87,8 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 ## 🧭 Key Design Principles
 - **Dirty-region rendering (`RefreshQueue`)**: The engine tracks what changed and redraws only those world-space regions, instead of repainting the whole screen every frame.
 - **World-space first**: The engine reasons in world pixels; views/cameras/viewport transforms convert world → screen at render time. This keeps logic consistent and avoids “screen math” leaking into gameplay code.
-- **Layered scenes**: A Scene is composed of SceneLayers (often with parallax). Each layer maintains its own refresh tracking and draw path.
-- **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports (or multiplayer split views) are natural, not bolted on.
+- **Layered scenes**: A Scene is composed of SceneLayers, with adjustable parallax. Each layer maintains its own refresh tracking and draw path.
+- **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports or multiplayer split views are natural, not bolted on.
 - **Adapters at the edges**: Platform projects (WinForms/Web) host the render surface and input wiring, while the core engine stays platform-agnostic.
 - **Deterministic ordering**: Where ordering matters (views, layers, drawables), the engine uses stable sort rules so rendering remains predictable and debuggable.
 
