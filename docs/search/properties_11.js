@@ -18,7 +18,7 @@ var searchData=
   ['shadowenabled_15',['ShadowEnabled',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#ab1d7d7a0e196139abd42879f81189072',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['shouldrecycle_16',['ShouldRecycle',['../class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance_layer.html#a975069acc936844a31ce8f5f5d554a9a',1,'Gondwana::Drawing::Direct::ImageLayer::ImageInstanceLayer']]],
   ['showcollisionboxes_17',['ShowCollisionBoxes',['../class_gondwana_1_1_scenes_1_1_scene_layer.html#ac68c60907a67666307c7720012e08c50',1,'Gondwana::Scenes::SceneLayer']]],
-  ['showgridlines_18',['ShowGridLines',['../class_gondwana_1_1_scenes_1_1_scene_layer.html#a582d49df8cfc0b28dc9988cc07919717',1,'Gondwana::Scenes::SceneLayer']]],
+  ['showgridlines_18',['ShowGridLines',['../class_slider_1_1_puzzle.html#a02bf5f9c129874ebc573b6ab04635eaf',1,'Slider.Puzzle.ShowGridLines'],['../class_gondwana_1_1_scenes_1_1_scene_layer.html#a582d49df8cfc0b28dc9988cc07919717',1,'Gondwana.Scenes.SceneLayer.ShowGridLines']]],
   ['sizenewspritestoscenelayer_19',['SizeNewSpritesToSceneLayer',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite_manager.html#a763ee51144da0fe6f81d3bc4dff7d287',1,'Gondwana::Drawing::Sprites::SpriteManager']]],
   ['sizerange_20',['SizeRange',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#ab1af5e07e974ce19e635fe249d78ad2f',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
   ['skbitmap_21',['SkBitmap',['../struct_gondwana_1_1_drawing_1_1_frame.html#a081ebf55d354a981277f0927a15fc883',1,'Gondwana.Drawing.Frame.SkBitmap'],['../class_gondwana_1_1_drawing_1_1_tilesheets_1_1_tilesheet.html#ac09643888382111a32e3bc8cc5fd0b47',1,'Gondwana.Drawing.Tilesheets.Tilesheet.SkBitmap']]],

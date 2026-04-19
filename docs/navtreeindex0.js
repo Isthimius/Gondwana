@@ -247,7 +247,7 @@ var NAVTREEINDEX0 =
 "class_gondwana_1_1_configuration_1_1_engine_configuration_file.html#ab7f1d52fdf79a4ac71c3a8398ba06882":[1,0,0,3,1,1],
 "class_gondwana_1_1_configuration_1_1_engine_configuration_file.html#aee65b95b5ff820dd22f1054b8e4dce83":[0,0,0,3,1,5],
 "class_gondwana_1_1_configuration_1_1_engine_configuration_file.html#aee65b95b5ff820dd22f1054b8e4dce83":[1,0,0,3,1,5],
-"class_gondwana_1_1_cycles_per_second_calculated_event_args.html":[0,0,0,16],
-"class_gondwana_1_1_cycles_per_second_calculated_event_args.html":[1,0,0,14],
-"class_gondwana_1_1_cycles_per_second_calculated_event_args.html#a037cfb72bc48bb3952d4a5c74572bb7d":[0,0,0,16,2]
+"class_gondwana_1_1_cycles_per_second_calculated_event_args.html":[0,0,0,17],
+"class_gondwana_1_1_cycles_per_second_calculated_event_args.html":[1,0,0,15],
+"class_gondwana_1_1_cycles_per_second_calculated_event_args.html#a037cfb72bc48bb3952d4a5c74572bb7d":[0,0,0,17,2]
 };

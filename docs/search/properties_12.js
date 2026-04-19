@@ -32,10 +32,12 @@ var searchData=
   ['tint_29',['Tint',['../class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance.html#a86c626e92328108708c79d728b8063da',1,'Gondwana.Drawing.Direct.ImageLayer.ImageInstance.Tint'],['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a084a996450b91ef98a4fccad81daddef',1,'Gondwana.Drawing.Direct.Particles.ParticleEmitter.Tint']]],
   ['top_30',['Top',['../struct_gondwana_1_1_collisions_1_1_collision_detection_adjustment.html#ac7907c01da59672a7ef317ffc175e876',1,'Gondwana::Collisions::CollisionDetectionAdjustment']]],
   ['totalcycletime_31',['TotalCycleTime',['../class_gondwana_1_1_drawing_1_1_animation_1_1_cycle.html#a41b758418ec539a9798cc6f23a722aa7',1,'Gondwana::Drawing::Animation::Cycle']]],
-  ['totalsecondsenginerunning_32',['TotalSecondsEngineRunning',['../class_gondwana_1_1_engine.html#aff8192ad9f289084c19ebbf7ba1d743b',1,'Gondwana::Engine']]],
-  ['totalticksenginerunning_33',['TotalTicksEngineRunning',['../class_gondwana_1_1_engine.html#a1f43c5236ee7f4625e54bb4098a05353',1,'Gondwana::Engine']]],
-  ['trackmousemovement_34',['TrackMouseMovement',['../class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html#abbdb5b8bcae2f98c552ba00991eca2ff',1,'Gondwana::Input::Mouse::MouseEventConfiguration']]],
-  ['triggers_35',['Triggers',['../class_gondwana_1_1_collisions_1_1_collision_group_registry.html#acbdcd07c5b6833821fa0b4334ac34745',1,'Gondwana::Collisions::CollisionGroupRegistry']]],
-  ['type_36',['Type',['../class_gondwana_1_1_timers_1_1_timer.html#ab77c85a918876971373c12ff567a8d75',1,'Gondwana::Timers::Timer']]],
-  ['typeface_37',['TypeFace',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a6ffd5a29f999a827f1d0e67d1a1aa9d4',1,'Gondwana::Drawing::Direct::TextBlock']]]
+  ['totalpieces_32',['TotalPieces',['../class_slider_1_1_puzzle.html#af73f9de4ab367b23ffa33407d94b5766',1,'Slider::Puzzle']]],
+  ['totalpiecescorrect_33',['TotalPiecesCorrect',['../class_slider_1_1_puzzle.html#ad3835dac9ee630866f61083e6a19b796',1,'Slider::Puzzle']]],
+  ['totalsecondsenginerunning_34',['TotalSecondsEngineRunning',['../class_gondwana_1_1_engine.html#aff8192ad9f289084c19ebbf7ba1d743b',1,'Gondwana::Engine']]],
+  ['totalticksenginerunning_35',['TotalTicksEngineRunning',['../class_gondwana_1_1_engine.html#a1f43c5236ee7f4625e54bb4098a05353',1,'Gondwana::Engine']]],
+  ['trackmousemovement_36',['TrackMouseMovement',['../class_gondwana_1_1_input_1_1_mouse_1_1_mouse_event_configuration.html#abbdb5b8bcae2f98c552ba00991eca2ff',1,'Gondwana::Input::Mouse::MouseEventConfiguration']]],
+  ['triggers_37',['Triggers',['../class_gondwana_1_1_collisions_1_1_collision_group_registry.html#acbdcd07c5b6833821fa0b4334ac34745',1,'Gondwana::Collisions::CollisionGroupRegistry']]],
+  ['type_38',['Type',['../class_gondwana_1_1_timers_1_1_timer.html#ab77c85a918876971373c12ff567a8d75',1,'Gondwana::Timers::Timer']]],
+  ['typeface_39',['TypeFace',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#a6ffd5a29f999a827f1d0e67d1a1aa9d4',1,'Gondwana::Drawing::Direct::TextBlock']]]
 ];

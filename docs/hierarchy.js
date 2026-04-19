@@ -25,7 +25,9 @@ var hierarchy =
       [ "Gondwana.Video.VideoStateChangedEventArgs", "class_gondwana_1_1_video_1_1_video_state_changed_event_args.html", null ]
     ] ],
     [ "Form", null, [
-      [ "Gondwana.Assets.WinForms.MainForm", "class_gondwana_1_1_assets_1_1_win_forms_1_1_main_form.html", null ]
+      [ "Gondwana.Assets.WinForms.MainForm", "class_gondwana_1_1_assets_1_1_win_forms_1_1_main_form.html", null ],
+      [ "Gondwana.Demos.ParticleTest.Form1", "class_gondwana_1_1_demos_1_1_particle_test_1_1_form1.html", null ],
+      [ "Slider.PuzzleForm", "class_slider_1_1_puzzle_form.html", null ]
     ] ],
     [ "Gondwana.Drawing.Frame", "struct_gondwana_1_1_drawing_1_1_frame.html", null ],
     [ "Gondwana.Input.Gamepad.GamepadEventPoller", "class_gondwana_1_1_input_1_1_gamepad_1_1_gamepad_event_poller.html", null ],
@@ -98,7 +100,8 @@ var hierarchy =
       ] ],
       [ "Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter", "class_gondwana_1_1_win_forms_1_1_input_1_1_keyboard_1_1_win_forms_keyboard_adapter.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceAdapter", "class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_bitmap_render_surface_adapter.html", null ],
-      [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter", "class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_adapter.html", null ]
+      [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter", "class_gondwana_1_1_win_forms_1_1_rendering_1_1_win_form_gpu_render_surface_adapter.html", null ],
+      [ "Slider.Puzzle", "class_slider_1_1_puzzle.html", null ]
     ] ],
     [ "Gondwana.Drawing.IDrawable", "interface_gondwana_1_1_drawing_1_1_i_drawable.html", [
       [ "Gondwana.Drawing.Direct.IDirectDrawable", "interface_gondwana_1_1_drawing_1_1_direct_1_1_i_direct_drawable.html", null ],

@@ -19,5 +19,6 @@ var searchData=
   ['righttrigger_16',['RightTrigger',['../class_gondwana_1_1_input_1_1_gamepad_1_1_s_d_l2_1_1_sdl_gamepad_adapter.html#a842480f9d496b75669c1c2b8ceb68a81',1,'Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter.RightTrigger'],['../class_gondwana_1_1_win_forms_1_1_input_1_1_gamepad_1_1_x_input_1_1_x_input_gamepad_adapter.html#a6657acaacc48da5a696a4b105c375e17',1,'Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter.RightTrigger'],['../interface_gondwana_1_1_input_1_1_gamepad_1_1_i_gamepad_adapter.html#ac37c23c699c2b2532effddc6961f6346',1,'Gondwana.Input.Gamepad.IGamepadAdapter.RightTrigger']]],
   ['rightvolume_17',['RightVolume',['../class_gondwana_1_1_audio_1_1_stereo_pan_sample_provider.html#a6c3cc3bca9632422b514e0d403a22c35',1,'Gondwana::Audio::StereoPanSampleProvider']]],
   ['ringinnerradius01_18',['RingInnerRadius01',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a34d35b47802acbd11d8cd6b7c67e4042',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
-  ['rotation_19',['Rotation',['../class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance.html#a4f770b3998f877c48acaf994de659200',1,'Gondwana::Drawing::Direct::ImageLayer::ImageInstance']]]
+  ['rotation_19',['Rotation',['../class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance.html#a4f770b3998f877c48acaf994de659200',1,'Gondwana::Drawing::Direct::ImageLayer::ImageInstance']]],
+  ['rows_20',['Rows',['../class_slider_1_1_puzzle.html#a2959201a3e643545750cf62144219730',1,'Slider::Puzzle']]]
 ];

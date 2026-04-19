@@ -19,5 +19,7 @@ var searchData=
   ['pulseby_16',['PulseBy',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#a3778b20a48b8eee1a04c0dd3d9aac288',1,'Gondwana::Drawing::Sprites::Sprite']]],
   ['pulsecolor_17',['PulseColor',['../class_gondwana_1_1_drawing_1_1_direct_1_1_text_block.html#adea146bff87658bfd3b3e383664ca1f6',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['pulsefill_18',['PulseFill',['../class_gondwana_1_1_drawing_1_1_direct_1_1_direct_rectangle.html#aa160982417cd8c658e820211741f0030',1,'Gondwana::Drawing::Direct::DirectRectangle']]],
-  ['pulseto_19',['PulseTo',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#ac2ebb697c9b81542117ad1eccf6cbe5b',1,'Gondwana::Drawing::Sprites::Sprite']]]
+  ['pulseto_19',['PulseTo',['../class_gondwana_1_1_drawing_1_1_sprites_1_1_sprite.html#ac2ebb697c9b81542117ad1eccf6cbe5b',1,'Gondwana::Drawing::Sprites::Sprite']]],
+  ['puzzle_20',['Puzzle',['../class_slider_1_1_puzzle.html#a6dea1a5b85d1386360353bddf0097ddf',1,'Slider::Puzzle']]],
+  ['puzzleform_21',['PuzzleForm',['../class_slider_1_1_puzzle_form.html#a17b770bb9ab1f0de6fd5bd72fe1ebed8',1,'Slider::PuzzleForm']]]
 ];

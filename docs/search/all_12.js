@@ -51,5 +51,6 @@ var searchData=
   ['rightvolume_48',['RightVolume',['../class_gondwana_1_1_audio_1_1_stereo_pan_sample_provider.html#a6c3cc3bca9632422b514e0d403a22c35',1,'Gondwana::Audio::StereoPanSampleProvider']]],
   ['ring_49',['Ring',['../namespace_gondwana_1_1_drawing_1_1_direct_1_1_particles.html#af3fd14a7c01a388157964c14899f80a1ad4db177c94738b72bf9ce61e988ab1f1',1,'Gondwana::Drawing::Direct::Particles']]],
   ['ringinnerradius01_50',['RingInnerRadius01',['../class_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle_emitter.html#a34d35b47802acbd11d8cd6b7c67e4042',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
-  ['rotation_51',['Rotation',['../class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance.html#a4f770b3998f877c48acaf994de659200',1,'Gondwana.Drawing.Direct.ImageLayer.ImageInstance.Rotation'],['../struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#ac943addfd1e0fa2c9a363485fa1a5ebf',1,'Gondwana.Drawing.Direct.Particles.Particle.Rotation']]]
+  ['rotation_51',['Rotation',['../class_gondwana_1_1_drawing_1_1_direct_1_1_image_layer_1_1_image_instance.html#a4f770b3998f877c48acaf994de659200',1,'Gondwana.Drawing.Direct.ImageLayer.ImageInstance.Rotation'],['../struct_gondwana_1_1_drawing_1_1_direct_1_1_particles_1_1_particle.html#ac943addfd1e0fa2c9a363485fa1a5ebf',1,'Gondwana.Drawing.Direct.Particles.Particle.Rotation']]],
+  ['rows_52',['Rows',['../class_slider_1_1_puzzle.html#a2959201a3e643545750cf62144219730',1,'Slider::Puzzle']]]
 ];

@@ -42,7 +42,10 @@ jobs:
       - name: Pack
         run: dotnet pack -c Release --no-build -o ./nupkgs --nologo /p:EnableWindowsTargeting=true
 
-      - name: Publish projects needed for staged binaries
+      # ---------------------------
+      # Publish
+      # ---------------------------
+      - name: Publish projects
         run: |
           mkdir -p publish/Gondwana
           mkdir -p publish/Gondwana.Audio.Midi
@@ -62,16 +65,22 @@ jobs:
           dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o publish/Gondwana.Video --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+
+          # Apps/tools (full folders needed for assets)
+          dotnet publish Tooling/Gondwana.Assets.WinForms/Gondwana.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
 
-      - name: Stage exact downloadable binaries
+      # ---------------------------
+      # Stage release artifacts
+      # ---------------------------
+      - name: Stage release assets
         shell: bash
         run: |
           mkdir -p release-assets/Tooling
           mkdir -p release-assets/Demos
 
+          # Engine DLLs (flat)
           cp publish/Gondwana/Gondwana.dll release-assets/
           cp publish/Gondwana.Audio.Midi/Gondwana.Audio.Midi.dll release-assets/
           cp publish/Gondwana.Hosting/Gondwana.Hosting.dll release-assets/
@@ -80,15 +89,19 @@ jobs:
           cp publish/Gondwana.WinForms/Gondwana.WinForms.dll release-assets/
           cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll release-assets/
 
-          cp publish/Tooling/Gondwana.Assets.WinForms/Gondwana.Assets.WinForms.exe release-assets/Tooling/
-          cp publish/Demos/Slider/Slider.exe release-assets/Demos/
-          cp publish/Demos/Spot/Spot.exe release-assets/Demos/
+          # Apps/tools (FULL folders for assets/runtime)
+          cp -r publish/Tooling/Gondwana.Assets.WinForms release-assets/Tooling/
+          cp -r publish/Demos/Slider release-assets/Demos/
+          cp -r publish/Demos/Spot release-assets/Demos/
 
       - name: Zip binaries
         run: |
           cd release-assets
           zip -r ../Gondwana-${{ env.VERSION }}-binaries.zip .
 
+      # ---------------------------
+      # GitHub Release
+      # ---------------------------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -97,6 +110,9 @@ jobs:
           generate_release_notes: true
           files: Gondwana-${{ env.VERSION }}-binaries.zip
 
+      # ---------------------------
+      # NuGet (nuget.org)
+      # ---------------------------
       - name: Push packages to NuGet
         run: |
           find ./nupkgs -name "*.nupkg" ! -name "*.snupkg" -print0 | \
@@ -105,6 +121,9 @@ jobs:
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
 
+      # ---------------------------
+      # GitHub Packages
+      # ---------------------------
       - name: Add GitHub Packages source
         run: |
           dotnet nuget remove source github || true
@@ -122,6 +141,9 @@ jobs:
             --source github \
             --skip-duplicate
 
+      # ---------------------------
+      # Docs (Doxygen)
+      # ---------------------------
       - name: Install Doxygen
         run: sudo apt-get update && sudo apt-get install -y doxygen
 
@@ -158,5 +180,5 @@ jobs:
           touch .nojekyll
 
           git add .
-          git commit -m "Update docs for version $VERSION" || echo "No changes to commit"
+          git commit -m "Update docs for version $VERSION" || echo "No changes"
           git push origin gh-pages --force

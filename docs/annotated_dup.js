@@ -32,6 +32,11 @@ var annotated_dup =
         [ "EngineConfiguration", "class_gondwana_1_1_configuration_1_1_engine_configuration.html", "class_gondwana_1_1_configuration_1_1_engine_configuration" ],
         [ "EngineConfigurationFile", "class_gondwana_1_1_configuration_1_1_engine_configuration_file.html", "class_gondwana_1_1_configuration_1_1_engine_configuration_file" ]
       ] ],
+      [ "Demos", "namespace_gondwana_1_1_demos.html", [
+        [ "ParticleTest", "namespace_gondwana_1_1_demos_1_1_particle_test.html", [
+          [ "Form1", "class_gondwana_1_1_demos_1_1_particle_test_1_1_form1.html", "class_gondwana_1_1_demos_1_1_particle_test_1_1_form1" ]
+        ] ]
+      ] ],
       [ "Drawing", "namespace_gondwana_1_1_drawing.html", [
         [ "Animation", "namespace_gondwana_1_1_drawing_1_1_animation.html", [
           [ "Animator", "class_gondwana_1_1_drawing_1_1_animation_1_1_animator.html", "class_gondwana_1_1_drawing_1_1_animation_1_1_animator" ],
@@ -193,5 +198,9 @@ var annotated_dup =
       [ "IUiDispatcher", "interface_gondwana_1_1_i_ui_dispatcher.html", "interface_gondwana_1_1_i_ui_dispatcher" ],
       [ "TypedValueBag", "class_gondwana_1_1_typed_value_bag.html", "class_gondwana_1_1_typed_value_bag" ],
       [ "UiDispatcher", "class_gondwana_1_1_ui_dispatcher.html", "class_gondwana_1_1_ui_dispatcher" ]
+    ] ],
+    [ "Slider", "namespace_slider.html", [
+      [ "Puzzle", "class_slider_1_1_puzzle.html", "class_slider_1_1_puzzle" ],
+      [ "PuzzleForm", "class_slider_1_1_puzzle_form.html", "class_slider_1_1_puzzle_form" ]
     ] ]
 ];
