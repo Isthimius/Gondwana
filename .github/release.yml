@@ -1,0 +1,31 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - documentation
+      - docs
+      - chore
+    authors:
+      - github-actions[bot]
+  categories:
+    - title: Breaking Changes
+      labels:
+        - breaking-change
+        - Semver-Major
+
+    - title: New Features
+      labels:
+        - enhancement
+        - feature
+        - Semver-Minor
+
+    - title: Fixes
+      labels:
+        - bug
+        - fix
+        - bugfix
+        - Semver-Patch
+
+    - title: Other Changes
+      labels:
+        - "*"

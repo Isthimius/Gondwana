@@ -23,7 +23,7 @@
         <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
 
         <!-- Release notes -->
-        <PackageReleaseNotes>See GitHub Releases or CHANGELOG.md in the repository for full release notes.</PackageReleaseNotes>
+        <PackageReleaseNotes>See GitHub Releases or CHANGELOG.md in the repository at https://github.com/Isthimius/Gondwana/ for full release notes.</PackageReleaseNotes>
 
         <!-- NuGet packaging and assets -->
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>

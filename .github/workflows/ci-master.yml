@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - '.github/workflows/docs.yml'
+      - '.github/release.yml'
 
 jobs:
   build:
@@ -21,28 +22,55 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore --nologo
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
 
       - name: Pack (validation only)
-        run: dotnet pack --configuration Release --no-build
+        run: dotnet pack --configuration Release --no-build --nologo /p:EnableWindowsTargeting=true
 
-      - name: Publish binaries
+      - name: Publish projects needed for staged binaries
         run: |
-          mkdir -p artifacts
+          mkdir -p publish/Gondwana
+          mkdir -p publish/Gondwana.Audio.Midi
+          mkdir -p publish/Gondwana.Hosting
+          mkdir -p publish/Gondwana.Input.SDL2
+          mkdir -p publish/Gondwana.Video
+          mkdir -p publish/Gondwana.WinForms
+          mkdir -p publish/Gondwana.WinForms.Hosting
+          mkdir -p publish/Tooling/Gondwana.Assets.Winforms
+          mkdir -p publish/Demos/Slider
+          mkdir -p publish/Demos/Spot
 
-          dotnet publish Gondwana/Gondwana.csproj -c Release -o artifacts/Gondwana
-          dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o artifacts/Gondwana.Audio.Midi
-          dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o artifacts/Gondwana.Hosting
-          dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o artifacts/Gondwana.Input.SDL2
-          dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o artifacts/Gondwana.Video
-          dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o artifacts/Gondwana.WinForms
-          dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o artifacts/Gondwana.WinForms.Hosting
-          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.csproj -c Release -o artifacts/Tooling/Gondwana.Assets.Winforms
-          dotnet publish Demos/Slider/Slider.csproj -c Release -o artifacts/Demos/Slider
-          dotnet publish Demos/Spot/Spot.csproj -c Release -o artifacts/Demos/Spot
+          dotnet publish Gondwana/Gondwana.csproj -c Release -o publish/Gondwana --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o publish/Gondwana.Audio.Midi --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o publish/Gondwana.Hosting --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o publish/Gondwana.Input.SDL2 --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o publish/Gondwana.Video --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.csproj -c Release -o publish/Tooling/Gondwana.Assets.Winforms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+
+      - name: Stage exact downloadable binaries
+        shell: bash
+        run: |
+          mkdir -p artifacts/Tooling
+          mkdir -p artifacts/Demos
+
+          cp publish/Gondwana/Gondwana.dll artifacts/
+          cp publish/Gondwana.Audio.Midi/Gondwana.Audio.Midi.dll artifacts/
+          cp publish/Gondwana.Hosting/Gondwana.Hosting.dll artifacts/
+          cp publish/Gondwana.Input.SDL2/Gondwana.Input.SDL2.dll artifacts/
+          cp publish/Gondwana.Video/Gondwana.Video.dll artifacts/
+          cp publish/Gondwana.WinForms/Gondwana.WinForms.dll artifacts/
+          cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll artifacts/
+
+          cp publish/Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.exe artifacts/Tooling/
+          cp publish/Demos/Slider/Slider.exe artifacts/Demos/
+          cp publish/Demos/Spot/Spot.exe artifacts/Demos/
 
       - name: Zip artifacts
         run: |

@@ -33,40 +33,68 @@ jobs:
         run: echo "VERSION=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore --nologo
 
       - name: Build
-        run: dotnet build -c Release --no-restore
+        run: dotnet build -c Release --no-restore --nologo /p:EnableWindowsTargeting=true
 
       - name: Pack
-        run: dotnet pack -c Release --no-build -o ./nupkgs
+        run: dotnet pack -c Release --no-build -o ./nupkgs --nologo /p:EnableWindowsTargeting=true
 
-      - name: Publish binaries
+      - name: Publish projects needed for staged binaries
         run: |
-          mkdir -p artifacts
+          mkdir -p publish/Gondwana
+          mkdir -p publish/Gondwana.Audio.Midi
+          mkdir -p publish/Gondwana.Hosting
+          mkdir -p publish/Gondwana.Input.SDL2
+          mkdir -p publish/Gondwana.Video
+          mkdir -p publish/Gondwana.WinForms
+          mkdir -p publish/Gondwana.WinForms.Hosting
+          mkdir -p publish/Tooling/Gondwana.Assets.Winforms
+          mkdir -p publish/Demos/Slider
+          mkdir -p publish/Demos/Spot
 
-          dotnet publish Gondwana/Gondwana.csproj -c Release -o artifacts/Gondwana
-          dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o artifacts/Gondwana.Audio.Midi
-          dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o artifacts/Gondwana.Hosting
-          dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o artifacts/Gondwana.Input.SDL2
-          dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o artifacts/Gondwana.Video
-          dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o artifacts/Gondwana.WinForms
-          dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o artifacts/Gondwana.WinForms.Hosting
-          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.csproj -c Release -o artifacts/Tooling/Gondwana.Assets.Winforms
-          dotnet publish Demos/Slider/Slider.csproj -c Release -o artifacts/Demos/Slider
-          dotnet publish Demos/Spot/Spot.csproj -c Release -o artifacts/Demos/Spot
+          dotnet publish Gondwana/Gondwana.csproj -c Release -o publish/Gondwana --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o publish/Gondwana.Audio.Midi --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o publish/Gondwana.Hosting --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o publish/Gondwana.Input.SDL2 --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o publish/Gondwana.Video --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.csproj -c Release -o publish/Tooling/Gondwana.Assets.Winforms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+
+      - name: Stage exact downloadable binaries
+        shell: bash
+        run: |
+          mkdir -p release-assets/Tooling
+          mkdir -p release-assets/Demos
+
+          cp publish/Gondwana/Gondwana.dll release-assets/
+          cp publish/Gondwana.Audio.Midi/Gondwana.Audio.Midi.dll release-assets/
+          cp publish/Gondwana.Hosting/Gondwana.Hosting.dll release-assets/
+          cp publish/Gondwana.Input.SDL2/Gondwana.Input.SDL2.dll release-assets/
+          cp publish/Gondwana.Video/Gondwana.Video.dll release-assets/
+          cp publish/Gondwana.WinForms/Gondwana.WinForms.dll release-assets/
+          cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll release-assets/
+
+          cp publish/Tooling/Gondwana.Assets.Winforms/Gondwana.Assets.Winforms.exe release-assets/Tooling/
+          cp publish/Demos/Slider/Slider.exe release-assets/Demos/
+          cp publish/Demos/Spot/Spot.exe release-assets/Demos/
 
       - name: Zip binaries
         run: |
-          cd artifacts
-          zip -r ../Gondwana-${{ env.VERSION }}.zip .
+          cd release-assets
+          zip -r ../Gondwana-${{ env.VERSION }}-binaries.zip .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: Gondwana ${{ env.VERSION }}
           tag_name: ${{ github.ref_name }}
-          files: Gondwana-${{ env.VERSION }}.zip
+          generate_release_notes: true
+          files: Gondwana-${{ env.VERSION }}-binaries.zip
 
       - name: Push packages to NuGet
         run: |
