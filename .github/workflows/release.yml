@@ -140,8 +140,8 @@ jobs:
             xargs -0 -I {} dotnet nuget push "{}" \
             --source github \
             --api-key "${{ secrets.GITHUB_TOKEN }}" \
-            --skip-duplicate \
-            --timeout 900
+            --timeout 900 \
+            --disable-buffering
 
       # ---------------------------
       # Docs (Doxygen)
