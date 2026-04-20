@@ -1,53 +1,47 @@
 <Project>
-    <PropertyGroup>
-        <Company>Hidden Worlds Games</Company>
-        <Product>Gondwana Game Engine</Product>
-        <Authors>Michael Adkins</Authors>
+	<PropertyGroup>
+		<Company>Hidden Worlds Games</Company>
+		<Product>Gondwana Game Engine</Product>
+		<Authors>Michael Adkins</Authors>
 
-        <!-- License -->
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<!-- License -->
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 
-        <!-- Symbols / Source Link -->
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<!-- Symbols / Source Link -->
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 
-        <!-- XML docs -->
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <NoWarn>$(NoWarn);1591</NoWarn>
-    </PropertyGroup>
+		<!-- XML docs -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
 
-    <PropertyGroup Condition="'$(IsPackable)' == 'true'">
-        <!-- Symbols / Source Link -->
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+	<PropertyGroup Condition="'$(IsPackable)' == 'true'">
+		<!-- Symbols / Source Link -->
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
 
-        <!-- Release notes -->
-        <PackageReleaseNotes>See GitHub Releases or CHANGELOG.md in the repository at https://github.com/Isthimius/Gondwana/ for full release notes.</PackageReleaseNotes>
+		<!-- Release notes -->
+		<PackageReleaseNotes>See GitHub Releases or CHANGELOG.md in the repository at https://github.com/Isthimius/Gondwana/ for full release notes.</PackageReleaseNotes>
 
-        <!-- NuGet packaging and assets -->
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageIcon>gondwana-logo.png</PackageIcon>
-        <PackageTags>game-engine gamedev csharp dotnet</PackageTags>
+		<!-- NuGet packaging and assets -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageTags>game-engine gamedev csharp dotnet</PackageTags>
 
-        <!-- URLs / repository -->
-        <RepositoryUrl>https://github.com/isthimius/Gondwana</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    </PropertyGroup>
+		<!-- URLs / repository -->
+		<RepositoryUrl>https://github.com/Isthimius/Gondwana</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <!-- auto versioning -->
-        <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50" PrivateAssets="all" />
-    </ItemGroup>
+	<ItemGroup>
+		<!-- auto versioning -->
+		<PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50" PrivateAssets="all" />
+	</ItemGroup>
 
-    <ItemGroup Condition="'$(IsPackable)' == 'true'">
-        <!-- NuGet package assets -->
-        <None Include="README.md" Pack="true" PackagePath="" />
-        <None Include="$(MSBuildThisFileDirectory)gondwana-logo.png" Pack="true" PackagePath="" />
-
-        <!-- Release notes -->
-        <None Include="$(MSBuildThisFileDirectory)CHANGELOG.md" Pack="true" PackagePath="" Link="CHANGELOG.md" />
-    </ItemGroup>
+	<ItemGroup Condition="'$(IsPackable)' == 'true'">
+		<!-- Release notes -->
+		<None Include="$(MSBuildThisFileDirectory)CHANGELOG.md" Pack="true" PackagePath="" Link="CHANGELOG.md" />
+	</ItemGroup>
 </Project>

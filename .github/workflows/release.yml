@@ -134,14 +134,14 @@ jobs:
             --name github \
             "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
-      - name: Push packages to GitHub Packages
-        run: |
-            find ./nupkgs -name "*.nupkg" ! -name "*.snupkg" -print0 | \
-            xargs -0 -I {} dotnet nuget push "{}" \
-            --source github \
-            --api-key "${{ secrets.GITHUB_TOKEN }}" \
-            --skip-duplicate \
-            --timeout 900
+      #- name: Push packages to GitHub Packages
+      #  run: |
+      #      find ./nupkgs -name "*.nupkg" ! -name "*.snupkg" -print0 | \
+      #      xargs -0 -I {} dotnet nuget push "{}" \
+      #      --source github \
+      #      --api-key "${{ secrets.GITHUB_TOKEN }}" \
+      #      --skip-duplicate \
+      #      --timeout 900
 
       # ---------------------------
       # Docs (Doxygen)

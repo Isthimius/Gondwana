@@ -18,6 +18,8 @@
         <Title>Gondwana WinForms Platform Support</Title>
         <Description>WinForms-based platform support for the Gondwana Game Engine, providing rendering, input, and audio integration for Windows desktop applications.</Description>
         <PackageTags>$(PackageTags) winforms windows desktop rendering input audio</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>gondwana-logo.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -32,5 +34,10 @@
     <ItemGroup>
         <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+	</ItemGroup>
 
 </Project>

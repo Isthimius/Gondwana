@@ -1,4 +1,8 @@
-﻿# v2.1.0
+﻿# v2.1.1
+## Versioning & Packaging
+- Bumped engine and package version to **2.1.1**
+
+# v2.1.0
 ## Versioning & Packaging
 - Bumped engine and package version to **2.1.0**
 - Updated multiple NuGet dependencies and versioning configuration
