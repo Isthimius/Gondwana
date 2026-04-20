@@ -4,7 +4,6 @@ var namespaceGondwana =
     [ "Audio", "namespaceGondwana_1_1Audio.html", "namespaceGondwana_1_1Audio" ],
     [ "Collisions", "namespaceGondwana_1_1Collisions.html", "namespaceGondwana_1_1Collisions" ],
     [ "Configuration", "namespaceGondwana_1_1Configuration.html", "namespaceGondwana_1_1Configuration" ],
-    [ "Demos", "namespaceGondwana_1_1Demos.html", "namespaceGondwana_1_1Demos" ],
     [ "Drawing", "namespaceGondwana_1_1Drawing.html", "namespaceGondwana_1_1Drawing" ],
     [ "Extensibility", "namespaceGondwana_1_1Extensibility.html", null ],
     [ "Hosting", "namespaceGondwana_1_1Hosting.html", "namespaceGondwana_1_1Hosting" ],

@@ -25,7 +25,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="Gondwana.jpg"/></td>
+  <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;2.1.1</span>
    </div>
@@ -109,22 +109,22 @@ $(document).ready(function(){initNavTree('WinFormGpuRenderSurfaceControl_8cs_sou
 <div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html">    7</a></span><span class="keyword">public</span> <span class="keyword">partial class </span><a class="code hl_class" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html">WinFormGpuRenderSurfaceControl</a> : UserControl</div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">private</span> readonly SKGLControl _glControl;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">private</span> <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">readonly</a> <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKGLControl</a> _glControl;</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ac2d53419632f6e84e9f6e554ca5ead97">   10</a></span>    <span class="keyword">public</span> <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">RenderSurfaceHost&lt;GpuBackbuffer&gt;</a> <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">RenderSurfaceHost</a> { <span class="keyword">get</span>; <span class="keyword">private</span> <span class="keyword">set</span>; }</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
 <div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ad870ae843c5bc1fd743f84d552042635">   12</a></span>    <span class="keyword">public</span> <a class="code hl_function" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ad870ae843c5bc1fd743f84d552042635">WinFormGpuRenderSurfaceControl</a>()</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        _glControl = <span class="keyword">new</span> SKGLControl { Dock = DockStyle.Fill };</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        Controls.Add(_glControl);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        _glControl = <span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKGLControl</a> { <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Dock</a> = <a class="code hl_property" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ac2d53419632f6e84e9f6e554ca5ead97">DockStyle.Fill</a> };</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Controls</a>.Add(_glControl);</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        this.Load += (_, _) =&gt; InitializeBackbuffer();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <a class="code hl_property" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ac2d53419632f6e84e9f6e554ca5ead97">this.Load</a> += (<a class="code hl_property" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ac2d53419632f6e84e9f6e554ca5ead97">_</a>, <a class="code hl_property" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ac2d53419632f6e84e9f6e554ca5ead97">_</a>) =&gt; InitializeBackbuffer();</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    }</div>
 </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> InitializeBackbuffer()</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        var renderAdapter = <span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html">WinFormGpuRenderSurfaceAdapter</a>(_glControl);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">var</a> <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderAdapter</a> = <span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html">WinFormGpuRenderSurfaceAdapter</a>(_glControl);</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">RenderSurfaceHost</a> = <span class="keyword">new</span> <a class="code hl_property" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html#ac2d53419632f6e84e9f6e554ca5ead97">RenderSurfaceHost&lt;GpuBackbuffer&gt;</a>(<a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderAdapter</a>);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>

@@ -1,6 +1,5 @@
 var namespaceGondwana_1_1Assets =
 [
-    [ "WinForms", "namespaceGondwana_1_1Assets_1_1WinForms.html", "namespaceGondwana_1_1Assets_1_1WinForms" ],
     [ "AssetsFile", "classGondwana_1_1Assets_1_1AssetsFile.html", "classGondwana_1_1Assets_1_1AssetsFile" ],
     [ "AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", "classGondwana_1_1Assets_1_1AssetsFileEntry" ],
     [ "AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", "classGondwana_1_1Assets_1_1AssetsFileIdentifier" ],

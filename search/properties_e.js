@@ -8,13 +8,11 @@ var searchData=
   ['onspawn_5',['OnSpawn',['../classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#ab20099561004cbc5f3ac7a759431fcf8',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
   ['onupdate_6',['OnUpdate',['../classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#acf35ad3a5338e3dc8b65eb28553da6d8',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
   ['opacity_7',['opacity',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#aae3d2e4f49c8d84902cc5bd26ce854df',1,'Gondwana.Drawing.Direct.DirectVideo.Opacity'],['../classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a69c6a77b634d2e70f4b7a4e724ee0596',1,'Gondwana.Drawing.Direct.DirectDrawingBase.Opacity']]],
-  ['openspace_8',['OpenSpace',['../classSlider_1_1Puzzle.html#a007e0ea8b3ba5160fffa7fdd021051ce',1,'Slider::Puzzle']]],
-  ['originalbitmapsize_9',['OriginalBitmapSize',['../classSlider_1_1Puzzle.html#ad9acce0a8f483c7d40659fc4eb59dfd7',1,'Slider::Puzzle']]],
-  ['originalbytes_10',['OriginalBytes',['../classGondwana_1_1Audio_1_1AudioResource.html#a6c3559866140508513b9fc25be885d7e',1,'Gondwana::Audio::AudioResource']]],
-  ['originpx_11',['OriginPx',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a21f256bf1956f7cbf867049dee1d182f',1,'Gondwana::Scenes::SceneLayer']]],
-  ['other_12',['Other',['../structGondwana_1_1Collisions_1_1CollisionResult.html#adb72ba927780f983706b4701ee4d3bc2',1,'Gondwana::Collisions::CollisionResult']]],
-  ['outlineenabled_13',['OutlineEnabled',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aaa9cdf867e4935510b1084463f104ba2',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['outlinepointsworld_14',['OutlinePointsWorld',['../classGondwana_1_1Drawing_1_1Tile.html#a56ea85f53ad251db7f223588a341773a',1,'Gondwana::Drawing::Tile']]],
-  ['overhangpixels_15',['overhangpixels',['../structGondwana_1_1Drawing_1_1Frame.html#a9c2ed2e18f4848fdd0c3e28454d69277',1,'Gondwana.Drawing.Frame.OverhangPixels'],['../classGondwana_1_1Drawing_1_1Tile.html#a06b3bff9f658e13237a591b2d8ec1a69',1,'Gondwana.Drawing.Tile.OverhangPixels'],['../classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a090f3d18fd676e5dcd7608c404b9f41d',1,'Gondwana.Drawing.Tilesheets.Tilesheet.OverhangPixels']]],
-  ['owner_16',['owner',['../interfaceGondwana_1_1Collisions_1_1ICollider.html#a41eae72a171b3b4d2c46dfc696f01a1d',1,'Gondwana.Collisions.ICollider.Owner'],['../classGondwana_1_1Drawing_1_1Collisions_1_1TileCollider.html#a86d32ba662e2955a63a2a3fd085907dd',1,'Gondwana.Drawing.Collisions.TileCollider.Owner']]]
+  ['originalbytes_8',['OriginalBytes',['../classGondwana_1_1Audio_1_1AudioResource.html#a6c3559866140508513b9fc25be885d7e',1,'Gondwana::Audio::AudioResource']]],
+  ['originpx_9',['OriginPx',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a21f256bf1956f7cbf867049dee1d182f',1,'Gondwana::Scenes::SceneLayer']]],
+  ['other_10',['Other',['../structGondwana_1_1Collisions_1_1CollisionResult.html#adb72ba927780f983706b4701ee4d3bc2',1,'Gondwana::Collisions::CollisionResult']]],
+  ['outlineenabled_11',['OutlineEnabled',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aaa9cdf867e4935510b1084463f104ba2',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['outlinepointsworld_12',['OutlinePointsWorld',['../classGondwana_1_1Drawing_1_1Tile.html#a56ea85f53ad251db7f223588a341773a',1,'Gondwana::Drawing::Tile']]],
+  ['overhangpixels_13',['overhangpixels',['../structGondwana_1_1Drawing_1_1Frame.html#a9c2ed2e18f4848fdd0c3e28454d69277',1,'Gondwana.Drawing.Frame.OverhangPixels'],['../classGondwana_1_1Drawing_1_1Tile.html#a06b3bff9f658e13237a591b2d8ec1a69',1,'Gondwana.Drawing.Tile.OverhangPixels'],['../classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a090f3d18fd676e5dcd7608c404b9f41d',1,'Gondwana.Drawing.Tilesheets.Tilesheet.OverhangPixels']]],
+  ['owner_14',['owner',['../interfaceGondwana_1_1Collisions_1_1ICollider.html#a41eae72a171b3b4d2c46dfc696f01a1d',1,'Gondwana.Collisions.ICollider.Owner'],['../classGondwana_1_1Drawing_1_1Collisions_1_1TileCollider.html#a86d32ba662e2955a63a2a3fd085907dd',1,'Gondwana.Drawing.Collisions.TileCollider.Owner']]]
 ];

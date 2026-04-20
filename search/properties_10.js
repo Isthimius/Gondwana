@@ -19,6 +19,5 @@ var searchData=
   ['righttrigger_16',['righttrigger',['../classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadAdapter.html#a842480f9d496b75669c1c2b8ceb68a81',1,'Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter.RightTrigger'],['../classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a6657acaacc48da5a696a4b105c375e17',1,'Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter.RightTrigger'],['../interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html#ac37c23c699c2b2532effddc6961f6346',1,'Gondwana.Input.Gamepad.IGamepadAdapter.RightTrigger']]],
   ['rightvolume_17',['RightVolume',['../classGondwana_1_1Audio_1_1StereoPanSampleProvider.html#a6c3cc3bca9632422b514e0d403a22c35',1,'Gondwana::Audio::StereoPanSampleProvider']]],
   ['ringinnerradius01_18',['RingInnerRadius01',['../classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#a34d35b47802acbd11d8cd6b7c67e4042',1,'Gondwana::Drawing::Direct::Particles::ParticleEmitter']]],
-  ['rotation_19',['Rotation',['../classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstance.html#a4f770b3998f877c48acaf994de659200',1,'Gondwana::Drawing::Direct::ImageLayer::ImageInstance']]],
-  ['rows_20',['Rows',['../classSlider_1_1Puzzle.html#a2959201a3e643545750cf62144219730',1,'Slider::Puzzle']]]
+  ['rotation_19',['Rotation',['../classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstance.html#a4f770b3998f877c48acaf994de659200',1,'Gondwana::Drawing::Direct::ImageLayer::ImageInstance']]]
 ];

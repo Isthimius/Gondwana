@@ -2,9 +2,6 @@ var annotated_dup =
 [
     [ "Gondwana", "namespaceGondwana.html", [
       [ "Assets", "namespaceGondwana_1_1Assets.html", [
-        [ "WinForms", "namespaceGondwana_1_1Assets_1_1WinForms.html", [
-          [ "MainForm", "classGondwana_1_1Assets_1_1WinForms_1_1MainForm.html", "classGondwana_1_1Assets_1_1WinForms_1_1MainForm" ]
-        ] ],
         [ "AssetsFile", "classGondwana_1_1Assets_1_1AssetsFile.html", "classGondwana_1_1Assets_1_1AssetsFile" ],
         [ "AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", "classGondwana_1_1Assets_1_1AssetsFileEntry" ],
         [ "AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", "classGondwana_1_1Assets_1_1AssetsFileIdentifier" ]
@@ -31,11 +28,6 @@ var annotated_dup =
       [ "Configuration", "namespaceGondwana_1_1Configuration.html", [
         [ "EngineConfiguration", "classGondwana_1_1Configuration_1_1EngineConfiguration.html", "classGondwana_1_1Configuration_1_1EngineConfiguration" ],
         [ "EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", "classGondwana_1_1Configuration_1_1EngineConfigurationFile" ]
-      ] ],
-      [ "Demos", "namespaceGondwana_1_1Demos.html", [
-        [ "ParticleTest", "namespaceGondwana_1_1Demos_1_1ParticleTest.html", [
-          [ "Form1", "classGondwana_1_1Demos_1_1ParticleTest_1_1Form1.html", "classGondwana_1_1Demos_1_1ParticleTest_1_1Form1" ]
-        ] ]
       ] ],
       [ "Drawing", "namespaceGondwana_1_1Drawing.html", [
         [ "Animation", "namespaceGondwana_1_1Drawing_1_1Animation.html", [
@@ -198,9 +190,5 @@ var annotated_dup =
       [ "IUiDispatcher", "interfaceGondwana_1_1IUiDispatcher.html", "interfaceGondwana_1_1IUiDispatcher" ],
       [ "TypedValueBag", "classGondwana_1_1TypedValueBag.html", "classGondwana_1_1TypedValueBag" ],
       [ "UiDispatcher", "classGondwana_1_1UiDispatcher.html", "classGondwana_1_1UiDispatcher" ]
-    ] ],
-    [ "Slider", "namespaceSlider.html", [
-      [ "Puzzle", "classSlider_1_1Puzzle.html", "classSlider_1_1Puzzle" ],
-      [ "PuzzleForm", "classSlider_1_1PuzzleForm.html", "classSlider_1_1PuzzleForm" ]
     ] ]
 ];
