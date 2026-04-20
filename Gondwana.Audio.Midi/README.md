@@ -18,6 +18,14 @@ It enables playback of `.mid` / `.midi` files with embedded SoundFont support, m
 dotnet add package Gondwana.Audio.Midi
 ```
 
+## Usage
+
+Register MIDI support through the Gondwana audio system:
+
+```csharp
+host.Engine.InitializeMidiAudioFormats();
+```
+
 ## Documentation
 
 -   **Source Code**\
@@ -29,18 +37,10 @@ dotnet add package Gondwana.Audio.Midi
 -   **API Reference (Doxygen)**\
     https://isthimius.github.io/Gondwana/
 
-## Usage
-
-Register MIDI support through the Gondwana audio system:
-
-```csharp
-host.Engine.InitializeMidiAudioFormats();
-```
-
 ## Related Packages
 
-- `Gondwana` — Core engine
-- `Gondwana.Hosting` — Engine bootstrapping and lifecycle
+- `Gondwana` â€” Core engine
+- `Gondwana.Hosting` â€” Engine bootstrapping and lifecycle
 
 ## License
 
