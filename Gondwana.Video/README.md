@@ -1,28 +1,64 @@
-# Gondwana Game Engine
+# Gondwana.Video
 
-**Gondwana** is a 2D and 2.5D game engine for C# / .NET 8 focused on
-tile-based worlds, layered rendering, and practical engine architecture.
+**Gondwana.Video** adds video playback capabilities to the Gondwana Game Engine using LibVLCSharp.
 
-It provides fine-grained control over rendering, timing, and scene
-composition while remaining lightweight and straightforward to integrate
-into .NET applications.
+It supports embedding video playback into scenes for cutscenes, backgrounds, or UI elements.
 
 ## Features
 
--   Tile and sprite rendering
--   Layered scenes with z-ordering
--   Parallax support
--   Camera / view system
--   Collision detection
--   Particle effects
--   SkiaSharp-based rendering
--   NAudio-based audio playback
--   Cross-platform architecture
+- Video playback support
+- Integration with Gondwana rendering
+- Backed by LibVLCSharp
+- Suitable for cutscenes and overlays
 
 ## Installation
 
-``` bash
-dotnet add package Gondwana
+```bash
+dotnet add package Gondwana.Video
+```
+
+## Requirements
+
+- VLC runtime libraries must be available on the target system
+
+## Usage
+
+Initialize video support through the rendering or media system:
+
+```csharp
+// Assume this is inside your GameHost or initialization flow
+
+// 1. Engine pieces
+var renderSurfaceHost = host.Engine.RenderSurfaceHost;
+var view = host.Engine.Managers.Views.PrimaryView;
+
+// 2. Create the VLC-backed video player
+IVideoPlayer player = new VlcVideoPlayer(
+    vlcArgs: new[]
+    {
+        "--no-audio-time-stretch",
+        "--no-snapshot-preview"
+    },
+    initialWidth: 1280,
+    initialHeight: 720);
+
+// Optional: configure behavior
+player.Loop = true;
+
+// 3. Define source
+var source = new Uri("assets/video/intro.mp4", UriKind.Relative);
+
+// 4. Define screen-space bounds (HUD-style)
+var bounds = new Rectangle(50, 50, 800, 450);
+
+// 5. Create DirectVideo (this will call Open + Play internally in your pipeline)
+var video = new DirectVideo(
+    player,
+    source,
+    renderSurfaceHost,
+    view,
+    bounds,
+    name: "IntroVideo");
 ```
 
 ## Documentation
@@ -38,12 +74,8 @@ dotnet add package Gondwana
 
 ## Related Packages
 
--   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
--   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
--   `Gondwana.Input.SDL2` --- SDL2-based input handling
--   `Gondwana.Video` --- Video playback support
--   `Gondwana.WinForms` --- WinForms rendering and input adapters
--   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle
+- `Gondwana` — Core engine
+- `Gondwana.WinForms` — Rendering surface integration
 
 ## License
 
