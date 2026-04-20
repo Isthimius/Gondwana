@@ -61,7 +61,7 @@ PROJECT_BRIEF          = "Gondwana is a cross-platform 2.5D game and rendering e
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = Gondwana.jpg
+PROJECT_LOGO           = Gondwana.png
 
 # With the PROJECT_ICON tag one can specify an icon that is included in the tabs
 # when the HTML document is shown. Doxygen will copy the logo to the output
@@ -1116,7 +1116,9 @@ EXCLUDE_PATTERNS       = */Testing/* \
                          */Gondwana.Design/* \
                          */Gondwana.CoordinateTest/* \
                          */TestHarness/* \
-                         *.md
+                         *.md \
+                         */Demos/* \
+                         */Tooling/*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
