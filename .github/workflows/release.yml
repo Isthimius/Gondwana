@@ -136,10 +136,12 @@ jobs:
 
       - name: Push packages to GitHub Packages
         run: |
-          find ./nupkgs -name "*.nupkg" ! -name "*.snupkg" -print0 | \
-          xargs -0 -I {} dotnet nuget push "{}" \
+            find ./nupkgs -name "*.nupkg" ! -name "*.snupkg" -print0 | \
+            xargs -0 -I {} dotnet nuget push "{}" \
             --source github \
-            --skip-duplicate
+            --api-key "${{ secrets.GITHUB_TOKEN }}" \
+            --skip-duplicate \
+            --timeout 900
 
       # ---------------------------
       # Docs (Doxygen)
