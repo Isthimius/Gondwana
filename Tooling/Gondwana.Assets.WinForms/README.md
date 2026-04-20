@@ -11,12 +11,6 @@ It is intended for development workflows rather than runtime use.
 - Zip-backed asset containers
 - Designed for integration with Gondwana pipelines
 
-## Installation
-
-```bash
-dotnet add package Gondwana.Assets.WinForms
-```
-
 ## Usage
 
 Use within tooling applications to manage asset bundles:
@@ -40,7 +34,7 @@ assets.Save();
 
 ## Related Packages
 
-- `Gondwana` — Core engine
+- `Gondwana` â€” Core engine
 
 ## License
 
