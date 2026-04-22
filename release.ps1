@@ -54,7 +54,7 @@ Write-Host ""
 # ----------------------------------------
 $confirmation = Read-Host "This will deploy version $tagName. Once deployed to NuGet, this cannot be undone. Are you sure you want to deploy? Type DEPLOY to confirm"
 
-if ($confirmation -ne "DEPLOY") {
+if ($confirmation -cne "DEPLOY") {
     Write-Host "Deployment cancelled."
     exit 1
 }
