@@ -22,13 +22,15 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 ## 🎯 Who Gondwana Is For
 
-Gondwana is designed for developers who want:
+Gondwana a code-first game engine for .NET developers who want to build games in C#, instead of just clicking an editor.
+
+Gondwana features:
 - Fine-grained control over rendering and timing
 - Deterministic, debuggable draw pipelines
 - A code-first engine without editor lock-in
 - A modern .NET engine that respects classic rendering principles
 
-It is intended to serve as a flexible foundation for custom 2D and 2.5D games, tools, and simulations.
+It is intended to serve as a flexible foundation for custom 2D and 2.5D games.
 
 ---
 
@@ -72,11 +74,12 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 | Namespace                   | Responsibility                                                                                 |
 | --------------------------- | ---------------------------------------------------------------------------------------------- |
 | **Gondwana**                | Core engine loop, lifecycle management, configuration, and global services.                    |
+| **Gondwana.Collisions**     | Bounding-volume collision detection and kinematic physics integration.                         |
 | **Gondwana.Drawing**        | Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables. |
 | **Gondwana.Input**          | Unified input polling for keyboard, mouse, and gamepad devices.                                |
 | **Gondwana.Movement**       | Sprite movement controllers, easing functions, and scripted motion paths.                      |
 | **Gondwana.Rendering**      | Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.             |
-| **Gondwana.Scenes**         | Scene and SceneLayer composition, visibility, and layer-level refresh tracking.                |
+| **Gondwana.Scenes**         | Hierarchical scene graph — Scenes, SceneLayers, and grid-based spatial organization.           |     |
 | **Gondwana.Timers**         | High-resolution timing, scheduled callbacks, and engine-cycle events.                          |
 | **Gondwana.Audio / Video**  | Audio playback, mixing, MIDI support, and experimental video integration.                      |
 | **Gondwana.WinForms / Web** | Platform adapters responsible for hosting render surfaces and wiring input.                    |
@@ -96,12 +99,13 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 
 ## 🛠 Roadmap
 
-_Gondwana is actively evolving, with a focus on strengthening core simulation and tooling rather than chasing engine sprawl._
+_Gondwana is actively evolving, with a focus on strengthening core features and tooling rather than chasing engine sprawl._
 
-- [ ] Physics integration (collisions, rigid bodies)  
-- [ ] Scene system for complex game flow  
-- [ ] More samples: tile maps, platformer demo  
-- [ ] Improved WebAssembly support  
+- [ ] supplemental UI tooling for level design  
+- [ ] More samples: tile maps, platformer demo
+- [ ] Improved GpuBackbuffer support  
+- [ ] Improved WebAssembly support
+- [ ] Enhancing rendering pipeline extensibility
 
 ---
 
