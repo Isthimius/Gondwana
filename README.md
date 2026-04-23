@@ -22,9 +22,7 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 ## 🎯 Who Gondwana Is For
 
-Gondwana a code-first game engine for .NET developers who want to build games in C#, instead of just clicking an editor.
-
-Gondwana features:
+Gondwana a code-first game engine for .NET developers who want to build games in C#, instead of just clicking an editor. Gondwana features:
 - Fine-grained control over rendering and timing
 - Deterministic, debuggable draw pipelines
 - A code-first engine without editor lock-in
