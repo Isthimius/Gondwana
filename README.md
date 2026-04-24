@@ -39,7 +39,8 @@ It is intended to serve as a flexible foundation for custom 2D and 2.5D games.
 - **DirectDrawing system** for sprites, shapes, text, and effects:
   - `DirectRectangle`, `DirectImage`, `TextBlock`, `DirectParticles` (new particle system with emitters)  
 - **High-resolution timing** (`HighResTimer`) for smooth frame updates  
-- **Thread-safe rendering manager** (`DirectDrawingManager`) with Z-order sorting  
+- **Thread-safe rendering manager** (`DirectDrawingManager`) with Z-order sorting
+- **Native, first-class sprite and camera movement** tweening, follow., and smooth lerp
 - **Extensible resource pipeline** for tilesheets, sprites, and audio  
 - **Experimental video & audio integration** (`LibVLCSharp`, `NAudio`)
 
@@ -103,6 +104,8 @@ _Gondwana is actively evolving, with a focus on strengthening core features and 
 - [ ] More samples: tile maps, platformer demo
 - [ ] Improved GpuBackbuffer support  
 - [ ] Improved WebAssembly support
+- [ ] Tilemap .tmx support
+- [ ] Native, first-class pathfinding
 - [ ] Enhancing rendering pipeline extensibility
 
 ---
