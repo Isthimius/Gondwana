@@ -4,3 +4,11 @@
 
 /.vs/Gondwana/v18/workspaceFileList.bin
 /.vs
+/Demos
+/Gondwana.Audio.Midi/obj
+/Gondwana.Hosting/obj
+/Gondwana.Input.SDL2/obj
+/Gondwana.Video/obj
+/Gondwana.WinForms/obj
+/Gondwana.WinForms.Hosting/obj
+/Tooling/Gondwana.Assets.WinForms/obj
