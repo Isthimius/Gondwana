@@ -20,6 +20,12 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     private SKRectI _sourceRect;
     private SKRect _destRect;
 
+    // Tracks whether GrContext has been captured and the first-available event fired.
+    private bool _grContextReady;
+
+    // Set to 1 when the GL control is resized so OnPaintSurface can fire ResizeRequested.
+    private int _pendingResize;
+
     /// <summary>
     /// Gets or sets the color used to clear the surface before rendering.
     /// </summary>
@@ -31,20 +37,36 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     public GRContext? GrContext { get; private set; }
 
     /// <summary>
+    /// Raised once, the first time the <see cref="GRContext"/> becomes available in
+    /// <see cref="OnPaintSurface"/>.  Subscribe to this event to call
+    /// <see cref="GpuBackbuffer.Initialize"/> on the GL thread.
+    /// </summary>
+    public event Action<GRContext>? GrContextFirstAvailable;
+
+    /// <summary>
+    /// Raised on the GL thread when the control has been resized and a valid
+    /// <see cref="GRContext"/> is available.  The arguments are the context and the new
+    /// width and height in pixels.  Subscribe to call
+    /// <see cref="GpuBackbuffer.Initialize"/> with the new dimensions.
+    /// </summary>
+    public event Action<GRContext, int, int>? ResizeRequested;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="WinFormGpuRenderSurfaceAdapter"/> class.
     /// </summary>
     /// <param name="gl">The SKGLControl to use as the render target.</param>
-    /// <exception cref="NotImplementedException">This constructor is not yet implemented.</exception>
     public WinFormGpuRenderSurfaceAdapter(SKGLControl gl)
         : base(gl.Width, gl.Height)
     {
-        throw new NotImplementedException();
-
         _glControl = gl;
 
         // Wire events
         _glControl.PaintSurface += OnPaintSurface;
-        _glControl.Resize += (_, _) => SetDestinationSize(_glControl.Width, _glControl.Height);
+        _glControl.Resize += (_, _) =>
+        {
+            SetDestinationSize(_glControl.Width, _glControl.Height);
+            Interlocked.Exchange(ref _pendingResize, 1);
+        };
 
         // On modern SkiaSharp, SKGLControl exposes GRContext; otherwise capture it in the first paint.
         GrContext = _glControl.GRContext; // may be null until first paint; we also set in OnPaintSurface
@@ -85,6 +107,23 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     {
         // Capture/refresh the GRContext so callers can wire the backbuffer to the same one.
         GrContext ??= _glControl.GRContext;
+
+        if (GrContext != null)
+        {
+            if (!_grContextReady)
+            {
+                // First time the context is available: clear any resize that happened before the
+                // first paint (the Initialize call will use the current adapter dimensions).
+                _grContextReady = true;
+                Interlocked.Exchange(ref _pendingResize, 0);
+                GrContextFirstAvailable?.Invoke(GrContext);
+            }
+            else if (Interlocked.Exchange(ref _pendingResize, 0) == 1)
+            {
+                // Subsequent resize: reinitialize the backbuffer's GPU resources on the GL thread.
+                ResizeRequested?.Invoke(GrContext, Width, Height);
+            }
+        }
 
         var canvas = e.Surface.Canvas;
 
