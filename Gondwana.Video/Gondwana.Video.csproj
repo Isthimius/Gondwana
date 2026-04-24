@@ -15,6 +15,8 @@
         <Title>Gondwana Video Playback</Title>
         <Description>Video playback support for the Gondwana Game Engine, including integration for loading and rendering video content within the engine.</Description>
         <PackageTags>$(PackageTags) video playback media rendering</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>gondwana-logo.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,5 +26,10 @@
     <ItemGroup>
         <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+	</ItemGroup>
 
 </Project>

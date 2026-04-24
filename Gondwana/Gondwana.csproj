@@ -17,6 +17,8 @@
 		<Title>Gondwana Game Engine</Title>
 		<Description>2D and 2.5D C#/.NET game engine with tile maps, sprites, layered scenes, camera/view systems, and SkiaSharp rendering. Designed for tile-based worlds and practical engine architecture.</Description>
         <PackageTags>$(PackageTags) 2d 2.5d tilemap tiles sprites skia skiaSharp engine</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>gondwana-logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -36,6 +38,11 @@
 		<None Update="gondwana.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
 	</ItemGroup>
 
 </Project>
