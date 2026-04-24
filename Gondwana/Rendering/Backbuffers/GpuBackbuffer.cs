@@ -29,14 +29,18 @@ public class GpuBackbuffer : BackbufferBase
     private SKSurface? _surface;
 
     // Set to true once Initialize() succeeds; reset to false on Dispose().
+    // Declared volatile so that reads on any thread always observe the latest value written
+    // by Initialize() or Dispose() without requiring an explicit lock.
     private volatile bool _initialized;
 
     // Set to true once Dispose() has been called; guards against double-disposal.
     private bool _disposed;
 
-    // Resize-pending state (written by UI/render thread, cleared by GL thread in Initialize).
+    // Set to 1 by RequestResize() to signal that a resize is outstanding.
+    // Cleared back to 0 by Initialize() after GPU resources have been recreated.
+    // The new dimensions are NOT stored here because the adapter already tracks them
+    // independently and passes them directly to Initialize() via ResizeRequested.
     private int _resizeFlag;           // 0 = none, 1 = pending
-    private int _reqW, _reqH;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GpuBackbuffer"/> class with the specified dimensions.
@@ -73,8 +77,10 @@ public class GpuBackbuffer : BackbufferBase
     public void Initialize(GRContext grContext, int width, int height)
     {
         // Dispose old GL resources (surface and render-target only — GRContext is not owned here).
-        _surface?.Dispose(); _surface = null;
-        _renderTarget?.Dispose(); _renderTarget = null;
+        _surface?.Dispose();
+        _surface = null;
+        _renderTarget?.Dispose();
+        _renderTarget = null;
 
         _grContext = grContext;
 
@@ -108,8 +114,6 @@ public class GpuBackbuffer : BackbufferBase
     /// <param name="height">The new height in pixels.</param>
     protected internal override void RequestResize(int width, int height)
     {
-        Volatile.Write(ref _reqW, width);
-        Volatile.Write(ref _reqH, height);
         Interlocked.Exchange(ref _resizeFlag, 1); // coalesce requests
     }
 
@@ -138,6 +142,8 @@ public class GpuBackbuffer : BackbufferBase
         if (Volatile.Read(ref _resizeFlag) == 1) return;
 
         var c = _surface.Canvas;
+        // Restore any open save-layers from the previous frame, then set up a clean
+        // coordinate space and clip region for the new frame (same pattern as BitmapBackbuffer).
         c.RestoreToCount(1);
         c.Save();
         c.ResetMatrix();
@@ -196,8 +202,10 @@ public class GpuBackbuffer : BackbufferBase
         _disposed = true;
         _initialized = false;
 
-        _surface?.Dispose(); _surface = null;
-        _renderTarget?.Dispose(); _renderTarget = null;
+        _surface?.Dispose();
+        _surface = null;
+        _renderTarget?.Dispose();
+        _renderTarget = null;
         _grContext = null;   // not owned — do not dispose
 
         base.Dispose();
