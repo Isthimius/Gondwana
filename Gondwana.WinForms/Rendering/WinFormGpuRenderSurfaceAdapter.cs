@@ -62,14 +62,20 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         _glControl = gl;
 
         // Store the resize handler in a field so it can be unsubscribed in Dispose().
-        // Note: SetDestinationSize updates Width/Height immediately on the UI thread, but the
-        // actual GPU surface resize happens later on the GL thread (via ResizeRequested fired from
-        // OnPaintSurface).  Between a resize event and the next paint, Width/Height may not match
-        // the actual GPU surface dimensions; this is by design and harmless in practice.
+        // WinForms can transiently report 0×0 during minimize/layout; avoid committing that size
+        // so downstream resize code (which divides by the previous width/height) never observes a
+        // zero denominator.  We skip both the dimension update and the pending-resize flag when the
+        // control reports non-positive dimensions.
         _resizeHandler = (_, _) =>
         {
-            SetDestinationSize(_glControl.Width, _glControl.Height);
-            Interlocked.Exchange(ref _pendingResize, 1);
+            var width = _glControl.Width;
+            var height = _glControl.Height;
+
+            if (width > 0 && height > 0)
+            {
+                SetDestinationSize(width, height);
+                Interlocked.Exchange(ref _pendingResize, 1);
+            }
         };
 
         // Wire events
