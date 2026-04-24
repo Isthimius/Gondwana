@@ -176,7 +176,7 @@ jobs:
 
       - name: Inject version into Doxyfile
         run: |
-          sed "s/@PROJECT_VERSION@/${VERSION}/g" docs/doxy/Gondwana_doxy > docs/doxy/Gondwana_doxy.gen
+          sed "s/@PROJECT_VERSION@/v${VERSION}/g" docs/doxy/Gondwana_doxy > docs/doxy/Gondwana_doxy.gen
 
       - name: Generate docs
         run: |
