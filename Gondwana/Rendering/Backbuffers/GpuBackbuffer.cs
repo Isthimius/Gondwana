@@ -51,12 +51,6 @@ public class GpuBackbuffer : BackbufferBase
     // Set to true once Dispose() has been called; guards against double-disposal.
     private bool _disposed;
 
-    // Set to 1 by RequestResize() to signal that a resize is outstanding.
-    // Cleared back to 0 by Initialize() after GPU resources have been recreated.
-    // The new dimensions are NOT stored here because the adapter already tracks them
-    // independently and passes them directly to Initialize() via ResizeRequested.
-    private int _resizeFlag;           // 0 = none, 1 = pending
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GpuBackbuffer"/> class with the specified dimensions.
     /// </summary>
@@ -123,7 +117,6 @@ public class GpuBackbuffer : BackbufferBase
         ) ?? throw new InvalidOperationException("Could not create GPU surface.");
 
         // Clear any pending-resize flag and mark as ready.
-        Interlocked.Exchange(ref _resizeFlag, 0);
         _initialized = true;
         UpdateSize(width, height);
     }
@@ -136,7 +129,9 @@ public class GpuBackbuffer : BackbufferBase
     /// <param name="height">The new height in pixels.</param>
     protected internal override void RequestResize(int width, int height)
     {
-        Interlocked.Exchange(ref _resizeFlag, 1); // coalesce requests
+        // Intentional no-op: for the GPU path, resize is handled entirely on the GL thread.
+        // The adapter fires ResizeRequested from OnPaintSurface (with the GL context current),
+        // which calls Initialize() with the new dimensions directly.
     }
 
     /// <summary>
@@ -158,9 +153,8 @@ public class GpuBackbuffer : BackbufferBase
     /// </remarks>
     protected internal override void BeginFrame()
     {
-        // Skip if not ready: either never initialized, or a resize is outstanding.
+        // Skip if not ready: not yet initialized or surface was disposed/nulled during reinit.
         if (!_initialized || _surface is null) return;
-        if (Volatile.Read(ref _resizeFlag) == 1) return;
 
         var c = _surface.Canvas;
         // Restore any open save-layers from the previous frame, then set up a clean
