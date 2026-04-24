@@ -10,6 +10,7 @@ namespace Gondwana.WinForms.Rendering;
 public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly SKGLControl _glControl;
+    private readonly EventHandler _resizeHandler;
 
     // The image we'll draw this frame (should be created/snapshotted off the SAME GRContext)
     private SKImage? _currentImage;
@@ -60,13 +61,16 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     {
         _glControl = gl;
 
-        // Wire events
-        _glControl.PaintSurface += OnPaintSurface;
-        _glControl.Resize += (_, _) =>
+        // Store the resize handler in a field so it can be unsubscribed in Dispose().
+        _resizeHandler = (_, _) =>
         {
             SetDestinationSize(_glControl.Width, _glControl.Height);
             Interlocked.Exchange(ref _pendingResize, 1);
         };
+
+        // Wire events
+        _glControl.PaintSurface += OnPaintSurface;
+        _glControl.Resize += _resizeHandler;
 
         // On modern SkiaSharp, SKGLControl exposes GRContext; otherwise capture it in the first paint.
         GrContext = _glControl.GRContext; // may be null until first paint; we also set in OnPaintSurface
@@ -121,7 +125,13 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             else if (Interlocked.Exchange(ref _pendingResize, 0) == 1)
             {
                 // Subsequent resize: reinitialize the backbuffer's GPU resources on the GL thread.
-                ResizeRequested?.Invoke(GrContext, Width, Height);
+                // WinForms controls can report zero size while minimized or before layout completes;
+                // suppress invalid resize requests so downstream GPU initialization is not attempted
+                // with non-positive dimensions.
+                var width = Width;
+                var height = Height;
+                if (width > 0 && height > 0)
+                    ResizeRequested?.Invoke(GrContext, width, height);
             }
         }
 
@@ -164,7 +174,11 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// </summary>
     public void Dispose()
     {
-        if (!_glControl.IsDisposed) _glControl.PaintSurface -= OnPaintSurface;
+        if (!_glControl.IsDisposed)
+        {
+            _glControl.PaintSurface -= OnPaintSurface;
+            _glControl.Resize -= _resizeHandler;
+        }
 
         // These MUST be disposed on the GL thread; do a last paint if needed.
         // If you're disposing off the UI thread at shutdown, it's usually fine

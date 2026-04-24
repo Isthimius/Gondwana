@@ -17,12 +17,27 @@ namespace Gondwana.Rendering.Backbuffers;
 /// or <c>ResizeRequested</c> handler on the adapter) before any rendering can take place.
 /// </para>
 /// <para>
-/// Until <see cref="Initialize"/> has been called, all rendering methods are no-ops and
-/// <see cref="Canvas"/> and <see cref="Snapshot"/> throw <see cref="InvalidOperationException"/>.
+/// <strong>Threading model:</strong> <see cref="Initialize"/> must be called on the GL thread (the
+/// same thread on which <see cref="SkiaSharp.Views.Desktop.SKGLControl"/> paints).  All methods that
+/// access <see cref="GRContext"/> or <see cref="SKSurface"/> — including <see cref="BeginFrame"/>,
+/// <see cref="EndFrame"/>, <see cref="DrawTileFrame"/>, <see cref="Canvas"/>, and
+/// <see cref="Snapshot"/> — are also assumed to be called from the GL thread once the surface has
+/// been initialized.  The engine's background render thread must therefore drive rendering
+/// synchronously inside <c>SKGLControl.PaintSurface</c> (or a shared-context approach must be
+/// adopted) to ensure the OpenGL context is current during GPU operations.
+/// </para>
+/// <para>
+/// Until <see cref="Initialize"/> has been called (or while a resize is pending), drawing methods
+/// are no-ops, <see cref="Canvas"/> returns a discarded off-screen canvas, and
+/// <see cref="Snapshot"/> returns an empty placeholder image so that callers never crash.
 /// </para>
 /// </remarks>
 public class GpuBackbuffer : BackbufferBase
 {
+    // Tiny raster surface used as a safe no-op target before Initialize() succeeds.
+    // All rendering operations against this canvas are silently discarded.
+    private readonly SKSurface _nullSurface;
+
     // GL resources — null until Initialize() is called on the GL thread.
     private GRContext? _grContext;
     private GRBackendRenderTarget? _renderTarget;
@@ -54,7 +69,10 @@ public class GpuBackbuffer : BackbufferBase
     public GpuBackbuffer(int width, int height)
         : base(width, height)
     {
-        // Intentionally empty: GPU resources must be created on the GL thread via Initialize().
+        // Create a tiny raster surface used as a safe no-op target before Initialize() succeeds.
+        // Drawing to this canvas is silently discarded once the GPU surface is ready.
+        _nullSurface = SKSurface.Create(new SKImageInfo(1, 1, SKColorType.Rgba8888, SKAlphaType.Premul))
+            ?? throw new InvalidOperationException("Could not create fallback raster surface.");
     }
 
     /// <summary>
@@ -76,6 +94,10 @@ public class GpuBackbuffer : BackbufferBase
     /// </exception>
     public void Initialize(GRContext grContext, int width, int height)
     {
+        // Suppress initialization attempts with non-positive dimensions (e.g. minimized window).
+        if (width <= 0 || height <= 0)
+            return;
+
         // Dispose old GL resources (surface and render-target only — GRContext is not owned here).
         _surface?.Dispose();
         _surface = null;
@@ -120,13 +142,12 @@ public class GpuBackbuffer : BackbufferBase
     /// <summary>
     /// Gets the SkiaSharp canvas for drawing operations.
     /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when <see cref="Initialize"/> has not been called yet.
-    /// </exception>
-    public override SKCanvas Canvas =>
-        _surface?.Canvas
-        ?? throw new InvalidOperationException(
-            "GpuBackbuffer has not been initialized. Call Initialize() from the GL thread first.");
+    /// <remarks>
+    /// Before <see cref="Initialize"/> has been called (or while a resize is pending), this returns
+    /// a temporary off-screen canvas so that callers never crash.  Drawing to it is silently discarded.
+    /// Once initialized this must only be called from the GL thread.
+    /// </remarks>
+    public override SKCanvas Canvas => _surface?.Canvas ?? _nullSurface.Canvas;
 
     /// <summary>
     /// Prepares the backbuffer for a new rendering frame.
@@ -167,26 +188,30 @@ public class GpuBackbuffer : BackbufferBase
     /// <param name="destRectScreen">The destination rectangle in screen coordinates.</param>
     protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
+        // No-op before initialization or during a pending resize to avoid accessing an invalid surface.
+        if (_surface is null) return;
         var image = tile.CurrentFrame.SkImage;
         if (image != null)
             Canvas.DrawImage(image, destRectScreen.ToSKRect());
     }
 
     /// <summary>
-    /// Creates an immutable GPU-backed snapshot of the current backbuffer contents.
+    /// Creates an immutable snapshot of the current backbuffer contents.
     /// </summary>
+    /// <remarks>
+    /// Before <see cref="Initialize"/> has been called (or while a resize is pending), returns a
+    /// blank 1×1 placeholder image so that callers never crash.  Presentation of this placeholder
+    /// is harmless: the adapter clips it to an empty source rectangle.
+    /// Once initialized this must only be called from the GL thread.
+    /// </remarks>
     /// <exception cref="ObjectDisposedException">Thrown if the backbuffer has been disposed.</exception>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown if <see cref="Initialize"/> has not been called yet.
-    /// </exception>
     protected internal override SKImage Snapshot()
     {
         if (_disposed)
             throw new ObjectDisposedException(nameof(GpuBackbuffer));
-        if (_surface is null)
-            throw new InvalidOperationException(
-                "GpuBackbuffer has not been initialized. Call Initialize() from the GL thread first.");
-        return _surface.Snapshot();
+
+        // Return a blank placeholder when the GPU surface is not yet ready.
+        return (_surface ?? _nullSurface).Snapshot();
     }
 
     /// <summary>
@@ -207,6 +232,8 @@ public class GpuBackbuffer : BackbufferBase
         _renderTarget?.Dispose();
         _renderTarget = null;
         _grContext = null;   // not owned — do not dispose
+
+        _nullSurface.Dispose();
 
         base.Dispose();
     }
