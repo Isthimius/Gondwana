@@ -1,11 +1,4 @@
 # Screenshots
 
-Place demo screenshots or animated GIFs here. The main README expects:
-
-| Filename | Demo |
-|---|---|
-| `spot.gif` (or `spot.png`) | Spot demo game |
-| `particles.gif` (or `particles.png`) | Particles demo |
-| `coordinates.gif` (or `coordinates.png`) | Coordinates test |
-
-Images can be `.gif` (animated) or `.png` (static). Update the `src` attributes in the README table if you use `.png` instead of `.gif`.
+Coordinates Test
+<img width="800" height="447" alt="coordinates" src="https://github.com/user-attachments/assets/6ae8183e-b4e6-4740-9a01-9679ed66cd40" />
