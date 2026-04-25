@@ -7,7 +7,8 @@ namespace Gondwana.WinForms.Rendering;
 public partial class WinFormGpuRenderSurfaceControl : UserControl
 {
     private readonly SKGLControl _glControl;
-    public RenderSurfaceHost<GpuBackbuffer> RenderSurfaceHost { get; private set; }
+    private WinFormGpuRenderSurfaceAdapter? _renderAdapter;
+    public RenderSurfaceHost<GpuBackbuffer> RenderSurfaceHost { get; private set; } = null!;
 
     public WinFormGpuRenderSurfaceControl()
     {
@@ -19,8 +20,22 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
 
     private void InitializeBackbuffer()
     {
-        var renderAdapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
-        RenderSurfaceHost = new RenderSurfaceHost<GpuBackbuffer>(renderAdapter);
+        _renderAdapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
+        RenderSurfaceHost = new RenderSurfaceHost<GpuBackbuffer>(_renderAdapter);
+
+        var gpuBackbuffer = (GpuBackbuffer)RenderSurfaceHost.Backbuffer;
+
+        // Called once from the GL thread when the GRContext becomes available for the first time.
+        _renderAdapter.GrContextFirstAvailable += (grContext) =>
+        {
+            gpuBackbuffer.Initialize(grContext, _renderAdapter.Width, _renderAdapter.Height);
+        };
+
+        // Called from the GL thread whenever the control is resized and the GRContext is ready.
+        _renderAdapter.ResizeRequested += (grContext, w, h) =>
+        {
+            gpuBackbuffer.Initialize(grContext, w, h);
+        };
     }
 
     /// <summary>
@@ -33,6 +48,7 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
         {
             components.Dispose();
             RenderSurfaceHost?.Dispose();
+            _renderAdapter?.Dispose();
         }
 
         base.Dispose(disposing);
