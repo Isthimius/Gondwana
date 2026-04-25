@@ -8,7 +8,7 @@ namespace Gondwana.Demos.Spot;
 
 internal partial class NewGameDialog : Form
 {
-    internal NewGameOptions Options { get; private set; }
+    internal NewGameOptions Options { get; private set; } = null!;
 
     internal NewGameDialog()
     {

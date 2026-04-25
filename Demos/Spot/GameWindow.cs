@@ -8,9 +8,9 @@ namespace Gondwana.Demos.Spot;
 
 internal partial class GameWindow : Form
 {
-    private SpotGameHost _gameHost;
+    private SpotGameHost? _gameHost;
     private static readonly Size DefaultWindowSize = new(769, 769);
-    private MenuStrip _menuStrip;
+    private MenuStrip _menuStrip = null!;
 
     internal GameWindow()
     {

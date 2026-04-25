@@ -11,6 +11,7 @@
         <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
         <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
         <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">

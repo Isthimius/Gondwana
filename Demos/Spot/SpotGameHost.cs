@@ -29,44 +29,44 @@ internal sealed class SpotGameHost : WinFormsGameHost
     private bool _handleHumanInput = false;
     private bool _showScores = true;
 
-    private ParticleSurface _particleSurface;
+    private ParticleSurface? _particleSurface;
 
-    internal TextBlock _player1Text;
-    internal DirectRectangle _player1Rectangle;
-    internal TextBlock _player2Text;
-    internal DirectRectangle _player2Rectangle;
-    internal TextBlock _player3Text;
-    internal DirectRectangle _player3Rectangle;
-    internal TextBlock _player4Text;
-    internal DirectRectangle _player4Rectangle;
-    internal TextBlock _gameMessageText;
-    internal DirectRectangle _gameMessageRectangle;
+    internal TextBlock? _player1Text;
+    internal DirectRectangle? _player1Rectangle;
+    internal TextBlock? _player2Text;
+    internal DirectRectangle? _player2Rectangle;
+    internal TextBlock? _player3Text;
+    internal DirectRectangle? _player3Rectangle;
+    internal TextBlock? _player4Text;
+    internal DirectRectangle? _player4Rectangle;
+    internal TextBlock? _gameMessageText;
+    internal DirectRectangle? _gameMessageRectangle;
 
-    internal AudioResource _music;
+    internal AudioResource _music = null!;
 
-    internal AudioResource _spotSelected;
-    internal AudioResource _velcro;
-    internal AudioResource _drop;
-    internal AudioResource _gameWin;
-    internal AudioResource _gameLose;
-    internal AudioResource _bump;
-    internal AudioResource _knock;
+    internal AudioResource? _spotSelected;
+    internal AudioResource _velcro = null!;
+    internal AudioResource _drop = null!;
+    internal AudioResource _gameWin = null!;
+    internal AudioResource _gameLose = null!;
+    internal AudioResource _bump = null!;
+    internal AudioResource? _knock;
 
-    internal Tilesheet _blueSpot;
-    internal Tilesheet _greenSpot;
-    internal Tilesheet _pinkSpot;
-    internal Tilesheet _redSpot;
-    internal Tilesheet _yellowSpot;
-    internal Tilesheet _blueSpotHappy;
-    internal Tilesheet _greenSpotHappy;
-    internal Tilesheet _pinkSpotHappy;
-    internal Tilesheet _redSpotHappy;
-    internal Tilesheet _yellowSpotHappy;
-    internal Tilesheet _clouds;
+    internal Tilesheet _blueSpot = null!;
+    internal Tilesheet _greenSpot = null!;
+    internal Tilesheet _pinkSpot = null!;
+    internal Tilesheet _redSpot = null!;
+    internal Tilesheet _yellowSpot = null!;
+    internal Tilesheet _blueSpotHappy = null!;
+    internal Tilesheet _greenSpotHappy = null!;
+    internal Tilesheet _pinkSpotHappy = null!;
+    internal Tilesheet _redSpotHappy = null!;
+    internal Tilesheet _yellowSpotHappy = null!;
+    internal Tilesheet _clouds = null!;
 
-    internal SKTypeface _font;
+    internal SKTypeface _font = null!;
 
-    internal SpotGame SpotGame { get; private set; }
+    internal SpotGame SpotGame { get; private set; } = null!;
 
     private static readonly Random _rng = new();
 
@@ -280,7 +280,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         }
         else if (!enabled)
         {
-            _particleSurface.Dispose();
+            _particleSurface?.Dispose();
         }
     }
 
@@ -393,7 +393,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
         {
             foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
             {
-                cell.Sprite.StartJiggle(loop: true);
+                cell.Sprite?.StartJiggle(loop: true);
             }
         }
     }
@@ -402,7 +402,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
         {
-            cell.Sprite.StopJiggle();
+            cell.Sprite?.StopJiggle();
         }
     }
 
@@ -630,10 +630,10 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _player2Text.SetText(SpotGame.Players[1].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[1]));
 
         if (SpotGame.Players.Length >= 3)
-            _player3Text.SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]));
+            _player3Text?.SetText(SpotGame.Players[2].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[2]));
 
         if (SpotGame.Players.Length >= 4)
-            _player4Text.SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
+            _player4Text?.SetText(SpotGame.Players[3].Name + " - " + SpotGame.GetPlayerScore(SpotGame.Players[3]));
     }
 
     private void CreateGameOverText(List<Player> winningPlayers)
@@ -797,12 +797,12 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnSpotSelected(SpotGameField.Cell cell)
     {
-        Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy.Name);
+        Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy!.Name);
 
         if (SoundEffectsEnabled)
             _spotSelected?.Play();
 
-        cell.Sprite.StopJiggle();
+        cell.Sprite!.StopJiggle();
         cell.Sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
         cell.Sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
     }
@@ -811,8 +811,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) deselected", cell.X, cell.Y);
 
-        cell.Sprite.StartJiggle(loop: true);
-        cell.Sprite.CurrentFrame = cell.OccupiedBy.DefaultFrame;
+        cell.Sprite!.StartJiggle(loop: true);
+        cell.Sprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
         cell.Sprite.StopPulse(true, 0.2f);
     }
 
@@ -872,7 +872,7 @@ internal sealed class SpotGameHost : WinFormsGameHost
             handler = () =>
             {
                 oldSprite.ResizeComplete -= handler;
-                oldSprite.CurrentFrame = cell.OccupiedBy.DefaultFrame;
+                oldSprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
                 oldSprite.ResizeTo(new(56, 56), 0.2f);
             };
 

@@ -19,8 +19,8 @@ internal partial class SpotGameField : SceneLayer
     {
         internal int X { get; set; }
         internal int Y { get; set; }
-        internal Player OccupiedBy { get; set; } = null;
-        internal Sprite Sprite { get; set; } = null;
+        internal Player? OccupiedBy { get; set; } = null;
+        internal Sprite? Sprite { get; set; } = null;
     }
 
     private SpotGameField(int columns, int rows) : base(columns, rows, 64, 64) { }
@@ -174,7 +174,7 @@ internal partial class SpotGameField : SceneLayer
                 movementType = MovementType.Illegal;
         }
 
-        return new(player, movementType, cell, fromX, fromY, destX, destY);
+        return new(player!, movementType, cell, fromX, fromY, destX, destY);
     }
 
     internal List<PlayerMovement> GetAllValidMoves()
