@@ -14,7 +14,7 @@
         <PackageId>Gondwana.Video</PackageId>
         <Title>Gondwana Video Playback</Title>
         <Description>Video playback support for the Gondwana Game Engine, including integration for loading and rendering video content within the engine.</Description>
-        <PackageTags>$(PackageTags) video playback media rendering</PackageTags>
+        <PackageTags>game-engine gamedev csharp dotnet video playback media rendering</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
     </PropertyGroup>

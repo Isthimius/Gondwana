@@ -13,7 +13,7 @@
         <PackageId>Gondwana.Hosting</PackageId>
         <Title>Gondwana Hosting Framework</Title>
         <Description>Hosting and application bootstrap utilities for the Gondwana Game Engine, including base game host class for lifecycle management, and integration wiring for rendering, input, and audio adapters.</Description>
-        <PackageTags>$(PackageTags) hosting bootstrap lifecycle game-loop initialization engine-host</PackageTags>
+        <PackageTags>game-engine gamedev csharp dotnet hosting bootstrap lifecycle game-loop initialization engine-host</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
     </PropertyGroup>

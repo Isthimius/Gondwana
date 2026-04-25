@@ -27,7 +27,6 @@
 
 		<!-- NuGet packaging and assets -->
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<PackageTags>game-engine gamedev csharp dotnet</PackageTags>
 
 		<!-- URLs / repository -->
 		<RepositoryUrl>https://github.com/Isthimius/Gondwana</RepositoryUrl>

@@ -13,7 +13,7 @@
         <PackageId>Gondwana.Input.SDL2</PackageId>
         <Title>Gondwana SDL2 Input Support</Title>
         <Description>SDL2-based input support for the Gondwana Game Engine, including gamepad and controller integration through the engine's input system.</Description>
-        <PackageTags>$(PackageTags) input sdl2 gamepad controller</PackageTags>
+        <PackageTags>game-engine gamedev csharp dotnet input sdl2 gamepad controller</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
     </PropertyGroup>

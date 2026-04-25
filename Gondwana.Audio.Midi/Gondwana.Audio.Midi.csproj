@@ -13,7 +13,7 @@
         <PackageId>Gondwana.Audio.Midi</PackageId>
         <Title>Gondwana Audio MIDI Support</Title>
         <Description>MIDI audio playback support for the Gondwana Game Engine, including integration for loading and playing MIDI files through the engine's audio system.</Description>
-        <PackageTags>$(PackageTags) audio midi adapter playback music sound</PackageTags>
+        <PackageTags>game-engine gamedev csharp dotnet audio midi adapter playback music sound</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
     </PropertyGroup>
