@@ -18,7 +18,8 @@ internal class SpotGame : IDisposable
     internal event Action<SpotGameField.Cell> InvalidSelectionAttempted;
     internal event Action<SpotGameField.Cell> InvalidMoveAttempted;
     internal event Action<Player> NoValidMovesAvailable;
-    internal event Action<PlayerMovement> PlayerMoved;
+    internal event Action<PlayerMovement> PlayerMoveStarted;
+    internal event Action<PlayerMovement> PlayerMoveStopped;
     internal event Action<List<SpotGameField.Cell>> CellsCaptured;
     internal event Action GameOver;
 
@@ -159,10 +160,17 @@ internal class SpotGame : IDisposable
         var fromCell = playerMovement.FromCell;
         var toCell = SpotGameField.GetCell(playerMovement.DestX, playerMovement.DestY);
 
-        Action<ScriptedMovement> handler = null;
-        handler = (ScriptedMovement scriptedMovement) =>
+        Action<ScriptedMovement> startHandler = null;
+        startHandler = (ScriptedMovement scriptedMovement) =>
         {
-            sprite.Movement.ScriptedMovementStopped -= handler;
+            sprite.Movement.ScriptedMovementStarted -= startHandler;
+            PlayerMoveStarted?.Invoke(playerMovement);
+        };
+
+        Action <ScriptedMovement> stopHandler = null;
+        stopHandler = (ScriptedMovement scriptedMovement) =>
+        {
+            sprite.Movement.ScriptedMovementStopped -= stopHandler;
             sprite.CurrentFrame = playerMovement.Player.DefaultFrame;
 
             var capturedCells = SpotGameField.CaptureAdjacentCells(
@@ -176,7 +184,7 @@ internal class SpotGame : IDisposable
             if (IsGameOver)
                 GameOver?.Invoke();
             else
-                PlayerMoved?.Invoke(playerMovement);
+                PlayerMoveStopped?.Invoke(playerMovement);
         };
 
         switch (playerMovement.MovementType)
@@ -188,7 +196,8 @@ internal class SpotGame : IDisposable
                 sprite.CurrentFrame = playerMovement.Player.DefaultFrame;
 
                 sprite = clonedSprite;
-                sprite.Movement.ScriptedMovementStopped += handler;
+                sprite.Movement.ScriptedMovementStarted += startHandler;
+                sprite.Movement.ScriptedMovementStopped += stopHandler;
                 sprite.Movement.MoveTo(new(playerMovement.DestX, playerMovement.DestY),
                                            0.4f,
                                            Gondwana.Movement.Easing.EasingKind.SmootherStep,
@@ -202,7 +211,8 @@ internal class SpotGame : IDisposable
 
             case MovementType.Jump:
                 sprite.StopPulse();
-                sprite.Movement.ScriptedMovementStopped += handler;
+                sprite.Movement.ScriptedMovementStarted += startHandler;
+                sprite.Movement.ScriptedMovementStopped += stopHandler;
                 sprite.Movement.MoveTo(new(playerMovement.DestX, playerMovement.DestY),
                                        0.4f,
                                        Gondwana.Movement.Easing.EasingKind.EaseInCubic,
@@ -250,7 +260,7 @@ internal class SpotGame : IDisposable
         SpotDeselected = null;
         InvalidSelectionAttempted = null;
         InvalidMoveAttempted = null;
-        PlayerMoved = null;
+        PlayerMoveStopped = null;
         CellsCaptured = null;
         NoValidMovesAvailable = null;
         GameOver = null;

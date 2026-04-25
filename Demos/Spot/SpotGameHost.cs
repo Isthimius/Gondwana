@@ -714,7 +714,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
         SpotGame.SpotDeselected += OnSpotDeselected;
         SpotGame.InvalidSelectionAttempted += OnInvalidSelectionAttempted;
         SpotGame.InvalidMoveAttempted += OnInvalidMoveAttempted;
-        SpotGame.PlayerMoved += OnPlayerMoved;
+        SpotGame.PlayerMoveStarted += OnPlayerMoveStarted;
+        SpotGame.PlayerMoveStopped += OnPlayerMoveStopped;
         SpotGame.CellsCaptured += OnCellsCaptured;
         SpotGame.NoValidMovesAvailable += OnNoValidMovesAvailable;
         SpotGame.GameOver += OnGameOver;
@@ -732,7 +733,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
         SpotGame.SpotDeselected -= OnSpotDeselected;
         SpotGame.InvalidSelectionAttempted -= OnInvalidSelectionAttempted;
         SpotGame.InvalidMoveAttempted -= OnInvalidMoveAttempted;
-        SpotGame.PlayerMoved -= OnPlayerMoved;
+        SpotGame.PlayerMoveStarted -= OnPlayerMoveStarted;
+        SpotGame.PlayerMoveStopped -= OnPlayerMoveStopped;
         SpotGame.CellsCaptured -= OnCellsCaptured;
         SpotGame.NoValidMovesAvailable -= OnNoValidMovesAvailable;
         SpotGame.GameOver -= OnGameOver;
@@ -830,7 +832,16 @@ internal sealed class SpotGameHost : WinFormsGameHost
             _knock?.Play();
     }
 
-    private void OnPlayerMoved(PlayerMovement movement)
+    private void OnPlayerMoveStarted(PlayerMovement movement)
+    {
+        if (movement.MovementType == MovementType.Jump)
+        {
+            if (SoundEffectsEnabled)
+                _velcro?.Play();
+        }
+    }
+
+    private void OnPlayerMoveStopped(PlayerMovement movement)
     {
         Engine.Logger.LogDebug("Player {0} performed a {1} move from ({2}, {3}) to ({4}, {5})",
             movement.Player.Name,
@@ -838,17 +849,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
             movement.FromX, movement.FromY,
             movement.DestX, movement.DestY);
 
-        if (movement.MovementType == MovementType.Jump)
-        {
-            if (SoundEffectsEnabled)
-                _velcro?.Play();
-        }
-
-        if (movement.MovementType == MovementType.Clone)
-        {
-            if (SoundEffectsEnabled)
-                _drop?.Play();
-        }
+        if (SoundEffectsEnabled)
+            _drop?.Play();
 
         if (_showScores)
             SetPlayerScores();
