@@ -802,18 +802,20 @@ internal sealed class SpotGameHost : WinFormsGameHost
         if (SoundEffectsEnabled)
             _spotSelected?.Play();
 
-        cell.Sprite!.StopJiggle();
-        cell.Sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
-        cell.Sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
+        var sprite = cell.Sprite!;
+        sprite.StopJiggle();
+        sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
+        sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
     }
 
     private void OnSpotDeselected(SpotGameField.Cell cell)
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) deselected", cell.X, cell.Y);
 
-        cell.Sprite!.StartJiggle(loop: true);
-        cell.Sprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
-        cell.Sprite.StopPulse(true, 0.2f);
+        var sprite = cell.Sprite!;
+        sprite.StartJiggle(loop: true);
+        sprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
+        sprite.StopPulse(true, 0.2f);
     }
 
     private void OnInvalidSelectionAttempted(SpotGameField.Cell cell)
