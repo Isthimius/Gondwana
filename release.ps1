@@ -9,7 +9,21 @@ function Require-Command {
     param([string]$Name)
 
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
-        throw "Required command '$Name' was not found on PATH."
+        Write-Host "Required command '$Name' was not found on PATH."
+
+        $answer = Read-Host "Would you like to install '$Name' globally via npm? [Y/N]"
+        if ($answer -match '^[Yy]$') {
+            & npm install -g $Name
+            if ($LASTEXITCODE -ne 0) {
+                throw "npm install -g $Name failed."
+            }
+            if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
+                throw "Command '$Name' still not found after npm install."
+            }
+        }
+        else {
+            throw "Required command '$Name' was not found on PATH."
+        }
     }
 }
 
