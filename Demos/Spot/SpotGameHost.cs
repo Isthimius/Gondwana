@@ -346,11 +346,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
             {
                 var cell = SpotGame.SpotGameField.GetCell((int)selectedCoord.X, (int)selectedCoord.Y);
 
-                if (SpotGame.AttemptSelectCell(cell, out var playerMovement))
-                {
-                    if (playerMovement != null)
-                        SpotGame.ExecuteMove(playerMovement.Value);
-                }
+                if (SpotGame.AttemptSelectCell(cell, out var playerMovement) && playerMovement != null)
+                    SpotGame.ExecuteMove(playerMovement.Value);
             }
         }
     }
@@ -744,11 +741,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
 
-        if (MusicEnabled)
-        {
-            if (!_music.IsPlaying)
-                _music.Play();
-        }
+        if (MusicEnabled && !_music.IsPlaying)
+            _music.Play();
 
         if (CloudsEnabled)
             AddClouds();
@@ -836,11 +830,8 @@ internal sealed class SpotGameHost : WinFormsGameHost
 
     private void OnPlayerMoveStarted(PlayerMovement movement)
     {
-        if (movement.MovementType == MovementType.Jump)
-        {
-            if (SoundEffectsEnabled)
-                _velcro?.Play();
-        }
+        if (movement.MovementType == MovementType.Jump && SoundEffectsEnabled)
+            _velcro?.Play();
     }
 
     private void OnPlayerMoveStopped(PlayerMovement movement)

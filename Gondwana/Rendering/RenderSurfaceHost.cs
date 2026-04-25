@@ -40,17 +40,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// <summary>
     /// Occurs at the beginning of the backbuffer rendering process.
     /// </summary>
-    public event Action RenderBackbufferBegin;
+    public event Action? RenderBackbufferBegin;
 
     /// <summary>
     /// Occurs at the end of the backbuffer rendering process.
     /// </summary>
-    public event Action RenderBackbufferEnd;
+    public event Action? RenderBackbufferEnd;
 
     /// <summary>
     /// Occurs when a backbuffer render operation is skipped because the scene is not dirty.
     /// </summary>
-    public event Action RenderBackbufferNoOp;
+    public event Action? RenderBackbufferNoOp;
 
     private RenderSurfaceHost() : base() => _viewManager = new ViewManager(this);
 
@@ -453,7 +453,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     public void Dispose()
     {
         Dispose(true);
-        GC.SuppressFinalize(this);
     }
 
     /// <summary>
