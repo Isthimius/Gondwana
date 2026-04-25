@@ -18,6 +18,32 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 - 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
 - 📦 **NuGet** - [https://www.nuget.org/packages/Gondwana](https://www.nuget.org/packages/Gondwana)
 
+## ⬇️ Downloads
+
+| Build | Download |
+|---|---|
+| **Latest Release** (v2.1.1) | [📦 Gondwana-2.1.1-binaries.zip](https://github.com/Isthimius/Gondwana/releases/download/v2.1.1/Gondwana-2.1.1-binaries.zip) &nbsp;·&nbsp; [🏷 All Releases](https://github.com/Isthimius/Gondwana/releases) |
+| **Latest CI Build** (`master`) | [⬇️ CI (master) workflow](https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml) — open the most recent successful run and download **Gondwana-binaries** from the Artifacts section |
+
+---
+
+## 🎬 Demo Previews
+
+<table>
+<tr>
+  <th align="center">Spot</th>
+  <th align="center">Particles</th>
+  <th align="center">Coordinates Test</th>
+</tr>
+<tr>
+  <td align="center"><img src="screenshots/spot.gif" alt="Spot demo" width="300"/></td>
+  <td align="center"><img src="screenshots/particles.gif" alt="Particles demo" width="300"/></td>
+  <td align="center"><img src="screenshots/coordinates.gif" alt="Coordinates test" width="300"/></td>
+</tr>
+</table>
+
+> 💡 Drop `.gif` or `.png` files named `spot.gif`, `particles.gif`, and `coordinates.gif` into [`screenshots/`](screenshots/) to populate this section.
+
 ---
 
 ## 🎯 Who Gondwana Is For
