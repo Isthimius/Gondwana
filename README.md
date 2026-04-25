@@ -27,11 +27,7 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 **Spot!**
 
-<img width="772" height="826" alt="spot_1-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" />
-
-<img width="772" height="826" alt="spot_2-ezgif com-optimize" src="https://github.com/user-attachments/assets/0aef0b63-1c16-44be-b6a6-d456f4799ce8" />
-
-
+<img width="45%" alt="spot_1-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" />   <img width="45%" alt="spot_2-ezgif com-optimize" src="https://github.com/user-attachments/assets/0aef0b63-1c16-44be-b6a6-d456f4799ce8" />
 
 **Particle Test** <br />
 <img width="800" height="388" alt="particles" src="https://github.com/user-attachments/assets/105740af-e8e5-4f92-92e2-7986612008a1" />
