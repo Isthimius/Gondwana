@@ -24,20 +24,8 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 ## 🎬 Demo Previews
 
-<table>
-<tr>
-  <th align="center">Spot</th>
-  <th align="center">Particles</th>
-  <th align="center">Coordinates Test</th>
-</tr>
-<tr>
-  <td align="center"><img src="screenshots/spot.gif" alt="Spot demo" width="300"/></td>
-  <td align="center"><img src="screenshots/particles.gif" alt="Particles demo" width="300"/></td>
-  <td align="center"><img src="screenshots/coordinates.gif" alt="Coordinates test" width="300"/></td>
-</tr>
-</table>
-
-> 💡 Drop `.gif` or `.png` files named `spot.gif`, `particles.gif`, and `coordinates.gif` into [`screenshots/`](screenshots/) to populate this section.
+**Coordinates Test**
+<img width="800" height="447" alt="coordinates" src="https://github.com/user-attachments/assets/6ae8183e-b4e6-4740-9a01-9679ed66cd40" />
 
 ---
 
