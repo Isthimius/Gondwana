@@ -10,7 +10,7 @@ var classGondwana_1_1Rendering_1_1RenderSurfaceHost =
     [ "Scene", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a5443506468c1f60d06d90d65d49ebee7", null ],
     [ "ViewManager", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a476c1ed70c6bd1d0683feac077a4fa73", null ],
     [ "BindToScene", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#af8bbb7657b2a182575fabb206ea4d974", null ],
-    [ "RenderBackbufferBegin", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a9a38a442d771de79bad120419404b337", null ],
-    [ "RenderBackbufferEnd", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a69b35f6dc68f8f96fd6dfd553b18a90b", null ],
-    [ "RenderBackbufferNoOp", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#af7808f96bd152d64f01df18e038e89c3", null ]
+    [ "RenderBackbufferBegin", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#adbd585d2a9ebe5f4224fd621ad2c72eb", null ],
+    [ "RenderBackbufferEnd", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a67f94f0c04700627f1f85fa5b7927eee", null ],
+    [ "RenderBackbufferNoOp", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#acfa3a199fe952ad768ce944219d40ac2", null ]
 ];

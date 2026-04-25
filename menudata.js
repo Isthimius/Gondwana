@@ -144,6 +144,7 @@ var menudata={children:[
 {text:"d",url:"functions_evnt.html#index_d"},
 {text:"e",url:"functions_evnt.html#index_e"},
 {text:"f",url:"functions_evnt.html#index_f"},
+{text:"g",url:"functions_evnt.html#index_g"},
 {text:"i",url:"functions_evnt.html#index_i"},
 {text:"k",url:"functions_evnt.html#index_k"},
 {text:"m",url:"functions_evnt.html#index_m"},

@@ -95,6 +95,7 @@ $(document).ready(function(){initNavTree('classGondwana_1_1WinForms_1_1Rendering
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#properties">Properties</a> &#124;
+<a href="#events">Events</a> &#124;
 <a href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter Class Reference<span class="mlabels"><span class="mlabel">sealed</span></span></div></div>
 </div><!--header-->
@@ -144,6 +145,19 @@ Properties</h2></td></tr>
 <tr class="memdesc:ae84340b8de8d385ce27da526d9a87317 inherit properties_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current height of the render surface in pixels.  <br /></td></tr>
 <tr class="separator:ae84340b8de8d385ce27da526d9a87317 inherit properties_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="events" name="events"></a>
+Events</h2></td></tr>
+<tr class="memitem:a46f89982ad86e47eea82af4c409615b6" id="r_a46f89982ad86e47eea82af4c409615b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">GRContext</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html#a46f89982ad86e47eea82af4c409615b6">GrContextFirstAvailable</a></td></tr>
+<tr class="memdesc:a46f89982ad86e47eea82af4c409615b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised once, the first time the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">GRContext</a> becomes available in OnPaintSurface. Subscribe to this event to call GpuBackbuffer.Initialize on the GL thread.  <br /></td></tr>
+<tr class="separator:a46f89982ad86e47eea82af4c409615b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5885f063b10616e588a6aebe938c2ad5" id="r_a5885f063b10616e588a6aebe938c2ad5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">GRContext</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html#a5885f063b10616e588a6aebe938c2ad5">ResizeRequested</a></td></tr>
+<tr class="memdesc:a5885f063b10616e588a6aebe938c2ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised on the GL thread when the control has been resized and a valid <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">GRContext</a> is available. The arguments are the context and the new width and height in pixels. Subscribe to call GpuBackbuffer.Initialize with the new dimensions.  <br /></td></tr>
+<tr class="separator:a5885f063b10616e588a6aebe938c2ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td colspan="2" onclick="javascript:toggleInherit('events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase')"><img src="closed.png" alt="-"/>&#160;Events inherited from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html">Gondwana.Rendering.RenderSurfaceAdapterBase</a></td></tr>
+<tr class="memitem:aec240b322b995ec0cdf4fca485cfba47 inherit events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase" id="r_aec240b322b995ec0cdf4fca485cfba47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html">RenderSurfaceAdapterResizedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#aec240b322b995ec0cdf4fca485cfba47">Resized</a></td></tr>
+<tr class="memdesc:aec240b322b995ec0cdf4fca485cfba47 inherit events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the render surface adapter is resized.  <br /></td></tr>
+<tr class="separator:aec240b322b995ec0cdf4fca485cfba47 inherit events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html">Gondwana.Rendering.RenderSurfaceAdapterBase</a></td></tr>
@@ -153,10 +167,6 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a406a663858eadcb3ed5de20e14ca049b inherit pro_methods_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase" id="r_a406a663858eadcb3ed5de20e14ca049b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a406a663858eadcb3ed5de20e14ca049b">SetDestinationSize</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">destWidth</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">destHeight</a>)</td></tr>
 <tr class="memdesc:a406a663858eadcb3ed5de20e14ca049b inherit pro_methods_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the destination size of the render surface and raises the Resized event if the dimensions have changed.  <br /></td></tr>
 <tr class="separator:a406a663858eadcb3ed5de20e14ca049b inherit pro_methods_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td colspan="2" onclick="javascript:toggleInherit('events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase')"><img src="closed.png" alt="-"/>&#160;Events inherited from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html">Gondwana.Rendering.RenderSurfaceAdapterBase</a></td></tr>
-<tr class="memitem:aec240b322b995ec0cdf4fca485cfba47 inherit events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase" id="r_aec240b322b995ec0cdf4fca485cfba47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html">RenderSurfaceAdapterResizedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#aec240b322b995ec0cdf4fca485cfba47">Resized</a></td></tr>
-<tr class="memdesc:aec240b322b995ec0cdf4fca485cfba47 inherit events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the render surface adapter is resized.  <br /></td></tr>
-<tr class="separator:aec240b322b995ec0cdf4fca485cfba47 inherit events_classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl. </p>
@@ -186,14 +196,8 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">NotImplementedException</td><td>This constructor is not yet implemented.</td></tr>
-  </table>
-  </dd>
-</dl>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00038">38</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00059">59</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -215,7 +219,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Releases all resources used by the WinFormGpuRenderSurfaceAdapter. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00126">126</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00185">185</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -261,7 +265,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00060">60</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00096">96</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -288,7 +292,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the color used to clear the surface before rendering. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00026">26</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00033">33</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -314,7 +318,44 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the GL/Skia GPU context that should be shared with the GpuBackbuffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00031">31</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00038">38</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Event Documentation</h2>
+<a id="a46f89982ad86e47eea82af4c409615b6" name="a46f89982ad86e47eea82af4c409615b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46f89982ad86e47eea82af4c409615b6">&#9670;&#160;</a></span>GrContextFirstAvailable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt;<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">GRContext</a>&gt;? Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter.GrContextFirstAvailable</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Raised once, the first time the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">GRContext</a> becomes available in OnPaintSurface. Subscribe to this event to call GpuBackbuffer.Initialize on the GL thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00045">45</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+
+</div>
+</div>
+<a id="a5885f063b10616e588a6aebe938c2ad5" name="a5885f063b10616e588a6aebe938c2ad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5885f063b10616e588a6aebe938c2ad5">&#9670;&#160;</a></span>ResizeRequested</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt;<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">GRContext</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a>&gt;? Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter.ResizeRequested</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Raised on the GL thread when the control has been resized and a valid <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">GRContext</a> is available. The arguments are the context and the new width and height in pixels. Subscribe to call GpuBackbuffer.Initialize with the new dimensions. </p>
+
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00053">53</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>

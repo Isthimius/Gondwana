@@ -35,7 +35,6 @@ var namespaceGondwana =
       [ "Scenes", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575abb34f602e45a9fbcb2cdfee7a48673fc", null ],
       [ "Sprites", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf", null ],
       [ "Audio", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575ab22f0418e8ac915eb66f829d262d14a2", null ],
-      [ "ValueBag", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a9f5502f51ead3b2c800dd7cf58671f54", null ],
       [ "All", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575ab1c94ca2fbc3e78fc30069c8d0f01680", null ]
     ] ],
     [ "ValueKey< T >", "namespaceGondwana.html#aaea774e0d5709f3c95b3bb8e843c97e3", null ]

@@ -96,11 +96,12 @@ var searchData=
   ['gravityx_93',['gravityx',['../classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#acf1c7c0f3e5207da8fd6f9c819c0d7b3',1,'Gondwana.Drawing.Direct.Particles.ParticleEmitter.GravityX'],['../classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a902e6b3d20c47de94948c1e7718346ed',1,'Gondwana.Drawing.Direct.Particles.ParticleSurface.GravityX']]],
   ['gravityy_94',['gravityy',['../classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#a316c9ccbea0460ac5a853ff0e1a8bc34',1,'Gondwana.Drawing.Direct.Particles.ParticleEmitter.GravityY'],['../classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a097410af3acfe301f3a15d5e4f3d2f04',1,'Gondwana.Drawing.Direct.Particles.ParticleSurface.GravityY']]],
   ['grcontext_95',['GrContext',['../classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html#ac6b7140e9c73ef341875f029113b98ef',1,'Gondwana::WinForms::Rendering::WinFormGpuRenderSurfaceAdapter']]],
-  ['grid_96',['Grid',['../namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341da5174d1309f275ba6f275db3af9eb3e18',1,'Gondwana::Movement']]],
-  ['gridcolumncount_97',['GridColumnCount',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a958ed10b48f15930d257d8d7ddb46057',1,'Gondwana::Scenes::SceneLayer']]],
-  ['gridcoordinatesabs_98',['GridCoordinatesAbs',['../classGondwana_1_1Scenes_1_1SceneLayerTile.html#a142c95716894c9150af7af6d2e5665dd',1,'Gondwana::Scenes::SceneLayerTile']]],
-  ['gridlinepaint_99',['GridLinePaint',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a7359e524a27798cfad65a3bf689f072b',1,'Gondwana::Rendering::Backbuffers::BackbufferBase']]],
-  ['gridrowcount_100',['GridRowCount',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a66305751d643a83bd615591eefd480c1',1,'Gondwana::Scenes::SceneLayer']]],
-  ['gridtoworldpx_101',['GridToWorldPx',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a8e484b10fcc567050632269596c987d4',1,'Gondwana::Scenes::SceneLayer']]],
-  ['grosscps_102',['GrossCPS',['../classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a037cfb72bc48bb3952d4a5c74572bb7d',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]]
+  ['grcontextfirstavailable_96',['GrContextFirstAvailable',['../classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html#a46f89982ad86e47eea82af4c409615b6',1,'Gondwana::WinForms::Rendering::WinFormGpuRenderSurfaceAdapter']]],
+  ['grid_97',['Grid',['../namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341da5174d1309f275ba6f275db3af9eb3e18',1,'Gondwana::Movement']]],
+  ['gridcolumncount_98',['GridColumnCount',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a958ed10b48f15930d257d8d7ddb46057',1,'Gondwana::Scenes::SceneLayer']]],
+  ['gridcoordinatesabs_99',['GridCoordinatesAbs',['../classGondwana_1_1Scenes_1_1SceneLayerTile.html#a142c95716894c9150af7af6d2e5665dd',1,'Gondwana::Scenes::SceneLayerTile']]],
+  ['gridlinepaint_100',['GridLinePaint',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a7359e524a27798cfad65a3bf689f072b',1,'Gondwana::Rendering::Backbuffers::BackbufferBase']]],
+  ['gridrowcount_101',['GridRowCount',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a66305751d643a83bd615591eefd480c1',1,'Gondwana::Scenes::SceneLayer']]],
+  ['gridtoworldpx_102',['GridToWorldPx',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a8e484b10fcc567050632269596c987d4',1,'Gondwana::Scenes::SceneLayer']]],
+  ['grosscps_103',['GrossCPS',['../classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a037cfb72bc48bb3952d4a5c74572bb7d',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]]
 ];
