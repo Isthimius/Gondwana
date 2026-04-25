@@ -9,7 +9,6 @@
 
 <img alt="gondwana-logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
 
-
 **Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.
 
 Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers can own their game loop and rendering flow end-to-end when needed, while still benefiting from sensible defaults that allow simpler games to come together quickly. This approach modernizes classic Win32/GDI-era rendering patterns into a clean, modular architecture with explicit control over draw order, dirty-region updates, and timing—yielding a predictable, debuggable engine that works out of the box but does not get in the way as projects grow.
@@ -25,6 +24,14 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 ---
 
 ## 🎬 Demo Previews
+
+**Spot!**
+
+<img width="772" height="826" alt="spot_1-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" />
+
+<img width="772" height="826" alt="spot_2-ezgif com-optimize" src="https://github.com/user-attachments/assets/0aef0b63-1c16-44be-b6a6-d456f4799ce8" />
+
+
 
 **Particle Test** <br />
 <img width="800" height="388" alt="particles" src="https://github.com/user-attachments/assets/105740af-e8e5-4f92-92e2-7986612008a1" />
