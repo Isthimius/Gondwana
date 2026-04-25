@@ -10,27 +10,27 @@ internal class SpotGame : IDisposable
 {
     #region events
 
-    internal event Action<SpotGame> GameStarted;
-    internal event Action<Player> PlayerTurnEnded;
-    internal event Action<Player> PlayerTurnStarted;
-    internal event Action<SpotGameField.Cell> SpotSelected;
-    internal event Action<SpotGameField.Cell> SpotDeselected;
-    internal event Action<SpotGameField.Cell> InvalidSelectionAttempted;
-    internal event Action<SpotGameField.Cell> InvalidMoveAttempted;
-    internal event Action<Player> NoValidMovesAvailable;
-    internal event Action<PlayerMovement> PlayerMoveStarted;
-    internal event Action<PlayerMovement> PlayerMoveStopped;
-    internal event Action<List<SpotGameField.Cell>> CellsCaptured;
-    internal event Action GameOver;
+    internal event Action<SpotGame>? GameStarted;
+    internal event Action<Player>? PlayerTurnEnded;
+    internal event Action<Player>? PlayerTurnStarted;
+    internal event Action<SpotGameField.Cell>? SpotSelected;
+    internal event Action<SpotGameField.Cell>? SpotDeselected;
+    internal event Action<SpotGameField.Cell>? InvalidSelectionAttempted;
+    internal event Action<SpotGameField.Cell>? InvalidMoveAttempted;
+    internal event Action<Player>? NoValidMovesAvailable;
+    internal event Action<PlayerMovement>? PlayerMoveStarted;
+    internal event Action<PlayerMovement>? PlayerMoveStopped;
+    internal event Action<List<SpotGameField.Cell>>? CellsCaptured;
+    internal event Action? GameOver;
 
     #endregion
 
     private int _currentPlayerIndex = 0;
 
-    internal SpotGameField BackgroundGameField { get; set; }
-    internal SpotGameField SpotGameField { get; set; }
+    internal SpotGameField BackgroundGameField { get; set; } = null!;
+    internal SpotGameField SpotGameField { get; set; } = null!;
     internal Player[] Players { get; set; } = Array.Empty<Player>();
-    internal SpotGameField.Cell SelectedCell { get; private set; } = null;
+    internal SpotGameField.Cell? SelectedCell { get; private set; } = null;
 
     internal SpotGame() { }
 
@@ -160,14 +160,14 @@ internal class SpotGame : IDisposable
         var fromCell = playerMovement.FromCell;
         var toCell = SpotGameField.GetCell(playerMovement.DestX, playerMovement.DestY);
 
-        Action<ScriptedMovement> startHandler = null;
+        Action<ScriptedMovement>? startHandler = null;
         startHandler = (ScriptedMovement scriptedMovement) =>
         {
             sprite.Movement.ScriptedMovementStarted -= startHandler;
             PlayerMoveStarted?.Invoke(playerMovement);
         };
 
-        Action <ScriptedMovement> stopHandler = null;
+        Action<ScriptedMovement>? stopHandler = null;
         stopHandler = (ScriptedMovement scriptedMovement) =>
         {
             sprite.Movement.ScriptedMovementStopped -= stopHandler;
