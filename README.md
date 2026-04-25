@@ -17,13 +17,8 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 - 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
 - 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
 - 📦 **NuGet** - [https://www.nuget.org/packages/Gondwana](https://www.nuget.org/packages/Gondwana)
-
-## ⬇️ Downloads
-
-| Build | Download |
-|---|---|
-| **Latest Release** (v2.1.1) | [📦 Gondwana-2.1.1-binaries.zip](https://github.com/Isthimius/Gondwana/releases/download/v2.1.1/Gondwana-2.1.1-binaries.zip) &nbsp;·&nbsp; [🏷 All Releases](https://github.com/Isthimius/Gondwana/releases) |
-| **Latest CI Build** (`master`) | [⬇️ CI (master) workflow](https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml) — open the most recent successful run and download **Gondwana-binaries** from the Artifacts section |
+- 🏷 **All Releases** - https://github.com/Isthimius/Gondwana/releases
+- ⬇️ **Latest CI Build** - https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml
 
 ---
 
