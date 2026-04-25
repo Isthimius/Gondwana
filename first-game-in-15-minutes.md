@@ -389,6 +389,6 @@ The engine renders only what changed each frame via a **dirty-region queue** (`R
 ## Further reading
 
 - **Engine architecture** — `README.md` in the repo root
-- **Recommended reading order** — `ONBOARDING.md`
+- **Recommended reading order** — https://github.com/Isthimius/Gondwana/wiki/Engine-Architecture-Overview
 - **API reference** — https://isthimius.github.io/Gondwana/
 - **Wiki guides** — https://github.com/Isthimius/Gondwana/wiki
