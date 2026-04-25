@@ -102,7 +102,6 @@ _Gondwana is actively evolving, with a focus on strengthening core features and 
 
 - [ ] supplemental UI tooling for level design  
 - [ ] More samples: tile maps, platformer demo
-- [ ] Improved GpuBackbuffer support  
 - [ ] Improved WebAssembly support
 - [ ] Tilemap .tmx support
 - [ ] Native, first-class pathfinding
