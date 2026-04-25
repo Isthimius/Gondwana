@@ -85,7 +85,7 @@ GameHostBase
        │    └─ View (Camera + Viewport)  ← world↔screen math lives here
        ├─ DirectDrawingManager           ← HUD/overlays (not in scene grid)
        ├─ Input (Keyboard / Mouse / Gamepad)
-       └─ Timers / Audio / Collisions
+       └─ Timers / Collisions / Animations
 ```
 
 **The key insight:** state changes call `RefreshQueue.AddWorldRect()` → the engine's render pass picks it up → `View` transforms the world rect to screen-space → the platform host repaints only that screen region.

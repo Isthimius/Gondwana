@@ -59,17 +59,10 @@ public enum EngineStateParts
     Audio = 1 << 5,
 
     /// <summary>
-    /// Represents the value bag state, which typically includes custom key-value pairs, game variables,
-    /// flags, and other dynamic data storage used by the application. This provides a flexible
-    /// storage mechanism for arbitrary game state data that doesn't fit into other specific categories.
-    /// </summary>
-    ValueBag = 1 << 6,
-
-    /// <summary>
     /// Represents all engine state parts combined. This is a convenience value that includes
     /// <see cref="AssetsFiles"/>, <see cref="Tilesheets"/>, <see cref="Cycles"/>, <see cref="Scenes"/>,
     /// <see cref="Sprites"/>, <see cref="Audio"/>, and <see cref="ValueBag"/>. Use this when you need
     /// to manage, save, or load the complete engine state without selectively choosing individual parts.
     /// </summary>
-    All = AssetsFiles | Tilesheets | Cycles | Scenes | Sprites | Audio | ValueBag
+    All = AssetsFiles | Tilesheets | Cycles | Scenes | Sprites | Audio
 }

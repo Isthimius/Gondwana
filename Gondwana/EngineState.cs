@@ -291,10 +291,6 @@ public sealed class EngineState
             SoundResources = parts.HasFlag(EngineStateParts.Audio)
                 ? SoundResources
                 : null,
-
-            ValueBag = parts.HasFlag(EngineStateParts.ValueBag)
-                ? ValueBag
-                : null
         };
     }
 
@@ -346,9 +342,6 @@ public sealed class EngineState
 
         if (parts.HasFlag(EngineStateParts.Sprites))
             MergeSprites(snapshot.Sprites, overwriteExisting);
-
-        if (parts.HasFlag(EngineStateParts.ValueBag))
-            Engine.Instance.State.ValueBag.MergeFrom(snapshot.ValueBag, overwriteExisting);
     }
 
     private static void ClearSelected(EngineStateParts parts)
@@ -370,9 +363,6 @@ public sealed class EngineState
 
         if (parts.HasFlag(EngineStateParts.Audio))
             AudioResourceManager.Instance.Dispose();
-
-        if (parts.HasFlag(EngineStateParts.ValueBag))
-            Engine.Instance.State.ValueBag.Clear();
     }
 
     private static void LoadAssetsFiles(IEnumerable<AssetsFile> resourceFiles)
