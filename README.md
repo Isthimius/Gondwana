@@ -24,7 +24,10 @@ Rather than hiding the render pipeline behind an editor, Gondwana embraces a cod
 
 ## 🎬 Demo Previews
 
-**Coordinates Test**
+**Particle Test** <br />
+<img width="800" height="388" alt="particles" src="https://github.com/user-attachments/assets/105740af-e8e5-4f92-92e2-7986612008a1" />
+
+**Coordinates Test** <br />
 <img width="800" height="447" alt="coordinates" src="https://github.com/user-attachments/assets/6ae8183e-b4e6-4740-9a01-9679ed66cd40" />
 
 ---
