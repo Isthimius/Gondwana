@@ -435,6 +435,17 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
+    /// Gets a value indicating whether this backbuffer is rendered on the GL thread rather than
+    /// the engine's background render thread.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="true"/>, the engine's <c>DoForegroundTasks</c> loop skips this surface.
+    /// Rendering and presentation are instead driven by the platform adapter from within
+    /// <c>SKGLControl.PaintSurface</c> via <see cref="RenderSurfaceHostBase.GlRenderAndSnapshot"/>.
+    /// </remarks>
+    public virtual bool IsGlThreadRendered => false;
+
+    /// <summary>
     /// Releases all resources used by the <see cref="BackbufferBase"/> instance.
     /// </summary>
     /// <remarks>

@@ -7,11 +7,27 @@ namespace Gondwana.WinForms.Rendering;
 /// <summary>
 /// Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl.
 /// </summary>
+/// <remarks>
+/// <para>
+/// <strong>Option A — GL-thread rendering:</strong>
+/// When a <see cref="RenderSurfaceHostBase"/> is registered via <see cref="SetHost"/>, all scene
+/// rendering and presentation are driven from within <c>PaintSurface</c> on the GL thread.  A
+/// <see cref="System.Windows.Forms.Timer"/> periodically calls <see cref="SKGLControl.Invalidate"/>
+/// to sustain the paint loop.  The engine's background render loop skips GPU-rendered surfaces
+/// entirely (see <see cref="GpuBackbuffer.IsGlThreadRendered"/>).
+/// </para>
+/// <para>
+/// If <see cref="SetHost"/> has not been called, the adapter falls back to the legacy
+/// <see cref="Present"/> path where the engine's background thread renders to a CPU surface and
+/// uploads it to the GPU inside <c>PaintSurface</c>.
+/// </para>
+/// </remarks>
 public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly SKGLControl _glControl;
     private readonly EventHandler _resizeHandler;
 
+    // ── Legacy (non-host) path ───────────────────────────────────────────────
     // The image we'll draw this frame (should be created/snapshotted off the SAME GRContext)
     private SKImage? _currentImage;
 
@@ -21,6 +37,11 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     private SKRectI _sourceRect;
     private SKRect _destRect;
 
+    // ── Option A (GL-thread) path ────────────────────────────────────────────
+    private RenderSurfaceHostBase? _host;
+    private readonly System.Windows.Forms.Timer _renderTimer = new();
+
+    // ── Shared state ─────────────────────────────────────────────────────────
     // Tracks whether GrContext has been captured and the first-available event fired.
     private bool _grContextReady;
 
@@ -87,7 +108,33 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     }
 
     /// <summary>
-    /// Presents the specified GPU buffer image to the render surface.
+    /// Registers the <see cref="RenderSurfaceHostBase"/> whose scene this adapter should render
+    /// and starts the GL paint loop.
+    /// </summary>
+    /// <remarks>
+    /// After this call all rendering is driven from <c>PaintSurface</c> on the GL thread.
+    /// A <see cref="System.Windows.Forms.Timer"/> fires at approximately
+    /// <paramref name="targetFps"/> frames per second and calls
+    /// <see cref="SKGLControl.Invalidate"/> to sustain the loop.
+    /// </remarks>
+    /// <param name="host">The render surface host to render each frame.</param>
+    /// <param name="targetFps">
+    /// Target frame rate for the render timer.  Defaults to 60 fps.  Actual frame rate is bounded
+    /// by the GL driver and monitor refresh rate.
+    /// </param>
+    public void SetHost(RenderSurfaceHostBase host, int targetFps = 60)
+    {
+        _host = host ?? throw new ArgumentNullException(nameof(host));
+
+        int intervalMs = Math.Max(1, 1000 / Math.Max(1, targetFps));
+        _renderTimer.Interval = intervalMs;
+        _renderTimer.Tick += (_, _) => _glControl.Invalidate();
+        _renderTimer.Start();
+    }
+
+    /// <summary>
+    /// Presents the specified GPU buffer image to the render surface (legacy path).
+    /// Used when <see cref="SetHost"/> has not been called.
     /// The image should be texture-backed and created from the same GRContext for optimal zero-copy rendering.
     /// </summary>
     /// <param name="bufferImage">The GPU image to present.</param>
@@ -147,33 +194,51 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
         var canvas = e.Surface.Canvas;
 
-        // Clear with your configured clear color
         canvas.Clear(ClearColor);
 
-        var img = _currentImage;
-        if (img != null)
+        if (_host != null)
         {
-            // IMPORTANT: For zero-copy, img MUST belong to this same GRContext.
-            // If you hand us a raster image, Skia will upload it each frame (works, but costs bandwidth).
-            var imgBoundsI = new SKRectI(0, 0, img.Width, img.Height);
-            var srcI = SKRectI.Intersect(_sourceRect, imgBoundsI);
-
-            if (!srcI.IsEmpty)
+            // ── Option A: render + blit entirely on the GL thread ────────────
+            // GlRenderAndSnapshot drives RenderToBackbuffer on the GPU surface then returns a
+            // lightweight GPU-backed snapshot.  Both the snapshot texture and e.Surface share the
+            // same GRContext, so DrawImage is a zero-copy GPU blit.
+            using var img = _host.GlRenderAndSnapshot();
+            if (img != null)
             {
-                var src = ToRect(srcI);
-                var dest = _destRect;
-
-                var bounds = SKRect.Create(e.BackendRenderTarget.Width, e.BackendRenderTarget.Height);
-                if (!bounds.Contains(dest))
-                    dest = SKRect.Intersect(dest, bounds);
-
-                canvas.DrawImage(img, src, dest);
+                var dst = SKRect.Create(0, 0,
+                    e.BackendRenderTarget.Width,
+                    e.BackendRenderTarget.Height);
+                canvas.DrawImage(img, dst);
             }
         }
+        else
+        {
+            // ── Legacy path: draw image set by Present() ─────────────────────
+            // IMPORTANT: For zero-copy, img MUST belong to this same GRContext.
+            // If you hand us a raster image, Skia will upload it each frame (works, but costs bandwidth).
+            var img = _currentImage;
+            if (img != null)
+            {
+                var imgBoundsI = new SKRectI(0, 0, img.Width, img.Height);
+                var srcI = SKRectI.Intersect(_sourceRect, imgBoundsI);
 
-        // Safe to free the previously drawn GPU image NOW (on GL thread)
-        _prevToDispose?.Dispose();
-        _prevToDispose = null;
+                if (!srcI.IsEmpty)
+                {
+                    var src = ToRect(srcI);
+                    var dest = _destRect;
+
+                    var bounds = SKRect.Create(e.BackendRenderTarget.Width, e.BackendRenderTarget.Height);
+                    if (!bounds.Contains(dest))
+                        dest = SKRect.Intersect(dest, bounds);
+
+                    canvas.DrawImage(img, src, dest);
+                }
+            }
+
+            // Safe to free the previously drawn GPU image NOW (on GL thread)
+            _prevToDispose?.Dispose();
+            _prevToDispose = null;
+        }
 
         // Optional: flush to ensure work is queued to GPU before we hand new images next frame
         _glControl.GRContext?.Flush();
@@ -184,6 +249,9 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// </summary>
     public void Dispose()
     {
+        _renderTimer.Stop();
+        _renderTimer.Dispose();
+
         if (!_glControl.IsDisposed)
         {
             _glControl.PaintSurface -= OnPaintSurface;

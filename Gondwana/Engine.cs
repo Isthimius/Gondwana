@@ -742,13 +742,15 @@ public sealed class Engine : IDisposable
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 
-        // refresh all RenderSurfaceHost backbuffers
+        // refresh all RenderSurfaceHost backbuffers (skip surfaces rendered on the GL thread)
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.RenderToBackbuffer(tick);
+            if (!surface.Backbuffer.IsGlThreadRendered)
+                surface.RenderToBackbuffer(tick);
 
-        // render each Backbuffer to RenderSurfaceHost adapter
+        // render each Backbuffer to RenderSurfaceHost adapter (skip GL-thread surfaces)
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.PresentBackbufferToAdapter();
+            if (!surface.Backbuffer.IsGlThreadRendered)
+                surface.PresentBackbufferToAdapter();
 
         // update state of gamepad(s)
         Input.GamepadManager?.Update();
