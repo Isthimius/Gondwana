@@ -384,10 +384,12 @@ public abstract class BackbufferBase : IDisposable
     /// <summary>
     /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
     /// This is used to signal to the UI adapter what needs to be repainted.
+    /// No-op for GL-thread-rendered backbuffers: the adapter always presents the full surface,
+    /// so there is no partial-blit dirty region to track.
     /// </summary>
     protected internal void AddToBackbufferDirtyRectangle(Rectangle area)
     {
-        if (area.IsEmpty)
+        if (IsGlThreadRendered || area.IsEmpty)
             return;
 
         area.Inflate(area.Width, area.Height);

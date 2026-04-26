@@ -95,7 +95,6 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
         var img = Backbuffer.Snapshot();
 
-        Backbuffer.ClearDirtyRectangle();
         Backbuffer.BeginFrame();
 
         return img;
