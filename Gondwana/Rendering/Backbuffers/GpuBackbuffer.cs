@@ -36,7 +36,6 @@ public class GpuBackbuffer : BackbufferBase
     // Surface state.  All access MUST occur on the GL thread after Initialize() is called.
     private SKBitmap? _cpuBitmap;   // temporary CPU surface used before GRContext is ready
     private SKSurface? _surface;
-    private bool _gpuSurfaceActive; // true once Initialize() has created a GPU surface
     private bool _disposed;
 
     /// <summary>
@@ -91,7 +90,8 @@ public class GpuBackbuffer : BackbufferBase
     /// <summary>
     /// Gets the SkiaSharp canvas for drawing operations.
     /// </summary>
-    public override SKCanvas Canvas => _surface!.Canvas;
+    public override SKCanvas Canvas => _surface?.Canvas
+        ?? throw new InvalidOperationException($"{nameof(GpuBackbuffer)} surface is not initialized.");
 
     /// <summary>
     /// Prepares the backbuffer canvas for a new rendering frame.
@@ -151,7 +151,6 @@ public class GpuBackbuffer : BackbufferBase
         // Rgba8888 / Premul is the natural format for an OpenGL render target.
         var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
         _surface = SKSurface.Create(grContext, budgeted: true, info);
-        _gpuSurfaceActive = true;
     }
 
     private void CreateCpuSurface(int width, int height)
@@ -161,7 +160,6 @@ public class GpuBackbuffer : BackbufferBase
         var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
         _cpuBitmap = new SKBitmap(info);
         _surface = SKSurface.Create(info, _cpuBitmap.GetPixels(), _cpuBitmap.Info.RowBytes);
-        _gpuSurfaceActive = false;
     }
 
     private void DisposeSurface()
@@ -170,7 +168,6 @@ public class GpuBackbuffer : BackbufferBase
         _surface = null;
         _cpuBitmap?.Dispose();
         _cpuBitmap = null;
-        _gpuSurfaceActive = false;
     }
 
     /// <summary>

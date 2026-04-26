@@ -126,7 +126,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
 
-        int intervalMs = Math.Max(1, 1000 / Math.Max(1, targetFps));
+        int safeFps = Math.Max(1, targetFps);
+        int intervalMs = Math.Max(1, 1000 / safeFps);
         _renderTimer.Interval = intervalMs;
         _renderTimer.Tick += (_, _) => _glControl.Invalidate();
         _renderTimer.Start();
