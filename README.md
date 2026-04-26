@@ -123,6 +123,7 @@ _Gondwana is actively evolving, with a focus on strengthening core features and 
 - [ ] Tilemap .tmx support
 - [ ] Native, first-class pathfinding
 - [ ] Enhancing rendering pipeline extensibility
+- [ ] Initial client/server networking support
 
 ---
 
