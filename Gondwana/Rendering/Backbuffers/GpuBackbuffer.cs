@@ -38,6 +38,42 @@ public class GpuBackbuffer : BackbufferBase
     private SKSurface? _surface;
     private bool _disposed;
 
+    private int _targetFps = 60;
+
+    /// <summary>
+    /// Gets or sets the target frame rate for the render timer that drives this GPU backbuffer.
+    /// </summary>
+    /// <remarks>
+    /// This value is read by the platform adapter (e.g. <c>WinFormGpuRenderSurfaceAdapter</c>) on
+    /// each timer tick and used to update the invalidation timer interval.  Set to <c>0</c> for an
+    /// uncapped frame rate (the adapter fires its timer as fast as WinForms allows, and the actual
+    /// frame rate is then limited only by vsync and GPU throughput).
+    /// </remarks>
+    /// <value>
+    /// The desired frames per second.  Negative values are clamped to zero.  The default is 60.
+    /// </value>
+    public int TargetFps
+    {
+        get => _targetFps;
+        set => _targetFps = value < 0 ? 0 : value;
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.
+    /// </summary>
+    /// <remarks>
+    /// This value is read by the platform adapter (e.g. <c>WinFormGpuRenderSurfaceAdapter</c>)
+    /// at the start of each <c>PaintSurface</c> call and applied to the underlying
+    /// <c>GLControl.VSync</c> property when it changes.  Enabling vsync prevents screen tearing
+    /// but caps the frame rate to the monitor refresh rate.  Disabling vsync allows higher frame
+    /// rates at the cost of potential tearing.
+    /// </remarks>
+    /// <value>
+    /// <see langword="true"/> to synchronise presentation with the monitor refresh; otherwise
+    /// <see langword="false"/>.  The default is <see langword="true"/>.
+    /// </value>
+    public bool VSync { get; set; } = true;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GpuBackbuffer"/> class with the specified dimensions.
     /// </summary>

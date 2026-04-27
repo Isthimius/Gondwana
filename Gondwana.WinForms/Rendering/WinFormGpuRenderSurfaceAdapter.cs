@@ -1,4 +1,5 @@
 ﻿using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
@@ -39,7 +40,15 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
     // ── Option A (GL-thread) path ────────────────────────────────────────────
     private RenderSurfaceHostBase? _host;
+    private GpuBackbuffer? _gpuBackbuffer;
     private readonly System.Windows.Forms.Timer _renderTimer = new();
+
+    // Tracks the last TargetFps value that was applied to the timer so we can detect changes.
+    private int _appliedTargetFps;
+
+    // Tracks the last VSync value applied to the GL control so we can detect changes.
+    // Null means "not yet applied" and forces an apply on the first PaintSurface call.
+    private bool? _appliedVSync;
 
     // ── Shared state ─────────────────────────────────────────────────────────
     // Tracks whether GrContext has been captured and the first-available event fired.
@@ -115,23 +124,53 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// After this call all rendering is driven from <c>PaintSurface</c> on the GL thread.
     /// A <see cref="System.Windows.Forms.Timer"/> fires at approximately
     /// <paramref name="targetFps"/> frames per second and calls
-    /// <see cref="SKGLControl.Invalidate"/> to sustain the loop.
+    /// <see cref="SKGLControl.Invalidate"/> to sustain the loop.  The initial
+    /// <paramref name="targetFps"/> value is written to
+    /// <see cref="GpuBackbuffer.TargetFps"/> when the host's backbuffer is a
+    /// <see cref="GpuBackbuffer"/>; subsequently, mutating
+    /// <see cref="GpuBackbuffer.TargetFps"/> directly is the preferred way to change the
+    /// frame rate at run time.
     /// </remarks>
     /// <param name="host">The render surface host to render each frame.</param>
     /// <param name="targetFps">
-    /// Target frame rate for the render timer.  Defaults to 60 fps.  Actual frame rate is bounded
-    /// by the GL driver and monitor refresh rate.
+    /// Initial target frame rate for the render timer.  Defaults to 60 fps.  Actual frame rate is
+    /// bounded by the GL driver and monitor refresh rate.  Set to <c>0</c> for uncapped.
     /// </param>
     public void SetHost(RenderSurfaceHostBase host, int targetFps = 60)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
 
-        int safeFps = Math.Max(1, targetFps);
-        int intervalMs = Math.Max(1, 1000 / safeFps);
+        // Cache the GpuBackbuffer so the timer tick and OnPaintSurface can read its settings.
+        _gpuBackbuffer = _host.Backbuffer as GpuBackbuffer;
+
+        // Seed TargetFps on the backbuffer from the parameter (0 = uncapped).
+        int safeFps = Math.Max(0, targetFps);
+        if (_gpuBackbuffer != null)
+            _gpuBackbuffer.TargetFps = safeFps;
+
+        int intervalMs = TargetFpsToIntervalMs(safeFps);
+        _appliedTargetFps = safeFps;
+
         _renderTimer.Interval = intervalMs;
-        _renderTimer.Tick += (_, _) => _glControl.Invalidate();
+        _renderTimer.Tick += OnRenderTimerTick;
         _renderTimer.Start();
     }
+
+    private void OnRenderTimerTick(object? sender, EventArgs e)
+    {
+        // Lazily sync TargetFps → timer interval whenever the backbuffer value changes.
+        int desiredFps = _gpuBackbuffer?.TargetFps ?? _appliedTargetFps;
+        if (desiredFps != _appliedTargetFps)
+        {
+            _renderTimer.Interval = TargetFpsToIntervalMs(desiredFps);
+            _appliedTargetFps = desiredFps;
+        }
+
+        _glControl.Invalidate();
+    }
+
+    private static int TargetFpsToIntervalMs(int fps) =>
+        fps <= 0 ? 1 : Math.Max(1, (int)Math.Round(1000.0 / fps));
 
     /// <summary>
     /// Presents the specified GPU buffer image to the render surface (legacy path).
@@ -167,6 +206,17 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
     private void OnPaintSurface(object? sender, SKPaintGLSurfaceEventArgs e)
     {
+        // Lazily sync VSync → GLControl.VSync whenever the backbuffer value changes.
+        if (_gpuBackbuffer != null)
+        {
+            bool desiredVSync = _gpuBackbuffer.VSync;
+            if (_appliedVSync != desiredVSync)
+            {
+                _glControl.VSync = desiredVSync;
+                _appliedVSync = desiredVSync;
+            }
+        }
+
         // Capture/refresh the GRContext so callers can wire the backbuffer to the same one.
         GrContext ??= _glControl.GRContext;
 
