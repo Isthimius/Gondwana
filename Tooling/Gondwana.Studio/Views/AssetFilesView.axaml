@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gondwana.Studio.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="Gondwana.Studio.Views.AssetFilesView"
+             x:DataType="vm:AssetFilesViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- File toolbar -->
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    Spacing="4"
+                    Margin="8,6,8,2">
+            <Button Content="New"      Command="{Binding NewCommand}" />
+            <Button Content="Open"     Command="{Binding OpenCommand}" />
+            <Button Content="Save"     Command="{Binding SaveCommand}" />
+            <Button Content="Save As"  Command="{Binding SaveAsCommand}" />
+            <Button Content="Refresh"  Command="{Binding RefreshCommand}" />
+        </StackPanel>
+
+        <!-- Filter / action toolbar -->
+        <WrapPanel Grid.Row="1"
+                   Orientation="Horizontal"
+                   Margin="8,2">
+            <TextBlock Text="Type:" VerticalAlignment="Center" Margin="0,0,4,0" />
+            <ComboBox ItemsSource="{Binding TypeFilterItems}"
+                      SelectedIndex="{Binding SelectedTypeIndex}"
+                      Width="140"
+                      Margin="0,0,12,0" />
+            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,4,0" />
+            <TextBox Text="{Binding SearchText}"
+                     Watermark="Filter by asset name..."
+                     Width="220"
+                     Margin="0,0,12,0" />
+            <Button Content="Add / Import" Command="{Binding AddCommand}"    Margin="0,0,4,0" />
+            <Button Content="Replace"      Command="{Binding ReplaceCommand}" Margin="0,0,4,0" />
+            <Button Content="Rename"       Command="{Binding RenameCommand}"  Margin="0,0,4,0" />
+            <Button Content="Export"       Command="{Binding ExportCommand}"  Margin="0,0,4,0" />
+            <Button Content="Delete"       Command="{Binding DeleteCommand}" />
+        </WrapPanel>
+
+        <!-- Asset grid -->
+        <DataGrid Grid.Row="2"
+                  Margin="8,4"
+                  ItemsSource="{Binding Records}"
+                  SelectedItem="{Binding SelectedRecord}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  GridLinesVisibility="All">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Type"
+                                    Binding="{Binding AssetType}"
+                                    Width="120" />
+                <DataGridTextColumn Header="Name"
+                                    Binding="{Binding AssetName}"
+                                    Width="*" />
+                <DataGridTextColumn Header="Size"
+                                    Binding="{Binding DisplaySize}"
+                                    Width="100" />
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <!-- Status bar -->
+        <Border Grid.Row="3"
+                Padding="8,4"
+                BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <TextBlock Text="{Binding StatusText}"
+                       FontSize="12" />
+        </Border>
+
+    </Grid>
+
+</UserControl>
