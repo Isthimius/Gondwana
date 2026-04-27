@@ -1,12 +1,12 @@
 # Gondwana.Avalonia
 
-**Gondwana.Avalonia** provides Avalonia UI adapters for rendering, input, and audio, mirroring
+**Gondwana.Avalonia** provides Avalonia UI adapters for rendering and input, mirroring
 `Gondwana.WinForms` but targeting all platforms supported by Avalonia: **desktop** (Windows,
 Linux, macOS), **WebAssembly**, **Android**, and **iOS / macOS (Catalyst)**.
 
 ## Features
 
-- SkiaSharp CPU rendering surface for Avalonia (`SKCanvasView`-based)
+- Bitmap rendering surface using Avalonia `WriteableBitmap` (no platform-specific SkiaSharp view package required; works on all Avalonia targets)
 - Keyboard input integration (global key capture via Avalonia `TopLevel`)
 - Mouse / pointer input integration
 - Designed to be consumed by platform-specific Avalonia host projects

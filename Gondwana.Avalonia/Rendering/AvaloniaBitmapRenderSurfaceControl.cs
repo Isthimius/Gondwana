@@ -50,6 +50,9 @@ public class AvaloniaBitmapRenderSurfaceControl : Control
     {
         var bmp = _bitmap;
         if (bmp != null)
-            context.DrawImage(bmp, new Rect(bmp.Size));
+        {
+            var dest = new Rect(0, 0, Bounds.Width, Bounds.Height);
+            context.DrawImage(bmp, new Rect(bmp.Size), dest);
+        }
     }
 }

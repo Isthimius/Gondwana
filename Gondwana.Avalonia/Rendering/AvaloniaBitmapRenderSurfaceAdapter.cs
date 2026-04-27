@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Collections.Concurrent;
+using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
@@ -22,7 +23,8 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
 
     // Current rendered image; swapped lock-free from any thread.
     private SKImage? _currentImage;
-    private readonly Queue<SKImage> _toDispose = new();
+    // Images queued for disposal; written from any thread (Present), drained on UI thread.
+    private readonly ConcurrentQueue<SKImage> _toDispose = new();
 
     private bool _disposed;
 
@@ -111,8 +113,8 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
         _control.SetBitmap(_bitmap);
         _control.InvalidateVisual();
 
-        while (_toDispose.Count > 0)
-            _toDispose.Dequeue().Dispose();
+        while (_toDispose.TryDequeue(out var stale))
+            stale.Dispose();
     }
 
     /// <summary>
@@ -125,8 +127,8 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
 
         _control.SizeChanged -= OnSizeChanged;
 
-        while (_toDispose.Count > 0)
-            _toDispose.Dequeue().Dispose();
+        while (_toDispose.TryDequeue(out var img))
+            img.Dispose();
 
         _currentImage?.Dispose();
         _currentImage = null;
