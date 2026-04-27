@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Gondwana.Avalonia</RootNamespace>
+        <AssemblyName>Gondwana.Avalonia</AssemblyName>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Avalonia</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.Avalonia</PackageId>
+        <Title>Gondwana Avalonia Platform Support</Title>
+        <Description>Avalonia-based platform support for the Gondwana Game Engine, providing rendering, input, and adapter integration for cross-platform applications including desktop, WASM, Android, iOS, and macOS.</Description>
+        <PackageTags>game-engine gamedev csharp dotnet avalonia cross-platform desktop wasm android ios macos rendering input</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>gondwana-logo.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.2.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+    </ItemGroup>
+
+</Project>
