@@ -782,7 +782,7 @@ public sealed class Engine : IDisposable
         // Collect actual GPU FPS from all registered GPU-rendered backbuffers.
         long totalGpuFrames = 0;
         int gpuSurfaceCount = 0;
-        foreach (var surface in RenderSurfaceHostRegistry.All)
+        foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
         {
             if (surface.Backbuffer is GpuBackbuffer gpuBb)
             {

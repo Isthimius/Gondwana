@@ -32,7 +32,7 @@ public partial class EngineConfiguration
             _targetFPS = value < 0 ? 0 : value;
 
             // Propagate to all active GPU backbuffers so their render timer intervals stay in sync.
-            foreach (var surface in RenderSurfaceHostRegistry.All)
+            foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
             {
                 if (surface.Backbuffer is GpuBackbuffer gpuBb)
                     gpuBb.TargetFps = _targetFPS;
