@@ -33,6 +33,10 @@ internal partial class GameWindow : Form
     {
         base.OnLoad(e);
         _gameHost = new SpotGameHost(renderSurface);
+        _gameHost.Engine.CPSCalculated += (cps) =>
+        {
+            Engine.Logger.LogTrace(cps.ToString());
+        };
     }
 
     protected override void OnShown(EventArgs e)
@@ -42,7 +46,7 @@ internal partial class GameWindow : Form
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
-        _gameHost!.Initialize(logLevel: LogLevel.Warning);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost!.Initialize(logLevel: LogLevel.Trace);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
 
         _gameHost.Engine.CPSCalculated += (cps) =>
         {

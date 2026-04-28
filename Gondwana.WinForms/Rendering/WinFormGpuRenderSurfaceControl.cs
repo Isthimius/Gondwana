@@ -10,6 +10,8 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
     private WinFormGpuRenderSurfaceAdapter? _renderAdapter;
     public RenderSurfaceHost<GpuBackbuffer> RenderSurfaceHost { get; private set; } = null!;
 
+    public RenderSurfaceHost<GpuBackbuffer> Host { get; }
+
     public WinFormGpuRenderSurfaceControl()
     {
         _glControl = new SKGLControl { Dock = DockStyle.Fill };
