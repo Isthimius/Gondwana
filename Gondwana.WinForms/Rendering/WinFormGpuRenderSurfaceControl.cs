@@ -7,8 +7,17 @@ namespace Gondwana.WinForms.Rendering;
 public partial class WinFormGpuRenderSurfaceControl : UserControl
 {
     private readonly SKGLControl _glControl;
-    private WinFormGpuRenderSurfaceAdapter? _renderAdapter;
-    public RenderSurfaceHost<GpuBackbuffer> RenderSurfaceHost { get; private set; } = null!;
+    private WinFormGpuRenderSurfaceAdapter? _adapter;
+
+    /// <summary>
+    /// Gets the GPU render surface adapter used by this control.
+    /// </summary>
+    public WinFormGpuRenderSurfaceAdapter Adapter => _adapter!;
+
+    /// <summary>
+    /// Gets the render surface host used for displaying game content.
+    /// </summary>
+    public RenderSurfaceHost<GpuBackbuffer> Host { get; private set; } = null!;
 
     public WinFormGpuRenderSurfaceControl()
     {
@@ -28,29 +37,44 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
         _glControl.MouseLeave += (_, e) => OnMouseLeave(e);
 
         this.Load += (_, _) => InitializeBackbuffer();
+
+        // Ensure the adapter re-reads size whenever THIS wrapper changes size
+        SizeChanged += (_, __) => _adapter?.RefreshDestinationSize();
+
+        // Fire once after this control is realized
+        HandleCreated += (_, __) => _adapter?.RefreshDestinationSize();
+        if (IsHandleCreated)
+            BeginInvoke((Action)(() => _adapter?.RefreshDestinationSize()));
+    }
+
+    protected override void OnParentChanged(EventArgs e)
+    {
+        base.OnParentChanged(e);
+        if (IsHandleCreated)
+            BeginInvoke((Action)(() => _adapter?.RefreshDestinationSize()));
     }
 
     private void InitializeBackbuffer()
     {
-        _renderAdapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
-        RenderSurfaceHost = new RenderSurfaceHost<GpuBackbuffer>(_renderAdapter);
+        _adapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
+        Host = new RenderSurfaceHost<GpuBackbuffer>(_adapter);
 
-        var gpuBackbuffer = (GpuBackbuffer)RenderSurfaceHost.Backbuffer;
+        var gpuBackbuffer = (GpuBackbuffer)Host.Backbuffer;
 
         // Called once from the GL thread when the GRContext becomes available for the first time.
-        _renderAdapter.GrContextFirstAvailable += (grContext) =>
+        _adapter.GrContextFirstAvailable += (grContext) =>
         {
-            gpuBackbuffer.Initialize(grContext, _renderAdapter.Width, _renderAdapter.Height);
+            gpuBackbuffer.Initialize(grContext, _adapter.Width, _adapter.Height);
         };
 
         // Called from the GL thread whenever the control is resized and the GRContext is ready.
-        _renderAdapter.ResizeRequested += (grContext, w, h) =>
+        _adapter.ResizeRequested += (grContext, w, h) =>
         {
             gpuBackbuffer.Initialize(grContext, w, h);
         };
 
         // Register the host so the adapter drives all rendering on the GL thread (Option A).
-        _renderAdapter.SetHost(RenderSurfaceHost);
+        _adapter.SetHost(Host);
     }
 
     /// <summary>
@@ -62,8 +86,8 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
         if (disposing && (components != null))
         {
             components.Dispose();
-            RenderSurfaceHost?.Dispose();
-            _renderAdapter?.Dispose();
+            Host?.Dispose();
+            _adapter?.Dispose();
         }
 
         base.Dispose(disposing);
