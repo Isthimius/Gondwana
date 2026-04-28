@@ -1,4 +1,5 @@
-﻿using Gondwana.Rendering;
+﻿using Gondwana;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -12,10 +13,11 @@ namespace Gondwana.WinForms.Rendering;
 /// <para>
 /// <strong>Option A — GL-thread rendering:</strong>
 /// When a <see cref="RenderSurfaceHostBase"/> is registered via <see cref="SetHost"/>, all scene
-/// rendering and presentation are driven from within <c>PaintSurface</c> on the GL thread.  A
-/// <see cref="System.Windows.Forms.Timer"/> periodically calls <see cref="SKGLControl.Invalidate"/>
-/// to sustain the paint loop.  The engine's background render loop skips GPU-rendered surfaces
-/// entirely (see <see cref="GpuBackbuffer.IsGlThreadRendered"/>).
+/// rendering and presentation are driven from within <c>PaintSurface</c> on the GL thread.
+/// <c>Invalidate()</c> is called on the UI thread at the end of each
+/// <c>Engine.DoForegroundTasks</c> cycle (via <c>Engine.AfterFrameRender</c>), so the paint loop
+/// stays in lockstep with the engine's own frame rate.  The engine's background render loop skips
+/// GPU-rendered surfaces entirely (see <see cref="GpuBackbuffer.IsGlThreadRendered"/>).
 /// </para>
 /// <para>
 /// If <see cref="SetHost"/> has not been called, the adapter falls back to the legacy
@@ -41,10 +43,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     // ── Option A (GL-thread) path ────────────────────────────────────────────
     private RenderSurfaceHostBase? _host;
     private GpuBackbuffer? _gpuBackbuffer;
-    private readonly System.Windows.Forms.Timer _renderTimer = new();
-
-    // Tracks the last TargetFps value that was applied to the timer so we can detect changes.
-    private int _appliedTargetFps;
+    private Action? _afterFrameRenderHandler;
 
     // Tracks the last VSync value applied to the GL control so we can detect changes.
     // Null means "not yet applied" and forces an apply on the first PaintSurface call.
@@ -133,59 +132,30 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
     /// <summary>
     /// Registers the <see cref="RenderSurfaceHostBase"/> whose scene this adapter should render
-    /// and starts the GL paint loop.
+    /// and wires the GL paint loop to the engine's foreground cycle.
     /// </summary>
     /// <remarks>
     /// After this call all rendering is driven from <c>PaintSurface</c> on the GL thread.
-    /// A <see cref="System.Windows.Forms.Timer"/> fires at approximately
-    /// <paramref name="targetFps"/> frames per second and calls
-    /// <see cref="SKGLControl.Invalidate"/> to sustain the loop.  The initial
-    /// <paramref name="targetFps"/> value is written to
-    /// <see cref="GpuBackbuffer.TargetFps"/> when the host's backbuffer is a
-    /// <see cref="GpuBackbuffer"/>; subsequently, mutating
-    /// <see cref="GpuBackbuffer.TargetFps"/> directly is the preferred way to change the
-    /// frame rate at run time.
+    /// <c>Invalidate()</c> is called on the UI thread at the end of each
+    /// <c>Engine.DoForegroundTasks</c> call (via <c>Engine.AfterFrameRender</c>), so the frame
+    /// rate is governed entirely by <see cref="Gondwana.Configuration.EngineConfiguration.TargetFPS"/>.
     /// </remarks>
     /// <param name="host">The render surface host to render each frame.</param>
-    /// <param name="targetFps">
-    /// Initial target frame rate for the render timer.  Defaults to 60 fps.  Actual frame rate is
-    /// bounded by the GL driver and monitor refresh rate.  Set to <c>0</c> for uncapped.
-    /// </param>
-    public void SetHost(RenderSurfaceHostBase host, int targetFps = 60)
+    public void SetHost(RenderSurfaceHostBase host)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
 
-        // Cache the GpuBackbuffer so the timer tick and OnPaintSurface can read its settings.
+        // Cache the GpuBackbuffer so OnPaintSurface can read its settings.
         _gpuBackbuffer = _host.Backbuffer as GpuBackbuffer;
 
-        // Seed TargetFps on the backbuffer from the parameter (0 = uncapped).
-        int safeFps = Math.Max(0, targetFps);
-        if (_gpuBackbuffer != null)
-            _gpuBackbuffer.TargetFps = safeFps;
-
-        int intervalMs = TargetFpsToIntervalMs(safeFps);
-        _appliedTargetFps = safeFps;
-
-        _renderTimer.Interval = intervalMs;
-        _renderTimer.Tick += OnRenderTimerTick;
-        _renderTimer.Start();
-    }
-
-    private void OnRenderTimerTick(object? sender, EventArgs e)
-    {
-        // Lazily sync TargetFps → timer interval whenever the backbuffer value changes.
-        int desiredFps = _gpuBackbuffer?.TargetFps ?? _appliedTargetFps;
-        if (desiredFps != _appliedTargetFps)
+        // Invalidate the GL control on the UI thread after every engine foreground cycle.
+        _afterFrameRenderHandler = () =>
         {
-            _renderTimer.Interval = TargetFpsToIntervalMs(desiredFps);
-            _appliedTargetFps = desiredFps;
-        }
-
-        _glControl.Invalidate();
+            if (!_glControl.IsDisposed && _glControl.IsHandleCreated)
+                _glControl.BeginInvoke((Action)_glControl.Invalidate);
+        };
+        Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;
     }
-
-    private static int TargetFpsToIntervalMs(int fps) =>
-        fps <= 0 ? 1 : Math.Max(1, (int)Math.Round(1000.0 / fps));
 
     /// <summary>
     /// Presents the specified GPU buffer image to the render surface (legacy path).
@@ -318,8 +288,11 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// </summary>
     public void Dispose()
     {
-        _renderTimer.Stop();
-        _renderTimer.Dispose();
+        if (_afterFrameRenderHandler != null)
+        {
+            Engine.Instance.AfterFrameRender -= _afterFrameRenderHandler;
+            _afterFrameRenderHandler = null;
+        }
 
         if (!_glControl.IsDisposed)
         {

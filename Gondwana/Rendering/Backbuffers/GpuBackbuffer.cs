@@ -45,13 +45,13 @@ public class GpuBackbuffer : BackbufferBase
     private long _frameCount;
 
     /// <summary>
-    /// Gets or sets the target frame rate for the render timer that drives this GPU backbuffer.
+    /// Gets or sets the target frame rate associated with this GPU backbuffer.
     /// </summary>
     /// <remarks>
-    /// This value is read by the platform adapter (e.g. <c>WinFormGpuRenderSurfaceAdapter</c>) on
-    /// each timer tick and used to update the invalidation timer interval.  Set to <c>0</c> for an
-    /// uncapped frame rate (the adapter fires its timer as fast as WinForms allows, and the actual
-    /// frame rate is then limited only by vsync and GPU throughput).
+    /// This value is kept in sync with <see cref="Gondwana.Configuration.EngineConfiguration.TargetFPS"/>
+    /// (which propagates its value to all registered GPU backbuffers).  The engine's own foreground
+    /// cycle — not the backbuffer — is responsible for throttling the frame rate; see
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.TargetFPS"/> for details.
     /// </remarks>
     /// <value>
     /// The desired frames per second.  Negative values are clamped to zero.  The default is 60.

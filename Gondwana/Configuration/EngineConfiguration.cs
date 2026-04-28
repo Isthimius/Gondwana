@@ -22,7 +22,7 @@ public partial class EngineConfiguration
     /// </summary>
     /// <remarks>
     /// Setting this property also updates <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps"/>
-    /// on all currently registered GPU surfaces so that the render timer interval stays consistent.
+    /// on all currently registered GPU surfaces to keep that value consistent.
     /// </remarks>
     public int TargetFPS
     {
@@ -31,7 +31,7 @@ public partial class EngineConfiguration
         {
             _targetFPS = value < 0 ? 0 : value;
 
-            // Propagate to all active GPU backbuffers so their render timer intervals stay in sync.
+            // Propagate to all active GPU backbuffers so their TargetFps stays in sync.
             foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
             {
                 if (surface.Backbuffer is GpuBackbuffer gpuBb)
