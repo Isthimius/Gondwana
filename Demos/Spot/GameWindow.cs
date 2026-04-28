@@ -37,6 +37,12 @@ internal partial class GameWindow : Form
         {
             Engine.Logger.LogTrace(cps.ToString());
         };
+
+        // Subscribe before Initialize() is called so the handler fires during initialization.
+        _gameHost.Engine.InitializationComplete += () =>
+        {
+            _gameHost.Engine.Configuration.TargetFPS = 0;
+        };
     }
 
     protected override void OnShown(EventArgs e)
@@ -47,11 +53,6 @@ internal partial class GameWindow : Form
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
         _gameHost!.Initialize(logLevel: LogLevel.Trace);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
-
-        _gameHost.Engine.CPSCalculated += (cps) =>
-        {
-            Engine.Logger.LogTrace("{CPS}", cps.ToString());
-        };
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
