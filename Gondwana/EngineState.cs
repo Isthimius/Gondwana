@@ -608,7 +608,7 @@ public sealed class EngineState
             else
             {
                 existingIndexById[incoming.Nickname] = SpriteManager.Instance._spriteList.Count;
-                SpriteManager.Instance._spriteList.Add(incoming);
+                SpriteManager.Instance.AddSprite(incoming);
             }
         }
     }
