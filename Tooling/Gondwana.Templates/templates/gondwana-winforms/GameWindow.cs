@@ -34,6 +34,7 @@ internal sealed class GameWindow : Form
 
     // Initialize AFTER the form is visible so SynchronizationContext is available,
     // which the engine requires to marshal callbacks back to the UI thread.
+    // Tip: change LogLevel.Warning to LogLevel.Debug to see per-frame engine output.
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);

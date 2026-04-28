@@ -10,10 +10,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Gondwana" Version="2.1.2" />
-        <PackageReference Include="Gondwana.Hosting" Version="2.1.2" />
-        <PackageReference Include="Gondwana.WinForms" Version="2.1.2" />
-        <PackageReference Include="Gondwana.WinForms.Hosting" Version="2.1.2" />
+        <!--
+            These versions track the latest Gondwana 2.x releases.
+            Run 'dotnet add package Gondwana' to update to a newer major version.
+        -->
+        <PackageReference Include="Gondwana" Version="2.*" />
+        <PackageReference Include="Gondwana.Hosting" Version="2.*" />
+        <PackageReference Include="Gondwana.WinForms" Version="2.*" />
+        <PackageReference Include="Gondwana.WinForms.Hosting" Version="2.*" />
     </ItemGroup>
 
     <!--
