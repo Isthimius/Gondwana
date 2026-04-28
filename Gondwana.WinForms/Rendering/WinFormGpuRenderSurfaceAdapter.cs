@@ -56,6 +56,10 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     // Set to 1 when the GL control is resized so OnPaintSurface can fire ResizeRequested.
     private int _pendingResize;
 
+    // Set to 1 when a BeginInvoke(Invalidate) is already queued; prevents queuing more than one
+    // at a time when the engine cycle rate exceeds the GPU render rate.
+    private int _pendingInvalidate;
+
     /// <summary>
     /// Gets or sets the color used to clear the surface before rendering.
     /// </summary>
@@ -149,9 +153,13 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         _gpuBackbuffer = _host.Backbuffer as GpuBackbuffer;
 
         // Invalidate the GL control on the UI thread after every engine foreground cycle.
+        // Use _pendingInvalidate to ensure at most one BeginInvoke is queued: when the engine
+        // cycle rate exceeds the GPU render rate, excess calls are dropped rather than piling
+        // up in the message queue.  The flag is cleared at the start of each paint.
         _afterFrameRenderHandler = () =>
         {
-            if (!_glControl.IsDisposed && _glControl.IsHandleCreated)
+            if (!_glControl.IsDisposed && _glControl.IsHandleCreated
+                && Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) == 0)
                 _glControl.BeginInvoke((Action)_glControl.Invalidate);
         };
         Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;
@@ -191,6 +199,9 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
     private void OnPaintSurface(object? sender, SKPaintGLSurfaceEventArgs e)
     {
+        // Clear the pending-invalidate flag so the next AfterFrameRender can queue a new one.
+        Interlocked.Exchange(ref _pendingInvalidate, 0);
+
         // Lazily sync VSync → GLControl.VSync whenever the backbuffer value changes.
         if (_gpuBackbuffer != null)
         {
