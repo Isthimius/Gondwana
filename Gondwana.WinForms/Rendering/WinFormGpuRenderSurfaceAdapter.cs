@@ -241,8 +241,6 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
         var canvas = e.Surface.Canvas;
 
-        canvas.Clear(ClearColor);
-
         if (_host != null)
         {
             // ── Option A: render + blit entirely on the GL thread ────────────
@@ -252,14 +250,24 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             using var img = _host.GlRenderAndSnapshot();
             if (img != null)
             {
+                // DrawImage always covers the full render target, so no pre-clear is needed.
+                // Clearing the window surface before blitting causes a black flash every frame
+                // that is visible when VSync is off (the monitor may scan between the clear and
+                // the blit, seeing the cleared back buffer).
                 var dst = SKRect.Create(0, 0,
                     e.BackendRenderTarget.Width,
                     e.BackendRenderTarget.Height);
                 canvas.DrawImage(img, dst);
             }
+            else
+            {
+                canvas.Clear(ClearColor);
+            }
         }
         else
         {
+            canvas.Clear(ClearColor);
+
             // ── Legacy path: draw image set by Present() ─────────────────────
             // IMPORTANT: For zero-copy, img MUST belong to this same GRContext.
             // If you hand us a raster image, Skia will upload it each frame (works, but costs bandwidth).
