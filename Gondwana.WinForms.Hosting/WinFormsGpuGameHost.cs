@@ -65,7 +65,7 @@ public abstract class WinFormsGpuGameHost : GameHostBase
     /// </summary>
     protected override void BindScene()
     {
-        RenderSurface.RenderSurfaceHost.Bind(Scene!, false);
+        RenderSurface.Host.Bind(Scene!, false);
     }
 
     /// <summary>

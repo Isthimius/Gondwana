@@ -83,6 +83,21 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     public event Action<GRContext, int, int>? ResizeRequested;
 
     /// <summary>
+    /// Refreshes the destination size based on the current client size of the GL control.
+    /// </summary>
+    public void RefreshDestinationSize()
+    {
+        if (_glControl.IsDisposed || !_glControl.IsHandleCreated) return;
+
+        var sz = _glControl.ClientSize;
+        if (sz.Width > 0 && sz.Height > 0)
+        {
+            SetDestinationSize(sz.Width, sz.Height);
+            Interlocked.Exchange(ref _pendingResize, 1);
+        }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="WinFormGpuRenderSurfaceAdapter"/> class.
     /// </summary>
     /// <param name="gl">The SKGLControl to use as the render target.</param>

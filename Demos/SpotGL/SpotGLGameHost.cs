@@ -159,7 +159,7 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
     protected override void CreateSceneGraph()
     {
         base.CreateSceneGraph();
-        RenderSurface.RenderSurfaceHost.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
+        RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
 
         SpotGame = new SpotGame();
         HookSpotGameEvents();
@@ -173,7 +173,7 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         {
             var directImage = new DirectImage(
                 tilesheet.SkBitmap,
-                RenderSurface.RenderSurfaceHost,
+                RenderSurface.Host,
                 Scene[0],
                 new Rectangle(0, 0, 769, 769));
 
@@ -182,7 +182,7 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         }
 
         var particleSurface = new ParticleSurface(
-            RenderSurface.RenderSurfaceHost,
+            RenderSurface.Host,
             Scene[0],
             new Rectangle(0, 0, 769, 769));
 
@@ -324,10 +324,10 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         if (Scene is null || Scene.SceneLayers.Count == 0)
             return;
 
-        if (RenderSurface.RenderSurfaceHost.ViewManager.Views.Count == 0)
+        if (RenderSurface.Host.ViewManager.Views.Count == 0)
             return;
 
-        var view = RenderSurface.RenderSurfaceHost.ViewManager.Views[0];
+        var view = RenderSurface.Host.ViewManager.Views[0];
         var layer = Scene.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
@@ -440,7 +440,7 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
     private void AddClouds()
     {
         _particleSurface = new ParticleSurface(
-            RenderSurface.RenderSurfaceHost,
+            RenderSurface.Host,
             SpotGame.BackgroundGameField,
             new Rectangle(0, 0, 769, 769),
             "cloudSurface",
@@ -489,8 +489,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
     private void CreateTextBlockFields()
     {
         // upper left
-        _player1Text = new TextBlock(RenderSurface.RenderSurfaceHost,
-                                     RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+        _player1Text = new TextBlock(RenderSurface.Host,
+                                     RenderSurface.Host.ViewManager.Views[0],
                                      new Rectangle(10, 10, 200, 50));
         _player1Text.SetFont(_font, 24, 12)
                     .SetColors(SpotGame.Players[0].ColorItem.TextColor, SKColors.Transparent)
@@ -502,15 +502,15 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         _player1Text.ZOrder = 20;
 
         _player1Rectangle = new DirectRectangle(SpotGame.Players[0].ColorItem.Color.ToColor(),
-                                                RenderSurface.RenderSurfaceHost,
-                                                RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+                                                RenderSurface.Host,
+                                                RenderSurface.Host.ViewManager.Views[0],
                                                 _player1Text.ScreenBounds);
         _player1Rectangle.SetCornerRadius(30)
                          .SetFilled(true);
 
         // bottom right
-        _player2Text = new TextBlock(RenderSurface.RenderSurfaceHost,
-                                     RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+        _player2Text = new TextBlock(RenderSurface.Host,
+                                     RenderSurface.Host.ViewManager.Views[0],
                                      new Rectangle(RenderSurface.Width - 210, RenderSurface.Height - 60, 200, 50));
         _player2Text.SetFont(_font, 24, 12)
                     .SetColors(SpotGame.Players[1].ColorItem.TextColor, SKColors.Transparent)
@@ -522,8 +522,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         _player2Text.ZOrder = 20;
 
         _player2Rectangle = new DirectRectangle(SpotGame.Players[1].ColorItem.Color.ToColor(),
-                                                RenderSurface.RenderSurfaceHost,
-                                                RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+                                                RenderSurface.Host,
+                                                RenderSurface.Host.ViewManager.Views[0],
                                                 _player2Text.ScreenBounds);
         _player2Rectangle.SetCornerRadius(30)
                          .SetFilled(true);
@@ -531,8 +531,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         if (SpotGame.Players.Length >= 3)
         {
             // upper right
-            _player3Text = new TextBlock(RenderSurface.RenderSurfaceHost,
-                                         RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+            _player3Text = new TextBlock(RenderSurface.Host,
+                                         RenderSurface.Host.ViewManager.Views[0],
                                          new Rectangle(RenderSurface.Width - 210, 10, 200, 50));
             _player3Text.SetFont(_font, 24, 12)
                         .SetColors(SpotGame.Players[2].ColorItem.TextColor, SKColors.Transparent)
@@ -544,8 +544,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
             _player3Text.ZOrder = 20;
 
             _player3Rectangle = new DirectRectangle(SpotGame.Players[2].ColorItem.Color.ToColor(),
-                                                    RenderSurface.RenderSurfaceHost,
-                                                    RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+                                                    RenderSurface.Host,
+                                                    RenderSurface.Host.ViewManager.Views[0],
                                                     _player3Text.ScreenBounds);
             _player3Rectangle.SetCornerRadius(30)
                              .SetFilled(true);
@@ -554,8 +554,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         if (SpotGame.Players.Length >= 4)
         {
             // bottom left
-            _player4Text = new TextBlock(RenderSurface.RenderSurfaceHost,
-                                         RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+            _player4Text = new TextBlock(RenderSurface.Host,
+                                         RenderSurface.Host.ViewManager.Views[0],
                                          new Rectangle(10, RenderSurface.Height - 60, 200, 50));
             _player4Text.SetFont(_font, 24, 12)
                         .SetColors(SpotGame.Players[3].ColorItem.TextColor, SKColors.Transparent)
@@ -568,8 +568,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
             _player4Text.ZOrder = 20;
 
             _player4Rectangle = new DirectRectangle(SpotGame.Players[3].ColorItem.Color.ToColor(),
-                                                    RenderSurface.RenderSurfaceHost,
-                                                    RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+                                                    RenderSurface.Host,
+                                                    RenderSurface.Host.ViewManager.Views[0],
                                                     _player4Text.ScreenBounds);
             _player4Rectangle.SetCornerRadius(30)
                              .SetFilled(true);
@@ -658,8 +658,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
             secondaryFillColor = winningPlayers[1].ColorItem.Color.ToColor();
         }
 
-        _gameMessageText = new TextBlock(RenderSurface.RenderSurfaceHost,
-                                         RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+        _gameMessageText = new TextBlock(RenderSurface.Host,
+                                         RenderSurface.Host.ViewManager.Views[0],
                                          new Rectangle(RenderSurface.Width / 2 - 180, RenderSurface.Height / 2 - 40, 360, 80));
         _gameMessageText.SetFont(_font, 48, 16)
                         .SetColors(primaryTextColor.ToSKColor(), SKColors.Transparent)
@@ -672,8 +672,8 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         _gameMessageText.ZOrder = 20;
 
         _gameMessageRectangle = new DirectRectangle(primaryFillColor,
-                                                    RenderSurface.RenderSurfaceHost,
-                                                    RenderSurface.RenderSurfaceHost.ViewManager.Views[0],
+                                                    RenderSurface.Host,
+                                                    RenderSurface.Host.ViewManager.Views[0],
                                                     _gameMessageText.ScreenBounds);
         _gameMessageRectangle.SetCornerRadius(40)
                              .SetFilled(true)
