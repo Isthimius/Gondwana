@@ -38,6 +38,15 @@ internal partial class GameWindow : Form
         {
             Engine.Logger.LogTrace(cps.ToString());
         };
+
+        // Subscribe before Initialize() is called so the handler fires during initialization.
+        _gameHost.Engine.InitializationComplete += () =>
+        {
+            // Setting TargetFPS = 0 removes the engine loop throttle AND automatically
+            // propagates to all registered GpuBackbuffers, removing their timer cap too.
+            _gameHost.Engine.Configuration.TargetFPS = 0;
+            ((GpuBackbuffer)_gameHost.RenderSurface.Host.Backbuffer).VSync = false;
+        };
     }
 
     protected override void OnShown(EventArgs e)
@@ -48,17 +57,6 @@ internal partial class GameWindow : Form
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
         _gameHost!.Initialize(logLevel: LogLevel.Trace);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
-
-        _gameHost.Engine.CPSCalculated += (cps) =>
-        {
-            Engine.Logger.LogTrace("{CPS}", cps.ToString());
-        };
-        _gameHost.Engine.InitializationComplete += () =>
-        {
-            _gameHost.Engine.Configuration.TargetFPS = 0;
-            ((GpuBackbuffer)_gameHost.RenderSurface.Host.Backbuffer).VSync = false;
-            ((GpuBackbuffer)_gameHost.RenderSurface.Host.Backbuffer).TargetFps = 0;
-        };  
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)

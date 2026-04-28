@@ -40,6 +40,10 @@ public class GpuBackbuffer : BackbufferBase
 
     private int _targetFps = 60;
 
+    // Frame counter used to compute the actual rendered FPS.
+    // Incremented on the GL thread by RecordFrame(); consumed atomically by the engine's CPS sampler.
+    private long _frameCount;
+
     /// <summary>
     /// Gets or sets the target frame rate for the render timer that drives this GPU backbuffer.
     /// </summary>
@@ -179,6 +183,20 @@ public class GpuBackbuffer : BackbufferBase
 
         return _surface.Snapshot();
     }
+
+    // ── Actual FPS tracking ──────────────────────────────────────────────────
+
+    /// <summary>
+    /// Records that one frame has been rendered.  Called by the platform adapter on every
+    /// <c>PaintSurface</c> callback so the engine can compute the actual rendered FPS.
+    /// </summary>
+    public void RecordFrame() => Interlocked.Increment(ref _frameCount);
+
+    /// <summary>
+    /// Returns the number of frames recorded since the last call and atomically resets the
+    /// counter to zero.  Called by the engine's CPS sampler on the background thread.
+    /// </summary>
+    internal long ConsumeFrameCount() => Interlocked.Exchange(ref _frameCount, 0);
 
     // ── Surface creation helpers ─────────────────────────────────────────────
 

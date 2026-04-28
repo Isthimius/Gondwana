@@ -7,6 +7,7 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
 using Timer = Gondwana.Timers.Timer;
@@ -778,13 +779,29 @@ public sealed class Engine : IDisposable
         double grossCps = grossCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
         double netCps = netCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
 
+        // Collect actual GPU FPS from all registered GPU-rendered backbuffers.
+        long totalGpuFrames = 0;
+        int gpuSurfaceCount = 0;
+        foreach (var surface in RenderSurfaceHostRegistry.All)
+        {
+            if (surface.Backbuffer is GpuBackbuffer gpuBb)
+            {
+                totalGpuFrames += gpuBb.ConsumeFrameCount();
+                gpuSurfaceCount++;
+            }
+        }
+        double? gpuFps = gpuSurfaceCount > 0
+            ? totalGpuFrames * HighResTimer.TicksPerSecond / (double)elapsedTicks
+            : null;
+
         // Build immutable args NOW (so lambda doesn't read changing fields later)
         var args = new CyclesPerSecondCalculatedEventArgs(
             grossCycles,
             netCycles,
             grossCps,
             netCps,
-            elapsedSec
+            elapsedSec,
+            gpuFps
         );
 
         // Post the snapshot

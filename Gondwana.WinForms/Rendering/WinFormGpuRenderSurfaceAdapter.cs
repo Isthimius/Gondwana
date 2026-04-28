@@ -308,6 +308,9 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
         // Optional: flush to ensure work is queued to GPU before we hand new images next frame
         _glControl.GRContext?.Flush();
+
+        // Record the completed frame so the engine's CPS sampler can compute actual GPU FPS.
+        _gpuBackbuffer?.RecordFrame();
     }
 
     /// <summary>
