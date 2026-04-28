@@ -15,6 +15,18 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
         _glControl = new SKGLControl { Dock = DockStyle.Fill };
         Controls.Add(_glControl);
 
+        // Forward mouse events from the inner GL control to this outer control so that a
+        // WinFormsMouseAdapter attached to this control sees them.  The inner SKGLControl
+        // fills the entire client area and therefore receives all mouse input; without this
+        // forwarding the outer control's mouse events never fire.
+        _glControl.MouseDown  += (_, e) => OnMouseDown(e);
+        _glControl.MouseUp    += (_, e) => OnMouseUp(e);
+        _glControl.MouseMove  += (_, e) => OnMouseMove(e);
+        _glControl.MouseClick += (_, e) => OnMouseClick(e);
+        _glControl.MouseWheel += (_, e) => OnMouseWheel(e);
+        _glControl.MouseEnter += (_, e) => OnMouseEnter(e);
+        _glControl.MouseLeave += (_, e) => OnMouseLeave(e);
+
         this.Load += (_, _) => InitializeBackbuffer();
     }
 
