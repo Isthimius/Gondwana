@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Michael Adkins",
+  "classifications": [ "Games", "WinForms", "Desktop", "Gondwana" ],
+  "identity": "Gondwana.Templates.WinForms.CSharp",
+  "name": "Gondwana WinForms Game",
+  "shortName": "gondwana-winforms",
+  "description": "A starter project for building a 2D Windows desktop game with the Gondwana Game Engine.",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "MyGame",
+  "preferNameDirectory": true
+}
