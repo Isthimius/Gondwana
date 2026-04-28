@@ -1,4 +1,5 @@
 using Gondwana;
+using Gondwana.Rendering.Backbuffers;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
@@ -55,7 +56,8 @@ internal partial class GameWindow : Form
         _gameHost.Engine.InitializationComplete += () =>
         {
             _gameHost.Engine.Configuration.TargetFPS = 0;
-            
+            ((GpuBackbuffer)_gameHost.RenderSurface.Host.Backbuffer).VSync = false;
+            ((GpuBackbuffer)_gameHost.RenderSurface.Host.Backbuffer).TargetFps = 0;
         };  
     }
 
