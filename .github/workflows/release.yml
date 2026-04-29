@@ -134,16 +134,14 @@ ${release_body}
 ---
 
 "
-          existing=$(cat CHANGELOG.md)
+          existing=$(cat CHANGELOG.md 2>/dev/null || true)
           printf '%s%s' "$new_entry" "$existing" > CHANGELOG.md
 
       - name: Commit and push CHANGELOG.md
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
           git add CHANGELOG.md
           git commit -m "chore: update CHANGELOG for v${VERSION}"
-          git push origin HEAD:master
+          git push origin HEAD:refs/heads/master
 
       # ---------------------------
       # NuGet (nuget.org)
