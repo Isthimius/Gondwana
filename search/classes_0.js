@@ -7,5 +7,10 @@ var searchData=
   ['assetsfileentry_4',['AssetsFileEntry',['../classGondwana_1_1Assets_1_1AssetsFileEntry.html',1,'Gondwana::Assets']]],
   ['assetsfileidentifier_5',['AssetsFileIdentifier',['../classGondwana_1_1Assets_1_1AssetsFileIdentifier.html',1,'Gondwana::Assets']]],
   ['audioresource_6',['AudioResource',['../classGondwana_1_1Audio_1_1AudioResource.html',1,'Gondwana::Audio']]],
-  ['audioresourcemanager_7',['AudioResourceManager',['../classGondwana_1_1Audio_1_1AudioResourceManager.html',1,'Gondwana::Audio']]]
+  ['audioresourcemanager_7',['AudioResourceManager',['../classGondwana_1_1Audio_1_1AudioResourceManager.html',1,'Gondwana::Audio']]],
+  ['avaloniabitmaprendersurfaceadapter_8',['AvaloniaBitmapRenderSurfaceAdapter',['../classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html',1,'Gondwana::Avalonia::Rendering']]],
+  ['avaloniabitmaprendersurfacecontrol_9',['AvaloniaBitmapRenderSurfaceControl',['../classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html',1,'Gondwana::Avalonia::Rendering']]],
+  ['avaloniagamehost_10',['AvaloniaGameHost',['../classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html',1,'Gondwana::Avalonia::Hosting']]],
+  ['avaloniakeyboardadapter_11',['AvaloniaKeyboardAdapter',['../classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html',1,'Gondwana::Avalonia::Input::Keyboard']]],
+  ['avaloniamouseadapter_12',['AvaloniaMouseAdapter',['../classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html',1,'Gondwana::Avalonia::Input::Mouse']]]
 ];

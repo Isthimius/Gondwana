@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.1.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -115,6 +115,9 @@ Inheritance diagram for Gondwana.Rendering.RenderSurfaceHostBase:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aa4889c2c598f4b21e07ec34728d064ce" id="r_aa4889c2c598f4b21e07ec34728d064ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKImage</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aa4889c2c598f4b21e07ec34728d064ce">GlRenderAndSnapshot</a> ()</td></tr>
+<tr class="memdesc:aa4889c2c598f4b21e07ec34728d064ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders the current scene frame on the GL thread and returns a snapshot of the GPU backbuffer ready to be drawn to the window surface.  <br /></td></tr>
+<tr class="separator:aa4889c2c598f4b21e07ec34728d064ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9eee1fb0d47a5b75e3f6457af9148703" id="r_a9eee1fb0d47a5b75e3f6457af9148703"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a9eee1fb0d47a5b75e3f6457af9148703">Dispose</a> ()</td></tr>
 <tr class="memdesc:a9eee1fb0d47a5b75e3f6457af9148703"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by this RenderSurfaceHostBase instance.  <br /></td></tr>
 <tr class="separator:a9eee1fb0d47a5b75e3f6457af9148703"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,7 +149,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a base class for hosting a render surface, providing functionality for managing rendering operations, backbuffer access, and integration with platform-specific adapters. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00011">11</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00012">12</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a05265ed2d40b4e9a2a40dff3573db2fe" name="a05265ed2d40b4e9a2a40dff3573db2fe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a05265ed2d40b4e9a2a40dff3573db2fe">&#9670;&#160;</a></span>RenderSurfaceHostBase()</h2>
@@ -196,7 +199,7 @@ Properties</h2></td></tr>
 <p>This method unregisters the render surface host from the RenderSurfaceHostRegistry and releases any managed resources. Derived classes should override Dispose(bool) to release additional resources specific to their implementation. </p>
 <p>After calling Dispose(), this instance should not be used. Calling Dispose() multiple times is safe and has no additional effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00084">84</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00129">129</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -237,6 +240,31 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="aa4889c2c598f4b21e07ec34728d064ce" name="aa4889c2c598f4b21e07ec34728d064ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4889c2c598f4b21e07ec34728d064ce">&#9670;&#160;</a></span>GlRenderAndSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKImage</a>? Gondwana.Rendering.RenderSurfaceHostBase.GlRenderAndSnapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Renders the current scene frame on the GL thread and returns a snapshot of the GPU backbuffer ready to be drawn to the window surface. </p>
+<p>This method is intended to be called from <code>SKGLControl.PaintSurface</code> (the GL thread) by a <code>WinFormGpuRenderSurfaceAdapter</code> that has been set as the host's adapter. It is the Option-A equivalent of the engine loop's <code>RenderToBackbuffer</code> + <code>PresentBackbufferToAdapter</code> pair; both operations happen synchronously on the GL thread, with no cross-thread posting. </p>
+<p>The returned SKImage is a lightweight GPU-backed view of the backbuffer texture. The caller <b>must dispose</b> it after drawing (typically with a <code>using</code> statement), and must do so within the same <code>PaintSurface</code> call to avoid aliasing with the next frame's rendering pass. </p>
+<p>Returns <code>null</code> when <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1" title="Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine&#39;s...">BackbufferBase.IsGlThreadRendered</a> is <code>false</code> (i.e. this is not a GPU-rendered surface). </p>
+<dl class="section return"><dt>Returns</dt><dd>A GPU-backed SKImage snapshot of the rendered frame, or <code>null</code> if this surface does not use GL-thread rendering. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00086">86</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Property Documentation</h2>
 <a id="aa5cd6f2a3441111e38acdff4b721512a" name="aa5cd6f2a3441111e38acdff4b721512a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa5cd6f2a3441111e38acdff4b721512a">&#9670;&#160;</a></span>Backbuffer</h2>
@@ -260,7 +288,7 @@ Properties</h2></td></tr>
 
 <p>Gets the in-memory BackbufferBase associated with the current rendering context. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00032">32</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00033">33</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -286,7 +314,7 @@ Properties</h2></td></tr>
 
 <p>Gets the platform-specific RenderSurfaceAdapterBase responsible for rendering the image from the Backbuffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00043">43</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00044">44</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -312,7 +340,7 @@ Properties</h2></td></tr>
 
 <p>Gets the source Scenes.Scene used for rendering operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00037">37</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00038">38</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -340,7 +368,7 @@ Properties</h2></td></tr>
 <p>The ViewManager instance managing all views associated with this render surface host. </p>
 <p>The view manager enables split-screen, picture-in-picture, and minimap rendering by managing multiple views with independent cameras and viewports. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00056">56</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00057">57</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>

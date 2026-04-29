@@ -1,7 +1,8 @@
 var classGondwana_1_1CyclesPerSecondCalculatedEventArgs =
 [
-    [ "CyclesPerSecondCalculatedEventArgs", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#af10277cacdc753884d4205c68be5563b", null ],
+    [ "CyclesPerSecondCalculatedEventArgs", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#ae3def773ec340fb7c56adb4d3ba6bc68", null ],
     [ "ToString", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a1efdf4ba59140f1ecb644704b0756eee", null ],
+    [ "GpuFps", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a87024aaee82908677db8284e0392ba3b", null ],
     [ "GrossCPS", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a037cfb72bc48bb3952d4a5c74572bb7d", null ],
     [ "NetCPS", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a1c87063c8632163cc66fd59e827dbe61", null ],
     [ "SampleTime", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a950f6a3a313494c672cb52c4ce16c4ee", null ],

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.1.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -111,7 +111,7 @@ Inheritance diagram for Gondwana.Rendering.Backbuffers.BackbufferBase:</div>
   <img src="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.png" usemap="#Gondwana.Rendering.Backbuffers.BackbufferBase_map" alt=""/>
   <map id="Gondwana.Rendering.Backbuffers.BackbufferBase_map" name="Gondwana.Rendering.Backbuffers.BackbufferBase_map">
 <area href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html" title="Provides a bitmap-based backbuffer implementation for rendering operations using SkiaSharp...." alt="Gondwana.Rendering.Backbuffers.BitmapBackbuffer" shape="rect" coords="0,112,309,136"/>
-<area href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html" title="Provides a GPU-presented backbuffer implementation using SkiaSharp and OpenGL." alt="Gondwana.Rendering.Backbuffers.GpuBackbuffer" shape="rect" coords="319,112,628,136"/>
+<area href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html" title="Provides a fully GPU-rendered backbuffer implementation using SkiaSharp and OpenGL." alt="Gondwana.Rendering.Backbuffers.GpuBackbuffer" shape="rect" coords="319,112,628,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -161,6 +161,9 @@ Properties</h2></td></tr>
 <tr class="memitem:aaf81a83ca48b73fed9ccf4331977169f" id="r_aaf81a83ca48b73fed9ccf4331977169f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKColor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aaf81a83ca48b73fed9ccf4331977169f">ClearColor</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:aaf81a83ca48b73fed9ccf4331977169f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the color used to clear the drawing surface.  <br /></td></tr>
 <tr class="separator:aaf81a83ca48b73fed9ccf4331977169f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18931760ccfbf7d8ee7aa962fec386d1" id="r_a18931760ccfbf7d8ee7aa962fec386d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1">IsGlThreadRendered</a><code> [get]</code></td></tr>
+<tr class="memdesc:a18931760ccfbf7d8ee7aa962fec386d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine's background render thread.  <br /></td></tr>
+<tr class="separator:a18931760ccfbf7d8ee7aa962fec386d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rendering operations are performed before being presented to the display. </p>
@@ -246,7 +249,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html#ac70c3a4da0791216d9e7e8947c703b8b">Gondwana.Rendering.Backbuffers.BitmapBackbuffer</a>, and <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Gondwana.Rendering.Backbuffers.GpuBackbuffer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00451">451</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00464">464</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -295,7 +298,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A byte array containing the encoded image data.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00430">430</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00432">432</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -554,6 +557,33 @@ Properties</h2></td></tr>
 <p>Gets the current Backbuffer height in a thread-safe manner. </p>
 
 <p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00189">189</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a18931760ccfbf7d8ee7aa962fec386d1" name="a18931760ccfbf7d8ee7aa962fec386d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18931760ccfbf7d8ee7aa962fec386d1">&#9670;&#160;</a></span>IsGlThreadRendered</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> Gondwana.Rendering.Backbuffers.BackbufferBase.IsGlThreadRendered</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine's background render thread. </p>
+<p>When <code>true</code>, the engine's <code>DoForegroundTasks</code> loop skips this surface. Rendering and presentation are instead driven by the platform adapter from within <code>SKGLControl.PaintSurface</code> via RenderSurfaceHostBase.GlRenderAndSnapshot. </p>
+
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00448">448</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>

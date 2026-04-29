@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.1.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Rendering_1_1Backbuff
 </div><!--header-->
 <div class="contents">
 
-<p>Provides a GPU-presented backbuffer implementation using SkiaSharp and OpenGL.  
+<p>Provides a fully GPU-rendered backbuffer implementation using SkiaSharp and OpenGL.  
  <a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Rendering.Backbuffers.GpuBackbuffer:</div>
@@ -118,8 +118,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a4aec5c53e310704b6b92745c5ba51f64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the GpuBackbuffer class with the specified dimensions.  <br /></td></tr>
 <tr class="separator:a4aec5c53e310704b6b92745c5ba51f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fef1b4ad8a55fd62cbaa501ec89290a" id="r_a4fef1b4ad8a55fd62cbaa501ec89290a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4fef1b4ad8a55fd62cbaa501ec89290a">Initialize</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">GRContext</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">grContext</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a> width, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">height</a>)</td></tr>
-<tr class="memdesc:a4fef1b4ad8a55fd62cbaa501ec89290a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recreates the raster surface with the supplied dimensions.  <br /></td></tr>
+<tr class="memdesc:a4fef1b4ad8a55fd62cbaa501ec89290a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates (or recreates) the GPU render-target surface for this backbuffer.  <br /></td></tr>
 <tr class="separator:a4fef1b4ad8a55fd62cbaa501ec89290a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6ec6f40683db71c71ebf19b5a360516" id="r_ad6ec6f40683db71c71ebf19b5a360516"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516">RecordFrame</a> ()</td></tr>
+<tr class="memdesc:ad6ec6f40683db71c71ebf19b5a360516"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records that one frame has been rendered. Called by the platform adapter on every <code>PaintSurface</code> callback so the engine can compute the actual rendered FPS.  <br /></td></tr>
+<tr class="separator:ad6ec6f40683db71c71ebf19b5a360516"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7f7fd8af54fb16b6914e046b4197cc0" id="r_ae7f7fd8af54fb16b6914e046b4197cc0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Dispose</a> ()</td></tr>
 <tr class="memdesc:ae7f7fd8af54fb16b6914e046b4197cc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by this GpuBackbuffer.  <br /></td></tr>
 <tr class="separator:ae7f7fd8af54fb16b6914e046b4197cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,6 +133,14 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a68033b8c7cccdc042fa6c352e977fcfc" id="r_a68033b8c7cccdc042fa6c352e977fcfc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a68033b8c7cccdc042fa6c352e977fcfc">TargetFps</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a68033b8c7cccdc042fa6c352e977fcfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the target frame rate associated with this GPU backbuffer.  <br /></td></tr>
+<tr class="separator:a68033b8c7cccdc042fa6c352e977fcfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a187c5db40cc71e3159ea4f6be0f6a3fe" id="r_a187c5db40cc71e3159ea4f6be0f6a3fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a187c5db40cc71e3159ea4f6be0f6a3fe">VSync</a> = <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">true</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a187c5db40cc71e3159ea4f6be0f6a3fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.  <br /></td></tr>
+<tr class="separator:a187c5db40cc71e3159ea4f6be0f6a3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a123d04c913f9489067a65ff33b639bc0" id="r_a123d04c913f9489067a65ff33b639bc0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a123d04c913f9489067a65ff33b639bc0">IsGlThreadRendered</a><code> [get]</code></td></tr>
+<tr class="separator:a123d04c913f9489067a65ff33b639bc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0584f5f0b09937cfafd3b512c838252" id="r_af0584f5f0b09937cfafd3b512c838252"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKCanvas</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252">Canvas</a><code> [get]</code></td></tr>
 <tr class="memdesc:af0584f5f0b09937cfafd3b512c838252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the SkiaSharp canvas for drawing operations.  <br /></td></tr>
 <tr class="separator:af0584f5f0b09937cfafd3b512c838252"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,6 +166,9 @@ Properties</h2></td></tr>
 <tr class="memitem:aaf81a83ca48b73fed9ccf4331977169f inherit properties_classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase" id="r_aaf81a83ca48b73fed9ccf4331977169f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKColor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aaf81a83ca48b73fed9ccf4331977169f">ClearColor</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:aaf81a83ca48b73fed9ccf4331977169f inherit properties_classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the color used to clear the drawing surface.  <br /></td></tr>
 <tr class="separator:aaf81a83ca48b73fed9ccf4331977169f inherit properties_classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18931760ccfbf7d8ee7aa962fec386d1 inherit properties_classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase" id="r_a18931760ccfbf7d8ee7aa962fec386d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1">IsGlThreadRendered</a><code> [get]</code></td></tr>
+<tr class="memdesc:a18931760ccfbf7d8ee7aa962fec386d1 inherit properties_classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine's background render thread.  <br /></td></tr>
+<tr class="separator:a18931760ccfbf7d8ee7aa962fec386d1 inherit properties_classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -170,11 +184,12 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:aeb71bc24fcba76bcc7f06be7f54041d8 inherit pro_attribs_classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Provides a GPU-presented backbuffer implementation using SkiaSharp and OpenGL. </p>
-<p><b>Architecture:</b> Rendering (tile drawing, canvas operations) happens on a raster SKSurface that is safe to access from any thread — including the engine's background render thread. At present time the rendered raster image is handed to <code>WinFormGpuRenderSurfaceAdapter</code>, which draws it to the OpenGL surface inside <code>SKGLControl.PaintSurface</code> on the GL thread using GPU-accelerated blitting. This avoids any requirement for the GL context to be current on the render thread. </p>
-<p>Initialize is called from the GL thread (via the adapter's <code>GrContextFirstAvailable</code> / <code>ResizeRequested</code> events) to (re)create the raster surface with the correct pixel dimensions. Until the first Initialize call the constructor allocates a surface from the dimensions supplied by RenderSurfaceHost&lt;TBackbuffer&gt;, so rendering is always safe from the first frame. </p>
+<div class="textblock"><p>Provides a fully GPU-rendered backbuffer implementation using SkiaSharp and OpenGL. </p>
+<p><b>Architecture (GL-thread rendering):</b> All rendering operations (tile drawing, canvas operations) and presentation happen on the GL thread, driven by <code>WinFormGpuRenderSurfaceAdapter</code> from within <code>SKGLControl.PaintSurface</code>. The engine's background loop skips this surface entirely (see IsGlThreadRendered). No CPU↔GPU data transfer occurs for the backbuffer contents; tiles are rasterised directly into an off-screen GPU render target and then blitted to the window surface in a single GPU draw call. </p>
+<p>Before the first Initialize call the backbuffer uses a temporary CPU raster surface (identical to BitmapBackbuffer) so that the host can always be in a valid state. Once a GRContext becomes available on the GL thread, Initialize replaces that with a proper GPU surface. </p>
+<p><b>Thread safety:</b> After Initialize has been called, ALL methods on this class must be invoked from the GL thread (the thread on which the GRContext is current). The engine loop guarantees this by checking IsGlThreadRendered before touching the backbuffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00028">28</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00034">34</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4aec5c53e310704b6b92745c5ba51f64" name="a4aec5c53e310704b6b92745c5ba51f64"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4aec5c53e310704b6b92745c5ba51f64">&#9670;&#160;</a></span>GpuBackbuffer()</h2>
@@ -211,7 +226,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00040">40</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00086">86</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -243,7 +258,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#ad337f9fed366bb07672919518bd3b7c2">Gondwana.Rendering.Backbuffers.BackbufferBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00166">166</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00230">230</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -279,18 +294,37 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Recreates the raster surface with the supplied dimensions. </p>
-<p>This method is called from the GL thread via the adapter's <code>GrContextFirstAvailable</code> and <code>ResizeRequested</code> events, but the raster surface itself may be accessed safely from any thread. The <em>grContext</em>  parameter is accepted for API symmetry with the adapter events but is not used here; GPU acceleration occurs at presentation time inside the adapter. </p>
+<p>Creates (or recreates) the GPU render-target surface for this backbuffer. </p>
+<p>Called from the GL thread via the adapter's <code>GrContextFirstAvailable</code> and <code>ResizeRequested</code> events. Replaces the temporary CPU raster surface with a hardware-accelerated off-screen render target backed by <em>grContext</em> . </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">grContext</td><td>Ignored — provided for API symmetry with the adapter events.</td></tr>
+    <tr><td class="paramname">grContext</td><td>The active Skia GPU context. Must not be <code>null</code>.</td></tr>
     <tr><td class="paramname">width</td><td>The new surface width in pixels.</td></tr>
     <tr><td class="paramname">height</td><td>The new surface height in pixels.</td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00058">58</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00110">110</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+
+</div>
+</div>
+<a id="ad6ec6f40683db71c71ebf19b5a360516" name="ad6ec6f40683db71c71ebf19b5a360516"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6ec6f40683db71c71ebf19b5a360516">&#9670;&#160;</a></span>RecordFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Rendering.Backbuffers.GpuBackbuffer.RecordFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records that one frame has been rendered. Called by the platform adapter on every <code>PaintSurface</code> callback so the engine can compute the actual rendered FPS. </p>
 
 </div>
 </div>
@@ -317,7 +351,88 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the SkiaSharp canvas for drawing operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00081">81</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00133">133</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a123d04c913f9489067a65ff33b639bc0" name="a123d04c913f9489067a65ff33b639bc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a123d04c913f9489067a65ff33b639bc0">&#9670;&#160;</a></span>IsGlThreadRendered</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> Gondwana.Rendering.Backbuffers.GpuBackbuffer.IsGlThreadRendered</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Always returns <code>true</code>. The engine loop will skip this surface; the platform adapter drives rendering from <code>SKGLControl.PaintSurface</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00097">97</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a68033b8c7cccdc042fa6c352e977fcfc" name="a68033b8c7cccdc042fa6c352e977fcfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68033b8c7cccdc042fa6c352e977fcfc">&#9670;&#160;</a></span>TargetFps</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a> Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the target frame rate associated with this GPU backbuffer. </p>
+<p>This value is kept in sync with <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">Gondwana.Configuration.EngineConfiguration.TargetFPS</a> (which propagates its value to all registered GPU backbuffers). The engine's own foreground cycle — not the backbuffer — is responsible for throttling the frame rate; see <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">Gondwana.Configuration.EngineConfiguration.TargetFPS</a> for details. </p>
+<p>The desired frames per second. Negative values are clamped to zero. The default is 60. </p>
+
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00059">59</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a187c5db40cc71e3159ea4f6be0f6a3fe" name="a187c5db40cc71e3159ea4f6be0f6a3fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a187c5db40cc71e3159ea4f6be0f6a3fe">&#9670;&#160;</a></span>VSync</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> Gondwana.Rendering.Backbuffers.GpuBackbuffer.VSync = <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">true</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled. </p>
+<p>This value is read by the platform adapter (e.g. <code>WinFormGpuRenderSurfaceAdapter</code>) at the start of each <code>PaintSurface</code> call and applied to the underlying <code>GLControl.VSync</code> property when it changes. Enabling vsync prevents screen tearing but caps the frame rate to the monitor refresh rate. Disabling vsync allows higher frame rates at the cost of potential tearing. </p>
+<p><code>true</code> to synchronise presentation with the monitor refresh; otherwise <code>false</code>. The default is <code>true</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00079">79</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>

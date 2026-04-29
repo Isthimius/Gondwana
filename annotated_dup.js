@@ -15,6 +15,23 @@ var annotated_dup =
         [ "AudioResourceManager", "classGondwana_1_1Audio_1_1AudioResourceManager.html", "classGondwana_1_1Audio_1_1AudioResourceManager" ],
         [ "StereoPanSampleProvider", "classGondwana_1_1Audio_1_1StereoPanSampleProvider.html", "classGondwana_1_1Audio_1_1StereoPanSampleProvider" ]
       ] ],
+      [ "Avalonia", "namespaceGondwana_1_1Avalonia.html", [
+        [ "Hosting", "namespaceGondwana_1_1Avalonia_1_1Hosting.html", [
+          [ "AvaloniaGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost" ]
+        ] ],
+        [ "Input", "namespaceGondwana_1_1Avalonia_1_1Input.html", [
+          [ "Keyboard", "namespaceGondwana_1_1Avalonia_1_1Input_1_1Keyboard.html", [
+            [ "AvaloniaKeyboardAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html", "classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter" ]
+          ] ],
+          [ "Mouse", "namespaceGondwana_1_1Avalonia_1_1Input_1_1Mouse.html", [
+            [ "AvaloniaMouseAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html", "classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter" ]
+          ] ]
+        ] ],
+        [ "Rendering", "namespaceGondwana_1_1Avalonia_1_1Rendering.html", [
+          [ "AvaloniaBitmapRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter" ],
+          [ "AvaloniaBitmapRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl" ]
+        ] ]
+      ] ],
       [ "Collisions", "namespaceGondwana_1_1Collisions.html", [
         [ "Aabb", "structGondwana_1_1Collisions_1_1Aabb.html", "structGondwana_1_1Collisions_1_1Aabb" ],
         [ "ColliderRegistry", "classGondwana_1_1Collisions_1_1ColliderRegistry.html", "classGondwana_1_1Collisions_1_1ColliderRegistry" ],
@@ -156,7 +173,8 @@ var annotated_dup =
       ] ],
       [ "WinForms", "namespaceGondwana_1_1WinForms.html", [
         [ "Hosting", "namespaceGondwana_1_1WinForms_1_1Hosting.html", [
-          [ "WinFormsGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost" ]
+          [ "WinFormsGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost" ],
+          [ "WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost" ]
         ] ],
         [ "Input", "namespaceGondwana_1_1WinForms_1_1Input.html", [
           [ "Gamepad", "namespaceGondwana_1_1WinForms_1_1Input_1_1Gamepad.html", [

@@ -2,6 +2,7 @@ var namespaceGondwana =
 [
     [ "Assets", "namespaceGondwana_1_1Assets.html", "namespaceGondwana_1_1Assets" ],
     [ "Audio", "namespaceGondwana_1_1Audio.html", "namespaceGondwana_1_1Audio" ],
+    [ "Avalonia", "namespaceGondwana_1_1Avalonia.html", "namespaceGondwana_1_1Avalonia" ],
     [ "Collisions", "namespaceGondwana_1_1Collisions.html", "namespaceGondwana_1_1Collisions" ],
     [ "Configuration", "namespaceGondwana_1_1Configuration.html", "namespaceGondwana_1_1Configuration" ],
     [ "Drawing", "namespaceGondwana_1_1Drawing.html", "namespaceGondwana_1_1Drawing" ],
