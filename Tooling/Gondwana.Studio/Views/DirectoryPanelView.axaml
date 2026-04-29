@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gondwana.Studio.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="600"
+             x:Class="Gondwana.Studio.Views.DirectoryPanelView"
+             x:DataType="vm:DirectoryPanelViewModel">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Padding="8,6">
+            <TextBlock Text="Directory"
+                       FontWeight="SemiBold"
+                       FontSize="13" />
+        </Border>
+
+        <!-- Tree -->
+        <TreeView x:Name="DirectoryTree"
+                  Grid.Row="1"
+                  ItemsSource="{Binding RootNodes}"
+                  SelectedItem="{Binding SelectedNode}"
+                  Background="Transparent">
+
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}"
+                                  x:DataType="vm:DirectoryNodeViewModel">
+                    <TextBlock Text="{Binding DisplayName}"
+                               Padding="2,2" />
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+
+        </TreeView>
+
+    </Grid>
+
+</UserControl>

@@ -1,4 +1,15 @@
-﻿# v2.1.1
+﻿# v2.1.2
+## Versioning & Packaging
+- Bumped engine and package version to **2.1.2**
+- Added ONBOARDING.md
+- Modified deployment script to preseent option to install missing required npm packages
+- Added "Make Your First Game in 15 Minutes" tutorial
+- Modified README to include demo previews, and links binary downloads
+
+## Core Engine Enhancements
+- Implemented GpuBackbuffer and wired up GPU render surface adapter/control
+
+# v2.1.1
 ## Versioning & Packaging
 - Bumped engine and package version to **2.1.1**
 
