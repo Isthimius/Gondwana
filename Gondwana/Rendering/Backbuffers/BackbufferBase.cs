@@ -384,10 +384,12 @@ public abstract class BackbufferBase : IDisposable
     /// <summary>
     /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
     /// This is used to signal to the UI adapter what needs to be repainted.
+    /// No-op for GL-thread-rendered backbuffers: the adapter always presents the full surface,
+    /// so there is no partial-blit dirty region to track.
     /// </summary>
     protected internal void AddToBackbufferDirtyRectangle(Rectangle area)
     {
-        if (area.IsEmpty)
+        if (IsGlThreadRendered || area.IsEmpty)
             return;
 
         area.Inflate(area.Width, area.Height);
@@ -433,6 +435,17 @@ public abstract class BackbufferBase : IDisposable
         using var data = image.Encode(format, quality);
         return data.ToArray();
     }
+
+    /// <summary>
+    /// Gets a value indicating whether this backbuffer is rendered on the GL thread rather than
+    /// the engine's background render thread.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="true"/>, the engine's <c>DoForegroundTasks</c> loop skips this surface.
+    /// Rendering and presentation are instead driven by the platform adapter from within
+    /// <c>SKGLControl.PaintSurface</c> via <see cref="RenderSurfaceHostBase.GlRenderAndSnapshot"/>.
+    /// </remarks>
+    public virtual bool IsGlThreadRendered => false;
 
     /// <summary>
     /// Releases all resources used by the <see cref="BackbufferBase"/> instance.
