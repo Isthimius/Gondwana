@@ -1,14 +1,15 @@
 using Gondwana;
+using Gondwana.Rendering.Backbuffers;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Gondwana.Demos.Spot;
+namespace Gondwana.Demos.SpotGL;
 
 internal partial class GameWindow : Form
 {
-    private SpotGameHost? _gameHost;
+    private SpotGLGameHost? _gameHost;
     private static readonly Size DefaultWindowSize = new(769, 769);
     private MenuStrip _menuStrip = null!;
 
@@ -32,7 +33,7 @@ internal partial class GameWindow : Form
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        _gameHost = new SpotGameHost(renderSurface);
+        _gameHost = new SpotGLGameHost(renderSurface);
         //_gameHost.Engine.CPSCalculated += (cps) =>
         //{
         //    Engine.Logger.LogTrace(cps.ToString());
@@ -41,7 +42,11 @@ internal partial class GameWindow : Form
         // Subscribe before Initialize() is called so the handler fires during initialization.
         _gameHost.Engine.InitializationComplete += () =>
         {
-            _gameHost.Engine.Configuration.TargetFPS = 0;
+            // Setting TargetFPS = 0 removes the engine loop throttle AND automatically
+            // propagates to all registered GpuBackbuffers, removing their timer cap too.
+            _gameHost.Engine.Configuration.TargetFPS = 500;
+            if (_gameHost.RenderSurface.Host.Backbuffer is GpuBackbuffer gpuBb)
+                gpuBb.VSync = true;
         };
     }
 

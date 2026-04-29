@@ -14,6 +14,7 @@ public sealed class SpriteManager : IDisposable
     public static SpriteManager Instance => _instance.Value;
 
     internal readonly List<Sprite> _spriteList = new();
+    private readonly object _spriteListLock = new();
 
     private long _lastTick = HighResTimer.GetCurrentTick();
 
@@ -27,7 +28,14 @@ public sealed class SpriteManager : IDisposable
     /// <summary>
     /// Gets a read-only collection of all sprites currently managed by the sprite manager.
     /// </summary>
-    public ReadOnlyCollection<Sprite> AllSprites => _spriteList.AsReadOnly();
+    public ReadOnlyCollection<Sprite> AllSprites
+    {
+        get
+        {
+            lock (_spriteListLock)
+                return new List<Sprite>(_spriteList).AsReadOnly();
+        }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether new sprites should be automatically sized to their scene layer.
@@ -119,7 +127,9 @@ public sealed class SpriteManager : IDisposable
     /// </summary>
     public void Clear()
     {
-        List<Sprite> tempSprites = new(_spriteList);
+        List<Sprite> tempSprites;
+        lock (_spriteListLock)
+            tempSprites = new List<Sprite>(_spriteList);
         foreach (Sprite sprite in tempSprites)
             Remove(sprite);
     }
@@ -131,7 +141,11 @@ public sealed class SpriteManager : IDisposable
     /// <returns>The sprite with the specified ID, or null if not found.</returns>
     public Sprite? GetSpriteByID(string ID)
     {
-        foreach (Sprite sprite in _spriteList)
+        List<Sprite> snapshot;
+        lock (_spriteListLock)
+            snapshot = new List<Sprite>(_spriteList);
+
+        foreach (Sprite sprite in snapshot)
         {
             if (sprite.Nickname == ID)
                 return sprite;
@@ -155,7 +169,11 @@ public sealed class SpriteManager : IDisposable
     {
         List<Sprite> retSprites = new();
 
-        foreach (Sprite sprite in _spriteList)
+        List<Sprite> snapshot;
+        lock (_spriteListLock)
+            snapshot = new List<Sprite>(_spriteList);
+
+        foreach (Sprite sprite in snapshot)
         {
             if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
@@ -192,7 +210,11 @@ public sealed class SpriteManager : IDisposable
     {
         var retSprites = new List<Sprite>();
 
-        foreach (var sprite in _spriteList)
+        List<Sprite> snapshot;
+        lock (_spriteListLock)
+            snapshot = new List<Sprite>(_spriteList);
+
+        foreach (var sprite in snapshot)
         {
             if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
@@ -228,7 +250,11 @@ public sealed class SpriteManager : IDisposable
     {
         var retSprites = new List<Sprite>();
 
-        foreach (Sprite sprite in _spriteList)
+        List<Sprite> snapshot;
+        lock (_spriteListLock)
+            snapshot = new List<Sprite>(_spriteList);
+
+        foreach (Sprite sprite in snapshot)
         {
             if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
@@ -244,6 +270,12 @@ public sealed class SpriteManager : IDisposable
 
     #region internal methods
 
+    internal void AddSprite(Sprite sprite)
+    {
+        lock (_spriteListLock)
+            _spriteList.Add(sprite);
+    }
+
     internal void MoveSprites(long tick)
     {
         if (tick <= _lastTick)
@@ -251,19 +283,22 @@ public sealed class SpriteManager : IDisposable
 
         float duration = HighResTimer.GetDuration(_lastTick, tick);
 
-        for (int i = 0; i < _spriteList.Count; i++)
+        lock (_spriteListLock)
         {
-            var sprite = _spriteList[i];
+            for (int i = 0; i < _spriteList.Count; i++)
+            {
+                var sprite = _spriteList[i];
 
-            if (sprite._pendingDispose)
-                continue;
+                if (sprite._pendingDispose)
+                    continue;
 
-            sprite.Movement.AdvanceMovement(duration);
-            sprite.AdvanceResize(duration);
-            sprite.AdvanceJiggle(duration);
+                sprite.Movement.AdvanceMovement(duration);
+                sprite.AdvanceResize(duration);
+                sprite.AdvanceJiggle(duration);
+            }
+
+            SweepDisposedSprites();
         }
-
-        SweepDisposedSprites();
 
         _lastTick = tick;
     }

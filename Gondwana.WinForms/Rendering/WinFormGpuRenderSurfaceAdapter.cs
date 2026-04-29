@@ -1,4 +1,6 @@
-﻿using Gondwana.Rendering;
+﻿using Gondwana;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
@@ -7,25 +9,37 @@ namespace Gondwana.WinForms.Rendering;
 /// <summary>
 /// Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl.
 /// </summary>
+/// <remarks>
+/// All scene rendering and presentation are driven from within <c>PaintSurface</c> on the GL thread
+/// <c>Invalidate()</c> is posted to the UI thread via <see cref="Engine.UiDispatcher"/>
+/// at the end of each <c>Engine.DoForegroundTasks</c> cycle (via <c>Engine.AfterFrameRender</c>), so
+/// the paint loop stays in lockstep with the engine's own frame rate.  The engine's background render
+/// loop skips GPU-rendered surfaces entirely (see <see cref="GpuBackbuffer.IsGlThreadRendered"/>).
+/// </remarks>
 public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly SKGLControl _glControl;
     private readonly EventHandler _resizeHandler;
 
-    // The image we'll draw this frame (should be created/snapshotted off the SAME GRContext)
-    private SKImage? _currentImage;
+    // ── GL-thread path ───────────────────────────────────────────────────────
+    private RenderSurfaceHostBase? _host;
+    private GpuBackbuffer? _gpuBackbuffer;
+    private Action? _afterFrameRenderHandler;
 
-    // Previous image to dispose AFTER it has been drawn on the GL thread
-    private SKImage? _prevToDispose;
+    // Tracks the last VSync value applied to the GL control so we can detect changes.
+    // Null means "not yet applied" and forces an apply on the first PaintSurface call.
+    private bool? _appliedVSync;
 
-    private SKRectI _sourceRect;
-    private SKRect _destRect;
-
+    // ── Shared state ─────────────────────────────────────────────────────────
     // Tracks whether GrContext has been captured and the first-available event fired.
     private bool _grContextReady;
 
     // Set to 1 when the GL control is resized so OnPaintSurface can fire ResizeRequested.
     private int _pendingResize;
+
+    // Set to 1 when a UiDispatcher.Post(Invalidate) is already queued; prevents queuing more than
+    // one at a time when the engine cycle rate exceeds the GPU render rate.
+    private int _pendingInvalidate;
 
     /// <summary>
     /// Gets or sets the color used to clear the surface before rendering.
@@ -51,6 +65,21 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// <see cref="GpuBackbuffer.Initialize"/> with the new dimensions.
     /// </summary>
     public event Action<GRContext, int, int>? ResizeRequested;
+
+    /// <summary>
+    /// Refreshes the destination size based on the current client size of the GL control.
+    /// </summary>
+    public void RefreshDestinationSize()
+    {
+        if (_glControl.IsDisposed || !_glControl.IsHandleCreated) return;
+
+        var sz = _glControl.ClientSize;
+        if (sz.Width > 0 && sz.Height > 0)
+        {
+            SetDestinationSize(sz.Width, sz.Height);
+            Interlocked.Exchange(ref _pendingResize, 1);
+        }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WinFormGpuRenderSurfaceAdapter"/> class.
@@ -87,38 +116,61 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     }
 
     /// <summary>
-    /// Presents the specified GPU buffer image to the render surface.
-    /// The image should be texture-backed and created from the same GRContext for optimal zero-copy rendering.
+    /// Registers the <see cref="RenderSurfaceHostBase"/> whose scene this adapter should render
+    /// and wires the GL paint loop to the engine's foreground cycle.
     /// </summary>
-    /// <param name="bufferImage">The GPU image to present.</param>
-    /// <param name="bufferRect">The source rectangle within the buffer image.</param>
-    /// <param name="destRect">The destination rectangle on the render surface.</param>
-    public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
+    /// <remarks>
+    /// After this call all rendering is driven from <c>PaintSurface</c> on the GL thread.
+    /// <c>Invalidate()</c> is posted to the UI thread via <see cref="Engine.UiDispatcher"/> at
+    /// the end of each <c>Engine.DoForegroundTasks</c> call (via <c>Engine.AfterFrameRender</c>),
+    /// so the frame rate is governed entirely by
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.TargetFPS"/>.
+    /// </remarks>
+    /// <param name="host">The render surface host to render each frame.</param>
+    public void SetHost(RenderSurfaceHostBase host)
     {
-        // If the control can't paint, dispose immediately to avoid a leak.
-        if (_glControl.IsDisposed || !_glControl.IsHandleCreated)
+        _host = host ?? throw new ArgumentNullException(nameof(host));
+
+        // Cache the GpuBackbuffer so OnPaintSurface can read its settings.
+        _gpuBackbuffer = _host.Backbuffer as GpuBackbuffer;
+
+        // Invalidate the GL control on the UI thread after every engine foreground cycle.
+        // Use _pendingInvalidate to ensure at most one Post(Invalidate) is queued: when the engine
+        // cycle rate exceeds the GPU render rate, excess calls are dropped rather than piling
+        // up in the message queue.  The flag is cleared at the start of each paint.
+        _afterFrameRenderHandler = () =>
         {
-            bufferImage.Dispose();
-            return;
-        }
-
-        // Swap
-        var old = _currentImage;
-        _currentImage = bufferImage;
-        if (!ReferenceEquals(old, _currentImage) && old is not null)
-            _prevToDispose = old;
-
-        _sourceRect = bufferRect;
-        _destRect = destRect;
-
-        // Kick the GL paint; this runs on the GL thread/context
-        _glControl.Invalidate();
+            if (!_glControl.IsDisposed
+                && Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) == 0)
+                Engine.Instance.UiDispatcher!.Post(_glControl.Invalidate);
+        };
+        Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;
     }
 
-    private static SKRect ToRect(SKRectI r) => new SKRect(r.Left, r.Top, r.Right, r.Bottom);
-
-    private void OnPaintSurface(object? sender, SKPaintGLSurfaceEventArgs e)
+    /// <summary>
+    /// Not used in the GL-thread path.  Rendering is driven by <see cref="SetHost"/> and
+    /// <c>SKGLControl.PaintSurface</c>.  The image is disposed immediately to avoid a leak.
+    /// </summary>
+    public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
+        bufferImage.Dispose();
+    }
+
+    private void OnPaintSurface(object? sender, SKPaintGLSurfaceEventArgs e)    {
+        // Clear the pending-invalidate flag so the next AfterFrameRender can queue a new one.
+        Interlocked.Exchange(ref _pendingInvalidate, 0);
+
+        // Lazily sync VSync → GLControl.VSync whenever the backbuffer value changes.
+        if (_gpuBackbuffer != null)
+        {
+            bool desiredVSync = _gpuBackbuffer.VSync;
+            if (_appliedVSync != desiredVSync)
+            {
+                _glControl.VSync = desiredVSync;
+                _appliedVSync = desiredVSync;
+            }
+        }
+
         // Capture/refresh the GRContext so callers can wire the backbuffer to the same one.
         GrContext ??= _glControl.GRContext;
 
@@ -147,36 +199,39 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
         var canvas = e.Surface.Canvas;
 
-        // Clear with your configured clear color
-        canvas.Clear(ClearColor);
-
-        var img = _currentImage;
-        if (img != null)
+        // Render + blit entirely on the GL thread.
+        // GlRenderAndSnapshot drives RenderToBackbuffer on the GPU surface then returns a
+        // lightweight GPU-backed snapshot.  Both the snapshot texture and e.Surface share the
+        // same GRContext, so DrawImage is a zero-copy GPU blit.
+        if (_host != null)
         {
-            // IMPORTANT: For zero-copy, img MUST belong to this same GRContext.
-            // If you hand us a raster image, Skia will upload it each frame (works, but costs bandwidth).
-            var imgBoundsI = new SKRectI(0, 0, img.Width, img.Height);
-            var srcI = SKRectI.Intersect(_sourceRect, imgBoundsI);
-
-            if (!srcI.IsEmpty)
+            using var img = _host.GlRenderAndSnapshot();
+            if (img != null)
             {
-                var src = ToRect(srcI);
-                var dest = _destRect;
-
-                var bounds = SKRect.Create(e.BackendRenderTarget.Width, e.BackendRenderTarget.Height);
-                if (!bounds.Contains(dest))
-                    dest = SKRect.Intersect(dest, bounds);
-
-                canvas.DrawImage(img, src, dest);
+                // DrawImage covers the full render target, so no pre-clear is needed.
+                // Clearing the window surface before blitting would cause a black flash
+                // that is visible when VSync is off (the monitor may scan between the
+                // clear and the blit, seeing the cleared back buffer).
+                var dst = SKRect.Create(0, 0,
+                    e.BackendRenderTarget.Width,
+                    e.BackendRenderTarget.Height);
+                canvas.DrawImage(img, dst);
+            }
+            else
+            {
+                canvas.Clear(ClearColor);
             }
         }
-
-        // Safe to free the previously drawn GPU image NOW (on GL thread)
-        _prevToDispose?.Dispose();
-        _prevToDispose = null;
+        else
+        {
+            canvas.Clear(ClearColor);
+        }
 
         // Optional: flush to ensure work is queued to GPU before we hand new images next frame
         _glControl.GRContext?.Flush();
+
+        // Record the completed frame so the engine's CPS sampler can compute actual GPU FPS.
+        _gpuBackbuffer?.RecordFrame();
     }
 
     /// <summary>
@@ -184,18 +239,16 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// </summary>
     public void Dispose()
     {
+        if (_afterFrameRenderHandler != null)
+        {
+            Engine.Instance.AfterFrameRender -= _afterFrameRenderHandler;
+            _afterFrameRenderHandler = null;
+        }
+
         if (!_glControl.IsDisposed)
         {
             _glControl.PaintSurface -= OnPaintSurface;
             _glControl.Resize -= _resizeHandler;
         }
-
-        // These MUST be disposed on the GL thread; do a last paint if needed.
-        // If you're disposing off the UI thread at shutdown, it's usually fine
-        // because the context is being torn down; still, we null them here.
-        _prevToDispose?.Dispose();
-        _currentImage?.Dispose();
-        _prevToDispose = null;
-        _currentImage = null;
     }
 }

@@ -40,6 +40,17 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
     public double NetCPS;
 
     /// <summary>
+    /// The actual GPU-rendered frames per second, measured by counting <c>PaintSurface</c> callbacks
+    /// over the same sampling window used for <see cref="NetCPS"/>.  This reflects the true render
+    /// throughput for GPU-rendered surfaces (e.g. <c>GpuBackbuffer</c>), which run independently of
+    /// the engine's background loop.
+    /// <para/>
+    /// <c>null</c> when no GPU-rendered surfaces are registered (i.e. when only
+    /// <c>BitmapBackbuffer</c> surfaces are in use).
+    /// </summary>
+    public double? GpuFps;
+
+    /// <summary>
     /// The duration of the sampling period in seconds over which the cycle counts and rates
     /// were measured. This time window determines the granularity and accuracy of the CPS calculations.
     /// </summary>
@@ -47,7 +58,7 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CyclesPerSecondCalculatedEventArgs"/> class
-    /// with the specified cycle counts, rates, and sampling time.
+    /// with the specified cycle counts, rates, sampling time, and optional GPU FPS.
     /// </summary>
     /// <param name="totalGross">
     /// The total number of gross cycles counted during the sampling period.
@@ -64,13 +75,17 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
     /// <param name="sampleTime">
     /// The duration of the sampling period in seconds.
     /// </param>
-    public CyclesPerSecondCalculatedEventArgs(long totalGross, long totalNet, double grossCPS, double netCPS, double sampleTime)
+    /// <param name="gpuFps">
+    /// The actual GPU-rendered frames per second, or <c>null</c> when no GPU surfaces are active.
+    /// </param>
+    public CyclesPerSecondCalculatedEventArgs(long totalGross, long totalNet, double grossCPS, double netCPS, double sampleTime, double? gpuFps = null)
     {
         TotalGrossCycles = totalGross;
         TotalNetCycles = totalNet;
         GrossCPS = grossCPS;
         NetCPS = netCPS;
         SampleTime = sampleTime;
+        GpuFps = gpuFps;
     }
 
     /// <summary>
@@ -90,6 +105,9 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
             .AppendLine($"Sampling time: {SampleTime:N2}s")
             .AppendLine($"Gross CPS: {GrossCPS:N2}")
             .AppendLine($"Net CPS (FPS): {NetCPS:N2}");
+
+        if (GpuFps.HasValue)
+            cpsValue.AppendLine($"GPU FPS: {GpuFps.Value:N2}");
 
         return cpsValue.ToString();
     }

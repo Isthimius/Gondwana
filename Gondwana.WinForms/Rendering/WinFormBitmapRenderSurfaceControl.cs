@@ -22,6 +22,7 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
         _skControl.MouseUp += (s, e) => OnMouseUp(e);
         _skControl.MouseMove += (s, e) => OnMouseMove(e);
         _skControl.MouseClick += (s, e) => OnMouseClick(e);
+        _skControl.MouseWheel += (s, e) => OnMouseWheel(e);
         _skControl.MouseEnter += (s, e) => OnMouseEnter(e);
         _skControl.MouseLeave += (s, e) => OnMouseLeave(e);
 

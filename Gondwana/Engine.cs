@@ -7,6 +7,7 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Logging;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
 using Timer = Gondwana.Timers.Timer;
@@ -742,13 +743,15 @@ public sealed class Engine : IDisposable
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 
-        // refresh all RenderSurfaceHost backbuffers
+        // refresh all RenderSurfaceHost backbuffers (skip surfaces rendered on the GL thread)
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.RenderToBackbuffer(tick);
+            if (!surface.Backbuffer.IsGlThreadRendered)
+                surface.RenderToBackbuffer(tick);
 
-        // render each Backbuffer to RenderSurfaceHost adapter
+        // render each Backbuffer to RenderSurfaceHost adapter (skip GL-thread surfaces)
         foreach (var surface in RenderSurfaceHostRegistry.All)
-            surface.PresentBackbufferToAdapter();
+            if (!surface.Backbuffer.IsGlThreadRendered)
+                surface.PresentBackbufferToAdapter();
 
         // update state of gamepad(s)
         Input.GamepadManager?.Update();
@@ -776,13 +779,29 @@ public sealed class Engine : IDisposable
         double grossCps = grossCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
         double netCps = netCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;
 
+        // Collect actual GPU FPS from all registered GPU-rendered backbuffers.
+        long totalGpuFrames = 0;
+        int gpuSurfaceCount = 0;
+        foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
+        {
+            if (surface.Backbuffer is GpuBackbuffer gpuBb)
+            {
+                totalGpuFrames += gpuBb.ConsumeFrameCount();
+                gpuSurfaceCount++;
+            }
+        }
+        double? gpuFps = gpuSurfaceCount > 0
+            ? totalGpuFrames * HighResTimer.TicksPerSecond / (double)elapsedTicks
+            : null;
+
         // Build immutable args NOW (so lambda doesn't read changing fields later)
         var args = new CyclesPerSecondCalculatedEventArgs(
             grossCycles,
             netCycles,
             grossCps,
             netCps,
-            elapsedSec
+            elapsedSec,
+            gpuFps
         );
 
         // Post the snapshot
