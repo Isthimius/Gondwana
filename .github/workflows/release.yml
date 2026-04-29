@@ -64,6 +64,7 @@ jobs:
           mkdir -p publish/Gondwana.WinForms
           mkdir -p publish/Gondwana.WinForms.Hosting
           mkdir -p publish/Tooling/Gondwana.Assets.WinForms
+          mkdir -p publish/Tooling/Gondwana.Templates
           mkdir -p publish/Demos/Slider
           mkdir -p publish/Demos/Spot
 
