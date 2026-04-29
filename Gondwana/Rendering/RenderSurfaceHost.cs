@@ -334,7 +334,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             if (!refreshQueue.IsDirty)
                 continue;
 
-            foreach (var worldRect in refreshQueue.WorldRects)
+            foreach (var worldRect in refreshQueue.SnapshotWorldRects())
             {
                 var screenRectF = view.WorldRectToScreenRect(sceneLayer, worldRect);
                 var rect = Rectangle.Intersect(
@@ -395,7 +395,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (!refreshQueue.IsDirty)
             return;
 
-        foreach (var worldRect in refreshQueue.WorldRects)
+        foreach (var worldRect in refreshQueue.SnapshotWorldRects())
         {
             // draw tiles/sprites/direct drawings in this world rect
             var drawables = layer.GetDrawablesInWorldRect(worldRect);
