@@ -128,14 +128,9 @@ jobs:
         run: |
           release_body=$(gh release view "${{ github.ref_name }}" --json body --jq '.body')
 
-          new_entry="# v${VERSION}
-${release_body}
-
----
-
-"
+          new_entry=$(printf '# v%s\n%s\n\n---\n\n' "${VERSION}" "${release_body}")
           existing=$(cat CHANGELOG.md 2>/dev/null || true)
-          printf '%s%s' "$new_entry" "$existing" > CHANGELOG.md
+          printf '%s%s' "${new_entry}" "${existing}" > CHANGELOG.md
 
       - name: Commit and push CHANGELOG.md
         run: |
