@@ -3,7 +3,7 @@
 
 ## What's Changed
 ### New Features
-* Option A: move GpuBackbuffer rendering to the GL thread by @Copilot in https://github.com/Isthimius/Gondwana/pull/52
+* move GpuBackbuffer rendering to the GL thread by @Copilot in https://github.com/Isthimius/Gondwana/pull/52
 ### Other Changes
 * feat: auto-prepend GitHub release notes to CHANGELOG.md on release by @Copilot in https://github.com/Isthimius/Gondwana/pull/57
 * fix: YAML parse error in release.yml due to unindented bash heredoc by @Copilot in https://github.com/Isthimius/Gondwana/pull/58
@@ -14,7 +14,9 @@
 
 **Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.1.2...v2.2.0
 
----﻿# v2.1.2
+---
+
+﻿# v2.1.2
 ## Versioning & Packaging
 - Bumped engine and package version to **2.1.2**
 - Added ONBOARDING.md
