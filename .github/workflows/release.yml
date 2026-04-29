@@ -120,6 +120,32 @@ jobs:
           files: Gondwana-${{ env.VERSION }}-binaries.zip
 
       # ---------------------------
+      # Update CHANGELOG.md
+      # ---------------------------
+      - name: Update CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          release_body=$(gh release view "${{ github.ref_name }}" --json body --jq '.body')
+
+          new_entry="# v${VERSION}
+${release_body}
+
+---
+
+"
+          existing=$(cat CHANGELOG.md)
+          printf '%s%s' "$new_entry" "$existing" > CHANGELOG.md
+
+      - name: Commit and push CHANGELOG.md
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "chore: update CHANGELOG for v${VERSION}"
+          git push origin HEAD:master
+
+      # ---------------------------
       # NuGet (nuget.org)
       # ---------------------------
       - name: Push packages to NuGet
