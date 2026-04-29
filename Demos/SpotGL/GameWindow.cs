@@ -44,9 +44,9 @@ internal partial class GameWindow : Form
         {
             // Setting TargetFPS = 0 removes the engine loop throttle AND automatically
             // propagates to all registered GpuBackbuffers, removing their timer cap too.
-            _gameHost.Engine.Configuration.TargetFPS = 0;
+            _gameHost.Engine.Configuration.TargetFPS = 500;
             if (_gameHost.RenderSurface.Host.Backbuffer is GpuBackbuffer gpuBb)
-                gpuBb.VSync = false;
+                gpuBb.VSync = true;
         };
     }
 
