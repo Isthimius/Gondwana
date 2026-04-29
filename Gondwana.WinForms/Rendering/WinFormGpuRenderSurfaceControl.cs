@@ -73,7 +73,7 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
             gpuBackbuffer.Initialize(grContext, w, h);
         };
 
-        // Register the host so the adapter drives all rendering on the GL thread (Option A).
+        // Register the host so the adapter drives all rendering on the GL thread.
         _adapter.SetHost(Host);
     }
 

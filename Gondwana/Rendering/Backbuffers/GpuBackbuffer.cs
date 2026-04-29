@@ -10,7 +10,7 @@ namespace Gondwana.Rendering.Backbuffers;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <strong>Architecture (Option A — GL-thread rendering):</strong>
+/// <strong>Architecture (GL-thread rendering):</strong>
 /// All rendering operations (tile drawing, canvas operations) and presentation happen on the GL
 /// thread, driven by <c>WinFormGpuRenderSurfaceAdapter</c> from within
 /// <c>SKGLControl.PaintSurface</c>.  The engine's background loop skips this surface entirely

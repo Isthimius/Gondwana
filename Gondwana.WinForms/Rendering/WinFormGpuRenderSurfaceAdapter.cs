@@ -11,7 +11,7 @@ namespace Gondwana.WinForms.Rendering;
 /// </summary>
 /// <remarks>
 /// All scene rendering and presentation are driven from within <c>PaintSurface</c> on the GL thread
-/// (Option A).  <c>Invalidate()</c> is posted to the UI thread via <see cref="Engine.UiDispatcher"/>
+/// <c>Invalidate()</c> is posted to the UI thread via <see cref="Engine.UiDispatcher"/>
 /// at the end of each <c>Engine.DoForegroundTasks</c> cycle (via <c>Engine.AfterFrameRender</c>), so
 /// the paint loop stays in lockstep with the engine's own frame rate.  The engine's background render
 /// loop skips GPU-rendered surfaces entirely (see <see cref="GpuBackbuffer.IsGlThreadRendered"/>).
