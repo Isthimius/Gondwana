@@ -8,13 +8,17 @@ namespace Gondwana.Rendering;
 internal sealed class RefreshQueue
 {
     private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
+    private readonly object _syncRoot = new();      // Guards _worldRects for cross-thread access
 
     internal RefreshQueue() => _worldRects = new List<Rectangle>(64);
 
     /// <summary>
     /// True if there is at least one world-space dirty rectangle enqueued.
     /// </summary>
-    internal bool IsDirty => _worldRects.Count > 0;
+    internal bool IsDirty
+    {
+        get { lock (_syncRoot) return _worldRects.Count > 0; }
+    }
 
     /// <summary>
     /// The queued world-space dirty rectangles (in pixels).
@@ -22,7 +26,21 @@ internal sealed class RefreshQueue
     /// - Mapping them to tiles (SceneLayer / CoordinateSystem)
     /// - Mapping them to screen-space per view (View / RenderSurfaceHost)
     /// </summary>
+    /// <remarks>
+    /// Only safe to enumerate from the same thread that calls <see cref="AddWorldRect"/> and
+    /// <see cref="ClearRefreshQueue"/>.  Call <see cref="SnapshotWorldRects"/> instead when
+    /// iterating from a thread other than the engine thread (e.g. the GL paint thread).
+    /// </remarks>
     internal IReadOnlyList<Rectangle> WorldRects => _worldRects;
+
+    /// <summary>
+    /// Returns a thread-safe point-in-time copy of the current dirty rectangles.
+    /// Safe to call from any thread, including the GL paint thread.
+    /// </summary>
+    internal Rectangle[] SnapshotWorldRects()
+    {
+        lock (_syncRoot) return _worldRects.ToArray();
+    }
 
     /// <summary>
     /// Enqueue a world-space pixel rectangle that requires redraw.
@@ -42,14 +60,17 @@ internal sealed class RefreshQueue
             return;
         }
 
-        // Fast containment check: if any existing rect already fully contains this one, skip storing it.
-        for (int i = 0; i < _worldRects.Count; i++)
+        lock (_syncRoot)
         {
-            if (_worldRects[i].Contains(worldPixelRange))
-                return;
-        }
+            // Fast containment check: if any existing rect already fully contains this one, skip storing it.
+            for (int i = 0; i < _worldRects.Count; i++)
+            {
+                if (_worldRects[i].Contains(worldPixelRange))
+                    return;
+            }
 
-        _worldRects.Add(worldPixelRange);
+            _worldRects.Add(worldPixelRange);
+        }
     }
 
     internal void AddViewScreenRect(View view, SceneLayer sceneLayer, Rectangle screenPixelRange)
@@ -89,6 +110,7 @@ internal sealed class RefreshQueue
             return;
         }
 
-        _worldRects.Clear();
+        lock (_syncRoot)
+            _worldRects.Clear();
     }
 }

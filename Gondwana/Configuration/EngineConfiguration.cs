@@ -1,4 +1,6 @@
 ﻿using Gondwana.Logging;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Timers;
 using Newtonsoft.Json;
 
@@ -18,10 +20,24 @@ public partial class EngineConfiguration
     /// Engine tasks. Set the value to 0 for no upper limit.
     /// Default is 60 FPS.
     /// </summary>
+    /// <remarks>
+    /// Setting this property also updates <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps"/>
+    /// on all currently registered GPU surfaces to keep that value consistent.
+    /// </remarks>
     public int TargetFPS
     {
         get => _targetFPS;
-        set => _targetFPS = value < 0 ? 0 : value;
+        set
+        {
+            _targetFPS = value < 0 ? 0 : value;
+
+            // Propagate to all active GPU backbuffers so their TargetFps stays in sync.
+            foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
+            {
+                if (surface.Backbuffer is GpuBackbuffer gpuBb)
+                    gpuBb.TargetFps = _targetFPS;
+            }
+        }
     }
 
     private double _samplingTimeForCPS = 1.5;

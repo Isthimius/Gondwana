@@ -81,7 +81,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _collider = new TileCollider(this, collisionGroup: CollisionMasks.All, collidesWith: CollisionMasks.All);
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
-        SpriteManager.Instance._spriteList.Add(this);
+        SpriteManager.Instance.AddSprite(this);
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     internal Sprite(Sprite sprite)
     {
         animator = new Animator(this);
-        SpriteManager.Instance._spriteList.Add(this);
+        SpriteManager.Instance.AddSprite(this);
 
         _sceneLayer = sprite._sceneLayer;
         frame = sprite.frame;
@@ -130,7 +130,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
 
-        SpriteManager.Instance._spriteList.Add(this);
+        SpriteManager.Instance.AddSprite(this);
     }
 
     #endregion constructors / finalizer
