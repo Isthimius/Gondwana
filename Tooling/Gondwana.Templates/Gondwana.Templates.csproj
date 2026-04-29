@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+
+        <!-- Template packages carry content only — no compiled output needed -->
+        <IncludeContentInPack>true</IncludeContentInPack>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <ContentTargetFolders>content</ContentTargetFolders>
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <!-- NU5128: expected for template packages that have no lib output -->
+        <NoWarn>$(NoWarn);NU5128</NoWarn>
+
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Templates</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.Templates</PackageId>
+        <PackageType>Template</PackageType>
+        <Title>Gondwana Project Templates</Title>
+        <Description>dotnet new templates for the Gondwana Game Engine. Scaffold a ready-to-run WinForms game project with one command: dotnet new gondwana-winforms -n MyGame</Description>
+        <PackageTags>game-engine gamedev csharp dotnet template winforms gondwana scaffold</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>gondwana-logo.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Exclude template source files from compilation — they are content only -->
+        <Compile Remove="templates/**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Pack all template files into content/ in the nupkg -->
+        <Content Include="templates/**" Exclude="templates/**/obj/**;templates/**/bin/**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="..\..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+    </ItemGroup>
+
+</Project>

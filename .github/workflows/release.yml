@@ -64,6 +64,7 @@ jobs:
           mkdir -p publish/Gondwana.WinForms
           mkdir -p publish/Gondwana.WinForms.Hosting
           mkdir -p publish/Tooling/Gondwana.Assets.WinForms
+          mkdir -p publish/Tooling/Gondwana.Templates
           mkdir -p publish/Demos/Slider
           mkdir -p publish/Demos/Spot
 
@@ -118,6 +119,25 @@ jobs:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           files: Gondwana-${{ env.VERSION }}-binaries.zip
+
+      # ---------------------------
+      # Update CHANGELOG.md
+      # ---------------------------
+      - name: Update CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          release_body=$(gh release view "${{ github.ref_name }}" --json body --jq '.body')
+
+          new_entry=$(printf '# v%s\n%s\n\n---\n\n' "${VERSION}" "${release_body}")
+          existing=$(cat CHANGELOG.md 2>/dev/null || true)
+          printf '%s%s' "${new_entry}" "${existing}" > CHANGELOG.md
+
+      - name: Commit and push CHANGELOG.md
+        run: |
+          git add CHANGELOG.md
+          git commit -m "chore: update CHANGELOG for v${VERSION}"
+          git push origin HEAD:refs/heads/master
 
       # ---------------------------
       # NuGet (nuget.org)

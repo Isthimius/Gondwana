@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--
+            These versions track the latest Gondwana 2.x releases.
+            Run 'dotnet add package Gondwana' to update to a newer major version.
+        -->
+        <PackageReference Include="Gondwana" Version="2.*" />
+        <PackageReference Include="Gondwana.Hosting" Version="2.*" />
+        <PackageReference Include="Gondwana.WinForms" Version="2.*" />
+        <PackageReference Include="Gondwana.WinForms.Hosting" Version="2.*" />
+    </ItemGroup>
+
+    <!--
+        Add your asset files here so they are copied to the output directory.
+        Example:
+        <ItemGroup>
+            <Content Include="assets\my-sprite.png">
+                <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            </Content>
+        </ItemGroup>
+    -->
+
+</Project>
