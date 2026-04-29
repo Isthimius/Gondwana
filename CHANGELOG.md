@@ -1,4 +1,20 @@
-﻿# v2.1.2
+# v2.2.0
+<!-- Release notes generated using configuration in .github/release.yml at v2.2.0 -->
+
+## What's Changed
+### New Features
+* Option A: move GpuBackbuffer rendering to the GL thread by @Copilot in https://github.com/Isthimius/Gondwana/pull/52
+### Other Changes
+* feat: auto-prepend GitHub release notes to CHANGELOG.md on release by @Copilot in https://github.com/Isthimius/Gondwana/pull/57
+* fix: YAML parse error in release.yml due to unindented bash heredoc by @Copilot in https://github.com/Isthimius/Gondwana/pull/58
+* feat: add Gondwana.Avalonia and Gondwana.Avalonia.Hosting by @Copilot in https://github.com/Isthimius/Gondwana/pull/54
+* feat: add `dotnet new gondwana-winforms` template package by @Copilot in https://github.com/Isthimius/Gondwana/pull/56
+* feat: add Gondwana.Studio — dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
+
+
+**Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.1.2...v2.2.0
+
+---﻿# v2.1.2
 ## Versioning & Packaging
 - Bumped engine and package version to **2.1.2**
 - Added ONBOARDING.md
