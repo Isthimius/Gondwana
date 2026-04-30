@@ -65,8 +65,23 @@ internal sealed class InfoCommand : Command
 
     private static string? FindCsproj(string directory)
     {
-        var files = Directory.GetFiles(directory, "*.csproj");
-        return files.Length == 1 ? files[0] : null;
+        var files = Directory.GetFiles(directory, "*.csproj")
+                             .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
+                             .ToArray();
+
+        if (files.Length == 0)
+            return null;
+
+        if (files.Length == 1)
+            return files[0];
+
+        AnsiConsole.MarkupLine("[yellow]Multiple .csproj files found in the current directory; using the first one:[/]");
+        foreach (var file in files)
+        {
+            AnsiConsole.MarkupLine($"  [dim]-[/] {Markup.Escape(Path.GetFileName(file))}");
+        }
+
+        return files[0];
     }
 
     private static string? GetProperty(XDocument doc, string name)
