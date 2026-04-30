@@ -15,7 +15,8 @@
 
 **Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.2.0...v2.2.1
 
----# v2.2.0
+---
+# v2.2.0
 <!-- Release notes generated using configuration in .github/release.yml at v2.2.0 -->
 
 ## What's Changed
@@ -32,8 +33,7 @@
 **Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.1.2...v2.2.0
 
 ---
-
-﻿# v2.1.2
+# v2.1.2
 ## Versioning & Packaging
 - Bumped engine and package version to **2.1.2**
 - Added ONBOARDING.md
@@ -44,10 +44,12 @@
 ## Core Engine Enhancements
 - Implemented GpuBackbuffer and wired up GPU render surface adapter/control
 
+---
 # v2.1.1
 ## Versioning & Packaging
 - Bumped engine and package version to **2.1.1**
 
+---
 # v2.1.0
 ## Versioning & Packaging
 - Bumped engine and package version to **2.1.0**
@@ -150,7 +152,6 @@
 - Added new assets (bubble sprites, icon, audio attribution)
 
 ---
-
 # v2.0.1
 ## Versioning & Packaging
 - Bumped engine and package version to **2.0.1**
@@ -177,6 +178,5 @@
 - Updated Gondwana.WinForms and Gondwana.Video project dependencies
 
 ---
-
 # v2.0.0
 - initial NuGet release
