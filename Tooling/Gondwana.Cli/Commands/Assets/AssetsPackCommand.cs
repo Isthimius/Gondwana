@@ -27,6 +27,11 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         [DefaultValue(true)]
         public bool Recurse { get; init; } = true;
 
+        [CommandOption("-a|--append")]
+        [Description("Append to an existing bundle instead of overwriting it (default: false).")]
+        [DefaultValue(false)]
+        public bool Append { get; init; } = false;
+
         [CommandOption("-m|--type-map")]
         [Description("Path to a JSON file that maps asset types to file extensions. " +
                      "Defaults to 'gondwana-asset-types.json' in the current directory or next to the executable.")]
@@ -65,6 +70,11 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
             AnsiConsole.MarkupLine($"[yellow]No files found in {Markup.Escape(source)}.[/]");
             return 0;
         }
+
+        // Default: overwrite (delete any existing bundle so stale entries are not retained).
+        // With --append: load the existing bundle and merge new files into it.
+        if (!settings.Append && File.Exists(output))
+            File.Delete(output);
 
         var assetFile = AssetsFile.LoadOrCreate(output);
         int packed = 0;
