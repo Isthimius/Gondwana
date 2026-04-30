@@ -123,11 +123,14 @@ internal sealed class DoctorCommand : Command
     private static CheckResult CheckSkiaSharp()
     {
         // Probe for the native SkiaSharp library by attempting to load it directly.
-        string[] candidates = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
-            ? ["libSkiaSharp.dll"]
-            : System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX)
-                ? ["libSkiaSharp.dylib"]
-                : ["libSkiaSharp.so", "libSkiaSharp.so.0"];
+        string[] candidates;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            candidates = ["libSkiaSharp.dll"];
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            candidates = ["libSkiaSharp.dylib"];
+        else
+            candidates = ["libSkiaSharp.so", "libSkiaSharp.so.0"];
 
         foreach (var candidate in candidates)
         {

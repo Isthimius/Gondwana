@@ -129,7 +129,8 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         // Convert path-like names such as "sprites/player.png" → "SpritesPlayerPng".
         var parts = assetName
             .Split(['/', '\\', '.', '-', '_', ' '], StringSplitOptions.RemoveEmptyEntries)
-            .Select(p => char.ToUpperInvariant(p[0]) + p[1..]);
+            .Where(p => p.Length > 0)
+            .Select(p => char.ToUpperInvariant(p[0]) + (p.Length > 1 ? p[1..] : string.Empty));
 
         var name = string.Concat(parts);
 
