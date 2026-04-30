@@ -197,6 +197,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         RenderBackbufferBegin?.Invoke();
 
+        // For GL-thread-rendered backbuffers (GpuBackbuffer), the RefreshQueue mechanism is
+        // unreliable: AddWorldRect and ClearRefreshQueue both post to the engine thread, so
+        // enqueued rects are not present when CollectDirtyScreenArea runs, and posted clears
+        // can silently discard dirty rects that were added after the last GL frame.
+        // Instead, always re-render the entire surface each GL paint callback.
+        if (Backbuffer.IsGlThreadRendered)
+        {
+            RenderToBackbufferGpuFull(tick);
+            RenderBackbufferEnd?.Invoke();
+            return;
+        }
+
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)
         {
@@ -289,6 +301,106 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Scene.FullRefreshNeeded = false;
 
         RenderBackbufferEnd?.Invoke();
+    }
+
+    /// <summary>
+    /// Full-surface rendering path used exclusively for GL-thread-rendered backbuffers
+    /// (i.e. <see cref="GpuBackbuffer"/>).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The standard dirty-rectangle path (<see cref="EnqueueFullSceneRefresh"/>,
+    /// <see cref="CollectDirtyScreenArea"/>, and <see cref="RefreshQueue.ClearRefreshQueue"/>)
+    /// relies on posting work items to the engine thread.  When
+    /// <see cref="BackbufferBase.IsGlThreadRendered"/> is <see langword="true"/> this posting
+    /// causes two races:
+    /// </para>
+    /// <list type="number">
+    /// <item><description>
+    ///   Full-refresh world rects enqueued by <see cref="EnqueueFullSceneRefresh"/> are not yet
+    ///   present in the queue when <see cref="CollectDirtyScreenArea"/> runs in the same GL frame,
+    ///   so large regions are silently skipped.
+    /// </description></item>
+    /// <item><description>
+    ///   The posted <see cref="RefreshQueue.ClearRefreshQueue"/> may execute on the engine thread
+    ///   after new dirty rects have been added by game logic, wiping those rects before the next
+    ///   GL frame can render them.
+    /// </description></item>
+    /// </list>
+    /// <para>
+    /// This method bypasses the <see cref="RefreshQueue"/> entirely: it clears and re-draws the
+    /// full viewport on every GL paint callback, which is correct because the GL paint fires once
+    /// per vsync and there is no partial-blit optimisation to preserve.
+    /// </para>
+    /// </remarks>
+    private void RenderToBackbufferGpuFull(long tick)
+    {
+        if (Scene.CountOfVisibleLayers == 0)
+        {
+            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Scene.FullRefreshNeeded = false;
+            return;
+        }
+
+        foreach (var view in ViewManager.Views)
+        {
+            RenderContext.Push(view, tick);
+
+            try
+            {
+                // 1) Force-refresh all DirectDrawings that overlay this view.
+                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+                foreach (var overlay in overlays)
+                    overlay.ForceRefresh();
+
+                var vp = view.Viewport.TargetRectPx;
+
+                // 2) Clip to this view's viewport, excluding areas covered by higher Z-order views.
+                Backbuffer.Canvas.Save();
+                Backbuffer.Canvas.ResetMatrix();
+                Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
+
+                foreach (var blocker in ViewManager.GetViewsAbove(view))
+                {
+                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
+                    if (!overlap.IsEmpty)
+                        Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
+                }
+
+                // 3) Clear the full viewport.
+                Backbuffer.ClearRect(vp);
+
+                // 4) Render every visible layer for the full viewport extent (layers are drawn
+                //    back-to-front by ascending Z-order, which VisibleSceneLayers already provides).
+                var sceneLayers = Scene.VisibleSceneLayers;
+
+                for (int i = 0; i < sceneLayers.Count; i++)
+                {
+                    var layer = sceneLayers[i];
+
+                    // Compute the world-space rect visible through this viewport for this layer,
+                    // expanded by one tile in each direction to cover boundary rounding.
+                    var layerWorldRectF = view.ScreenRectToWorldRect(layer, vp);
+                    layerWorldRectF.Inflate(layer.TileWidth, layer.TileHeight);
+                    var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
+
+                    var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
+                    Backbuffer.DrawDrawables(view, drawables, vp);
+                }
+
+                // 5) Render view-based DirectDrawings on top.
+                for (int i = 0; i < overlays.Count; i++)
+                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+
+                Backbuffer.Canvas.Restore();
+            }
+            finally
+            {
+                RenderContext.Pop();
+            }
+        }
+
+        Scene.FullRefreshNeeded = false;
     }
 
     #region DrawRefreshQueueToBackbuffer helpers
