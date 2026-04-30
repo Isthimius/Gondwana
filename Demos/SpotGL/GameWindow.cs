@@ -34,10 +34,10 @@ internal partial class GameWindow : Form
     {
         base.OnLoad(e);
         _gameHost = new SpotGLGameHost(renderSurface);
-        //_gameHost.Engine.CPSCalculated += (cps) =>
-        //{
-        //    Engine.Logger.LogTrace(cps.ToString());
-        //};
+        _gameHost.Engine.CPSCalculated += (cps) =>
+        {
+            Engine.Logger.LogTrace(cps.ToString());
+        };
 
         // Subscribe before Initialize() is called so the handler fires during initialization.
         _gameHost.Engine.InitializationComplete += () =>
@@ -46,7 +46,7 @@ internal partial class GameWindow : Form
             // propagates to all registered GpuBackbuffers, removing their timer cap too.
             _gameHost.Engine.Configuration.TargetFPS = 500;
             if (_gameHost.RenderSurface.Host.Backbuffer is GpuBackbuffer gpuBb)
-                gpuBb.VSync = true;
+                gpuBb.VSync = false;
         };
     }
 
@@ -57,7 +57,7 @@ internal partial class GameWindow : Form
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
-        _gameHost!.Initialize(logLevel: LogLevel.Warning);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost!.Initialize(logLevel: LogLevel.Trace);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
