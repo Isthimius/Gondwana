@@ -28,8 +28,12 @@ app.Configure(config =>
         branch.SetDescription("Scaffold a new Gondwana project.");
 
         branch.AddCommand<NewWinFormsCommand>("winforms")
-              .WithDescription("Create a new WinForms Gondwana project.")
+              .WithDescription("Create a new WinForms Gondwana project (Windows only).")
               .WithExample("new", "winforms", "MyGame");
+
+        branch.AddCommand<NewAvaloniaCommand>("avalonia")
+              .WithDescription("Create a new Avalonia Gondwana project (Windows, macOS, Linux).")
+              .WithExample("new", "avalonia", "MyGame");
     });
 
     config.AddBranch("templates", branch =>

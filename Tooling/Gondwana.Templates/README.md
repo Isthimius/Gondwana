@@ -17,8 +17,11 @@ dotnet new install Gondwana.Templates
 | Template | Short name | Description |
 |---|---|---|
 | Gondwana WinForms Game | `gondwana-winforms` | Starter Windows desktop game using Gondwana + WinForms |
+| Gondwana Avalonia Game | `gondwana-avalonia` | Starter cross-platform desktop game using Gondwana + Avalonia (Windows, macOS, Linux) |
 
 ## Usage
+
+### WinForms (Windows only)
 
 ```bash
 dotnet new gondwana-winforms -n MyGame
@@ -32,6 +35,23 @@ This scaffolds a ready-to-run WinForms project containing:
 - `Program.cs` — `[STAThread]` WinForms entry point
 - `GameWindow.cs` — `Form` wired to the engine lifecycle (`OnLoad` → host, `OnShown` → `Initialize`, `OnFormClosed` → `Dispose`)
 - `GameHost.cs` — `WinFormsGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
+- `assets/README.txt` — instructions for adding sprites and other asset files
+
+### Avalonia (Windows, macOS, Linux)
+
+```bash
+dotnet new gondwana-avalonia -n MyGame
+cd MyGame
+dotnet run
+```
+
+This scaffolds a ready-to-run Avalonia project containing:
+
+- `MyGame.csproj` — targets `net8.0` with the Gondwana and `Avalonia.Desktop` packages pre-referenced
+- `Program.cs` — Avalonia `AppBuilder` entry point using `UsePlatformDetect()`
+- `App.cs` — `Application` subclass that creates the main window on startup
+- `GameWindow.cs` — `Window` wired to the engine lifecycle (`OnOpened` → host + `Initialize`, `OnClosed` → `Dispose`)
+- `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
 - `assets/README.txt` — instructions for adding sprites and other asset files
 
 ## Further reading
