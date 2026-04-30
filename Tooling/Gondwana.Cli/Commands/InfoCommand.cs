@@ -23,7 +23,7 @@ internal sealed class InfoCommand : Command
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Failed to read project file: {ex.Message}[/]");
+            AnsiConsole.MarkupLine($"[red]Failed to read project file: {Markup.Escape(ex.Message)}[/]");
             return 1;
         }
 
