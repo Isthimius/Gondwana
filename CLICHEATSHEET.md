@@ -61,6 +61,7 @@ Reads the `.csproj` in the current directory and prints project metadata (name, 
 | Subcommand | Description |
 |---|---|
 | `winforms` | Create a new WinForms Gondwana project. |
+| `avalonia` | Create a new Avalonia Gondwana project (Windows, macOS, Linux). |
 
 ### `gondwana new winforms <name>`
 
@@ -73,6 +74,21 @@ Reads the `.csproj` in the current directory and prints project metadata (name, 
 ```
 gondwana new winforms MyGame
 gondwana new winforms MyGame -o ./projects/MyGame
+```
+
+---
+
+### `gondwana new avalonia <name>`
+
+| Argument / Option | Short | Description |
+|---|---|---|
+| `<name>` | | **Required.** Name of the new project. |
+| `--output <dir>` | `-o` | Directory to place the generated output in. Defaults to a new folder named `<name>` in the current directory. |
+
+**Example**
+```
+gondwana new avalonia MyGame
+gondwana new avalonia MyGame -o ./projects/MyGame
 ```
 
 ---
