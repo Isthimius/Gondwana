@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+        <!-- .NET global tool packaging -->
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>gondwana</ToolCommandName>
+        <RollForward>Major</RollForward>
+
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Cli</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.Cli</PackageId>
+        <Title>Gondwana CLI</Title>
+        <Description>Developer CLI for the Gondwana Game Engine. Create projects, validate your setup, pack assets, inspect projects, and manage templates — all from the command line. Install globally with: dotnet tool install --global Gondwana.Cli</Description>
+        <PackageTags>game-engine gamedev csharp dotnet cli gondwana tool assets templates doctor scaffold</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>gondwana-logo.png</PackageIcon>
+        <!-- NU5128: expected for tool packages that have no lib output -->
+        <NoWarn>$(NoWarn);NU5128</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Spectre.Console" Version="0.55.0" />
+        <PackageReference Include="Spectre.Console.Cli" Version="0.55.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="..\..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Default asset-type mapping; shipped alongside the executable -->
+        <Content Include="gondwana-asset-types.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+</Project>
