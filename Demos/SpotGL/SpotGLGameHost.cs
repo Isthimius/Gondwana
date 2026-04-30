@@ -398,6 +398,14 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         }
     }
 
+    private void JiggleAllPlayers()
+    {
+        foreach (var player in SpotGame.Players)
+        {
+            StartPlayerJiggle(player);
+        }
+    }
+
     #endregion private methods
 
     #region particle emitters
@@ -885,6 +893,7 @@ internal sealed class SpotGLGameHost : WinFormsGpuGameHost
         SetScoreVisible(true);
         SetPlayerScores();
         StopPlayerJiggle(SpotGame.CurrentPlayer);
+        JiggleAllPlayers();
 
         var allScores = SpotGame.GetAllPlayerScores();
         var maxScore = allScores.Values.Max();
