@@ -1,0 +1,113 @@
+# Gondwana CLI
+
+Developer CLI for the [Gondwana Game Engine](https://github.com/Isthimius/Gondwana).
+
+## Installation
+
+```bash
+dotnet tool install --global Gondwana.Cli
+```
+
+## Commands
+
+### `gondwana doctor`
+
+Validates your local Gondwana development environment.
+
+```
+Gondwana Doctor
+
+.NET SDK             OK  10.0.201
+Templates            OK  gondwana-winforms found
+SkiaSharp            OK
+SDL2                 Missing native library
+LibVLC               Not checked
+
+1 issue found.
+```
+
+Checks performed:
+- .NET SDK installed and version
+- Gondwana templates (`gondwana-winforms`) installed
+- SkiaSharp native binaries
+- SDL2 native binaries (for `Gondwana.Input.SDL2`)
+- LibVLC (for `Gondwana.Video`)
+
+---
+
+### `gondwana new winforms <name>`
+
+Scaffolds a new WinForms Gondwana project.
+
+```bash
+gondwana new winforms MyGame
+```
+
+Equivalent to `dotnet new gondwana-winforms -n MyGame` but with cleaner output.
+
+---
+
+### `gondwana templates`
+
+Manage Gondwana project templates.
+
+```bash
+gondwana templates install   # Install Gondwana.Templates from NuGet
+gondwana templates update    # Update installed templates
+gondwana templates list      # List installed Gondwana templates
+```
+
+---
+
+### `gondwana assets`
+
+Pack, inspect, and extract Gondwana asset files (`.gaf`).
+
+```bash
+# Pack a directory of files into an asset bundle
+gondwana assets pack ./Assets ./game.assets
+
+# List all assets in a bundle
+gondwana assets list ./game.assets
+
+# Extract all assets from a bundle
+gondwana assets extract ./game.assets ./Extracted
+
+# Generate a C# constants class for asset keys
+gondwana assets generate-keys ./game.assets
+gondwana assets generate-keys ./game.assets -o AssetKeys.cs -n MyGame.Assets
+```
+
+The `generate-keys` command produces a file like:
+
+```csharp
+public static class AssetKeys
+{
+    public const string PlayerSprite = "sprites/player.png";
+    public const string ThemeMusic = "audio/theme.ogg";
+}
+```
+
+---
+
+### `gondwana info`
+
+Displays information about the Gondwana project in the current directory.
+
+```
+Project: MyGame
+Framework: net8.0
+Host: WinForms
+Gondwana: 2.2.0
+Adapters:
+  - Gondwana.WinForms
+  - Gondwana.Audio.Midi
+Assets:
+  - Assets/game.assets
+```
+
+---
+
+## License
+
+MIT — see [LICENSE](https://github.com/Isthimius/Gondwana/blob/master/LICENSE)

@@ -127,6 +127,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Studio", "Tooling\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Templates", "Tooling\Gondwana.Templates\Gondwana.Templates.csproj", "{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Cli", "Tooling\Gondwana.Cli\Gondwana.Cli.csproj", "{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -373,6 +375,22 @@ Global
 		{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1}.Release|x64.Build.0 = Release|Any CPU
 		{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1}.Release|x86.ActiveCfg = Release|Any CPU
 		{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1}.Release|x86.Build.0 = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|x64.Build.0 = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Debug|x86.Build.0 = Debug|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|x64.ActiveCfg = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|x64.Build.0 = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|x86.ActiveCfg = Release|Any CPU
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -389,6 +407,7 @@ Global
 		{F059118F-6A87-7D7B-03FE-2B7D24A12554} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{7472B43A-FACF-4F8D-BF93-B409561F2685} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
+		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
