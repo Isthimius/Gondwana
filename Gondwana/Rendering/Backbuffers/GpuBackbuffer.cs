@@ -2,6 +2,7 @@
 using Gondwana.Drawing;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
+using Gondwana;
 
 namespace Gondwana.Rendering.Backbuffers;
 
@@ -39,6 +40,7 @@ public class GpuBackbuffer : BackbufferBase
     private bool _disposed;
 
     private int _targetFps = 60;
+    private int _msaaSampleCount = 1;
 
     // Frame counter used to compute the actual rendered FPS.
     // Incremented on the GL thread by RecordFrame(); consumed atomically by the engine's CPS sampler.
@@ -66,17 +68,52 @@ public class GpuBackbuffer : BackbufferBase
     /// Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.
     /// </summary>
     /// <remarks>
-    /// This value is read by the platform adapter (e.g. <c>WinFormGpuRenderSurfaceAdapter</c>)
-    /// at the start of each <c>PaintSurface</c> call and applied to the underlying
-    /// <c>GLControl.VSync</c> property when it changes.  Enabling vsync prevents screen tearing
-    /// but caps the frame rate to the monitor refresh rate.  Disabling vsync allows higher frame
-    /// rates at the cost of potential tearing.
+    /// <para>
+    /// This property only applies to <see cref="GpuBackbuffer"/>; other backbuffer types ignore it.
+    /// </para>
+    /// <para>
+    /// This value is kept in sync with <see cref="Gondwana.Configuration.EngineConfiguration.VSync"/>
+    /// (which propagates its value to all registered GPU backbuffers).  The value is read by the
+    /// platform adapter (e.g. <c>WinFormGpuRenderSurfaceAdapter</c>) at the start of each
+    /// <c>PaintSurface</c> call and applied to the underlying <c>GLControl.VSync</c> property when
+    /// it changes.  Enabling vsync prevents screen tearing but caps the frame rate to the monitor
+    /// refresh rate.  Disabling vsync allows higher frame rates at the cost of potential tearing.
+    /// </para>
     /// </remarks>
     /// <value>
     /// <see langword="true"/> to synchronise presentation with the monitor refresh; otherwise
     /// <see langword="false"/>.  The default is <see langword="true"/>.
     /// </value>
     public bool VSync { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating the
+    /// GPU render-target surface.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This property only applies to <see cref="GpuBackbuffer"/>; other backbuffer types ignore it.
+    /// </para>
+    /// <para>
+    /// This value is kept in sync with
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.MsaaSampleCount"/> (which propagates
+    /// its value to all registered GPU backbuffers).  A value of <c>1</c> disables MSAA.  Common
+    /// values are <c>2</c>, <c>4</c>, or <c>8</c>, subject to hardware support.
+    /// </para>
+    /// <para>
+    /// Changing this property on an already-initialized backbuffer takes effect the next time
+    /// <see cref="Initialize"/> is called (e.g. on the next window resize), because the GPU
+    /// render-target surface must be recreated with the new sample count.
+    /// </para>
+    /// </remarks>
+    /// <value>
+    /// The MSAA sample count.  Values less than <c>1</c> are clamped to <c>1</c>.  The default is <c>1</c>.
+    /// </value>
+    public int MsaaSampleCount
+    {
+        get => _msaaSampleCount;
+        set => _msaaSampleCount = value < 1 ? 1 : value;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GpuBackbuffer"/> class with the specified dimensions.
@@ -86,6 +123,12 @@ public class GpuBackbuffer : BackbufferBase
     public GpuBackbuffer(int width, int height)
         : base(width, height)
     {
+        // Apply defaults from the current engine configuration so that properties set on
+        // EngineConfiguration before this backbuffer was created are honoured automatically.
+        var config = Engine.Instance.Configuration;
+        VSync = config.VSync;
+        MsaaSampleCount = config.MsaaSampleCount;
+
         CreateCpuSurface(width, height);
     }
 
@@ -204,7 +247,7 @@ public class GpuBackbuffer : BackbufferBase
     {
         // Rgba8888 / Premul is the natural format for an OpenGL render target.
         var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
-        _surface = SKSurface.Create(grContext, budgeted: true, info);
+        _surface = SKSurface.Create(grContext, budgeted: true, info, _msaaSampleCount);
     }
 
     private void CreateCpuSurface(int width, int height)
