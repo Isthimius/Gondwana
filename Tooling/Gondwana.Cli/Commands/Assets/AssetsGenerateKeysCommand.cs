@@ -67,8 +67,28 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
             if (settings.Output is not null)
             {
                 var outputPath = Path.GetFullPath(settings.Output);
-                System.IO.File.WriteAllText(outputPath, code, Encoding.UTF8);
-                AnsiConsole.MarkupLine($"[green]Generated {Markup.Escape(outputPath)} with {entries.Count} key(s).[/]");
+
+                try
+                {
+                    var outputDirectory = Path.GetDirectoryName(outputPath);
+                    if (!string.IsNullOrEmpty(outputDirectory))
+                    {
+                        System.IO.Directory.CreateDirectory(outputDirectory);
+                    }
+
+                    System.IO.File.WriteAllText(outputPath, code, Encoding.UTF8);
+                    AnsiConsole.MarkupLine($"[green]Generated {Markup.Escape(outputPath)} with {entries.Count} key(s).[/]");
+                }
+                catch (System.UnauthorizedAccessException ex)
+                {
+                    AnsiConsole.MarkupLine($"[red]Failed to write output file: {Markup.Escape(ex.Message)}[/]");
+                    return 1;
+                }
+                catch (System.IO.IOException ex)
+                {
+                    AnsiConsole.MarkupLine($"[red]Failed to write output file: {Markup.Escape(ex.Message)}[/]");
+                    return 1;
+                }
             }
             else
             {
