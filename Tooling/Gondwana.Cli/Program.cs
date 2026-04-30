@@ -17,6 +17,9 @@ app.Configure(config =>
     config.SetApplicationName("gondwana");
     config.UseAssemblyInformationalVersion();
 
+    config.AddCommand<HelpCommand>("help")
+          .WithDescription("Show a summary of all available commands.");
+
     config.AddCommand<DoctorCommand>("doctor")
           .WithDescription("Validate your local Gondwana development environment.");
 

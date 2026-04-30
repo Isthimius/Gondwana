@@ -32,11 +32,20 @@ After installation the `gondwana` command is available in any terminal.
 
 | Command | Description |
 |---|---|
+| `gondwana help` | Show a summary of all available commands. |
 | `gondwana doctor` | Validate your local Gondwana development environment. |
 | `gondwana info` | Show information about the Gondwana project in the current directory. |
 | `gondwana new <subcommand>` | Scaffold a new Gondwana project. |
 | `gondwana templates <subcommand>` | Manage Gondwana `dotnet new` templates. |
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
+
+---
+
+## `gondwana help`
+
+Prints a formatted table of all available commands with short descriptions, then reminds you to run `gondwana <command> --help` for detailed usage.
+
+*No arguments or options.*
 
 ---
 
