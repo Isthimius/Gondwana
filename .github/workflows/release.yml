@@ -260,14 +260,11 @@ jobs:
             --body "Automated merge of CHANGELOG and release changes into master after v${VERSION} release." \
             || true
 
-          # Look up the PR number and merge it via REST API (bypasses branch protection for admins)
+          # Look up the PR number and merge it, bypassing branch protection for admins
           pr_number=$(gh pr list \
             --base master \
             --head "${release_branch}" \
             --json number \
             --jq '.[0].number')
 
-          gh api \
-            --method PUT \
-            "/repos/${{ github.repository }}/pulls/${pr_number}/merge" \
-            -f merge_method=merge
+          gh pr merge "${pr_number}" --merge --admin
