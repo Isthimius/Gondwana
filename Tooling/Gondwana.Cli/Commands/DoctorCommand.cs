@@ -117,8 +117,17 @@ internal sealed class DoctorCommand : Command
         if (exitCode != 0)
             return CheckResult.Fail($"Failed to query installed templates (exit code {exitCode}). Is the .NET SDK installed and functional?");
 
-        if (output.Contains("gondwana-winforms", StringComparison.OrdinalIgnoreCase))
+        bool hasWinForms = output.Contains("gondwana-winforms", StringComparison.OrdinalIgnoreCase);
+        bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
+
+        if (hasWinForms && hasAvalonia)
+            return CheckResult.Ok("gondwana-winforms, gondwana-avalonia found");
+
+        if (hasWinForms)
             return CheckResult.Ok("gondwana-winforms found");
+
+        if (hasAvalonia)
+            return CheckResult.Ok("gondwana-avalonia found");
 
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
     }
