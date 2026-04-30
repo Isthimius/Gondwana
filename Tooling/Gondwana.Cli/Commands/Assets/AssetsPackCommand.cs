@@ -58,7 +58,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         }
 
         var searchOption = settings.Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-        var files = Directory.GetFiles(source, "*.*", searchOption);
+        var files = Directory.GetFiles(source, "*", searchOption);
 
         if (files.Length == 0)
         {
