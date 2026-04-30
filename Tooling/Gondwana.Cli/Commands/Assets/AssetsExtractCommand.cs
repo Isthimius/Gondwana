@@ -76,7 +76,18 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
 
             foreach (var entry in entries)
             {
-                var destPath = Path.Combine(outDir, entry.AssetName.Replace('/', Path.DirectorySeparatorChar));
+                var rawDest = Path.Combine(outDir, entry.AssetName.Replace('/', Path.DirectorySeparatorChar));
+                var destPath = Path.GetFullPath(rawDest);
+
+                // Guard against path-traversal: reject entries that escape the output directory.
+                var outDirWithSeparator = outDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                                                + Path.DirectorySeparatorChar;
+                if (!destPath.StartsWith(outDirWithSeparator, StringComparison.OrdinalIgnoreCase))
+                {
+                    AnsiConsole.MarkupLine($"  [red]Rejected (path traversal): {Markup.Escape(entry.AssetName)}[/]");
+                    skipped++;
+                    continue;
+                }
 
                 if (System.IO.File.Exists(destPath) && !settings.Overwrite)
                 {

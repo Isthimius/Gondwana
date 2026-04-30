@@ -73,4 +73,35 @@ internal static class ProcessHelper
             return -1;
         }
     }
+
+    /// <summary>
+    /// Runs a command with individual argument tokens (no shell quoting needed).
+    /// Streams output live to the console. Returns the exit code.
+    /// </summary>
+    public static int RunLive(string fileName, IEnumerable<string> arguments)
+    {
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = fileName,
+                UseShellExecute = false,
+                CreateNoWindow = false,
+            };
+
+            foreach (var arg in arguments)
+                psi.ArgumentList.Add(arg);
+
+            using var process = Process.Start(psi);
+            if (process is null)
+                return -1;
+
+            process.WaitForExit();
+            return process.ExitCode;
+        }
+        catch
+        {
+            return -1;
+        }
+    }
 }

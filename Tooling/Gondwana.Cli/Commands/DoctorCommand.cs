@@ -114,6 +114,9 @@ internal sealed class DoctorCommand : Command
     {
         var output = ProcessHelper.Run("dotnet", "new list gondwana --columns author,type", out int exitCode);
 
+        if (exitCode != 0)
+            return CheckResult.Fail($"Failed to query installed templates (exit code {exitCode}). Is the .NET SDK installed and functional?");
+
         if (output.Contains("gondwana-winforms", StringComparison.OrdinalIgnoreCase))
             return CheckResult.Ok("gondwana-winforms found");
 

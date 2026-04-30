@@ -119,14 +119,32 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         sb.AppendLine($"public static class {className}");
         sb.AppendLine("{");
 
+        // Track generated identifier → usage count for de-duplication across the whole class.
+        var usedNames = new Dictionary<string, int>(StringComparer.Ordinal);
+
         foreach (var group in entries.GroupBy(e => e.AssetType))
         {
             sb.AppendLine($"    // {group.Key}");
 
             foreach (var entry in group)
             {
-                var constName = ToConstantName(entry.AssetName);
-                sb.AppendLine($"    public const string {constName} = \"{entry.AssetName}\";");
+                var baseName = ToConstantName(entry.AssetName);
+
+                // De-duplicate: if the name was used before, append an incrementing suffix.
+                string constName;
+                if (usedNames.TryGetValue(baseName, out var count))
+                {
+                    usedNames[baseName] = count + 1;
+                    constName = $"{baseName}{count + 1}";
+                }
+                else
+                {
+                    usedNames[baseName] = 1;
+                    constName = baseName;
+                }
+
+                var escapedValue = EscapeStringLiteral(entry.AssetName);
+                sb.AppendLine($"    public const string {constName} = \"{escapedValue}\";");
             }
 
             sb.AppendLine();
@@ -144,20 +162,57 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         return sb.ToString();
     }
 
+    // C# contextual and reserved keywords that cannot be used as unescaped identifiers.
+    private static readonly HashSet<string> CSharpKeywords = new(StringComparer.Ordinal)
+    {
+        "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char",
+        "checked", "class", "const", "continue", "decimal", "default", "delegate", "do",
+        "double", "else", "enum", "event", "explicit", "extern", "false", "finally",
+        "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int",
+        "interface", "internal", "is", "lock", "long", "namespace", "new", "null",
+        "object", "operator", "out", "override", "params", "private", "protected",
+        "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof",
+        "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true",
+        "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using",
+        "virtual", "void", "volatile", "while",
+    };
+
     private static string ToConstantName(string assetName)
     {
-        // Convert path-like names such as "sprites/player.png" → "SpritesPlayerPng".
+        // Split on common path/word separators, title-case each part, then join.
         var parts = assetName
             .Split(['/', '\\', '.', '-', '_', ' '], StringSplitOptions.RemoveEmptyEntries)
-            .Where(p => p.Length > 0)
-            .Select(p => char.ToUpperInvariant(p[0]) + (p.Length > 1 ? p[1..] : string.Empty));
+            .Select(p =>
+            {
+                // Remove any character that is not a letter, digit, or underscore.
+                var sanitized = new string(p.Select((c, i) =>
+                    char.IsLetterOrDigit(c) || c == '_' ? c : '_').ToArray());
+
+                if (sanitized.Length == 0)
+                    return string.Empty;
+
+                // Title-case the segment.
+                return char.ToUpperInvariant(sanitized[0]) + (sanitized.Length > 1 ? sanitized[1..] : string.Empty);
+            })
+            .Where(p => p.Length > 0);
 
         var name = string.Concat(parts);
 
-        // Ensure the identifier starts with a letter.
-        if (name.Length > 0 && !char.IsLetter(name[0]))
+        if (name.Length == 0)
+            name = "_Asset";
+
+        // Ensure the identifier starts with a letter or underscore.
+        if (!char.IsLetter(name[0]) && name[0] != '_')
+            name = "_" + name;
+
+        // Prefix reserved keywords so the generated code compiles.
+        if (CSharpKeywords.Contains(name))
             name = "_" + name;
 
         return name;
     }
+
+    /// <summary>Escapes backslashes and double-quotes for use inside a C# verbatim string literal.</summary>
+    private static string EscapeStringLiteral(string value)
+        => value.Replace("\\", "\\\\").Replace("\"", "\\\"");
 }

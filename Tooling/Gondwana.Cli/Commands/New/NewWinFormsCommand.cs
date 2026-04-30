@@ -26,14 +26,16 @@ internal sealed class NewWinFormsCommand : Command<NewWinFormsCommand.Settings>
             return 1;
         }
 
-        var outputArg = settings.Output is not null
-            ? $" -o \"{settings.Output}\""
-            : string.Empty;
+        var args = new List<string> { "new", "gondwana-winforms", "-n", settings.Name };
+        if (settings.Output is not null)
+        {
+            args.Add("-o");
+            args.Add(settings.Output);
+        }
 
         AnsiConsole.MarkupLine($"Creating Gondwana WinForms project: [bold]{Markup.Escape(settings.Name)}[/]");
 
-        var arguments = $"new gondwana-winforms -n \"{settings.Name}\"{outputArg}";
-        var exitCode = ProcessHelper.RunLive("dotnet", arguments);
+        var exitCode = ProcessHelper.RunLive("dotnet", args);
 
         if (exitCode == 0)
         {
