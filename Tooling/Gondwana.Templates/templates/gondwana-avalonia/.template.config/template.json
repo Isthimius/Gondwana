@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Michael Adkins",
+  "classifications": [ "Games", "Avalonia", "Desktop", "Cross-Platform", "Gondwana" ],
+  "identity": "Gondwana.Templates.Avalonia.CSharp",
+  "name": "Gondwana Avalonia Game",
+  "shortName": "gondwana-avalonia",
+  "description": "A starter project for building a cross-platform 2D desktop game with the Gondwana Game Engine and Avalonia (Windows, macOS, Linux).",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "MyGame",
+  "preferNameDirectory": true
+}
