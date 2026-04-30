@@ -94,9 +94,28 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
             }
         });
 
-        assetFile.Save();
-        assetFile.Dispose();
+        try
+        {
+            var outputDirectory = Path.GetDirectoryName(output);
+            if (!string.IsNullOrEmpty(outputDirectory))
+                Directory.CreateDirectory(outputDirectory);
 
+            assetFile.Save();
+        }
+        catch (IOException ex)
+        {
+            AnsiConsole.MarkupLine($"[red]Failed to save assets to {Markup.Escape(output)}: {Markup.Escape(ex.Message)}[/]");
+            return 1;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            AnsiConsole.MarkupLine($"[red]Failed to save assets to {Markup.Escape(output)}: {Markup.Escape(ex.Message)}[/]");
+            return 1;
+        }
+        finally
+        {
+            assetFile.Dispose();
+        }
         AnsiConsole.MarkupLine($"[green]Packed {packed} asset(s) into {Markup.Escape(output)}.[/]");
 
         if (skipped > 0)
