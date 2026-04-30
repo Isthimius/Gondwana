@@ -26,6 +26,11 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         [Description("Recurse into subdirectories (default: true).")]
         [DefaultValue(true)]
         public bool Recurse { get; init; } = true;
+
+        [CommandOption("-m|--type-map")]
+        [Description("Path to a JSON file that maps asset types to file extensions. " +
+                     "Defaults to 'gondwana-asset-types.json' in the current directory or next to the executable.")]
+        public string? TypeMapPath { get; init; }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -42,6 +47,13 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         if (!Enum.TryParse<AssetTypes>(settings.DefaultType, ignoreCase: true, out var defaultType))
         {
             AnsiConsole.MarkupLine($"[red]Invalid asset type '{Markup.Escape(settings.DefaultType)}'. Valid types: {string.Join(", ", Enum.GetNames<AssetTypes>())}[/]");
+            return 1;
+        }
+
+        var typeMap = AssetTypeMap.Load(settings.TypeMapPath, out var mapError);
+        if (typeMap is null)
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(mapError!)}[/]");
             return 1;
         }
 
@@ -66,7 +78,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
             {
                 ctx.Status($"Packing {Markup.Escape(Path.GetFileName(file))}...");
 
-                var assetType = InferAssetType(file, defaultType);
+                var assetType = typeMap.Infer(file, defaultType);
                 var assetName = Path.GetRelativePath(source, file).Replace('\\', '/');
 
                 try
@@ -92,19 +104,5 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
 
         return 0;
     }
-
-    private static AssetTypes InferAssetType(string filePath, AssetTypes fallback)
-    {
-        var ext = Path.GetExtension(filePath).TrimStart('.').ToLowerInvariant();
-
-        return ext switch
-        {
-            "png" or "jpg" or "jpeg" or "bmp" or "gif" or "webp" or "tiff" or "ico" => AssetTypes.Image,
-            "wav" or "mp3" or "ogg" or "flac" or "aac" or "wma" or "mid" or "midi" => AssetTypes.Audio,
-            "mp4" or "avi" or "mkv" or "mov" or "wmv" or "webm" or "m4v"           => AssetTypes.Video,
-            "cur" or "ani"                                                           => AssetTypes.Cursor,
-            "ttf" or "otf" or "woff" or "woff2"                                     => AssetTypes.Font,
-            _ => fallback,
-        };
-    }
 }
+

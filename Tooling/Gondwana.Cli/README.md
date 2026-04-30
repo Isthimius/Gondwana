@@ -67,6 +67,9 @@ Pack, inspect, and extract Gondwana asset files (`.gaf`).
 # Pack a directory of files into an asset bundle
 gondwana assets pack ./Assets ./game.assets
 
+# Pack using a custom type-map config
+gondwana assets pack ./Assets ./game.assets --type-map my-types.json
+
 # List all assets in a bundle
 gondwana assets list ./game.assets
 
@@ -87,6 +90,31 @@ public static class AssetKeys
     public const string ThemeMusic = "audio/theme.ogg";
 }
 ```
+
+#### Asset type mapping
+
+`gondwana assets pack` maps file extensions to `AssetTypes` values using a JSON config file.
+The tool looks for the config in this order:
+
+1. The path given to `--type-map <file>` (if supplied)
+2. `gondwana-asset-types.json` in the **current working directory**
+3. `gondwana-asset-types.json` next to the `gondwana` executable (the shipped default)
+
+The JSON format is an object whose keys are `AssetTypes` names and whose values are arrays of
+file extensions (without a leading dot):
+
+```json
+{
+  "Image":  ["png", "jpg", "jpeg", "bmp", "gif", "webp", "tiff", "ico"],
+  "Audio":  ["wav", "mp3", "ogg", "flac", "aac", "wma", "mid", "midi"],
+  "Video":  ["mp4", "avi", "mkv", "mov", "wmv", "webm", "m4v"],
+  "Cursor": ["cur", "ani"],
+  "Font":   ["ttf", "otf", "woff", "woff2"]
+}
+```
+
+Copy `gondwana-asset-types.json` from the tool installation directory into your project to
+customize extension mappings without affecting other projects.
 
 ---
 
