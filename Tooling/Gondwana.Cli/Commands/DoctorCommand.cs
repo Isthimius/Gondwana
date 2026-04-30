@@ -48,21 +48,21 @@ internal sealed class DoctorCommand : Command
                 case CheckStatus.Ok:
                     AnsiConsole.Markup($"  {paddedLabel}  [green]OK[/]");
                     if (!string.IsNullOrWhiteSpace(result.Detail))
-                        AnsiConsole.Markup($"  [dim]{result.Detail}[/]");
+                        AnsiConsole.Markup($"  [dim]{Markup.Escape(result.Detail)}[/]");
                     AnsiConsole.WriteLine();
                     break;
 
                 case CheckStatus.Warning:
                     AnsiConsole.Markup($"  {paddedLabel}  [yellow]Warning[/]");
                     if (!string.IsNullOrWhiteSpace(result.Detail))
-                        AnsiConsole.Markup($"  [dim]{result.Detail}[/]");
+                        AnsiConsole.Markup($"  [dim]{Markup.Escape(result.Detail)}[/]");
                     AnsiConsole.WriteLine();
                     break;
 
                 case CheckStatus.Fail:
                     AnsiConsole.Markup($"  {paddedLabel}  [red]Missing[/]");
                     if (!string.IsNullOrWhiteSpace(result.Detail))
-                        AnsiConsole.Markup($"  [dim]{result.Detail}[/]");
+                        AnsiConsole.Markup($"  [dim]{Markup.Escape(result.Detail)}[/]");
                     AnsiConsole.WriteLine();
                     break;
 
