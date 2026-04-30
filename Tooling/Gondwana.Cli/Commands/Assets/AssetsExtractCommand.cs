@@ -80,9 +80,9 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
                 var destPath = Path.GetFullPath(rawDest);
 
                 // Guard against path-traversal: reject entries that escape the output directory.
-                var outDirWithSeparator = outDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                var outDirWithSeparator = Path.GetFullPath(outDir).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                                                 + Path.DirectorySeparatorChar;
-                if (!destPath.StartsWith(outDirWithSeparator, StringComparison.OrdinalIgnoreCase))
+                if (!destPath.StartsWith(outDirWithSeparator, StringComparison.Ordinal))
                 {
                     AnsiConsole.MarkupLine($"  [red]Rejected (path traversal): {Markup.Escape(entry.AssetName)}[/]");
                     skipped++;

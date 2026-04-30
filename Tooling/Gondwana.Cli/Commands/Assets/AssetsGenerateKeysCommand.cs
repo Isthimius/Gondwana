@@ -185,7 +185,7 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
             .Select(p =>
             {
                 // Remove any character that is not a letter, digit, or underscore.
-                var sanitized = new string(p.Select((c, i) =>
+                var sanitized = new string(p.Select(c =>
                     char.IsLetterOrDigit(c) || c == '_' ? c : '_').ToArray());
 
                 if (sanitized.Length == 0)
@@ -212,7 +212,7 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         return name;
     }
 
-    /// <summary>Escapes backslashes and double-quotes for use inside a C# verbatim string literal.</summary>
+    /// <summary>Escapes backslashes and double-quotes for use inside a C# regular string literal.</summary>
     private static string EscapeStringLiteral(string value)
         => value.Replace("\\", "\\\\").Replace("\"", "\\\"");
 }
