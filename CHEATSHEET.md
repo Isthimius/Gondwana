@@ -4,6 +4,30 @@ Quick reference for all `gondwana` commands and their options.
 
 ---
 
+## Installation
+
+Install the CLI as a .NET global tool from NuGet:
+
+```sh
+dotnet tool install --global Gondwana.Cli
+```
+
+Update to the latest version:
+
+```sh
+dotnet tool update --global Gondwana.Cli
+```
+
+Uninstall:
+
+```sh
+dotnet tool uninstall --global Gondwana.Cli
+```
+
+After installation the `gondwana` command is available in any terminal.
+
+---
+
 ## Top-level commands
 
 | Command | Description |
