@@ -1,4 +1,21 @@
-# v2.2.0
+# v2.2.1
+<!-- Release notes generated using configuration in .github/release.yml at v2.2.1 -->
+
+## What's Changed
+### Other Changes
+* fix(release): use REST API to merge release PR, bypassing required-review branch protection by @Copilot in https://github.com/Isthimius/Gondwana/pull/64
+* Add Gondwana.Cli .NET global tool by @Copilot in https://github.com/Isthimius/Gondwana/pull/65
+* docs: update README for v2.1.0–v2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
+* Add gondwana-avalonia dotnet new template and CLI command by @Copilot in https://github.com/Isthimius/Gondwana/pull/67
+* Add `gondwana new avalonia` to CLI docs and fix doctor template check by @Copilot in https://github.com/Isthimius/Gondwana/pull/68
+* docs: Add missing `gondwana new avalonia` command to CLICHEATSHEET by @Copilot in https://github.com/Isthimius/Gondwana/pull/69
+
+## New Contributors
+* @github-actions[bot] made their first contribution in https://github.com/Isthimius/Gondwana/pull/63
+
+**Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.2.0...v2.2.1
+
+---# v2.2.0
 <!-- Release notes generated using configuration in .github/release.yml at v2.2.0 -->
 
 ## What's Changed
