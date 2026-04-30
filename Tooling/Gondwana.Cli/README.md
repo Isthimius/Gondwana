@@ -18,7 +18,7 @@ Validates your local Gondwana development environment.
 Gondwana Doctor
 
 .NET SDK             OK  10.0.201
-Templates            OK  gondwana-winforms found
+Templates            OK  gondwana-winforms, gondwana-avalonia found
 SkiaSharp            OK
 SDL2                 Missing native library
 LibVLC               Not checked
@@ -28,7 +28,7 @@ LibVLC               Not checked
 
 Checks performed:
 - .NET SDK installed and version
-- Gondwana templates (`gondwana-winforms`) installed
+- Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`) installed
 - SkiaSharp native binaries
 - SDL2 native binaries (for `Gondwana.Input.SDL2`)
 - LibVLC (for `Gondwana.Video`)
@@ -44,6 +44,25 @@ gondwana new winforms MyGame
 ```
 
 Equivalent to `dotnet new gondwana-winforms -n MyGame` but with cleaner output.
+
+---
+
+### `gondwana new avalonia <name>`
+
+Scaffolds a new Avalonia Gondwana project (Windows, macOS, Linux).
+
+```bash
+gondwana new avalonia MyGame
+```
+
+Equivalent to `dotnet new gondwana-avalonia -n MyGame` but with cleaner output.
+
+An optional `--output` / `-o` flag can be used to specify the output directory for either `new` command:
+
+```bash
+gondwana new avalonia MyGame -o ./projects/MyGame
+gondwana new winforms MyGame -o ./projects/MyGame
+```
 
 ---
 
