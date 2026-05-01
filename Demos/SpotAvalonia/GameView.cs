@@ -8,7 +8,6 @@ using Avalonia.Threading;
 using Gondwana.Avalonia.Rendering;
 using Gondwana.Demos.SpotAvalonia.Game;
 using Microsoft.Extensions.Logging;
-using SkiaSharp;
 
 namespace Gondwana.Demos.SpotAvalonia;
 
@@ -18,14 +17,7 @@ namespace Gondwana.Demos.SpotAvalonia;
 /// </summary>
 internal sealed class GameView : UserControl
 {
-    private static readonly ColorItem[] _availableColors =
-    [
-        new ColorItem("Red",    SKColors.Red,    SKColors.White),
-        new ColorItem("Blue",   SKColors.Blue,   SKColors.White),
-        new ColorItem("Yellow", SKColors.Yellow, SKColors.Blue),
-        new ColorItem("Violet", SKColors.Violet, SKColors.White),
-        new ColorItem("Green",  SKColors.Green,  SKColors.Black),
-    ];
+    private static readonly ColorItem[] _availableColors = GameConfig.AvailableColors;
 
     private readonly AvaloniaBitmapRenderSurfaceControl _renderSurface = new();
     private SpotAvaloniaGameHost? _host;
@@ -89,7 +81,7 @@ internal sealed class GameView : UserControl
 
     private Border BuildOverlay()
     {
-        string[] boardSizes = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+        string[] boardSizes = GameConfig.BoardSizes;
 
         var outerStack = new StackPanel { Spacing = 8 };
 
@@ -97,18 +89,18 @@ internal sealed class GameView : UserControl
         var topRow = new WrapPanel { Orientation = Orientation.Horizontal };
 
         _cboPlayerCount.ItemsSource    = new[] { "2", "3", "4" };
-        _cboPlayerCount.SelectedIndex  = 2;
+        _cboPlayerCount.SelectedIndex  = GameConfig.DefaultPlayerCountIndex;
         _cboPlayerCount.MinWidth       = 55;
         _cboPlayerCount.Margin         = new Thickness(4);
         _cboPlayerCount.SelectionChanged += CboPlayerCount_SelectionChanged;
 
         _cboWidth.ItemsSource   = boardSizes;
-        _cboWidth.SelectedIndex = 5;
+        _cboWidth.SelectedIndex = GameConfig.DefaultBoardSizeIndex;
         _cboWidth.MinWidth      = 55;
         _cboWidth.Margin        = new Thickness(4);
 
         _cboHeight.ItemsSource   = boardSizes;
-        _cboHeight.SelectedIndex = 5;
+        _cboHeight.SelectedIndex = GameConfig.DefaultBoardSizeIndex;
         _cboHeight.MinWidth      = 55;
         _cboHeight.Margin        = new Thickness(4);
 
