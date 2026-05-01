@@ -305,8 +305,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     /// <summary>
     /// Starts a default 4-player game (1 human, 3 AI) on an 8×8 board.
-    /// Called automatically from <see cref="GameWindow"/> and <see cref="GameView"/> after
-    /// <see cref="Gondwana.Engine.InitializationComplete"/> fires.
+    /// Useful as a quick-start shortcut; production UI should call
+    /// <see cref="StartNewGame"/> with user-configured <see cref="NewGameOptions"/> instead.
     /// </summary>
     internal void StartDefaultGame()
     {
