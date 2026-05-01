@@ -240,7 +240,7 @@ internal sealed class NewGameDialog : Window
 
             if (combo.SelectedItem is ColorItem current && current.Color == selected.Color)
             {
-                // Reassign this combo to the first unused color.
+                // Reassign this combo to the first available color.
                 foreach (var candidate in _availableColors)
                 {
                     bool taken = _colorSelects

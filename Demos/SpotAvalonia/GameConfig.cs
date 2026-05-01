@@ -19,7 +19,7 @@ internal static class GameConfig
         new ColorItem("Green",  SKColors.Green,  SKColors.Black),
     ];
 
-    /// <summary>The selectable board dimension values (3–12), as display strings.</summary>
+    /// <summary>The selectable board dimension values (3 to 12 inclusive).</summary>
     internal static readonly string[] BoardSizes =
         Enumerable.Range(3, 10).Select(n => n.ToString()).ToArray();
 
