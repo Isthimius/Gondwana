@@ -22,7 +22,9 @@ public partial class EngineConfiguration
     /// </summary>
     /// <remarks>
     /// Setting this property also updates <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps"/>
-    /// on all currently registered GPU surfaces to keep that value consistent.
+    /// on all currently registered GPU surfaces to keep that value consistent.  It also serves as
+    /// the default value for any new <see cref="GpuBackbuffer"/> instances created after this
+    /// property is set.
     /// </remarks>
     public int TargetFPS
     {
