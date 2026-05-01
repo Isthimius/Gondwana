@@ -22,7 +22,7 @@ public abstract class GameHostBase : IDisposable
     private bool _disposed;
 
     /// <summary>
-    /// Initializes the game host by setting up logging, the engine, platform, input, and game content.
+    /// Initializes the game host by setting up logging, platform, input, game content, and then the engine.
     /// </summary>
     /// <param name="configPath">Optional path to the configuration file.</param>
     /// <param name="autoSaveConfig">Optional flag indicating whether to automatically save configuration changes.</param>
@@ -32,11 +32,11 @@ public abstract class GameHostBase : IDisposable
         EnsureNotDisposed();
 
         ConfigureLogging(logLevel);
-        InitializeEngine(configPath, autoSaveConfig);
-
         ConfigurePlatform();
         ConfigureInput();
         InitializeGameContent();
+
+        InitializeEngine(configPath, autoSaveConfig);
 
         StartEngine();
     }

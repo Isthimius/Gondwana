@@ -26,22 +26,52 @@ internal sealed class AssetTypeMap
     private AssetTypeMap(Dictionary<string, AssetTypes> map) => _map = map;
 
     /// <summary>
+    /// Built-in extension → <see cref="AssetTypes"/> defaults, used when no JSON config file is found.
+    /// </summary>
+    private static AssetTypeMap BuildDefault()
+    {
+        var map = new Dictionary<string, AssetTypes>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var ext in new[] { "png", "jpg", "jpeg", "bmp", "gif", "webp", "tiff", "ico" })
+            map[ext] = AssetTypes.Image;
+
+        foreach (var ext in new[] { "wav", "mp3", "ogg", "flac", "aac", "wma", "mid", "midi" })
+            map[ext] = AssetTypes.Audio;
+
+        foreach (var ext in new[] { "mp4", "avi", "mkv", "mov", "wmv", "webm", "m4v" })
+            map[ext] = AssetTypes.Video;
+
+        foreach (var ext in new[] { "cur", "ani" })
+            map[ext] = AssetTypes.Cursor;
+
+        foreach (var ext in new[] { "ttf", "otf", "woff", "woff2" })
+            map[ext] = AssetTypes.Font;
+
+        return new AssetTypeMap(map);
+    }
+
+    /// <summary>
     /// Resolves and loads the asset-type map from the first location that exists:
     /// <list type="number">
     ///   <item>The explicit <paramref name="explicitPath"/> (if non-null).</item>
     ///   <item><c>gondwana-asset-types.json</c> in the current working directory.</item>
     ///   <item><c>gondwana-asset-types.json</c> next to the running executable (the shipped default).</item>
+    ///   <item>Built-in defaults (when no file is found anywhere).</item>
     /// </list>
-    /// Returns <see langword="null"/> and sets <paramref name="error"/> if no valid config can be found or parsed.
+    /// Returns <see langword="null"/> and sets <paramref name="error"/> only when an explicit path is
+    /// provided but cannot be read or parsed.
     /// </summary>
     public static AssetTypeMap? Load(string? explicitPath, out string? error)
     {
-        var candidates = new List<string>();
-
+        // If the caller explicitly specified a file, it must exist and parse cleanly.
         if (!string.IsNullOrWhiteSpace(explicitPath))
-            candidates.Add(Path.GetFullPath(explicitPath));
+            return ParseFile(Path.GetFullPath(explicitPath), out error);
 
-        candidates.Add(Path.Combine(Directory.GetCurrentDirectory(), DefaultConfigFileName));
+        // Otherwise try the well-known locations; fall back to built-in defaults.
+        var candidates = new List<string>
+        {
+            Path.Combine(Directory.GetCurrentDirectory(), DefaultConfigFileName),
+        };
 
         var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
         if (!string.IsNullOrWhiteSpace(exeDir))
@@ -55,10 +85,9 @@ internal sealed class AssetTypeMap
             return ParseFile(candidate, out error);
         }
 
-        error = $"No asset-type config found. " +
-                $"Looked for '{DefaultConfigFileName}' in the current directory and next to the executable. " +
-                $"Use --type-map <file> to specify an explicit path.";
-        return null;
+        // No config file found anywhere — use built-in defaults silently.
+        error = null;
+        return BuildDefault();
     }
 
     private static AssetTypeMap? ParseFile(string path, out string? error)
