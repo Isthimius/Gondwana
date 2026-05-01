@@ -22,7 +22,9 @@ public partial class EngineConfiguration
     /// </summary>
     /// <remarks>
     /// Setting this property also updates <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps"/>
-    /// on all currently registered GPU surfaces to keep that value consistent.
+    /// on all currently registered GPU surfaces to keep that value consistent.  It also serves as
+    /// the default value for any new <see cref="GpuBackbuffer"/> instances created after this
+    /// property is set.
     /// </remarks>
     public int TargetFPS
     {
@@ -32,10 +34,94 @@ public partial class EngineConfiguration
             _targetFPS = value < 0 ? 0 : value;
 
             // Propagate to all active GPU backbuffers so their TargetFps stays in sync.
-            foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
+            foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
             {
                 if (surface.Backbuffer is GpuBackbuffer gpuBb)
                     gpuBb.TargetFps = _targetFPS;
+            }
+        }
+    }
+
+    private bool _vSync = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This setting only applies to <see cref="GpuBackbuffer"/>; other backbuffer types ignore it.
+    /// </para>
+    /// <para>
+    /// Setting this property propagates the value to
+    /// <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.VSync"/> on all currently registered
+    /// GPU surfaces.  It also serves as the default value for any new <see cref="GpuBackbuffer"/>
+    /// instances created after this property is set.  The change is applied to each surface lazily
+    /// at the start of its next <c>PaintSurface</c> callback.
+    /// </para>
+    /// <para>
+    /// Enabling vsync prevents screen tearing but caps the frame rate to the monitor refresh rate.
+    /// Disabling vsync allows higher frame rates at the cost of potential tearing.
+    /// </para>
+    /// </remarks>
+    /// <value>
+    /// <see langword="true"/> to synchronise presentation with the monitor refresh; otherwise
+    /// <see langword="false"/>.  The default is <see langword="true"/>.
+    /// </value>
+    public bool VSync
+    {
+        get => _vSync;
+        set
+        {
+            _vSync = value;
+
+            // Propagate to all active GPU backbuffers so their VSync stays in sync.
+            foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
+            {
+                if (surface.Backbuffer is GpuBackbuffer gpuBb)
+                    gpuBb.VSync = _vSync;
+            }
+        }
+    }
+
+    private int _msaaSampleCount = 1;
+
+    /// <summary>
+    /// Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating
+    /// GPU render-target surfaces.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This setting only applies to <see cref="GpuBackbuffer"/>; other backbuffer types ignore it.
+    /// </para>
+    /// <para>
+    /// Setting this property propagates the value to
+    /// <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.MsaaSampleCount"/> on all currently
+    /// registered GPU surfaces.  It also serves as the default value for any new
+    /// <see cref="GpuBackbuffer"/> instances created after this property is set.  Because the
+    /// GPU render-target surface must be recreated to change the sample count, the new value takes
+    /// effect the next time <see cref="GpuBackbuffer.Initialize"/> is called on each surface
+    /// (e.g. on the next window resize).
+    /// </para>
+    /// <para>
+    /// A value of <c>1</c> disables MSAA.  Common higher values are <c>2</c>, <c>4</c>, and
+    /// <c>8</c>, subject to hardware and driver support.
+    /// </para>
+    /// </remarks>
+    /// <value>
+    /// The MSAA sample count.  Values less than <c>1</c> are clamped to <c>1</c>.  The default is <c>1</c>.
+    /// </value>
+    public int MsaaSampleCount
+    {
+        get => _msaaSampleCount;
+        set
+        {
+            _msaaSampleCount = value < 1 ? 1 : value;
+
+            // Propagate to all active GPU backbuffers so their MsaaSampleCount stays in sync.
+            foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
+            {
+                if (surface.Backbuffer is GpuBackbuffer gpuBb)
+                    gpuBb.MsaaSampleCount = _msaaSampleCount;
             }
         }
     }
