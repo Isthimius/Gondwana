@@ -58,6 +58,7 @@ internal partial class GameWindow : Form
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
         _gameHost!.Initialize(logLevel: LogLevel.Trace);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost.Engine.Configuration.MsaaSampleCount = 4;
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
