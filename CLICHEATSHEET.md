@@ -35,6 +35,7 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana help` | Show a summary of all available commands. |
 | `gondwana doctor` | Validate your local Gondwana development environment. |
 | `gondwana info` | Show information about the Gondwana project in the current directory. |
+| `gondwana pack <source> <output>` | Pack a directory of files into an asset bundle (shorthand for `gondwana assets pack`). |
 | `gondwana new <subcommand>` | Scaffold a new Gondwana project. |
 | `gondwana templates <subcommand>` | Manage Gondwana `dotnet new` templates. |
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
@@ -62,6 +63,28 @@ Checks the local environment for all Gondwana prerequisites (.NET SDK, native li
 Reads the `.csproj` in the current directory and prints project metadata (name, target framework, Gondwana version, adapters, and discovered asset bundles). When multiple `.csproj` files are present, the first one alphabetically is used.
 
 *No arguments or options.*
+
+---
+
+## `gondwana pack`
+
+Top-level shorthand for [`gondwana assets pack`](#gondwana-assets-pack-source-output). Accepts exactly the same arguments and options.
+
+| Argument / Option | Short | Default | Description |
+|---|---|---|---|
+| `<source>` | | | **Required.** Source directory containing files to pack. |
+| `<output>` | | | **Required.** Output bundle file path (e.g. `game.assets` or `game.gaf`). |
+| `--type <name>` | `-t` | `Misc` | Default asset type for files whose type cannot be inferred from the extension. |
+| `--recurse` | `-r` | `true` | Recurse into subdirectories. |
+| `--append` | `-a` | `false` | Append to an existing bundle instead of overwriting it. |
+| `--type-map <file>` | `-m` | *(auto)* | Path to a JSON file that maps asset types to file extensions. |
+
+**Examples**
+```
+gondwana pack ./Assets ./game.assets
+gondwana pack ./Assets ./game.assets --append
+gondwana pack ./Assets ./game.assets -m ./my-types.json
+```
 
 ---
 

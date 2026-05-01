@@ -78,6 +78,20 @@ gondwana templates list      # List installed Gondwana templates
 
 ---
 
+### `gondwana pack <source> <output>`
+
+Shorthand for `gondwana assets pack`. Packs a directory of files into an asset bundle.
+
+```bash
+gondwana pack ./Assets ./game.assets
+gondwana pack ./Assets ./game.assets --append
+gondwana pack ./Assets ./game.assets --type-map my-types.json
+```
+
+See [`gondwana assets pack`](#gondwana-assets) for the full list of options.
+
+---
+
 ### `gondwana assets`
 
 Pack, inspect, and extract Gondwana asset files (`.gaf`).
