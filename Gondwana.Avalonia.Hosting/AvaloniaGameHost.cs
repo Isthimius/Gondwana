@@ -105,7 +105,10 @@ public abstract class AvaloniaGameHost : GameHostBase
 
             _engineTimer = new DispatcherTimer(DispatcherPriority.Normal)
             {
-                Interval = TimeSpan.FromMilliseconds(1)
+                // Zero interval: fire on every dispatcher cycle. The browser's event loop
+                // (requestAnimationFrame) caps throughput on WASM; the engine's own
+                // TargetFPS throttling inside Tick() controls the actual frame rate.
+                Interval = TimeSpan.Zero
             };
             _engineTimer.Tick += (_, _) => Engine.Instance.Tick();
             _engineTimer.Start();
