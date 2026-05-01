@@ -26,10 +26,14 @@ namespace Gondwana.Rendering.Backbuffers;
 /// <see cref="Initialize"/> replaces that with a proper GPU surface.
 /// </para>
 /// <para>
-/// <strong>Thread safety:</strong> After <see cref="Initialize"/> has been called, ALL methods on
-/// this class must be invoked from the GL thread (the thread on which the
-/// <see cref="GRContext"/> is current).  The engine loop guarantees this by checking
-/// <see cref="IsGlThreadRendered"/> before touching the backbuffer.
+/// <strong>Thread safety:</strong> After <see cref="Initialize"/> has been called, all methods and
+/// properties that access or mutate GL state must be invoked from the GL thread (the thread on
+/// which the <see cref="GRContext"/> is current).  The engine loop guarantees this by checking
+/// <see cref="IsGlThreadRendered"/> before touching the backbuffer.  The simple configuration
+/// properties <see cref="VSync"/>, <see cref="MsaaSampleCount"/>, and <see cref="TargetFps"/> are
+/// exempt from this restriction: they only write to plain fields and may be set from any thread
+/// (for example, from <see cref="Gondwana.Configuration.EngineConfiguration"/> setters running on
+/// the engine background thread).
 /// </para>
 /// </remarks>
 public class GpuBackbuffer : BackbufferBase
