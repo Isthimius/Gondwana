@@ -104,7 +104,9 @@ public partial class EngineConfiguration
     /// </para>
     /// <para>
     /// A value of <c>1</c> disables MSAA.  Common higher values are <c>2</c>, <c>4</c>, and
-    /// <c>8</c>, subject to hardware and driver support.
+    /// <c>8</c>, subject to hardware and driver support.  If the requested sample count is not
+    /// supported, <see cref="GpuBackbuffer.Initialize"/> automatically falls back to <c>1</c>
+    /// so the surface is always valid.
     /// </para>
     /// </remarks>
     /// <value>

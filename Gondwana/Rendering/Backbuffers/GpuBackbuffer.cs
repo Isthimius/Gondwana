@@ -109,6 +109,11 @@ public class GpuBackbuffer : BackbufferBase
     /// <see cref="Initialize"/> is called (e.g. on the next window resize), because the GPU
     /// render-target surface must be recreated with the new sample count.
     /// </para>
+    /// <para>
+    /// If the requested sample count is not supported by the hardware or driver,
+    /// <see cref="Initialize"/> will automatically fall back to a sample count of <c>1</c>
+    /// (no MSAA) so the surface is always valid.
+    /// </para>
     /// </remarks>
     /// <value>
     /// The MSAA sample count.  Values less than <c>1</c> are clamped to <c>1</c>.  The default is <c>1</c>.
@@ -253,6 +258,17 @@ public class GpuBackbuffer : BackbufferBase
         // Rgba8888 / Premul is the natural format for an OpenGL render target.
         var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
         _surface = SKSurface.Create(grContext, budgeted: true, info, _msaaSampleCount);
+
+        // SKSurface.Create returns null when the requested MSAA sample count is not supported
+        // by the hardware or driver.  Fall back to no MSAA (sample count 1) so the surface
+        // is always valid after Initialize() completes.
+        if (_surface is null && _msaaSampleCount > 1)
+            _surface = SKSurface.Create(grContext, budgeted: true, info, sampleCount: 1);
+
+        if (_surface is null)
+            throw new InvalidOperationException(
+                $"Failed to create a {nameof(GpuBackbuffer)} GPU surface ({width}x{height}). " +
+                "The GRContext may be invalid or the pixel format is not renderable.");
     }
 
     private void CreateCpuSurface(int width, int height)
