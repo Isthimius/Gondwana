@@ -473,6 +473,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     private void AddClouds()
     {
+        _particleSurface?.Dispose();
+        _particleSurface = null;
         _particleSurface = new ParticleSurface(
             RenderSurface.Host,
             SpotGame.BackgroundGameField,
