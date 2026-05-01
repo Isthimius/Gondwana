@@ -275,7 +275,7 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         {
             AddClouds();
         }
-        else if (!enabled)
+        else
         {
             _particleSurface?.Dispose();
         }
@@ -510,7 +510,7 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
                 p.AngularVel = 0;
                 p.Rotation = 0;
 
-                byte alpha = (byte)Random.Shared.Next(100, 180);
+                byte alpha = (byte)_rng.Next(100, 180);
                 p.Tint = new SKColor(255, 255, 255, alpha);
             }
         };
@@ -796,7 +796,7 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
                 timer.Dispose();
 
                 var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
-                var bestMove = moves[Random.Shared.Next(moves.Count)];
+                var bestMove = moves[_rng.Next(moves.Count)];
 
                 SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
 

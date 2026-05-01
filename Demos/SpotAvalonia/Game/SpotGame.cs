@@ -260,6 +260,7 @@ internal class SpotGame : IDisposable
         SpotDeselected = null;
         InvalidSelectionAttempted = null;
         InvalidMoveAttempted = null;
+        PlayerMoveStarted = null;
         PlayerMoveStopped = null;
         CellsCaptured = null;
         NoValidMovesAvailable = null;
