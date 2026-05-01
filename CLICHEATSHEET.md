@@ -77,7 +77,7 @@ Top-level shorthand for [`gondwana assets pack`](#gondwana-assets-pack-source-ou
 | `--type <name>` | `-t` | `Misc` | Default asset type for files whose type cannot be inferred from the extension. |
 | `--recurse` | `-r` | `true` | Recurse into subdirectories. |
 | `--append` | `-a` | `false` | Append to an existing bundle instead of overwriting it. |
-| `--type-map <file>` | `-m` | *(auto)* | Path to a JSON file that maps asset types to file extensions. |
+| `--type-map <file>` | `-m` | *(built-in defaults)* | Path to a JSON file that maps asset types to file extensions. Optional — uses built-in defaults when omitted and no `gondwana-asset-types.json` is found. |
 
 **Examples**
 ```
@@ -167,7 +167,7 @@ Runs `dotnet new list gondwana` and prints matching templates. *No arguments or 
 | `--type <name>` | `-t` | `Misc` | Default asset type for files whose type cannot be inferred from the extension. |
 | `--recurse` | `-r` | `true` | Recurse into subdirectories. |
 | `--append` | `-a` | `false` | Append to an existing bundle instead of overwriting it. By default the output file is deleted first so no stale entries survive a re-run. |
-| `--type-map <file>` | `-m` | *(auto)* | Path to a JSON file that maps asset types to file extensions. Resolution order: this flag → `gondwana-asset-types.json` in CWD → `gondwana-asset-types.json` next to the executable. |
+| `--type-map <file>` | `-m` | *(built-in defaults)* | Path to a JSON file that maps asset types to file extensions. Optional. Resolution order: this flag → `gondwana-asset-types.json` in CWD → `gondwana-asset-types.json` next to the executable → built-in defaults. |
 
 **Examples**
 ```
@@ -230,6 +230,13 @@ gondwana assets generate-keys ./game.assets -o ./Generated/AssetKeys.cs -n MyGam
 ---
 
 ## Asset type-map JSON format
+
+The `--type-map` flag is **optional**. When omitted, `assets pack` (and `pack`) resolve the type config in this order, falling back to built-in defaults if nothing is found:
+
+1. The path given to `--type-map <file>`
+2. `gondwana-asset-types.json` in the current working directory
+3. `gondwana-asset-types.json` next to the `gondwana` executable
+4. **Built-in defaults** — no config file required
 
 Drop a `gondwana-asset-types.json` in the project directory (or pass `--type-map`) to customise extension → type mappings for `assets pack`.
 
