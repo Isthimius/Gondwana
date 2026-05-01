@@ -24,32 +24,6 @@ namespace Gondwana;
 public readonly record struct ValueKey<T>(string Name);
 
 /// <summary>
-/// Defines a lightweight contract for values that can produce an explicit deep clone of themselves.
-/// <para>
-/// This interface is optional, but it provides the most reliable way for <see cref="TypedValueBag"/>
-/// to duplicate mutable reference-type values without relying on JSON serialization or other
-/// reflection-heavy mechanisms.
-/// </para>
-/// <para>
-/// When a stored value implements <see cref="IDeepCloneable{T}"/>, the bag will prefer that path
-/// during cloning and merge operations.
-/// </para>
-/// </summary>
-/// <typeparam name="T">
-/// The concrete type produced by the deep clone operation.
-/// </typeparam>
-public interface IDeepCloneable<out T>
-{
-    /// <summary>
-    /// Creates a deep clone of the current instance.
-    /// </summary>
-    /// <returns>
-    /// A new instance that does not share mutable state with the current instance.
-    /// </returns>
-    T DeepClone();
-}
-
-/// <summary>
 /// A flexible, strongly-typed value container intended for runtime-attached metadata and
 /// ephemeral engine state.
 /// <para>
@@ -79,9 +53,6 @@ public interface IDeepCloneable<out T>
 /// </description>
 /// </item>
 /// <item>
-/// <description>
-/// If a stored value implements <see cref="IDeepCloneable{T}"/>, that deep-clone path is used.
-/// </description>
 /// </item>
 /// <item>
 /// <description>
@@ -435,8 +406,8 @@ public sealed class TypedValueBag : ICloneable
     /// </item>
     /// </list>
     /// <para>
-    /// Note that generic interfaces such as <c>IDeepCloneable&lt;T&gt;</c> are not easily discoverable
-    /// through a non-generic cast, so <see cref="ICloneable"/> remains the simple universal hook here.
+    /// Note that generic interfaces are not easily discoverable through a non-generic cast,
+    /// so <see cref="ICloneable"/> remains the simple universal hook here.
     /// If you want your engine types to participate in deep copying cleanly, implementing
     /// <see cref="ICloneable"/> is the path of least resistance.
     /// </para>
