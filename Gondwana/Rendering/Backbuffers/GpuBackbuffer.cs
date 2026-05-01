@@ -123,8 +123,8 @@ public class GpuBackbuffer : BackbufferBase
     public GpuBackbuffer(int width, int height)
         : base(width, height)
     {
-        // Apply defaults from the current engine configuration so that properties set on
-        // EngineConfiguration before this backbuffer was created are honoured automatically.
+        // Apply the current engine configuration defaults for the settings this backbuffer
+        // explicitly copies at construction time: TargetFps, VSync, and MsaaSampleCount.
         var config = Engine.Instance.Configuration;
         TargetFps = config.TargetFPS;
         VSync = config.VSync;
