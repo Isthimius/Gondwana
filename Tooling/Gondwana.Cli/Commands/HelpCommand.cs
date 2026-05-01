@@ -21,6 +21,7 @@ internal sealed class HelpCommand : Command
         table.AddRow("[cyan]gondwana templates install[/]",       "Install Gondwana.Templates from NuGet.");
         table.AddRow("[cyan]gondwana templates update[/]",        "Update installed Gondwana templates.");
         table.AddRow("[cyan]gondwana templates list[/]",          "List installed Gondwana templates.");
+        table.AddRow("[cyan]gondwana pack[/]",                    "Pack a directory of files into an asset bundle (shorthand).");
         table.AddRow("[cyan]gondwana assets pack[/]",             "Pack a directory of files into an asset bundle.");
         table.AddRow("[cyan]gondwana assets list[/]",             "List all assets in a bundle.");
         table.AddRow("[cyan]gondwana assets extract[/]",          "Extract all assets from a bundle to a directory.");

@@ -78,6 +78,20 @@ gondwana templates list      # List installed Gondwana templates
 
 ---
 
+### `gondwana pack <source> <output>`
+
+Shorthand for `gondwana assets pack`. Packs a directory of files into an asset bundle.
+
+```bash
+gondwana pack ./Assets ./game.assets
+gondwana pack ./Assets ./game.assets --append
+gondwana pack ./Assets ./game.assets --type-map my-types.json
+```
+
+See [`gondwana assets pack`](#gondwana-assets) for the full list of options.
+
+---
+
 ### `gondwana assets`
 
 Pack, inspect, and extract Gondwana asset files (`.gaf`).
@@ -112,12 +126,13 @@ public static class AssetKeys
 
 #### Asset type mapping
 
-`gondwana assets pack` maps file extensions to `AssetTypes` values using a JSON config file.
-The tool looks for the config in this order:
+`gondwana assets pack` maps file extensions to `AssetTypes` values. The `--type-map` flag is optional.
+The tool resolves the config in this order, using built-in defaults if nothing is found:
 
 1. The path given to `--type-map <file>` (if supplied)
 2. `gondwana-asset-types.json` in the **current working directory**
 3. `gondwana-asset-types.json` next to the `gondwana` executable (the shipped default)
+4. **Built-in defaults** (always available — no config file required)
 
 The JSON format is an object whose keys are `AssetTypes` names and whose values are arrays of
 file extensions (without a leading dot):

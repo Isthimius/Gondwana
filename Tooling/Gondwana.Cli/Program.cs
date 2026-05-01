@@ -53,6 +53,10 @@ app.Configure(config =>
               .WithDescription("List installed Gondwana templates.");
     });
 
+    config.AddCommand<AssetsPackCommand>("pack")
+          .WithDescription("Pack a directory of files into an asset bundle.")
+          .WithExample("pack", "./Assets", "./game.assets");
+
     config.AddBranch("assets", branch =>
     {
         branch.SetDescription("Pack, inspect, and extract Gondwana asset files.");
