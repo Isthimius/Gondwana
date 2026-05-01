@@ -118,7 +118,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         // Wrap the Avalonia-provided framebuffer in a SkiaSharp surface for compositing.
         // The framebuffer uses OpenGL bottom-left origin, RGBA8 color format.
         var fbInfo      = new GRGlFramebufferInfo((uint)fb, GlRgba8);
-        var renderTarget = new GRBackendRenderTarget(physW, physH, sampleCount: 0, stencilBits: 0, fbInfo);
+        using var renderTarget = new GRBackendRenderTarget(physW, physH, sampleCount: 0, stencilBits: 0, fbInfo);
         using var fbSurface = SKSurface.Create(_grContext, renderTarget, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
         if (fbSurface == null) return;
