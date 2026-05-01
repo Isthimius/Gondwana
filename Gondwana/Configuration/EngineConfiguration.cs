@@ -117,8 +117,14 @@ public partial class EngineConfiguration
         {
             _msaaSampleCount = value < 1 ? 1 : value;
 
+            RenderSurfaceHost[] surfaces;
+            lock (RenderSurfaceHostRegistry.All)
+            {
+                surfaces = RenderSurfaceHostRegistry.All.ToArray();
+            }
+
             // Propagate to all active GPU backbuffers so their MsaaSampleCount stays in sync.
-            foreach (var surface in RenderSurfaceHostRegistry.All.ToArray())
+            foreach (var surface in surfaces)
             {
                 if (surface.Backbuffer is GpuBackbuffer gpuBb)
                     gpuBb.MsaaSampleCount = _msaaSampleCount;
