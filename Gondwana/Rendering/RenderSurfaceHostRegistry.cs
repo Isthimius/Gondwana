@@ -13,6 +13,7 @@
 public static class RenderSurfaceHostRegistry
 {
     private static readonly List<RenderSurfaceHostBase> _all = new();
+    private static readonly object _lock = new();
 
     /// <summary>
     /// Gets a read-only collection of all currently registered <see cref="RenderSurfaceHostBase"/> instances.
@@ -25,10 +26,33 @@ public static class RenderSurfaceHostRegistry
     /// This collection is automatically maintained as render surface hosts are created and disposed.
     /// The collection reflects the current state at the time of access and may change as hosts are
     /// added or removed.
+    /// <para>
+    /// <strong>Thread safety:</strong> This property returns the live backing list and is not safe to
+    /// enumerate concurrently with <see cref="Register"/> or <see cref="Unregister"/> calls on other
+    /// threads.  Use <see cref="Snapshot"/> when a stable, thread-safe copy is required.
+    /// </para>
     /// </remarks>
     public static IReadOnlyList<RenderSurfaceHostBase> All => _all;
 
-    internal static void Register(RenderSurfaceHostBase host) => _all.Add(host);
+    /// <summary>
+    /// Returns a thread-safe point-in-time snapshot of all currently registered
+    /// <see cref="RenderSurfaceHostBase"/> instances.
+    /// </summary>
+    internal static RenderSurfaceHostBase[] Snapshot()
+    {
+        lock (_lock)
+            return _all.ToArray();
+    }
 
-    internal static void Unregister(RenderSurfaceHostBase host) => _all.Remove(host);
+    internal static void Register(RenderSurfaceHostBase host)
+    {
+        lock (_lock)
+            _all.Add(host);
+    }
+
+    internal static void Unregister(RenderSurfaceHostBase host)
+    {
+        lock (_lock)
+            _all.Remove(host);
+    }
 }
