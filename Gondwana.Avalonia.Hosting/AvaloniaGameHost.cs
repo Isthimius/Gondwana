@@ -1,4 +1,5 @@
-﻿using Gondwana.Avalonia.Rendering;
+﻿using Avalonia.Threading;
+using Gondwana.Avalonia.Rendering;
 using Gondwana.Hosting;
 
 namespace Gondwana.Avalonia.Hosting;
@@ -8,6 +9,8 @@ namespace Gondwana.Avalonia.Hosting;
 /// </summary>
 public abstract class AvaloniaGameHost : GameHostBase
 {
+    private DispatcherTimer? _engineTimer;
+
     /// <summary>
     /// Gets the render surface control used for displaying game content.
     /// </summary>
@@ -84,4 +87,45 @@ public abstract class AvaloniaGameHost : GameHostBase
     /// Called after the gamepad manager has been initialized. Override to perform additional gamepad setup.
     /// </summary>
     protected virtual void OnGamepadManagerInitialized() { }
+
+    /// <summary>
+    /// Starts the engine. On browser/WASM targets, uses a timer-driven loop on the UI thread
+    /// via <see cref="DispatcherTimer"/>. On all other targets, the default background-thread
+    /// loop is used.
+    /// </summary>
+    protected override void StartEngine()
+    {
+        var syncContext = SynchronizationContext.Current
+            ?? throw new InvalidOperationException(
+                $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
+
+        if (OperatingSystem.IsBrowser())
+        {
+            Engine.Instance.StartTimerDriven(syncContext);
+
+            _engineTimer = new DispatcherTimer(DispatcherPriority.Normal)
+            {
+                Interval = TimeSpan.FromMilliseconds(1)
+            };
+            _engineTimer.Tick += (_, _) => Engine.Instance.Tick();
+            _engineTimer.Start();
+        }
+        else
+        {
+            Engine.Instance.Start(syncContext);
+        }
+
+        OnStartEngine();
+    }
+
+    /// <summary>
+    /// Stops the engine and, on browser/WASM targets, stops the timer that was driving the loop.
+    /// </summary>
+    protected override void StopEngine()
+    {
+        _engineTimer?.Stop();
+        _engineTimer = null;
+
+        base.StopEngine();
+    }
 }
