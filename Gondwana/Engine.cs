@@ -451,9 +451,11 @@ public sealed class Engine : IDisposable
     /// The <see cref="SynchronizationContext"/> that defines the UI thread context to which
     /// UI-related operations and events will be dispatched.
     /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="uiContext"/> is <c>null</c>.
+    /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if <paramref name="uiContext"/> is <c>null</c>, or if initialization is
-    /// currently in progress on another thread.
+    /// Thrown if initialization is currently in progress on another thread.
     /// </exception>
     /// <seealso cref="Tick"/>
     /// <seealso cref="Start(SynchronizationContext)"/>
