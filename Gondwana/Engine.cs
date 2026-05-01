@@ -429,6 +429,91 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>
+    /// Starts the <see cref="Engine"/> in timer-driven mode using the provided
+    /// <see cref="SynchronizationContext"/>, without spawning a background thread.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This overload is designed for environments where a background thread is not viable,
+    /// such as single-threaded WebAssembly (WASM) runtimes. Instead of spawning a
+    /// <see cref="Task"/> to drive the loop, it binds the <see cref="EngineDispatcher"/>
+    /// to the calling thread and returns immediately. The caller is then responsible for
+    /// advancing the engine by calling <see cref="Tick"/> on each timer tick (e.g. via
+    /// a platform-specific timer such as <c>DispatcherTimer</c>).
+    /// </para>
+    /// <para>
+    /// Unlike <see cref="Start(SynchronizationContext)"/>, this method will throw if
+    /// initialization is already in progress, because waiting for it to complete (via
+    /// <c>ManualResetEventSlim.Wait</c>) is not safe on a single-threaded runtime.
+    /// </para>
+    /// </remarks>
+    /// <param name="uiContext">
+    /// The <see cref="SynchronizationContext"/> that defines the UI thread context to which
+    /// UI-related operations and events will be dispatched.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="uiContext"/> is <c>null</c>.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if initialization is currently in progress on another thread.
+    /// </exception>
+    /// <seealso cref="Tick"/>
+    /// <seealso cref="Start(SynchronizationContext)"/>
+    /// <seealso cref="Stop"/>
+    public void StartTimerDriven(SynchronizationContext uiContext)
+    {
+        if (IsRunning)
+            return;
+
+        UiDispatcher = new UiDispatcher(uiContext);
+
+        if (!IsInitialized)
+        {
+            if (IsInitializing)
+                throw new InvalidOperationException(
+                    "Engine initialization is already in progress on another thread. " +
+                    "Blocking waits are not supported in timer-driven (single-threaded) mode.");
+
+            Initialize();
+        }
+
+        // Bind the dispatcher to the calling (UI) thread — Tick() will be called from here.
+        EngineDispatcher.BindToCurrentThread();
+
+        IsRunning = true;
+
+        _startTick = HighResTimer.GetCurrentTick();
+        _lastCPSSamplingTick = _startTick;
+
+        // _cycleTask is intentionally left null; the caller drives the loop via Tick().
+    }
+
+    /// <summary>
+    /// Advances the engine by one cycle.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method is intended for use with the timer-driven startup path initiated by
+    /// <see cref="StartTimerDriven(SynchronizationContext)"/>. The caller (typically a
+    /// platform timer such as a <c>DispatcherTimer</c>) should invoke this method once per
+    /// timer tick to drive the engine loop.
+    /// </para>
+    /// <para>
+    /// If the engine is not currently running, this method returns immediately without
+    /// performing any work.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="StartTimerDriven(SynchronizationContext)"/>
+    /// <seealso cref="Stop"/>
+    public void Tick()
+    {
+        if (!IsRunning)
+            return;
+
+        Cycle();
+    }
+
+    /// <summary>
     /// Stops the <see cref="Engine"/> main loop and halts all ongoing processing.
     /// </summary>
     /// <remarks>

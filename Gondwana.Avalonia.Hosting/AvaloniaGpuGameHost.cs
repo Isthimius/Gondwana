@@ -1,27 +1,31 @@
-﻿using Avalonia.Threading;
 using Gondwana.Avalonia.Rendering;
 using Gondwana.Hosting;
 
 namespace Gondwana.Avalonia.Hosting;
 
 /// <summary>
-/// Provides a base class for hosting Gondwana games in Avalonia applications.
+/// Provides a base class for hosting Gondwana games in Avalonia applications using
+/// GPU-accelerated (OpenGL) rendering via <see cref="AvaloniaGpuRenderSurfaceControl"/>.
 /// </summary>
-public abstract class AvaloniaGameHost : GameHostBase
+/// <remarks>
+/// GPU rendering requires a desktop Avalonia target that supports OpenGL
+/// (Windows, macOS, or Linux).  It is not suitable for WebAssembly (WASM) targets;
+/// use <see cref="AvaloniaGameHost"/> with
+/// <see cref="AvaloniaBitmapRenderSurfaceControl"/> for cross-platform / WASM scenarios.
+/// </remarks>
+public abstract class AvaloniaGpuGameHost : GameHostBase
 {
-    private DispatcherTimer? _engineTimer;
+    /// <summary>
+    /// Gets the GPU render surface control used for displaying game content.
+    /// </summary>
+    public AvaloniaGpuRenderSurfaceControl RenderSurface { get; }
 
     /// <summary>
-    /// Gets the render surface control used for displaying game content.
+    /// Initializes a new instance of the <see cref="AvaloniaGpuGameHost"/> class.
     /// </summary>
-    public AvaloniaBitmapRenderSurfaceControl RenderSurface { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AvaloniaGameHost"/> class.
-    /// </summary>
-    /// <param name="renderSurface">The render surface control to use for rendering.</param>
+    /// <param name="renderSurface">The GPU render surface control to use for rendering.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurface"/> is null.</exception>
-    protected AvaloniaGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
+    protected AvaloniaGpuGameHost(AvaloniaGpuRenderSurfaceControl renderSurface)
     {
         RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
     }
@@ -61,7 +65,7 @@ public abstract class AvaloniaGameHost : GameHostBase
     }
 
     /// <summary>
-    /// Binds the current scene to the render surface host.
+    /// Binds the current scene to the GPU render surface host.
     /// </summary>
     protected override void BindScene()
     {
@@ -87,48 +91,4 @@ public abstract class AvaloniaGameHost : GameHostBase
     /// Called after the gamepad manager has been initialized. Override to perform additional gamepad setup.
     /// </summary>
     protected virtual void OnGamepadManagerInitialized() { }
-
-    /// <summary>
-    /// Starts the engine. On browser/WASM targets, uses a timer-driven loop on the UI thread
-    /// via <see cref="DispatcherTimer"/>. On all other targets, the default background-thread
-    /// loop is used.
-    /// </summary>
-    protected override void StartEngine()
-    {
-        var syncContext = SynchronizationContext.Current
-            ?? throw new InvalidOperationException(
-                $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
-
-        if (OperatingSystem.IsBrowser())
-        {
-            Engine.Instance.StartTimerDriven(syncContext);
-
-            _engineTimer = new DispatcherTimer(DispatcherPriority.Normal)
-            {
-                // Use a non-zero interval so Tick() is not scheduled on every dispatcher cycle.
-                // This keeps the browser/WASM loop on the UI thread while preventing background
-                // engine work from running at an effectively unbounded rate.
-                Interval = TimeSpan.FromMilliseconds(1000.0 / 60.0)
-            };
-            _engineTimer.Tick += (_, _) => Engine.Instance.Tick();
-            _engineTimer.Start();
-        }
-        else
-        {
-            Engine.Instance.Start(syncContext);
-        }
-
-        OnStartEngine();
-    }
-
-    /// <summary>
-    /// Stops the engine and, on browser/WASM targets, stops the timer that was driving the loop.
-    /// </summary>
-    protected override void StopEngine()
-    {
-        _engineTimer?.Stop();
-        _engineTimer = null;
-
-        base.StopEngine();
-    }
 }
