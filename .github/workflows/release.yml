@@ -147,10 +147,11 @@ except Exception as e:
 ")
 
           existing=$(cat CHANGELOG.md 2>/dev/null || true)
+          release_date=$(date +'%B %d, %Y')
           # Use a grouped redirect so trailing newlines in the separator are
           # preserved (command substitution would strip them).
           {
-            printf '# v%s\n%s\n\n---\n\n' "${VERSION}" "${cleaned_body}"
+            printf '# v%s - %s\n%s\n\n---\n\n' "${VERSION}" "${release_date}" "${cleaned_body}"
             printf '%s' "${existing}"
           } > CHANGELOG.md
 
