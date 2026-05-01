@@ -78,6 +78,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         // (which Avalonia has made current before this callback) and loads function
         // pointers from it without requiring any explicit proc-address lookup delegate.
         _glInterface = GRGlInterface.Create();
+        if (_glInterface == null) return;
         _grContext   = GRContext.CreateGl(_glInterface);
 
         if (_grContext == null) return;
