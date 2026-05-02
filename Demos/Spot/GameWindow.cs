@@ -30,11 +30,17 @@ internal partial class GameWindow : Form
 
     internal GameWindow()
     {
-        // Load config before anything else so we can read the GPU acceleration setting.
-        _configFile = EngineConfigurationFile.Load();
-        _gpuAcceleration = ReadBoolSetting(KeyGpuAcceleration, defaultValue: false);
-
         InitializeComponent();
+
+        // Avoid config file I/O at design time (the Designer instantiates the form without a
+        // real runtime environment, so file access can fail or produce wrong defaults).
+        if (!System.ComponentModel.LicenseManager.UsageMode.Equals(
+                System.ComponentModel.LicenseUsageMode.Designtime))
+        {
+            _configFile = EngineConfigurationFile.Load();
+            _gpuAcceleration = ReadBoolSetting(KeyGpuAcceleration, defaultValue: false);
+        }
+
         CreateRenderSurface();
         CreateMenu();
 
@@ -129,13 +135,17 @@ internal partial class GameWindow : Form
 
     private bool ReadBoolSetting(string key, bool defaultValue)
     {
-        var raw = _configFile!.EngineConfig.GetConfigurationValue(ConfigSection, key, defaultValue ? "true" : "false");
+        if (_configFile == null)
+            return defaultValue;
+        var raw = _configFile.EngineConfig.GetConfigurationValue(ConfigSection, key, defaultValue ? "true" : "false");
         return string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase);
     }
 
     private void PersistSetting(string key, string value)
     {
-        _configFile!.EngineConfig.SetConfigurationValue(ConfigSection, key, value);
+        if (_configFile == null)
+            return;
+        _configFile.EngineConfig.SetConfigurationValue(ConfigSection, key, value);
         _configFile.Save();
 
         if (_gameHost != null && _gameHost.Engine.IsInitialized)

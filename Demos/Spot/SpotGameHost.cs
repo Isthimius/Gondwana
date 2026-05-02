@@ -278,14 +278,16 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
         {
             AddClouds();
         }
-        else if (!enabled)
+        else
         {
             _particleSurface?.Dispose();
+            _particleSurface = null;
         }
     }
 
     public void StartNewGame(NewGameOptions options)
     {
+        _particleSurface = null;    // ClearAll() below disposes it; null the reference beforehand
         Engine.Managers.DirectDrawings.ClearAll();
         Engine.Managers.Sprites.Clear();
         Scene.RemoveAllLayers();
@@ -444,6 +446,7 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
 
     private void AddClouds()
     {
+        _particleSurface?.Dispose();
         _particleSurface = new ParticleSurface(
             RenderSurface.Host,
             SpotGame.BackgroundGameField,
