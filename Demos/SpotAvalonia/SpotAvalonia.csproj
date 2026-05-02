@@ -15,10 +15,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.1" />
-    </ItemGroup>
-
-    <ItemGroup>
         <!-- Assets linked from the Spot demo to avoid duplication -->
         <Content Include="../Spot/assets/ArchitectsDaughter-Regular.ttf" Link="assets/ArchitectsDaughter-Regular.ttf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
