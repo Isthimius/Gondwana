@@ -10,6 +10,7 @@ namespace Gondwana.Demos.SpotGL;
 internal partial class GameWindow : Form
 {
     private SpotGLGameHost? _gameHost;
+    private NewGameOptions? _lastNewGameOptions;
     private static readonly Size DefaultWindowSize = new(769, 769);
     private MenuStrip _menuStrip = null!;
 
@@ -151,9 +152,10 @@ internal partial class GameWindow : Form
 
     private void OpenNewGameDialog()
     {
-        using var dialog = new NewGameDialog();
+        using var dialog = new NewGameDialog(_lastNewGameOptions);
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
+            _lastNewGameOptions = dialog.Options;
             var options = dialog.Options;
             _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.StartNewGame(options));
         }

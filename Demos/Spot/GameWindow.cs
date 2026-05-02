@@ -14,6 +14,7 @@ internal partial class GameWindow : Form
     private WinFormBitmapRenderSurfaceControl? _bitmapRenderSurface;
     private WinFormGpuRenderSurfaceControl? _gpuRenderSurface;
     private EngineConfigurationFile? _configFile;
+    private NewGameOptions? _lastNewGameOptions;
     private static readonly Size DefaultWindowSize = new(769, 769);
     private MenuStrip _menuStrip = null!;
 
@@ -266,9 +267,10 @@ internal partial class GameWindow : Form
 
     private void OpenNewGameDialog()
     {
-        using var dialog = new NewGameDialog();
+        using var dialog = new NewGameDialog(_lastNewGameOptions);
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
+            _lastNewGameOptions = dialog.Options;
             var options = dialog.Options;
             _gameHost!.Engine.EngineDispatcher.Post(() => _gameHost.StartNewGame(options));
         }

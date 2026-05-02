@@ -14,6 +14,7 @@ internal sealed class GameWindow : Window
 {
     private readonly AvaloniaBitmapRenderSurfaceControl _renderSurface = new();
     private SpotAvaloniaGameHost? _host;
+    private NewGameOptions? _lastNewGameOptions;
 
     private MenuItem? _newGameMenuItem;
     private MenuItem? _musicMenuItem;
@@ -155,10 +156,13 @@ internal sealed class GameWindow : Window
     private async System.Threading.Tasks.Task OpenNewGameDialogAsync()
     {
 #if !BROWSER
-        var dialog = new NewGameDialog();
+        var dialog = new NewGameDialog(_lastNewGameOptions);
         var options = await dialog.ShowDialog<NewGameOptions?>(this);
         if (options is not null)
+        {
+            _lastNewGameOptions = options;
             _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
+        }
 #else
         await System.Threading.Tasks.Task.CompletedTask;
 #endif
