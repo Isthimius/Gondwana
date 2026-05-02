@@ -265,18 +265,24 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
 
     public bool CloudsEnabled { get; private set; } = true;
 
+    private void DisposeParticleSurface()
+    {
+        _particleSurface?.Dispose();
+        _particleSurface = null;
+    }
+
     public void SetCloudsEnabled(bool enabled)
     {
         CloudsEnabled = enabled;
 
         if (enabled)
         {
+            DisposeParticleSurface();
             AddClouds();
         }
         else
         {
-            _particleSurface?.Dispose();
-            _particleSurface = null;
+            DisposeParticleSurface();
         }
     }
 
@@ -449,7 +455,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
 
     private void AddClouds()
     {
-        _particleSurface?.Dispose();
+        DisposeParticleSurface();
         _particleSurface = new ParticleSurface(
             RenderSurface.Host,
             SpotGame.BackgroundGameField,
