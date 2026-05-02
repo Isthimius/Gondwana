@@ -237,9 +237,14 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
         MusicEnabled = enabled;
 
         if (enabled)
-            _music.Play();
+        {
+            if (!_music.IsPlaying)
+                _music.Play();
+        }
         else
+        {
             _music.Stop();
+        }
     }
 
     public bool SoundEffectsEnabled { get; private set; } = true;
