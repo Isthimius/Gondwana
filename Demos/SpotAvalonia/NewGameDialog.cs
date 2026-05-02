@@ -45,15 +45,15 @@ internal sealed class NewGameDialog : Window
 
     private void ApplyInitialOptions(NewGameOptions options)
     {
-        int playerCountIndex = options.Players.Count - 2;
+        int playerCountIndex = options.Players.Count - 2; // combo items start at "2"
         if (playerCountIndex >= 0 && playerCountIndex < _cboPlayerCount.ItemCount)
             _cboPlayerCount.SelectedIndex = playerCountIndex;
 
-        int widthIndex = options.BoardWidth - 3;
+        int widthIndex = options.BoardWidth - 3;   // combo items start at "3"
         if (widthIndex >= 0 && widthIndex < _cboWidth.ItemCount)
             _cboWidth.SelectedIndex = widthIndex;
 
-        int heightIndex = options.BoardHeight - 3;
+        int heightIndex = options.BoardHeight - 3; // combo items start at "3"
         if (heightIndex >= 0 && heightIndex < _cboHeight.ItemCount)
             _cboHeight.SelectedIndex = heightIndex;
 

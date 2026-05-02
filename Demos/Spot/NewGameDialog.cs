@@ -52,15 +52,15 @@ internal partial class NewGameDialog : Form
 
     private void ApplyInitialOptions(NewGameOptions options)
     {
-        int playerCountIndex = options.PlayerCount - 2;
+        int playerCountIndex = options.PlayerCount - 2; // combo items start at "2"
         if (playerCountIndex >= 0 && playerCountIndex < cboPlayerCount.Items.Count)
             cboPlayerCount.SelectedIndex = playerCountIndex;
 
-        int widthIndex = options.BoardWidth - 3;
+        int widthIndex = options.BoardWidth - 3;   // combo items start at "3"
         if (widthIndex >= 0 && widthIndex < cboWidth.Items.Count)
             cboWidth.SelectedIndex = widthIndex;
 
-        int heightIndex = options.BoardHeight - 3;
+        int heightIndex = options.BoardHeight - 3; // combo items start at "3"
         if (heightIndex >= 0 && heightIndex < cboHeight.Items.Count)
             cboHeight.SelectedIndex = heightIndex;
 
