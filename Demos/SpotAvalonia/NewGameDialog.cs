@@ -32,7 +32,7 @@ internal sealed class NewGameDialog : Window
     {
         Title  = "New Game";
         Width  = 510;
-        Height = 390;
+        SizeToContent = SizeToContent.Height;
         CanResize = false;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
