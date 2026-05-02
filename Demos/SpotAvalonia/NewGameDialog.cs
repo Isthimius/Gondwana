@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Gondwana.Demos.SpotAvalonia.Game;
+using System.Linq;
 
 namespace Gondwana.Demos.SpotAvalonia;
 
@@ -28,7 +29,7 @@ internal sealed class NewGameDialog : Window
     private readonly ComboBox[]  _colorSelects = new ComboBox[4];
     private readonly Border[]    _playerBorders = new Border[4];
 
-    internal NewGameDialog()
+    internal NewGameDialog(NewGameOptions? initialOptions = null)
     {
         Title  = "New Game";
         Width  = 510;
@@ -37,6 +38,34 @@ internal sealed class NewGameDialog : Window
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
         BuildUI();
+
+        if (initialOptions is not null)
+            ApplyInitialOptions(initialOptions);
+    }
+
+    private void ApplyInitialOptions(NewGameOptions options)
+    {
+        int playerCountIndex = options.Players.Count - 2; // combo items start at "2"
+        if (playerCountIndex >= 0 && playerCountIndex < _cboPlayerCount.ItemCount)
+            _cboPlayerCount.SelectedIndex = playerCountIndex;
+
+        int widthIndex = options.BoardWidth - 3;   // combo items start at "3"
+        if (widthIndex >= 0 && widthIndex < _cboWidth.ItemCount)
+            _cboWidth.SelectedIndex = widthIndex;
+
+        int heightIndex = options.BoardHeight - 3; // combo items start at "3"
+        if (heightIndex >= 0 && heightIndex < _cboHeight.ItemCount)
+            _cboHeight.SelectedIndex = heightIndex;
+
+        for (int i = 0; i < options.Players.Count && i < 4; i++)
+        {
+            var player = options.Players[i];
+            _nameBoxes[i].Text = player.Name;
+            _typeSelects[i].SelectedIndex = player.Type == PlayerType.Human ? 0 : 1;
+            var match = _availableColors.FirstOrDefault(c => c.Color == player.ColorItem.Color);
+            if (match is not null)
+                _colorSelects[i].SelectedItem = match;
+        }
     }
 
     private void BuildUI()

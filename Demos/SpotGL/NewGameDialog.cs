@@ -10,7 +10,7 @@ internal partial class NewGameDialog : Form
 {
     internal NewGameOptions Options { get; private set; } = null!;
 
-    internal NewGameDialog()
+    internal NewGameDialog(NewGameOptions? initialOptions = null)
     {
         InitializeComponent();
 
@@ -45,6 +45,48 @@ internal partial class NewGameDialog : Form
 
         this.AcceptButton = cmdStart;
         this.CancelButton = cmdCancel;
+
+        if (initialOptions != null)
+            ApplyInitialOptions(initialOptions);
+    }
+
+    private void ApplyInitialOptions(NewGameOptions options)
+    {
+        int playerCountIndex = options.PlayerCount - 2; // combo items start at "2"
+        if (playerCountIndex >= 0 && playerCountIndex < cboPlayerCount.Items.Count)
+            cboPlayerCount.SelectedIndex = playerCountIndex;
+
+        int widthIndex = options.BoardWidth - 3;   // combo items start at "3"
+        if (widthIndex >= 0 && widthIndex < cboWidth.Items.Count)
+            cboWidth.SelectedIndex = widthIndex;
+
+        int heightIndex = options.BoardHeight - 3; // combo items start at "3"
+        if (heightIndex >= 0 && heightIndex < cboHeight.Items.Count)
+            cboHeight.SelectedIndex = heightIndex;
+
+        var nameBoxes    = new[] { textBox1,       textBox2,       textBox3,       textBox4       };
+        var typeSelects  = new[] { cboPlayerType1,  cboPlayerType2,  cboPlayerType3,  cboPlayerType4  };
+        var colorSelects = new[] { cboColor1,       cboColor2,       cboColor3,       cboColor4       };
+
+        for (int i = 0; i < options.Players.Count && i < 4; i++)
+        {
+            var player = options.Players[i];
+            nameBoxes[i].Text = player.Name;
+            typeSelects[i].SelectedIndex = player.Type == PlayerType.Human ? 0 : 1;
+            SetColorCombo(colorSelects[i], player.ColorItem.Color);
+        }
+    }
+
+    private static void SetColorCombo(ComboBox cbo, SKColor color)
+    {
+        for (int i = 0; i < cbo.Items.Count; i++)
+        {
+            if (cbo.Items[i] is ColorItem ci && ci.Color == color)
+            {
+                cbo.SelectedIndex = i;
+                return;
+            }
+        }
     }
 
     private void BuildColorComboBox(ComboBox cboColor)
