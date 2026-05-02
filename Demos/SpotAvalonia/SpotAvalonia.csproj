@@ -91,6 +91,11 @@
         <PackageReference Include="Avalonia.Browser" Version="11.2.1" />
     </ItemGroup>
 
+    <!-- Theme required on all targets so Avalonia controls (Menu, Button, etc.) have visual templates -->
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.1" />
+    </ItemGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
