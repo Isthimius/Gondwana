@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
-        <OutputType>Exe</OutputType>
+        <OutputType>BrowserExe</OutputType>
         <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
