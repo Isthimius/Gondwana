@@ -9,7 +9,7 @@ namespace Gondwana.Configuration;
 /// <summary>
 /// Settings used by the engine when cycling
 /// </summary>
-[JsonObject(IsReference = true)]
+[JsonObject]
 public partial class EngineConfiguration
 {
     private int _targetFPS = 60;
@@ -216,4 +216,287 @@ public partial class EngineConfiguration
     /// Optional collection of serialized <see cref="EngineState"/>s to mount at initialization.
     /// </summary>
     public List<StateFileMount>? StateFiles { get; set; }
+
+    #region ConfigurationSections
+
+    /// <summary>
+    /// Gets or sets a collection of structured configuration values organized into named sections.
+    /// <para>
+    /// Each top-level key represents a logical configuration section (for example, <c>"graphics"</c>, 
+    /// <c>"audio"</c>, or <c>"input"</c>). Each section contains a set of string-based key/value pairs 
+    /// that define configurable aspects of the engine or application.
+    /// </para>
+    /// <para>
+    /// This property is intended for persistent configuration data such as user preferences, engine 
+    /// tuning parameters, or feature flags. It is fully serialized and restored as part of the 
+    /// <see cref="EngineConfiguration"/> lifecycle.
+    /// </para>
+    /// <para>
+    /// Unlike runtime state containers (such as <c>EngineState</c> or <c>ValueBag</c>), values stored here 
+    /// are expected to be stable, portable, and environment-agnostic. They should not represent transient 
+    /// gameplay state or frequently mutating runtime data.
+    /// </para>
+    /// <para>
+    /// The structure is intentionally string-based to ensure compatibility with serialization formats 
+    /// and external tooling, while still allowing flexible organization without requiring changes to 
+    /// the core configuration schema.
+    /// </para>
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// // Set values
+    /// engineConfiguration.ConfigurationSections["audio"]["volume"] = "0.8";
+    /// engineConfiguration.ConfigurationSections["graphics"]["resolution"] = "1920x1080";
+    ///
+    /// // Read values
+    /// var volume = engineConfiguration.ConfigurationSections["audio"]["volume"];
+    /// var resolution = engineConfiguration.ConfigurationSections["graphics"]["resolution"];
+    /// </code>
+    /// </example>
+    [JsonProperty]
+    public Dictionary<string, Dictionary<string, string>> ConfigurationSections { get; set; } = new();
+
+    /// <summary>
+    /// Determines whether the specified configuration section exists.
+    /// </summary>
+    /// <param name="section">The name of the configuration section.</param>
+    /// <returns>
+    /// <see langword="true"/> if the section exists; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool HasConfigurationSection(string section)
+    {
+        return ConfigurationSections.ContainsKey(section);
+    }
+
+    /// <summary>
+    /// Creates a configuration section if it does not already exist.
+    /// </summary>
+    /// <param name="section">The name of the configuration section to create.</param>
+    /// <returns>
+    /// The existing or newly created dictionary for the specified section.
+    /// </returns>
+    public Dictionary<string, string> CreateConfigurationSection(string section)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+
+        if (!ConfigurationSections.TryGetValue(section, out var values))
+        {
+            values = new Dictionary<string, string>();
+            ConfigurationSections[section] = values;
+        }
+
+        return values;
+    }
+
+    /// <summary>
+    /// Removes the specified configuration section and all key/value pairs contained within it.
+    /// </summary>
+    /// <param name="section">The name of the configuration section to remove.</param>
+    /// <returns>
+    /// <see langword="true"/> if the section was removed; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool RemoveConfigurationSection(string section)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+
+        return ConfigurationSections.Remove(section);
+    }
+
+    /// <summary>
+    /// Gets a read-only view of all key/value pairs in the specified configuration section.
+    /// </summary>
+    /// <param name="section">The name of the configuration section to retrieve.</param>
+    /// <returns>
+    /// A read-only dictionary containing the section values, or <see langword="null"/> if the section does not exist.
+    /// </returns>
+    public IReadOnlyDictionary<string, string>? GetConfigurationSection(string section)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+
+        return ConfigurationSections.TryGetValue(section, out var values)
+            ? values
+            : null;
+    }
+
+    /// <summary>
+    /// Determines whether a configuration value exists in the specified section.
+    /// </summary>
+    /// <param name="section">The name of the configuration section.</param>
+    /// <param name="key">The configuration key to check.</param>
+    /// <returns>
+    /// <see langword="true"/> if the section and key exist; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool HasConfigurationValue(string section, string key)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        return ConfigurationSections.TryGetValue(section, out var values)
+            && values.ContainsKey(key);
+    }
+
+    /// <summary>
+    /// Gets a configuration value from the specified section.
+    /// </summary>
+    /// <param name="section">The name of the configuration section.</param>
+    /// <param name="key">The configuration key to retrieve.</param>
+    /// <param name="defaultValue">The value to return if the section or key does not exist.</param>
+    /// <returns>
+    /// The stored configuration value, or <paramref name="defaultValue"/> if no value exists.
+    /// </returns>
+    public string? GetConfigurationValue(string section, string key, string? defaultValue = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        return ConfigurationSections.TryGetValue(section, out var values)
+            && values.TryGetValue(key, out var value)
+                ? value
+                : defaultValue;
+    }
+
+    /// <summary>
+    /// Sets a configuration value in the specified section, creating the section if necessary.
+    /// </summary>
+    /// <param name="section">The name of the configuration section.</param>
+    /// <param name="key">The configuration key to set.</param>
+    /// <param name="value">The string value to store.</param>
+    public void SetConfigurationValue(string section, string key, string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNull(value);
+
+        var values = CreateConfigurationSection(section);
+        values[key] = value;
+    }
+
+    /// <summary>
+    /// Removes a configuration value from the specified section.
+    /// </summary>
+    /// <param name="section">The name of the configuration section.</param>
+    /// <param name="key">The configuration key to remove.</param>
+    /// <returns>
+    /// <see langword="true"/> if the value was removed; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool RemoveConfigurationValue(string section, string key)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        return ConfigurationSections.TryGetValue(section, out var values)
+            && values.Remove(key);
+    }
+
+    /// <summary>
+    /// Clears all key/value pairs from the specified configuration section without removing the section itself.
+    /// </summary>
+    /// <param name="section">The name of the configuration section to clear.</param>
+    /// <returns>
+    /// <see langword="true"/> if the section existed and was cleared; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool ClearConfigurationSection(string section)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(section);
+
+        if (!ConfigurationSections.TryGetValue(section, out var values))
+            return false;
+
+        values.Clear();
+        return true;
+    }
+
+    /// <summary>
+    /// Removes all configuration sections and all contained key/value pairs.
+    /// </summary>
+    public void ClearConfigurationSections()
+    {
+        ConfigurationSections.Clear();
+    }
+
+    /// <summary>
+    /// Gets or sets a configuration section by name.
+    /// <para>
+    /// When getting, returns the existing section if present; otherwise <see langword="null"/>.
+    /// When setting, replaces the entire section with the provided dictionary.
+    /// </para>
+    /// </summary>
+    /// <param name="section">The name of the configuration section.</param>
+    /// <returns>
+    /// The dictionary of key/value pairs for the section, or <see langword="null"/> if the section does not exist.
+    /// </returns>
+    public Dictionary<string, string>? this[string section]
+    {
+        get
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(section);
+
+            return ConfigurationSections.TryGetValue(section, out var values)
+                ? values
+                : null;
+        }
+        set
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(section);
+
+            if (value == null)
+            {
+                ConfigurationSections.Remove(section);
+            }
+            else
+            {
+                ConfigurationSections[section] = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets a configuration value using section and key.
+    /// <para>
+    /// When getting, returns the value if found; otherwise <see langword="null"/>.
+    /// When setting, creates the section if necessary and stores the value.
+    /// </para>
+    /// </summary>
+    /// <param name="section">The name of the configuration section.</param>
+    /// <param name="key">The configuration key within the section.</param>
+    /// <returns>
+    /// The stored configuration value, or <see langword="null"/> if not found.
+    /// </returns>
+    public string? this[string section, string key]
+    {
+        get
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(section);
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+            return ConfigurationSections.TryGetValue(section, out var values)
+                && values.TryGetValue(key, out var value)
+                    ? value
+                    : null;
+        }
+        set
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(section);
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+            if (value == null)
+            {
+                if (ConfigurationSections.TryGetValue(section, out var values))
+                {
+                    values.Remove(key);
+                }
+                return;
+            }
+
+            if (!ConfigurationSections.TryGetValue(section, out var sectionValues))
+            {
+                sectionValues = new Dictionary<string, string>();
+                ConfigurationSections[section] = sectionValues;
+            }
+
+            sectionValues[key] = value;
+        }
+    }
+
+    #endregion ConfigurationSections
 }
