@@ -1,4 +1,6 @@
 using Gondwana;
+using Gondwana.Configuration;
+using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
@@ -8,16 +10,34 @@ namespace Gondwana.Demos.Spot;
 
 internal partial class GameWindow : Form
 {
-    private SpotGameHost? _gameHost;
+    private ISpotGameHost? _gameHost;
+    private WinFormBitmapRenderSurfaceControl? _bitmapRenderSurface;
+    private WinFormGpuRenderSurfaceControl? _gpuRenderSurface;
+    private EngineConfigurationFile? _configFile;
     private static readonly Size DefaultWindowSize = new(769, 769);
     private MenuStrip _menuStrip = null!;
 
+    private const string ConfigSection = "spot";
+    private const string KeyMusic = "music";
+    private const string KeySoundEffects = "soundEffects";
+    private const string KeyJiggle = "jiggle";
+    private const string KeyClouds = "clouds";
+    private const string KeyGpuAcceleration = "gpuAcceleration";
+
+    private bool _gpuAcceleration;
+
     internal GameWindow()
     {
-        InitializeComponent();
-        CreateMenu();
+        // Load config before anything else so we can read GPU acceleration setting.
+        _configFile = EngineConfigurationFile.Load();
+        _gpuAcceleration = string.Equals(
+            _configFile.EngineConfig.GetConfigurationValue(ConfigSection, KeyGpuAcceleration, "false"),
+            "true",
+            StringComparison.OrdinalIgnoreCase);
 
-        renderSurface.Dock = DockStyle.Fill;
+        InitializeComponent();
+        CreateRenderSurface();
+        CreateMenu();
 
         // Normal window, centered
         this.FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -28,20 +48,45 @@ internal partial class GameWindow : Form
         this.MaximizeBox = false;
     }
 
+    private void CreateRenderSurface()
+    {
+        if (_gpuAcceleration)
+        {
+            _gpuRenderSurface = new WinFormGpuRenderSurfaceControl();
+            _gpuRenderSurface.Dock = DockStyle.Fill;
+            Controls.Add(_gpuRenderSurface);
+        }
+        else
+        {
+            _bitmapRenderSurface = new WinFormBitmapRenderSurfaceControl();
+            _bitmapRenderSurface.Dock = DockStyle.Fill;
+            Controls.Add(_bitmapRenderSurface);
+        }
+    }
+
     // create the Game (and thereby start the engine) once the form & controls are ready
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        _gameHost = new SpotGameHost(renderSurface);
-        //_gameHost.Engine.CPSCalculated += (cps) =>
-        //{
-        //    Engine.Logger.LogTrace(cps.ToString());
-        //};
+
+        if (_gpuAcceleration)
+            _gameHost = new SpotGpuGameHost(_gpuRenderSurface!);
+        else
+            _gameHost = new SpotGameHost(_bitmapRenderSurface!);
 
         // Subscribe before Initialize() is called so the handler fires during initialization.
         _gameHost.Engine.InitializationComplete += () =>
         {
-            _gameHost.Engine.Configuration.TargetFPS = 0;
+            if (_gpuAcceleration)
+            {
+                _gameHost.Engine.Configuration.TargetFPS = 500;
+                _gameHost.Engine.Configuration.VSync = false;
+                _gameHost.Engine.Configuration.MsaaSampleCount = 4;
+            }
+            else
+            {
+                _gameHost.Engine.Configuration.TargetFPS = 0;
+            }
         };
     }
 
@@ -52,7 +97,10 @@ internal partial class GameWindow : Form
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
-        _gameHost!.Initialize(logLevel: LogLevel.Warning);    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
+        _gameHost!.Initialize(logLevel: LogLevel.Warning);
+
+        // Apply saved settings now that assets are loaded and engine is running.
+        ApplyLoadedSettings();
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
@@ -64,10 +112,42 @@ internal partial class GameWindow : Form
         base.OnFormClosed(e);
     }
 
+    private void ApplyLoadedSettings()
+    {
+        bool music = ReadBoolSetting(KeyMusic, defaultValue: true);
+        bool soundEffects = ReadBoolSetting(KeySoundEffects, defaultValue: true);
+        bool jiggle = ReadBoolSetting(KeyJiggle, defaultValue: true);
+        bool clouds = ReadBoolSetting(KeyClouds, defaultValue: true);
+
+        _gameHost!.Engine.EngineDispatcher.Post(() =>
+        {
+            _gameHost.SetMusicEnabled(music);
+            _gameHost.SetSoundEffectsEnabled(soundEffects);
+            _gameHost.SetJiggleEnabled(jiggle);
+            _gameHost.SetCloudsEnabled(clouds);
+        });
+    }
+
+    private bool ReadBoolSetting(string key, bool defaultValue)
+    {
+        var raw = _configFile!.EngineConfig.GetConfigurationValue(ConfigSection, key, defaultValue ? "true" : "false");
+        return string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void PersistSetting(string key, string value)
+    {
+        _configFile!.EngineConfig.SetConfigurationValue(ConfigSection, key, value);
+        _configFile.Save();
+
+        if (_gameHost != null && _gameHost.Engine.IsInitialized)
+            _gameHost.Engine.Configuration.SetConfigurationValue(ConfigSection, key, value);
+    }
+
     private ToolStripMenuItem? _musicMenuItem;
     private ToolStripMenuItem? _soundEffectsMenuItem;
     private ToolStripMenuItem? _jiggleMenuItem;
     private ToolStripMenuItem? _cloudsMenuItem;
+    private ToolStripMenuItem? _gpuAccelerationMenuItem;
 
     private void CreateMenu()
     {
@@ -86,35 +166,44 @@ internal partial class GameWindow : Form
         _musicMenuItem = new ToolStripMenuItem("Music")
         {
             CheckOnClick = true,
-            Checked = true
+            Checked = ReadBoolSetting(KeyMusic, defaultValue: true)
         };
         _musicMenuItem.CheckedChanged += MusicMenuItem_CheckedChanged;
 
         _soundEffectsMenuItem = new ToolStripMenuItem("Sound Effects")
         {
             CheckOnClick = true,
-            Checked = true
+            Checked = ReadBoolSetting(KeySoundEffects, defaultValue: true)
         };
         _soundEffectsMenuItem.CheckedChanged += SoundEffectsMenuItem_CheckedChanged;
 
         _jiggleMenuItem = new ToolStripMenuItem("Jiggle")
         {
             CheckOnClick = true,
-            Checked = true
+            Checked = ReadBoolSetting(KeyJiggle, defaultValue: true)
         };
         _jiggleMenuItem.CheckedChanged += JiggleMenuItem_CheckedChanged;
 
         _cloudsMenuItem = new ToolStripMenuItem("Clouds")
         {
             CheckOnClick = true,
-            Checked = true
+            Checked = ReadBoolSetting(KeyClouds, defaultValue: true)
         };
         _cloudsMenuItem.CheckedChanged += CloudsMenuItem_CheckedChanged;
+
+        _gpuAccelerationMenuItem = new ToolStripMenuItem("GPU Acceleration")
+        {
+            CheckOnClick = true,
+            Checked = _gpuAcceleration
+        };
+        _gpuAccelerationMenuItem.CheckedChanged += GpuAccelerationMenuItem_CheckedChanged;
 
         optionsMenu.DropDownItems.Add(_musicMenuItem);
         optionsMenu.DropDownItems.Add(_soundEffectsMenuItem);
         optionsMenu.DropDownItems.Add(_jiggleMenuItem);
         optionsMenu.DropDownItems.Add(_cloudsMenuItem);
+        optionsMenu.DropDownItems.Add(new ToolStripSeparator());
+        optionsMenu.DropDownItems.Add(_gpuAccelerationMenuItem);
 
         _menuStrip.Items.Add(gameMenu);
         _menuStrip.Items.Add(optionsMenu);
@@ -125,22 +214,45 @@ internal partial class GameWindow : Form
 
     private void MusicMenuItem_CheckedChanged(object? sender, EventArgs e)
     {
-        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetMusicEnabled(_musicMenuItem!.Checked));
+        var enabled = _musicMenuItem!.Checked;
+        PersistSetting(KeyMusic, enabled ? "true" : "false");
+        if (_gameHost != null)
+            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetMusicEnabled(enabled));
     }
 
     private void SoundEffectsMenuItem_CheckedChanged(object? sender, EventArgs e)
     {
-        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetSoundEffectsEnabled(_soundEffectsMenuItem!.Checked));
+        var enabled = _soundEffectsMenuItem!.Checked;
+        PersistSetting(KeySoundEffects, enabled ? "true" : "false");
+        if (_gameHost != null)
+            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetSoundEffectsEnabled(enabled));
     }
 
     private void JiggleMenuItem_CheckedChanged(object? sender, EventArgs e)
     {
-        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetJiggleEnabled(_jiggleMenuItem!.Checked));
+        var enabled = _jiggleMenuItem!.Checked;
+        PersistSetting(KeyJiggle, enabled ? "true" : "false");
+        if (_gameHost != null)
+            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetJiggleEnabled(enabled));
     }
 
     private void CloudsMenuItem_CheckedChanged(object? sender, EventArgs e)
     {
-        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetCloudsEnabled(_cloudsMenuItem!.Checked));
+        var enabled = _cloudsMenuItem!.Checked;
+        PersistSetting(KeyClouds, enabled ? "true" : "false");
+        if (_gameHost != null)
+            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetCloudsEnabled(enabled));
+    }
+
+    private void GpuAccelerationMenuItem_CheckedChanged(object? sender, EventArgs e)
+    {
+        var enabled = _gpuAccelerationMenuItem!.Checked;
+        PersistSetting(KeyGpuAcceleration, enabled ? "true" : "false");
+        MessageBox.Show(
+            "GPU Acceleration setting has been changed. Please restart the application to apply this change.",
+            "Restart Required",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
     }
 
     private void OpenNewGameDialog()
@@ -149,7 +261,8 @@ internal partial class GameWindow : Form
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
             var options = dialog.Options;
-            _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.StartNewGame(options));
+            _gameHost!.Engine.EngineDispatcher.Post(() => _gameHost.StartNewGame(options));
         }
     }
 }
+

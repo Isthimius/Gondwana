@@ -24,7 +24,7 @@ using Gondwana.Demos.Spot.Game;
 
 namespace Gondwana.Demos.Spot;
 
-internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
+internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
 {
     private bool _handleHumanInput = false;
     private bool _showScores = true;
@@ -70,18 +70,15 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
 
     private static readonly Random _rng = new();
 
-    internal SpotGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
+    internal SpotGpuGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
     {
-        ((BitmapBackbuffer)renderSurface.Host.Backbuffer).FilterQuality = SKFilterQuality.High;
     }
 
     #region WinFormsGameHost overrides
 
     protected override void LoadAssets()
     {
-        // load asset files
-
         // load standalone audio files
         _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
         _music.IsLooping = true;
@@ -93,8 +90,6 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
         _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
         _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
         //_knock = gotta find it
-
-        // load standalone video files
 
         // load standalone font files
         _font = Engine.Managers.Fonts.LoadFromFile("main", "assets\\ArchitectsDaughter-Regular.ttf");
@@ -400,6 +395,14 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
         foreach (var cell in SpotGame.SpotGameField.GetAllCellsForPlayer(player))
         {
             cell.Sprite?.StopJiggle();
+        }
+    }
+
+    private void JiggleAllPlayers()
+    {
+        foreach (var player in SpotGame.Players)
+        {
+            StartPlayerJiggle(player);
         }
     }
 
@@ -890,11 +893,7 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
         SetScoreVisible(true);
         SetPlayerScores();
         StopPlayerJiggle(SpotGame.CurrentPlayer);
-
-        //foreach (var player in SpotGame.Players)
-        //{
-        //    StartPlayerJiggle(player);
-        //}
+        JiggleAllPlayers();
 
         var allScores = SpotGame.GetAllPlayerScores();
         var maxScore = allScores.Values.Max();

@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using Gondwana.WinForms;
-using Gondwana.WinForms.Rendering;
 
 namespace Gondwana.Demos.Spot;
 
@@ -34,23 +32,13 @@ partial class GameWindow
     private void InitializeComponent()
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameWindow));
-        renderSurface = new WinFormBitmapRenderSurfaceControl();
         SuspendLayout();
-        // 
-        // renderSurface
-        // 
-        renderSurface.BackColor = SystemColors.Desktop;
-        renderSurface.Location = new Point(4, 3);
-        renderSurface.Name = "renderSurface";
-        renderSurface.Size = new Size(1433, 654);
-        renderSurface.TabIndex = 0;
         // 
         // GameWindow
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(1438, 656);
-        Controls.Add(renderSurface);
         Icon = (Icon)resources.GetObject("$this.Icon");
         Name = "GameWindow";
         Text = "Spot!";
@@ -58,6 +46,4 @@ partial class GameWindow
     }
 
     #endregion
-
-    private WinFormBitmapRenderSurfaceControl renderSurface;
 }
