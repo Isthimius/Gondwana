@@ -446,6 +446,9 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
 
     private void AddClouds()
     {
+        if (SpotGame.Players.Length == 0)
+            return;
+
         _particleSurface?.Dispose();
         _particleSurface = new ParticleSurface(
             RenderSurface.Host,
