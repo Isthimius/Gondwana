@@ -72,7 +72,10 @@ internal sealed class GameWindow : Window
             IsChecked  = true,
         };
         _musicMenuItem.Click += (_, _) =>
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetMusicEnabled(_musicMenuItem.IsChecked));
+        {
+            var isChecked = _musicMenuItem.IsChecked;
+            _host?.Engine.EngineDispatcher.Post(() => _host.SetMusicEnabled(isChecked));
+        };
 
         _soundEffectsMenuItem = new MenuItem
         {
@@ -81,7 +84,10 @@ internal sealed class GameWindow : Window
             IsChecked  = true,
         };
         _soundEffectsMenuItem.Click += (_, _) =>
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetSoundEffectsEnabled(_soundEffectsMenuItem.IsChecked));
+        {
+            var isChecked = _soundEffectsMenuItem.IsChecked;
+            _host?.Engine.EngineDispatcher.Post(() => _host.SetSoundEffectsEnabled(isChecked));
+        };
 
         _jiggleMenuItem = new MenuItem
         {
@@ -90,7 +96,10 @@ internal sealed class GameWindow : Window
             IsChecked  = true,
         };
         _jiggleMenuItem.Click += (_, _) =>
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetJiggleEnabled(_jiggleMenuItem.IsChecked));
+        {
+            var isChecked = _jiggleMenuItem.IsChecked;
+            _host?.Engine.EngineDispatcher.Post(() => _host.SetJiggleEnabled(isChecked));
+        };
 
         _cloudsMenuItem = new MenuItem
         {
@@ -99,7 +108,10 @@ internal sealed class GameWindow : Window
             IsChecked  = true,
         };
         _cloudsMenuItem.Click += (_, _) =>
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetCloudsEnabled(_cloudsMenuItem.IsChecked));
+        {
+            var isChecked = _cloudsMenuItem.IsChecked;
+            _host?.Engine.EngineDispatcher.Post(() => _host.SetCloudsEnabled(isChecked));
+        };
 
         optionsMenu.Items.Add(_musicMenuItem);
         optionsMenu.Items.Add(_soundEffectsMenuItem);
