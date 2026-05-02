@@ -265,23 +265,31 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
 
     public bool CloudsEnabled { get; private set; } = true;
 
+    private void DisposeParticleSurface()
+    {
+        _particleSurface?.Dispose();
+        _particleSurface = null;
+    }
+
     public void SetCloudsEnabled(bool enabled)
     {
         CloudsEnabled = enabled;
 
         if (enabled)
         {
+            DisposeParticleSurface();
             AddClouds();
         }
         else
         {
-            _particleSurface?.Dispose();
+            DisposeParticleSurface();
         }
     }
 
     public void StartNewGame(NewGameOptions options)
     {
         Engine.Managers.DirectDrawings.ClearAll();
+        _particleSurface = null;
         Engine.Managers.Sprites.Clear();
         Scene.RemoveAllLayers();
 
