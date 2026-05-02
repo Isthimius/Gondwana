@@ -273,7 +273,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
         {
             AddClouds();
         }
-        else if (!enabled)
+        else
         {
             _particleSurface?.Dispose();
         }

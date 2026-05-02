@@ -23,17 +23,16 @@ internal partial class GameWindow : Form
     private const string KeyJiggle = "jiggle";
     private const string KeyClouds = "clouds";
     private const string KeyGpuAcceleration = "gpuAcceleration";
+    private const int GpuTargetFps = 500;
+    private const int GpuMsaaSampleCount = 4;
 
     private bool _gpuAcceleration;
 
     internal GameWindow()
     {
-        // Load config before anything else so we can read GPU acceleration setting.
+        // Load config before anything else so we can read the GPU acceleration setting.
         _configFile = EngineConfigurationFile.Load();
-        _gpuAcceleration = string.Equals(
-            _configFile.EngineConfig.GetConfigurationValue(ConfigSection, KeyGpuAcceleration, "false"),
-            "true",
-            StringComparison.OrdinalIgnoreCase);
+        _gpuAcceleration = ReadBoolSetting(KeyGpuAcceleration, defaultValue: false);
 
         InitializeComponent();
         CreateRenderSurface();
@@ -79,9 +78,9 @@ internal partial class GameWindow : Form
         {
             if (_gpuAcceleration)
             {
-                _gameHost.Engine.Configuration.TargetFPS = 500;
+                _gameHost.Engine.Configuration.TargetFPS = GpuTargetFps;
                 _gameHost.Engine.Configuration.VSync = false;
-                _gameHost.Engine.Configuration.MsaaSampleCount = 4;
+                _gameHost.Engine.Configuration.MsaaSampleCount = GpuMsaaSampleCount;
             }
             else
             {
