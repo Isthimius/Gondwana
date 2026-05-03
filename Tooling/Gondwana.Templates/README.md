@@ -60,7 +60,7 @@ Both templates accept a `--Backbuffer` parameter to choose the rendering backend
 
 | Value | Description |
 |---|---|
-| `bitmap` | CPU-based bitmap backbuffer using SkiaSharp **(default)**. Works on all platforms. |
+| `bitmap` | CPU-based bitmap backbuffer using SkiaSharp **(default)**. Available for WinForms on Windows and Avalonia on Windows, macOS, and Linux. |
 | `gpu` | GPU-accelerated OpenGL backbuffer. Requires an OpenGL-capable desktop target. |
 
 ```bash
