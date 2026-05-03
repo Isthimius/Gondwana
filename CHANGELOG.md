@@ -1,3 +1,34 @@
+# v2.2.2 - May 03, 2026
+## What's Changed
+### Other Changes
+* Add `gondwana help` command to Gondwana.Cli
+* fix: always full-render surface when using GpuBackbuffer
+* fix(release): clean CHANGELOG bullets, fix separator bleed, harden merge step
+* Add MSAA and VSync as configurable EngineConfiguration properties that propagate to GpuBackbuffer
+* feat(changelog): include release date in CHANGELOG version heading
+* feat: WASM-safe timer-driven engine loop for Avalonia hosting
+* fix: GpuBackbuffer throws on Canvas access when MSAA sample count is unsupported
+* Add SpotAvalonia: WASM-capable Spot demo using Avalonia adapters and timer-driven engine loop
+* fix: ensure Scene is initialized before InitializationComplete fires
+* Add top-level `gondwana pack` shorthand command
+* SpotAvalonia: show splash screen and player selection instead of auto-starting
+* Fix: capture IsChecked on UI thread in SpotAvalonia menu item click handlers
+* fix: repair YAML parse error in release.yml caused by unindented Python script
+* Fix: register Avalonia Fluent theme so SpotAvalonia menu bar renders
+* fix(SpotAvalonia): New Game dialog clips Start/Cancel buttons
+* Merge SpotGL into Spot: GPU Acceleration option with persistent settings
+* Fix startup crash in Spot: guard AddClouds against uninitialized BackgroundGameField
+* fix: music stops immediately on startup in Spot project
+* Persist new game dialog selections between sessions
+* fix: remove stale NestedProjects entry causing MSB5023 on restore
+* feat: add --backbuffer option to gondwana new winforms/avalonia commands
+* Spot: fix double-speed moves and index-out-of-bounds when starting a new game mid-computer-turn
+* fix: add --force to git fetch --tags in release.ps1
+
+**Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.2.1...v2.2.2
+
+---
+
 # v2.2.1
 <!-- Release notes generated using configuration in .github/release.yml at v2.2.1 -->
 
