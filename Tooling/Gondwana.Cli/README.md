@@ -64,6 +64,18 @@ gondwana new avalonia MyGame -o ./projects/MyGame
 gondwana new winforms MyGame -o ./projects/MyGame
 ```
 
+Both commands accept an optional `--backbuffer` / `-b` flag to choose the rendering backbuffer:
+
+| Value | Description |
+|---|---|
+| `bitmap` | CPU-based bitmap backbuffer using SkiaSharp (default). Available on the platforms supported by the selected template. |
+| `gpu` | GPU-accelerated OpenGL backbuffer. Requires an OpenGL-capable desktop target. |
+
+```bash
+gondwana new winforms MyGame --backbuffer gpu
+gondwana new avalonia MyGame -b gpu
+```
+
 ---
 
 ### `gondwana templates`

@@ -97,30 +97,34 @@ gondwana pack ./Assets ./game.assets -m ./my-types.json
 
 ### `gondwana new winforms <name>`
 
-| Argument / Option | Short | Description |
-|---|---|---|
-| `<name>` | | **Required.** Name of the new project. |
-| `--output <dir>` | `-o` | Directory to place the generated output in. Defaults to a new folder named `<name>` in the current directory. |
+| Argument / Option | Short | Default | Description |
+|---|---|---|---|
+| `<name>` | | | **Required.** Name of the new project. |
+| `--output <dir>` | `-o` | | Directory to place the generated output in. Defaults to a new folder named `<name>` in the current directory. |
+| `--backbuffer <type>` | `-b` | `bitmap` | Backbuffer type: `bitmap` (CPU-based, default) or `gpu` (OpenGL-accelerated). |
 
 **Example**
 ```
 gondwana new winforms MyGame
 gondwana new winforms MyGame -o ./projects/MyGame
+gondwana new winforms MyGame --backbuffer gpu
 ```
 
 ---
 
 ### `gondwana new avalonia <name>`
 
-| Argument / Option | Short | Description |
-|---|---|---|
-| `<name>` | | **Required.** Name of the new project. |
-| `--output <dir>` | `-o` | Directory to place the generated output in. Defaults to a new folder named `<name>` in the current directory. |
+| Argument / Option | Short | Default | Description |
+|---|---|---|---|
+| `<name>` | | | **Required.** Name of the new project. |
+| `--output <dir>` | `-o` | | Directory to place the generated output in. Defaults to a new folder named `<name>` in the current directory. |
+| `--backbuffer <type>` | `-b` | `bitmap` | Backbuffer type: `bitmap` (CPU-based, default) or `gpu` (OpenGL-accelerated). |
 
 **Example**
 ```
 gondwana new avalonia MyGame
 gondwana new avalonia MyGame -o ./projects/MyGame
+gondwana new avalonia MyGame --backbuffer gpu
 ```
 
 ---

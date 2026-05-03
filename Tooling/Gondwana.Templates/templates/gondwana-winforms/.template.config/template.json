@@ -11,5 +11,21 @@
     "type": "project"
   },
   "sourceName": "MyGame",
-  "preferNameDirectory": true
+  "preferNameDirectory": true,
+  "symbols": {
+    "Backbuffer": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "bitmap", "description": "CPU bitmap backbuffer (default, widest compatibility)" },
+        { "choice": "gpu",    "description": "GPU-accelerated OpenGL backbuffer" }
+      ],
+      "defaultValue": "bitmap",
+      "description": "The backbuffer type to use for rendering."
+    },
+    "UseGpuBackbuffer": {
+      "type": "computed",
+      "value": "(Backbuffer == \"gpu\")"
+    }
+  }
 }

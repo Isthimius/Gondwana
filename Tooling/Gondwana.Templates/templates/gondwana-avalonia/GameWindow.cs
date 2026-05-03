@@ -6,8 +6,13 @@ namespace MyGame;
 
 internal sealed class GameWindow : Window
 {
+//#if (UseGpuBackbuffer)
+    // OpenGL-accelerated render surface provided by Gondwana.Avalonia.
+    private readonly AvaloniaGpuRenderSurfaceControl _renderSurface = new();
+//#else
     // Gondwana.Avalonia bitmap-based render surface — works on all Avalonia desktop targets.
     private readonly AvaloniaBitmapRenderSurfaceControl _renderSurface = new();
+//#endif
     private MyGameHost? _host;
 
     internal GameWindow()
