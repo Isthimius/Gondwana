@@ -1,9 +1,5 @@
 using Avalonia.Controls;
-//#if (UseGpuBackbuffer)
 using Gondwana.Avalonia.Rendering;
-//#else
-using Gondwana.Avalonia.Rendering;
-//#endif
 using Microsoft.Extensions.Logging;
 
 namespace MyGame;

@@ -2,13 +2,8 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
 using Gondwana.Scenes;
-//#if (UseGpuBackbuffer)
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
-//#else
-using Gondwana.WinForms.Hosting;
-using Gondwana.WinForms.Rendering;
-//#endif
 
 namespace MyGame;
 

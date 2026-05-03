@@ -1,10 +1,5 @@
-//#if (UseGpuBackbuffer)
 using Gondwana.Avalonia.Hosting;
 using Gondwana.Avalonia.Rendering;
-//#else
-using Gondwana.Avalonia.Hosting;
-using Gondwana.Avalonia.Rendering;
-//#endif
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
