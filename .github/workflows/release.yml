@@ -125,11 +125,20 @@ jobs:
           # script prepends this section before creating the tag, so the tagged
           # commit is the source of truth for the GitHub Release body.
           awk '
-            /^# \[/ {
-              section++
-              if (section > 1) exit
+            function is_release_heading(line) {
+              return line ~ /^# \[/ || line ~ /^# v/
             }
-            section == 1 { print }
+
+            /^# Changelog[[:space:]]*$/ { next }
+
+            {
+              if (is_release_heading($0)) {
+                section++
+                if (section > 1) exit
+              }
+
+              if (section == 1) print
+            }
           ' CHANGELOG.md > RELEASE_NOTES.md
 
           if [ ! -s RELEASE_NOTES.md ]; then
