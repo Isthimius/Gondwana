@@ -68,7 +68,7 @@ Both commands accept an optional `--backbuffer` / `-b` flag to choose the render
 
 | Value | Description |
 |---|---|
-| `bitmap` | CPU-based bitmap backbuffer using SkiaSharp (default). Works on all platforms. |
+| `bitmap` | CPU-based bitmap backbuffer using SkiaSharp (default). Available on the platforms supported by the selected template. |
 | `gpu` | GPU-accelerated OpenGL backbuffer. Requires an OpenGL-capable desktop target. |
 
 ```bash
