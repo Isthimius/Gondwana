@@ -42,7 +42,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         public string? Password { get; init; }
 
         [CommandOption("-e|--encrypt")]
-        [Description("Encrypt the bundle using AES-256. Requires --password to be set.")]
+        [Description("Encrypt the bundle using AES-256. Requires --password <value> to be specified.")]
         [DefaultValue(false)]
         public bool Encrypt { get; init; }
     }
@@ -60,7 +60,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
 
         if (settings.Encrypt && string.IsNullOrEmpty(settings.Password))
         {
-            AnsiConsole.MarkupLine("[red]--encrypt requires --password to be set.[/]");
+            AnsiConsole.MarkupLine("[red]--encrypt requires a password. Use --password <value> to specify one.[/]");
             return 1;
         }
 
