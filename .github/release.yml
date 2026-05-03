@@ -26,6 +26,57 @@ changelog:
         - bugfix
         - Semver-Patch
 
+    - title: Gondwana (Core)
+      labels:
+        - gondwana-core
+        - Gondwana
+
+    - title: Gondwana.Avalonia
+      labels:
+        - gondwana-avalonia
+        - Gondwana.Avalonia
+
+    - title: Gondwana.WinForms
+      labels:
+        - gondwana-winforms
+        - Gondwana.WinForms
+
+    - title: Gondwana.Audio.Midi
+      labels:
+        - gondwana-audio
+        - Gondwana.Audio.Midi
+
+    - title: Gondwana.Hosting
+      labels:
+        - gondwana-hosting
+        - Gondwana.Hosting
+
+    - title: Gondwana.Input.SDL2
+      labels:
+        - gondwana-input
+        - Gondwana.Input.SDL2
+
+    - title: Gondwana.Video
+      labels:
+        - gondwana-video
+        - Gondwana.Video
+
+    - title: Tooling
+      labels:
+        - gondwana-cli
+        - gondwana-templates
+        - Gondwana.Cli
+        - Gondwana.Templates
+        - tooling
+
+    - title: Demos
+      labels:
+        - demo
+        - demos
+        - Spot
+        - SpotAvalonia
+        - Slider
+
     - title: Other Changes
       labels:
         - "*"

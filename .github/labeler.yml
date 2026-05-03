@@ -1,0 +1,61 @@
+gondwana-core:
+  - changed-files:
+    - any-glob-to-any-file: 'Gondwana/**'
+
+gondwana-avalonia:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Gondwana.Avalonia/**'
+      - 'Gondwana.Avalonia.Hosting/**'
+
+gondwana-winforms:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Gondwana.WinForms/**'
+      - 'Gondwana.WinForms.Hosting/**'
+
+gondwana-audio:
+  - changed-files:
+    - any-glob-to-any-file: 'Gondwana.Audio.Midi/**'
+
+gondwana-hosting:
+  - changed-files:
+    - any-glob-to-any-file: 'Gondwana.Hosting/**'
+
+gondwana-input:
+  - changed-files:
+    - any-glob-to-any-file: 'Gondwana.Input.SDL2/**'
+
+gondwana-video:
+  - changed-files:
+    - any-glob-to-any-file: 'Gondwana.Video/**'
+
+gondwana-cli:
+  - changed-files:
+    - any-glob-to-any-file: 'Tooling/Gondwana.Cli/**'
+
+gondwana-templates:
+  - changed-files:
+    - any-glob-to-any-file: 'Tooling/Gondwana.Templates/**'
+
+tooling:
+  - changed-files:
+    - any-glob-to-any-file: 'Tooling/**'
+
+demo:
+  - changed-files:
+    - any-glob-to-any-file: 'Demos/**'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docs/**'
+      - '*.md'
+      - '**/*.md'
+
+chore:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+      - '*.props'
+      - '*.json'
