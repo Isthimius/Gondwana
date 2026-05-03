@@ -31,6 +31,9 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
 
     private ParticleSurface? _particleSurface;
 
+    private Gondwana.Timers.Timer? _pendingComputerSelectTimer;
+    private Gondwana.Timers.Timer? _pendingComputerMoveTimer;
+
     internal TextBlock? _player1Text;
     internal DirectRectangle? _player1Rectangle;
     internal TextBlock? _player2Text;
@@ -292,6 +295,11 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
 
     public void StartNewGame(NewGameOptions options)
     {
+        _pendingComputerSelectTimer?.Dispose();
+        _pendingComputerSelectTimer = null;
+        _pendingComputerMoveTimer?.Dispose();
+        _pendingComputerMoveTimer = null;
+
         _particleSurface = null;    // ClearAll() below disposes it; null the reference beforehand
         Engine.Managers.DirectDrawings.ClearAll();
         Engine.Managers.Sprites.Clear();
@@ -773,10 +781,10 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
             _handleHumanInput = false;
 
             // start a short timer before computer moves
-            var timer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
-            timer.Tick += () =>
+            _pendingComputerSelectTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+            _pendingComputerSelectTimer.Tick += () =>
             {
-                timer.Dispose();
+                _pendingComputerSelectTimer = null;
 
                 var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
                 var bestMove = moves[Random.Shared.Next(moves.Count)];
@@ -784,10 +792,10 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
                 SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
 
                 // small delay before executing move to allow for selection animation
-                var moveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
-                moveTimer.Tick += () =>
+                _pendingComputerMoveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+                _pendingComputerMoveTimer.Tick += () =>
                 {
-                    moveTimer.Dispose();
+                    _pendingComputerMoveTimer = null;
                     SpotGame.ExecuteMove(bestMove);
                 };
             };
