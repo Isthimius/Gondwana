@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -160,9 +160,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineState.html">EngineState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the complete serializable state of the game engine, including assets, scenes, sprites, audio resources, and custom data. This class provides functionality to save and load engine state to/from files with support for selective state management, compression, and merge operations. The state can be persisted as JSON and optionally compressed using GZip compression.  <a href="classGondwana_1_1EngineState.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1IDeepCloneable.html">IDeepCloneable</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a lightweight contract for values that can produce an explicit deep clone of themselves.  <a href="interfaceGondwana_1_1IDeepCloneable.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1IEngineDispatcher.html">IEngineDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a contract for dispatching actions to the engine's background thread in a thread-safe manner. Implementations of this interface provide mechanisms for posting work items from any thread to be executed on the engine's dedicated update loop thread, ensuring thread-safe access to engine state.  <a href="interfaceGondwana_1_1IEngineDispatcher.html#details">More...</a><br /></td></tr>

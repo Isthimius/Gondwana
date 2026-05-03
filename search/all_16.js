@@ -28,7 +28,7 @@ var searchData=
   ['visibleworldsizepx_25',['VisibleWorldSizePx',['../classGondwana_1_1Rendering_1_1Views_1_1Viewport.html#ac86d45bc12a7cc253c2128c3174c61e8',1,'Gondwana::Rendering::Views::Viewport']]],
   ['vlcvideoplayer_26',['vlcvideoplayer',['../classGondwana_1_1Video_1_1VlcVideoPlayer.html',1,'Gondwana.Video.VlcVideoPlayer'],['../classGondwana_1_1Video_1_1VlcVideoPlayer.html#a77571cf049db3a8de6a68d3508054195',1,'Gondwana.Video.VlcVideoPlayer.VlcVideoPlayer()']]],
   ['volume_27',['Volume',['../classGondwana_1_1Audio_1_1AudioResource.html#a1427ceb80ce37f31c23700204b41080c',1,'Gondwana::Audio::AudioResource']]],
-  ['vsync_28',['VSync',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a187c5db40cc71e3159ea4f6be0f6a3fe',1,'Gondwana::Rendering::Backbuffers::GpuBackbuffer']]],
+  ['vsync_28',['vsync',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a187c5db40cc71e3159ea4f6be0f6a3fe',1,'Gondwana.Rendering.Backbuffers.GpuBackbuffer.VSync'],['../classGondwana_1_1Configuration_1_1EngineConfiguration.html#abb8f7812aaf01854910f2230c530ec79',1,'Gondwana.Configuration.EngineConfiguration.VSync']]],
   ['vx_29',['VX',['../structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a471fc42b937c56add758dc22a4317ae8',1,'Gondwana::Drawing::Direct::Particles::Particle']]],
   ['vy_30',['VY',['../structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#afd5b512bb2081bca87998318d89e3bca',1,'Gondwana::Drawing::Direct::Particles::Particle']]]
 ];

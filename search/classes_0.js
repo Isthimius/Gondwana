@@ -11,6 +11,9 @@ var searchData=
   ['avaloniabitmaprendersurfaceadapter_8',['AvaloniaBitmapRenderSurfaceAdapter',['../classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html',1,'Gondwana::Avalonia::Rendering']]],
   ['avaloniabitmaprendersurfacecontrol_9',['AvaloniaBitmapRenderSurfaceControl',['../classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html',1,'Gondwana::Avalonia::Rendering']]],
   ['avaloniagamehost_10',['AvaloniaGameHost',['../classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html',1,'Gondwana::Avalonia::Hosting']]],
-  ['avaloniakeyboardadapter_11',['AvaloniaKeyboardAdapter',['../classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html',1,'Gondwana::Avalonia::Input::Keyboard']]],
-  ['avaloniamouseadapter_12',['AvaloniaMouseAdapter',['../classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html',1,'Gondwana::Avalonia::Input::Mouse']]]
+  ['avaloniagpugamehost_11',['AvaloniaGpuGameHost',['../classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html',1,'Gondwana::Avalonia::Hosting']]],
+  ['avaloniagpurendersurfaceadapter_12',['AvaloniaGpuRenderSurfaceAdapter',['../classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceAdapter.html',1,'Gondwana::Avalonia::Rendering']]],
+  ['avaloniagpurendersurfacecontrol_13',['AvaloniaGpuRenderSurfaceControl',['../classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html',1,'Gondwana::Avalonia::Rendering']]],
+  ['avaloniakeyboardadapter_14',['AvaloniaKeyboardAdapter',['../classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html',1,'Gondwana::Avalonia::Input::Keyboard']]],
+  ['avaloniamouseadapter_15',['AvaloniaMouseAdapter',['../classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html',1,'Gondwana::Avalonia::Input::Mouse']]]
 ];

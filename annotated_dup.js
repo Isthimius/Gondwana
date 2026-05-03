@@ -17,7 +17,8 @@ var annotated_dup =
       ] ],
       [ "Avalonia", "namespaceGondwana_1_1Avalonia.html", [
         [ "Hosting", "namespaceGondwana_1_1Avalonia_1_1Hosting.html", [
-          [ "AvaloniaGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost" ]
+          [ "AvaloniaGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost" ],
+          [ "AvaloniaGpuGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost" ]
         ] ],
         [ "Input", "namespaceGondwana_1_1Avalonia_1_1Input.html", [
           [ "Keyboard", "namespaceGondwana_1_1Avalonia_1_1Input_1_1Keyboard.html", [
@@ -29,7 +30,9 @@ var annotated_dup =
         ] ],
         [ "Rendering", "namespaceGondwana_1_1Avalonia_1_1Rendering.html", [
           [ "AvaloniaBitmapRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter" ],
-          [ "AvaloniaBitmapRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl" ]
+          [ "AvaloniaBitmapRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl" ],
+          [ "AvaloniaGpuRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceAdapter.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceAdapter" ],
+          [ "AvaloniaGpuRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl" ]
         ] ]
       ] ],
       [ "Collisions", "namespaceGondwana_1_1Collisions.html", [
@@ -203,7 +206,6 @@ var annotated_dup =
       [ "EngineInputSystems", "classGondwana_1_1EngineInputSystems.html", "classGondwana_1_1EngineInputSystems" ],
       [ "EngineManagers", "classGondwana_1_1EngineManagers.html", "classGondwana_1_1EngineManagers" ],
       [ "EngineState", "classGondwana_1_1EngineState.html", "classGondwana_1_1EngineState" ],
-      [ "IDeepCloneable", "interfaceGondwana_1_1IDeepCloneable.html", "interfaceGondwana_1_1IDeepCloneable" ],
       [ "IEngineDispatcher", "interfaceGondwana_1_1IEngineDispatcher.html", "interfaceGondwana_1_1IEngineDispatcher" ],
       [ "IUiDispatcher", "interfaceGondwana_1_1IUiDispatcher.html", "interfaceGondwana_1_1IUiDispatcher" ],
       [ "TypedValueBag", "classGondwana_1_1TypedValueBag.html", "classGondwana_1_1TypedValueBag" ],

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -106,171 +106,162 @@ $(document).ready(function(){initNavTree('TypedValueBag_8cs_source.html',''); in
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceGondwana.html#aaea774e0d5709f3c95b3bb8e843c97e3">   24</a></span><span class="keyword">public</span> readonly record <span class="keyword">struct </span>ValueKey&lt;T&gt;(string Name);</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="interfaceGondwana_1_1IDeepCloneable.html">   41</a></span><span class="keyword">public</span> <span class="keyword">interface </span><a class="code hl_interface" href="interfaceGondwana_1_1IDeepCloneable.html">IDeepCloneable</a>&lt;out T&gt;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="interfaceGondwana_1_1IDeepCloneable.html#abb9a2d5c47eb64e53012153f8f69dc29">   49</a></span>    T <a class="code hl_function" href="interfaceGondwana_1_1IDeepCloneable.html#abb9a2d5c47eb64e53012153f8f69dc29">DeepClone</a>();</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="};">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html">   73</a></span><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class </span><a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a> : ICloneable</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>{</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    [JsonIgnore]</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">private</span> readonly Dictionary&lt;string, object?&gt; _data = <span class="keyword">new</span>();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481">   95</a></span>    <span class="keyword">public</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481">TypedValueBag</a>()</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
 </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="foldopen" id="foldopen00102" data-start="{" data-end="};">
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html">  102</a></span><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class </span><a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a> : ICloneable</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>{</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [JsonIgnore]</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">private</span> readonly Dictionary&lt;string, object?&gt; _data = <span class="keyword">new</span>();</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="foldopen" id="foldopen00124" data-start="{" data-end="}">
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481">  124</a></span>    <span class="keyword">public</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481">TypedValueBag</a>()</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    {</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="foldopen" id="foldopen00118" data-start="{" data-end="}">
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a5e409a408522f7d09d19e2e0f7dc8cb9">  118</a></span>    <span class="keyword">public</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a5e409a408522f7d09d19e2e0f7dc8cb9">TypedValueBag</a>(<a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a> other)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">if</span> (other is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentNullException(nameof(other));</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">foreach</span> (var (key, value) in other._data)</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            _data[key] = CloneValue(value);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
 </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="foldopen" id="foldopen00147" data-start="{" data-end="}">
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a5e409a408522f7d09d19e2e0f7dc8cb9">  147</a></span>    <span class="keyword">public</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a5e409a408522f7d09d19e2e0f7dc8cb9">TypedValueBag</a>(<a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a> other)</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    {</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordflow">if</span> (other is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentNullException(nameof(other));</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">foreach</span> (var (key, value) in other._data)</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            _data[key] = CloneValue(value);</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="foldopen" id="foldopen00145" data-start="{" data-end="}">
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#af67e6dfa811e2c976fd2a55ee19f364b">  145</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> Set&lt;T&gt;(ValueKey&lt;T&gt; key, T value)</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        ValidateKeyName(key.Name);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        _data[key.Name] = value;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    }</div>
 </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
-<div class="foldopen" id="foldopen00174" data-start="{" data-end="}">
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#af67e6dfa811e2c976fd2a55ee19f364b">  174</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> Set&lt;T&gt;(ValueKey&lt;T&gt; key, T value)</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    {</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        ValidateKeyName(key.Name);</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        _data[key.Name] = value;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="foldopen" id="foldopen00190" data-start="{" data-end="}">
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a31034c42886d93f50f6d0d0bde6c9be7">  190</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> TryGet&lt;T&gt;(ValueKey&lt;T&gt; key, out T? value)</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        ValidateKeyName(key.Name);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (!_data.TryGetValue(key.Name, out var raw))</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            value = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        }</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">if</span> (raw is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            value = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">if</span> (raw is T typed)</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            value = typed;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidCastException(</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            $<span class="stringliteral">&quot;Value for key &#39;{key.Name}&#39; is of runtime type &#39;{raw.GetType().FullName}&#39;, &quot;</span> +</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            $<span class="stringliteral">&quot;which is not assignable to requested type &#39;{typeof(T).FullName}&#39;.&quot;</span>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
 </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
-<div class="foldopen" id="foldopen00219" data-start="{" data-end="}">
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a31034c42886d93f50f6d0d0bde6c9be7">  219</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> TryGet&lt;T&gt;(ValueKey&lt;T&gt; key, out T? value)</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    {</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        ValidateKeyName(key.Name);</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keywordflow">if</span> (!_data.TryGetValue(key.Name, out var raw))</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        {</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            value = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        }</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="keywordflow">if</span> (raw is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        {</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            value = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        }</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        <span class="keywordflow">if</span> (raw is T typed)</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        {</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            value = typed;</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        }</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidCastException(</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            $<span class="stringliteral">&quot;Value for key &#39;{key.Name}&#39; is of runtime type &#39;{raw.GetType().FullName}&#39;, &quot;</span> +</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            $<span class="stringliteral">&quot;which is not assignable to requested type &#39;{typeof(T).FullName}&#39;.&quot;</span>);</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="foldopen" id="foldopen00240" data-start="{" data-end="}">
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#aa7e70d80d3b46d0b57a8fdb814ebc705">  240</a></span>    <span class="keyword">public</span> T Get&lt;T&gt;(ValueKey&lt;T&gt; key, T defaultValue = <span class="keywordflow">default</span>!)</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        <span class="keywordflow">return</span> TryGet(key, out var v) &amp;&amp; v is not <span class="keyword">null</span></div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            ? v</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            : defaultValue;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    }</div>
 </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
-<div class="foldopen" id="foldopen00269" data-start="{" data-end="}">
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#aa7e70d80d3b46d0b57a8fdb814ebc705">  269</a></span>    <span class="keyword">public</span> T Get&lt;T&gt;(ValueKey&lt;T&gt; key, T defaultValue = <span class="keywordflow">default</span>!)</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    {</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keywordflow">return</span> TryGet(key, out var v) &amp;&amp; v is not <span class="keyword">null</span></div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            ? v</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            : defaultValue;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="foldopen" id="foldopen00262" data-start="{" data-end="}">
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#aca6e78701f9ddb6557e80e4565eb984b">  262</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> Remove&lt;T&gt;(ValueKey&lt;T&gt; key)</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    {</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        ValidateKeyName(key.Name);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <span class="keywordflow">return</span> _data.Remove(key.Name);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    }</div>
+</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
+<div class="foldopen" id="foldopen00271" data-start="{" data-end="}">
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#aec90b25e36a728090cecf4b6a410b94a">  271</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#aec90b25e36a728090cecf4b6a410b94a">Clear</a>()</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    {</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        _data.Clear();</div>
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    }</div>
 </div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="foldopen" id="foldopen00291" data-start="{" data-end="}">
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#aca6e78701f9ddb6557e80e4565eb984b">  291</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> Remove&lt;T&gt;(ValueKey&lt;T&gt; key)</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    {</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        ValidateKeyName(key.Name);</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">return</span> _data.Remove(key.Name);</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    }</div>
+<div class="foldopen" id="foldopen00293" data-start="{" data-end="}">
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a9fb1c3d69507270040aa919c4bb81137">  293</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a9fb1c3d69507270040aa919c4bb81137">MergeFrom</a>(<a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a>? incoming, <span class="keywordtype">bool</span> overwriteExisting = <span class="keyword">false</span>)</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    {</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <span class="keywordflow">if</span> (incoming is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span> </div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        <span class="keywordflow">foreach</span> (var (key, value) in incoming._data)</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        {</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            <span class="keywordflow">if</span> (!overwriteExisting &amp;&amp; _data.ContainsKey(key))</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            _data[key] = CloneValue(value);</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        }</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    }</div>
 </div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="foldopen" id="foldopen00300" data-start="{" data-end="}">
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#aec90b25e36a728090cecf4b6a410b94a">  300</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#aec90b25e36a728090cecf4b6a410b94a">Clear</a>()</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    {</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        _data.Clear();</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    }</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
+<div class="foldopen" id="foldopen00319" data-start="{" data-end="}">
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a1aecaf38c23c6f2702f1c92c2f298918">  319</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a1aecaf38c23c6f2702f1c92c2f298918">Contains</a>(<span class="keywordtype">string</span> keyName)</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    {</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        ValidateKeyName(keyName);</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        <span class="keywordflow">return</span> _data.ContainsKey(keyName);</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    }</div>
 </div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
-<div class="foldopen" id="foldopen00322" data-start="{" data-end="}">
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a9fb1c3d69507270040aa919c4bb81137">  322</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a9fb1c3d69507270040aa919c4bb81137">MergeFrom</a>(<a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a>? incoming, <span class="keywordtype">bool</span> overwriteExisting = <span class="keyword">false</span>)</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    {</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keywordflow">if</span> (incoming is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keywordflow">foreach</span> (var (key, value) in incoming._data)</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        {</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>            <span class="keywordflow">if</span> (!overwriteExisting &amp;&amp; _data.ContainsKey(key))</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            _data[key] = CloneValue(value);</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        }</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    }</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
+<div class="foldopen" id="foldopen00340" data-start="{" data-end="}">
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a6eeaddfdfcf347f163ec6b1175b2b306">  340</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> Contains&lt;T&gt;(ValueKey&lt;T&gt; key)</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    {</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        ValidateKeyName(key.Name);</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        <span class="keywordflow">return</span> _data.ContainsKey(key.Name);</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    }</div>
 </div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
-<div class="foldopen" id="foldopen00348" data-start="{" data-end="}">
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a1aecaf38c23c6f2702f1c92c2f298918">  348</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a1aecaf38c23c6f2702f1c92c2f298918">Contains</a>(<span class="keywordtype">string</span> keyName)</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    {</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        ValidateKeyName(keyName);</div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        <span class="keywordflow">return</span> _data.ContainsKey(keyName);</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>    }</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span> </div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a4789210939144a6f8ac01beadaf647d2">  356</a></span>    <span class="keyword">public</span> <a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a4789210939144a6f8ac01beadaf647d2">Clone</a>() =&gt; <span class="keyword">new</span>(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    <span class="keywordtype">object</span> ICloneable.<a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a4789210939144a6f8ac01beadaf647d2">Clone</a>() =&gt; Clone();</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
+<div class="foldopen" id="foldopen00378" data-start="{" data-end="}">
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a8bdc9933dad81e8bb0b3ffed08b40dce">  378</a></span>    <span class="keyword">public</span> Dictionary&lt;string, object?&gt; <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a8bdc9933dad81e8bb0b3ffed08b40dce">ToDictionary</a>()</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    {</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> Dictionary&lt;string, object?&gt;(_data);</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    }</div>
 </div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
-<div class="foldopen" id="foldopen00369" data-start="{" data-end="}">
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a6eeaddfdfcf347f163ec6b1175b2b306">  369</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> Contains&lt;T&gt;(ValueKey&lt;T&gt; key)</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    {</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        ValidateKeyName(key.Name);</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        <span class="keywordflow">return</span> _data.ContainsKey(key.Name);</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    }</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span> </div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">object</span>? CloneValue(<span class="keywordtype">object</span>? value)</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>    {</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>        <span class="keywordflow">if</span> (value is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>            <span class="keywordflow">return</span> <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span> </div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>        <span class="keywordflow">if</span> (value is Array array)</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>            <span class="keywordflow">return</span> array.Clone();</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span> </div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>        <span class="keywordflow">if</span> (value is ICloneable cloneable)</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>            <span class="keywordflow">return</span> cloneable.Clone();</div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span> </div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>        <span class="keywordflow">return</span> value;</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>    }</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span> </div>
+<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> ValidateKeyName(<span class="keywordtype">string</span> keyName)</div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>    {</div>
+<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(keyName))</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentException(<span class="stringliteral">&quot;Value bag keys may not be null, empty, or whitespace.&quot;</span>, nameof(keyName));</div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>    }</div>
+<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>}</div>
 </div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span> </div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a4789210939144a6f8ac01beadaf647d2">  385</a></span>    <span class="keyword">public</span> <a class="code hl_class" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a> <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a4789210939144a6f8ac01beadaf647d2">Clone</a>() =&gt; <span class="keyword">new</span>(<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span> </div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    <span class="keywordtype">object</span> ICloneable.<a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a4789210939144a6f8ac01beadaf647d2">Clone</a>() =&gt; Clone();</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span> </div>
-<div class="foldopen" id="foldopen00407" data-start="{" data-end="}">
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno"><a class="line" href="classGondwana_1_1TypedValueBag.html#a8bdc9933dad81e8bb0b3ffed08b40dce">  407</a></span>    <span class="keyword">public</span> Dictionary&lt;string, object?&gt; <a class="code hl_function" href="classGondwana_1_1TypedValueBag.html#a8bdc9933dad81e8bb0b3ffed08b40dce">ToDictionary</a>()</div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    {</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> Dictionary&lt;string, object?&gt;(_data);</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    }</div>
-</div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span> </div>
-<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">object</span>? CloneValue(<span class="keywordtype">object</span>? value)</div>
-<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>    {</div>
-<div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span>        <span class="keywordflow">if</span> (value is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span>            <span class="keywordflow">return</span> <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span> </div>
-<div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span>        <span class="keywordflow">if</span> (value is Array array)</div>
-<div class="line"><a id="l00450" name="l00450"></a><span class="lineno">  450</span>            <span class="keywordflow">return</span> array.Clone();</div>
-<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span> </div>
-<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span>        <span class="keywordflow">if</span> (value is ICloneable cloneable)</div>
-<div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span>            <span class="keywordflow">return</span> cloneable.Clone();</div>
-<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span> </div>
-<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>        <span class="keywordflow">return</span> value;</div>
-<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>    }</div>
-<div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span> </div>
-<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> ValidateKeyName(<span class="keywordtype">string</span> keyName)</div>
-<div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span>    {</div>
-<div class="line"><a id="l00469" name="l00469"></a><span class="lineno">  469</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(keyName))</div>
-<div class="line"><a id="l00470" name="l00470"></a><span class="lineno">  470</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentException(<span class="stringliteral">&quot;Value bag keys may not be null, empty, or whitespace.&quot;</span>, nameof(keyName));</div>
-<div class="line"><a id="l00471" name="l00471"></a><span class="lineno">  471</span>    }</div>
-<div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span>}</div>
-</div>
-<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html">Gondwana.TypedValueBag</a></div><div class="ttdoc">A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00102">TypedValueBag.cs:103</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a1aecaf38c23c6f2702f1c92c2f298918"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a1aecaf38c23c6f2702f1c92c2f298918">Gondwana.TypedValueBag.Contains</a></div><div class="ttdeci">bool Contains(string keyName)</div><div class="ttdoc">Determines whether the bag contains a value for the specified key name, regardless of type.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00348">TypedValueBag.cs:348</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a37b2e5a4289bb731a75ea77fb904f481"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481">Gondwana.TypedValueBag.TypedValueBag</a></div><div class="ttdeci">TypedValueBag()</div><div class="ttdoc">Initializes a new instance of the TypedValueBag class.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00124">TypedValueBag.cs:124</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html">Gondwana.TypedValueBag</a></div><div class="ttdoc">A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00073">TypedValueBag.cs:74</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a1aecaf38c23c6f2702f1c92c2f298918"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a1aecaf38c23c6f2702f1c92c2f298918">Gondwana.TypedValueBag.Contains</a></div><div class="ttdeci">bool Contains(string keyName)</div><div class="ttdoc">Determines whether the bag contains a value for the specified key name, regardless of type.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00319">TypedValueBag.cs:319</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a37b2e5a4289bb731a75ea77fb904f481"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481">Gondwana.TypedValueBag.TypedValueBag</a></div><div class="ttdeci">TypedValueBag()</div><div class="ttdoc">Initializes a new instance of the TypedValueBag class.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00095">TypedValueBag.cs:95</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a4789210939144a6f8ac01beadaf647d2"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a4789210939144a6f8ac01beadaf647d2">Gondwana.TypedValueBag.Clone</a></div><div class="ttdeci">TypedValueBag Clone()</div><div class="ttdoc">Creates a copy of this TypedValueBag.</div></div>
-<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a5e409a408522f7d09d19e2e0f7dc8cb9"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a5e409a408522f7d09d19e2e0f7dc8cb9">Gondwana.TypedValueBag.TypedValueBag</a></div><div class="ttdeci">TypedValueBag(TypedValueBag other)</div><div class="ttdoc">Initializes a new instance of the TypedValueBag class by performing a copy of another TypedValueBag.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00147">TypedValueBag.cs:147</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a8bdc9933dad81e8bb0b3ffed08b40dce"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a8bdc9933dad81e8bb0b3ffed08b40dce">Gondwana.TypedValueBag.ToDictionary</a></div><div class="ttdeci">Dictionary&lt; string, object?&gt; ToDictionary()</div><div class="ttdoc">Produces a shallow snapshot of the bag's current contents.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00407">TypedValueBag.cs:407</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a9fb1c3d69507270040aa919c4bb81137"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a9fb1c3d69507270040aa919c4bb81137">Gondwana.TypedValueBag.MergeFrom</a></div><div class="ttdeci">void MergeFrom(TypedValueBag? incoming, bool overwriteExisting=false)</div><div class="ttdoc">Merges values from another TypedValueBag into this instance.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00322">TypedValueBag.cs:322</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_aec90b25e36a728090cecf4b6a410b94a"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#aec90b25e36a728090cecf4b6a410b94a">Gondwana.TypedValueBag.Clear</a></div><div class="ttdeci">void Clear()</div><div class="ttdoc">Removes all values from the bag.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00300">TypedValueBag.cs:300</a></div></div>
-<div class="ttc" id="ainterfaceGondwana_1_1IDeepCloneable_html"><div class="ttname"><a href="interfaceGondwana_1_1IDeepCloneable.html">Gondwana.IDeepCloneable</a></div><div class="ttdoc">Defines a lightweight contract for values that can produce an explicit deep clone of themselves.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00041">TypedValueBag.cs:42</a></div></div>
-<div class="ttc" id="ainterfaceGondwana_1_1IDeepCloneable_html_abb9a2d5c47eb64e53012153f8f69dc29"><div class="ttname"><a href="interfaceGondwana_1_1IDeepCloneable.html#abb9a2d5c47eb64e53012153f8f69dc29">Gondwana.IDeepCloneable.DeepClone</a></div><div class="ttdeci">T DeepClone()</div><div class="ttdoc">Creates a deep clone of the current instance.</div></div>
+<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a5e409a408522f7d09d19e2e0f7dc8cb9"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a5e409a408522f7d09d19e2e0f7dc8cb9">Gondwana.TypedValueBag.TypedValueBag</a></div><div class="ttdeci">TypedValueBag(TypedValueBag other)</div><div class="ttdoc">Initializes a new instance of the TypedValueBag class by performing a copy of another TypedValueBag.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00118">TypedValueBag.cs:118</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a8bdc9933dad81e8bb0b3ffed08b40dce"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a8bdc9933dad81e8bb0b3ffed08b40dce">Gondwana.TypedValueBag.ToDictionary</a></div><div class="ttdeci">Dictionary&lt; string, object?&gt; ToDictionary()</div><div class="ttdoc">Produces a shallow snapshot of the bag's current contents.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00378">TypedValueBag.cs:378</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_a9fb1c3d69507270040aa919c4bb81137"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#a9fb1c3d69507270040aa919c4bb81137">Gondwana.TypedValueBag.MergeFrom</a></div><div class="ttdeci">void MergeFrom(TypedValueBag? incoming, bool overwriteExisting=false)</div><div class="ttdoc">Merges values from another TypedValueBag into this instance.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00293">TypedValueBag.cs:293</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1TypedValueBag_html_aec90b25e36a728090cecf4b6a410b94a"><div class="ttname"><a href="classGondwana_1_1TypedValueBag.html#aec90b25e36a728090cecf4b6a410b94a">Gondwana.TypedValueBag.Clear</a></div><div class="ttdeci">void Clear()</div><div class="ttdoc">Removes all values from the bag.</div><div class="ttdef"><b>Definition</b> <a href="TypedValueBag_8cs_source.html#l00271">TypedValueBag.cs:271</a></div></div>
 <div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="Gondwana_8Audio_8Midi_2EngineExtensions_8cs_source.html#l00001">EngineExtensions.cs:1</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

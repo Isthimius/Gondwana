@@ -1,13 +1,28 @@
 var classGondwana_1_1Configuration_1_1EngineConfiguration =
 [
+    [ "ClearConfigurationSection", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ad1dc9477f1c07a45432694155dd29238", null ],
+    [ "ClearConfigurationSections", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a62573fe2e1fb88005fa0b7df374e1bd0", null ],
+    [ "CreateConfigurationSection", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aa7490aacf618bb150c94358c56ddcc1e", null ],
+    [ "GetConfigurationSection", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a73007501e1889d0f883f80f1ae026240", null ],
+    [ "GetConfigurationValue", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a8a486d657314f73a61361153af42549d", null ],
+    [ "HasConfigurationSection", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aecc69edcc3845171cc3c712ad57afdee", null ],
+    [ "HasConfigurationValue", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#af25afd47c40e226753d165099c2a1aaa", null ],
+    [ "RemoveConfigurationSection", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a58f71e36a5770c87d56bebb970387667", null ],
+    [ "RemoveConfigurationValue", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a349658bb8d7190e75df503120f3a62a7", null ],
+    [ "SetConfigurationValue", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aa1cf9d1068cf9ac1c7c7b8a7b346e03c", null ],
+    [ "ConfigurationSections", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#af0867377c22596c6ec503c2ace2da69a", null ],
     [ "FlushAsyncLogsOnShutdown", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aeb4cba8fce3cc6bf8a4bfcf377e89a0d", null ],
     [ "LoggingMode", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab2115476b30f35d3cb762a3f2a4a979f", null ],
     [ "LoggingQueueCapacity", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a1256ecbc22e69298a52eda5eae3a142f", null ],
+    [ "MsaaSampleCount", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab614f324c6124fb90cbd818886755602", null ],
     [ "SamplingTimeForCPS", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac855c43adbb76108ebf60b3a4e607f37", null ],
     [ "SamplingTimeForCPSTicks", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a54425e8fee2e8de5f3bb71b94fa9bcbc", null ],
     [ "StateFiles", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a9b0e346219ec6961dcdfb9425538bc55", null ],
     [ "TargetFPS", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33", null ],
+    [ "this[string section, string key]", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a386b698cf8ebe1fe937f980e6b51b3b7", null ],
+    [ "this[string section]", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#adcbcc5161c8fa042afcebf9d4fe650fe", null ],
     [ "TimeBetweenGamepadEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a723ed7b99319baaa075ddbe6e2d90699", null ],
     [ "TimeBetweenKeyboardEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac1cf26699f1a240bc2face7c098067d8", null ],
-    [ "TimeBetweenMouseEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a5c881d1a987fc214a2f8b4913add7ccd", null ]
+    [ "TimeBetweenMouseEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a5c881d1a987fc214a2f8b4913add7ccd", null ],
+    [ "VSync", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#abb8f7812aaf01854910f2230c530ec79", null ]
 ];

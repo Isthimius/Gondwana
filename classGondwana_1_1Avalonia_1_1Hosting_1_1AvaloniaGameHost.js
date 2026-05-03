@@ -10,5 +10,7 @@ var classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost =
     [ "OnGamepadManagerInitialized", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a7b4043aea948965c5969998f9db87bf0", null ],
     [ "OnKeyboardAdapterInitialized", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a65eeb9527f54d6f5da5dd6f2fa221ffd", null ],
     [ "OnMouseAdapterInitialized", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a9c97a8a396c01678347791000df2fb14", null ],
+    [ "StartEngine", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a536a62fd84fd846548428d08c5d56d0b", null ],
+    [ "StopEngine", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#aa5148eb22c6fbf29329e75f22c4e534b", null ],
     [ "RenderSurface", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a0d90853861d6a58908a2484a700b5a12", null ]
 ];

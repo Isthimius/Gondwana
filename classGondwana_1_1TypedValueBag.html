@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -157,7 +157,7 @@ Public Member Functions</h2></td></tr>
 <li>
 If a stored value is <code>null</code>, it remains <code>null</code>.   </li>
 <li>
-If a stored value implements IDeepCloneable&lt;T&gt;, that deep-clone path is used.   </li>
+</li>
 <li>
 If a stored value implements ICloneable, that clone path is used.   </li>
 <li>
@@ -165,7 +165,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
 </ul>
 <p>This means immutable values behave exactly as expected, while mutable reference types can opt into stronger cloning semantics by implementing one of the supported clone contracts. </p>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00102">102</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00073">73</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a37b2e5a4289bb731a75ea77fb904f481" name="a37b2e5a4289bb731a75ea77fb904f481"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a37b2e5a4289bb731a75ea77fb904f481">&#9670;&#160;</a></span>TypedValueBag() <span class="overload">[1/2]</span></h2>
@@ -184,7 +184,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
 
 <p>Initializes a new instance of the TypedValueBag class. </p>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00124">124</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00095">95</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -220,7 +220,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
 </dl>
 <p>This constructor is intended for scenarios such as runtime duplication, snapshot creation, undo/redo support, and general engine-state isolation. The exact depth of the copy depends on the clone capabilities of the stored values themselves. </p>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00147">147</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00118">118</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -242,7 +242,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
 
 <p>Removes all values from the bag. </p>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00300">300</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00271">271</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -298,7 +298,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00348">348</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00319">319</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -339,7 +339,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00369">369</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00340">340</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -392,7 +392,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00269">269</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00240">240</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -432,7 +432,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
 </dl>
 <p>Values copied from <em>incoming</em>  pass through the same clone strategy used by Clone(). This avoids unnecessary sharing where the stored types expose a supported clone mechanism. </p>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00322">322</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00293">293</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -473,7 +473,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00291">291</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00262">262</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -525,7 +525,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00174">174</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00145">145</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -548,7 +548,7 @@ Otherwise, the stored reference is copied as-is (shallow copy).   </li>
 <p>This method is primarily intended for diagnostics, inspection, or external code that wants a plain dictionary view of the stored runtime values. </p>
 <dl class="section return"><dt>Returns</dt><dd>A new dictionary containing the current key/value pairs from the bag. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00407">407</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00378">378</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
@@ -609,7 +609,7 @@ A value exists and is <code>null</code>: returns <code>true</code>, with <em>val
 A value exists and is non-null: the method verifies type compatibility before returning it.  </li>
 </ol>
 
-<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00219">219</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TypedValueBag_8cs_source.html#l00190">190</a> of file <a class="el" href="TypedValueBag_8cs_source.html">TypedValueBag.cs</a>.</p>
 
 </div>
 </div>
