@@ -101,7 +101,7 @@ Write-Host "Pre-flight checks passed."
 # ----------------------------------------
 
 # Refresh tags from remote
-Invoke-Git @("fetch", "--tags", $Remote)
+Invoke-Git @("fetch", "--tags", "--force", $Remote)
 
 # Check local tag
 $localTagExists = $false
