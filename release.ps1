@@ -153,7 +153,7 @@ if ($PreviewOnly) {
 # HARD CONFIRMATION
 # ----------------------------------------
 
-$confirmation = Read-Host "This will update $ChangelogPath, commit it, deploy version $tagName, and push a release tag. Once deployed to NuGet, this cannot be undone. Type DEPLOY to confirm"
+$confirmation = Read-Host "This will update $ChangelogPath, commit it, deploy version $tagName, and push a release tag. Once deployed to NuGet, this cannot be undone. (Run with -PreviewOnly to preview without deploying.) Type DEPLOY to confirm"
 
 if ($confirmation -cne "DEPLOY") {
     Write-Host "Deployment cancelled."
@@ -199,14 +199,17 @@ else {
 # TAG HANDLING
 # ----------------------------------------
 
+# Refresh tags from remote
 Invoke-Git @("fetch", "--tags", "--force", $Remote)
 
+# Check local tag
 $localTagExists = $false
 git rev-parse -q --verify "refs/tags/$tagName" *> $null
 if ($LASTEXITCODE -eq 0) {
     $localTagExists = $true
 }
 
+# Check remote tag
 $remoteTagExists = $false
 $remoteCheck = git ls-remote --tags $Remote "refs/tags/$tagName"
 if (-not [string]::IsNullOrWhiteSpace($remoteCheck)) {
@@ -228,7 +231,10 @@ else {
     Write-Host "Tag $tagName does not exist. Creating it."
 }
 
+# Create tag at current HEAD
 Invoke-Git @("tag", $tagName)
+
+# Push tag
 Invoke-Git @("push", $Remote, $tagName)
 
 Write-Host ""
