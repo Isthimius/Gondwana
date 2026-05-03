@@ -1,0 +1,54 @@
+# git-cliff configuration for Gondwana
+# Generates release notes from BOTH PR merge commits and direct commits to master.
+# Docs: https://git-cliff.org/docs/
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+"""
+body = """
+{% if version %}\
+# v{{ version | trim_start_matches(pat="v") }} - {{ timestamp | date(format="%B %d, %Y") }}
+{% else %}\
+# [Unreleased]
+{% endif %}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+## {{ group | striptags | trim | upper_first }}
+{% for commit in commits %}
+- {{ commit.message | upper_first }}{% if commit.remote.pr_number %} ([#{{ commit.remote.pr_number }}]({{ commit.remote.pr_url }})){% endif %}
+{% endfor %}
+
+{% endfor %}
+"""
+trim = true
+postprocessors = []
+
+[git]
+# Conventional commits get parsed cleanly, but direct/non-conventional commits are NOT filtered out.
+conventional_commits = true
+filter_unconventional = false
+split_commits = false
+protect_breaking_commits = true
+filter_commits = false
+sort_commits = "newest"
+tag_pattern = "v[0-9].*"
+
+# Group conventional commits first. Anything else falls through to Changed.
+commit_parsers = [
+    { message = "^feat", group = "<!-- 0 -->Added" },
+    { message = "^fix", group = "<!-- 1 -->Fixed" },
+    { message = "^perf", group = "<!-- 2 -->Performance" },
+    { message = "^refactor", group = "<!-- 3 -->Refactoring" },
+    { message = "^docs", group = "<!-- 4 -->Documentation" },
+    { message = "^test", group = "<!-- 5 -->Tests" },
+    { message = "^build", group = "<!-- 6 -->Build" },
+    { message = "^ci", group = "<!-- 7 -->CI" },
+    { message = "^chore", group = "<!-- 8 -->Maintenance" },
+    { message = "^revert", group = "<!-- 9 -->Reverted" },
+    { body = ".*security", group = "<!-- 10 -->Security" },
+    { message = ".*", group = "<!-- 99 -->Changed" },
+]
