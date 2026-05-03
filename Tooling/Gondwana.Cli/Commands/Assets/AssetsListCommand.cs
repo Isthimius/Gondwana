@@ -16,6 +16,10 @@ internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
         [CommandOption("-t|--type")]
         [Description("Filter by asset type (e.g. Image, Audio, Video, Font, Cursor, Misc).")]
         public string? TypeFilter { get; init; }
+
+        [CommandOption("-p|--password")]
+        [Description("Password required to open a password-protected or encrypted bundle.")]
+        public string? Password { get; init; }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -43,7 +47,7 @@ internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
         AssetsFile assetFile;
         try
         {
-            assetFile = AssetsFile.LoadOrCreate(path);
+            assetFile = AssetsFile.LoadOrCreate(path, settings.Password);
         }
         catch (Exception ex)
         {

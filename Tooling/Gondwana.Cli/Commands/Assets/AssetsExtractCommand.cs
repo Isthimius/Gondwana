@@ -25,6 +25,10 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
         [Description("Overwrite existing files.")]
         [DefaultValue(false)]
         public bool Overwrite { get; init; }
+
+        [CommandOption("-p|--password")]
+        [Description("Password required to open a password-protected or encrypted bundle.")]
+        public string? Password { get; init; }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -53,7 +57,7 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
         AssetsFile assetFile;
         try
         {
-            assetFile = AssetsFile.LoadOrCreate(path);
+            assetFile = AssetsFile.LoadOrCreate(path, settings.Password);
         }
         catch (Exception ex)
         {

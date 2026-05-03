@@ -26,6 +26,10 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         [Description("C# class name (default: AssetKeys).")]
         [DefaultValue("AssetKeys")]
         public string ClassName { get; init; } = "AssetKeys";
+
+        [CommandOption("-p|--password")]
+        [Description("Password required to open a password-protected or encrypted bundle.")]
+        public string? Password { get; init; }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -41,7 +45,7 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
         AssetsFile assetFile;
         try
         {
-            assetFile = AssetsFile.LoadOrCreate(path);
+            assetFile = AssetsFile.LoadOrCreate(path, settings.Password);
         }
         catch (Exception ex)
         {
