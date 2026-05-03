@@ -17,7 +17,7 @@
       "type": "parameter",
       "datatype": "choice",
       "choices": [
-        { "choice": "bitmap", "description": "CPU bitmap backbuffer (default, works everywhere)" },
+        { "choice": "bitmap", "description": "CPU bitmap backbuffer (default, widest compatibility)" },
         { "choice": "gpu",    "description": "GPU-accelerated OpenGL backbuffer" }
       ],
       "defaultValue": "bitmap",
