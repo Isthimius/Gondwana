@@ -37,6 +37,13 @@ filter_commits = false
 sort_commits = "newest"
 tag_pattern = "v[0-9].*"
 
+# Strip author/co-author trailer lines (added by GitHub Copilot and GitHub itself).
+commit_preprocessors = [
+    { pattern = "(?m)^Co-authored-by:.*\n?", replace = "" },
+    { pattern = "(?m)^Agent-Logs-Url:.*\n?", replace = "" },
+    { pattern = "(?m)^Signed-off-by:.*\n?", replace = "" },
+]
+
 # Group conventional commits first. Anything else falls through to Changed.
 commit_parsers = [
     { message = "^feat", group = "<!-- 0 -->Added" },
