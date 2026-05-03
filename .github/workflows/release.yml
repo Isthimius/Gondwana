@@ -265,8 +265,8 @@ jobs:
           git worktree remove "$ghpages_dir" --force
 
       # ---------------------------
-      # Merge release branch into master
+      # Push current HEAD to master
       # ---------------------------
-      - name: Merge release branch into master
+      - name: Push current HEAD to master
         run: |
           git push origin HEAD:refs/heads/master
