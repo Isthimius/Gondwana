@@ -47,12 +47,11 @@ jobs:
             # Strip frontmatter (everything between the first two "---" lines)
             body=$(awk '/^---$/{n++; if(n==2){found=1; next}} found' "$file")
 
-            number=$(gh issue create \
+            url=$(gh issue create \
               --repo "$REPO" \
               --title "$title" \
-              --body "$body" \
-              --json number \
-              -q '.number')
+              --body "$body")
+            number=$(echo "$url" | grep -oE '[0-9]+$')
             echo "Created #$number: $title"
           done
           echo "Done."
