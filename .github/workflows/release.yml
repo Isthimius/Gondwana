@@ -113,181 +113,39 @@ jobs:
       # ---------------------------
       # GitHub Release
       # ---------------------------
+      - name: Extract release notes from CHANGELOG.md
+        shell: bash
+        run: |
+          if [ ! -f CHANGELOG.md ]; then
+            echo "CHANGELOG.md was not found. Run release.ps1 so git-cliff can update the changelog before tagging."
+            exit 1
+          fi
+
+          # Pull the newest release section from CHANGELOG.md. The release.ps1
+          # script prepends this section before creating the tag, so the tagged
+          # commit is the source of truth for the GitHub Release body.
+          awk '
+            /^## \[/ {
+              section++
+              if (section > 1) exit
+            }
+            section == 1 { print }
+          ' CHANGELOG.md > RELEASE_NOTES.md
+
+          if [ ! -s RELEASE_NOTES.md ]; then
+            echo "Could not extract release notes from CHANGELOG.md."
+            exit 1
+          fi
+
+          cat RELEASE_NOTES.md
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: Gondwana ${{ env.VERSION }}
           tag_name: ${{ github.ref_name }}
-          generate_release_notes: true
+          body_path: RELEASE_NOTES.md
           files: Gondwana-${{ env.VERSION }}-binaries.zip
-
-      # ---------------------------
-      # Update CHANGELOG.md
-      # ---------------------------
-      - name: Update CHANGELOG.md
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          release_body=$(gh release view "${{ github.ref_name }}" --json body --jq '.body')
-
-          # Write the changelog processing script to a temp file so it can use
-          # single/double quotes freely without shell-escaping nightmares.
-          cat > /tmp/process_changelog.py << 'PYEOF'
-          import sys, re, collections
-
-          body = sys.stdin.read()
-          # Strip HTML comments
-          body = re.sub(r'<!--.*?-->', '', body, flags=re.DOTALL)
-          # Strip New Contributors section
-          body = re.sub(r'^## New Contributors\n(?:\* @[^\n]*\n)*', '', body, flags=re.MULTILINE)
-          # Strip author attribution and PR URLs
-          body = re.sub(r' by @\S+ in https?://\S+', '', body)
-          # Collapse excessive blank lines
-          body = re.sub(r'\n{3,}', '\n\n', body).strip()
-
-          # --- Parse sections produced by GitHub release notes ---
-          # Format: "## What's Changed" / "### Category" / "* bullet" / "**Full Changelog**: URL"
-          sections = collections.OrderedDict()
-          full_changelog = ''
-          current = None
-          for line in body.splitlines():
-              if re.match(r'^#+ What', line):
-                  continue
-              if line.startswith('### '):
-                  current = line[4:].strip()
-                  sections.setdefault(current, [])
-              elif line.startswith('* ') and current is not None:
-                  sections[current].append(line)
-              elif line.startswith('**Full Changelog**'):
-                  full_changelog = line
-
-          # --- Assembly detection ---
-          # Maps a conventional-commit scope (the part inside parentheses) to an
-          # assembly section title.  None means "keep in Other Changes".
-          SCOPE_MAP = {
-              'spotavalonia': 'Demos',
-              'spot':         'Demos',
-              'spotgl':       'Demos',
-              'slider':       'Demos',
-              'audio':        'Gondwana.Audio.Midi',
-              'midi':         'Gondwana.Audio.Midi',
-              'avalonia':     'Gondwana.Avalonia',
-              'winforms':     'Gondwana.WinForms',
-              'hosting':      'Gondwana.Hosting',
-              'input':        'Gondwana.Input.SDL2',
-              'sdl2':         'Gondwana.Input.SDL2',
-              'video':        'Gondwana.Video',
-              'cli':          'Gondwana.Cli',
-              'templates':    'Gondwana.Templates',
-              # Infrastructure scopes stay in Other Changes
-              'release': None, 'changelog': None, 'docs': None,
-              'ci': None, 'chore': None,
-          }
-
-          # Keyword rules applied to the lowercase bullet text when no scope matches.
-          # Each entry is (section_title, [regex_patterns]).  First match wins.
-          # Gondwana.Cli comes before Gondwana.Avalonia so "gondwana new … avalonia"
-          # is attributed to the CLI rather than to the Avalonia library.
-          ASSEMBLY_RULES = [
-              ('Demos', [
-                  r'\bspotavalonia\b', r'\bspotgl\b', r'\bspot\b', r'\bslider\b',
-              ]),
-              ('Gondwana.Audio.Midi', [
-                  r'\baudio\b', r'\bmidi\b',
-              ]),
-              ('Gondwana.Cli', [
-                  r'gondwana\.cli',
-                  # 'gondwana templates' here is the CLI sub-command, not the assembly
-                  r'gondwana (?:new|pack|doctor|help|templates)\b',
-                  r'\bglobal tool\b',
-              ]),
-              ('Gondwana.Templates', [
-                  r'gondwana\.templates', r'\bdotnet new\b', r'\btemplates?\b',
-              ]),
-              ('Gondwana.Avalonia', [
-                  r'gondwana\.avalonia', r'\bavalonia\b',
-              ]),
-              ('Gondwana.WinForms', [
-                  r'gondwana\.winforms', r'\bwinforms\b',
-              ]),
-              ('Gondwana.Hosting', [
-                  r'gondwana\.hosting',
-              ]),
-              ('Gondwana.Input.SDL2', [
-                  r'gondwana\.input', r'\bsdl2?\b',
-              ]),
-              ('Gondwana.Video', [
-                  r'gondwana\.video', r'\bvideo\b',
-              ]),
-              ('Gondwana (Core)', [
-                  r'\bgpubackbuffer\b', r'\bmsaa\b', r'\bvsync\b', r'\bbackbuffer\b',
-                  r'\bengine\b', r'\bscene\b',
-              ]),
-          ]
-
-          def detect_assembly(bullet):
-              text = bullet.lstrip('* ').strip()
-              # Check for a conventional-commit scope: type(scope): description
-              m = re.match(r'^\w+\(([^)]+)\)\s*:', text)
-              if m:
-                  scope = m.group(1).lower()
-                  if scope in SCOPE_MAP:
-                      # SCOPE_MAP maps infra scopes (release, changelog, …) to None.
-                      # Returning None here causes the caller to bucket the bullet
-                      # in "Other Changes" without attempting keyword matching.
-                      return SCOPE_MAP[scope]
-              # Fall back to keyword matching
-              lower = text.lower()
-              for title, patterns in ASSEMBLY_RULES:
-                  for p in patterns:
-                      if re.search(p, lower):
-                          return title
-              return 'Other Changes'
-
-          # Re-categorize the "Other Changes" bucket by assembly
-          other_bullets = sections.pop('Other Changes', [])
-          asm_sections = collections.OrderedDict()
-          for bullet in other_bullets:
-              key = detect_assembly(bullet) or 'Other Changes'
-              asm_sections.setdefault(key, []).append(bullet)
-
-          # --- Render output ---
-          out = ["## What's Changed", '']
-          PRIORITY = ['Breaking Changes', 'New Features', 'Fixes']
-          for name in PRIORITY:
-              if sections.get(name):
-                  out += ['### ' + name] + sections[name] + ['']
-          for name, bullets in sections.items():
-              if name not in PRIORITY and bullets:
-                  out += ['### ' + name] + bullets + ['']
-          # Assembly sections derived from re-categorisation; "Other Changes" last
-          for name, bullets in asm_sections.items():
-              if name != 'Other Changes' and bullets:
-                  out += ['### ' + name] + bullets + ['']
-          if asm_sections.get('Other Changes'):
-              out += ['### Other Changes'] + asm_sections['Other Changes'] + ['']
-          if full_changelog:
-              out.append(full_changelog)
-          print('\n'.join(out).strip())
-          PYEOF
-
-          # Clean and group the release notes
-          cleaned_body=$(echo "${release_body}" | python3 /tmp/process_changelog.py)
-
-          existing=$(cat CHANGELOG.md 2>/dev/null || true)
-          release_date=$(date +'%B %d, %Y')
-          # Use a grouped redirect so trailing newlines in the separator are
-          # preserved (command substitution would strip them).
-          {
-            printf '# v%s - %s\n%s\n\n---\n\n' "${VERSION}" "${release_date}" "${cleaned_body}"
-            printf '%s' "${existing}"
-          } > CHANGELOG.md
-
-      - name: Commit and push CHANGELOG.md
-        run: |
-          git add CHANGELOG.md
-          git commit -m "chore: update CHANGELOG for v${VERSION}"
-          git push origin HEAD:refs/heads/release/v${VERSION}
 
       # ---------------------------
       # NuGet (nuget.org)
@@ -391,12 +249,3 @@ jobs:
           )
 
           git worktree remove "$ghpages_dir" --force
-
-      # ---------------------------
-      # Push current HEAD to master
-      # ---------------------------
-      - name: Push current HEAD to master
-        run: |
-          git fetch origin master
-          git rebase origin/master
-          git push origin HEAD:refs/heads/master

@@ -1,29 +1,27 @@
 param(
     [string]$Remote = "origin",
-    [string]$RequiredBranch = "master"
+    [string]$RequiredBranch = "master",
+    [string]$ChangelogPath = "CHANGELOG.md",
+    [string]$CliffConfigPath = "cliff.toml",
+    [switch]$PreviewOnly
 )
 
 $ErrorActionPreference = "Stop"
 
 function Require-Command {
-    param([string]$Name)
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [string]$InstallHint
+    )
 
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
-        Write-Host "Required command '$Name' was not found on PATH."
-
-        $answer = Read-Host "Would you like to install '$Name' globally via npm? [Y/N]"
-        if ($answer -match '^[Yy]$') {
-            & npm install -g $Name
-            if ($LASTEXITCODE -ne 0) {
-                throw "npm install -g $Name failed."
-            }
-            if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
-                throw "Command '$Name' still not found after npm install."
-            }
-        }
-        else {
+        if ([string]::IsNullOrWhiteSpace($InstallHint)) {
             throw "Required command '$Name' was not found on PATH."
         }
+
+        throw "Required command '$Name' was not found on PATH. $InstallHint"
     }
 }
 
@@ -39,23 +37,63 @@ function Invoke-Git {
     }
 }
 
-Require-Command git
-Require-Command nbgv
+function Get-NbgvPackageVersion {
+    $versionInfo = nbgv get-version -f json | ConvertFrom-Json
+    $version = $versionInfo.NuGetPackageVersion
 
-# Ensure we're inside a git repo
+    if ([string]::IsNullOrWhiteSpace($version)) {
+        throw "Could not determine NuGetPackageVersion from nbgv."
+    }
+
+    return $version
+}
+
+Require-Command git "Install Git for Windows, then reopen your terminal."
+Require-Command nbgv "Install with: dotnet tool install -g nbgv"
+Require-Command git-cliff "Install with: winget install git-cliff"
+
+if (-not (Test-Path $CliffConfigPath)) {
+    throw "Missing $CliffConfigPath. Add cliff.toml to the repository root before releasing."
+}
+
+# Ensure we're inside a git repo.
 git rev-parse --is-inside-work-tree *> $null
 if ($LASTEXITCODE -ne 0) {
     throw "This script must be run inside a git repository."
 }
 
-# Get version from Nerdbank.GitVersioning
-$versionInfo = nbgv get-version -f json | ConvertFrom-Json
-$version = $versionInfo.NuGetPackageVersion
+# ----------------------------------------
+# PRE-FLIGHT CHECKS
+# ----------------------------------------
 
-if ([string]::IsNullOrWhiteSpace($version)) {
-    throw "Could not determine NuGetPackageVersion from nbgv."
+# Ensure correct branch.
+$currentBranch = git branch --show-current
+if ($currentBranch -ne $RequiredBranch) {
+    throw "You must be on '$RequiredBranch' to create a release tag. Current branch: $currentBranch"
 }
 
+# Refresh remote branch/tag state before checks.
+Invoke-Git @("fetch", "--prune", "--tags", "--force", $Remote)
+
+# Ensure local branch is not behind remote.
+$localHead = git rev-parse HEAD
+$remoteHead = git rev-parse "$Remote/$RequiredBranch"
+if ($localHead -ne $remoteHead) {
+    throw "Local '$RequiredBranch' is not aligned with '$Remote/$RequiredBranch'. Pull/rebase first, then retry."
+}
+
+# Ensure clean working tree before generating the changelog.
+git diff --quiet
+if ($LASTEXITCODE -ne 0) {
+    throw "Working tree has unstaged changes. Commit or stash them first."
+}
+
+git diff --cached --quiet
+if ($LASTEXITCODE -ne 0) {
+    throw "Working tree has staged but uncommitted changes. Commit or unstage them first."
+}
+
+$version = Get-NbgvPackageVersion
 $tagName = "v$version"
 
 Write-Host ""
@@ -64,9 +102,31 @@ Write-Host "Resolved tag: $tagName"
 Write-Host ""
 
 # ----------------------------------------
+# RELEASE NOTES PREVIEW
+# ----------------------------------------
+
+$tempNotes = Join-Path $env:TEMP "gondwana-release-notes-$tagName.md"
+& git-cliff --config $CliffConfigPath --unreleased --tag $tagName --output $tempNotes
+if ($LASTEXITCODE -ne 0) {
+    throw "git-cliff failed while generating release notes preview."
+}
+
+Write-Host "Release notes preview from git-cliff:"
+Write-Host "-------------------------------------"
+Get-Content $tempNotes | Write-Host
+Write-Host "-------------------------------------"
+Write-Host ""
+
+if ($PreviewOnly) {
+    Write-Host "Preview only. No changelog, commit, tag, or push performed."
+    exit 0
+}
+
+# ----------------------------------------
 # HARD CONFIRMATION
 # ----------------------------------------
-$confirmation = Read-Host "This will deploy version $tagName. Once deployed to NuGet, this cannot be undone. Are you sure you want to deploy? Type DEPLOY to confirm"
+
+$confirmation = Read-Host "This will update $ChangelogPath, commit it, deploy version $tagName, and push a release tag. Once deployed to NuGet, this cannot be undone. Type DEPLOY to confirm"
 
 if ($confirmation -cne "DEPLOY") {
     Write-Host "Deployment cancelled."
@@ -74,43 +134,47 @@ if ($confirmation -cne "DEPLOY") {
 }
 
 # ----------------------------------------
-# PRE-FLIGHT CHECKS
+# CHANGELOG UPDATE
 # ----------------------------------------
 
-# Ensure clean working tree
-git diff --quiet
+if (-not (Test-Path $ChangelogPath)) {
+    New-Item -ItemType File -Path $ChangelogPath -Force | Out-Null
+}
+
+& git-cliff --config $CliffConfigPath --unreleased --tag $tagName --prepend $ChangelogPath
 if ($LASTEXITCODE -ne 0) {
-    throw "Working tree has unstaged changes."
+    throw "git-cliff failed while updating $ChangelogPath."
 }
 
-git diff --cached --quiet
+# Commit CHANGELOG.md only if it actually changed.
+git diff --quiet -- $ChangelogPath
 if ($LASTEXITCODE -ne 0) {
-    throw "Working tree has staged but uncommitted changes."
-}
+    Invoke-Git @("add", $ChangelogPath)
+    Invoke-Git @("commit", "-m", "docs: update changelog for $tagName")
+    Invoke-Git @("push", $Remote, $RequiredBranch)
 
-# Ensure correct branch
-$currentBranch = git branch --show-current
-if ($currentBranch -ne $RequiredBranch) {
-    throw "You must be on '$RequiredBranch' to create a release tag. Current branch: $currentBranch"
+    # Re-resolve version after the changelog commit. Stable NBGV releases should remain unchanged.
+    $versionAfterChangelogCommit = Get-NbgvPackageVersion
+    if ($versionAfterChangelogCommit -ne $version) {
+        throw "Version changed after the changelog commit: before=$version after=$versionAfterChangelogCommit. Aborting before tagging."
+    }
 }
-
-Write-Host "Pre-flight checks passed."
+else {
+    Write-Host "$ChangelogPath did not change. No changelog commit created."
+}
 
 # ----------------------------------------
 # TAG HANDLING
 # ----------------------------------------
 
-# Refresh tags from remote
 Invoke-Git @("fetch", "--tags", "--force", $Remote)
 
-# Check local tag
 $localTagExists = $false
 git rev-parse -q --verify "refs/tags/$tagName" *> $null
 if ($LASTEXITCODE -eq 0) {
     $localTagExists = $true
 }
 
-# Check remote tag
 $remoteTagExists = $false
 $remoteCheck = git ls-remote --tags $Remote "refs/tags/$tagName"
 if (-not [string]::IsNullOrWhiteSpace($remoteCheck)) {
@@ -132,12 +196,8 @@ else {
     Write-Host "Tag $tagName does not exist. Creating it."
 }
 
-# Create tag at current HEAD
 Invoke-Git @("tag", $tagName)
-
-# Push tag
 Invoke-Git @("push", $Remote, $tagName)
 
 Write-Host ""
-Write-Host "Done. Tag '$tagName' pushed to '$Remote'."
-Write-Host "GitHub Actions will take it from here."
+Write-Host "Done. Updated $ChangelogPath, pushed '$tagName' to '$Remote', and handed off to GitHub Actions."
