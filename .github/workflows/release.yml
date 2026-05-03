@@ -269,4 +269,6 @@ jobs:
       # ---------------------------
       - name: Push current HEAD to master
         run: |
+          git fetch origin master
+          git rebase origin/master
           git push origin HEAD:refs/heads/master
