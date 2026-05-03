@@ -105,15 +105,32 @@ Write-Host ""
 # RELEASE NOTES PREVIEW
 # ----------------------------------------
 
-$tempNotes = Join-Path $env:TEMP "gondwana-release-notes-$tagName.md"
-& git-cliff --config $CliffConfigPath --unreleased --tag $tagName --output $tempNotes
+# Preview by prepending to a temp copy of the changelog so the output matches
+# exactly what --prepend will write (no header block, just the new section body).
+$tempChangelog = Join-Path $env:TEMP "gondwana-changelog-preview-$tagName.md"
+if (Test-Path $ChangelogPath) {
+    Copy-Item $ChangelogPath $tempChangelog
+}
+else {
+    New-Item -ItemType File -Path $tempChangelog -Force | Out-Null
+}
+
+& git-cliff --config $CliffConfigPath --unreleased --tag $tagName --prepend $tempChangelog
 if ($LASTEXITCODE -ne 0) {
     throw "git-cliff failed while generating release notes preview."
 }
 
 Write-Host "Release notes preview from git-cliff:"
 Write-Host "-------------------------------------"
-Get-Content $tempNotes | Write-Host
+# Show only the new section (everything before the next top-level heading).
+$inSection = $false
+foreach ($line in (Get-Content $tempChangelog)) {
+    if ($line -match '^# \[') {
+        if ($inSection) { break }
+        $inSection = $true
+    }
+    if ($inSection) { Write-Host $line }
+}
 Write-Host "-------------------------------------"
 Write-Host ""
 
@@ -137,11 +154,16 @@ if ($confirmation -cne "DEPLOY") {
 # CHANGELOG UPDATE
 # ----------------------------------------
 
-if (-not (Test-Path $ChangelogPath)) {
-    New-Item -ItemType File -Path $ChangelogPath -Force | Out-Null
-}
+$changelogIsNew = (-not (Test-Path $ChangelogPath)) -or ((Get-Item $ChangelogPath).Length -eq 0)
 
-& git-cliff --config $CliffConfigPath --unreleased --tag $tagName --prepend $ChangelogPath
+if ($changelogIsNew) {
+    # First-ever changelog: use --output so the "# Changelog" header is written.
+    & git-cliff --config $CliffConfigPath --tag $tagName --output $ChangelogPath
+}
+else {
+    # Existing changelog: prepend only the new section body, preserving history.
+    & git-cliff --config $CliffConfigPath --unreleased --tag $tagName --prepend $ChangelogPath
+}
 if ($LASTEXITCODE -ne 0) {
     throw "git-cliff failed while updating $ChangelogPath."
 }

@@ -125,7 +125,7 @@ jobs:
           # script prepends this section before creating the tag, so the tagged
           # commit is the source of truth for the GitHub Release body.
           awk '
-            /^## \[/ {
+            /^# \[/ {
               section++
               if (section > 1) exit
             }
