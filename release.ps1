@@ -169,9 +169,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Commit CHANGELOG.md only if it actually changed.
-git diff --quiet -- $ChangelogPath
+Invoke-Git @("add", $ChangelogPath)
+git diff --cached --quiet -- $ChangelogPath
 if ($LASTEXITCODE -ne 0) {
-    Invoke-Git @("add", $ChangelogPath)
     Invoke-Git @("commit", "-m", "docs: update changelog for $tagName")
     Invoke-Git @("push", $Remote, $RequiredBranch)
 
