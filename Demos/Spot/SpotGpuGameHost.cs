@@ -796,6 +796,9 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
                 _pendingComputerSelectTimer = null;
 
                 var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
+                if (moves.Count == 0)
+                    return;
+
                 var bestMove = moves[Random.Shared.Next(moves.Count)];
 
                 SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
