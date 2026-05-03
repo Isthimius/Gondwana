@@ -8,8 +8,13 @@ namespace MyGame;
 
 internal sealed class GameWindow : Form
 {
+//#if (UseGpuBackbuffer)
+    // OpenGL-accelerated render surface provided by Gondwana.WinForms.
+    private readonly WinFormGpuRenderSurfaceControl _renderSurface = new();
+//#else
     // SkiaSharp-backed render surface provided by Gondwana.WinForms.
     private readonly WinFormBitmapRenderSurfaceControl _renderSurface = new();
+//#endif
     private MyGameHost? _host;
 
     internal GameWindow()

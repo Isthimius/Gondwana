@@ -54,6 +54,29 @@ This scaffolds a ready-to-run Avalonia project containing:
 - `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
 - `assets/README.txt` — instructions for adding sprites and other asset files
 
+### Choosing a backbuffer
+
+Both templates accept a `--Backbuffer` parameter to choose the rendering backend:
+
+| Value | Description |
+|---|---|
+| `bitmap` | CPU-based bitmap backbuffer using SkiaSharp **(default)**. Works on all platforms. |
+| `gpu` | GPU-accelerated OpenGL backbuffer. Requires an OpenGL-capable desktop target. |
+
+```bash
+# GPU-accelerated WinForms project
+dotnet new gondwana-winforms -n MyGame --Backbuffer gpu
+
+# GPU-accelerated Avalonia project
+dotnet new gondwana-avalonia -n MyGame --Backbuffer gpu
+```
+
+Omitting `--Backbuffer` is equivalent to passing `--Backbuffer bitmap`.
+
+When `--Backbuffer gpu` is used:
+- `GameWindow.cs` uses `WinFormGpuRenderSurfaceControl` / `AvaloniaGpuRenderSurfaceControl` instead of the bitmap variant.
+- `GameHost.cs` derives from `WinFormsGpuGameHost` / `AvaloniaGpuGameHost` instead of `WinFormsGameHost` / `AvaloniaGameHost`.
+
 ## Further reading
 
 - **Getting started (15-minute guide)** — [first-game-in-15-minutes.md](https://github.com/Isthimius/Gondwana/blob/master/first-game-in-15-minutes.md)

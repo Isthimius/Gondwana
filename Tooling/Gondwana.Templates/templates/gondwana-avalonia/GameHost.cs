@@ -1,5 +1,10 @@
+//#if (UseGpuBackbuffer)
 using Gondwana.Avalonia.Hosting;
 using Gondwana.Avalonia.Rendering;
+//#else
+using Gondwana.Avalonia.Hosting;
+using Gondwana.Avalonia.Rendering;
+//#endif
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
@@ -16,10 +21,17 @@ namespace MyGame;
 /// and the 15-minute guide at
 /// <see href="https://github.com/Isthimius/Gondwana/blob/master/first-game-in-15-minutes.md">first-game-in-15-minutes.md</see>.
 /// </remarks>
+//#if (UseGpuBackbuffer)
+internal sealed class MyGameHost : AvaloniaGpuGameHost
+{
+    internal MyGameHost(AvaloniaGpuRenderSurfaceControl renderSurface)
+        : base(renderSurface) { }
+//#else
 internal sealed class MyGameHost : AvaloniaGameHost
 {
     internal MyGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
+//#endif
 
     // TODO: Load tilesheets from the assets\ folder.
     // A Tilesheet is an image atlas; TileSize tells Gondwana the size of one frame.
