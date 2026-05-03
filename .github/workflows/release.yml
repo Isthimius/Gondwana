@@ -124,6 +124,8 @@ jobs:
           # Pull the newest release section from CHANGELOG.md. The release.ps1
           # script prepends this section before creating the tag, so the tagged
           # commit is the source of truth for the GitHub Release body.
+          # Handles both git-cliff format (# [version]) and the legacy repo
+          # format (# vX.Y.Z), while ignoring any "# Changelog" header line.
           awk '
             function is_release_heading(line) {
               return line ~ /^# \[/ || line ~ /^# v/

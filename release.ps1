@@ -52,6 +52,15 @@ Require-Command git "Install Git for Windows, then reopen your terminal."
 Require-Command nbgv "Install with: dotnet tool install -g nbgv"
 Require-Command git-cliff "Install with: winget install git-cliff"
 
+# Resolve relative paths against the script's own directory so the script works
+# correctly when invoked from any working directory inside (or outside) the repo.
+if (-not [System.IO.Path]::IsPathRooted($CliffConfigPath)) {
+    $CliffConfigPath = Join-Path $PSScriptRoot $CliffConfigPath
+}
+if (-not [System.IO.Path]::IsPathRooted($ChangelogPath)) {
+    $ChangelogPath = Join-Path $PSScriptRoot $ChangelogPath
+}
+
 if (-not (Test-Path $CliffConfigPath)) {
     throw "Missing $CliffConfigPath. Add cliff.toml to the repository root before releasing."
 }
@@ -122,10 +131,11 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "Release notes preview from git-cliff:"
 Write-Host "-------------------------------------"
-# Show only the new section (everything before the next top-level heading).
+# Show only the new section (everything before the next top-level release heading).
+# Matches both git-cliff format (# [version]) and the legacy repo format (# vX.Y.Z).
 $inSection = $false
 foreach ($line in (Get-Content $tempChangelog)) {
-    if ($line -match '^# \[') {
+    if ($line -match '^# (\[|v\d)') {
         if ($inSection) { break }
         $inSection = $true
     }
