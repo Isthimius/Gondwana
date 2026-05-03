@@ -62,6 +62,8 @@ internal sealed class NewAvaloniaCommand : Command<NewAvaloniaCommand.Settings>
         {
             AnsiConsole.MarkupLine("[red]Project creation failed. Is the Gondwana template installed?[/]");
             AnsiConsole.MarkupLine("[dim]Run: gondwana templates install[/]");
+            if (backbuffer is not null)
+                AnsiConsole.MarkupLine("[dim]Tip: if templates are already installed, the installed version may be too old to support --backbuffer. Run: gondwana templates update[/]");
         }
 
         return exitCode;
