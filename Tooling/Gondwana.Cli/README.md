@@ -122,6 +122,38 @@ dotnet publish -f net8.0-browser -c Release
 # Output: bin/Release/net8.0-browser/browser-wasm/AppBundle/
 ```
 
+Or use the CLI shorthand:
+
+```bash
+cd MyGame
+gondwana publish wasm
+```
+
+---
+
+### `gondwana publish wasm`
+
+Builds and publishes the project in the current directory (or `--project`) for `net8.0-browser`.
+
+```bash
+gondwana publish wasm
+gondwana publish wasm --project ./src/MyGame
+gondwana publish wasm --skip-workload
+gondwana publish wasm --configuration Debug
+```
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Release` | Build configuration. |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+The output AppBundle is placed at `bin/<Configuration>/net8.0-browser/browser-wasm/AppBundle/`.
+
+For further deployment see:
+- `scripts/Deploy-Gondwana-Itch.ps1` — upload to itch.io via `butler`
+- `scripts/Deploy-Gondwana-Website.ps1` — copy/rsync to a static web host
+
 ---
 
 ### `gondwana templates`

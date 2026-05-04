@@ -38,6 +38,7 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana pack <source> <output>` | Pack a directory of files into an asset bundle (shorthand for `gondwana assets pack`). |
 | `gondwana new <subcommand>` | Scaffold a new Gondwana project. |
 | `gondwana templates <subcommand>` | Manage Gondwana `dotnet new` templates. |
+| `gondwana publish <subcommand>` | Publish a Gondwana project for distribution. |
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
 
 ---
@@ -157,6 +158,35 @@ dotnet publish -f net8.0-browser -c Release
 ```
 
 Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
+
+---
+
+## `gondwana publish`
+
+| Subcommand | Description |
+|---|---|
+| `wasm` | Build and publish the current project for browser/WASM. |
+
+### `gondwana publish wasm`
+
+Installs the `wasm-tools` .NET workload (unless `--skip-workload`) then runs
+`dotnet publish -f net8.0-browser -c Release` and reports the AppBundle path.
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Release` | Build configuration (`Release`, `Debug`). |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+**Examples**
+```
+gondwana publish wasm
+gondwana publish wasm -p ./src/MyGame
+gondwana publish wasm --skip-workload -c Debug
+```
+
+For itch.io and website deployment, see `scripts/Deploy-Gondwana-Itch.ps1` and
+`scripts/Deploy-Gondwana-Website.ps1`.
 
 ---
 

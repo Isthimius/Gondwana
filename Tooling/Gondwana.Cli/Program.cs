@@ -1,6 +1,7 @@
 using Gondwana.Cli.Commands;
 using Gondwana.Cli.Commands.Assets;
 using Gondwana.Cli.Commands.New;
+using Gondwana.Cli.Commands.Publish;
 using Gondwana.Cli.Commands.Templates;
 using Gondwana.Logging;
 using Microsoft.Extensions.Logging;
@@ -60,6 +61,16 @@ app.Configure(config =>
     config.AddCommand<AssetsPackCommand>("pack")
           .WithDescription("Pack a directory of files into an asset bundle.")
           .WithExample("pack", "./Assets", "./game.assets");
+
+    config.AddBranch("publish", branch =>
+    {
+        branch.SetDescription("Publish a Gondwana project for distribution.");
+
+        branch.AddCommand<PublishWasmCommand>("wasm")
+              .WithDescription("Publish a Gondwana project for browser/WASM (net8.0-browser).")
+              .WithExample("publish", "wasm")
+              .WithExample("publish", "wasm", "--project", "./src/MyGame", "--skip-workload");
+    });
 
     config.AddBranch("assets", branch =>
     {
