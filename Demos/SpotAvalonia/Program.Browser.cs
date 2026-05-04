@@ -1,4 +1,5 @@
 #if BROWSER
+using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.Versioning;
 using Avalonia;
 using Avalonia.Browser;
@@ -15,6 +16,10 @@ internal static partial class Program
 
     [SupportedOSPlatform("browser")]
     private static async Task Main(string[] args)
-        => await BuildAvaloniaApp().StartBrowserAppAsync("out");
+    {
+        // Import the Gondwana audio JS module so BrowserAudioManager can be used.
+        await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+        await BuildAvaloniaApp().StartBrowserAppAsync("out");
+    }
 }
 #endif
