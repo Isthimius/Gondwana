@@ -42,7 +42,7 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
 
 ---
-
+## help
 <details>
 <summary><b><code>gondwana help</code></b></summary>
 
@@ -54,6 +54,7 @@ Prints a formatted table of all available commands with short descriptions, then
 
 ---
 
+## doctor
 <details>
 <summary><b><code>gondwana doctor</code></b></summary>
 
@@ -65,6 +66,7 @@ Checks the local environment for all Gondwana prerequisites (.NET SDK, native li
 
 ---
 
+## info
 <details>
 <summary><b><code>gondwana info</code></b></summary>
 
@@ -76,6 +78,7 @@ Reads the `.csproj` in the current directory and prints project metadata (name, 
 
 ---
 
+## pack
 <details>
 <summary><b><code>gondwana pack</code></b></summary>
 
@@ -105,6 +108,7 @@ gondwana pack ./Assets ./game.assets --password secret --encrypt
 
 ---
 
+## new
 <details>
 <summary><b><code>gondwana new</code></b></summary>
 
@@ -176,6 +180,7 @@ Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
 
 ---
 
+## publish
 <details>
 <summary><b><code>gondwana publish</code></b></summary>
 
@@ -208,6 +213,7 @@ For itch.io and website deployment, see `scripts/Deploy-Gondwana-Itch.ps1` and
 
 ---
 
+## templates
 <details>
 <summary><b><code>gondwana templates</code></b></summary>
 
@@ -233,6 +239,7 @@ Runs `dotnet new list gondwana` and prints matching templates. *No arguments or 
 
 ---
 
+## assets
 <details>
 <summary><b><code>gondwana assets</code></b></summary>
 
