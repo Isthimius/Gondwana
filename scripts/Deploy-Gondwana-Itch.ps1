@@ -90,7 +90,6 @@ Write-Host ""
 Write-Host "Zipping AppBundle..." -ForegroundColor Cyan
 
 # Compress the *contents* of AppBundle so index.html is at the zip root.
-$items = Get-ChildItem -Path $appBundle
 Compress-Archive -Path (Join-Path $appBundle "*") -DestinationPath $zipPath -Force
 
 Write-Host "Zip      : $zipPath" -ForegroundColor Cyan

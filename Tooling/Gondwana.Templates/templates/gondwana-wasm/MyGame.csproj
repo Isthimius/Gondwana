@@ -35,9 +35,14 @@
     </ItemGroup>
 
     <!-- Browser-only: Avalonia WASM bootstrapper + Gondwana browser audio adapter. -->
+    <!--
+        ExcludeAssets="contentFiles" prevents the Gondwana.Audio.Browser NuGet package from
+        injecting a second copy of gondwana-audio.js as a Content item. The template already
+        ships the file in wwwroot/, so we only need the compiled assembly, not the contentFiles.
+    -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
         <PackageReference Include="Avalonia.Browser" Version="11.*" />
-        <PackageReference Include="Gondwana.Audio.Browser" Version="2.*" />
+        <PackageReference Include="Gondwana.Audio.Browser" Version="2.*" ExcludeAssets="contentFiles" />
     </ItemGroup>
 
     <!--

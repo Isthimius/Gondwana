@@ -120,7 +120,7 @@ if ($useLocal) {
         New-Item -ItemType Directory -Path $WebRoot -Force | Out-Null
     }
     # Robocopy /MIR mirrors the AppBundle, removing stale files on the destination.
-    if ($IsWindows -or $env:OS -eq 'Windows_NT') {
+    if ($env:OS -eq 'Windows_NT') {
         robocopy $appBundle $WebRoot /MIR /NJH /NJS /NDL /NFL
         # Robocopy exit codes 0-7 indicate success/partial success.
         if ($LASTEXITCODE -gt 7) { throw "robocopy failed (exit $LASTEXITCODE)." }

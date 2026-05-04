@@ -14,7 +14,7 @@
 const _players = new Map();
 
 /**
- * Loads a new audio track and optionally starts playing it immediately.
+ * Loads a new audio track. Returns without starting playback; call play() when ready.
  * If a track with the same key already exists it is stopped and replaced.
  * @param {string} key    - Unique identifier for this track.
  * @param {string} src    - Relative or absolute URL of the audio file.
