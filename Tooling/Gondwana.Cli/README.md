@@ -98,6 +98,8 @@ Shorthand for `gondwana assets pack`. Packs a directory of files into an asset b
 gondwana pack ./Assets ./game.assets
 gondwana pack ./Assets ./game.assets --append
 gondwana pack ./Assets ./game.assets --type-map my-types.json
+gondwana pack ./Assets ./game.assets --password secret
+gondwana pack ./Assets ./game.assets --password secret --encrypt
 ```
 
 See [`gondwana assets pack`](#gondwana-assets) for the full list of options.
@@ -115,15 +117,33 @@ gondwana assets pack ./Assets ./game.assets
 # Pack using a custom type-map config
 gondwana assets pack ./Assets ./game.assets --type-map my-types.json
 
+# Pack with password protection
+gondwana assets pack ./Assets ./game.assets --password secret
+
+# Pack with AES-256 encryption (requires --password)
+gondwana assets pack ./Assets ./game.assets --password secret --encrypt
+
 # List all assets in a bundle
 gondwana assets list ./game.assets
+
+# List assets in a password-protected bundle
+gondwana assets list ./game.assets --password secret
 
 # Extract all assets from a bundle
 gondwana assets extract ./game.assets ./Extracted
 
+# Extract from a password-protected bundle
+gondwana assets extract ./game.assets ./Extracted --password secret
+
 # Generate a C# constants class for asset keys
 gondwana assets generate-keys ./game.assets
 gondwana assets generate-keys ./game.assets -o AssetKeys.cs -n MyGame.Assets
+
+# Generate keys from a password-protected bundle
+gondwana assets generate-keys ./game.assets --password secret
+
+# Generate keys and include a Load() method for the bundle
+gondwana assets generate-keys ./game.assets --include-loader -o AssetKeys.cs -n MyGame.Assets
 ```
 
 The `generate-keys` command produces a file like:
@@ -134,6 +154,33 @@ public static class AssetKeys
     public const string PlayerSprite = "sprites/player.png";
     public const string ThemeMusic = "audio/theme.ogg";
 }
+```
+
+With `--include-loader`, a `Load()` factory method is also emitted:
+
+```csharp
+using Gondwana.Assets;
+
+public static class AssetKeys
+{
+    public const string PlayerSprite = "sprites/player.png";
+    public const string ThemeMusic = "audio/theme.ogg";
+
+    /// <summary>Loads the <c>game.assets</c> asset bundle.
+    /// The <paramref name="password"/> is only required for password-protected or encrypted bundles.</summary>
+    public static AssetsFile Load(string? password = null)
+        => AssetsFile.LoadOrCreate("game.assets", password);
+}
+```
+
+This lets you load the bundle and retrieve assets entirely through the generated class:
+
+```csharp
+using var assets = AssetKeys.Load();
+var sprite = assets[AssetTypes.Image, AssetKeys.PlayerSprite];
+
+// Or, for a password-protected bundle:
+using var assets = AssetKeys.Load("mypassword");
 ```
 
 #### Asset type mapping

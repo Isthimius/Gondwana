@@ -36,6 +36,15 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         [Description("Path to a JSON file that maps asset types to file extensions. " +
                      "Defaults to 'gondwana-asset-types.json' in the current directory or next to the executable.")]
         public string? TypeMapPath { get; init; }
+
+        [CommandOption("-p|--password")]
+        [Description("Password to protect the bundle. Required when --encrypt is specified.")]
+        public string? Password { get; init; }
+
+        [CommandOption("-e|--encrypt")]
+        [Description("Encrypt the bundle using AES-256. Requires --password <value> to be specified.")]
+        [DefaultValue(false)]
+        public bool Encrypt { get; init; }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -46,6 +55,12 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         if (!Directory.Exists(source))
         {
             AnsiConsole.MarkupLine($"[red]Source directory not found: {Markup.Escape(source)}[/]");
+            return 1;
+        }
+
+        if (settings.Encrypt && string.IsNullOrEmpty(settings.Password))
+        {
+            AnsiConsole.MarkupLine("[red]--encrypt requires a password. Use --password <value> to specify one.[/]");
             return 1;
         }
 
@@ -76,7 +91,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         if (!settings.Append && File.Exists(output))
             File.Delete(output);
 
-        var assetFile = AssetsFile.LoadOrCreate(output);
+        var assetFile = AssetsFile.LoadOrCreate(output, settings.Password, settings.Encrypt);
         int packed = 0;
         int skipped = 0;
 
@@ -127,6 +142,12 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
             assetFile.Dispose();
         }
         AnsiConsole.MarkupLine($"[green]Packed {packed} asset(s) into {Markup.Escape(output)}.[/]");
+
+        if (!string.IsNullOrEmpty(settings.Password))
+        {
+            var protection = settings.Encrypt ? "AES-256 encrypted" : "password-protected";
+            AnsiConsole.MarkupLine($"[dim]Bundle is {protection}.[/]");
+        }
 
         if (skipped > 0)
             AnsiConsole.MarkupLine($"[yellow]{skipped} file(s) skipped.[/]");

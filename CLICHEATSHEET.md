@@ -78,12 +78,16 @@ Top-level shorthand for [`gondwana assets pack`](#gondwana-assets-pack-source-ou
 | `--recurse` | `-r` | `true` | Recurse into subdirectories. |
 | `--append` | `-a` | `false` | Append to an existing bundle instead of overwriting it. |
 | `--type-map <file>` | `-m` | *(built-in defaults)* | Path to a JSON file that maps asset types to file extensions. Optional — uses built-in defaults when omitted and no `gondwana-asset-types.json` is found. |
+| `--password <pass>` | `-p` | *(none)* | Password-protect the bundle. Required when `--encrypt` is used. |
+| `--encrypt` | `-e` | `false` | Encrypt the bundle using AES-256. Requires `--password`. |
 
 **Examples**
 ```
 gondwana pack ./Assets ./game.assets
 gondwana pack ./Assets ./game.assets --append
 gondwana pack ./Assets ./game.assets -m ./my-types.json
+gondwana pack ./Assets ./game.assets --password secret
+gondwana pack ./Assets ./game.assets --password secret --encrypt
 ```
 
 ---
@@ -172,12 +176,16 @@ Runs `dotnet new list gondwana` and prints matching templates. *No arguments or 
 | `--recurse` | `-r` | `true` | Recurse into subdirectories. |
 | `--append` | `-a` | `false` | Append to an existing bundle instead of overwriting it. By default the output file is deleted first so no stale entries survive a re-run. |
 | `--type-map <file>` | `-m` | *(built-in defaults)* | Path to a JSON file that maps asset types to file extensions. Optional. Resolution order: this flag → `gondwana-asset-types.json` in CWD → `gondwana-asset-types.json` next to the executable → built-in defaults. |
+| `--password <pass>` | `-p` | *(none)* | Password-protect the bundle. Required when `--encrypt` is used. |
+| `--encrypt` | `-e` | `false` | Encrypt the bundle using AES-256. Requires `--password`. |
 
 **Examples**
 ```
 gondwana assets pack ./Assets ./game.assets
 gondwana assets pack ./Assets ./game.assets --append
 gondwana assets pack ./Assets ./game.assets -m ./my-types.json
+gondwana assets pack ./Assets ./game.assets --password secret
+gondwana assets pack ./Assets ./game.assets --password secret --encrypt
 ```
 
 ---
@@ -188,11 +196,13 @@ gondwana assets pack ./Assets ./game.assets -m ./my-types.json
 |---|---|---|
 | `<file>` | | **Required.** Path to the asset bundle to inspect. |
 | `--type <name>` | `-t` | Filter output to assets of the specified type (e.g. `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Misc`). |
+| `--password <pass>` | `-p` | Password required to open a password-protected or encrypted bundle. |
 
 **Example**
 ```
 gondwana assets list ./game.assets
 gondwana assets list ./game.assets -t Image
+gondwana assets list ./game.assets --password secret
 ```
 
 ---
@@ -205,11 +215,13 @@ gondwana assets list ./game.assets -t Image
 | `<output>` | | | **Required.** Directory to extract assets into. Created automatically if it does not exist. |
 | `--type <name>` | `-t` | *(all)* | Extract only assets of the specified type (e.g. `Image`, `Audio`). |
 | `--overwrite` | | `false` | Overwrite existing files in the output directory. |
+| `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
 
 **Example**
 ```
 gondwana assets extract ./game.assets ./Extracted
 gondwana assets extract ./game.assets ./Extracted --overwrite -t Audio
+gondwana assets extract ./game.assets ./Extracted --password secret
 ```
 
 ---
@@ -224,11 +236,15 @@ Generates a C# `public static class` containing one `public const string` per as
 | `--output <file>` | `-o` | *(stdout)* | Output `.cs` file path. Prints to stdout if omitted. The destination directory is created automatically if it does not exist. |
 | `--namespace <ns>` | `-n` | *(none)* | C# namespace for the generated class. |
 | `--class <name>` | `-c` | `AssetKeys` | C# class name. |
+| `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
+| `--include-loader` | `-l` | `false` | Also emit a `Load(string? password = null)` static method that instantiates `AssetsFile` for the bundle. |
 
 **Examples**
 ```
 gondwana assets generate-keys ./game.assets
 gondwana assets generate-keys ./game.assets -o ./Generated/AssetKeys.cs -n MyGame -c AssetKeys
+gondwana assets generate-keys ./game.assets --password secret
+gondwana assets generate-keys ./game.assets --include-loader -o ./Generated/AssetKeys.cs -n MyGame
 ```
 
 ---
