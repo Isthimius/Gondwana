@@ -18,6 +18,7 @@ dotnet new install Gondwana.Templates
 |---|---|---|
 | Gondwana WinForms Game | `gondwana-winforms` | Starter Windows desktop game using Gondwana + WinForms |
 | Gondwana Avalonia Game | `gondwana-avalonia` | Starter cross-platform desktop game using Gondwana + Avalonia (Windows, macOS, Linux) |
+| Gondwana Avalonia WASM Game | `gondwana-wasm` | Starter cross-platform game using Gondwana + Avalonia, targeting both desktop and browser/WASM |
 
 ## Usage
 
@@ -76,6 +77,35 @@ Omitting `--Backbuffer` is equivalent to passing `--Backbuffer bitmap`.
 When `--Backbuffer gpu` is used:
 - `GameWindow.cs` uses `WinFormGpuRenderSurfaceControl` / `AvaloniaGpuRenderSurfaceControl` instead of the bitmap variant.
 - `GameHost.cs` derives from `WinFormsGpuGameHost` / `AvaloniaGpuGameHost` instead of `WinFormsGameHost` / `AvaloniaGameHost`.
+
+### Avalonia WASM (desktop + browser)
+
+```bash
+dotnet new gondwana-wasm -n MyGame
+cd MyGame
+dotnet run                                    # run on desktop
+```
+
+Build and publish for browser:
+
+```bash
+dotnet workload install wasm-tools            # one-time per machine
+dotnet publish -f net8.0-browser -c Release
+# Output: bin/Release/net8.0-browser/browser-wasm/AppBundle/
+```
+
+This scaffolds a project containing:
+
+- `MyGame.csproj` — multi-targets `net8.0` and `net8.0-browser`; `Avalonia.Desktop` / `Avalonia.Browser` and `Gondwana.Audio.Browser` are applied conditionally; defines `BROWSER` constant for the browser target
+- `Program.cs` — desktop entry point (`#if !BROWSER`); uses `UsePlatformDetect()` and `StartWithClassicDesktopLifetime()`
+- `Program.Browser.cs` — browser entry point (`#if BROWSER`); imports `gondwana-audio.js` via `JSHost.ImportAsync`, then starts Avalonia with `StartBrowserAppAsync()`
+- `App.cs` — handles both `IClassicDesktopStyleApplicationLifetime` (desktop) and `ISingleViewApplicationLifetime` (WASM)
+- `GameWindow.cs` — desktop `Window` (compiled only when `BROWSER` is not defined)
+- `GameView.cs` — browser single-view `UserControl`
+- `GameRenderSurface.cs` — thin project-specific subclass of `AvaloniaBitmapRenderSurfaceControl`
+- `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs showing both desktop and browser audio patterns
+- `wwwroot/gondwana-audio.js` — the Gondwana browser audio JS module, also shipped by the `Gondwana.Audio.Browser` NuGet package as a content file
+- `assets/README.txt` — instructions for adding sprites and other assets
 
 ## Further reading
 

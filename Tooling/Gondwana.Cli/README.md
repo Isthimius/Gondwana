@@ -78,6 +78,52 @@ gondwana new avalonia MyGame -b gpu
 
 ---
 
+### `gondwana new wasm <name>`
+
+Scaffolds a new Gondwana project that targets **both desktop and browser/WASM** using Avalonia.
+
+```bash
+gondwana new wasm MyGame
+```
+
+Equivalent to `dotnet new gondwana-wasm -n MyGame`.
+
+An optional `--output` / `-o` flag can be used to specify the output directory:
+
+```bash
+gondwana new wasm MyGame -o ./projects/MyGame
+```
+
+The scaffolded project contains:
+
+- `MyGame.csproj` — multi-targets `net8.0` (desktop) and `net8.0-browser` (WASM), with `Avalonia.Desktop` / `Avalonia.Browser` and `Gondwana.Audio.Browser` applied conditionally
+- `Program.cs` / `Program.Browser.cs` — split entry points; the browser version imports the audio JS module and starts Avalonia in single-view mode
+- `App.cs` — handles both `IClassicDesktopStyleApplicationLifetime` and `ISingleViewApplicationLifetime`
+- `GameWindow.cs` — desktop `Window` (compiled only for `net8.0`)
+- `GameView.cs` — browser `UserControl` (compiled for both targets, used only in WASM)
+- `GameRenderSurface.cs` — thin subclass of `AvaloniaBitmapRenderSurfaceControl`
+- `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs that show both desktop and browser audio patterns
+- `wwwroot/gondwana-audio.js` — the Gondwana browser audio module
+- `assets/README.txt` — instructions for adding sprites and other assets
+
+After scaffolding, run on desktop:
+
+```bash
+cd MyGame
+dotnet run
+```
+
+Build and publish for WASM:
+
+```bash
+cd MyGame
+dotnet workload install wasm-tools   # one-time per machine
+dotnet publish -f net8.0-browser -c Release
+# Output: bin/Release/net8.0-browser/browser-wasm/AppBundle/
+```
+
+---
+
 ### `gondwana templates`
 
 Manage Gondwana project templates.

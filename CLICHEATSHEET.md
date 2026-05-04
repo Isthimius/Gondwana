@@ -98,6 +98,7 @@ gondwana pack ./Assets ./game.assets --password secret --encrypt
 |---|---|
 | `winforms` | Create a new WinForms Gondwana project. |
 | `avalonia` | Create a new Avalonia Gondwana project (Windows, macOS, Linux). |
+| `wasm` | Create a new Avalonia Gondwana project targeting desktop and browser/WASM. |
 
 ### `gondwana new winforms <name>`
 
@@ -130,6 +131,32 @@ gondwana new avalonia MyGame
 gondwana new avalonia MyGame -o ./projects/MyGame
 gondwana new avalonia MyGame --backbuffer gpu
 ```
+
+---
+
+### `gondwana new wasm <name>`
+
+| Argument / Option | Short | Default | Description |
+|---|---|---|---|
+| `<name>` | | | **Required.** Name of the new project. |
+| `--output <dir>` | `-o` | | Directory to place the generated output in. Defaults to a new folder named `<name>` in the current directory. |
+
+**Example**
+```
+gondwana new wasm MyGame
+gondwana new wasm MyGame -o ./projects/MyGame
+```
+
+Scaffolds an Avalonia project that compiles for both `net8.0` (desktop) and `net8.0-browser` (WASM).
+Includes `Program.Browser.cs`, `GameView.cs`, `wwwroot/gondwana-audio.js`, and the `Gondwana.Audio.Browser` package reference.
+
+After scaffolding, publish for WASM with:
+```
+dotnet workload install wasm-tools    # one-time per machine
+dotnet publish -f net8.0-browser -c Release
+```
+
+Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
 
 ---
 

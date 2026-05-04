@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <!--
+            net8.0         — desktop (Windows, macOS, Linux) via Avalonia.Desktop
+            net8.0-browser — WASM via Avalonia.Browser + Gondwana.Audio.Browser
+        -->
+        <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <!-- Define BROWSER constant for the browser target so guarded code compiles correctly. -->
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
+        <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--
+            Core Gondwana packages — track the latest 2.x releases.
+            Run 'dotnet add package Gondwana' to update to a newer major version.
+        -->
+        <PackageReference Include="Gondwana" Version="2.*" />
+        <PackageReference Include="Gondwana.Hosting" Version="2.*" />
+        <PackageReference Include="Gondwana.Avalonia" Version="2.*" />
+        <PackageReference Include="Gondwana.Avalonia.Hosting" Version="2.*" />
+    </ItemGroup>
+
+    <!-- Desktop-only: Avalonia platform detection bootstrapper. -->
+    <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-browser'">
+        <PackageReference Include="Avalonia.Desktop" Version="11.*" />
+    </ItemGroup>
+
+    <!-- Browser-only: Avalonia WASM bootstrapper + Gondwana browser audio adapter. -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
+        <PackageReference Include="Avalonia.Browser" Version="11.*" />
+        <PackageReference Include="Gondwana.Audio.Browser" Version="2.*" />
+    </ItemGroup>
+
+    <!--
+        Static web content.
+        gondwana-audio.js is the audio JS module used by Gondwana.Audio.Browser.
+        All wwwroot/ files are bundled into AppBundle/ when publishing for WASM.
+
+        NOTE: Gondwana.Audio.Browser ships gondwana-audio.js as a NuGet content file
+        so it is automatically placed here. If you are using project references instead
+        of NuGet packages, copy the file manually from
+        Gondwana.Audio.Browser/wwwroot/gondwana-audio.js.
+    -->
+    <ItemGroup>
+        <Content Include="wwwroot/**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <!--
+        Add your asset files here so they are copied to the output directory.
+        Example:
+        <ItemGroup>
+            <Content Include="assets\my-sprite.png">
+                <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            </Content>
+        </ItemGroup>
+    -->
+
+</Project>

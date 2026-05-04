@@ -37,6 +37,10 @@ app.Configure(config =>
         branch.AddCommand<NewAvaloniaCommand>("avalonia")
               .WithDescription("Create a new Avalonia Gondwana project (Windows, macOS, Linux).")
               .WithExample("new", "avalonia", "MyGame");
+
+        branch.AddCommand<NewWasmCommand>("wasm")
+              .WithDescription("Create a new Avalonia Gondwana project targeting both desktop and browser/WASM.")
+              .WithExample("new", "wasm", "MyGame");
     });
 
     config.AddBranch("templates", branch =>

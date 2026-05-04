@@ -119,15 +119,18 @@ internal sealed class DoctorCommand : Command
 
         bool hasWinForms = output.Contains("gondwana-winforms", StringComparison.OrdinalIgnoreCase);
         bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
+        bool hasWasm     = output.Contains("gondwana-wasm",     StringComparison.OrdinalIgnoreCase);
 
-        if (hasWinForms && hasAvalonia)
-            return CheckResult.Ok("gondwana-winforms, gondwana-avalonia found");
+        if (hasWinForms && hasAvalonia && hasWasm)
+            return CheckResult.Ok("gondwana-winforms, gondwana-avalonia, gondwana-wasm found");
 
-        if (hasWinForms)
-            return CheckResult.Ok("gondwana-winforms found");
+        var found = new List<string>();
+        if (hasWinForms) found.Add("gondwana-winforms");
+        if (hasAvalonia) found.Add("gondwana-avalonia");
+        if (hasWasm)     found.Add("gondwana-wasm");
 
-        if (hasAvalonia)
-            return CheckResult.Ok("gondwana-avalonia found");
+        if (found.Count > 0)
+            return CheckResult.Ok(string.Join(", ", found) + " found");
 
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
     }
