@@ -237,12 +237,14 @@ Generates a C# `public static class` containing one `public const string` per as
 | `--namespace <ns>` | `-n` | *(none)* | C# namespace for the generated class. |
 | `--class <name>` | `-c` | `AssetKeys` | C# class name. |
 | `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
+| `--include-loader` | `-l` | `false` | Also emit a `Load(string? password = null)` static method that instantiates `AssetsFile` for the bundle. |
 
 **Examples**
 ```
 gondwana assets generate-keys ./game.assets
 gondwana assets generate-keys ./game.assets -o ./Generated/AssetKeys.cs -n MyGame -c AssetKeys
 gondwana assets generate-keys ./game.assets --password secret
+gondwana assets generate-keys ./game.assets --include-loader -o ./Generated/AssetKeys.cs -n MyGame
 ```
 
 ---

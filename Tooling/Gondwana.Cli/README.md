@@ -141,6 +141,9 @@ gondwana assets generate-keys ./game.assets -o AssetKeys.cs -n MyGame.Assets
 
 # Generate keys from a password-protected bundle
 gondwana assets generate-keys ./game.assets --password secret
+
+# Generate keys and include a Load() method for the bundle
+gondwana assets generate-keys ./game.assets --include-loader -o AssetKeys.cs -n MyGame.Assets
 ```
 
 The `generate-keys` command produces a file like:
@@ -151,6 +154,33 @@ public static class AssetKeys
     public const string PlayerSprite = "sprites/player.png";
     public const string ThemeMusic = "audio/theme.ogg";
 }
+```
+
+With `--include-loader`, a `Load()` factory method is also emitted:
+
+```csharp
+using Gondwana.Assets;
+
+public static class AssetKeys
+{
+    public const string PlayerSprite = "sprites/player.png";
+    public const string ThemeMusic = "audio/theme.ogg";
+
+    /// <summary>Loads the <c>game.assets</c> asset bundle.
+    /// The <paramref name="password"/> is only required for password-protected or encrypted bundles.</summary>
+    public static AssetsFile Load(string? password = null)
+        => AssetsFile.LoadOrCreate("game.assets", password);
+}
+```
+
+This lets you load the bundle and retrieve assets entirely through the generated class:
+
+```csharp
+using var assets = AssetKeys.Load();
+var sprite = assets[AssetTypes.Image, AssetKeys.PlayerSprite];
+
+// Or, for a password-protected bundle:
+using var assets = AssetKeys.Load("mypassword");
 ```
 
 #### Asset type mapping
