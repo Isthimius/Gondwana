@@ -43,31 +43,41 @@ After installation the `gondwana` command is available in any terminal.
 
 ---
 
-## `gondwana help`
+<details>
+<summary><b><code>gondwana help</code></b></summary>
 
 Prints a formatted table of all available commands with short descriptions, then reminds you to run `gondwana <command> --help` for detailed usage.
 
 *No arguments or options.*
 
+</details>
+
 ---
 
-## `gondwana doctor`
+<details>
+<summary><b><code>gondwana doctor</code></b></summary>
 
 Checks the local environment for all Gondwana prerequisites (.NET SDK, native libraries, templates).
 
 *No arguments or options.*
 
+</details>
+
 ---
 
-## `gondwana info`
+<details>
+<summary><b><code>gondwana info</code></b></summary>
 
 Reads the `.csproj` in the current directory and prints project metadata (name, target framework, Gondwana version, adapters, and discovered asset bundles). When multiple `.csproj` files are present, the first one alphabetically is used.
 
 *No arguments or options.*
 
+</details>
+
 ---
 
-## `gondwana pack`
+<details>
+<summary><b><code>gondwana pack</code></b></summary>
 
 Top-level shorthand for [`gondwana assets pack`](#gondwana-assets-pack-source-output). Accepts exactly the same arguments and options.
 
@@ -91,9 +101,12 @@ gondwana pack ./Assets ./game.assets --password secret
 gondwana pack ./Assets ./game.assets --password secret --encrypt
 ```
 
+</details>
+
 ---
 
-## `gondwana new`
+<details>
+<summary><b><code>gondwana new</code></b></summary>
 
 | Subcommand | Description |
 |---|---|
@@ -159,9 +172,12 @@ dotnet publish -f net8.0-browser -c Release
 
 Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
 
+</details>
+
 ---
 
-## `gondwana publish`
+<details>
+<summary><b><code>gondwana publish</code></b></summary>
 
 | Subcommand | Description |
 |---|---|
@@ -188,9 +204,12 @@ gondwana publish wasm --skip-workload -c Debug
 For itch.io and website deployment, see `scripts/Deploy-Gondwana-Itch.ps1` and
 `scripts/Deploy-Gondwana-Website.ps1`.
 
+</details>
+
 ---
 
-## `gondwana templates`
+<details>
+<summary><b><code>gondwana templates</code></b></summary>
 
 | Subcommand | Description |
 |---|---|
@@ -210,9 +229,12 @@ Runs `dotnet new update Gondwana.Templates`. *No arguments or options.*
 
 Runs `dotnet new list gondwana` and prints matching templates. *No arguments or options.*
 
+</details>
+
 ---
 
-## `gondwana assets`
+<details>
+<summary><b><code>gondwana assets</code></b></summary>
 
 | Subcommand | Description |
 |---|---|
@@ -303,6 +325,8 @@ gondwana assets generate-keys ./game.assets -o ./Generated/AssetKeys.cs -n MyGam
 gondwana assets generate-keys ./game.assets --password secret
 gondwana assets generate-keys ./game.assets --include-loader -o ./Generated/AssetKeys.cs -n MyGame
 ```
+
+</details>
 
 ---
 
