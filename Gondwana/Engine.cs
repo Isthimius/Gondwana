@@ -5,6 +5,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
+using Gondwana.Input.Touch;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -794,6 +795,9 @@ public sealed class Engine : IDisposable
         // check for mouse events
         MouseEventPoller.Instance?.PollForEvents(tick);
 
+        // check for touch events
+        TouchEventPoller.Instance?.PollForEvents(tick);
+
         // check for gamepad events
         GamepadEventPoller.Instance?.PollForEvents(tick);
 
@@ -942,6 +946,7 @@ public sealed class Engine : IDisposable
                 // managed cleanup...
                 Input.KeyboardEventPoller?.StopMonitoringAllKeys();
                 Input.MouseEventPoller?.StopMonitoringMouse();
+                Input.TouchEventPoller?.StopMonitoringTouch();
 
                 if (Input.GamepadManager is not null)
                     foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)

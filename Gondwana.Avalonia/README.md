@@ -36,15 +36,15 @@ that should receive pointer events:
 Engine.Instance.InitializeAvaloniaTouchAdapter(renderSurfaceControl);
 ```
 
-After initialization, the touch system is accessible via `engine.Input.Touch`:
+After initialization, the touch system is accessible via `engine.Input.TouchEventPoller`:
 
 ```csharp
 // Raw touch events
-Engine.Instance.Input.Touch!.TouchBegan += (_, e) =>
+Engine.Instance.Input.TouchEventPoller!.TouchBegan += (_, e) =>
     Console.WriteLine($"Touch began: id={e.Touch.Id} pos={e.Touch.Position}");
 
 // Active contacts (polling)
-var touches = Engine.Instance.Input.Touch!.ActiveTouches;
+var touches = Engine.Instance.Input.TouchEventPoller!.ActiveTouches;
 ```
 
 #### Gesture recognizers
@@ -55,20 +55,20 @@ an `ITouchInput` source and raise higher-level events. Dispose them when no long
 ```csharp
 using Gondwana.Input.Touch.Gestures;
 
-var tap = new TapGestureRecognizer(Engine.Instance.Input.Touch!)
+var tap = new TapGestureRecognizer(Engine.Instance.Input.TouchEventPoller!)
 {
     MaxTapDurationSeconds = 0.3,   // default
     MaxTapMovementPixels  = 20,    // default
 };
 tap.Tapped += (_, e) => Console.WriteLine($"Tapped at {e.Position}");
 
-var swipe = new SwipeGestureRecognizer(Engine.Instance.Input.Touch!)
+var swipe = new SwipeGestureRecognizer(Engine.Instance.Input.TouchEventPoller!)
 {
     MinimumSwipeSpeedPixelsPerSecond = 200,  // default
 };
 swipe.Swiped += (_, e) => Console.WriteLine($"Swiped {e.Direction} at {e.SpeedPixelsPerSecond:F0} px/s");
 
-var pinch = new PinchGestureRecognizer(Engine.Instance.Input.Touch!);
+var pinch = new PinchGestureRecognizer(Engine.Instance.Input.TouchEventPoller!);
 pinch.PinchUpdated += (_, e) => Console.WriteLine($"Pinch scale delta: {e.ScaleDelta:F3}");
 ```
 

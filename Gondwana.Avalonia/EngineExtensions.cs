@@ -1,5 +1,6 @@
 ﻿using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
+using Gondwana.Input.Touch;
 using Gondwana.Avalonia.Input.Keyboard;
 using Gondwana.Avalonia.Input.Mouse;
 using Gondwana.Avalonia.Input.Touch;
@@ -57,7 +58,7 @@ public static class EngineExtensions
 
     /// <summary>
     /// Initializes the Avalonia touch adapter for the specified control and registers it with
-    /// <see cref="EngineInputSystems.Touch"/>, enabling touch and pointer gesture input.
+    /// <see cref="TouchEventPoller"/>, enabling touch and pointer gesture input.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -66,7 +67,7 @@ public static class EngineExtensions
     /// touch contact with <c>Id = 0</c>, so desktop mouse behaviour is not affected.
     /// </para>
     /// <para>
-    /// After calling this method, access the touch system via <c>engine.Input.Touch</c> and attach
+    /// After calling this method, access the touch system via <c>engine.Input.TouchEventPoller</c> and attach
     /// gesture recognizers such as <c>TapGestureRecognizer</c>, <c>SwipeGestureRecognizer</c>, and
     /// <c>PinchGestureRecognizer</c> from the <c>Gondwana.Input.Touch.Gestures</c> namespace.
     /// </para>
@@ -86,7 +87,7 @@ public static class EngineExtensions
             throw new ArgumentNullException(nameof(control));
         }
 
-        (engine.Input.Touch as IDisposable)?.Dispose();
-        engine.Input.Touch = new AvaloniaTouchInputAdapter(control);
+        (TouchEventPoller.Instance?.Adapter as IDisposable)?.Dispose();
+        TouchEventPoller.Initialize(new AvaloniaTouchInputAdapter(control));
     }
 }

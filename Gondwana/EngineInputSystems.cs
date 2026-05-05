@@ -70,17 +70,18 @@ public sealed class EngineInputSystems
     public MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
 
     /// <summary>
-    /// Gets or sets the touch input system, if configured.
+    /// Gets the touch event polling subsystem, if initialized.
     /// </summary>
     /// <value>
-    /// An <see cref="ITouchInput"/> implementation (for example, <c>AvaloniaTouchInputAdapter</c>)
-    /// when touch has been initialized; otherwise, <c>null</c>.
+    /// The <see cref="Gondwana.Input.Touch.TouchEventPoller"/> instance if initialized;
+    /// otherwise, <c>null</c>.
     /// </value>
     /// <remarks>
-    /// Assign an <see cref="ITouchInput"/> implementation to this property to enable touch support.
-    /// On Android and iOS (via the Avalonia host), set this to a new <c>AvaloniaTouchInputAdapter</c>
-    /// instance, or call <c>engine.InitializeAvaloniaTouchAdapter(control)</c> from the
-    /// <c>Gondwana.Avalonia</c> package, which sets this property automatically.
+    /// This property provides access to the touch input subsystem, which also implements
+    /// <see cref="ITouchInput"/> for gesture recognizer consumption. The poller must be
+    /// initialized via <c>TouchEventPoller.Initialize</c> (or by calling
+    /// <c>engine.InitializeAvaloniaTouchAdapter(control)</c> from the <c>Gondwana.Avalonia</c>
+    /// package) before use.
     /// </remarks>
-    public ITouchInput? Touch { get; set; }
+    public TouchEventPoller? TouchEventPoller => TouchEventPoller.Instance;
 }

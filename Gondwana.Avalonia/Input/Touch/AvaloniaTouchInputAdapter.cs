@@ -7,9 +7,11 @@ using Microsoft.Extensions.Logging;
 namespace Gondwana.Avalonia.Input.Touch;
 
 /// <summary>
-/// Provides a touch/pointer input adapter for Avalonia applications, implementing <see cref="ITouchInput"/>
-/// by translating Avalonia <c>PointerPressed</c>, <c>PointerMoved</c>, and
-/// <c>PointerReleased</c> events into Gondwana touch events.
+/// Provides a passive touch/pointer state adapter for Avalonia applications, implementing
+/// <see cref="ITouchAdapter"/> by translating Avalonia <c>PointerPressed</c>,
+/// <c>PointerMoved</c>, <c>PointerReleased</c>, and <c>PointerCaptureLost</c> events into
+/// Gondwana touch state. Events are not raised directly; the <see cref="TouchEventPoller"/>
+/// polls this adapter each engine frame to detect transitions and raise events.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -21,24 +23,17 @@ namespace Gondwana.Avalonia.Input.Touch;
 /// Dispose this adapter to unsubscribe from all Avalonia pointer events.
 /// </para>
 /// </remarks>
-public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
+public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
 {
     private readonly Control _control;
     private readonly Dictionary<int, TouchPoint> _activeTouches = new();
     private TouchPoint[] _activeTouchesSnapshot = Array.Empty<TouchPoint>();
+    private readonly List<TouchPoint> _pendingEnds = new();
+    private readonly object _pendingEndsLock = new();
     private bool _isDisposed;
 
     /// <inheritdoc />
     public IReadOnlyList<TouchPoint> ActiveTouches => _activeTouchesSnapshot;
-
-    /// <inheritdoc />
-    public event EventHandler<TouchEventArgs>? TouchBegan;
-
-    /// <inheritdoc />
-    public event EventHandler<TouchEventArgs>? TouchMoved;
-
-    /// <inheritdoc />
-    public event EventHandler<TouchEventArgs>? TouchEnded;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AvaloniaTouchInputAdapter"/> class,
@@ -77,7 +72,6 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
 
         _activeTouches[id] = point;
         RebuildSnapshot();
-        TouchBegan?.Invoke(this, new TouchEventArgs(point));
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
@@ -94,7 +88,6 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
 
         _activeTouches[id] = point;
         RebuildSnapshot();
-        TouchMoved?.Invoke(this, new TouchEventArgs(point));
     }
 
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -109,7 +102,8 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
 
         _activeTouches.Remove(id);
         RebuildSnapshot();
-        TouchEnded?.Invoke(this, new TouchEventArgs(point));
+        lock (_pendingEndsLock)
+            _pendingEnds.Add(point);
     }
 
     private void OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
@@ -123,7 +117,22 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
         var point = new TouchPoint(existing.Id, existing.Position, TouchPhase.Cancelled);
         _activeTouches.Remove(id);
         RebuildSnapshot();
-        TouchEnded?.Invoke(this, new TouchEventArgs(point));
+        lock (_pendingEndsLock)
+            _pendingEnds.Add(point);
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<TouchPoint> ConsumeEndedTouches()
+    {
+        lock (_pendingEndsLock)
+        {
+            if (_pendingEnds.Count == 0)
+                return Array.Empty<TouchPoint>();
+
+            var snapshot = _pendingEnds.ToArray();
+            _pendingEnds.Clear();
+            return snapshot;
+        }
     }
 
     private void RebuildSnapshot()
