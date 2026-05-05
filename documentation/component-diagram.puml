@@ -1,0 +1,90 @@
+@startuml component-diagram
+title Gondwana Engine — Component Diagram
+
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam defaultFontName Segoe UI
+skinparam backgroundColor #FAFAFA
+skinparam component {
+    BackgroundColor #DDEEFF
+    BorderColor #336699
+    FontColor #003366
+}
+skinparam package {
+    BackgroundColor #F0F8FF
+    BorderColor #336699
+}
+
+package "Core" {
+    [Gondwana] <<library>> as core
+}
+
+package "Platform Adapters" {
+    [Gondwana.WinForms] <<library>> as winforms
+    [Gondwana.Avalonia] <<library>> as avalonia
+}
+
+package "Hosting" {
+    [Gondwana.Hosting] <<library>> as hosting
+    [Gondwana.WinForms.Hosting] <<library>> as winformsHosting
+    [Gondwana.Avalonia.Hosting] <<library>> as avaloniaHosting
+}
+
+package "Extensions" {
+    [Gondwana.Audio.Browser] <<library>> as audioBrowser
+    [Gondwana.Audio.Midi] <<library>> as audioMidi
+    [Gondwana.Input.SDL2] <<library>> as inputSdl2
+    [Gondwana.Video] <<library>> as video
+}
+
+package "Tooling" {
+    [Gondwana.Cli] <<tool>> as cli
+    [Gondwana.Templates] <<template-package>> as templates
+}
+
+' Core dependencies
+winforms --> core : uses
+avalonia --> core : uses
+hosting --> core : uses
+
+' Hosting dependencies
+winformsHosting --> hosting : extends
+winformsHosting --> winforms : uses
+avaloniaHosting --> hosting : extends
+avaloniaHosting --> avalonia : uses
+
+' Extension dependencies
+audioBrowser --> core : extends
+audioMidi --> core : extends
+inputSdl2 --> core : extends
+video --> core : extends
+
+' Tooling
+cli --> templates : scaffolds
+
+note bottom of core
+  Engine, Scenes, Drawing,
+  Rendering, Collisions,
+  Input, Audio, Timers,
+  Movement, Configuration
+end note
+
+note bottom of winforms
+  WinForm Bitmap/GPU
+  RenderSurfaceAdapters
+  and Controls
+end note
+
+note bottom of avalonia
+  Avalonia Bitmap/GPU
+  RenderSurfaceAdapters
+  and Controls
+end note
+
+note bottom of hosting
+  GameHostBase —
+  lifecycle management
+  template for game hosts
+end note
+
+@enduml

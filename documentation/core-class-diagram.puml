@@ -1,0 +1,791 @@
+@startuml core-class-diagram
+title Gondwana Core — Class Diagram
+
+skinparam defaultFontName Segoe UI
+skinparam backgroundColor #FAFAFA
+skinparam classBackgroundColor #DDEEFF
+skinparam classBorderColor #336699
+skinparam classArrowColor #336699
+skinparam packageBackgroundColor #F0F8FF
+skinparam packageBorderColor #336699
+skinparam abstractClassBackgroundColor #E8F0FF
+skinparam interfaceBackgroundColor #FFFACD
+
+' ─────────────────────────────────────────────
+' ENGINE CORE
+' ─────────────────────────────────────────────
+package "Engine" {
+
+    class Engine <<sealed>> {
+        {static} +Instance : Engine
+        +State : EngineState
+        +Configuration : EngineConfiguration
+        +Managers : EngineManagers
+        +Input : EngineInputSystems
+        +UiDispatcher : IUiDispatcher
+        +EngineDispatcher : IEngineDispatcher
+        +IsInitialized : bool
+        +IsRunning : bool
+        +CyclesPerSecond : double
+        +FramesPerSecond : double
+        +Initialize(configFileName?, ...)
+        +Start(uiContext)
+        +StartTimerDriven(uiContext)
+        +Tick()
+        +Stop()
+        +Dispose()
+        --events--
+        +PreInitialization : Action
+        +PostInitialization : Action
+        +InitializationComplete : Action
+        +BeforeBackgroundTasksExecute : Action
+        +AfterBackgroundTasksExecute : Action
+        +BeforeFrameRender : Action
+        +AfterFrameRender : Action
+        +CPSCalculated : Action<CyclesPerSecondCalculatedEventArgs>
+        +Disposing : Action
+        +Disposed : Action
+    }
+
+    class EngineState {
+        +ValueBag : TypedValueBag
+        +Assets : AssetsFile
+        +Scenes : IList<Scene>
+        +Sprites : IList<Sprite>
+        +AudioResources : IList<AudioResource>
+        +Tilesheets : IList<Tilesheet>
+        +Merge(...)
+        +{static} MergeFromFile(file, compressed, ...)
+        +Save(file, compressed)
+    }
+
+    class EngineManagers <<sealed>> {
+        +AudioResources : AudioResourceManager
+        +DirectDrawings : DirectDrawingManager
+        +Fonts : FontManager
+        +Sprites : SpriteManager
+        +Tilesheets : TilesheetRegistry
+    }
+
+    class EngineInputSystems <<sealed>> {
+        +GamepadManager : IGamepadManager<IGamepadAdapter>
+        +GamepadEventPoller : GamepadEventPoller
+        +Keyboard : KeyboardEventPoller
+        +Mouse : MouseEventPoller
+    }
+
+    class EngineConfiguration {
+        +TargetFPS : int
+        +VSync : bool
+        +MsaaSampleCount : int
+        +SamplingTimeForCPS : double
+        +TimeBetweenKeyboardEvents : double
+        +TimeBetweenMouseEvents : double
+        +TimeBetweenGamepadEvents : double
+        +LoggingMode : EngineLoggingMode
+        +StateFiles : List<StateFileMount>
+        +ConfigurationSections : Dictionary<string,Dictionary<string,string>>
+    }
+
+    class CyclesPerSecondCalculatedEventArgs {
+        +GrossCycles : long
+        +NetCycles : long
+        +GrossCPS : double
+        +NetFPS : double
+        +ElapsedSeconds : double
+        +GpuFps : double?
+    }
+
+    class TypedValueBag {
+        +Set<T>(key, value)
+        +Get<T>(key) : T
+        +TryGet<T>(key, out value) : bool
+        +Remove(key)
+    }
+
+    interface IUiDispatcher {
+        +Post(action)
+        +Send(action)
+    }
+
+    interface IEngineDispatcher {
+        +Post(action)
+        +BindToCurrentThread()
+        +Drain()
+    }
+
+    class UiDispatcher implements IUiDispatcher {
+        +Post(action)
+        +Send(action)
+    }
+
+    class EngineDispatcher implements IEngineDispatcher {
+        +Post(action)
+        +BindToCurrentThread()
+        +Drain()
+    }
+}
+
+' ─────────────────────────────────────────────
+' RENDERING
+' ─────────────────────────────────────────────
+package "Rendering" {
+
+    abstract class BackbufferBase {
+        +Width : int
+        +Height : int
+        +ClearColor : SKColor
+        +Canvas : SKCanvas <<abstract>>
+        +IsGlThreadRendered : bool <<virtual>>
+        +FogPaint : SKPaint
+        +GridLinePaint : SKPaint
+        +CollisionBoxPaint : SKPaint
+        +{abstract} Snapshot() : SKImage
+        +{abstract} BeginFrame()
+        +{abstract} EndFrame()
+        +{abstract} DrawTileFrame(tile, destRectScreen)
+        +ToByteArray(format, quality) : byte[]
+        +Resize(width, height)
+        +Dispose()
+    }
+
+    class BitmapBackbuffer {
+        +Canvas : SKCanvas
+        +IsGlThreadRendered : bool = false
+        +Snapshot() : SKImage
+        +BeginFrame()
+        +EndFrame()
+        +DrawTileFrame(tile, destRectScreen)
+        +Dispose()
+    }
+
+    class GpuBackbuffer {
+        +TargetFps : int
+        +VSync : bool
+        +MsaaSampleCount : int
+        +Canvas : SKCanvas
+        +IsGlThreadRendered : bool = true
+        +Initialize(grContext, width, height)
+        +Snapshot() : SKImage
+        +BeginFrame()
+        +EndFrame()
+        +DrawTileFrame(tile, destRectScreen)
+        +RecordFrame()
+        +ConsumeFrameCount() : long
+        +Dispose()
+    }
+
+    abstract class RenderSurfaceHostBase {
+        +Backbuffer : BackbufferBase <<abstract>>
+        +Scene : Scene <<abstract>>
+        +RenderSurfaceAdapter : RenderSurfaceAdapterBase <<abstract>>
+        +ViewManager : ViewManager <<abstract>>
+        +GlRenderAndSnapshot() : SKImage?
+        +Dispose()
+    }
+
+    class "RenderSurfaceHost<TBackbuffer>" as RenderSurfaceHost {
+        +Backbuffer : TBackbuffer
+        +Scene : Scene
+        +RenderSurfaceAdapter : RenderSurfaceAdapterBase
+        +ViewManager : ViewManager
+        +RedrawDirtyRectangleOnly : bool
+        +Bind(newScene, limitCameraToWorldBoundPx)
+        +RenderToBackbuffer(tick) <<internal>>
+        +PresentBackbufferToAdapter() <<internal>>
+        +Dispose()
+        --events--
+        +BindToScene : EventHandler<RenderSurfaceHostBindEventArgs>
+        +RenderBackbufferBegin : Action
+        +RenderBackbufferEnd : Action
+        +RenderBackbufferNoOp : Action
+    }
+
+    class RenderSurfaceHostRegistry <<static>> {
+        +{static} All : IReadOnlyList<RenderSurfaceHostBase>
+        +{static} Register(host)
+        +{static} Unregister(host)
+        +{static} Snapshot() : RenderSurfaceHostBase[]
+    }
+
+    abstract class RenderSurfaceAdapterBase {
+        +Width : int
+        +Height : int
+        +{abstract} Present(bufferImage, bufferRect, destRect)
+        +Resized : Action<RenderSurfaceAdapterResizedEventArgs>
+    }
+
+    class ViewManager <<sealed>> {
+        +Views : ReadOnlyCollection<View>
+        +Add(targetRectPx, zoom, zOrder) : View
+        +Remove(view)
+        +UpdateCameras(deltaSeconds)
+        --events--
+        +ViewAdded : Action<View>
+        +ViewRemoved : Action<View>
+    }
+
+    class View <<sealed>> {
+        +Id : Guid
+        +Camera : Camera
+        +Viewport : Viewport
+        +ZOrder : int
+        +MinZoom : float
+        +MaxZoom : float
+        +ZoomAroundScreenPoint(...)
+        +ScreenPxToWorldPx(layer, screenPx) : PointF
+        +WorldPxToScreenPx(layer, worldPx) : PointF
+    }
+
+    class Camera <<sealed>> {
+        +PositionPx : PointF
+        +WorldBoundsPx : RectangleF
+        +DeadZonePx : Rectangle
+        +FollowLerpPerSecond : float
+        +SnapTo(worldUpperLeftPx)
+        +CenterOn(worldCenterPx)
+        +Follow(getWorldPixel, hardFollow)
+        +FollowCentered(target, speed, hard)
+        +PanCenterTo(worldCenterPx, speed)
+        +PanToOverDuration(worldTopLeftPx, durationSeconds)
+    }
+
+    class Viewport <<sealed>> {
+        +TargetRectPx : Rectangle
+        +Zoom : float
+        +ScreenOffsetPx : PointF
+        +VisibleWorldSizePx : SizeF
+        +Resize(width, height)
+        +SnapZoom(zoom)
+        +ZoomTo(targetZoom, lerpPerSecond)
+    }
+
+    class RefreshQueue <<internal>> {
+    }
+}
+
+' ─────────────────────────────────────────────
+' SCENES
+' ─────────────────────────────────────────────
+package "Scenes" {
+
+    class Scene {
+        +ID : string
+        +SceneLayers : ReadOnlyCollection<SceneLayer>
+        +VisibleSceneLayers : ReadOnlyCollection<SceneLayer>
+        +CountOfVisibleLayers : int
+        +FullRefreshNeeded : bool
+        +CollisionGroups : CollisionGroupRegistry
+        +ValueBag : TypedValueBag
+        +AddLayer(columnCount, rowCount, ...) : SceneLayer
+        +RemoveLayer(sceneLayer)
+        +RemoveAllLayers()
+        +GetSceneLayerByID(id) : SceneLayer?
+        +{static} GetAllScenes() : IEnumerable<Scene>
+        +Dispose()
+        --events--
+        +SceneLayerAdded : Action<SceneLayer>
+        +SceneLayerRemoved : Action<SceneLayer>
+        +SceneDisposing : Action<Scene>
+    }
+
+    class SceneLayer {
+        +ID : string
+        +Scene : Scene
+        +ZOrder : int
+        +Parallax : float
+        +TileWidth : int
+        +TileHeight : int
+        +Visible : bool
+        +CoordinateSystemType : CoordinateSystemTypes
+        +CoordinateSystem : ISceneLayerCoordinates
+        +GridColumnCount : int
+        +GridRowCount : int
+        +SceneLayerTileArray : SceneLayerTile[,]
+        +WrapHorizontally : bool
+        +WrapVertically : bool
+        +ShowGridLines : bool
+        +ShowCollisionBoxes : bool
+        +OriginPx : Point
+        +ColliderRegistry : ColliderRegistry
+        +CollisionResolver : CollisionResolver
+        +ValueBag : TypedValueBag
+        +Dispose()
+    }
+
+    class SceneLayerTile {
+        +SceneLayer : SceneLayer
+        +Column : int
+        +Row : int
+        +IsPositionFixed : bool = true
+    }
+}
+
+' ─────────────────────────────────────────────
+' DRAWING
+' ─────────────────────────────────────────────
+package "Drawing" {
+
+    abstract class Tile {
+        +Id : Guid
+        +Nickname : string?
+        +Visible : bool
+        +ZOrder : int
+        +CurrentFrame : Frame
+        +TileAnimator : Animator
+        +PauseAnimation : bool
+        +Collider : ICollider?
+        +CollisionArea : Rectangle
+        +CollisionsEnabled : bool
+        +EnableFog : bool
+        +AdjustCollisionArea : CollisionDetectionAdjustment
+        +ValueBag : TypedValueBag
+        +{abstract} IsPositionFixed : bool
+        +{abstract} DrawLocationWorld : Rectangle
+        +{abstract} SceneLayerCoordinates : PointF
+        +{abstract} SceneLayer : SceneLayer
+        +Draw(backbuffer, destRectScreen)
+        +GetDrawLocationScreen(view) : RectangleF
+        +GetCollisionAreaScreen(view) : RectangleF
+        +{static} TilesAnimating : List<Tile>
+        +Dispose()
+    }
+
+    class Sprite {
+        +Movement : MovementController
+        +HorizAlign : HorizontalAlignment
+        +VertAlign : VerticalAlignment
+        +NudgeX : int
+        +NudgeY : int
+        +RenderSize : Size
+        +IsPositionFixed : bool = false
+        +DrawLocationWorld : Rectangle
+        +SceneLayerCoordinates : PointF
+        +SceneLayer : SceneLayer
+        +GetPosition() : Vector2
+        +SetPosition(pos)
+        +TranslateWorldPx(dx, dy)
+        +Dispose()
+        --events--
+        +SpriteMoved : Action<SpriteMovedEventArgs>
+        +Disposing : Action<Sprite>
+    }
+
+    class SpriteManager <<sealed>> {
+        +{static} Instance : SpriteManager
+        +AllSprites : ReadOnlyCollection<Sprite>
+        +SizeNewSpritesToSceneLayer : bool
+        +CreateSprite(sceneLayer, frame, id?) : Sprite
+        +CloneSprite(sprite, sceneLayer?) : Sprite
+        +Remove(sprite)
+        +Clear()
+        +GetSpriteByID(id) : Sprite?
+        +GetSpritesInWorldRectRange(...) : List<Sprite>
+        +Dispose()
+        --events--
+        +SpriteCreated : Action<Sprite>
+    }
+
+    struct Frame {
+        +Tilesheet : Tilesheet
+        +XTile : int
+        +YTile : int
+        +SkBitmap : SKBitmap?
+        +SkImage : SKImage?
+        +BaseTileSize : Size
+        +OverhangPixels : Overhang
+        +TileSizeWithOverhang : Size
+    }
+
+    class Tilesheet <<sealed>> {
+        +Name : string
+        +SkBitmap : SKBitmap
+        +TileSize : Size
+        +OverhangPixels : Overhang
+        +InitialOffsetX : int
+        +InitialOffsetY : int
+        +XPixelsBetweenTiles : int
+        +YPixelsBetweenTiles : int
+        +ValueBag : TypedValueBag
+        +GetBitmap(xTile, yTile) : SKBitmap?
+        +GetImage(xTile, yTile) : SKImage?
+        +Dispose()
+        --events--
+        +Disposed : EventHandler<TilesheetDisposedEventArgs>
+    }
+
+    class TilesheetRegistry <<sealed>> {
+        +{static} Instance : TilesheetRegistry
+        +Add(name, tilesheet)
+        +TryGet(name, out sheet) : bool
+        +Remove(name, dispose?) : bool
+        +Clear()
+        +Names : IReadOnlyList<string>
+        +Count : int
+        +Dispose()
+    }
+
+    class Animator {
+        +Parent : Tile
+        +CurrentCycle : Cycle
+        +IsCycling : bool
+        +SetCurrentCycle(cycleKey) : Cycle
+        +StartAnimation()
+        +StartAnimation(cycleKey)
+        +StopAnimation()
+        +CycleAnimation(tick)
+        +Dispose()
+        --events--
+        +Started : Action<AnimatorEventArgs>
+        +Stopped : Action<AnimatorEventArgs>
+        +Cycled : Action<AnimatorEventArgs>
+    }
+
+    class Cycle {
+        +Key : string
+        +Type : CycleType
+        +Frames : FrameSequence
+        +FrameDurationTicks : long
+    }
+
+    class DirectDrawingManager <<sealed>> {
+        +{static} Instance : DirectDrawingManager
+        +DirectDrawings : ReadOnlyCollection<IDirectDrawable>
+        +Count : int
+        +GetDirectDrawing(name) : IDirectDrawable?
+        +GetDrawingsForLayer(layer) : IReadOnlyList<DirectDrawingBase>
+        +GetDrawingsForView(view) : IReadOnlyList<DirectDrawingBase>
+        +ClearAll()
+        +Clear(name)
+        +UpdateAll(tick)
+        +Dispose()
+    }
+
+    abstract class DirectDrawingBase {
+        +Name : string
+        +Visible : bool
+        +ZOrder : int
+        +Mode : DirectDrawingMode
+        +Update(tick)
+        +{abstract} Draw(canvas, view)
+    }
+
+    class DirectImage extends DirectDrawingBase {
+        +Frame : Frame
+        +DestRectScreen : RectangleF
+    }
+
+    class DirectRectangle extends DirectDrawingBase {
+        +DestRectScreen : RectangleF
+        +FillColor : SKColor?
+        +StrokeColor : SKColor?
+        +StrokeWidth : float
+    }
+
+    class TextBlock extends DirectDrawingBase {
+        +Text : string
+        +Font : FontInfo
+        +Color : SKColor
+        +PositionScreen : PointF
+    }
+
+    class ParticleEmitter extends DirectDrawingBase {
+        +IsEmitting : bool
+        +ParticleCount : int
+        +Start()
+        +Stop()
+    }
+
+    class CompositeSprite {
+        +Sprites : IReadOnlyList<Sprite>
+        +Add(sprite)
+        +Remove(sprite)
+        +Move(dx, dy)
+    }
+}
+
+' ─────────────────────────────────────────────
+' MOVEMENT
+' ─────────────────────────────────────────────
+package "Movement" {
+
+    class MovementController <<sealed>> {
+        +MovementState : MovementState
+        +IsFollowing : bool
+        +IsScripted : bool
+        +IsIntegratedActive : bool
+        +WrapX : bool
+        +WrapY : bool
+        +StopAllMovement()
+        +Dispose()
+        --events--
+        +ScriptedMovementStarted : Action<ScriptedMovement>
+        +ScriptedMovementStopped : Action<ScriptedMovement>
+    }
+
+    interface IMovable {
+        +GetPosition() : Vector2
+        +SetPosition(pos)
+    }
+
+    interface IMovableOnSceneLayer extends IMovable {
+        +SceneLayer : SceneLayer
+        +PositionSpace : MovementSpace
+        +TranslateWorldPx(dx, dy)
+    }
+}
+
+' ─────────────────────────────────────────────
+' COLLISIONS
+' ─────────────────────────────────────────────
+package "Collisions" {
+
+    class ColliderRegistry {
+        +Add(collider)
+        +Remove(collider)
+        +GetAll() : IReadOnlyList<ICollider>
+    }
+
+    class CollisionGroupRegistry {
+        +AddGroup(name) : CollisionMasks
+        +GetMask(name) : CollisionMasks
+    }
+
+    class CollisionResolver <<internal sealed>> {
+        +Resolve()
+    }
+
+    interface ICollider {
+        +Owner : ICollisionEntity
+        +CollisionArea : Rectangle
+        +CollisionMask : CollisionMasks
+    }
+
+    interface ICollisionEntity {
+        +Collider : ICollider?
+        +CollisionArea : Rectangle
+        +CollisionsEnabled : bool
+        +AdjustCollisionArea : CollisionDetectionAdjustment
+    }
+
+    interface ICollisionMovableEntity extends ICollisionEntity, IMovableOnSceneLayer {
+    }
+
+    class CollisionResult {
+        +EntityA : ICollisionEntity
+        +EntityB : ICollisionEntity
+        +Direction : CollisionDirectionFrom
+        +ResponseType : CollisionResponseType
+    }
+}
+
+' ─────────────────────────────────────────────
+' INPUT
+' ─────────────────────────────────────────────
+package "Input" {
+
+    class KeyboardEventPoller <<sealed>> {
+        +{static} Instance : KeyboardEventPoller?
+        +Adapter : IKeyboardAdapter?
+        +PauseAllKeyEvents : bool
+        +{static} Initialize(adapter)
+        +PollForEvents(tick)
+        +StartMonitoringKey(keyCode, ...)
+        +StopMonitoringKey(keyCode)
+        +AllKeyConfigs : IReadOnlyDictionary<int, KeyEventConfiguration>
+        --events--
+        +KeyDown : Action<KeyDownEventArgs>
+    }
+
+    class MouseEventPoller <<sealed>> {
+        +{static} Instance : MouseEventPoller?
+        +Adapter : IMouseAdapter?
+        +{static} Initialize(adapter)
+        +PollForEvents(tick)
+    }
+
+    class GamepadEventPoller <<sealed>> {
+        +{static} Instance : GamepadEventPoller?
+        +{static} Initialize(adapters)
+        +PollForEvents(tick)
+    }
+
+    interface IKeyboardAdapter {
+        +GetState() : KeyboardState
+    }
+
+    interface IMouseAdapter {
+        +GetState() : MouseState
+    }
+
+    interface IGamepadAdapter {
+        +GetState() : GamepadState
+    }
+
+    interface "IGamepadManager<TAdapter>" as IGamepadManager {
+        +ConnectedAdapters : IReadOnlyList<TAdapter>
+        +Update()
+    }
+}
+
+' ─────────────────────────────────────────────
+' TIMERS
+' ─────────────────────────────────────────────
+package "Timers" {
+
+    class Timer <<sealed>> {
+        +Type : TimerType
+        +Cycles : TimerCycles
+        +Length : long
+        +TimerID : string
+        +Paused : bool
+        +{static} PausedAll : bool
+        +{static} Add(timerID, type, cycles, length) : Timer
+        +{static} Remove(timerID)
+        +{static} Get(timerID) : Timer
+        +{static} RaiseTimerEvents(type, tick)
+        +{static} ClearAll()
+        +{static} Count : int
+        +Dispose()
+        --events--
+        +Tick : Action
+    }
+
+    enum TimerType {
+        PreCycle
+        PostCycle
+    }
+
+    enum TimerCycles {
+        Repeating
+        Once
+    }
+}
+
+' ─────────────────────────────────────────────
+' AUDIO
+' ─────────────────────────────────────────────
+package "Audio" {
+
+    class AudioResourceManager <<sealed>> {
+        +{static} Instance : AudioResourceManager
+        +LoadFromFile(key, filePath, ...) : AudioResource
+        +LoadFromStream(key, input, ...) : AudioResource
+        +LoadFromEngineAssetsFile(assetsFile, ...) : List<AudioResource>
+        +Clone(key, newKey?) : AudioResource?
+        +Unload(key)
+        +Clear()
+        +Get(key) : AudioResource?
+        +GetAll() : Dictionary<string, AudioResource>
+        +Contains(key) : bool
+        +Dispose()
+        --events--
+        +SoundDisposed : EventHandler<(string, AudioResource)>
+    }
+
+    class AudioResource {
+        +Key : string
+        +Volume : float
+        +Pan : float
+        +Play()
+        +Stop()
+        +Dispose()
+    }
+}
+
+' ─────────────────────────────────────────────
+' ASSETS
+' ─────────────────────────────────────────────
+package "Assets" {
+
+    class AssetsFile {
+        +Entries : IReadOnlyList<AssetsFileEntry>
+        +Open(entryName) : Stream
+        +Contains(entryName) : bool
+    }
+}
+
+' ─────────────────────────────────────────────
+' RELATIONSHIPS
+' ─────────────────────────────────────────────
+
+' Engine owns
+Engine "1" *-- "1" EngineState
+Engine "1" *-- "1" EngineManagers
+Engine "1" *-- "1" EngineInputSystems
+Engine "1" *-- "1" EngineConfiguration
+Engine "1" o-- "0..1" IUiDispatcher
+Engine "1" o-- "1" IEngineDispatcher
+
+' EngineManagers aggregates singletons
+EngineManagers "1" o-- "1" AudioResourceManager
+EngineManagers "1" o-- "1" DirectDrawingManager
+EngineManagers "1" o-- "1" SpriteManager
+EngineManagers "1" o-- "1" TilesheetRegistry
+
+' EngineInputSystems aggregates pollers
+EngineInputSystems "1" o-- "0..1" KeyboardEventPoller
+EngineInputSystems "1" o-- "0..1" MouseEventPoller
+EngineInputSystems "1" o-- "0..1" GamepadEventPoller
+
+' Rendering hierarchy
+BackbufferBase <|-- BitmapBackbuffer
+BackbufferBase <|-- GpuBackbuffer
+RenderSurfaceHostBase <|-- RenderSurfaceHost
+RenderSurfaceHost "1" *-- "1" BackbufferBase
+RenderSurfaceHost "1" *-- "1" ViewManager
+RenderSurfaceHost "1" o-- "0..1" RenderSurfaceAdapterBase
+RenderSurfaceHost "1" o-- "0..1" Scene
+RenderSurfaceHostRegistry "0..*" o-- RenderSurfaceHostBase
+
+ViewManager "1" *-- "0..*" View
+View "1" *-- "1" Camera
+View "1" *-- "1" Viewport
+
+' Scene hierarchy
+Scene "1" *-- "0..*" SceneLayer
+SceneLayer "1" *-- "0..*" SceneLayerTile
+SceneLayer "1" *-- "1" ColliderRegistry
+SceneLayer "1" *-- "1" CollisionResolver
+CollisionResolver "1" o-- "1" ColliderRegistry
+
+' Tile hierarchy
+Tile <|-- SceneLayerTile
+Tile <|-- Sprite
+SceneLayerTile "0..*" --o "1" SceneLayer : in grid
+Sprite "0..*" --o "1" SceneLayer : placed on
+Tile "1" *-- "1" Animator
+Tile "1" o-- "0..1" Frame
+Tile ..> ICollisionEntity : implements
+
+Animator "1" *-- "0..*" Cycle
+Frame "1" o-- "0..1" Tilesheet
+Tilesheet --o TilesheetRegistry
+
+Sprite "1" *-- "1" MovementController
+Sprite ..> IMovableOnSceneLayer : implements
+Sprite ..> ICollisionMovableEntity : implements
+SpriteManager "1" o-- "0..*" Sprite
+
+' Drawing
+DirectDrawingManager "1" o-- "0..*" DirectDrawingBase
+
+' Collisions
+ICollisionEntity <|-- ICollisionMovableEntity
+ICollisionMovableEntity <|-- IMovableOnSceneLayer
+CollisionResolver ..> CollisionResult : produces
+
+' Input adapters
+KeyboardEventPoller "1" o-- "0..1" IKeyboardAdapter
+MouseEventPoller "1" o-- "0..1" IMouseAdapter
+GamepadEventPoller "1" o-- "0..*" IGamepadAdapter
+IGamepadManager "1" o-- "0..*" IGamepadAdapter
+
+' Audio
+AudioResourceManager "1" o-- "0..*" AudioResource
+
+' Dispatcher impls
+UiDispatcher ..|> IUiDispatcher
+EngineDispatcher ..|> IEngineDispatcher
+
+@enduml
