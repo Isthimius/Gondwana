@@ -947,6 +947,8 @@ public sealed class Engine : IDisposable
                 Input.KeyboardEventPoller?.StopMonitoringAllKeys();
                 Input.MouseEventPoller?.StopMonitoringMouse();
                 Input.TouchEventPoller?.StopMonitoringTouch();
+                if (Input.TouchEventPoller is IDisposable disposableTouchEventPoller)
+                    disposableTouchEventPoller.Dispose();
 
                 if (Input.GamepadManager is not null)
                     foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)
