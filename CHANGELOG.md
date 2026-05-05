@@ -1,3 +1,121 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+# v2.2.3 - May 05, 2026
+
+
+
+## Added
+- Add gondwana run and gondwana run wasm commands
+- Update SpotAvalonia to use BrowserAudioManager for WASM audio (PR 4)
+- Add WASM publish/deploy scripts and gondwana publish wasm command (PR 3)
+- Add gondwana-wasm template, gondwana new wasm CLI command, docs (PR 2)
+- Add Gondwana.Audio.Browser WASM audio adapter (PR 1)
+- Add --include-loader flag to generate-keys command
+- Add --password and --encrypt switches to asset/pack commands
+- Strip Co-authored-by, Agent-Logs-Url, Signed-off-by from CHANGELOG
+- Group CHANGELOG entries by assembly
+
+
+
+## Fixed
+- Address PR review feedback (App.cs BROWSER guard, duplicate JS, PS5.1 $IsWindows, dead code, doc fix)
+- Improve --encrypt error message wording
+- Use pull_request event in labeler to avoid manual approval
+- Remove extra blank lines between bullet points in cliff.toml template
+- Replace unsupported --json flag in gh issue create with URL parsing
+- Use \r?\n? in preprocessors to handle both line endings
+- Construct PR URL from pr_number instead of non-existent pr_url field
+- Restore TAG HANDLING inline comments and mention -PreviewOnly in confirmation prompt
+- Align cliff.toml format, harden heading detection, resolve paths from PSScriptRoot
+- Use # headings in cliff.toml, align awk extractor, fix preview and first-run changelog
+- Fetch origin/master and rebase before pushing CHANGELOG to master
+- Push CHANGELOG directly to master instead of via PR in release workflow
+
+
+
+## Documentation
+- Make each top-level CLI command a collapsible section in CLICHEATSHEET
+
+
+
+## Maintenance
+- Add dev install scripts for Gondwana.Cli and Gondwana.Templates
+- Run label-PR workflow automatically using pull_request_target
+- Add PR auto-labeler workflow and rules
+- Update CHANGELOG for v2.2.2 ([#94](https://github.com/Isthimius/Gondwana/pull/94))
+
+
+
+## Reverted
+- Revert changes to CLICKCHEATSHEET
+
+
+
+## Changed
+- Merge pull request #128 from Isthimius/copilot/prepare-avalanche-project-for-wasm
+
+feat: WASM audio adapter, gondwana-wasm template, publish scripts, SpotAvalonia audio ([#128](https://github.com/Isthimius/Gondwana/pull/128))
+- Version bump
+- Cheatsheet
+- Merge pull request #127 from Isthimius/copilot/add-powershell-scripts-for-packaging
+
+Add developer install scripts for Gondwana.Cli and Gondwana.Templates ([#127](https://github.com/Isthimius/Gondwana/pull/127))
+- Merge pull request #126 from Isthimius/copilot/add-password-protection-encryption
+
+feat(cli): add --password and --encrypt switches to asset/pack commands ([#126](https://github.com/Isthimius/Gondwana/pull/126))
+- Merge pull request #125 from Isthimius/copilot/automate-label-pr-approval
+
+fix: switch Label PR workflow to `pull_request` to remove manual approval gate ([#125](https://github.com/Isthimius/Gondwana/pull/125))
+- Merge pull request #124 from Isthimius/copilot/remove-extra-empty-lines
+
+fix: remove extra blank lines between bullet points in changelog output ([#124](https://github.com/Isthimius/Gondwana/pull/124))
+- One time use; removing
+- Merge pull request #103 from Isthimius/copilot/troubleshoot-create-issues-action
+
+fix(ci): gh issue create does not support --json flag ([#103](https://github.com/Isthimius/Gondwana/pull/103))
+- Merge pull request #102 from Isthimius/copilot/create-roadmap-feature-usability-gaps
+
+Create 20 roadmap issues via automated workflow ([#102](https://github.com/Isthimius/Gondwana/pull/102))
+- Add 20 roadmap issues as markdown files + create-roadmap-issues workflow
+
+
+
+- Merge pull request #101 from Isthimius/copilot/strip-author-text-changelog
+
+feat(cliff.toml): strip author/co-author trailer lines from CHANGELOG ([#101](https://github.com/Isthimius/Gondwana/pull/101))
+- Merge pull request #100 from Isthimius/copilot/fix-release-script-failure
+
+fix: cliff.toml template crash on commit.remote.pr_url ([#100](https://github.com/Isthimius/Gondwana/pull/100))
+- Merge pull request #97 from Isthimius/add-git-cliff
+
+utilize git-cliff for CHANGELOG ([#97](https://github.com/Isthimius/Gondwana/pull/97))
+- Potential fix for pull request finding
+
+
+- Potential fix for pull request finding
+
+
+- Apply suggestions from code review
+
+
+- Utilize git-cliff for CHANGELOG
+- Merge pull request #99 from Isthimius/copilot/update-label-pr-job-approval
+
+Use `pull_request_target` for labeler to skip fork approval gate ([#99](https://github.com/Isthimius/Gondwana/pull/99))
+- Delete junk file
+- Merge pull request #96 from Isthimius/copilot/group-changelog-by-assembly
+
+feat(changelog): group CHANGELOG entries by assembly ([#96](https://github.com/Isthimius/Gondwana/pull/96))
+- Merge pull request #95 from Isthimius/copilot/fix-final-merge-issue
+
+fix: push CHANGELOG directly to master instead of PR merge in release workflow ([#95](https://github.com/Isthimius/Gondwana/pull/95))
+- Potential fix for pull request finding
+
+
+
+
 # v2.2.2 - May 03, 2026
 ## What's Changed
 ### Other Changes
