@@ -87,7 +87,6 @@ public static class EngineExtensions
             throw new ArgumentNullException(nameof(control));
         }
 
-        (TouchEventPoller.Instance?.Adapter as IDisposable)?.Dispose();
         engine.Input.TouchAdapter = new AvaloniaTouchInputAdapter(control);
     }
 }
