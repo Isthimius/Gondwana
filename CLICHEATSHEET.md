@@ -38,6 +38,8 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana pack <source> <output>` | Pack a directory of files into an asset bundle (shorthand for `gondwana assets pack`). |
 | `gondwana new <subcommand>` | Scaffold a new Gondwana project. |
 | `gondwana templates <subcommand>` | Manage Gondwana `dotnet new` templates. |
+| `gondwana run` | Run the desktop build of the project in the current directory. |
+| `gondwana run wasm` | Build and run the project in the browser (net8.0-browser dev server). |
 | `gondwana publish <subcommand>` | Publish a Gondwana project for distribution. |
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
 
@@ -158,6 +160,52 @@ dotnet publish -f net8.0-browser -c Release
 ```
 
 Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
+
+---
+
+## `gondwana run`
+
+### `gondwana run` (desktop)
+
+Runs the desktop build of the project in the current directory.
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Debug` | Build configuration (`Debug`, `Release`). |
+| `--framework <tfm>` | `-f` | *(auto)* | Target framework (e.g. `net8.0`). Required for multi-target projects. |
+
+**Examples**
+```
+gondwana run
+gondwana run -p ./src/MyGame
+gondwana run -c Release
+gondwana run -f net8.0
+```
+
+Equivalent to `dotnet run --project <path> -c <configuration>`.
+
+---
+
+### `gondwana run wasm`
+
+Builds and runs the project in the browser using the `net8.0-browser` dev server.
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Debug` | Build configuration (`Debug`, `Release`). |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+**Examples**
+```
+gondwana run wasm
+gondwana run wasm -p ./src/MyGame
+gondwana run wasm --skip-workload
+gondwana run wasm --skip-workload -c Release
+```
+
+Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`. The Avalonia browser host starts a local dev server and opens the game in the default browser.
 
 ---
 

@@ -131,6 +131,47 @@ gondwana publish wasm
 
 ---
 
+### `gondwana run`
+
+Runs the desktop build of the project in the current directory (or `--project`).
+
+```bash
+gondwana run
+gondwana run --project ./src/MyGame
+gondwana run --configuration Release
+gondwana run --framework net8.0
+```
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Debug` | Build configuration. |
+| `--framework <tfm>` | `-f` | *(auto)* | Target framework to run. Required for multi-target projects. |
+
+Equivalent to `dotnet run --project <path> -c <configuration>`.
+
+---
+
+### `gondwana run wasm`
+
+Builds and runs the project in the browser using the `net8.0-browser` dev server.
+
+```bash
+gondwana run wasm
+gondwana run wasm --project ./src/MyGame
+gondwana run wasm --skip-workload
+```
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Debug` | Build configuration. |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`. The Avalonia browser host starts a local dev server and opens the game in the default browser.
+
+---
+
 ### `gondwana publish wasm`
 
 Builds and publishes the project in the current directory (or `--project`) for `net8.0-browser`.

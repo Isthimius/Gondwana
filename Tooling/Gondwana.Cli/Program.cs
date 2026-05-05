@@ -2,6 +2,7 @@ using Gondwana.Cli.Commands;
 using Gondwana.Cli.Commands.Assets;
 using Gondwana.Cli.Commands.New;
 using Gondwana.Cli.Commands.Publish;
+using Gondwana.Cli.Commands.Run;
 using Gondwana.Cli.Commands.Templates;
 using Gondwana.Logging;
 using Microsoft.Extensions.Logging;
@@ -70,6 +71,18 @@ app.Configure(config =>
               .WithDescription("Publish a Gondwana project for browser/WASM (net8.0-browser).")
               .WithExample("publish", "wasm")
               .WithExample("publish", "wasm", "--project", "./src/MyGame", "--skip-workload");
+    });
+
+    config.AddBranch("run", branch =>
+    {
+        branch.SetDescription("Run a Gondwana project.");
+
+        branch.SetDefaultCommand<RunDesktopCommand>();
+
+        branch.AddCommand<RunWasmCommand>("wasm")
+              .WithDescription("Build and run the project in the browser (net8.0-browser dev server).")
+              .WithExample("run", "wasm")
+              .WithExample("run", "wasm", "--skip-workload");
     });
 
     config.AddBranch("assets", branch =>
