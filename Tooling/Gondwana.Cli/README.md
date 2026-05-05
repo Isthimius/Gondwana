@@ -33,6 +33,17 @@ Checks performed:
 - SDL2 native binaries (for `Gondwana.Input.SDL2`)
 - LibVLC (for `Gondwana.Video`)
 
+Pass `--fix` to automatically resolve issues that have a known fix:
+
+```bash
+gondwana doctor --fix
+```
+
+Currently auto-fixable:
+- **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
+
+After applying fixes, the checks are re-run and the updated results are displayed.
+
 ---
 
 ### `gondwana new winforms <name>`

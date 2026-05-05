@@ -1,30 +1,88 @@
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Gondwana.Cli.Commands;
 
-internal sealed class DoctorCommand : Command
+internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 {
-    protected override int Execute(CommandContext context, CancellationToken cancellationToken)
+    public sealed class Settings : CommandSettings
+    {
+        [CommandOption("--fix")]
+        [Description("Automatically fix issues that can be resolved without manual steps.")]
+        public bool Fix { get; init; }
+    }
+
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         AnsiConsole.MarkupLine("[bold]Gondwana Doctor[/]");
         AnsiConsole.WriteLine();
 
-        var checks = new List<(string Label, Func<CheckResult> Check)>
+        var checks = new List<(string Label, Func<CheckResult> Check, Action? Fix)>
         {
-            (".NET SDK",           CheckDotNetSdk),
-            ("Gondwana Templates", CheckGondwanaTemplates),
-            ("SkiaSharp",          CheckSkiaSharp),
-            ("SDL2",               CheckSdl2),
-            ("LibVLC",             CheckLibVlc),
+            (".NET SDK",           CheckDotNetSdk,         null),
+            ("Gondwana Templates", CheckGondwanaTemplates, FixGondwanaTemplates),
+            ("SkiaSharp",          CheckSkiaSharp,         null),
+            ("SDL2",               CheckSdl2,              null),
+            ("LibVLC",             CheckLibVlc,            null),
         };
-
-        var results = new List<(string Label, CheckResult Result)>();
 
         int maxLabel = checks.Max(c => c.Label.Length);
 
-        foreach (var (label, check) in checks)
+        var results = RunChecks(checks);
+        PrintResults(results, maxLabel);
+
+        AnsiConsole.WriteLine();
+
+        int exitCode = PrintSummary(results, remaining: false);
+
+        if (!settings.Fix || exitCode == 0)
+            return exitCode;
+
+        var fixable = results
+            .Zip(checks, (r, c) => (r.Label, r.Result, c.Fix))
+            .Where(x => x.Result.Status == CheckStatus.Fail && x.Fix != null)
+            .ToList();
+
+        AnsiConsole.WriteLine();
+
+        if (fixable.Count == 0)
+        {
+            AnsiConsole.MarkupLine("[dim]No automatic fixes available for the issues found.[/]");
+            return exitCode;
+        }
+
+        AnsiConsole.MarkupLine("[bold]Applying fixes...[/]");
+        AnsiConsole.WriteLine();
+
+        foreach (var (label, _, fix) in fixable)
+        {
+            AnsiConsole.MarkupLine($"  Fixing [bold]{Markup.Escape(label)}[/]...");
+            AnsiConsole.WriteLine();
+            fix!();
+            AnsiConsole.WriteLine();
+        }
+
+        AnsiConsole.MarkupLine("[bold]Re-checking...[/]");
+        AnsiConsole.WriteLine();
+
+        var reResults = RunChecks(checks);
+        PrintResults(reResults, maxLabel);
+
+        AnsiConsole.WriteLine();
+
+        return PrintSummary(reResults, remaining: true);
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    private static List<(string Label, CheckResult Result)> RunChecks(
+        List<(string Label, Func<CheckResult> Check, Action? Fix)> checks)
+    {
+        var results = new List<(string Label, CheckResult Result)>();
+
+        foreach (var (label, check, _) in checks)
         {
             CheckResult result;
             try
@@ -39,6 +97,33 @@ internal sealed class DoctorCommand : Command
             results.Add((label, result));
         }
 
+        return results;
+    }
+
+    private static int PrintSummary(List<(string Label, CheckResult Result)> results, bool remaining)
+    {
+        int issues = results.Count(r => r.Result.Status == CheckStatus.Fail);
+        int warnings = results.Count(r => r.Result.Status == CheckStatus.Warning);
+
+        if (issues == 0 && warnings == 0)
+        {
+            AnsiConsole.MarkupLine("[green]All checks passed.[/]");
+            return 0;
+        }
+
+        string suffix = remaining ? " remaining." : " found.";
+
+        if (issues > 0)
+            AnsiConsole.MarkupLine($"[red]{issues} issue(s){suffix}[/]");
+
+        if (warnings > 0)
+            AnsiConsole.MarkupLine($"[yellow]{warnings} warning(s){suffix}[/]");
+
+        return issues > 0 ? 1 : 0;
+    }
+
+    private static void PrintResults(List<(string Label, CheckResult Result)> results, int maxLabel)
+    {
         foreach (var (label, result) in results)
         {
             var paddedLabel = label.PadRight(maxLabel);
@@ -72,25 +157,13 @@ internal sealed class DoctorCommand : Command
                     break;
             }
         }
+    }
 
-        AnsiConsole.WriteLine();
+    // ─── Fixes ────────────────────────────────────────────────────────────────
 
-        int issues = results.Count(r => r.Result.Status == CheckStatus.Fail);
-        int warnings = results.Count(r => r.Result.Status == CheckStatus.Warning);
-
-        if (issues == 0 && warnings == 0)
-        {
-            AnsiConsole.MarkupLine("[green]All checks passed.[/]");
-            return 0;
-        }
-
-        if (issues > 0)
-            AnsiConsole.MarkupLine($"[red]{issues} issue(s) found.[/]");
-
-        if (warnings > 0)
-            AnsiConsole.MarkupLine($"[yellow]{warnings} warning(s) found.[/]");
-
-        return issues > 0 ? 1 : 0;
+    private static void FixGondwanaTemplates()
+    {
+        ProcessHelper.RunLive("dotnet", "new install Gondwana.Templates");
     }
 
     // ─── Individual checks ────────────────────────────────────────────────────
