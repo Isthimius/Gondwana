@@ -144,6 +144,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{02EA681E-C7D
 		Solution Items\documentation\old\World-Screen.puml = Solution Items\documentation\old\World-Screen.puml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{54A066E5-41AB-466E-BE27-7B6817B6C1A9}"
+	ProjectSection(SolutionItems) = preProject
+		Solution Items\scripts\Deploy-Gondwana-Itch.ps1 = Solution Items\scripts\Deploy-Gondwana-Itch.ps1
+		Solution Items\scripts\Deploy-Gondwana-Website.ps1 = Solution Items\scripts\Deploy-Gondwana-Website.ps1
+		Solution Items\scripts\Publish-Gondwana-Wasm.ps1 = Solution Items\scripts\Publish-Gondwana-Wasm.ps1
+		Solution Items\scripts\release.ps1 = Solution Items\scripts\release.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -472,6 +480,7 @@ Global
 		{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {3752648C-1686-442C-B3CB-D6E2DFD260CA}
+		{54A066E5-41AB-466E-BE27-7B6817B6C1A9} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
