@@ -2,6 +2,8 @@ var hierarchy =
 [
     [ "Gondwana.Collisions.Aabb", "structGondwana_1_1Collisions_1_1Aabb.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", null ],
+    [ "Gondwana.Audio.Browser.BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", null ],
+    [ "Gondwana.Audio.Browser.BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", null ],
     [ "Gondwana.Rendering.Views.Camera", "classGondwana_1_1Rendering_1_1Views_1_1Camera.html", null ],
     [ "Gondwana.Collisions.ColliderRegistry", "classGondwana_1_1Collisions_1_1ColliderRegistry.html", null ],
     [ "Gondwana.Collisions.CollisionDetectionAdjustment", "structGondwana_1_1Collisions_1_1CollisionDetectionAdjustment.html", null ],

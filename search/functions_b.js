@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['load_0',['Load',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a3c30de9161e52c8a2ad35746d9117698',1,'Gondwana::Configuration::EngineConfigurationFile']]],
+  ['load_0',['load',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html#ac1aae70c99fefae628d16b38c9ce3618',1,'Gondwana.Audio.Browser.BrowserAudioManager.Load()'],['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a3c30de9161e52c8a2ad35746d9117698',1,'Gondwana.Configuration.EngineConfigurationFile.Load()']]],
   ['loadanimationcycles_1',['LoadAnimationCycles',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a5a49535618c4d95073d1fb6b63090162',1,'Gondwana::Hosting::GameHostBase']]],
   ['loadassets_2',['LoadAssets',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a0930bbe034b663e96202b5e1c8fca903',1,'Gondwana::Hosting::GameHostBase']]],
   ['loadcontent_3',['LoadContent',['../classGondwana_1_1Hosting_1_1GameHostBase.html#ae566e90c1bc1cac44eea3d26bb511561',1,'Gondwana::Hosting::GameHostBase']]],

@@ -7,6 +7,10 @@ var annotated_dup =
         [ "AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", "classGondwana_1_1Assets_1_1AssetsFileIdentifier" ]
       ] ],
       [ "Audio", "namespaceGondwana_1_1Audio.html", [
+        [ "Browser", "namespaceGondwana_1_1Audio_1_1Browser.html", [
+          [ "BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager" ],
+          [ "BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer" ]
+        ] ],
         [ "Midi", "namespaceGondwana_1_1Audio_1_1Midi.html", [
           [ "SynthesizerSampleProvider", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider" ],
           [ "WaveProviderToWaveStream", "classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream.html", "classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream" ]

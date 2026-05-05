@@ -16,7 +16,7 @@ var searchData=
   ['lineheight_13',['LineHeight',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#adc94f261534f4e63cef86ad80a1e0ba2',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['lines_14',['Lines',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ac9830c61b758722087c406040cfc4eab',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['linespacingmultiplier_15',['LineSpacingMultiplier',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a8b60c8922204ff195a2cadc269f633d5',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['load_16',['Load',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a3c30de9161e52c8a2ad35746d9117698',1,'Gondwana::Configuration::EngineConfigurationFile']]],
+  ['load_16',['load',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html#ac1aae70c99fefae628d16b38c9ce3618',1,'Gondwana.Audio.Browser.BrowserAudioManager.Load()'],['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a3c30de9161e52c8a2ad35746d9117698',1,'Gondwana.Configuration.EngineConfigurationFile.Load()']]],
   ['loadanimationcycles_17',['LoadAnimationCycles',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a5a49535618c4d95073d1fb6b63090162',1,'Gondwana::Hosting::GameHostBase']]],
   ['loadassets_18',['LoadAssets',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a0930bbe034b663e96202b5e1c8fca903',1,'Gondwana::Hosting::GameHostBase']]],
   ['loadcontent_19',['LoadContent',['../classGondwana_1_1Hosting_1_1GameHostBase.html#ae566e90c1bc1cac44eea3d26bb511561',1,'Gondwana::Hosting::GameHostBase']]],
