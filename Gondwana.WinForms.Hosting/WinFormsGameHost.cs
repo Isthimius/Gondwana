@@ -60,6 +60,14 @@ public abstract class WinFormsGameHost : GameHostBase
     }
 
     /// <summary>
+    /// Configures touch input. Override to provide a platform-specific touch adapter.
+    /// </summary>
+    protected override void ConfigureTouch()
+    {
+        OnTouchAdapterInitialized();
+    }
+
+    /// <summary>
     /// Binds the current scene to the render surface host.
     /// </summary>
     protected override void BindScene()
@@ -86,4 +94,10 @@ public abstract class WinFormsGameHost : GameHostBase
     /// Called after the gamepad manager has been initialized. Override to perform additional gamepad setup.
     /// </summary>
     protected virtual void OnGamepadManagerInitialized() { }
+
+    /// <summary>
+    /// Called after the touch adapter has been initialized. Override to perform additional touch setup,
+    /// such as attaching gesture recognizers.
+    /// </summary>
+    protected virtual void OnTouchAdapterInitialized() { }
 }

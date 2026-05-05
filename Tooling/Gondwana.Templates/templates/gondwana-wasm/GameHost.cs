@@ -86,6 +86,14 @@ internal sealed class MyGameHost : AvaloniaGameHost
     {
     }
 
+    // TODO: Subscribe to touch/gesture events here after the adapter is initialized.
+    // Example:
+    //   var tap = new TapGestureRecognizer(Engine.Input.TouchEventPoller!);
+    //   tap.Tapped += (_, e) => { /* handle tap at e.Position */ };
+    protected override void OnTouchAdapterInitialized()
+    {
+    }
+
     // TODO: Unsubscribe any events subscribed in OnKeyboardAdapterInitialized
     // to avoid memory leaks during shutdown.
     protected override void UnhookEvents()
