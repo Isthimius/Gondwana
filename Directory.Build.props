@@ -1,5 +1,8 @@
 <Project>
 	<PropertyGroup>
+		<!-- Allow restoring/building Windows-targeting projects on non-Windows runners -->
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+
 		<Company>Hidden Worlds Games</Company>
 		<Product>Gondwana Game Engine</Product>
 		<Authors>Michael Adkins</Authors>
