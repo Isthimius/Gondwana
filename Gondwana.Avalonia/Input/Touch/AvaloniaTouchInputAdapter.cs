@@ -125,7 +125,7 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
         if (_pendingEnds.IsEmpty)
             return Array.Empty<TouchPoint>();
 
-        var snapshot = new List<TouchPoint>();
+        var snapshot = new List<TouchPoint>(_pendingEnds.Count);
         while (_pendingEnds.TryDequeue(out var point))
             snapshot.Add(point);
         return snapshot;

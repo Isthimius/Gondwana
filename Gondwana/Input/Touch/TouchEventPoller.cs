@@ -131,7 +131,8 @@ public sealed class TouchEventPoller : ITouchInput
             }
             else if (known.Position != point.Position)
             {
-                // Existing contact that moved
+                // Existing contact moved. The poller owns phase semantics for transition events,
+                // so TouchPhase.Moved is always correct here regardless of the adapter's stored phase.
                 var movedPoint = new TouchPoint(point.Id, point.Position, TouchPhase.Moved);
                 _activeTouches[point.Id] = movedPoint;
                 TouchMoved?.Invoke(this, new TouchEventArgs(movedPoint));
