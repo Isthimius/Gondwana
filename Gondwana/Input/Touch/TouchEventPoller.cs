@@ -1,3 +1,5 @@
+using Gondwana.Input.Touch.Gestures;
+
 namespace Gondwana.Input.Touch;
 
 /// <summary>
@@ -77,10 +79,46 @@ public sealed class TouchEventPoller : ITouchInput
     /// <inheritdoc />
     public event EventHandler<TouchEventArgs>? TouchEnded;
 
+    /// <summary>
+    /// Occurs when any recognized gesture — tap, swipe, or pinch — is detected.
+    /// Inspect <see cref="GestureEventArgs.IsTap"/>, <see cref="GestureEventArgs.IsSwipe"/>, or
+    /// <see cref="GestureEventArgs.IsPinch"/> to determine the gesture kind, then access the
+    /// corresponding property (<see cref="GestureEventArgs.Tap"/>, <see cref="GestureEventArgs.Swipe"/>,
+    /// or <see cref="GestureEventArgs.Pinch"/>) for the specific data.
+    /// </summary>
+    public event Action<GestureEventArgs>? TouchEvent;
+
+    /// <summary>
+    /// Gets the tap gesture recognizer used by this poller.
+    /// Adjust <see cref="TapGestureRecognizer.MaxTapDurationSeconds"/> and
+    /// <see cref="TapGestureRecognizer.MaxTapMovementPixels"/> to tune tap detection thresholds.
+    /// </summary>
+    public TapGestureRecognizer TapRecognizer { get; }
+
+    /// <summary>
+    /// Gets the swipe gesture recognizer used by this poller.
+    /// Adjust <see cref="SwipeGestureRecognizer.MinimumSwipeSpeedPixelsPerSecond"/> to tune swipe
+    /// detection thresholds.
+    /// </summary>
+    public SwipeGestureRecognizer SwipeRecognizer { get; }
+
+    /// <summary>
+    /// Gets the pinch gesture recognizer used by this poller.
+    /// </summary>
+    public PinchGestureRecognizer PinchRecognizer { get; }
+
     private TouchEventPoller(ITouchAdapter adapter, TouchEventConfiguration config)
     {
         Adapter = adapter;
         Configuration = config;
+
+        TapRecognizer = new TapGestureRecognizer(this);
+        SwipeRecognizer = new SwipeGestureRecognizer(this);
+        PinchRecognizer = new PinchGestureRecognizer(this);
+
+        TapRecognizer.Tapped += (_, e) => TouchEvent?.Invoke(new GestureEventArgs(e));
+        SwipeRecognizer.Swiped += (_, e) => TouchEvent?.Invoke(new GestureEventArgs(e));
+        PinchRecognizer.PinchUpdated += (_, e) => TouchEvent?.Invoke(new GestureEventArgs(e));
     }
 
     /// <summary>
