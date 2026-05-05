@@ -56,8 +56,9 @@ All notable changes to this project will be documented in this file.
 - feat(changelog): group CHANGELOG entries by assembly ([#96](https://github.com/Isthimius/Gondwana/pull/96))
 - fix: push CHANGELOG directly to master instead of PR merge in release workflow ([#95](https://github.com/Isthimius/Gondwana/pull/95))
 
+**Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.2.2...v2.2.3
 
-
+---
 
 # v2.2.2 - May 03, 2026
 ## What's Changed
