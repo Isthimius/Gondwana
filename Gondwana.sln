@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.5.11723.231 stable
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37203.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{AFC28C9E-17FD-4DEC-9870-8B98C661764A}"
 EndProject
@@ -115,14 +115,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{AD16FE1C-14B5-4F89-83DD-933D044DC211}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{3752648C-1686-442C-B3CB-D6E2DFD260CA}"
-	ProjectSection(SolutionItems) = preProject
-		Solution Items\documentation\gondwana-core-diagrams.puml = Solution Items\documentation\gondwana-core-diagrams.puml
-		Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip
-		Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip
-		Solution Items\documentation\Gondwana_UML_PlantUML.zip = Solution Items\documentation\Gondwana_UML_PlantUML.zip
-		Solution Items\documentation\Screen-World-Grid.puml = Solution Items\documentation\Screen-World-Grid.puml
-		Solution Items\documentation\World-Screen.puml = Solution Items\documentation\World-Screen.puml
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Assets.WinForms", "Tooling\Gondwana.Assets.WinForms\Gondwana.Assets.WinForms.csproj", "{F059118F-6A87-7D7B-03FE-2B7D24A12554}"
 EndProject
@@ -136,6 +128,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Avalonia", "Gondwa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Avalonia.Hosting", "Gondwana.Avalonia.Hosting\Gondwana.Avalonia.Hosting.csproj", "{EA889D06-E9CB-6431-6D7F-6B8260F3F9BC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Solution Items\documentation\gondwana-core-diagrams.puml = Solution Items\documentation\gondwana-core-diagrams.puml
+		Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip
+		Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip
+		Solution Items\documentation\Gondwana_UML_PlantUML.zip = Solution Items\documentation\Gondwana_UML_PlantUML.zip
+		Solution Items\documentation\Screen-World-Grid.puml = Solution Items\documentation\Screen-World-Grid.puml
+		Solution Items\documentation\World-Screen.puml = Solution Items\documentation\World-Screen.puml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,20 +150,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x64.Build.0 = Debug|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x64.ActiveCfg = Release|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x64.Build.0 = Release|Any CPU
-		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x86.ActiveCfg = Release|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -254,6 +242,20 @@ Global
 		{52B85595-4300-4725-A0C9-87D3AEAAA9AA}.Release|x64.Build.0 = Release|Any CPU
 		{52B85595-4300-4725-A0C9-87D3AEAAA9AA}.Release|x86.ActiveCfg = Release|Any CPU
 		{52B85595-4300-4725-A0C9-87D3AEAAA9AA}.Release|x86.Build.0 = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x64.Build.0 = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x86.ActiveCfg = Release|Any CPU
 		{8DD90A45-56EC-605B-636B-C5238328283F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8DD90A45-56EC-605B-636B-C5238328283F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DD90A45-56EC-605B-636B-C5238328283F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -463,6 +465,7 @@ Global
 		{7472B43A-FACF-4F8D-BF93-B409561F2685} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {3752648C-1686-442C-B3CB-D6E2DFD260CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
