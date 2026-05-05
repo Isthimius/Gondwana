@@ -168,6 +168,13 @@ public partial class EngineConfiguration
     public double TimeBetweenMouseEvents { get; set; } = 0.03;
 
     /// <summary>
+    /// Minimum time (in seconds) allowed between Touch events.
+    /// Use this to prevent flooding the system with too many events at once (fast drags, multi-touch, etc).
+    /// Default is 0.03 seconds (30 milliseconds).
+    /// </summary>
+    public double TimeBetweenTouchEvents { get; set; } = 0.03;
+
+    /// <summary>
     /// Controls whether engine logging operations are performed synchronously or asynchronously.
     /// </summary>
     /// <remarks>

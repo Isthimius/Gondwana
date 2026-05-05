@@ -38,11 +38,14 @@ public sealed class TouchEventPoller : ITouchInput
     /// </param>
     /// <param name="config">
     /// Optional configuration for touch event monitoring. If <c>null</c>, a default configuration
-    /// is created with no throttling.
+    /// is created using <see cref="Engine.Configuration"/>'s
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.TimeBetweenTouchEvents"/> as the
+    /// throttle interval.
     /// </param>
     public static void Initialize(ITouchAdapter adapter, TouchEventConfiguration? config = null)
     {
-        config ??= new TouchEventConfiguration();
+        config ??= new TouchEventConfiguration(
+            secondsBetweenEvents: Engine.Instance.Configuration.TimeBetweenTouchEvents);
         Instance = new TouchEventPoller(adapter, config);
     }
 
