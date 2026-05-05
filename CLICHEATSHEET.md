@@ -42,45 +42,32 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
 
 ---
-## help
-<details>
-<summary><b><code>gondwana help</code></b></summary>
+
+## `gondwana help`
 
 Prints a formatted table of all available commands with short descriptions, then reminds you to run `gondwana <command> --help` for detailed usage.
 
 *No arguments or options.*
 
-</details>
-
 ---
 
-## doctor
-<details>
-<summary><b><code>gondwana doctor</code></b></summary>
+## `gondwana doctor`
 
 Checks the local environment for all Gondwana prerequisites (.NET SDK, native libraries, templates).
 
 *No arguments or options.*
 
-</details>
-
 ---
 
-## info
-<details>
-<summary><b><code>gondwana info</code></b></summary>
+## `gondwana info`
 
 Reads the `.csproj` in the current directory and prints project metadata (name, target framework, Gondwana version, adapters, and discovered asset bundles). When multiple `.csproj` files are present, the first one alphabetically is used.
 
 *No arguments or options.*
 
-</details>
-
 ---
 
-## pack
-<details>
-<summary><b><code>gondwana pack</code></b></summary>
+## `gondwana pack`
 
 Top-level shorthand for [`gondwana assets pack`](#gondwana-assets-pack-source-output). Accepts exactly the same arguments and options.
 
@@ -104,13 +91,9 @@ gondwana pack ./Assets ./game.assets --password secret
 gondwana pack ./Assets ./game.assets --password secret --encrypt
 ```
 
-</details>
-
 ---
 
-## new
-<details>
-<summary><b><code>gondwana new</code></b></summary>
+## `gondwana new`
 
 | Subcommand | Description |
 |---|---|
@@ -176,13 +159,9 @@ dotnet publish -f net8.0-browser -c Release
 
 Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
 
-</details>
-
 ---
 
-## publish
-<details>
-<summary><b><code>gondwana publish</code></b></summary>
+## `gondwana publish`
 
 | Subcommand | Description |
 |---|---|
@@ -209,13 +188,9 @@ gondwana publish wasm --skip-workload -c Debug
 For itch.io and website deployment, see `scripts/Deploy-Gondwana-Itch.ps1` and
 `scripts/Deploy-Gondwana-Website.ps1`.
 
-</details>
-
 ---
 
-## templates
-<details>
-<summary><b><code>gondwana templates</code></b></summary>
+## `gondwana templates`
 
 | Subcommand | Description |
 |---|---|
@@ -235,13 +210,9 @@ Runs `dotnet new update Gondwana.Templates`. *No arguments or options.*
 
 Runs `dotnet new list gondwana` and prints matching templates. *No arguments or options.*
 
-</details>
-
 ---
 
-## assets
-<details>
-<summary><b><code>gondwana assets</code></b></summary>
+## `gondwana assets`
 
 | Subcommand | Description |
 |---|---|
@@ -332,8 +303,6 @@ gondwana assets generate-keys ./game.assets -o ./Generated/AssetKeys.cs -n MyGam
 gondwana assets generate-keys ./game.assets --password secret
 gondwana assets generate-keys ./game.assets --include-loader -o ./Generated/AssetKeys.cs -n MyGame
 ```
-
-</details>
 
 ---
 
