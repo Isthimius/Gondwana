@@ -96,9 +96,13 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 | Namespace                          | Responsibility                                                                                 |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------- |
 | **Gondwana**                       | Core engine loop, lifecycle management, configuration, and global services.                    |
+| **Gondwana.Assets**                | Asset type definitions, asset file loading, and asset identifiers.                             |
+| **Gondwana.Audio**                 | Platform-agnostic audio resource loading and playback management.                              |
 | **Gondwana.Collisions**            | Bounding-volume collision detection and kinematic physics integration.                         |
+| **Gondwana.Configuration**         | Engine configuration model and configuration file loading.                                     |
 | **Gondwana.Drawing**               | Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables. |
 | **Gondwana.Input**                 | Unified input polling for keyboard, mouse, and gamepad devices.                                |
+| **Gondwana.Logging**               | Engine-internal logging, log events, and logging mode configuration.                           |
 | **Gondwana.Movement**              | Sprite movement controllers, easing functions, and scripted motion paths.                      |
 | **Gondwana.Rendering**             | Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.             |
 | **Gondwana.Scenes**                | Hierarchical scene graph — Scenes, SceneLayers, and grid-based spatial organization.           |
@@ -124,6 +128,7 @@ All runtime packages are available on NuGet. Install only what your project need
 | [`Gondwana.Avalonia.Hosting`](https://www.nuget.org/packages/Gondwana.Avalonia.Hosting) | Ready-to-use `AvaloniaGameHost` for Avalonia-based games. |
 | [`Gondwana.Input.SDL2`](https://www.nuget.org/packages/Gondwana.Input.SDL2) | SDL2 gamepad input (cross-platform; requires native SDL2). |
 | [`Gondwana.Audio.Midi`](https://www.nuget.org/packages/Gondwana.Audio.Midi) | MIDI audio playback and SoundFont support. |
+| [`Gondwana.Audio.Browser`](https://www.nuget.org/packages/Gondwana.Audio.Browser) | Browser/WASM audio playback via HTML5 Audio API and JavaScript interop (`net8.0-browser`). |
 | [`Gondwana.Video`](https://www.nuget.org/packages/Gondwana.Video) | Experimental video playback via LibVLCSharp. |
 
 ---
