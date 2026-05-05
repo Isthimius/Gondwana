@@ -1,0 +1,111 @@
+@startuml architecture-diagram
+title Gondwana Engine — Architectural Diagram
+
+skinparam defaultFontName Segoe UI
+skinparam backgroundColor #FAFAFA
+skinparam rectangle {
+    BackgroundColor #DDEEFF
+    BorderColor #336699
+}
+skinparam frame {
+    BackgroundColor #F5F5F5
+    BorderColor #555555
+}
+
+frame "Game Application" {
+    rectangle "Game Code\n(user's scenes, sprites, logic)" as gameCode #FFFACD
+}
+
+frame "Hosting Layer" {
+    rectangle "WinFormsGameHost\nWinFormsGpuGameHost" as wfHost #D5E8D4
+    rectangle "AvaloniaGameHost\nAvaloniaGpuGameHost" as avHost #D5E8D4
+    rectangle "GameHostBase\n(Initialize / Start / Stop)" as hostBase #C8E6C9
+}
+
+frame "Platform Adapter Layer" {
+    rectangle "WinFormBitmapRenderSurfaceAdapter\nWinFormGpuRenderSurfaceAdapter" as wfAdapters #FFF2CC
+    rectangle "AvaloniaBitmapRenderSurfaceAdapter\nAvaloniaGpuRenderSurfaceAdapter" as avAdapters #FFF2CC
+}
+
+frame "Core Engine Layer" {
+
+    frame "Engine Lifecycle" {
+        rectangle "Engine (singleton)\nInitialize / Start / Stop\nCycle / DoBackgroundTasks\nDoForegroundTasks" as engine #DAE8FC
+    }
+
+    frame "Rendering Subsystem" {
+        rectangle "RenderSurfaceHost<TBackbuffer>\n+ RenderSurfaceHostRegistry" as rsh #DAE8FC
+        rectangle "BitmapBackbuffer\n(CPU / SkiaSharp bitmap)" as bitmapBB #DAE8FC
+        rectangle "GpuBackbuffer\n(OpenGL / SkiaSharp GPU)" as gpuBB #DAE8FC
+        rectangle "ViewManager\n+ View + Camera + Viewport" as views #DAE8FC
+    }
+
+    frame "Scene & Content" {
+        rectangle "Scene\n+ SceneLayer\n+ SceneLayerTile" as scene #DAE8FC
+        rectangle "Tile (abstract)\n+ Sprite\n+ SceneLayerTile" as tiles #DAE8FC
+        rectangle "Tilesheet\n+ TilesheetRegistry\n+ Frame" as tilesheets #DAE8FC
+        rectangle "DirectDrawingManager\n(images, rects, text,\nparticles)" as direct #DAE8FC
+    }
+
+    frame "Input Subsystem" {
+        rectangle "KeyboardEventPoller\nMouseEventPoller\nGamepadEventPoller\n+ IGamepadManager" as input #E1D5E7
+    }
+
+    frame "Movement & Collision" {
+        rectangle "MovementController\n(scripted / integrated / follow)" as movement #E1D5E7
+        rectangle "CollisionResolver\nColliderRegistry\nICollider" as collision #E1D5E7
+    }
+
+    frame "Supporting Systems" {
+        rectangle "Timer\n(PreCycle / PostCycle)" as timers #F8CECC
+        rectangle "Animator\n+ Cycle + FrameSequence" as animator #F8CECC
+        rectangle "AudioResourceManager\n+ AudioResource" as audio #F8CECC
+        rectangle "EngineState\n(serialisable game state)" as state #F8CECC
+        rectangle "EngineConfiguration\n(gondwana.json)" as config #F8CECC
+    }
+}
+
+frame "Extension Packages" {
+    rectangle "Gondwana.Audio.Browser\nGondwana.Audio.Midi" as audioExt #E8E8E8
+    rectangle "Gondwana.Input.SDL2" as sdlExt #E8E8E8
+    rectangle "Gondwana.Video" as videoExt #E8E8E8
+}
+
+' Flow
+gameCode --> hostBase : derives from
+wfHost --> hostBase
+avHost --> hostBase
+hostBase --> engine : owns / manages
+
+wfHost --> wfAdapters : creates
+avHost --> avAdapters : creates
+
+wfAdapters --> rsh : adapter for
+avAdapters --> rsh : adapter for
+
+engine --> rsh : iterates via\nRenderSurfaceHostRegistry
+engine --> input : polls
+engine --> timers : raises events
+engine --> scene : collision resolution
+engine --> state : reads/writes
+engine --> config : reads
+
+rsh --> bitmapBB : uses (CPU path)
+rsh --> gpuBB : uses (GPU path)
+rsh --> views : manages
+rsh --> scene : bound to
+
+scene --> tiles
+tiles --> tilesheets
+tiles --> animator
+tiles --> movement
+tiles --> collision
+
+engine --> direct : UpdateAll()
+direct --> rsh : drawn into
+
+audioExt --> audio : provides impl
+sdlExt --> input : provides impl
+videoExt --> gameCode : used by
+
+@enduml
