@@ -154,7 +154,7 @@ Equivalent to `dotnet run --project <path> -c <configuration>`.
 
 ### `gondwana run wasm`
 
-Builds and runs the project in the browser using the `net8.0-browser` dev server.
+Publishes the project for WASM and serves it in the browser using `dotnet-serve`.
 
 ```bash
 gondwana run wasm
@@ -168,7 +168,7 @@ gondwana run wasm --skip-workload
 | `--configuration <name>` | `-c` | `Debug` | Build configuration. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
 
-Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`. The Avalonia browser host starts a local dev server and opens the game in the default browser.
+Publishes the project for `net8.0-browser` and serves the resulting `AppBundle` via `dotnet-serve`, opening the game in the default browser. `dotnet-serve` is installed automatically as a global tool if it is not already present.
 
 ---
 

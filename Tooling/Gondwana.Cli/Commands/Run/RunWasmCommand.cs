@@ -75,14 +75,62 @@ internal sealed class RunWasmCommand : Command<RunWasmCommand.Settings>
             }
         }
 
-        // 2. Run for net8.0-browser — starts the Avalonia browser dev server
-        var runArgs = new List<string>
+        // 2. Publish for net8.0-browser to produce the WASM AppBundle
+        AnsiConsole.MarkupLine("[dim]Publishing for net8.0-browser...[/]");
+        var publishArgs = new List<string>
         {
-            "run", "--project", csprojPath,
+            "publish", csprojPath,
             "-f", "net8.0-browser",
             "-c", settings.Configuration,
         };
 
-        return ProcessHelper.RunLive("dotnet", runArgs);
+        var publishExit = ProcessHelper.RunLive("dotnet", publishArgs);
+        if (publishExit != 0)
+        {
+            AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
+            return publishExit;
+        }
+
+        // 3. Locate the AppBundle output directory
+        var projectDir = Path.GetDirectoryName(csprojPath)!;
+        var appBundle = Path.Combine(projectDir, "bin", settings.Configuration, "net8.0-browser", "browser-wasm", "AppBundle");
+
+        if (!Directory.Exists(appBundle))
+        {
+            var binDir = Path.Combine(projectDir, "bin");
+            if (Directory.Exists(binDir))
+            {
+                var candidate = Directory.GetDirectories(binDir, "AppBundle", SearchOption.AllDirectories)
+                                         .FirstOrDefault();
+                if (candidate is not null)
+                    appBundle = candidate;
+            }
+        }
+
+        if (!Directory.Exists(appBundle))
+        {
+            AnsiConsole.MarkupLine("[red]AppBundle not found after publish.[/]");
+            AnsiConsole.MarkupLine("[dim]Expected: bin/<configuration>/net8.0-browser/browser-wasm/AppBundle[/]");
+            return 1;
+        }
+
+        // 4. Ensure dotnet-serve is installed (exit code 1 = already installed, which is fine)
+        AnsiConsole.MarkupLine("[dim]Ensuring dotnet-serve is installed...[/]");
+        var installOutput = ProcessHelper.Run("dotnet", "tool install -g dotnet-serve", out int installExit);
+        if (installExit != 0 && !installOutput.Contains("already installed", StringComparison.OrdinalIgnoreCase))
+        {
+            AnsiConsole.MarkupLine("[yellow]Warning:[/] dotnet-serve could not be installed automatically.");
+            AnsiConsole.MarkupLine("[dim]Run manually: dotnet tool install -g dotnet-serve[/]");
+        }
+
+        // 5. Serve AppBundle — dotnet-serve opens the browser automatically
+        AnsiConsole.MarkupLine($"[dim]AppBundle: {Markup.Escape(appBundle)}[/]");
+        AnsiConsole.MarkupLine("[green]Starting local server. Press Ctrl+C to stop.[/]");
+        var serveArgs = new List<string>
+        {
+            "serve", "-d", appBundle, "--open-browser",
+        };
+
+        return ProcessHelper.RunLive("dotnet", serveArgs);
     }
 }
