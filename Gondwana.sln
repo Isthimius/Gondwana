@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.WinForms", "Gondwa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Audio.Midi", "Gondwana.Audio.Midi\Gondwana.Audio.Midi.csproj", "{52B85595-4300-4725-A0C9-87D3AEAAA9AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Audio.Browser", "Gondwana.Audio.Browser\Gondwana.Audio.Browser.csproj", "{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video", "Gondwana.Video\Gondwana.Video.csproj", "{8DD90A45-56EC-605B-636B-C5238328283F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "licenses", "licenses", "{3B510C60-8DE3-4B61-A934-5FAB2A699657}"
@@ -146,6 +148,20 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x64.Build.0 = Release|Any CPU
+		{3A4B5C6D-7E8F-9A0B-C1D2-E3F4A5B6C7D8}.Release|x86.ActiveCfg = Release|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

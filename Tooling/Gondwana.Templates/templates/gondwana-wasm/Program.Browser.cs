@@ -5,7 +5,7 @@ using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Skia;
 
-namespace Gondwana.Demos.SpotAvalonia;
+namespace MyGame;
 
 internal static partial class Program
 {
@@ -14,11 +14,14 @@ internal static partial class Program
                      .UseSkia()
                      .LogToTrace();
 
+    // Browser entry point: import the audio module, then start Avalonia.
     [SupportedOSPlatform("browser")]
     private static async Task Main(string[] args)
     {
         // Import the Gondwana audio JS module so BrowserAudioManager can be used.
+        // The gondwana-audio.js file is served from wwwroot/ inside AppBundle/.
         await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+
         await BuildAvaloniaApp().StartBrowserAppAsync("out");
     }
 }

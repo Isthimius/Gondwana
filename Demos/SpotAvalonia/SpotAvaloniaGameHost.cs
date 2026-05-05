@@ -19,6 +19,9 @@ using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.Demos.SpotAvalonia.Game;
+#if BROWSER
+using Gondwana.Audio.Browser;
+#endif
 
 namespace Gondwana.Demos.SpotAvalonia;
 
@@ -53,6 +56,16 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     internal AudioResource? _gameLose;
     internal AudioResource? _bump;
 
+#if BROWSER
+    // Browser/WASM audio (HTML5 Audio API via BrowserAudioManager).
+    private BrowserAudioPlayer? _browserMusic;
+    private BrowserAudioPlayer? _browserVelcro;
+    private BrowserAudioPlayer? _browserDrop;
+    private BrowserAudioPlayer? _browserGameWin;
+    private BrowserAudioPlayer? _browserGameLose;
+    private BrowserAudioPlayer? _browserBump;
+#endif
+
     internal Tilesheet _blueSpot = null!;
     internal Tilesheet _greenSpot = null!;
     internal Tilesheet _pinkSpot = null!;
@@ -80,18 +93,27 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     protected override void LoadAssets()
     {
-        // Audio is not supported in all browser/WASM environments.
-        if (!OperatingSystem.IsBrowser())
-        {
-            _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
-            _music.IsLooping = true;
+#if BROWSER
+        // Browser/WASM: use BrowserAudioManager (HTML5 Audio API via JS interop).
+        // Audio paths use forward slashes and are relative to AppBundle/index.html.
+        var browserAudio = Engine.GetBrowserAudioManager();
+        _browserMusic    = browserAudio.Load("music",    "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3",             volume: 0.2f, loop: true);
+        _browserVelcro   = browserAudio.Load("velcro",   "assets/freesound_community-velcro_fast-91558.mp3");
+        _browserDrop     = browserAudio.Load("drop",     "assets/freesound_community-water-drip-45622.mp3");
+        _browserGameWin  = browserAudio.Load("gameWin",  "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
+        _browserGameLose = browserAudio.Load("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
+        _browserBump     = browserAudio.Load("bump",     "assets/freesound_community-bump-7-92964.mp3");
+#else
+        // Desktop: use the NAudio-based AudioResourceManager.
+        _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
+        _music.IsLooping = true;
 
-            _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", "assets/freesound_community-velcro_fast-91558.mp3");
-            _drop = Engine.Managers.AudioResources.LoadFromFile("drop", "assets/freesound_community-water-drip-45622.mp3");
-            _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
-            _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
-            _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets/freesound_community-bump-7-92964.mp3");
-        }
+        _velcro   = Engine.Managers.AudioResources.LoadFromFile("velcro",   "assets/freesound_community-velcro_fast-91558.mp3");
+        _drop     = Engine.Managers.AudioResources.LoadFromFile("drop",     "assets/freesound_community-water-drip-45622.mp3");
+        _gameWin  = Engine.Managers.AudioResources.LoadFromFile("gameWin",  "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
+        _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
+        _bump     = Engine.Managers.AudioResources.LoadFromFile("bump",     "assets/freesound_community-bump-7-92964.mp3");
+#endif
 
         _font = Engine.Managers.Fonts.LoadFromFile("main", "assets/ArchitectsDaughter-Regular.ttf");
     }
@@ -192,11 +214,15 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     protected override void OnStartEngine()
     {
+#if BROWSER
+        _browserMusic?.Play();
+#else
         if (_music != null)
         {
             _music.Volume = 0.2f;
             _music.Play();
         }
+#endif
     }
 
     protected override void OnMouseAdapterInitialized()
@@ -239,9 +265,21 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         MusicEnabled = enabled;
 
         if (enabled)
+        {
+#if BROWSER
+            _browserMusic?.Play(fromStart: false);
+#else
             _music?.Play();
+#endif
+        }
         else
+        {
+#if BROWSER
+            _browserMusic?.Stop();
+#else
             _music?.Stop();
+#endif
+        }
     }
 
     internal bool SoundEffectsEnabled { get; private set; } = true;
@@ -297,8 +335,11 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         Scene.AddLayer(newGameResult.Field);
         Scene.AddLayer(newGameResult.BackgroundField);
 
-        if (_music != null)
-            _music.Volume = 0.1f;
+#if BROWSER
+        if (_browserMusic != null) _browserMusic.Volume = 0.1f;
+#else
+        if (_music != null) _music.Volume = 0.1f;
+#endif
 
         CreateTextBlockFields();
     }
@@ -771,8 +812,15 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
 
-        if (MusicEnabled && _music != null && !_music.IsPlaying)
-            _music.Play();
+        if (MusicEnabled)
+        {
+#if BROWSER
+            _browserMusic?.Play(fromStart: false);
+#else
+            if (_music != null && !_music.IsPlaying)
+                _music.Play();
+#endif
+        }
 
         if (CloudsEnabled)
             AddClouds();
@@ -844,7 +892,13 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         Engine.Logger.LogDebug("Invalid selection attempted at cell ({0}, {1})", cell.X, cell.Y);
 
         if (SoundEffectsEnabled)
+        {
+#if BROWSER
+            _browserBump?.Play();
+#else
             _bump?.Play();
+#endif
+        }
     }
 
     private void OnInvalidMoveAttempted(SpotGameField.Cell cell)
@@ -855,7 +909,13 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     private void OnPlayerMoveStarted(PlayerMovement movement)
     {
         if (movement.MovementType == MovementType.Jump && SoundEffectsEnabled)
+        {
+#if BROWSER
+            _browserVelcro?.Play();
+#else
             _velcro?.Play();
+#endif
+        }
     }
 
     private void OnPlayerMoveStopped(PlayerMovement movement)
@@ -867,7 +927,13 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
             movement.DestX, movement.DestY);
 
         if (SoundEffectsEnabled)
+        {
+#if BROWSER
+            _browserDrop?.Play();
+#else
             _drop?.Play();
+#endif
+        }
 
         if (_showScores)
             SetPlayerScores();
@@ -925,15 +991,28 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
         CreateGameOverText(winnersWithScores);
 
-        if (MusicEnabled && _music != null)
+        if (MusicEnabled)
         {
-            _music.Volume = 0.05f;
+#if BROWSER
+            if (_browserMusic != null) _browserMusic.Volume = 0.05f;
 
             var isHumanWinner = winnersWithScores.Any(winner => winner.Type == PlayerType.Human);
             if (isHumanWinner)
-                _gameWin?.Play();
+                _browserGameWin?.Play();
             else
-                _gameLose?.Play();
+                _browserGameLose?.Play();
+#else
+            if (_music != null)
+            {
+                _music.Volume = 0.05f;
+
+                var isHumanWinner = winnersWithScores.Any(winner => winner.Type == PlayerType.Human);
+                if (isHumanWinner)
+                    _gameWin?.Play();
+                else
+                    _gameLose?.Play();
+            }
+#endif
         }
     }
 

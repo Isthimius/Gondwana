@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Michael Adkins",
+  "classifications": [ "Games", "Avalonia", "WASM", "Browser", "Cross-Platform", "Gondwana" ],
+  "identity": "Gondwana.Templates.Wasm.CSharp",
+  "name": "Gondwana Avalonia WASM Game",
+  "shortName": "gondwana-wasm",
+  "description": "A starter project for building a cross-platform 2D game with the Gondwana Game Engine and Avalonia, targeting both desktop (Windows, macOS, Linux) and browser (WASM via net8.0-browser).",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "MyGame",
+  "preferNameDirectory": true,
+  "symbols": {}
+}

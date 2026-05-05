@@ -78,6 +78,125 @@ gondwana new avalonia MyGame -b gpu
 
 ---
 
+### `gondwana new wasm <name>`
+
+Scaffolds a new Gondwana project that targets **both desktop and browser/WASM** using Avalonia.
+
+```bash
+gondwana new wasm MyGame
+```
+
+Equivalent to `dotnet new gondwana-wasm -n MyGame`.
+
+An optional `--output` / `-o` flag can be used to specify the output directory:
+
+```bash
+gondwana new wasm MyGame -o ./projects/MyGame
+```
+
+The scaffolded project contains:
+
+- `MyGame.csproj` — multi-targets `net8.0` (desktop) and `net8.0-browser` (WASM), with `Avalonia.Desktop` / `Avalonia.Browser` and `Gondwana.Audio.Browser` applied conditionally
+- `Program.cs` / `Program.Browser.cs` — split entry points; the browser version imports the audio JS module and starts Avalonia in single-view mode
+- `App.cs` — handles both `IClassicDesktopStyleApplicationLifetime` and `ISingleViewApplicationLifetime`
+- `GameWindow.cs` — desktop `Window` (compiled only for `net8.0`)
+- `GameView.cs` — browser `UserControl` (compiled for both targets, used only in WASM)
+- `GameRenderSurface.cs` — thin subclass of `AvaloniaBitmapRenderSurfaceControl`
+- `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs that show both desktop and browser audio patterns
+- `wwwroot/gondwana-audio.js` — the Gondwana browser audio module
+- `assets/README.txt` — instructions for adding sprites and other assets
+
+After scaffolding, run on desktop:
+
+```bash
+cd MyGame
+dotnet run
+```
+
+Build and publish for WASM:
+
+```bash
+cd MyGame
+dotnet workload install wasm-tools   # one-time per machine
+dotnet publish -f net8.0-browser -c Release
+# Output: bin/Release/net8.0-browser/browser-wasm/AppBundle/
+```
+
+Or use the CLI shorthand:
+
+```bash
+cd MyGame
+gondwana publish wasm
+```
+
+---
+
+### `gondwana run`
+
+Runs the desktop build of the project in the current directory (or `--project`).
+
+```bash
+gondwana run
+gondwana run --project ./src/MyGame
+gondwana run --configuration Release
+gondwana run --framework net8.0
+```
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Debug` | Build configuration. |
+| `--framework <tfm>` | `-f` | *(auto)* | Target framework to run. Required for multi-target projects. |
+
+Equivalent to `dotnet run --project <path> -c <configuration>`.
+
+---
+
+### `gondwana run wasm`
+
+Builds and runs the project in the browser using the `net8.0-browser` dev server.
+
+```bash
+gondwana run wasm
+gondwana run wasm --project ./src/MyGame
+gondwana run wasm --skip-workload
+```
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Debug` | Build configuration. |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`. The Avalonia browser host starts a local dev server and opens the game in the default browser.
+
+---
+
+### `gondwana publish wasm`
+
+Builds and publishes the project in the current directory (or `--project`) for `net8.0-browser`.
+
+```bash
+gondwana publish wasm
+gondwana publish wasm --project ./src/MyGame
+gondwana publish wasm --skip-workload
+gondwana publish wasm --configuration Debug
+```
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Release` | Build configuration. |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+The output AppBundle is placed at `bin/<Configuration>/net8.0-browser/browser-wasm/AppBundle/`.
+
+For further deployment see:
+- `scripts/Deploy-Gondwana-Itch.ps1` — upload to itch.io via `butler`
+- `scripts/Deploy-Gondwana-Website.ps1` — copy/rsync to a static web host
+
+---
+
 ### `gondwana templates`
 
 Manage Gondwana project templates.
