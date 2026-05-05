@@ -115,6 +115,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{AD16FE1C-14B5-4F89-83DD-933D044DC211}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{3752648C-1686-442C-B3CB-D6E2DFD260CA}"
+	ProjectSection(SolutionItems) = preProject
+		Solution Items\documentation\architecture-diagram.puml = Solution Items\documentation\architecture-diagram.puml
+		Solution Items\documentation\component-diagram.puml = Solution Items\documentation\component-diagram.puml
+		Solution Items\documentation\core-class-diagram.puml = Solution Items\documentation\core-class-diagram.puml
+		Solution Items\documentation\rendering-pipeline-sequence.puml = Solution Items\documentation\rendering-pipeline-sequence.puml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Assets.WinForms", "Tooling\Gondwana.Assets.WinForms\Gondwana.Assets.WinForms.csproj", "{F059118F-6A87-7D7B-03FE-2B7D24A12554}"
 EndProject
