@@ -130,12 +130,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Avalonia.Hosting",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
-		Solution Items\documentation\gondwana-core-diagrams.puml = Solution Items\documentation\gondwana-core-diagrams.puml
-		Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Activity_Diagrams_PlantUML.zip
-		Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\documentation\Gondwana_Sequence_Diagrams_PlantUML.zip
-		Solution Items\documentation\Gondwana_UML_PlantUML.zip = Solution Items\documentation\Gondwana_UML_PlantUML.zip
-		Solution Items\documentation\Screen-World-Grid.puml = Solution Items\documentation\Screen-World-Grid.puml
-		Solution Items\documentation\World-Screen.puml = Solution Items\documentation\World-Screen.puml
+		Solution Items\documentation\old\gondwana-core-diagrams.puml = Solution Items\documentation\old\gondwana-core-diagrams.puml
+		Solution Items\documentation\old\Gondwana_Activity_Diagrams_PlantUML.zip = Solution Items\documentation\old\Gondwana_Activity_Diagrams_PlantUML.zip
+		Solution Items\documentation\old\Gondwana_Sequence_Diagrams_PlantUML.zip = Solution Items\documentation\old\Gondwana_Sequence_Diagrams_PlantUML.zip
+		Solution Items\documentation\old\Gondwana_UML_PlantUML.zip = Solution Items\documentation\old\Gondwana_UML_PlantUML.zip
+		Solution Items\documentation\old\Screen-World-Grid.puml = Solution Items\documentation\old\Screen-World-Grid.puml
+		Solution Items\documentation\old\World-Screen.puml = Solution Items\documentation\old\World-Screen.puml
 	EndProjectSection
 EndProject
 Global
