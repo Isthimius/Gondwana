@@ -76,14 +76,15 @@ public sealed class TapGestureRecognizer : IDisposable
         if (!_activeTaps.TryGetValue(e.Touch.Id, out var state))
             return;
 
+        if (state.Cancelled)
+            return;
+
         var dx = e.Touch.Position.X - state.StartPosition.X;
         var dy = e.Touch.Position.Y - state.StartPosition.Y;
         var distance = Math.Sqrt(dx * dx + dy * dy);
 
         if (distance > MaxTapMovementPixels)
-            state.Cancelled = true;
-
-        _activeTaps[e.Touch.Id] = state;
+            _activeTaps[e.Touch.Id] = state with { Cancelled = true };
     }
 
     private void OnTouchEnded(object? sender, TouchEventArgs e)
@@ -115,17 +116,8 @@ public sealed class TapGestureRecognizer : IDisposable
         _touchInput.TouchEnded -= OnTouchEnded;
     }
 
-    private struct TapState
+    private record struct TapState(Point StartPosition, DateTime StartTime, bool Cancelled)
     {
-        public Point StartPosition;
-        public DateTime StartTime;
-        public bool Cancelled;
-
-        public TapState(Point startPosition)
-        {
-            StartPosition = startPosition;
-            StartTime = DateTime.UtcNow;
-            Cancelled = false;
-        }
+        public TapState(Point startPosition) : this(startPosition, DateTime.UtcNow, false) { }
     }
 }

@@ -98,15 +98,8 @@ public sealed class SwipeGestureRecognizer : IDisposable
         _touchInput.TouchEnded -= OnTouchEnded;
     }
 
-    private struct SwipeState
+    private readonly record struct SwipeState(Point StartPosition, DateTime StartTime)
     {
-        public Point StartPosition;
-        public DateTime StartTime;
-
-        public SwipeState(Point startPosition)
-        {
-            StartPosition = startPosition;
-            StartTime = DateTime.UtcNow;
-        }
+        public SwipeState(Point startPosition) : this(startPosition, DateTime.UtcNow) { }
     }
 }

@@ -25,10 +25,11 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
 {
     private readonly Control _control;
     private readonly Dictionary<int, TouchPoint> _activeTouches = new();
+    private TouchPoint[] _activeTouchesSnapshot = Array.Empty<TouchPoint>();
     private bool _isDisposed;
 
     /// <inheritdoc />
-    public IReadOnlyList<TouchPoint> ActiveTouches => _activeTouches.Values.ToList();
+    public IReadOnlyList<TouchPoint> ActiveTouches => _activeTouchesSnapshot;
 
     /// <inheritdoc />
     public event EventHandler<TouchEventArgs>? TouchBegan;
@@ -69,6 +70,7 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
         var point = new TouchPoint(id, pos, TouchPhase.Began);
 
         _activeTouches[id] = point;
+        RebuildSnapshot();
         TouchBegan?.Invoke(this, new TouchEventArgs(point));
     }
 
@@ -85,6 +87,7 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
         var point = new TouchPoint(id, pos, TouchPhase.Moved);
 
         _activeTouches[id] = point;
+        RebuildSnapshot();
         TouchMoved?.Invoke(this, new TouchEventArgs(point));
     }
 
@@ -99,6 +102,7 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
         var point = new TouchPoint(id, pos, TouchPhase.Ended);
 
         _activeTouches.Remove(id);
+        RebuildSnapshot();
         TouchEnded?.Invoke(this, new TouchEventArgs(point));
     }
 
@@ -112,7 +116,13 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
 
         var point = new TouchPoint(existing.Id, existing.Position, TouchPhase.Cancelled);
         _activeTouches.Remove(id);
+        RebuildSnapshot();
         TouchEnded?.Invoke(this, new TouchEventArgs(point));
+    }
+
+    private void RebuildSnapshot()
+    {
+        _activeTouchesSnapshot = _activeTouches.Values.ToArray();
     }
 
     /// <summary>
