@@ -94,7 +94,8 @@ public sealed class TapGestureRecognizer : IDisposable
 
         _activeTaps.Remove(e.Touch.Id);
 
-        if (state.Cancelled)
+        // A system-cancelled contact (e.g. incoming call) must never fire Tapped.
+        if (state.Cancelled || e.Touch.Phase == TouchPhase.Cancelled)
             return;
 
         var elapsed = (DateTime.UtcNow - state.StartTime).TotalSeconds;

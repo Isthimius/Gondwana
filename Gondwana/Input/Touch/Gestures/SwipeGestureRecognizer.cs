@@ -63,6 +63,10 @@ public sealed class SwipeGestureRecognizer : IDisposable
 
         _activeSwipes.Remove(e.Touch.Id);
 
+        // A system-cancelled contact must never produce a swipe.
+        if (e.Touch.Phase == TouchPhase.Cancelled)
+            return;
+
         var endPos = e.Touch.Position;
         var dx = endPos.X - state.StartPosition.X;
         var dy = endPos.Y - state.StartPosition.Y;

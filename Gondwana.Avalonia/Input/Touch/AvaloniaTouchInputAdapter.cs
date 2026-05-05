@@ -65,6 +65,12 @@ public sealed class AvaloniaTouchInputAdapter : ITouchInput, IDisposable
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        // For mouse pointers, only emulate touch for the primary (left) button.
+        // Right- and middle-clicks should not generate touch events.
+        if (e.Pointer.Type == PointerType.Mouse &&
+            !e.GetCurrentPoint(sender as Control).Properties.IsLeftButtonPressed)
+            return;
+
         var id = GetTouchId(e.Pointer);
         var pos = GetPosition(e, sender as Control);
         var point = new TouchPoint(id, pos, TouchPhase.Began);

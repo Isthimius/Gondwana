@@ -15,8 +15,9 @@ namespace Gondwana.Input.Touch.Gestures;
 /// means they moved closer (contract).
 /// </para>
 /// <para>
-/// Only exactly two simultaneous active touches are tracked. If more than two touches are present,
-/// only the first two that were registered are used.
+/// All simultaneous contacts are tracked. Pinch updates are emitted only when exactly two contacts
+/// are active. If a third finger lands while two are tracked, updates pause until one lifts and
+/// exactly two remain — at which point the baseline distance is recomputed so there is no jump.
 /// </para>
 /// </remarks>
 public sealed class PinchGestureRecognizer : IDisposable
@@ -52,13 +53,16 @@ public sealed class PinchGestureRecognizer : IDisposable
 
     private void OnTouchBegan(object? sender, TouchEventArgs e)
     {
-        if (_activePoints.Count >= 2)
-            return;
-
+        var prevCount = _activePoints.Count;
         _activePoints[e.Touch.Id] = e.Touch.Position;
+        var newCount = _activePoints.Count;
 
-        if (_activePoints.Count == 2)
+        // Transition into "exactly 2" — baseline the distance so the first move has a reference.
+        // Any other count change (1→3, 3→4, etc.) clears the baseline so updates pause.
+        if (prevCount != 2 && newCount == 2)
             _lastDistance = GetCurrentDistance();
+        else if (newCount != 2)
+            _lastDistance = 0;
     }
 
     private void OnTouchMoved(object? sender, TouchEventArgs e)
@@ -68,11 +72,12 @@ public sealed class PinchGestureRecognizer : IDisposable
 
         _activePoints[e.Touch.Id] = e.Touch.Position;
 
-        if (_activePoints.Count == 2)
+        // Only emit updates when exactly two contacts are tracked and a baseline exists.
+        if (_activePoints.Count == 2 && _lastDistance > 0)
         {
             var currentDistance = GetCurrentDistance();
 
-            if (_lastDistance > 0 && currentDistance > 0)
+            if (currentDistance > 0)
             {
                 var scaleDelta = currentDistance / _lastDistance;
                 PinchUpdated?.Invoke(this, new PinchedEventArgs(scaleDelta, currentDistance));
@@ -84,9 +89,14 @@ public sealed class PinchGestureRecognizer : IDisposable
 
     private void OnTouchEnded(object? sender, TouchEventArgs e)
     {
+        var prevCount = _activePoints.Count;
         _activePoints.Remove(e.Touch.Id);
+        var newCount = _activePoints.Count;
 
-        if (_activePoints.Count < 2)
+        // Transition from 3+ down to exactly 2 — re-baseline so there is no position jump.
+        if (prevCount != 2 && newCount == 2)
+            _lastDistance = GetCurrentDistance();
+        else if (newCount < 2)
             _lastDistance = 0;
     }
 
