@@ -1,11 +1,12 @@
 ﻿using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
+using Gondwana.Input.Touch;
 
 namespace Gondwana;
 
 /// <summary>
-/// Provides centralized access to all the input systems of the engine, including gamepad, keyboard, and mouse input.
+/// Provides centralized access to all the input systems of the engine, including gamepad, keyboard, mouse, and touch input.
 /// </summary>
 public sealed class EngineInputSystems
 {
@@ -67,4 +68,19 @@ public sealed class EngineInputSystems
     /// before use.
     /// </remarks>
     public MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
+
+    /// <summary>
+    /// Gets or sets the touch input system, if configured.
+    /// </summary>
+    /// <value>
+    /// An <see cref="ITouchInput"/> implementation (for example, <c>AvaloniaTouchInputAdapter</c>)
+    /// when touch has been initialized; otherwise, <c>null</c>.
+    /// </value>
+    /// <remarks>
+    /// Assign an <see cref="ITouchInput"/> implementation to this property to enable touch support.
+    /// On Android and iOS (via the Avalonia host), set this to a new <c>AvaloniaTouchInputAdapter</c>
+    /// instance, or call <c>engine.InitializeAvaloniaTouchAdapter(control)</c> from the
+    /// <c>Gondwana.Avalonia</c> package, which sets this property automatically.
+    /// </remarks>
+    public ITouchInput? Touch { get; set; }
 }
