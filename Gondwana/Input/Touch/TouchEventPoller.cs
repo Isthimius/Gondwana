@@ -86,6 +86,13 @@ public sealed class TouchEventPoller : ITouchInput
     /// corresponding property (<see cref="GestureEventArgs.Tap"/>, <see cref="GestureEventArgs.Swipe"/>,
     /// or <see cref="GestureEventArgs.Pinch"/>) for the specific data.
     /// </summary>
+    /// <remarks>
+    /// The internal gesture recognizers (<see cref="TapRecognizer"/>, <see cref="SwipeRecognizer"/>,
+    /// <see cref="PinchRecognizer"/>) are owned by this poller instance. They subscribe to this
+    /// poller's own touch events and their lifetime is bound to the lifetime of this instance —
+    /// when the instance is replaced via <see cref="Initialize"/> the entire object graph
+    /// (poller + recognizers + subscriptions) becomes unreachable and is collected together.
+    /// </remarks>
     public event Action<GestureEventArgs>? TouchEvent;
 
     /// <summary>
