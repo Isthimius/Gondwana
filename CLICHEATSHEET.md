@@ -33,7 +33,7 @@ After installation the `gondwana` command is available in any terminal.
 | Command | Description |
 |---|---|
 | `gondwana help` | Show a summary of all available commands. |
-| `gondwana doctor` | Validate your local Gondwana development environment. |
+| `gondwana doctor` | Validate your local Gondwana development environment. Pass `--fix` to auto-fix issues. |
 | `gondwana info` | Show information about the Gondwana project in the current directory. |
 | `gondwana pack <source> <output>` | Pack a directory of files into an asset bundle (shorthand for `gondwana assets pack`). |
 | `gondwana new <subcommand>` | Scaffold a new Gondwana project. |
@@ -57,7 +57,18 @@ Prints a formatted table of all available commands with short descriptions, then
 
 Checks the local environment for all Gondwana prerequisites (.NET SDK, native libraries, templates).
 
-*No arguments or options.*
+| Option | Description |
+|---|---|
+| `--fix` | Automatically fix issues that can be resolved without manual steps. After applying fixes, all checks are re-run and the updated results are displayed. |
+
+Currently auto-fixable:
+- **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
+
+**Examples**
+```
+gondwana doctor
+gondwana doctor --fix
+```
 
 ---
 
