@@ -70,6 +70,25 @@ public sealed class EngineInputSystems
     public MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
 
     /// <summary>
+    /// Gets or sets the touch adapter responsible for providing raw touch state to the engine.
+    /// </summary>
+    /// <remarks>
+    /// Setting this property disposes the previous adapter (if it implements
+    /// <see cref="IDisposable"/>) and initializes a new <see cref="TouchEventPoller"/> instance
+    /// backed by the supplied adapter. Pass <see langword="null"/> to clear the current adapter
+    /// without replacing it.
+    /// </remarks>
+    public ITouchAdapter? TouchAdapter
+    {
+        get => TouchEventPoller.Instance?.Adapter;
+        set
+        {
+            if (value != null)
+                TouchEventPoller.Initialize(value);
+        }
+    }
+
+    /// <summary>
     /// Gets the touch event polling subsystem, if initialized.
     /// </summary>
     /// <value>
@@ -78,10 +97,10 @@ public sealed class EngineInputSystems
     /// </value>
     /// <remarks>
     /// This property provides access to the touch input subsystem, which also implements
-    /// <see cref="ITouchInput"/> for gesture recognizer consumption. The poller must be
-    /// initialized via <c>TouchEventPoller.Initialize</c> (or by calling
+    /// <see cref="ITouchInput"/> for gesture recognizer consumption. Initialize it by assigning
+    /// a platform adapter to <see cref="TouchAdapter"/>, or by calling
     /// <c>engine.InitializeAvaloniaTouchAdapter(control)</c> from the <c>Gondwana.Avalonia</c>
-    /// package) before use.
+    /// package.
     /// </remarks>
     public TouchEventPoller? TouchEventPoller => TouchEventPoller.Instance;
 }
