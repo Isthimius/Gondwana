@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Drawing;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -28,8 +29,7 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
     private readonly Control _control;
     private readonly Dictionary<int, TouchPoint> _activeTouches = new();
     private TouchPoint[] _activeTouchesSnapshot = Array.Empty<TouchPoint>();
-    private readonly List<TouchPoint> _pendingEnds = new();
-    private readonly object _pendingEndsLock = new();
+    private readonly ConcurrentQueue<TouchPoint> _pendingEnds = new();
     private bool _isDisposed;
 
     /// <inheritdoc />
@@ -102,8 +102,7 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
 
         _activeTouches.Remove(id);
         RebuildSnapshot();
-        lock (_pendingEndsLock)
-            _pendingEnds.Add(point);
+        _pendingEnds.Enqueue(point);
     }
 
     private void OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
@@ -117,22 +116,19 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
         var point = new TouchPoint(existing.Id, existing.Position, TouchPhase.Cancelled);
         _activeTouches.Remove(id);
         RebuildSnapshot();
-        lock (_pendingEndsLock)
-            _pendingEnds.Add(point);
+        _pendingEnds.Enqueue(point);
     }
 
     /// <inheritdoc />
     public IReadOnlyList<TouchPoint> ConsumeEndedTouches()
     {
-        lock (_pendingEndsLock)
-        {
-            if (_pendingEnds.Count == 0)
-                return Array.Empty<TouchPoint>();
+        if (_pendingEnds.IsEmpty)
+            return Array.Empty<TouchPoint>();
 
-            var snapshot = _pendingEnds.ToArray();
-            _pendingEnds.Clear();
-            return snapshot;
-        }
+        var snapshot = new List<TouchPoint>();
+        while (_pendingEnds.TryDequeue(out var point))
+            snapshot.Add(point);
+        return snapshot;
     }
 
     private void RebuildSnapshot()

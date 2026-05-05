@@ -47,9 +47,10 @@ public sealed class TouchEventPoller : ITouchInput
     }
 
     private readonly Dictionary<int, TouchPoint> _activeTouches = new();
+    private TouchPoint[] _activeTouchesSnapshot = Array.Empty<TouchPoint>();
 
     /// <inheritdoc />
-    public IReadOnlyList<TouchPoint> ActiveTouches => _activeTouches.Values.ToList();
+    public IReadOnlyList<TouchPoint> ActiveTouches => _activeTouchesSnapshot;
 
     /// <summary>
     /// Gets the touch adapter currently in use, which provides access to the underlying touch
@@ -106,7 +107,7 @@ public sealed class TouchEventPoller : ITouchInput
     internal void PollForEvents(long tick)
     {
         if (Adapter is null) return;
-        if ((Configuration?.IsPaused ?? true) || !(Configuration?.ReadyForNextEvent(tick) ?? false)) return;
+        if (Configuration is null || Configuration.IsPaused || !Configuration.ReadyForNextEvent(tick)) return;
 
         // Step 1: drain ended/cancelled contacts and fire TouchEnded
         var ended = Adapter.ConsumeEndedTouches();
@@ -137,8 +138,9 @@ public sealed class TouchEventPoller : ITouchInput
             }
         }
 
-        // Update snapshot tick for throttling
-        Configuration!._lastEventTick = tick;
+        // Step 3: update snapshot and throttle tick
+        _activeTouchesSnapshot = _activeTouches.Values.ToArray();
+        Configuration._lastEventTick = tick;
     }
 
     /// <summary>
