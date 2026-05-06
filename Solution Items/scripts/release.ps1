@@ -52,13 +52,15 @@ Require-Command git "Install Git for Windows, then reopen your terminal."
 Require-Command nbgv "Install with: dotnet tool install -g nbgv"
 Require-Command git-cliff "Install with: winget install git-cliff"
 
-# Resolve relative paths against the script's own directory so the script works
-# correctly when invoked from any working directory inside (or outside) the repo.
+# Resolve relative paths against the repo root (two levels above this script:
+# Solution Items/scripts/ → root) so the script works correctly when invoked
+# from any working directory inside (or outside) the repo.
+$repoRoot = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
 if (-not [System.IO.Path]::IsPathRooted($CliffConfigPath)) {
-    $CliffConfigPath = Join-Path $PSScriptRoot $CliffConfigPath
+    $CliffConfigPath = Join-Path $repoRoot $CliffConfigPath
 }
 if (-not [System.IO.Path]::IsPathRooted($ChangelogPath)) {
-    $ChangelogPath = Join-Path $PSScriptRoot $ChangelogPath
+    $ChangelogPath = Join-Path $repoRoot $ChangelogPath
 }
 
 if (-not (Test-Path $CliffConfigPath)) {
