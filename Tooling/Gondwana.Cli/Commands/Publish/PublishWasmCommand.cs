@@ -15,6 +15,7 @@ internal sealed class PublishWasmCommand : Command<PublishWasmCommand.Settings>
 
         [CommandOption("-c|--configuration")]
         [Description("Build configuration. Defaults to 'Release'.")]
+        [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
         [CommandOption("--skip-workload")]
