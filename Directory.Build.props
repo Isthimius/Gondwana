@@ -1,5 +1,7 @@
 <Project>
 	<PropertyGroup>
+		<!-- Allow dotnet restore/build on non-Windows CI runners for Windows-targeted projects -->
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
 		<Company>Hidden Worlds Games</Company>
 		<Product>Gondwana Game Engine</Product>
 		<Authors>Michael Adkins</Authors>
