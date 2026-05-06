@@ -1,4 +1,9 @@
 <Project>
+	<PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
+		<!-- Allow dotnet restore/build on non-Windows CI runners for Windows-targeted projects -->
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+	</PropertyGroup>
+
 	<PropertyGroup>
 		<Company>Hidden Worlds Games</Company>
 		<Product>Gondwana Game Engine</Product>
