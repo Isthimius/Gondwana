@@ -44,7 +44,7 @@ commit_preprocessors = [
     { pattern = "(?m)^Signed-off-by:.*\r?\n?", replace = "" },
 ]
 
-# Group conventional commits first. Anything else falls through to Changed.
+# Group conventional commits first. Anything else falls through to Other Changes.
 commit_parsers = [
     { message = "^feat", group = "<!-- 0 -->Added" },
     { message = "^fix", group = "<!-- 1 -->Fixed" },
@@ -57,5 +57,5 @@ commit_parsers = [
     { message = "^chore", group = "<!-- 8 -->Maintenance" },
     { message = "^revert", group = "<!-- 9 -->Reverted" },
     { body = ".*security", group = "<!-- 10 -->Security" },
-    { message = ".*", group = "<!-- 99 -->Changed" },
+    { message = ".*", group = "<!-- 99 -->Other Changes" },
 ]
