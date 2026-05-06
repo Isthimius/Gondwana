@@ -185,7 +185,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckGondwanaTemplates()
     {
-        var output = ProcessHelper.Run("dotnet", "new list gondwana --columns author,type", out int exitCode);
+        var output = ProcessHelper.Run("dotnet", "new list gondwana", out int exitCode);
 
         if (exitCode != 0)
             return CheckResult.Fail($"Failed to query installed templates (exit code {exitCode}). Is the .NET SDK installed and functional?");
@@ -249,16 +249,48 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckLibVlc()
     {
-        string[] candidates = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? ["libvlc.dll"]
-            : RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Check both the PATH-resolvable name and well-known VLC install directories,
+            // since the VLC installer does not add itself to the system PATH by default.
+            var windowsCandidates = new List<string> { "libvlc.dll" };
+
+            foreach (var programFiles in new[]
+            {
+                Environment.GetEnvironmentVariable("ProgramFiles"),
+                Environment.GetEnvironmentVariable("ProgramFiles(x86)"),
+            })
+            {
+                if (string.IsNullOrEmpty(programFiles))
+                    continue;
+
+                try
+                {
+                    windowsCandidates.Add(Path.Combine(programFiles, "VideoLAN", "VLC", "libvlc.dll"));
+                }
+                catch (ArgumentException)
+                {
+                    // Skip if the environment variable contains invalid path characters.
+                }
+            }
+
+            foreach (var candidate in windowsCandidates)
+            {
+                if (NativeLibraryProbe.CanLoad(candidate))
+                    return CheckResult.Ok(candidate);
+            }
+        }
+        else
+        {
+            string[] candidates = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                 ? ["libvlc.dylib"]
                 : ["libvlc.so", "libvlc.so.5"];
 
-        foreach (var candidate in candidates)
-        {
-            if (NativeLibraryProbe.CanLoad(candidate))
-                return CheckResult.Ok(candidate);
+            foreach (var candidate in candidates)
+            {
+                if (NativeLibraryProbe.CanLoad(candidate))
+                    return CheckResult.Ok(candidate);
+            }
         }
 
         // LibVLC is optional; only needed if Gondwana.Video is used.
