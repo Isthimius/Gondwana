@@ -1,0 +1,143 @@
+@startuml rendering-pipeline-sequence
+title Gondwana Engine — Rendering Pipeline Sequence\n(BackgroundTasks vs ForegroundTasks · BitmapBackbuffer vs GpuBackbuffer)
+
+skinparam defaultFontName Segoe UI
+skinparam backgroundColor #FAFAFA
+skinparam sequence {
+    LifeLineBorderColor #336699
+    ParticipantBackgroundColor #DDEEFF
+    ParticipantBorderColor #336699
+    ActorBackgroundColor #FFFACD
+    BoxBackgroundColor #F0F8FF
+    BoxBorderColor #AAAAAA
+    DividerBackgroundColor #F5F5F5
+    GroupBackgroundColor #EEFAEE
+    GroupBorderColor #336699
+    ArrowColor #336699
+    LifeLineBackgroundColor #EEF4FF
+}
+
+box "Engine Background Thread" #EEF4FF
+    participant "Engine\n(Cycle loop)" as Engine
+    participant "EngineDispatcher" as Dispatcher
+end box
+
+box "Background Tasks (every cycle)" #FFFACD
+    participant "Timer\n(PreCycle)" as TimerPre
+    participant "KeyboardEventPoller" as KB
+    participant "MouseEventPoller" as Mouse
+    participant "GamepadEventPoller" as Gamepad
+    participant "Tile.TilesAnimating\n(Animator)" as Anim
+    participant "SpriteManager" as Sprites
+    participant "CollisionResolver" as Collision
+    participant "ViewManager\n(Camera)" as Camera
+    participant "Timer\n(PostCycle)" as TimerPost
+end box
+
+box "Foreground Tasks — Bitmap Path\n(CPU / SkiaSharp, same thread)" #E8F5E9
+    participant "DirectDrawingManager" as DDM
+    participant "RenderSurfaceHost\n<BitmapBackbuffer>" as RSH_Bitmap
+    participant "BitmapBackbuffer" as BitmapBB
+    participant "RenderSurfaceAdapterBase\n(WinForms/Avalonia Bitmap)" as BitmapAdapter
+end box
+
+box "Foreground Tasks — GPU Path\n(skipped; rendered on GL thread)" #FFF3E0
+    participant "RenderSurfaceHost\n<GpuBackbuffer>" as RSH_Gpu
+    participant "GpuBackbuffer" as GpuBB
+    participant "RenderSurfaceAdapterBase\n(WinForms/Avalonia GPU)" as GpuAdapter
+end box
+
+box "GL / UI Thread" #FFF0F0
+    participant "SKGLControl /\nOpenGlControlBase\n(PaintSurface callback)" as GLThread
+end box
+
+== Engine Cycle ==
+
+Engine -> Dispatcher : Drain() — process queued lambdas
+
+group DoBackgroundTasks(tick)
+    Engine -> Engine : calculate deltaSeconds
+    Engine -> Engine : BeforeBackgroundTasksExecute?.Invoke()
+    Engine -> TimerPre : RaiseTimerEvents(PreCycle, tick)
+    Engine -> KB : PollForEvents(tick)
+    Engine -> Mouse : PollForEvents(tick)
+    Engine -> Gamepad : PollForEvents(tick)
+    Engine -> Anim : CycleAnimation(tick) [for each animating Tile]
+    Engine -> Sprites : MoveSprites(tick)
+    Engine -> Collision : Resolve() [for each SceneLayer in each Scene]
+    Engine -> Camera : UpdateCameras(deltaSeconds) [for each RenderSurfaceHost]
+    Engine -> Engine : AfterBackgroundTasksExecute?.Invoke()
+end
+
+alt TargetFPS <= 0 OR throttle elapsed
+
+    group DoForegroundTasks(tick)
+        Engine -> Engine : BeforeFrameRender?.Invoke()
+
+        Engine -> DDM : UpdateAll(tick)
+
+        group Bitmap Backbuffer Path (IsGlThreadRendered = false)
+            Engine -> RSH_Bitmap : RenderToBackbuffer(tick)
+            activate RSH_Bitmap
+                RSH_Bitmap -> BitmapBB : BeginFrame()
+                RSH_Bitmap -> BitmapBB : draw scene layers, tiles, sprites\n(via BackbufferBase.DrawTileFrame)
+                note right of BitmapBB
+                  DirectDrawings for each layer/view
+                  are also composed here
+                end note
+                RSH_Bitmap -> BitmapBB : EndFrame()
+            deactivate RSH_Bitmap
+
+            Engine -> RSH_Bitmap : PresentBackbufferToAdapter()
+            activate RSH_Bitmap
+                RSH_Bitmap -> BitmapBB : Snapshot() → SKImage
+                RSH_Bitmap -> BitmapAdapter : Present(bufferImage, bufferRect, destRect)
+                note right of BitmapAdapter
+                  Copies SKImage to the
+                  platform control surface
+                  (WinForms SKControl /
+                  Avalonia Image)
+                end note
+            deactivate RSH_Bitmap
+        end
+
+        group GPU Backbuffer Path (IsGlThreadRendered = true — SKIPPED in ForegroundTasks)
+            Engine -> RSH_Gpu : [skipped — IsGlThreadRendered = true]
+            note over RSH_Gpu, GpuBB
+              GPU surfaces are NOT rendered here.
+              Rendering and presentation happen
+              entirely on the GL/UI thread below.
+            end note
+        end
+
+        Engine -> Gamepad : Update() (IGamepadManager)
+        Engine -> Engine : AfterFrameRender?.Invoke()
+        Engine -> TimerPost : RaiseTimerEvents(PostCycle, tick)
+    end
+
+end
+
+== GL Thread (independent, driven by OS/platform) ==
+
+GLThread -> RSH_Gpu : GlRenderAndSnapshot() [called from PaintSurface]
+activate RSH_Gpu
+    RSH_Gpu -> GpuBB : Initialize(grContext, w, h) [on first call / resize]
+    RSH_Gpu -> GpuBB : BeginFrame() — creates SKSurface on GrContext
+    RSH_Gpu -> GpuBB : draw scene layers, tiles, sprites\n(via BackbufferBase.DrawTileFrame)
+    note right of GpuBB
+      DirectDrawings composed
+      directly into the GPU surface
+    end note
+    RSH_Gpu -> GpuBB : EndFrame() — flushes GrContext
+    RSH_Gpu -> GpuBB : Snapshot() → SKImage
+    RSH_Gpu -> GpuBB : RecordFrame() — increments GPU FPS counter
+    RSH_Gpu --> GLThread : returns SKImage
+deactivate RSH_Gpu
+
+GLThread -> GpuAdapter : Present(bufferImage, bufferRect, destRect)
+note right of GpuAdapter
+  Blits the SkiaSharp GPU image
+  to the OpenGL framebuffer
+end note
+
+@enduml
