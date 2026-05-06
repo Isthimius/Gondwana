@@ -1,11 +1,12 @@
 ﻿using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
+using Gondwana.Input.Touch;
 
 namespace Gondwana;
 
 /// <summary>
-/// Provides centralized access to all the input systems of the engine, including gamepad, keyboard, and mouse input.
+/// Provides centralized access to all the input systems of the engine, including gamepad, keyboard, mouse, and touch input.
 /// </summary>
 public sealed class EngineInputSystems
 {
@@ -67,4 +68,40 @@ public sealed class EngineInputSystems
     /// before use.
     /// </remarks>
     public MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;
+
+    /// <summary>
+    /// Gets or sets the touch adapter responsible for providing raw touch state to the engine.
+    /// </summary>
+    /// <remarks>
+    /// Setting this property disposes the previous adapter (if it implements
+    /// <see cref="IDisposable"/>) and initializes a new <see cref="TouchEventPoller"/> instance
+    /// backed by the supplied adapter. Pass <see langword="null"/> to clear the current adapter
+    /// without replacing it.
+    /// </remarks>
+    public ITouchAdapter? TouchAdapter
+    {
+        get => TouchEventPoller.Instance?.Adapter;
+        set
+        {
+            (TouchEventPoller.Instance?.Adapter as IDisposable)?.Dispose();
+            if (value != null)
+                TouchEventPoller.Initialize(value);
+        }
+    }
+
+    /// <summary>
+    /// Gets the touch event polling subsystem, if initialized.
+    /// </summary>
+    /// <value>
+    /// The <see cref="Gondwana.Input.Touch.TouchEventPoller"/> instance if initialized;
+    /// otherwise, <c>null</c>.
+    /// </value>
+    /// <remarks>
+    /// This property provides access to the touch input subsystem, which also implements
+    /// <see cref="ITouchInput"/> for gesture recognizer consumption. Initialize it by assigning
+    /// a platform adapter to <see cref="TouchAdapter"/>, or by calling
+    /// <c>engine.InitializeAvaloniaTouchAdapter(control)</c> from the <c>Gondwana.Avalonia</c>
+    /// package.
+    /// </remarks>
+    public TouchEventPoller? TouchEventPoller => TouchEventPoller.Instance;
 }

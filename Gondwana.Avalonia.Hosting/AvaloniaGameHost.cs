@@ -61,6 +61,15 @@ public abstract class AvaloniaGameHost : GameHostBase
     }
 
     /// <summary>
+    /// Configures the touch adapter for the Avalonia render surface.
+    /// </summary>
+    protected override void ConfigureTouch()
+    {
+        Engine.Instance.InitializeAvaloniaTouchAdapter(RenderSurface);
+        OnTouchAdapterInitialized();
+    }
+
+    /// <summary>
     /// Binds the current scene to the render surface host.
     /// </summary>
     protected override void BindScene()
@@ -87,6 +96,12 @@ public abstract class AvaloniaGameHost : GameHostBase
     /// Called after the gamepad manager has been initialized. Override to perform additional gamepad setup.
     /// </summary>
     protected virtual void OnGamepadManagerInitialized() { }
+
+    /// <summary>
+    /// Called after the touch adapter has been initialized. Override to perform additional touch setup,
+    /// such as attaching gesture recognizers.
+    /// </summary>
+    protected virtual void OnTouchAdapterInitialized() { }
 
     /// <summary>
     /// Starts the engine. On browser/WASM targets, uses a timer-driven loop on the UI thread

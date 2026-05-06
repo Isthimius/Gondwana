@@ -66,13 +66,14 @@ public abstract class GameHostBase : IDisposable
     protected abstract void ConfigurePlatform();
 
     /// <summary>
-    /// Configures all input devices including keyboard, mouse, and gamepads.
+    /// Configures all input devices including keyboard, mouse, gamepads, and touch.
     /// </summary>
     protected virtual void ConfigureInput()
     {
         ConfigureKeyboard();
         ConfigureMouse();
         ConfigureGamepads();
+        ConfigureTouch();
     }
 
     /// <summary>
@@ -89,6 +90,11 @@ public abstract class GameHostBase : IDisposable
     /// Configures the gamepad manager. Override to set up gamepad-specific configuration.
     /// </summary>
     protected virtual void ConfigureGamepads() { }
+
+    /// <summary>
+    /// Configures the touch input adapter. Override to set up touch-specific configuration.
+    /// </summary>
+    protected virtual void ConfigureTouch() { }
 
     /// <summary>
     /// Initializes game-specific content including assets, scenes, and game objects.

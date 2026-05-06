@@ -5,6 +5,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
+using Gondwana.Input.Touch;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -257,6 +258,9 @@ public sealed class Engine : IDisposable
     /// <param name="mouseAdapter">
     /// Optional <see cref="IMouseAdapter"/> instance used to initialize the mouse input subsystem.
     /// </param>
+    /// <param name="touchAdapter">
+    /// Optional <see cref="ITouchAdapter"/> instance used to initialize the touch input subsystem.
+    /// </param>
     /// <param name="gamepadManager">
     /// Optional <see cref="IGamepadManager{T}"/> instance used to initialize the gamepad subsystem.
     /// </param>
@@ -269,6 +273,7 @@ public sealed class Engine : IDisposable
         bool? autoSaveConfig = null,
         IKeyboardAdapter? keyboardAdapter = null,
         IMouseAdapter? mouseAdapter = null,
+        ITouchAdapter? touchAdapter = null,
         IGamepadManager<IGamepadAdapter>? gamepadManager = null)
     {
         if (_isInitialized || _isInitializing)
@@ -301,6 +306,9 @@ public sealed class Engine : IDisposable
 
         if (mouseAdapter != null)
             MouseEventPoller.Initialize(mouseAdapter);
+
+        if (touchAdapter != null)
+            Input.TouchAdapter = touchAdapter;
 
         Input.GamepadManager = gamepadManager;
 
@@ -707,16 +715,17 @@ public sealed class Engine : IDisposable
     public EngineManagers Managers { get; } = new();
 
     /// <summary>
-    /// Gets the collection of input subsystems for keyboard, mouse, and gamepad input.
+    /// Gets the collection of input subsystems for keyboard, mouse, touch, and gamepad input.
     /// </summary>
     /// <value>An <see cref="EngineInputSystems"/> instance providing access to all input subsystems.</value>
     /// <remarks>
     /// <para>
     /// This property provides centralized access to input event pollers and managers
-    /// for keyboard, mouse, and gamepad devices. Use the nested properties to access
-    /// specific subsystems such as <see cref="EngineInputSystems.KeyboardEventPoller"/>, 
-    /// <see cref="EngineInputSystems.MouseEventPoller"/>, 
-    /// <see cref="EngineInputSystems.GamepadEventPoller"/>, and 
+    /// for keyboard, mouse, touch, and gamepad devices. Use the nested properties to access
+    /// specific subsystems such as <see cref="EngineInputSystems.KeyboardEventPoller"/>,
+    /// <see cref="EngineInputSystems.MouseEventPoller"/>,
+    /// <see cref="EngineInputSystems.TouchEventPoller"/>,
+    /// <see cref="EngineInputSystems.GamepadEventPoller"/>, and
     /// <see cref="EngineInputSystems.GamepadManager"/>.
     /// </para>
     /// <para>
@@ -793,6 +802,9 @@ public sealed class Engine : IDisposable
 
         // check for mouse events
         MouseEventPoller.Instance?.PollForEvents(tick);
+
+        // check for touch events
+        TouchEventPoller.Instance?.PollForEvents(tick);
 
         // check for gamepad events
         GamepadEventPoller.Instance?.PollForEvents(tick);
@@ -942,6 +954,8 @@ public sealed class Engine : IDisposable
                 // managed cleanup...
                 Input.KeyboardEventPoller?.StopMonitoringAllKeys();
                 Input.MouseEventPoller?.StopMonitoringMouse();
+                Input.TouchEventPoller?.StopMonitoringTouch();
+                (Input.TouchEventPoller?.Adapter as IDisposable)?.Dispose();
 
                 if (Input.GamepadManager is not null)
                     foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)
