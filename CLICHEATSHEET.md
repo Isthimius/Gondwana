@@ -62,7 +62,9 @@ Checks the local environment for all Gondwana prerequisites (.NET SDK, native li
 | `--fix` | Automatically fix issues that can be resolved without manual steps. After applying fixes, all checks are re-run and the updated results are displayed. |
 
 Currently auto-fixable:
+- **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
 - **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
+- **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
 
 **Examples**
 ```

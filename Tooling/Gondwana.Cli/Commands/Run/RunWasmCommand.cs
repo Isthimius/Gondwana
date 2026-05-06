@@ -15,6 +15,7 @@ internal sealed class RunWasmCommand : Command<RunWasmCommand.Settings>
 
         [CommandOption("-c|--configuration")]
         [Description("Build configuration. Defaults to 'Debug'.")]
+        [DefaultValue("Debug")]
         public string Configuration { get; init; } = "Debug";
 
         [CommandOption("--skip-workload")]
