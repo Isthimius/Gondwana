@@ -236,8 +236,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     }
 
     /// <summary>
-    /// Returns true if at least one version of the given NuGet package (case-insensitive)
-    /// exists in the global packages cache.
+    /// Returns true if at least one version of the given NuGet package exists in the
+    /// global packages cache. <paramref name="packageId"/> must be lowercase — NuGet
+    /// normalises package IDs to lowercase when writing to the cache on all platforms.
     /// </summary>
     private static bool IsNuGetPackageCached(string packageId)
     {
@@ -252,7 +253,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             var packageDir = Path.Combine(nugetHome, packageId);
             return Directory.Exists(packageDir) && Directory.EnumerateDirectories(packageDir).Any();
         }
-        catch
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             return false;
         }
