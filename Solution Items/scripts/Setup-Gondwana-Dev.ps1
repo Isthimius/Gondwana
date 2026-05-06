@@ -78,18 +78,18 @@ function Invoke-Cmd {
 function Test-GlobalTool {
     param([string] $PackageId)
     $output = dotnet tool list -g 2>&1
-    return ($output | Where-Object { $_ -match [regex]::Escape($PackageId) }).Count -gt 0
+    return (@($output | Where-Object { $_ -match [regex]::Escape($PackageId) })).Count -gt 0
 }
 
 function Test-TemplatesInstalled {
     $output = dotnet new list 2>&1
-    return ($output | Where-Object { $_ -match 'gondwana-winforms' }).Count -gt 0
+    return (@($output | Where-Object { $_ -match 'gondwana-winforms' })).Count -gt 0
 }
 
 function Test-Workload {
     param([string] $Id)
     $output = dotnet workload list 2>&1
-    return ($output | Where-Object { $_ -match "\b$([regex]::Escape($Id))\b" }).Count -gt 0
+    return (@($output | Where-Object { $_ -match "\b$([regex]::Escape($Id))\b" })).Count -gt 0
 }
 
 function Test-NativeDll {
