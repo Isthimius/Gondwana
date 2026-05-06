@@ -126,7 +126,7 @@ OK "$(git --version)"
 Step '2/11  .NET 8 SDK'
 $dotnetFound = $null -ne (Get-Command dotnet -ErrorAction SilentlyContinue)
 $hasSdk8     = $dotnetFound -and
-               ((dotnet --list-sdks 2>&1) | Where-Object { $_ -match '^8\.' }).Count -gt 0
+               (@((dotnet --list-sdks 2>&1) | Where-Object { $_ -match '^8\.' })).Count -gt 0
 
 if ($hasSdk8) {
     $sdk8Line = (dotnet --list-sdks 2>&1) | Where-Object { $_ -match '^8\.' } | Select-Object -Last 1
