@@ -21,8 +21,12 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         var checks = new List<(string Label, Func<CheckResult> Check, Action? Fix)>
         {
+            ("Git",                CheckGit,               null),
             (".NET SDK",           CheckDotNetSdk,         null),
+            ("nbgv",               CheckNbgv,              null),
+            ("Gondwana CLI",       CheckGondwanaCli,       FixGondwanaCli),
             ("Gondwana Templates", CheckGondwanaTemplates, FixGondwanaTemplates),
+            ("wasm-tools",         CheckWasmTools,         FixWasmTools),
             ("SkiaSharp",          CheckSkiaSharp,         null),
             ("SDL2",               CheckSdl2,              null),
             ("LibVLC",             CheckLibVlc,            null),
@@ -161,12 +165,65 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     // ─── Fixes ────────────────────────────────────────────────────────────────
 
+    private static void FixGondwanaCli()
+    {
+        ProcessHelper.RunLive("dotnet", ["tool", "install", "--global", "Gondwana.Cli"]);
+    }
+
     private static void FixGondwanaTemplates()
     {
         ProcessHelper.RunLive("dotnet", "new install Gondwana.Templates");
     }
 
+    private static void FixWasmTools()
+    {
+        ProcessHelper.RunLive("dotnet", ["workload", "install", "wasm-tools"]);
+    }
+
     // ─── Individual checks ────────────────────────────────────────────────────
+
+    private static CheckResult CheckGit()
+    {
+        var output = ProcessHelper.Run("git", "--version", out int exitCode);
+        if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
+            return CheckResult.Fail("git not found on PATH. Install Git from https://git-scm.com");
+
+        return CheckResult.Ok(output.Trim());
+    }
+
+    private static CheckResult CheckNbgv()
+    {
+        // nbgv is a local .NET tool restored from .config/dotnet-tools.json.
+        var output = ProcessHelper.Run("dotnet", "tool list", out int exitCode);
+        if (exitCode != 0)
+            return CheckResult.Fail($"dotnet tool list failed (exit {exitCode}).");
+
+        if (!output.Contains("nbgv", StringComparison.OrdinalIgnoreCase))
+            return CheckResult.Fail("nbgv local tool not found. Run: dotnet tool restore");
+
+        // Extract version from the tool list line, e.g. "nbgv    3.9.50    nbgv"
+        var line = output.Split('\n')
+            .FirstOrDefault(l => l.Contains("nbgv", StringComparison.OrdinalIgnoreCase));
+        var version = line?.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1);
+
+        return CheckResult.Ok(version ?? "found");
+    }
+
+    private static CheckResult CheckGondwanaCli()
+    {
+        var output = ProcessHelper.Run("dotnet", "tool list -g", out int exitCode);
+        if (exitCode != 0)
+            return CheckResult.Fail($"dotnet tool list -g failed (exit {exitCode}).");
+
+        if (!output.Contains("gondwana.cli", StringComparison.OrdinalIgnoreCase))
+            return CheckResult.Fail("Gondwana.Cli global tool not installed. Run: dotnet tool install -g Gondwana.Cli");
+
+        var line = output.Split('\n')
+            .FirstOrDefault(l => l.Contains("gondwana.cli", StringComparison.OrdinalIgnoreCase));
+        var version = line?.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1);
+
+        return CheckResult.Ok(version ?? "found");
+    }
 
     private static CheckResult CheckDotNetSdk()
     {
@@ -185,7 +242,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckGondwanaTemplates()
     {
-        var output = ProcessHelper.Run("dotnet", "new list gondwana --columns author,type", out int exitCode);
+        var output = ProcessHelper.Run("dotnet", "new list gondwana", out int exitCode);
 
         if (exitCode != 0)
             return CheckResult.Fail($"Failed to query installed templates (exit code {exitCode}). Is the .NET SDK installed and functional?");
@@ -208,6 +265,18 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
     }
 
+    private static CheckResult CheckWasmTools()
+    {
+        var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode);
+        if (exitCode != 0)
+            return CheckResult.Fail($"dotnet workload list failed (exit {exitCode}).");
+
+        if (!output.Contains("wasm-tools", StringComparison.OrdinalIgnoreCase))
+            return CheckResult.Fail("wasm-tools workload not installed. Run: dotnet workload install wasm-tools");
+
+        return CheckResult.Ok("wasm-tools installed");
+    }
+
     private static CheckResult CheckSkiaSharp()
     {
         // Probe for the native SkiaSharp library by attempting to load it directly.
@@ -226,7 +295,37 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 return CheckResult.Ok(candidate);
         }
 
-        return CheckResult.Fail("Native SkiaSharp library not found. Run: dotnet add package SkiaSharp.NativeAssets.Linux (or equivalent for your platform).");
+        // SkiaSharp is typically installed via NuGet and bundled into the project output
+        // at build time — its native DLL is never placed on the system PATH.
+        // Check the NuGet global packages cache so that a NuGet install is recognised.
+        if (IsNuGetPackageCached("skiasharp"))
+            return CheckResult.Ok("found in NuGet global cache");
+
+        return CheckResult.Fail("SkiaSharp not found. Restore a project that references SkiaSharp, or run: dotnet add package SkiaSharp");
+    }
+
+    /// <summary>
+    /// Returns true if at least one version of the given NuGet package exists in the
+    /// global packages cache. <paramref name="packageId"/> must be lowercase — NuGet
+    /// normalises package IDs to lowercase when writing to the cache on all platforms.
+    /// </summary>
+    private static bool IsNuGetPackageCached(string packageId)
+    {
+        try
+        {
+            // NUGET_PACKAGES env var overrides the default cache location.
+            var nugetHome = Environment.GetEnvironmentVariable("NUGET_PACKAGES")
+                ?? Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    ".nuget", "packages");
+
+            var packageDir = Path.Combine(nugetHome, packageId);
+            return Directory.Exists(packageDir) && Directory.EnumerateDirectories(packageDir).Any();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 
     private static CheckResult CheckSdl2()
@@ -249,16 +348,48 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckLibVlc()
     {
-        string[] candidates = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? ["libvlc.dll"]
-            : RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Check both the PATH-resolvable name and well-known VLC install directories,
+            // since the VLC installer does not add itself to the system PATH by default.
+            var windowsCandidates = new List<string> { "libvlc.dll" };
+
+            foreach (var programFiles in new[]
+            {
+                Environment.GetEnvironmentVariable("ProgramFiles"),
+                Environment.GetEnvironmentVariable("ProgramFiles(x86)"),
+            })
+            {
+                if (string.IsNullOrEmpty(programFiles))
+                    continue;
+
+                try
+                {
+                    windowsCandidates.Add(Path.Combine(programFiles, "VideoLAN", "VLC", "libvlc.dll"));
+                }
+                catch (ArgumentException)
+                {
+                    // Skip if the environment variable contains invalid path characters.
+                }
+            }
+
+            foreach (var candidate in windowsCandidates)
+            {
+                if (NativeLibraryProbe.CanLoad(candidate))
+                    return CheckResult.Ok(candidate);
+            }
+        }
+        else
+        {
+            string[] candidates = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                 ? ["libvlc.dylib"]
                 : ["libvlc.so", "libvlc.so.5"];
 
-        foreach (var candidate in candidates)
-        {
-            if (NativeLibraryProbe.CanLoad(candidate))
-                return CheckResult.Ok(candidate);
+            foreach (var candidate in candidates)
+            {
+                if (NativeLibraryProbe.CanLoad(candidate))
+                    return CheckResult.Ok(candidate);
+            }
         }
 
         // LibVLC is optional; only needed if Gondwana.Video is used.
