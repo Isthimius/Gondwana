@@ -54,8 +54,11 @@ $ErrorActionPreference = 'Stop'
 $repoRoot     = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
 $solutionFile = Join-Path $repoRoot 'Gondwana.sln'
 
-$isWindowsOS = ($PSVersionTable.PSEdition -eq 'Desktop') -or
-               ($PSVersionTable.PSEdition -eq 'Core' -and $IsWindows -eq $true)
+# $IsWindows is only defined in PowerShell Core 6+; use a safe lookup so the
+# script remains compatible with Windows PowerShell 5.1 (PSEdition = 'Desktop').
+$_isWindowsVar = Get-Variable -Name 'IsWindows' -ErrorAction SilentlyContinue
+$isWindowsOS   = ($PSVersionTable.PSEdition -eq 'Desktop') -or
+                 ($null -ne $_isWindowsVar -and $_isWindowsVar.Value -eq $true)
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -232,10 +235,10 @@ if ($SkipOptional) {
     } else {
         INFO "LibVLC not detected. Attempting to install VLC via winget..."
         if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
-            winget install --id VideoLAN.VLC --silent `
-                           --accept-source-agreements --accept-package-agreements
-            if ($LASTEXITCODE -eq 0) {
-                # Refresh PATH and check again
+            try {
+                Invoke-Cmd winget @('install', '--id', 'VideoLAN.VLC', '--silent',
+                                    '--accept-source-agreements', '--accept-package-agreements')
+                # Refresh PATH so the newly installed VLC directory is visible
                 $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
                             [System.Environment]::GetEnvironmentVariable('PATH', 'User')
                 if (Test-NativeDll $vlcDlls) {
@@ -244,8 +247,8 @@ if ($SkipOptional) {
                     OK "VLC installed. libvlc.dll is in VLC's install directory."
                     INFO "Add 'C:\Program Files\VideoLAN\VLC' to your PATH if you use Gondwana.Video."
                 }
-            } else {
-                WARN "winget install VideoLAN.VLC failed (exit $LASTEXITCODE)."
+            } catch {
+                WARN "winget install VideoLAN.VLC failed: $_"
                 WARN "Download and install VLC manually from https://www.videolan.org/vlc/"
                 INFO "LibVLC is only required if you use the Gondwana.Video package."
             }
