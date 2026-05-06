@@ -226,7 +226,36 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 return CheckResult.Ok(candidate);
         }
 
-        return CheckResult.Fail("Native SkiaSharp library not found. Run: dotnet add package SkiaSharp.NativeAssets.Linux (or equivalent for your platform).");
+        // SkiaSharp is typically installed via NuGet and bundled into the project output
+        // at build time — its native DLL is never placed on the system PATH.
+        // Check the NuGet global packages cache so that a NuGet install is recognised.
+        if (IsNuGetPackageCached("skiasharp"))
+            return CheckResult.Ok("found in NuGet global cache");
+
+        return CheckResult.Fail("SkiaSharp not found. Restore a project that references SkiaSharp, or run: dotnet add package SkiaSharp");
+    }
+
+    /// <summary>
+    /// Returns true if at least one version of the given NuGet package (case-insensitive)
+    /// exists in the global packages cache.
+    /// </summary>
+    private static bool IsNuGetPackageCached(string packageId)
+    {
+        try
+        {
+            // NUGET_PACKAGES env var overrides the default cache location.
+            var nugetHome = Environment.GetEnvironmentVariable("NUGET_PACKAGES")
+                ?? Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    ".nuget", "packages");
+
+            var packageDir = Path.Combine(nugetHome, packageId);
+            return Directory.Exists(packageDir) && Directory.EnumerateDirectories(packageDir).Any();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static CheckResult CheckSdl2()
