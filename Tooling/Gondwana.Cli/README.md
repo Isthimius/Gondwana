@@ -17,9 +17,13 @@ Validates your local Gondwana development environment.
 ```
 Gondwana Doctor
 
+Git                  OK  git version 2.47.0.windows.2
 .NET SDK             OK  10.0.201
-Templates            OK  gondwana-winforms, gondwana-avalonia found
-SkiaSharp            OK
+nbgv                 OK  3.9.50
+Gondwana CLI         OK  1.2.0
+Gondwana Templates   OK  gondwana-winforms, gondwana-avalonia, gondwana-wasm found
+wasm-tools           OK  wasm-tools installed
+SkiaSharp            OK  found in NuGet global cache
 SDL2                 Missing native library
 LibVLC               Not checked
 
@@ -27,8 +31,12 @@ LibVLC               Not checked
 ```
 
 Checks performed:
+- Git installed and version
 - .NET SDK installed and version
-- Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`) installed
+- `nbgv` local tool restored
+- Gondwana CLI global tool installed
+- Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) installed
+- `wasm-tools` .NET workload installed
 - SkiaSharp native binaries
 - SDL2 native binaries (for `Gondwana.Input.SDL2`)
 - LibVLC (for `Gondwana.Video`)
@@ -40,7 +48,9 @@ gondwana doctor --fix
 ```
 
 Currently auto-fixable:
+- **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
 - **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
+- **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
 
 After applying fixes, the checks are re-run and the updated results are displayed.
 
