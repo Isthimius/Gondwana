@@ -6,6 +6,48 @@ This folder contains PowerShell helper scripts for building, publishing, and rel
 
 ## Scripts
 
+### `Setup-Gondwana-Dev.ps1`
+
+Idempotent one-shot setup script for new contributors. Run it once after cloning the repository to install everything needed to build, run, and develop Gondwana. Safe to re-run — each step checks whether work is already done before acting.
+
+**What it does:**
+1. Verifies Git is available on `PATH`.
+2. Checks for the .NET 8 SDK; installs it via `winget` if missing (Windows only).
+3. Restores local .NET tools (`nbgv`) from `.config/dotnet-tools.json`.
+4. Restores NuGet packages for the solution.
+5. Builds the solution in `Release` configuration.
+6. Installs the `Gondwana.Cli` global tool (`gondwana`).
+7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`).
+8. Installs the `dotnet wasm-tools` workload for WebAssembly support.
+9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance if missing.
+10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
+11. Runs `gondwana doctor` to confirm the final environment state.
+
+**Prerequisites:**
+- Git on `PATH`
+- PowerShell 5.1 or later
+
+**Parameters:**
+
+| Parameter | Description | Default |
+|---|---|---|
+| `-SkipBuild` | Skip step 5 (`dotnet build`). Restores packages and tools only. | — |
+| `-SkipOptional` | Skip steps 8–10 (wasm-tools, SDL2, LibVLC). | — |
+
+**Examples:**
+```powershell
+# Full setup — run from anywhere inside the cloned repository
+.\Setup-Gondwana-Dev.ps1
+
+# Skip building the solution
+.\Setup-Gondwana-Dev.ps1 -SkipBuild
+
+# Install core tools only (no WASM workload, SDL2, or LibVLC)
+.\Setup-Gondwana-Dev.ps1 -SkipOptional
+```
+
+---
+
 ### `Publish-Gondwana-Wasm.ps1`
 
 Builds and publishes a Gondwana project for browser (WASM) deployment.
