@@ -18,6 +18,10 @@ internal sealed class HelpCommand : Command
         table.AddRow("[cyan]gondwana info[/]",                    "Show information about the Gondwana project in the current directory.");
         table.AddRow("[cyan]gondwana new winforms <name>[/]",     "Scaffold a new WinForms Gondwana project.");
         table.AddRow("[cyan]gondwana new avalonia <name>[/]",     "Scaffold a new Avalonia Gondwana project (Windows, macOS, Linux).");
+        table.AddRow("[cyan]gondwana new wasm <name>[/]",         "Scaffold a new Avalonia Gondwana project targeting both desktop and browser/WASM.");
+        table.AddRow("[cyan]gondwana run[/]",                     "Run the desktop build of the project in the current directory.");
+        table.AddRow("[cyan]gondwana run wasm[/]",                "Build and run the project in the browser (net8.0-browser dev server).");
+        table.AddRow("[cyan]gondwana publish wasm[/]",            "Publish a Gondwana project for browser/WASM (net8.0-browser).");
         table.AddRow("[cyan]gondwana templates install[/]",       "Install Gondwana.Templates from NuGet.");
         table.AddRow("[cyan]gondwana templates update[/]",        "Update installed Gondwana templates.");
         table.AddRow("[cyan]gondwana templates list[/]",          "List installed Gondwana templates.");
