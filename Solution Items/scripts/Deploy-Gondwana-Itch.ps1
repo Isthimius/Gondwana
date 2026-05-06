@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     Packages and uploads a Gondwana WASM build to itch.io via butler.

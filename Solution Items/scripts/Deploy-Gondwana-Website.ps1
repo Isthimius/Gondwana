@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     Publishes a Gondwana WASM build to a personal website (static host).
