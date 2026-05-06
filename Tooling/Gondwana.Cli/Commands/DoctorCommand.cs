@@ -21,8 +21,12 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         var checks = new List<(string Label, Func<CheckResult> Check, Action? Fix)>
         {
+            ("Git",                CheckGit,               null),
             (".NET SDK",           CheckDotNetSdk,         null),
+            ("nbgv",               CheckNbgv,              null),
+            ("Gondwana CLI",       CheckGondwanaCli,       FixGondwanaCli),
             ("Gondwana Templates", CheckGondwanaTemplates, FixGondwanaTemplates),
+            ("wasm-tools",         CheckWasmTools,         FixWasmTools),
             ("SkiaSharp",          CheckSkiaSharp,         null),
             ("SDL2",               CheckSdl2,              null),
             ("LibVLC",             CheckLibVlc,            null),
@@ -161,12 +165,65 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     // ─── Fixes ────────────────────────────────────────────────────────────────
 
+    private static void FixGondwanaCli()
+    {
+        ProcessHelper.RunLive("dotnet", ["tool", "install", "--global", "Gondwana.Cli"]);
+    }
+
     private static void FixGondwanaTemplates()
     {
         ProcessHelper.RunLive("dotnet", "new install Gondwana.Templates");
     }
 
+    private static void FixWasmTools()
+    {
+        ProcessHelper.RunLive("dotnet", ["workload", "install", "wasm-tools"]);
+    }
+
     // ─── Individual checks ────────────────────────────────────────────────────
+
+    private static CheckResult CheckGit()
+    {
+        var output = ProcessHelper.Run("git", "--version", out int exitCode);
+        if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
+            return CheckResult.Fail("git not found on PATH. Install Git from https://git-scm.com");
+
+        return CheckResult.Ok(output.Trim());
+    }
+
+    private static CheckResult CheckNbgv()
+    {
+        // nbgv is a local .NET tool restored from .config/dotnet-tools.json.
+        var output = ProcessHelper.Run("dotnet", "tool list", out int exitCode);
+        if (exitCode != 0)
+            return CheckResult.Fail($"dotnet tool list failed (exit {exitCode}).");
+
+        if (!output.Contains("nbgv", StringComparison.OrdinalIgnoreCase))
+            return CheckResult.Fail("nbgv local tool not found. Run: dotnet tool restore");
+
+        // Extract version from the tool list line, e.g. "nbgv    3.9.50    nbgv"
+        var line = output.Split('\n')
+            .FirstOrDefault(l => l.Contains("nbgv", StringComparison.OrdinalIgnoreCase));
+        var version = line?.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1);
+
+        return CheckResult.Ok(version ?? "found");
+    }
+
+    private static CheckResult CheckGondwanaCli()
+    {
+        var output = ProcessHelper.Run("dotnet", "tool list -g", out int exitCode);
+        if (exitCode != 0)
+            return CheckResult.Fail($"dotnet tool list -g failed (exit {exitCode}).");
+
+        if (!output.Contains("gondwana.cli", StringComparison.OrdinalIgnoreCase))
+            return CheckResult.Fail("Gondwana.Cli global tool not installed. Run: dotnet tool install -g Gondwana.Cli");
+
+        var line = output.Split('\n')
+            .FirstOrDefault(l => l.Contains("gondwana.cli", StringComparison.OrdinalIgnoreCase));
+        var version = line?.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1);
+
+        return CheckResult.Ok(version ?? "found");
+    }
 
     private static CheckResult CheckDotNetSdk()
     {
@@ -206,6 +263,18 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             return CheckResult.Ok(string.Join(", ", found) + " found");
 
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
+    }
+
+    private static CheckResult CheckWasmTools()
+    {
+        var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode);
+        if (exitCode != 0)
+            return CheckResult.Fail($"dotnet workload list failed (exit {exitCode}).");
+
+        if (!output.Contains("wasm-tools", StringComparison.OrdinalIgnoreCase))
+            return CheckResult.Fail("wasm-tools workload not installed. Run: dotnet workload install wasm-tools");
+
+        return CheckResult.Ok("wasm-tools installed");
     }
 
     private static CheckResult CheckSkiaSharp()
