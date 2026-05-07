@@ -46,8 +46,11 @@ public static class AnimationAssetLoader
     public static Cycle ToCycle(string animationPath)
     {
         var asset = Load(animationPath);
+        if (asset.Frames.Count == 0)
+            throw new InvalidDataException($"Animation '{asset.Name}' has no frames: {animationPath}");
+
         var sequence = ToFrameSequence(animationPath);
-        var avgDurationMs = asset.Frames.Count == 0 ? 100d : asset.Frames.Average(f => Math.Max(1, f.DurationMs));
+        var avgDurationMs = asset.Frames.Average(f => Math.Max(1, f.DurationMs));
         var throttleSeconds = avgDurationMs / 1000d;
         return new Cycle(sequence, throttleSeconds, asset.Name);
     }

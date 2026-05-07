@@ -8,6 +8,10 @@ namespace Gondwana.Studio.Views;
 
 public partial class SceneEditorView : UserControl
 {
+    private const double ZoomSensitivity = 0.1;
+    private const double MinZoom = 0.2;
+    private const double MaxZoom = 6.0;
+
     private bool _panning;
     private bool _drawingCollider;
     private Point _lastPointer;
@@ -84,7 +88,7 @@ public partial class SceneEditorView : UserControl
         if (DataContext is not SceneEditorViewModel vm)
             return;
 
-        vm.Zoom = Math.Clamp(vm.Zoom + (e.Delta.Y * 0.1), 0.2, 6);
+        vm.Zoom = Math.Clamp(vm.Zoom + (e.Delta.Y * ZoomSensitivity), MinZoom, MaxZoom);
         ApplyTransform(vm);
     }
 

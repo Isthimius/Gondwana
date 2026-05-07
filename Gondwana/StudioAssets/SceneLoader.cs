@@ -1,5 +1,6 @@
 using Gondwana.Drawing;
 using Gondwana.Scenes;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Gondwana.StudioAssets;
@@ -36,7 +37,16 @@ public static class SceneLoader
                 var y = tile.TileIndex / xTiles;
                 var layerTile = layer[tile.X, tile.Y];
                 if (layerTile is null)
+                {
+                    Engine.Logger.LogWarning(
+                        "Skipping out-of-bounds scene tile at ({TileX}, {TileY}) in layer '{LayerName}' with size {Width}x{Height}.",
+                        tile.X,
+                        tile.Y,
+                        layerAsset.Name,
+                        maxX,
+                        maxY);
                     continue;
+                }
 
                 layerTile.CurrentFrame = new Frame(tilesheet, x, y);
             }

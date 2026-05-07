@@ -105,7 +105,7 @@ public sealed class StudioPluginHost
     {
         try
         {
-            var loadContext = new AssemblyLoadContext($"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true);
+            var loadContext = new AssemblyLoadContext($"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: false);
             var assembly = loadContext.LoadFromAssemblyPath(dllPath);
             var pluginTypes = assembly.GetTypes()
                 .Where(t => !t.IsAbstract && typeof(IStudioPlugin).IsAssignableFrom(t))

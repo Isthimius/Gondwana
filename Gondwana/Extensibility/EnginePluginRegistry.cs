@@ -7,13 +7,14 @@ public static class EnginePluginRegistry
     private static readonly object _lock = new();
     private static readonly List<IEnginePlugin> _plugins = [];
     private static readonly HashSet<IEnginePlugin> _disabledPlugins = [];
+    private static IEnginePlugin[] _snapshot = [];
 
     public static IReadOnlyList<IEnginePlugin> All
     {
         get
         {
             lock (_lock)
-                return _plugins.ToArray();
+                return _snapshot;
         }
     }
 
@@ -28,6 +29,7 @@ public static class EnginePluginRegistry
 
             _plugins.Add(plugin);
             _disabledPlugins.Remove(plugin);
+            _snapshot = [.. _plugins];
         }
     }
 
@@ -39,6 +41,7 @@ public static class EnginePluginRegistry
         {
             _plugins.Remove(plugin);
             _disabledPlugins.Remove(plugin);
+            _snapshot = [.. _plugins];
         }
     }
 
@@ -56,9 +59,9 @@ public static class EnginePluginRegistry
 
     private static void Invoke(Engine engine, Action<IEnginePlugin> callback, string hook)
     {
-        List<IEnginePlugin> snapshot;
+        IEnginePlugin[] snapshot;
         lock (_lock)
-            snapshot = [.. _plugins];
+            snapshot = _snapshot;
 
         foreach (var plugin in snapshot)
         {

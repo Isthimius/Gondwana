@@ -17,6 +17,7 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
     private readonly Window _owner;
     private readonly DispatcherTimer _previewTimer;
     private int _previewFrameIndex;
+    private int _previewDirection = 1;
     private DateTime _lastFrameTime;
 
     public ObservableCollection<TileCellViewModel> TilePalette { get; } = [];
@@ -132,6 +133,7 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
 
         IsPreviewPlaying = true;
         _previewFrameIndex = 0;
+        _previewDirection = 1;
         _lastFrameTime = DateTime.UtcNow;
         _previewTimer.Start();
         UpdatePreviewText();
@@ -265,9 +267,29 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
         return CycleType switch
         {
             "Once" => Math.Min(Frames.Count - 1, currentIndex + 1),
-            "PingPong" => (currentIndex + 1) % Frames.Count,
+            "PingPong" => GetPingPongIndex(currentIndex),
             _ => (currentIndex + 1) % Frames.Count
         };
+    }
+
+    private int GetPingPongIndex(int currentIndex)
+    {
+        if (Frames.Count <= 1)
+            return 0;
+
+        var next = currentIndex + _previewDirection;
+        if (next >= Frames.Count)
+        {
+            _previewDirection = -1;
+            next = Frames.Count - 2;
+        }
+        else if (next < 0)
+        {
+            _previewDirection = 1;
+            next = 1;
+        }
+
+        return next;
     }
 
     private void UpdatePreviewText()
