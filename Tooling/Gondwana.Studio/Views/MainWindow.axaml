@@ -12,11 +12,32 @@
         Width="1200" Height="750"
         MinWidth="800" MinHeight="500">
 
-    <dock:DockControl
-        x:Name="DockControl"
-        Layout="{Binding Layout}"
-        Factory="{Binding Factory}"
-        InitializeLayout="True"
-        InitializeFactory="True" />
+    <Grid RowDefinitions="Auto,*">
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open Project..." Click="OnOpenProjectClicked"/>
+                <MenuItem Header="_Close Project" Click="OnCloseProjectClicked"/>
+                <Separator />
+                <MenuItem Header="_New">
+                    <MenuItem Header="_Tilesheet" Click="OnNewTilesheetClicked"/>
+                    <MenuItem Header="_Animation" Click="OnNewAnimationClicked"/>
+                    <MenuItem Header="_Scene" Click="OnNewSceneClicked"/>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Open _Tilesheet..." Click="OnOpenTilesheetClicked"/>
+                <MenuItem Header="Open _Animation..." Click="OnOpenAnimationClicked"/>
+                <MenuItem Header="Open S_cene..." Click="OnOpenSceneClicked"/>
+            </MenuItem>
+            <MenuItem x:Name="PluginsMenu" Header="_Plugins" />
+        </Menu>
+
+        <dock:DockControl
+            Grid.Row="1"
+            x:Name="DockControl"
+            Layout="{Binding Layout}"
+            Factory="{Binding Factory}"
+            InitializeLayout="True"
+            InitializeFactory="True" />
+    </Grid>
 
 </Window>

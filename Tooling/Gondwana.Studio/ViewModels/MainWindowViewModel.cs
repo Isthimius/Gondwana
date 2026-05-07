@@ -39,6 +39,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     public void SetProject(string projectPath)
     {
+        if (!string.IsNullOrWhiteSpace(CurrentProjectPath) && !string.Equals(CurrentProjectPath, projectPath, StringComparison.Ordinal))
+            CloseProject();
+
         CurrentProjectPath = projectPath;
         PluginHost.NotifyProjectOpened(projectPath);
         Output.Log($"Project opened: {projectPath}");

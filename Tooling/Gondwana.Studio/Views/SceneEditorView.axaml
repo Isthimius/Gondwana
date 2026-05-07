@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gondwana.Studio.ViewModels"
+             x:Class="Gondwana.Studio.Views.SceneEditorView"
+             x:DataType="vm:SceneEditorViewModel">
+  <Grid ColumnDefinitions="280,*" RowDefinitions="Auto,*,Auto">
+    <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8" Spacing="6">
+      <Button Content="Open Tilesheet" Command="{Binding OpenTilesheetCommand}" />
+      <Button Content="Save Scene" Command="{Binding SaveSceneCommand}" />
+      <TextBlock Text="Tool" VerticalAlignment="Center"/>
+      <ComboBox Width="100" SelectedItem="{Binding ActiveTool}">
+        <x:String>Tile</x:String>
+        <x:String>Entity</x:String>
+        <x:String>Collider</x:String>
+      </ComboBox>
+      <TextBlock Text="Parallax" VerticalAlignment="Center"/>
+      <NumericUpDown Width="100" Increment="0.1" Value="{Binding ActiveLayerParallax}" />
+    </StackPanel>
+
+    <StackPanel Grid.Row="1" Grid.Column="0" Margin="8" Spacing="6">
+      <TextBlock Text="Tile Palette" FontWeight="Bold"/>
+      <ListBox ItemsSource="{Binding TilePalette}" SelectedItem="{Binding SelectedPaletteTile}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="vm:TileCellViewModel">
+            <TextBlock Text="{Binding Name}" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </StackPanel>
+
+    <Border Grid.Row="1" Grid.Column="1" Margin="8" BorderBrush="Gray" BorderThickness="1">
+      <Canvas x:Name="SceneCanvas"
+              Width="2000"
+              Height="2000"
+              Background="#111111"
+              PointerPressed="OnCanvasPressed"
+              PointerMoved="OnCanvasMoved"
+              PointerReleased="OnCanvasReleased"
+              PointerWheelChanged="OnCanvasWheel">
+        <ItemsControl ItemsSource="{Binding PaintedTiles}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><Canvas/></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ScenePaintedTileViewModel">
+              <Border Height="{Binding Height}"
+                      Width="{Binding Width}"
+                      Background="#4477AA33"
+                      BorderBrush="#99AADD66"
+                      BorderThickness="1"
+                      Canvas.Left="{Binding PixelX}"
+                      Canvas.Top="{Binding PixelY}">
+                <TextBlock Text="{Binding TileIndex}" FontSize="8"/>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <ItemsControl ItemsSource="{Binding Entities}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><Canvas/></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:SceneEntityViewModel">
+              <Ellipse Width="10" Height="10" Fill="#66FFD966"
+                       Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"/>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Canvas>
+    </Border>
+
+    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="8" Text="{Binding StatusText}" />
+  </Grid>
+</UserControl>
