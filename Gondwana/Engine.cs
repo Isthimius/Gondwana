@@ -559,6 +559,23 @@ public sealed class Engine : IDisposable
             return;
 
         IsRunning = false;
+        InvokeShutdownAfterCycleStops();
+    }
+
+    private void InvokeShutdownAfterCycleStops()
+    {
+        var cycleTask = _cycleTask;
+
+        if (cycleTask is not null && !cycleTask.IsCompleted)
+        {
+            cycleTask.ContinueWith(
+                _ => EnginePluginRegistry.InvokeShutdown(this),
+                System.Threading.CancellationToken.None,
+                System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously,
+                System.Threading.Tasks.TaskScheduler.Default);
+            return;
+        }
+
         EnginePluginRegistry.InvokeShutdown(this);
     }
 
