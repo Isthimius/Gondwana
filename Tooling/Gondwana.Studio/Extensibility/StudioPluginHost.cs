@@ -33,36 +33,42 @@ public sealed class StudioPluginHost
 
     public IEnumerable<(string pluginName, Control panel)> GetPluginPanels()
     {
+        var panels = new List<(string pluginName, Control panel)>();
         foreach (var plugin in _plugins.Where(p => p.Enabled))
         {
             try
             {
                 var panel = plugin.Instance.CreatePanel();
                 if (panel is not null)
-                    yield return (plugin.Instance.Name, panel);
+                    panels.Add((plugin.Instance.Name, panel));
             }
             catch (Exception ex)
             {
                 DisablePlugin(plugin, $"CreatePanel threw: {ex.Message}");
             }
         }
+
+        return panels;
     }
 
     public IEnumerable<MenuItem> GetPluginMenuItems()
     {
+        var items = new List<MenuItem>();
         foreach (var plugin in _plugins.Where(p => p.Enabled))
         {
             try
             {
                 var menu = plugin.Instance.CreateMenuItem();
                 if (menu is not null)
-                    yield return menu;
+                    items.Add(menu);
             }
             catch (Exception ex)
             {
                 DisablePlugin(plugin, $"CreateMenuItem threw: {ex.Message}");
             }
         }
+
+        return items;
     }
 
     public void NotifyProjectOpened(string projectPath)

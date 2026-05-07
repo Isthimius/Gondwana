@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Gondwana.Studio.ViewModels;
 
 namespace Gondwana.Studio.Views;
@@ -30,7 +32,7 @@ public partial class TilesheetEditorView : UserControl
             return;
 
         var files = e.Data.GetFiles();
-        var path = files?.FirstOrDefault()?.TryGetLocalPath();
+        var path = (files?.FirstOrDefault() as IStorageFile)?.TryGetLocalPath();
         if (!string.IsNullOrWhiteSpace(path))
             vm.LoadImage(path);
     }

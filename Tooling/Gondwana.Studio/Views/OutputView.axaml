@@ -3,13 +3,12 @@
              xmlns:vm="using:Gondwana.Studio.ViewModels"
              x:Class="Gondwana.Studio.Views.OutputView"
              x:DataType="vm:OutputViewModel">
-  <TextBox IsReadOnly="True"
-           Text="{Binding CombinedText}"
-           AcceptsReturn="True"
-           TextWrapping="Wrap"
-           VerticalScrollBarVisibility="Auto"
-           HorizontalScrollBarVisibility="Auto"
-           FontFamily="Consolas"
-           FontSize="12"
-           Margin="4"/>
+  <ScrollViewer Margin="4">
+    <TextBox IsReadOnly="True"
+             Text="{Binding CombinedText}"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             FontFamily="Consolas"
+             FontSize="12"/>
+  </ScrollViewer>
 </UserControl>

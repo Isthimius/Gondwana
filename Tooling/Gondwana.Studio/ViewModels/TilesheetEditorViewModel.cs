@@ -33,11 +33,9 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
     private int _imageHeight;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(RebuildGridCommand))]
     private int _tileWidth = 16;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(RebuildGridCommand))]
     private int _tileHeight = 16;
 
     [ObservableProperty]

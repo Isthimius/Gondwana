@@ -27,7 +27,7 @@ public static class SceneLoader
 
             var maxX = layerAsset.Tiles.Count == 0 ? 1 : layerAsset.Tiles.Max(t => t.X + 1);
             var maxY = layerAsset.Tiles.Count == 0 ? 1 : layerAsset.Tiles.Max(t => t.Y + 1);
-            var layer = scene.AddLayer(maxX, maxY, metadata.TileWidth, metadata.TileHeight, layerAsset.Parallax);
+            var layer = scene.AddLayer(maxX, maxY, metadata.TileWidth, metadata.TileHeight, 0, layerAsset.Parallax);
             layer.ID = layerAsset.Name;
 
             foreach (var tile in layerAsset.Tiles)
