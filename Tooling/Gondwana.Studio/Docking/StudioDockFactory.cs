@@ -20,11 +20,13 @@ namespace Gondwana.Studio.Docking;
 public sealed class StudioDockFactory : Factory
 {
     private readonly DirectoryPanelViewModel _directoryVm;
+    private readonly OutputViewModel _outputVm;
     private DocumentDock? _documentDock;
 
-    public StudioDockFactory(DirectoryPanelViewModel directoryVm)
+    public StudioDockFactory(DirectoryPanelViewModel directoryVm, OutputViewModel outputVm)
     {
         _directoryVm = directoryVm;
+        _outputVm = outputVm;
     }
 
     public override IRootDock CreateLayout()
@@ -37,14 +39,31 @@ public sealed class StudioDockFactory : Factory
             Context = _directoryVm
         };
 
-        var leftToolDock = new ToolDock
+        var outputTool = new Tool
+        {
+            Id = "Output",
+            Title = "Output",
+            Context = _outputVm
+        };
+
+        var leftToolDock = new ProportionalDock
         {
             Id = "LeftTools",
             Title = "Tools",
             Proportion = 0.22,
             VisibleDockables = CreateList<IDockable>(directoryTool),
             ActiveDockable = directoryTool,
-            Alignment = Alignment.Left,
+            Orientation = Orientation.Vertical
+        };
+
+        var bottomToolDock = new ToolDock
+        {
+            Id = "BottomTools",
+            Title = "BottomTools",
+            Proportion = 0.25,
+            VisibleDockables = CreateList<IDockable>(outputTool),
+            ActiveDockable = outputTool,
+            Alignment = Alignment.Bottom,
             GripMode = GripMode.Visible
         };
 
@@ -59,6 +78,19 @@ public sealed class StudioDockFactory : Factory
         };
 
         // ---- Main horizontal split -----------------------------------------
+        var rightDock = new ProportionalDock
+        {
+            Id = "RightDock",
+            Title = "RightDock",
+            Proportion = double.NaN,
+            Orientation = Orientation.Vertical,
+            VisibleDockables = CreateList<IDockable>(
+                _documentDock,
+                new ProportionalDockSplitter { Id = "RightSplitter" },
+                bottomToolDock
+            )
+        };
+
         var mainLayout = new ProportionalDock
         {
             Id = "Main",
@@ -67,7 +99,7 @@ public sealed class StudioDockFactory : Factory
             VisibleDockables = CreateList<IDockable>(
                 leftToolDock,
                 new ProportionalDockSplitter { Id = "Splitter" },
-                _documentDock
+                rightDock
             )
         };
 
@@ -85,7 +117,8 @@ public sealed class StudioDockFactory : Factory
     {
         ContextLocator = new Dictionary<string, Func<object?>>
         {
-            ["Directory"] = () => _directoryVm
+            ["Directory"] = () => _directoryVm,
+            ["Output"] = () => _outputVm
         };
 
         HostWindowLocator = new Dictionary<string, Func<IHostWindow?>>

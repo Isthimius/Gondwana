@@ -6,6 +6,7 @@ using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Input.Touch;
+using Gondwana.Extensibility;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -65,6 +66,7 @@ public sealed class Engine : IDisposable
     private long _lastCPSSamplingTick;
     private long _lastBackgroundTick = HighResTimer.GetCurrentTick();
     private long _lastForegroundTick = HighResTimer.GetCurrentTick();
+    private long _lastCycleTick = HighResTimer.GetCurrentTick();
 
     private long _grossCyclesThisMeasure = 0;
     private long _netCyclesThisMeasure = 0;
@@ -317,6 +319,8 @@ public sealed class Engine : IDisposable
         else
             UiDispatcher!.Post(() => PostInitialization?.Invoke());
 
+        EnginePluginRegistry.InvokeInitialize(this);
+
         _isInitializing = false;
         _isInitialized = true;
 
@@ -423,6 +427,7 @@ public sealed class Engine : IDisposable
 
         _startTick = HighResTimer.GetCurrentTick();
         _lastCPSSamplingTick = _startTick;
+        _lastCycleTick = _startTick;
 
         _cycleTask = Task.Run(() =>
         {
@@ -492,6 +497,7 @@ public sealed class Engine : IDisposable
 
         _startTick = HighResTimer.GetCurrentTick();
         _lastCPSSamplingTick = _startTick;
+        _lastCycleTick = _startTick;
 
         // _cycleTask is intentionally left null; the caller drives the loop via Tick().
     }
@@ -549,7 +555,11 @@ public sealed class Engine : IDisposable
     /// <seealso cref="IsRunning"/>
     public void Stop()
     {
+        if (!IsRunning)
+            return;
+
         IsRunning = false;
+        EnginePluginRegistry.InvokeShutdown(this);
     }
 
     #region public properties
@@ -764,6 +774,10 @@ public sealed class Engine : IDisposable
         EngineDispatcher.Drain();
 
         long tick = HighResTimer.GetCurrentTick();
+        var deltaMs = HighResTimer.GetDuration(_lastCycleTick, tick) * 1000d;
+        _lastCycleTick = tick;
+
+        EnginePluginRegistry.InvokePreCycle(this, deltaMs);
 
         DoBackgroundTasks(tick);
 
@@ -785,6 +799,8 @@ public sealed class Engine : IDisposable
         // if 0 or negative, sampling is turned off
         if (Configuration.SamplingTimeForCPS > 0)
             CalculateCPS(tick);
+
+        EnginePluginRegistry.InvokePostCycle(this, deltaMs);
     }
 
     private void DoBackgroundTasks(long tick)
