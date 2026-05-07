@@ -22,6 +22,7 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
     private string _metadataPath = string.Empty;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RebuildGridCommand))]
     private string _imagePath = string.Empty;
 
     [ObservableProperty]
@@ -33,9 +34,11 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
     private int _imageHeight;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RebuildGridCommand))]
     private int _tileWidth = 16;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RebuildGridCommand))]
     private int _tileHeight = 16;
 
     [ObservableProperty]
