@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Dock.Model.Core;
 using Gondwana.Studio.ViewModels;
 
 namespace Gondwana.Studio;
@@ -19,6 +20,10 @@ public class ViewLocator : IDataTemplate
         if (param is Control control)
             return control;
 
+        // If Dock passes an IDockable, render its Context instead
+        if (param is IDockable dockable && dockable.Context is not null)
+            param = dockable.Context;
+
         var name = param.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
         var type = Type.GetType(name);
 
@@ -30,6 +35,6 @@ public class ViewLocator : IDataTemplate
 
     public bool Match(object? data)
     {
-        return data is ViewModelBase;
+        return data is ViewModelBase || data is IDockable { Context: ViewModelBase };
     }
 }

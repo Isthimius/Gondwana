@@ -18,6 +18,8 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
 
     public ObservableCollection<TileCellViewModel> TileCells { get; } = [];
 
+    public IEnumerable<TileCellViewModel> NamedTiles => TileCells.Where(t => !string.IsNullOrWhiteSpace(t.Name));
+
     [ObservableProperty]
     private string _metadataPath = string.Empty;
 
@@ -102,6 +104,7 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
             return;
 
         SelectedTile.Name = SelectedTileName.Trim();
+        OnPropertyChanged(nameof(NamedTiles));
     }
 
     [RelayCommand]
@@ -157,6 +160,8 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
         var names = metadata.Tiles.ToDictionary(t => t.Index, t => t.Name);
         foreach (var tile in TileCells)
             tile.Name = names.TryGetValue(tile.Index, out var name) ? name : string.Empty;
+
+        OnPropertyChanged(nameof(NamedTiles));
     }
 
     public void SaveTo(string metadataPath)
@@ -207,5 +212,7 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
                 });
             }
         }
+
+        OnPropertyChanged(nameof(NamedTiles));
     }
 }

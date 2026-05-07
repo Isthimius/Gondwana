@@ -26,4 +26,9 @@ public sealed class SceneColliderViewModel : ViewModelBase
 {
     public Rect Rect { get; set; }
     public Color StrokeColor { get; set; } = Colors.OrangeRed;
+
+    public double X => Rect.X;
+    public double Y => Rect.Y;
+    public double Width => Rect.Width;
+    public double Height => Rect.Height;
 }

@@ -9,7 +9,7 @@
       <TextBlock Text="Name" VerticalAlignment="Center"/>
       <TextBox Width="180" Text="{Binding AnimationName}" />
       <TextBlock Text="Cycle" VerticalAlignment="Center"/>
-      <ComboBox Width="120" SelectedItem="{Binding CycleType}" SelectedIndex="1">
+      <ComboBox Width="120" SelectedItem="{Binding CycleType}">
         <x:String>Once</x:String>
         <x:String>Loop</x:String>
         <x:String>PingPong</x:String>

@@ -150,6 +150,9 @@ public sealed class StudioDockFactory : Factory
             }
         }
 
+        // Register the context so Dock can find it when resolving content
+        ContextLocator[id] = () => context;
+
         var document = new Document
         {
             Id = id,

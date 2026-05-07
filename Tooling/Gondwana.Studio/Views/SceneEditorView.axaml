@@ -73,7 +73,7 @@
             <ItemsPanelTemplate><Canvas/></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
-            <DataTemplate>
+            <DataTemplate x:DataType="vm:SceneColliderViewModel">
               <Border Width="{Binding Width}"
                       Height="{Binding Height}"
                       Background="#33FF4444"

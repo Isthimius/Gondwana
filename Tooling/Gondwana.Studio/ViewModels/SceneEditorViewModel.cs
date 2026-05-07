@@ -86,6 +86,12 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
     [RelayCommand]
     private async Task SaveSceneAsync()
     {
+        if (string.IsNullOrWhiteSpace(TilesheetPath))
+        {
+            StatusText = "A tilesheet must be loaded before saving the scene.";
+            return;
+        }
+
         var saveTarget = await _owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Save Scene",

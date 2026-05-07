@@ -105,7 +105,7 @@ public sealed class StudioPluginHost
     {
         try
         {
-            var loadContext = new AssemblyLoadContext($"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: false);
+            var loadContext = new PluginLoadContext(dllPath);
             var assembly = loadContext.LoadFromAssemblyPath(dllPath);
             var pluginTypes = assembly.GetTypes()
                 .Where(t => !t.IsAbstract && typeof(IStudioPlugin).IsAssignableFrom(t))
@@ -136,6 +136,29 @@ public sealed class StudioPluginHost
         catch (Exception ex)
         {
             _log($"[Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
+        }
+    }
+
+    private sealed class PluginLoadContext : AssemblyLoadContext
+    {
+        private readonly AssemblyDependencyResolver _resolver;
+
+        public PluginLoadContext(string dllPath)
+            : base(name: $"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true)
+        {
+            _resolver = new AssemblyDependencyResolver(dllPath);
+        }
+
+        protected override Assembly? Load(AssemblyName assemblyName)
+        {
+            var path = _resolver.ResolveAssemblyToPath(assemblyName);
+            return path is not null ? LoadFromAssemblyPath(path) : null;
+        }
+
+        protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
+        {
+            var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
+            return path is not null ? LoadUnmanagedDllFromPath(path) : IntPtr.Zero;
         }
     }
 

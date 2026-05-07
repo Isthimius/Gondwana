@@ -163,18 +163,20 @@ public class Animator : IDisposable
         if (CurrentCycle is null)
             return;
 
+        var throttle = GetThrottleForCurrentFrame();
+
         // if throttle is 0, stop the animation so loop doesn't hang
-        if (CurrentCycle._throttle == 0)
+        if (throttle == 0)
         {
             StopAnimation();
             return;
         }
 
         //if "throttle" time has passed
-        while (currentTick >= LastTick + CurrentCycle._throttle)
+        while (currentTick >= LastTick + throttle)
         {
             // capture the LastTick value
-            LastTick += CurrentCycle._throttle;
+            LastTick += throttle;
 
             // do not change image if animation is paused
             if (parent.PauseAnimation)
@@ -188,8 +190,27 @@ public class Animator : IDisposable
 
             // if terminating cycle is done, stop the animation
             if (CurrentCycle.Sequence.CycleFinished)
+            {
                 StopAnimation();
+                return;
+            }
+
+            // recalculate throttle for the new current frame
+            throttle = GetThrottleForCurrentFrame();
+            if (throttle == 0)
+            {
+                StopAnimation();
+                return;
+            }
         }
+    }
+
+    private long GetThrottleForCurrentFrame()
+    {
+        var frameDuration = parent.CurrentFrame.DurationSeconds;
+        return frameDuration > 0
+            ? (long)(frameDuration * HighResTimer.TicksPerSecond)
+            : CurrentCycle._throttle;
     }
 
     #endregion public methods
