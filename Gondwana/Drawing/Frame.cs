@@ -32,7 +32,7 @@ public struct Frame
     /// The duration in seconds this frame should display. A value of 0 means
     /// the owning <see cref="Gondwana.Drawing.Animation.Cycle"/>'s <c>ThrottleTime</c> is used instead.
     /// </summary>
-    public double DurationSeconds;
+    public readonly double DurationSeconds;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
