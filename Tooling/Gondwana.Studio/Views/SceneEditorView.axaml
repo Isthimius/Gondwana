@@ -67,6 +67,23 @@
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
+
+        <ItemsControl ItemsSource="{Binding Colliders}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><Canvas/></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border Width="{Binding Width}"
+                      Height="{Binding Height}"
+                      Background="#33FF4444"
+                      BorderBrush="#CCFF4444"
+                      BorderThickness="1"
+                      Canvas.Left="{Binding X}"
+                      Canvas.Top="{Binding Y}" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
       </Canvas>
     </Border>
 
