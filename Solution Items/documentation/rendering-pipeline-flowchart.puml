@@ -73,14 +73,14 @@ repeat
                         endif
                     endif
 
-                    repeat : **For each View**
+                    repeat : **For each View**;
                         :RenderContext.Push(view, tick);
                         :ForceRefresh all View-based DirectDrawings;
                         :CollectDirtyScreenArea(view)\n— translate RefreshQueue world rects\n  to screen rects for this view;
                         :Clip canvas to viewport\n(exclude higher Z-order views);
                         :PreclearScreenAreas\n— fill dirty rects with ClearColor;
 
-                        repeat : **For each visible SceneLayer (back→front)**
+                        repeat : **For each visible SceneLayer (back→front)**;
                             :RenderLayerDirtyRegions(view, layer)\n— GetDrawablesInWorldRect;\n— BitmapBackbuffer.DrawDrawables\n  → DrawTileFrame(tile)\n  → SKCanvas.DrawBitmap (SKBitmap);
                         repeat while (more layers?)
 
@@ -196,13 +196,13 @@ if (Scene has visible layers?) then (no)
     :ClearRect (full backbuffer);
     :Scene.FullRefreshNeeded = false;
 else (yes)
-    repeat : **For each View**
+    repeat : **For each View**;
         :RenderContext.Push(view, tick);
         :ForceRefresh all View-based DirectDrawings;
         :Clip canvas to viewport;
         :GpuBackbuffer.ClearRect(viewport)\n— fill with ClearColor on GPU canvas;
 
-        repeat : **For each visible SceneLayer (back→front)**
+        repeat : **For each visible SceneLayer (back→front)**;
             :Compute layer world rect visible\nthrough this viewport;
             :GetDrawablesInWorldRect\n→ GpuBackbuffer.DrawDrawables\n→ DrawTileFrame(tile)\n→ SKCanvas.DrawImage (GPU texture);
         repeat while (more layers?)
