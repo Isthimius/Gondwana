@@ -118,6 +118,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentat
 		Solution Items\documentation\architecture-diagram.puml = Solution Items\documentation\architecture-diagram.puml
 		Solution Items\documentation\component-diagram.puml = Solution Items\documentation\component-diagram.puml
 		Solution Items\documentation\core-class-diagram.puml = Solution Items\documentation\core-class-diagram.puml
+		Solution Items\documentation\rendering-pipeline-flowchart-bitmap-backbuffer.puml = Solution Items\documentation\rendering-pipeline-flowchart-bitmap-backbuffer.puml
+		Solution Items\documentation\rendering-pipeline-flowchart-gpu-backbuffer.puml = Solution Items\documentation\rendering-pipeline-flowchart-gpu-backbuffer.puml
+		Solution Items\documentation\rendering-pipeline-flowchart.puml = Solution Items\documentation\rendering-pipeline-flowchart.puml
 		Solution Items\documentation\rendering-pipeline-sequence.puml = Solution Items\documentation\rendering-pipeline-sequence.puml
 	EndProjectSection
 EndProject
