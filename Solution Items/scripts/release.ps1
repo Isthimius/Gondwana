@@ -126,7 +126,7 @@ else {
     New-Item -ItemType File -Path $tempChangelog -Force | Out-Null
 }
 
-& git-cliff --config $CliffConfigPath --unreleased --tag $tagName --prepend $tempChangelog
+& git-cliff --config $CliffConfigPath --repository $repoRoot --unreleased --tag $tagName --prepend $tempChangelog
 if ($LASTEXITCODE -ne 0) {
     throw "git-cliff failed while generating release notes preview."
 }
@@ -170,11 +170,11 @@ $changelogIsNew = (-not (Test-Path $ChangelogPath)) -or ((Get-Item $ChangelogPat
 
 if ($changelogIsNew) {
     # First-ever changelog: use --output so the "# Changelog" header is written.
-    & git-cliff --config $CliffConfigPath --tag $tagName --output $ChangelogPath
+    & git-cliff --config $CliffConfigPath --repository $repoRoot --tag $tagName --output $ChangelogPath
 }
 else {
     # Existing changelog: prepend only the new section body, preserving history.
-    & git-cliff --config $CliffConfigPath --unreleased --tag $tagName --prepend $ChangelogPath
+    & git-cliff --config $CliffConfigPath --repository $repoRoot --unreleased --tag $tagName --prepend $ChangelogPath
 }
 if ($LASTEXITCODE -ne 0) {
     throw "git-cliff failed while updating $ChangelogPath."
