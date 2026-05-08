@@ -6,8 +6,14 @@ using Gondwana.Studio.ViewModels;
 
 namespace Gondwana.Studio.Views;
 
+/// <summary>
+/// TilesheetEditorView.
+/// </summary>
 public partial class TilesheetEditorView : UserControl
 {
+    /// <summary>
+    /// TilesheetEditorView.
+    /// </summary>
     public TilesheetEditorView()
     {
         InitializeComponent();

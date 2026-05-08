@@ -12,6 +12,9 @@ using Newtonsoft.Json;
 
 namespace Gondwana.Studio.ViewModels;
 
+/// <summary>
+/// AnimationEditorViewModel.
+/// </summary>
 public sealed partial class AnimationEditorViewModel : ViewModelBase
 {
     private readonly Window _owner;
@@ -20,7 +23,13 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
     private int _previewDirection = 1;
     private DateTime _lastFrameTime;
 
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public ObservableCollection<TileCellViewModel> TilePalette { get; } = [];
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public ObservableCollection<AnimationFrameViewModel> Frames { get; } = [];
 
     [ObservableProperty]
@@ -47,6 +56,10 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isPreviewPlaying;
 
+    /// <summary>
+    /// AnimationEditorViewModel.
+    /// </summary>
+    /// <param name="owner">owner.</param>
     public AnimationEditorViewModel(Window owner)
     {
         _owner = owner;
@@ -175,6 +188,10 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
         StatusText = $"Saved animation: {path}";
     }
 
+    /// <summary>
+    /// LoadTilesheet.
+    /// </summary>
+    /// <param name="tilesheetMetadataPath">tilesheetMetadataPath.</param>
     public void LoadTilesheet(string tilesheetMetadataPath)
     {
         TilesheetPath = tilesheetMetadataPath;
@@ -203,6 +220,10 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
         StatusText = $"Loaded {tileCount} tiles from {Path.GetFileName(tilesheetMetadataPath)}";
     }
 
+    /// <summary>
+    /// LoadAnimation.
+    /// </summary>
+    /// <param name="animationPath">animationPath.</param>
     public void LoadAnimation(string animationPath)
     {
         var animation = AnimationAssetLoader.Load(animationPath);
@@ -226,6 +247,10 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
         StatusText = $"Loaded animation: {Path.GetFileName(animationPath)}";
     }
 
+    /// <summary>
+    /// SaveTo.
+    /// </summary>
+    /// <param name="path">path.</param>
     public void SaveTo(string path)
     {
         var animationDir = Path.GetDirectoryName(path) ?? string.Empty;

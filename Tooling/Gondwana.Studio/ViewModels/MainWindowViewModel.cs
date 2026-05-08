@@ -9,13 +9,34 @@ namespace Gondwana.Studio.ViewModels;
 /// </summary>
 public sealed partial class MainWindowViewModel : ViewModelBase
 {
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public StudioDockFactory Factory { get; }
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public IRootDock Layout { get; }
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public DirectoryPanelViewModel DirectoryPanel { get; }
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public OutputViewModel Output { get; }
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public StudioPluginHost PluginHost { get; }
+    /// <summary>
+    /// Gets or sets set.
+    /// </summary>
     public string? CurrentProjectPath { get; private set; }
 
+    /// <summary>
+    /// MainWindowViewModel.
+    /// </summary>
     public MainWindowViewModel()
     {
         DirectoryPanel = new DirectoryPanelViewModel();
@@ -32,11 +53,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Opens a document tab. Called from code-behind when the owner Window is available.
     /// </summary>
+    /// <param name="id">id.</param>
+    /// <param name="title">title.</param>
+    /// <param name="context">context.</param>
     public void OpenDocumentTab(string id, string title, object context)
     {
         Factory.OpenDocument(id, title, context);
     }
 
+    /// <summary>
+    /// SetProject.
+    /// </summary>
+    /// <param name="projectPath">projectPath.</param>
     public void SetProject(string projectPath)
     {
         if (!string.IsNullOrWhiteSpace(CurrentProjectPath) && !string.Equals(CurrentProjectPath, projectPath, StringComparison.Ordinal))
@@ -47,6 +75,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Output.Log($"Project opened: {projectPath}");
     }
 
+    /// <summary>
+    /// CloseProject.
+    /// </summary>
     public void CloseProject()
     {
         if (CurrentProjectPath is null)

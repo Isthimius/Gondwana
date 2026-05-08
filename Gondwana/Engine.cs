@@ -602,6 +602,7 @@ public sealed class Engine : IDisposable
     /// This dispatcher allows external code to safely post work items that should execute
     /// on the engine's dedicated background thread, ensuring thread-safe access to engine state.
     /// </remarks>
+    /// <returns>The result.</returns>
     public IEngineDispatcher EngineDispatcher { get; } = new EngineDispatcher();
 
     /// <summary>

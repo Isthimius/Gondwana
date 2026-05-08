@@ -4,8 +4,16 @@ using Newtonsoft.Json;
 
 namespace Gondwana.StudioAssets;
 
+/// <summary>
+/// AnimationAssetLoader.
+/// </summary>
 public static class AnimationAssetLoader
 {
+    /// <summary>
+    /// Load.
+    /// </summary>
+    /// <param name="animationPath">animationPath.</param>
+    /// <returns>The result.</returns>
     public static AnimationAsset Load(string animationPath)
     {
         var json = File.ReadAllText(animationPath);
@@ -13,6 +21,11 @@ public static class AnimationAssetLoader
             ?? throw new InvalidDataException($"Unable to parse animation asset: {animationPath}");
     }
 
+    /// <summary>
+    /// ToFrameSequence.
+    /// </summary>
+    /// <param name="animationPath">animationPath.</param>
+    /// <returns>The result.</returns>
     public static FrameSequence ToFrameSequence(string animationPath)
     {
         var asset = Load(animationPath);
@@ -43,6 +56,11 @@ public static class AnimationAssetLoader
         return sequence;
     }
 
+    /// <summary>
+    /// ToCycle.
+    /// </summary>
+    /// <param name="animationPath">animationPath.</param>
+    /// <returns>The result.</returns>
     public static Cycle ToCycle(string animationPath)
     {
         var asset = Load(animationPath);

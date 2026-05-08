@@ -1,5 +1,8 @@
 namespace Gondwana.Extensibility;
 
+/// <summary>
+/// IEnginePlugin.
+/// </summary>
 public interface IEnginePlugin
 {
     string Name { get; }

@@ -7,13 +7,23 @@ using System.IO;
 
 namespace Gondwana.Studio.Views;
 
+/// <summary>
+/// MainWindow.
+/// </summary>
 public partial class MainWindow : Window
 {
+    /// <summary>
+    /// MainWindow.
+    /// </summary>
     public MainWindow()
     {
         InitializeComponent();
     }
 
+    /// <summary>
+    /// OnDataContextChanged.
+    /// </summary>
+    /// <param name="e">e.</param>
     protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);

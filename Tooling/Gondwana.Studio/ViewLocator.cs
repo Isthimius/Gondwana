@@ -9,6 +9,9 @@ using Gondwana.Studio.ViewModels;
 
 namespace Gondwana.Studio;
 
+/// <summary>
+/// Resolves view-model and dockable content objects to Avalonia views.
+/// </summary>
 [RequiresUnreferencedCode(
     "Default implementation of ViewLocator involves reflection which may be trimmed away.",
     Url = "https://docs.avaloniaui.net/docs/concepts/view-locator")]
@@ -17,6 +20,11 @@ public class ViewLocator : IDataTemplate
     private const string DockableContentPropertyName = "Content";
     private static readonly ConcurrentDictionary<(Type Type, string Property), PropertyInfo?> PropertyCache = new();
 
+    /// <summary>
+    /// Build.
+    /// </summary>
+    /// <param name="param">param.</param>
+    /// <returns>The result.</returns>
     public Control? Build(object? param)
     {
         if (param is null)
@@ -41,6 +49,11 @@ public class ViewLocator : IDataTemplate
         return new TextBlock { Text = "Not Found: " + name };
     }
 
+    /// <summary>
+    /// Match.
+    /// </summary>
+    /// <param name="data">data.</param>
+    /// <returns>The result.</returns>
     public bool Match(object? data)
     {
         if (data is null)

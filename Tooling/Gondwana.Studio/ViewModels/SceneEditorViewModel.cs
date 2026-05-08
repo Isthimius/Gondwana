@@ -12,13 +12,28 @@ using Newtonsoft.Json;
 
 namespace Gondwana.Studio.ViewModels;
 
+/// <summary>
+/// SceneEditorViewModel.
+/// </summary>
 public sealed partial class SceneEditorViewModel : ViewModelBase
 {
     private readonly Window _owner;
 
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public ObservableCollection<TileCellViewModel> TilePalette { get; } = [];
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public ObservableCollection<ScenePaintedTileViewModel> PaintedTiles { get; } = [];
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public ObservableCollection<SceneEntityViewModel> Entities { get; } = [];
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public ObservableCollection<SceneColliderViewModel> Colliders { get; } = [];
 
     [ObservableProperty]
@@ -57,6 +72,10 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
     [ObservableProperty]
     private string _statusText = "Scene editor ready.";
 
+    /// <summary>
+    /// SceneEditorViewModel.
+    /// </summary>
+    /// <param name="owner">owner.</param>
     public SceneEditorViewModel(Window owner)
     {
         _owner = owner;
@@ -115,6 +134,10 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
         StatusText = $"Saved scene: {path}";
     }
 
+    /// <summary>
+    /// LoadTilesheet.
+    /// </summary>
+    /// <param name="tilesheetMetadataPath">tilesheetMetadataPath.</param>
     public void LoadTilesheet(string tilesheetMetadataPath)
     {
         var metadata = TilesheetMetadataLoader.Load(tilesheetMetadataPath);
@@ -140,6 +163,11 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// ApplyToolAt.
+    /// </summary>
+    /// <param name="worldX">worldX.</param>
+    /// <param name="worldY">worldY.</param>
     public void ApplyToolAt(double worldX, double worldY)
     {
         if (ActiveTool == "Tile")
@@ -178,6 +206,10 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// AddCollider.
+    /// </summary>
+    /// <param name="worldRect">worldRect.</param>
     public void AddCollider(Rect worldRect)
     {
         if (worldRect.Width <= 0 || worldRect.Height <= 0)
@@ -186,6 +218,10 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
         Colliders.Add(new SceneColliderViewModel { Rect = worldRect });
     }
 
+    /// <summary>
+    /// LoadScene.
+    /// </summary>
+    /// <param name="scenePath">scenePath.</param>
     public void LoadScene(string scenePath)
     {
         var scene = SceneLoader.LoadAsset(scenePath);
@@ -226,6 +262,10 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
             Colliders.Add(new SceneColliderViewModel { Rect = new Rect(collider.X, collider.Y, collider.Width, collider.Height) });
     }
 
+    /// <summary>
+    /// SaveTo.
+    /// </summary>
+    /// <param name="scenePath">scenePath.</param>
     public void SaveTo(string scenePath)
     {
         var layer = new SceneLayerAsset

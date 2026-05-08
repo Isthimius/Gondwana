@@ -2,6 +2,9 @@ using Avalonia.Controls;
 
 namespace Gondwana.Studio.Extensibility;
 
+/// <summary>
+/// IStudioPlugin.
+/// </summary>
 public interface IStudioPlugin
 {
     string Name { get; }

@@ -66,6 +66,7 @@ public struct Frame
     /// Gets the SkiaSharp bitmap for this frame at the specified tile coordinates.
     /// Returns <see langword="null"/> if the tilesheet is not available.
     /// </summary>
+    /// <returns>The frame bitmap, or <see langword="null"/>.</returns>
     [JsonIgnore]
     public readonly SKBitmap? SkBitmap => Tilesheet?.GetBitmap(XTile, YTile);
 
@@ -73,6 +74,7 @@ public struct Frame
     /// Gets the SkiaSharp image for this frame at the specified tile coordinates.
     /// Returns <see langword="null"/> if the tilesheet is not available.
     /// </summary>
+    /// <returns>The frame image, or <see langword="null"/>.</returns>
     [JsonIgnore]
     public readonly SKImage? SkImage => Tilesheet?.GetImage(XTile, YTile);
 

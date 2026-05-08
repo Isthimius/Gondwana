@@ -4,18 +4,32 @@ using Avalonia.Controls;
 
 namespace Gondwana.Studio.Extensibility;
 
+/// <summary>
+/// StudioPluginHost.
+/// </summary>
 public sealed class StudioPluginHost
 {
     private readonly List<LoadedPlugin> _plugins = [];
     private readonly Action<string> _log;
 
+    /// <summary>
+    /// StudioPluginHost.
+    /// </summary>
+    /// <param name="log">log.</param>
     public StudioPluginHost(Action<string> log)
     {
         _log = log;
     }
 
+    /// <summary>
+    /// ToArray.
+    /// </summary>
+    /// <returns>The result.</returns>
     public IReadOnlyList<IStudioPlugin> Plugins => _plugins.Where(p => p.Enabled).Select(p => p.Instance).ToArray();
 
+    /// <summary>
+    /// DiscoverAndLoad.
+    /// </summary>
     public void DiscoverAndLoad()
     {
         var baseDirectory = AppContext.BaseDirectory;
@@ -31,6 +45,10 @@ public sealed class StudioPluginHost
             LoadAssemblyPlugins(dllPath);
     }
 
+    /// <summary>
+    /// GetPluginPanels.
+    /// </summary>
+    /// <returns>The result.</returns>
     public IEnumerable<(string pluginName, Control panel)> GetPluginPanels()
     {
         var panels = new List<(string pluginName, Control panel)>();
@@ -51,6 +69,10 @@ public sealed class StudioPluginHost
         return panels;
     }
 
+    /// <summary>
+    /// GetPluginMenuItems.
+    /// </summary>
+    /// <returns>The result.</returns>
     public IEnumerable<MenuItem> GetPluginMenuItems()
     {
         var items = new List<MenuItem>();
@@ -71,6 +93,10 @@ public sealed class StudioPluginHost
         return items;
     }
 
+    /// <summary>
+    /// NotifyProjectOpened.
+    /// </summary>
+    /// <param name="projectPath">projectPath.</param>
     public void NotifyProjectOpened(string projectPath)
     {
         foreach (var plugin in _plugins.Where(p => p.Enabled))
@@ -86,6 +112,9 @@ public sealed class StudioPluginHost
         }
     }
 
+    /// <summary>
+    /// NotifyProjectClosed.
+    /// </summary>
     public void NotifyProjectClosed()
     {
         foreach (var plugin in _plugins.Where(p => p.Enabled))
@@ -143,18 +172,32 @@ public sealed class StudioPluginHost
     {
         private readonly AssemblyDependencyResolver _resolver;
 
+        /// <summary>
+        /// PluginLoadContext.
+        /// </summary>
+        /// <param name="dllPath">dllPath.</param>
         public PluginLoadContext(string dllPath)
             : base(name: $"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true)
         {
             _resolver = new AssemblyDependencyResolver(dllPath);
         }
 
+        /// <summary>
+        /// Load.
+        /// </summary>
+        /// <param name="assemblyName">assemblyName.</param>
+        /// <returns>The result.</returns>
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             var path = _resolver.ResolveAssemblyToPath(assemblyName);
             return path is not null ? LoadFromAssemblyPath(path) : null;
         }
 
+        /// <summary>
+        /// LoadUnmanagedDll.
+        /// </summary>
+        /// <param name="unmanagedDllName">unmanagedDllName.</param>
+        /// <returns>The result.</returns>
         protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
         {
             var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
@@ -170,6 +213,12 @@ public sealed class StudioPluginHost
 
     private sealed class LoadedPlugin
     {
+        /// <summary>
+        /// LoadedPlugin.
+        /// </summary>
+        /// <param name="instance">instance.</param>
+        /// <param name="loadContext">loadContext.</param>
+        /// <param name="sourcePath">sourcePath.</param>
         public LoadedPlugin(IStudioPlugin instance, AssemblyLoadContext loadContext, string sourcePath)
         {
             Instance = instance;
@@ -177,9 +226,21 @@ public sealed class StudioPluginHost
             SourcePath = sourcePath;
         }
 
+        /// <summary>
+        /// Gets get.
+        /// </summary>
         public IStudioPlugin Instance { get; }
+        /// <summary>
+        /// Gets get.
+        /// </summary>
         public AssemblyLoadContext LoadContext { get; }
+        /// <summary>
+        /// Gets get.
+        /// </summary>
         public string SourcePath { get; }
+        /// <summary>
+        /// Gets or sets true.
+        /// </summary>
         public bool Enabled { get; set; } = true;
     }
 }

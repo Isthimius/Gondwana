@@ -4,8 +4,16 @@ using Newtonsoft.Json;
 
 namespace Gondwana.StudioAssets;
 
+/// <summary>
+/// TilesheetMetadataLoader.
+/// </summary>
 public static class TilesheetMetadataLoader
 {
+    /// <summary>
+    /// Load.
+    /// </summary>
+    /// <param name="metadataPath">metadataPath.</param>
+    /// <returns>The result.</returns>
     public static TilesheetMetadataAsset Load(string metadataPath)
     {
         var json = File.ReadAllText(metadataPath);
@@ -13,6 +21,11 @@ public static class TilesheetMetadataLoader
             ?? throw new InvalidDataException($"Unable to parse tilesheet metadata: {metadataPath}");
     }
 
+    /// <summary>
+    /// LoadAndRegisterTilesheet.
+    /// </summary>
+    /// <param name="metadataPath">metadataPath.</param>
+    /// <returns>The result.</returns>
     public static Tilesheet LoadAndRegisterTilesheet(string metadataPath)
     {
         var metadata = Load(metadataPath);

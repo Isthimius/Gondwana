@@ -6,6 +6,9 @@ using Gondwana.Studio.ViewModels;
 
 namespace Gondwana.Studio.Views;
 
+/// <summary>
+/// SceneEditorView.
+/// </summary>
 public partial class SceneEditorView : UserControl
 {
     private const double ZoomSensitivity = 0.1;
@@ -17,6 +20,9 @@ public partial class SceneEditorView : UserControl
     private Point _lastPointer;
     private Point _colliderStart;
 
+    /// <summary>
+    /// SceneEditorView.
+    /// </summary>
     public SceneEditorView()
     {
         InitializeComponent();

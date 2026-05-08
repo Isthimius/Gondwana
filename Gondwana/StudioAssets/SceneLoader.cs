@@ -5,8 +5,16 @@ using Newtonsoft.Json;
 
 namespace Gondwana.StudioAssets;
 
+/// <summary>
+/// SceneLoader.
+/// </summary>
 public static class SceneLoader
 {
+    /// <summary>
+    /// LoadAsset.
+    /// </summary>
+    /// <param name="scenePath">scenePath.</param>
+    /// <returns>The result.</returns>
     public static SceneAsset LoadAsset(string scenePath)
     {
         var json = File.ReadAllText(scenePath);
@@ -14,6 +22,11 @@ public static class SceneLoader
             ?? throw new InvalidDataException($"Unable to parse scene asset: {scenePath}");
     }
 
+    /// <summary>
+    /// LoadScene.
+    /// </summary>
+    /// <param name="scenePath">scenePath.</param>
+    /// <returns>The result.</returns>
     public static Scene LoadScene(string scenePath)
     {
         var sceneAsset = LoadAsset(scenePath);

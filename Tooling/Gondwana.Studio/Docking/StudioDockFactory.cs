@@ -23,12 +23,21 @@ public sealed class StudioDockFactory : Factory
     private readonly OutputViewModel _outputVm;
     private DocumentDock? _documentDock;
 
+    /// <summary>
+    /// StudioDockFactory.
+    /// </summary>
+    /// <param name="directoryVm">directoryVm.</param>
+    /// <param name="outputVm">outputVm.</param>
     public StudioDockFactory(DirectoryPanelViewModel directoryVm, OutputViewModel outputVm)
     {
         _directoryVm = directoryVm;
         _outputVm = outputVm;
     }
 
+    /// <summary>
+    /// CreateLayout.
+    /// </summary>
+    /// <returns>The result.</returns>
     public override IRootDock CreateLayout()
     {
         // ---- Directory tool ------------------------------------------------
@@ -113,6 +122,10 @@ public sealed class StudioDockFactory : Factory
         return rootDock;
     }
 
+    /// <summary>
+    /// InitLayout.
+    /// </summary>
+    /// <param name="layout">layout.</param>
     public override void InitLayout(IDockable layout)
     {
         ContextLocator = new Dictionary<string, Func<object?>>
@@ -132,6 +145,10 @@ public sealed class StudioDockFactory : Factory
     }
 
     /// <summary>Opens a new document tab in the document dock area.</summary>
+    /// <param name="id">id.</param>
+    /// <param name="title">title.</param>
+    /// <param name="context">context.</param>
+    /// <returns>The result.</returns>
     public Document? OpenDocument(string id, string title, object context)
     {
         if (_documentDock is null) return null;

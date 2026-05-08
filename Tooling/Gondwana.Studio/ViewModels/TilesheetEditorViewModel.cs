@@ -12,12 +12,21 @@ using Newtonsoft.Json;
 
 namespace Gondwana.Studio.ViewModels;
 
+/// <summary>
+/// TilesheetEditorViewModel.
+/// </summary>
 public sealed partial class TilesheetEditorViewModel : ViewModelBase
 {
     private readonly Window _owner;
 
+    /// <summary>
+    /// Gets get.
+    /// </summary>
     public ObservableCollection<TileCellViewModel> TileCells { get; } = [];
 
+    /// <summary>
+    /// Gets t.
+    /// </summary>
     public IEnumerable<TileCellViewModel> NamedTiles => TileCells.Where(t => !string.IsNullOrWhiteSpace(t.Name));
 
     [ObservableProperty]
@@ -55,9 +64,19 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
     [ObservableProperty]
     private string _statusText = "No tilesheet loaded.";
 
+    /// <summary>
+    /// Gets ImageWidth.
+    /// </summary>
     public double CanvasWidth => ImageWidth;
+    /// <summary>
+    /// Gets ImageHeight.
+    /// </summary>
     public double CanvasHeight => ImageHeight;
 
+    /// <summary>
+    /// TilesheetEditorViewModel.
+    /// </summary>
+    /// <param name="owner">owner.</param>
     public TilesheetEditorViewModel(Window owner)
     {
         _owner = owner;
@@ -136,6 +155,10 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
         StatusText = $"Saved metadata: {MetadataPath}";
     }
 
+    /// <summary>
+    /// LoadImage.
+    /// </summary>
+    /// <param name="path">path.</param>
     public void LoadImage(string path)
     {
         using var stream = File.OpenRead(path);
@@ -147,6 +170,10 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
         StatusText = $"Loaded image: {Path.GetFileName(path)}";
     }
 
+    /// <summary>
+    /// LoadMetadata.
+    /// </summary>
+    /// <param name="metadataPath">metadataPath.</param>
     public void LoadMetadata(string metadataPath)
     {
         var metadata = TilesheetMetadataLoader.Load(metadataPath);
@@ -164,6 +191,10 @@ public sealed partial class TilesheetEditorViewModel : ViewModelBase
         OnPropertyChanged(nameof(NamedTiles));
     }
 
+    /// <summary>
+    /// SaveTo.
+    /// </summary>
+    /// <param name="metadataPath">metadataPath.</param>
     public void SaveTo(string metadataPath)
     {
         var metadataDir = Path.GetDirectoryName(metadataPath) ?? string.Empty;

@@ -2,6 +2,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Extensibility;
 
+/// <summary>
+/// EnginePluginRegistry.
+/// </summary>
 public static class EnginePluginRegistry
 {
     private static readonly object _lock = new();
@@ -9,6 +12,9 @@ public static class EnginePluginRegistry
     private static readonly HashSet<IEnginePlugin> _disabledPlugins = [];
     private static IEnginePlugin[] _snapshot = [];
 
+    /// <summary>
+    /// Gets a thread-safe snapshot of all currently registered plugins.
+    /// </summary>
     public static IReadOnlyList<IEnginePlugin> All
     {
         get
@@ -18,6 +24,10 @@ public static class EnginePluginRegistry
         }
     }
 
+    /// <summary>
+    /// Register.
+    /// </summary>
+    /// <param name="plugin">plugin.</param>
     public static void Register(IEnginePlugin plugin)
     {
         ArgumentNullException.ThrowIfNull(plugin);
@@ -33,6 +43,10 @@ public static class EnginePluginRegistry
         }
     }
 
+    /// <summary>
+    /// Unregister.
+    /// </summary>
+    /// <param name="plugin">plugin.</param>
     public static void Unregister(IEnginePlugin plugin)
     {
         ArgumentNullException.ThrowIfNull(plugin);
