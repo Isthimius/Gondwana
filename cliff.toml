@@ -24,8 +24,9 @@ body = """
 
 {% endfor %}
 {% if previous.version %}Full Changelog: https://github.com/Isthimius/Gondwana/compare/{{ previous.version }}...{{ version }}{% endif %}
+
 """
-trim = true
+trim = false
 postprocessors = []
 
 [git]
