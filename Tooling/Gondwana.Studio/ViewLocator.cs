@@ -14,6 +14,7 @@ namespace Gondwana.Studio;
     Url = "https://docs.avaloniaui.net/docs/concepts/view-locator")]
 public class ViewLocator : IDataTemplate
 {
+    private const string DockableContentPropertyName = "Content";
     private static readonly ConcurrentDictionary<(Type Type, string Property), PropertyInfo?> PropertyCache = new();
 
     public Control? Build(object? param)
@@ -55,7 +56,8 @@ public class ViewLocator : IDataTemplate
             if (dockable.Context is not null)
                 return dockable.Context;
 
-            if (TryGetPropertyValue(dockable, "Content", out var content))
+            // Dock wrappers can expose nested payload via a runtime "Content" property.
+            if (TryGetPropertyValue(dockable, DockableContentPropertyName, out var content) && content is not null)
                 return content!;
         }
 
@@ -75,6 +77,6 @@ public class ViewLocator : IDataTemplate
         }
 
         value = property.GetValue(instance);
-        return value is not null;
+        return true;
     }
 }
