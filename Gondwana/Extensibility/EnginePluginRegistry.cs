@@ -51,6 +51,12 @@ public static class EnginePluginRegistry
     internal static void InvokePreCycle(Engine engine, double deltaMs) =>
         Invoke(engine, p => p.OnPreCycle(engine, deltaMs), "OnPreCycle");
 
+    internal static void InvokePreFrameRender(Engine engine, double deltaMs) =>
+        Invoke(engine, p => p.OnPreFrameRender(engine, deltaMs), "OnPreFrameRender");
+
+    internal static void InvokePostFrameRender(Engine engine, double deltaMs) =>
+        Invoke(engine, p => p.OnPostFrameRender(engine, deltaMs), "OnPostFrameRender");
+
     internal static void InvokePostCycle(Engine engine, double deltaMs) =>
         Invoke(engine, p => p.OnPostCycle(engine, deltaMs), "OnPostCycle");
 

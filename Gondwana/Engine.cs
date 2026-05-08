@@ -791,7 +791,7 @@ public sealed class Engine : IDisposable
         EngineDispatcher.Drain();
 
         long tick = HighResTimer.GetCurrentTick();
-        var deltaMs = HighResTimer.GetDuration(_lastCycleTick, tick) * 1000d;
+        var deltaMs = HighResTimer.GetDuration(_lastCycleTick, tick);
         _lastCycleTick = tick;
 
         EnginePluginRegistry.InvokePreCycle(this, deltaMs);
@@ -803,7 +803,11 @@ public sealed class Engine : IDisposable
         if ((Configuration.TargetFPS <= 0)
             || (tick - _lastForegroundTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS)
         {
+            EnginePluginRegistry.InvokePreFrameRender(this, deltaMs);
+
             DoForegroundTasks(tick);
+
+            EnginePluginRegistry.InvokePostFrameRender(this, deltaMs);
 
             // save time of this last tick; increment CPS counter
             _lastForegroundTick = tick;
