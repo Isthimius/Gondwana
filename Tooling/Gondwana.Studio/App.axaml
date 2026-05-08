@@ -11,6 +11,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Dock.Avalonia.Themes.Fluent/Presets/Ide/Default.axaml" />
                 <ResourceDictionary>
                     <ControlRecycling x:Key="ControlRecyclingKey" />
                 </ResourceDictionary>

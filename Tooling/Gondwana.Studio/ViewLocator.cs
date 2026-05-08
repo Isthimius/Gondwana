@@ -17,24 +17,57 @@ public class ViewLocator : IDataTemplate
         if (param is null)
             return null;
 
-        if (param is Control control)
+        var source = ResolveSource(param);
+
+        if (source is Control control)
             return control;
 
-        // If Dock passes an IDockable, render its Context instead
-        if (param is IDockable dockable && dockable.Context is not null)
-            param = dockable.Context;
-
-        var name = param.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
+        var name = source.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
         var type = Type.GetType(name);
 
-        if (type != null)
-            return (Control)Activator.CreateInstance(type)!;
+        if (type is not null && Activator.CreateInstance(type) is Control view)
+        {
+            // Ensure the generated view binds to the resolved source (e.g. dockable.Context)
+            // rather than the outer dockable wrapper object.
+            view.DataContext = source;
+            return view;
+        }
 
         return new TextBlock { Text = "Not Found: " + name };
     }
 
     public bool Match(object? data)
     {
-        return data is ViewModelBase || data is IDockable { Context: ViewModelBase };
+        if (data is null)
+            return false;
+
+        return ResolveSource(data) is ViewModelBase or Control;
+    }
+
+    private static object ResolveSource(object data)
+    {
+        if (data is IDockable dockable)
+        {
+            if (dockable.Context is not null)
+                return dockable.Context;
+
+            if (dockable is { } && TryGetPropertyValue(dockable, "Content", out var content))
+                return content!;
+        }
+
+        return data;
+    }
+
+    private static bool TryGetPropertyValue(object instance, string propertyName, out object? value)
+    {
+        var property = instance.GetType().GetProperty(propertyName);
+        if (property is null)
+        {
+            value = null;
+            return false;
+        }
+
+        value = property.GetValue(instance);
+        return value is not null;
     }
 }
