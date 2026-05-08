@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Dock.Model.Core;
@@ -12,6 +14,8 @@ namespace Gondwana.Studio;
     Url = "https://docs.avaloniaui.net/docs/concepts/view-locator")]
 public class ViewLocator : IDataTemplate
 {
+    private static readonly ConcurrentDictionary<(Type Type, string Property), PropertyInfo?> PropertyCache = new();
+
     public Control? Build(object? param)
     {
         if (param is null)
@@ -51,7 +55,7 @@ public class ViewLocator : IDataTemplate
             if (dockable.Context is not null)
                 return dockable.Context;
 
-            if (dockable is { } && TryGetPropertyValue(dockable, "Content", out var content))
+            if (TryGetPropertyValue(dockable, "Content", out var content))
                 return content!;
         }
 
@@ -60,7 +64,10 @@ public class ViewLocator : IDataTemplate
 
     private static bool TryGetPropertyValue(object instance, string propertyName, out object? value)
     {
-        var property = instance.GetType().GetProperty(propertyName);
+        var property = PropertyCache.GetOrAdd(
+            (instance.GetType(), propertyName),
+            key => key.Type.GetProperty(key.Property));
+
         if (property is null)
         {
             value = null;
