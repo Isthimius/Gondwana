@@ -1,0 +1,154 @@
+@startuml rendering-pipeline-flowchart-gpu-backbuffer
+title Gondwana Engine — Rendering Pipeline Flowchart\n(GpuBackbuffer / GPU path)
+
+skinparam defaultFontName Segoe UI
+skinparam backgroundColor #FAFAFA
+skinparam activity {
+    BackgroundColor #DDEEFF
+    BorderColor #336699
+    ArrowColor #336699
+    DiamondBackgroundColor #FFFACD
+    DiamondBorderColor #336699
+    StartColor #336699
+    EndColor #336699
+}
+skinparam note {
+    BackgroundColor #FFF9C4
+    BorderColor #AAAAAA
+}
+
+|#EEF4FF| Engine Background Thread |
+
+start
+
+:Engine.Start(uiContext);
+note right: Runs main loop on\na background Task
+
+repeat
+    :Drain EngineDispatcher queue;
+    :tick = HighResTimer.GetCurrentTick();
+
+    partition "**DoBackgroundTasks(tick)**" {
+        :BeforeBackgroundTasksExecute?.Invoke();
+        :Timer.RaiseTimerEvents(PreCycle, tick);
+        :KeyboardEventPoller.PollForEvents(tick);
+        :MouseEventPoller.PollForEvents(tick);
+        :TouchEventPoller.PollForEvents(tick);
+        :GamepadEventPoller.PollForEvents(tick);
+        :Animate Tiles (TileAnimator.CycleAnimation);
+        :SpriteManager.MoveSprites(tick);
+        :CollisionResolver.Resolve() per SceneLayer;
+        :ViewManager.UpdateCameras(deltaSeconds);
+        :AfterBackgroundTasksExecute?.Invoke();
+    }
+
+    if (TargetFPS <= 0\nOR throttle time elapsed?) then (yes)
+        partition "**DoForegroundTasks(tick)**" {
+            :BeforeFrameRender?.Invoke();
+            :DirectDrawingManager.UpdateAll(tick);
+
+            |#FFF3E0| GPU Rendering Line (GpuBackbuffer) |
+
+            note
+              **IsGlThreadRendered = true**
+              Engine loop skips this surface.
+              Rendering is driven from the GL/UI thread.
+            end note
+
+            :Engine loop **skips** GpuBackbuffer surfaces\n(both RenderToBackbuffer and\nPresentBackbufferToAdapter are no-ops);
+
+            :IGamepadManager?.Update();
+            :AfterFrameRender?.Invoke();
+
+            note right
+              **GPU pacing hook:**
+              WinFormGpuRenderSurfaceAdapter
+              and AvaloniaGpuRenderSurfaceAdapter
+              subscribe to AfterFrameRender and post
+              Invalidate / RequestNextFrameRendering
+              to the GL/UI thread.
+            end note
+
+            :Timer.RaiseTimerEvents(PostCycle, tick);
+        }
+    else (no — throttled)
+    endif
+
+repeat while (Engine.IsRunning?)
+
+stop
+
+|#FFF0F0| GL / UI Thread (independent, paced by AfterFrameRender) |
+
+start
+
+:Platform GL paint callback fires\n(SKGLControl.PaintSurface /\nOpenGlControlBase.OnOpenGlRender);
+
+if (GRContext available\nfor the first time?) then (yes)
+    :GpuBackbuffer.Initialize(grContext, w, h)\n— DisposeCPU fallback surface\n— CreateGpuSurface (SKSurface on GRContext)\n— UpdateSize → SizeChanged event\n— BeginFrame;
+    note right
+      Replaces the temporary CPU raster surface
+      (BitmapBackbuffer-equivalent) that GpuBackbuffer
+      uses before the OpenGL context is ready.
+    end note
+else (no)
+    if (Control resized?) then (yes)
+        :GpuBackbuffer.Initialize(grContext, newW, newH)\n— Recreate GPU render-target surface\n  with optional MSAA;
+        note right
+          Falls back to sampleCount=1
+          if MSAA is unsupported by hardware.
+        end note
+    else (no)
+        :Sync VSync setting to GLControl if changed;
+    endif
+endif
+
+:RenderSurfaceHostBase.GlRenderAndSnapshot();
+
+note right
+  Combines Render + Present in one
+  synchronous GL-thread call.
+  No CPU↔GPU pixel copy occurs.
+end note
+
+:RenderSurfaceHost.RenderToBackbuffer(tick)\n→ RenderToBackbufferGpuFull(tick);
+note right
+  Bypasses RefreshQueue entirely —
+  redraws the full surface every frame.
+end note
+
+if (Scene has visible layers?) then (no)
+    :ClearRect (full backbuffer);
+    :Scene.FullRefreshNeeded = false;
+else (yes)
+    repeat : **For each View**;
+        :RenderContext.Push(view, tick);
+        :ForceRefresh all View-based DirectDrawings;
+        :Clip canvas to viewport;
+        :GpuBackbuffer.ClearRect(viewport)\n— fill with ClearColor on GPU canvas;
+
+        repeat : **For each visible SceneLayer (back→front)**;
+            :Compute layer world rect visible\nthrough this viewport;
+            :GetDrawablesInWorldRect\n→ GpuBackbuffer.DrawDrawables\n→ DrawTileFrame(tile)\n→ SKCanvas.DrawImage (GPU texture);
+        repeat while (more layers?)
+
+        :Draw View-based DirectDrawings;
+        :Restore viewport clip;
+        :RenderContext.Pop();
+    repeat while (more views?)
+
+    :Scene.FullRefreshNeeded = false;
+endif
+
+:GpuBackbuffer.EndFrame()\n— SKSurface.Flush (queues GPU work);
+:GpuBackbuffer.Snapshot()\n— Lightweight GPU-backed SKImage\n  (no pixel readback);
+:GpuBackbuffer.BeginFrame()\n— Reset matrix, clip rect for next frame;
+
+:Blit SKImage to window framebuffer\n— SKCanvas.DrawImage covers full render target\n  (zero-copy GPU draw call);
+
+:GRContext.Flush()\n— Submit all queued GPU commands;
+:GpuBackbuffer.RecordFrame()\n— Increment GPU FPS counter\n  (read by Engine.CalculateCPS);
+
+stop
+
+@enduml
