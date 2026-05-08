@@ -1,0 +1,130 @@
+@startuml rendering-pipeline-flowchart-bitmap-backbuffer
+title Gondwana Engine — Rendering Pipeline Flowchart\n(BitmapBackbuffer / CPU path)
+
+skinparam defaultFontName Segoe UI
+skinparam backgroundColor #FAFAFA
+skinparam activity {
+    BackgroundColor #DDEEFF
+    BorderColor #336699
+    ArrowColor #336699
+    DiamondBackgroundColor #FFFACD
+    DiamondBorderColor #336699
+    StartColor #336699
+    EndColor #336699
+}
+skinparam note {
+    BackgroundColor #FFF9C4
+    BorderColor #AAAAAA
+}
+
+|#EEF4FF| Engine Background Thread |
+
+start
+
+:Engine.Start(uiContext);
+note right: Runs main loop on\na background Task
+
+repeat
+    :Drain EngineDispatcher queue;
+    :tick = HighResTimer.GetCurrentTick();
+
+    partition "**DoBackgroundTasks(tick)**" {
+        :BeforeBackgroundTasksExecute?.Invoke();
+        :Timer.RaiseTimerEvents(PreCycle, tick);
+        :KeyboardEventPoller.PollForEvents(tick);
+        :MouseEventPoller.PollForEvents(tick);
+        :TouchEventPoller.PollForEvents(tick);
+        :GamepadEventPoller.PollForEvents(tick);
+        :Animate Tiles (TileAnimator.CycleAnimation);
+        :SpriteManager.MoveSprites(tick);
+        :CollisionResolver.Resolve() per SceneLayer;
+        :ViewManager.UpdateCameras(deltaSeconds);
+        :AfterBackgroundTasksExecute?.Invoke();
+    }
+
+    if (TargetFPS <= 0\nOR throttle time elapsed?) then (yes)
+
+        partition "**DoForegroundTasks(tick)**" {
+            :BeforeFrameRender?.Invoke();
+            :DirectDrawingManager.UpdateAll(tick);
+
+            |#E8F5E9| CPU Rendering Line (BitmapBackbuffer) |
+
+            note
+              **IsGlThreadRendered = false**
+              Runs entirely on the
+              engine background thread.
+            end note
+
+            :RenderSurfaceHost<BitmapBackbuffer>\n.RenderToBackbuffer(tick);
+
+            if (Scene has visible layers?) then (no)
+                :ClearRect (full backbuffer);
+                :Scene.FullRefreshNeeded = false;
+            else (yes)
+                if (Scene.FullRefreshNeeded?) then (yes)
+                    :EnqueueFullSceneRefresh()\n— adds all visible world rects\n  to each layer's RefreshQueue;
+                else (no)
+                    if (Scene.IsDirty?) then (no)
+                        :RenderBackbufferNoOp?.Invoke();
+                        detach
+                    endif
+                endif
+
+                repeat : **For each View**;
+                    :RenderContext.Push(view, tick);
+                    :ForceRefresh all View-based DirectDrawings;
+                    :CollectDirtyScreenArea(view)\n— translate RefreshQueue world rects\n  to screen rects for this view;
+                    :Clip canvas to viewport\n(exclude higher Z-order views);
+                    :PreclearScreenAreas\n— fill dirty rects with ClearColor;
+
+                    repeat : **For each visible SceneLayer (back→front)**;
+                        :RenderLayerDirtyRegions(view, layer)\n— GetDrawablesInWorldRect;\n— BitmapBackbuffer.DrawDrawables\n  → DrawTileFrame(tile)\n  → SKCanvas.DrawBitmap (SKBitmap);
+                    repeat while (more layers?)
+
+                    :Draw View-based DirectDrawings\non top of layers;
+                    :Restore viewport clip;
+                    :RenderContext.Pop();
+                repeat while (more views?)
+
+                :ClearRefreshQueue() on all visible layers;
+                :Scene.FullRefreshNeeded = false;
+                :RenderBackbufferEnd?.Invoke();
+            endif
+
+            :RenderSurfaceHost.PresentBackbufferToAdapter();
+            :BitmapBackbuffer.EndFrame()\n— SKSurface.Flush();
+            if (RedrawDirtyRectangleOnly?) then (yes)
+                :Snapshot dirty rect → SKImage;
+                :RenderSurfaceAdapterBase.Present\n(dirtyRect image, src, dest);
+            else (no)
+                :Snapshot full backbuffer → SKImage;
+                :RenderSurfaceAdapterBase.Present\n(full image, src, dest);
+            endif
+            note right
+              **WinFormBitmapRenderSurfaceAdapter:**
+              _currentImage = SKImage
+              SKControl.Invalidate()
+              → OnPaintSurface
+              → SKCanvas.DrawImage (CPU blit)
+
+              **AvaloniaBitmapRenderSurfaceAdapter:**
+              WriteableBitmap updated
+              → Avalonia Image control
+            end note
+            :BitmapBackbuffer.ClearDirtyRectangle;
+            :BitmapBackbuffer.BeginFrame()\n— reset matrix, clip rect;
+
+            :IGamepadManager?.Update();
+            :AfterFrameRender?.Invoke();
+            :Timer.RaiseTimerEvents(PostCycle, tick);
+        }
+
+    else (no — throttled)
+    endif
+
+repeat while (Engine.IsRunning?)
+
+stop
+
+@enduml
