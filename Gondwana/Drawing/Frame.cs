@@ -29,6 +29,12 @@ public struct Frame
     public readonly int YTile;
 
     /// <summary>
+    /// The duration in seconds this frame should display. A value of 0 means
+    /// the owning <see cref="Gondwana.Drawing.Animation.Cycle"/>'s <c>ThrottleTime</c> is used instead.
+    /// </summary>
+    public readonly double DurationSeconds;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
     /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
@@ -42,9 +48,25 @@ public struct Frame
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet, tile coordinates, and per-frame display duration.
+    /// </summary>
+    /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
+    /// <param name="xTile">The horizontal tile coordinate (column index) within the tilesheet.</param>
+    /// <param name="yTile">The vertical tile coordinate (row index) within the tilesheet.</param>
+    /// <param name="durationSeconds">How long in seconds this frame should display. 0 defers to the cycle's throttle time.</param>
+    public Frame(Tilesheet tilesheet, int xTile, int yTile, double durationSeconds)
+    {
+        Tilesheet = tilesheet;
+        XTile = xTile;
+        YTile = yTile;
+        DurationSeconds = durationSeconds;
+    }
+
+    /// <summary>
     /// Gets the SkiaSharp bitmap for this frame at the specified tile coordinates.
     /// Returns <see langword="null"/> if the tilesheet is not available.
     /// </summary>
+    /// <returns>The frame bitmap, or <see langword="null"/>.</returns>
     [JsonIgnore]
     public readonly SKBitmap? SkBitmap => Tilesheet?.GetBitmap(XTile, YTile);
 
@@ -52,6 +74,7 @@ public struct Frame
     /// Gets the SkiaSharp image for this frame at the specified tile coordinates.
     /// Returns <see langword="null"/> if the tilesheet is not available.
     /// </summary>
+    /// <returns>The frame image, or <see langword="null"/>.</returns>
     [JsonIgnore]
     public readonly SKImage? SkImage => Tilesheet?.GetImage(XTile, YTile);
 

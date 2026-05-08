@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gondwana.Studio.ViewModels"
+             x:Class="Gondwana.Studio.Views.TilesheetEditorView"
+             x:DataType="vm:TilesheetEditorViewModel"
+             DragDrop.AllowDrop="True">
+  <Grid ColumnDefinitions="3*,1*" RowDefinitions="Auto,*,Auto">
+    <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8" Spacing="6">
+      <Button Content="Open Image" Command="{Binding OpenImageCommand}" />
+      <Button Content="Save Metadata" Command="{Binding SaveCommand}" />
+      <TextBlock Text="Tile W" VerticalAlignment="Center" />
+      <NumericUpDown Width="80" Minimum="1" Value="{Binding TileWidth}" />
+      <TextBlock Text="Tile H" VerticalAlignment="Center" />
+      <NumericUpDown Width="80" Minimum="1" Value="{Binding TileHeight}" />
+      <Button Content="Rebuild Grid" Command="{Binding RebuildGridCommand}" />
+    </StackPanel>
+
+    <Border Grid.Row="1" Grid.Column="0" Margin="8" BorderThickness="1" BorderBrush="Gray">
+      <ScrollViewer>
+        <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}">
+          <Image Source="{Binding PreviewBitmap}" />
+          <ItemsControl ItemsSource="{Binding TileCells}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <Canvas />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:TileCellViewModel">
+                <Button Background="#00FFFFFF"
+                        BorderBrush="#66FFFFFF"
+                        BorderThickness="1"
+                        Width="{Binding Width}"
+                        Height="{Binding Height}"
+                        Canvas.Left="{Binding Left}"
+                        Canvas.Top="{Binding Top}"
+                        Tag="{Binding}"
+                        Click="OnTileCellClicked"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Grid>
+      </ScrollViewer>
+    </Border>
+
+    <StackPanel Grid.Row="1" Grid.Column="1" Margin="8" Spacing="6">
+      <TextBlock Text="Selected Tile" FontWeight="Bold"/>
+      <TextBlock Text="{Binding SelectedTile.Index, StringFormat='Index: {0}'}" />
+      <TextBox Text="{Binding SelectedTileName}" Watermark="Tile name..." />
+      <Button Content="Apply Name" Command="{Binding ApplyTileNameCommand}" />
+      <TextBlock Text="Named tiles" FontWeight="Bold" Margin="0,12,0,0"/>
+      <ListBox ItemsSource="{Binding NamedTiles}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="vm:TileCellViewModel">
+            <TextBlock Text="{Binding Name, StringFormat='[{0}]'}"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </StackPanel>
+
+    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="8" Text="{Binding StatusText}" />
+  </Grid>
+</UserControl>
