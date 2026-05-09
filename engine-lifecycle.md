@@ -6,6 +6,23 @@ This document covers the public runtime events exposed by the core `Gondwana` pa
 
 ---
 
+## Contents
+
+1. [Lifecycle at a glance](#1-lifecycle-at-a-glance)
+2. [Threading model](#2-threading-model)
+3. [Hosted startup sequence (`GameHostBase.Initialize`)](#3-hosted-startup-sequence-gamehostbaseinitialize)
+4. [Engine initialization sequence (`Engine.Initialize`)](#4-engine-initialization-sequence-engineinitialize)
+5. [Engine start sequence (`Engine.Start` / `StartTimerDriven`)](#5-engine-start-sequence-enginestart--starttimedriven)
+6. [What happens every engine cycle](#6-what-happens-every-engine-cycle)
+7. [Render-surface lifecycle](#7-render-surface-lifecycle)
+8. [Shutdown and disposal sequence](#8-shutdown-and-disposal-sequence)
+9. [Host hooks vs engine events vs plugin hooks](#9-host-hooks-vs-engine-events-vs-plugin-hooks)
+10. [Complete public event reference](#10-complete-public-event-reference)
+11. [Which hook should I use?](#11-which-hook-should-i-use)
+12. [Final mental model](#12-final-mental-model)
+
+---
+
 ## 1. Lifecycle at a glance
 
 In a typical hosted game, the runtime sequence is:
