@@ -1,5 +1,7 @@
 using Gondwana.Drawing.Direct;
+using Gondwana.Logging;
 using Gondwana.Rendering;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 
@@ -60,11 +62,19 @@ public sealed class SplashScreen : IDisposable
             return null;
 
         if (!File.Exists(imagePath))
+        {
+            EngineLogger.GetLogger<SplashScreen>().LogWarning(
+                "SplashScreen image not found at '{Path}'; splash will be skipped.", imagePath);
             return null;
+        }
 
         var bitmap = SKBitmap.Decode(imagePath);
         if (bitmap == null)
+        {
+            EngineLogger.GetLogger<SplashScreen>().LogWarning(
+                "SplashScreen image could not be decoded from '{Path}'; splash will be skipped.", imagePath);
             return null;
+        }
 
         var view = host.ViewManager.Views[0];
         var vp = view.Viewport.TargetRectPx;
