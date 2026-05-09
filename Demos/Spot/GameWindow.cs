@@ -290,6 +290,7 @@ internal partial class GameWindow : Form
         var enabled = _gpuAccelerationMenuItem!.Checked;
         PersistSetting(KeyGpuAcceleration, enabled ? "true" : "false");
         MessageBox.Show(
+            this,
             "GPU Acceleration setting has been changed. Please restart the application to apply this change.",
             "Restart Required",
             MessageBoxButtons.OK,
