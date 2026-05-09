@@ -72,11 +72,22 @@ internal sealed class SpotSplashForm : Form
         await AnimateOpacityAsync(from: 0, to: 1, FadeInDurationMs);
         await Task.Delay(HoldBeforeInitMs);
 
-        initializationAction();
+        Exception? initializationError = null;
+        try
+        {
+            initializationAction();
+        }
+        catch (Exception ex)
+        {
+            initializationError = ex;
+        }
 
         await Task.Delay(HoldAfterInitMs);
         await AnimateOpacityAsync(from: 1, to: 0, FadeOutDurationMs);
         Close();
+
+        if (initializationError is not null)
+            throw initializationError;
     }
 
     private void SyncToOwnerBounds()
@@ -92,6 +103,7 @@ internal sealed class SpotSplashForm : Form
 
         using var stream = File.OpenRead(logoPath);
         using var image = Image.FromStream(stream);
+        // Copy into a standalone bitmap so the source stream/file can be closed immediately.
         _logoPictureBox.Image = new Bitmap(image);
     }
 
@@ -108,7 +120,7 @@ internal sealed class SpotSplashForm : Form
         var steps = Math.Max(1, durationMs / intervalMs);
         var step = (to - from) / steps;
         var currentStep = 0;
-        var tcs = new TaskCompletionSource();
+        var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var timer = new System.Windows.Forms.Timer { Interval = intervalMs };
 
         timer.Tick += (_, _) =>

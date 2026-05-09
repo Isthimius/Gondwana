@@ -97,16 +97,29 @@ internal partial class GameWindow : Form
         };
     }
 
-    protected override void OnShown(EventArgs e)
+    protected override async void OnShown(EventArgs e)
     {
         base.OnShown(e);
 
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
-        ShowStartupSplashAndInitializeAsync();
+        try
+        {
+            await ShowStartupSplashAndInitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                $"Failed to initialize Spot: {ex.Message}",
+                "Startup Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            Close();
+        }
     }
 
-    private async void ShowStartupSplashAndInitializeAsync()
+    private async Task ShowStartupSplashAndInitializeAsync()
     {
         if (_gameHost == null)
             return;
