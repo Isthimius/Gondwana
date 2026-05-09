@@ -18,8 +18,9 @@ A recommended reading order for getting up to speed on the Gondwana engine codeb
 
 ```
 Initialize()
-  → ConfigureLogging → InitializeEngine → ConfigurePlatform → ConfigureInput
+  → ConfigureLogging → ConfigurePlatform → ConfigureInput
   → LoadContent → CreateSceneGraph → BindScene → InitializeSceneObjects
+  → InitializeEngine
   → StartEngine
 ```
 
