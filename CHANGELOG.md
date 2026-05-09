@@ -103,9 +103,6 @@ All notable changes to this project will be documented in this file.
 
 Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 
-# Changelog
-
-All notable changes to this project will be documented in this file.
 
 # v2.2.3 - May 05, 2026
 
