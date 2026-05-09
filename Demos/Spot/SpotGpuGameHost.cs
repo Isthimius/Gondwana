@@ -85,7 +85,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
 
     protected override SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
-        var imagePath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo.png");
+        var imagePath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
         var splash = SplashScreen.TryCreate(host, imagePath);
         if (splash != null)
             splash.HoldSec = 3f;

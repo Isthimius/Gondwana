@@ -80,8 +80,7 @@
         <Content Include="assets\spot_ico.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="..\..\gondwana-logo.png">
-            <Link>assets\gondwana-logo.png</Link>
+        <Content Include="assets\gondwana-logo-text.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
@@ -109,5 +108,10 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="assets\OFL.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>
