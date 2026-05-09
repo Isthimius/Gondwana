@@ -92,6 +92,7 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     {
         if (disposing)
         {
+            // Bitmap lifetime is owned by SvgResource's per-size cache.
             _cachedBitmap = null;
             _paint.Dispose();
         }
