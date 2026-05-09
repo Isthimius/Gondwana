@@ -39,7 +39,8 @@ The script is idempotent — safe to re-run at any time. It ends with `gondwana 
 ```
 Initialize()
   → ConfigureLogging → ConfigurePlatform → ConfigureInput
-  → LoadContent → CreateSceneGraph → BindScene → InitializeSceneObjects
+  → InitializeGameContent
+       → LoadContent → CreateSceneGraph → BindScene → InitializeSceneObjects
   → InitializeEngine
   → StartEngine
 ```
