@@ -12,7 +12,8 @@ namespace Gondwana.Cli.Commands.Assets;
 /// <code>
 /// {
 ///   "Image": ["png", "jpg", "bmp"],
-///   "Audio": ["wav", "mp3", "ogg"]
+///   "Audio": ["wav", "mp3", "ogg"],
+///   "Svg": ["svg"]
 /// }
 /// </code>
 /// </remarks>
@@ -46,6 +47,9 @@ internal sealed class AssetTypeMap
 
         foreach (var ext in new[] { "ttf", "otf", "woff", "woff2" })
             map[ext] = AssetTypes.Font;
+
+        foreach (var ext in new[] { "svg" })
+            map[ext] = AssetTypes.Svg;
 
         return new AssetTypeMap(map);
     }

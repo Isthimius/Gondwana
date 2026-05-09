@@ -18,7 +18,7 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
         public string Output { get; init; } = string.Empty;
 
         [CommandOption("-t|--type")]
-        [Description("Extract only assets of the specified type (e.g. Image, Audio).")]
+        [Description("Extract only assets of the specified type (e.g. Image, Audio, Svg).")]
         public string? TypeFilter { get; init; }
 
         [CommandOption("--overwrite")]

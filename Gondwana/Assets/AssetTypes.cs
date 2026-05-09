@@ -34,5 +34,10 @@ public enum AssetTypes
     /// <summary>
     /// not currently supported
     /// </summary>
-    Misc = 5
+    Misc = 5,
+
+    /// <summary>
+    /// Represents a scalable vector graphic (SVG) asset.
+    /// </summary>
+    Svg = 6
 }

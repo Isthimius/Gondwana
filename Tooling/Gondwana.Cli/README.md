@@ -342,7 +342,8 @@ file extensions (without a leading dot):
   "Audio":  ["wav", "mp3", "ogg", "flac", "aac", "wma", "mid", "midi"],
   "Video":  ["mp4", "avi", "mkv", "mov", "wmv", "webm", "m4v"],
   "Cursor": ["cur", "ani"],
-  "Font":   ["ttf", "otf", "woff", "woff2"]
+  "Font":   ["ttf", "otf", "woff", "woff2"],
+  "Svg":    ["svg"]
 }
 ```
 

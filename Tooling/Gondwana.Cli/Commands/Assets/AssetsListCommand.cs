@@ -14,7 +14,7 @@ internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
         public string File { get; init; } = string.Empty;
 
         [CommandOption("-t|--type")]
-        [Description("Filter by asset type (e.g. Image, Audio, Video, Font, Cursor, Misc).")]
+        [Description("Filter by asset type (e.g. Image, Audio, Video, Font, Cursor, Svg, Misc).")]
         public string? TypeFilter { get; init; }
 
         [CommandOption("-p|--password")]
