@@ -4,6 +4,7 @@ using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Gondwana.Demos.Spot;
@@ -102,11 +103,31 @@ internal partial class GameWindow : Form
 
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
+        ShowStartupSplashAndInitializeAsync();
+    }
 
-        _gameHost!.Initialize(logLevel: LogLevel.Warning);
+    private async void ShowStartupSplashAndInitializeAsync()
+    {
+        if (_gameHost == null)
+            return;
 
-        // Apply saved settings now that assets are loaded and engine is running.
-        ApplyLoadedSettings();
+        Enabled = false;
+        using var splash = new SpotSplashForm(this);
+        try
+        {
+            await splash.ShowDuringInitializationAsync(() =>
+            {
+                _gameHost.Initialize(logLevel: LogLevel.Warning);
+
+                // Apply saved settings now that assets are loaded and engine is running.
+                ApplyLoadedSettings();
+            });
+        }
+        finally
+        {
+            Enabled = true;
+            Activate();
+        }
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
@@ -276,4 +297,3 @@ internal partial class GameWindow : Form
         }
     }
 }
-

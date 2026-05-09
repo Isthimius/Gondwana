@@ -80,6 +80,10 @@
         <Content Include="assets\spot_ico.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="..\..\gondwana-logo.png">
+            <Link>assets\gondwana-logo.png</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
