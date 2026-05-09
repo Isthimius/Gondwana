@@ -68,8 +68,8 @@ public sealed class SplashScreen : IDisposable
             return null;
         }
 
-        using var data = SKData.Create(imagePath);
-        var sourceImage = data == null ? null : SKImage.FromEncodedData(data);
+        using var bitmap = SKBitmap.Decode(imagePath);
+        var sourceImage = bitmap == null ? null : SKImage.FromBitmap(bitmap);
         if (sourceImage == null)
         {
             EngineLogger.GetLogger<SplashScreen>().LogWarning(
