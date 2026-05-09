@@ -151,18 +151,18 @@ internal sealed class GameWindow : Form
 ```
 Initialize()
   → ConfigureLogging
-  → InitializeEngine
   → ConfigurePlatform          ← wired by WinFormsGameHost for you
   → ConfigureInput
-       → ConfigureKeyboard     ← you override this
+        → ConfigureKeyboard     ← you override this
   → LoadContent
-       → LoadAssets
-       → LoadTilesheets        ← you override this
+        → LoadAssets
+        → LoadTilesheets        ← you override this
   → CreateSceneGraph           ← you override this
   → InitializeSceneObjects
-       → CreateDirectDrawings  ← optional overlay HUD
+        → CreateDirectDrawings  ← optional overlay HUD
+  → InitializeEngine
   → StartEngine
-       → OnStartEngine         ← optional post-start hook
+        → OnStartEngine         ← optional post-start hook
 ```
 
 You only need to override the methods you care about. Everything else has a safe no-op default.
