@@ -1,6 +1,6 @@
 using System.Drawing;
 using SkiaSharp;
-using SkiaSharp.Extended.Svg;
+using Svg.Skia;
 
 namespace Gondwana.Drawing;
 
@@ -11,9 +11,7 @@ public sealed class SvgResource : IDisposable
 {
     private readonly SKPicture _picture;
     private readonly object _cacheLock = new();
-    private SKBitmap? _cachedBitmap;
-    private int _cachedWidth;
-    private int _cachedHeight;
+    private readonly Dictionary<(int Width, int Height), SKBitmap> _cachedBitmaps = new();
     private bool _disposed;
 
     private SvgResource(SKPicture picture, SizeF intrinsicSize)
@@ -63,6 +61,10 @@ public sealed class SvgResource : IDisposable
     /// <param name="width">Output width in pixels.</param>
     /// <param name="height">Output height in pixels.</param>
     /// <returns>A cached rasterized bitmap for the requested size.</returns>
+    /// <remarks>
+    /// The cache is keyed by output size. Repeated requests for the same size return the same bitmap instance.
+    /// Cached bitmaps remain valid until this <see cref="SvgResource"/> is disposed.
+    /// </remarks>
     public SKBitmap Rasterize(int width, int height)
     {
         ThrowIfDisposed();
@@ -74,8 +76,8 @@ public sealed class SvgResource : IDisposable
 
         lock (_cacheLock)
         {
-            if (_cachedBitmap is not null && _cachedWidth == width && _cachedHeight == height)
-                return _cachedBitmap;
+            if (_cachedBitmaps.TryGetValue((width, height), out var cachedBitmap))
+                return cachedBitmap;
 
             var bitmap = new SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
             using var canvas = new SKCanvas(bitmap);
@@ -91,11 +93,8 @@ public sealed class SvgResource : IDisposable
             canvas.DrawPicture(_picture);
             canvas.Flush();
 
-            _cachedBitmap?.Dispose();
-            _cachedBitmap = bitmap;
-            _cachedWidth = width;
-            _cachedHeight = height;
-            return _cachedBitmap;
+            _cachedBitmaps[(width, height)] = bitmap;
+            return bitmap;
         }
     }
 
@@ -124,7 +123,10 @@ public sealed class SvgResource : IDisposable
 
         lock (_cacheLock)
         {
-            _cachedBitmap?.Dispose();
+            foreach (var bitmap in _cachedBitmaps.Values)
+                bitmap.Dispose();
+
+            _cachedBitmaps.Clear();
             _picture.Dispose();
             _disposed = true;
         }

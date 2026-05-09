@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Gondwana.Assets;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Drawing;
 

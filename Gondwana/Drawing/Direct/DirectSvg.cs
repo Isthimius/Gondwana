@@ -79,11 +79,25 @@ public sealed class DirectSvg : DirectDrawingMovableBase
 
         if (_cachedBitmap is null || _cachedWidth != width || _cachedHeight != height)
         {
-            _cachedBitmap = _svgResource.Rasterize(width, height);
+            _cachedBitmap?.Dispose();
+            _cachedBitmap = _svgResource.Rasterize(width, height).Copy();
             _cachedWidth = width;
             _cachedHeight = height;
         }
 
         backbuffer.Canvas.DrawBitmap(_cachedBitmap, destRectScreen.ToPixelAlignedRect().ToSKRect(), _paint);
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _cachedBitmap?.Dispose();
+            _cachedBitmap = null;
+            _paint.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 }
