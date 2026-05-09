@@ -145,6 +145,8 @@ public sealed class SplashScreen : IDisposable
 
         try
         {
+            // Normalize synchronous callback failures into a faulted Task so ShowAsync still
+            // waits for the configured hold period before surfacing the error to the caller.
             return AfterFadeInAsync(this) ?? Task.CompletedTask;
         }
         catch (Exception ex)

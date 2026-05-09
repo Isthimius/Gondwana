@@ -59,8 +59,11 @@ public abstract class GameHostBase : IDisposable
     /// <para>
     /// Override <see cref="CreateSplash"/> in a subclass to provide a custom splash image and to
     /// configure <see cref="SplashScreen.AfterFadeInAsync"/> for startup work that should run after
-    /// fade-in completes. Override <see cref="GetPrimaryRenderSurfaceHost"/> in platform-specific subclasses to expose
-    /// the render surface host that the splash will be attached to.
+    /// fade-in completes.
+    /// </para>
+    /// <para>
+    /// Override <see cref="GetPrimaryRenderSurfaceHost"/> in platform-specific subclasses to
+    /// expose the render surface host that the splash will be attached to.
     /// </para>
     /// </remarks>
     public async Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning)
