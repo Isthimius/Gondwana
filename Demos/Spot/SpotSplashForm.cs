@@ -109,37 +109,33 @@ internal sealed class SpotSplashForm : Form
 
     private Task AnimateOpacityAsync(double from, double to, int durationMs)
     {
+        return AnimateOpacityCoreAsync(from, to, durationMs);
+    }
+
+    private async Task AnimateOpacityCoreAsync(double from, double to, int durationMs)
+    {
         Opacity = from;
         if (durationMs <= 0 || Math.Abs(to - from) < double.Epsilon)
         {
             Opacity = to;
-            return Task.CompletedTask;
+            return;
         }
 
         const int intervalMs = 16;
-        var steps = Math.Max(1, durationMs / intervalMs);
-        var step = (to - from) / steps;
-        var currentStep = 0;
-        var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var timer = new System.Windows.Forms.Timer { Interval = intervalMs };
+        var start = Environment.TickCount64;
 
-        timer.Tick += (_, _) =>
+        while (true)
         {
-            currentStep++;
-            if (currentStep >= steps)
-            {
-                timer.Stop();
-                timer.Dispose();
-                Opacity = to;
-                tcs.TrySetResult();
-                return;
-            }
+            var elapsed = Environment.TickCount64 - start;
+            if (elapsed >= durationMs)
+                break;
 
-            Opacity = Math.Clamp(Opacity + step, 0, 1);
-        };
+            var progress = Math.Clamp((double)elapsed / durationMs, 0, 1);
+            Opacity = from + ((to - from) * progress);
+            await Task.Delay(intervalMs);
+        }
 
-        timer.Start();
-        return tcs.Task;
+        Opacity = to;
     }
 
     protected override void Dispose(bool disposing)
