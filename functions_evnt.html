@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -159,6 +159,7 @@ $(document).ready(function(){initNavTree('functions_evnt.html',''); initResizabl
 <h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
 <li>ParallaxChanged&#160;:&#160;<a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#aa6430a168f54a55f6c8ff0c92cce2ffa">Gondwana.Scenes.SceneLayer</a></li>
 <li>Paused&#160;:&#160;<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html#aae6530fb0a5d8999473ceaee12379d28">Gondwana.Video.IVideoPlayer</a>, <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#ace51acd0e3dc454abb7b3340cf64d3dc">Gondwana.Video.VlcVideoPlayer</a></li>
+<li>PinchUpdated&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#a9db28285041f19812c3118d16f1a9df5">Gondwana.Input.Touch.Gestures.PinchGestureRecognizer</a></li>
 <li>PlaybackCompleted&#160;:&#160;<a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html#ab3095f4f58ab095465ba6581fd3a787d">Gondwana.Audio.AudioResource</a></li>
 <li>PostInitialization&#160;:&#160;<a class="el" href="classGondwana_1_1Engine.html#a4880475a941f9c9cf1a72aaee207c443">Gondwana.Engine</a></li>
 <li>PreInitialization&#160;:&#160;<a class="el" href="classGondwana_1_1Engine.html#aae919c657e9096bec3306b8669d0da14">Gondwana.Engine</a></li>
@@ -190,14 +191,20 @@ $(document).ready(function(){initNavTree('functions_evnt.html',''); initResizabl
 <li>Started&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a314a6221d984ac059ae6b4af5788f9f6">Gondwana.Drawing.Animation.Animator</a>, <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html#aa928ee0cbfa70d52de13b69cdb590e6a">Gondwana.Video.IVideoPlayer</a>, <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a07117d25378d618f5a45e9b0cf9c0e51">Gondwana.Video.VlcVideoPlayer</a></li>
 <li>StateChanged&#160;:&#160;<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a5b82ef74e8cd0508efc69e3b54084540">Gondwana.Video.IVideoPlayer</a>, <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a6594dbaf6e554a50070a101e65f5e313">Gondwana.Video.VlcVideoPlayer</a></li>
 <li>Stopped&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a47bd062544a3205996b73987c43ca4aa">Gondwana.Drawing.Animation.Animator</a>, <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a2bdb0600f631a13e91a5c71246aa9e72">Gondwana.Video.IVideoPlayer</a>, <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a65df0784f059714d46cb4a112cd0f3b8">Gondwana.Video.VlcVideoPlayer</a></li>
+<li>Swiped&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html#a2694933ed889b27591bec7e2eda69a2a">Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer</a></li>
 </ul>
 
 
 <h3><a id="index_t" name="index_t"></a>- t -</h3><ul>
+<li>Tapped&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TapGestureRecognizer.html#a2e3ecbba7f6f0e78512283636ead4dde">Gondwana.Input.Touch.Gestures.TapGestureRecognizer</a></li>
 <li>TargetRectChanged&#160;:&#160;<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1Viewport.html#a4386f3d057772b034e426db46cb8c2ea">Gondwana.Rendering.Views.Viewport</a></li>
 <li>TextRevealComplete&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9789930c51fc4d4567f495dc74cac796">Gondwana.Drawing.Direct.TextBlock</a></li>
 <li>TextRevealed&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ad628da1ed304368a92d6113567d5f561">Gondwana.Drawing.Direct.TextBlock</a></li>
 <li>Tick&#160;:&#160;<a class="el" href="classGondwana_1_1Timers_1_1Timer.html#a955a8277b1a780b15bc846207d9dd776">Gondwana.Timers.Timer</a></li>
+<li>TouchBegan&#160;:&#160;<a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a15badb9c0a75e2c4594bbe2d01e08a91">Gondwana.Input.Touch.ITouchInput</a>, <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a1f5696ed58111684ee831e76e267804c">Gondwana.Input.Touch.TouchEventPoller</a></li>
+<li>TouchEnded&#160;:&#160;<a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a4516416101a94764ee5a89378de02801">Gondwana.Input.Touch.ITouchInput</a>, <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a6da93940e80c048aa682cdcca5f69d97">Gondwana.Input.Touch.TouchEventPoller</a></li>
+<li>TouchEvent&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a40b89d6865fa7cf877482104f619bbb2">Gondwana.Input.Touch.TouchEventPoller</a></li>
+<li>TouchMoved&#160;:&#160;<a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a79eef09f33cc62e2a54852f854d526e0">Gondwana.Input.Touch.ITouchInput</a>, <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a4463d1b4fab1dd7050ca2d85c64ceea5">Gondwana.Input.Touch.TouchEventPoller</a></li>
 </ul>
 
 

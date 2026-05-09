@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -101,6 +101,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>Save()&#160;:&#160;<a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html#a04993d63e330991b3fc75f205156c08d">Gondwana.Assets.AssetsFile</a>, <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a7056ace3dc549fc9201eecabdfd68513">Gondwana.Configuration.EngineConfigurationFile</a></li>
 <li>SaveToFile()&#160;:&#160;<a class="el" href="classGondwana_1_1EngineState.html#ab6c8ac6b21aecf60bf1f14c496104626">Gondwana.EngineState</a></li>
 <li>ScaleBy()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a756c3be01e25b9662a47bdc151466052">Gondwana.Drawing.Sprites.Sprite</a></li>
+<li>ScaleDelta&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a6bbff7ce739eebcba20f0303bf52885b">Gondwana.Input.Touch.Gestures.PinchedEventArgs</a></li>
 <li>ScaleMode&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3">Gondwana.Drawing.Direct.DirectImage</a></li>
 <li>Scene&#160;:&#160;<a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab1ca5ddd8b4d2aa962f171245c96c94b">Gondwana.Hosting.GameHostBase</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a5443506468c1f60d06d90d65d49ebee7">Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a41d56ce40e10058940fb2f73dcaec343">Gondwana.Rendering.RenderSurfaceHostBase</a>, <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html#a254272a432b1d3a737e48a52750cdeff">Gondwana.Scenes.Scene</a>, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#aacf01c57de45ceb7fed3c5ec7b9aab1c">Gondwana.Scenes.SceneLayer</a></li>
 <li>SceneDisposing&#160;:&#160;<a class="el" href="classGondwana_1_1Scenes_1_1Scene.html#abcd4c21b21ed5e394f65b9f969b0b2b0">Gondwana.Scenes.Scene</a></li>
@@ -134,7 +135,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>SetBlendMode()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#a58f7fe9ac36ca6bf14327152ac6c2061">Gondwana.Drawing.Direct.DirectImage</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#ab359dcb7b9f47a80622a071b9ec519e3">Gondwana.Drawing.Direct.DirectRectangle</a></li>
 <li>SetBorderColor()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a476370d59eb61805c4431a509d494ee9">Gondwana.Drawing.Direct.DirectRectangle</a></li>
 <li>SetColor()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a577cf46c75069fe87bad6c68a95f227f">Gondwana.Drawing.Direct.DirectRectangle</a></li>
-<li>SetColors()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a88fa2c4183ddc2dd28b37988f56907e0">Gondwana.Drawing.Direct.TextBlock</a></li>
+<li>SetColors()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a293f659d68b7702b9c01322ae375e562">Gondwana.Drawing.Direct.TextBlock</a></li>
 <li>SetConfigurationValue()&#160;:&#160;<a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aa1cf9d1068cf9ac1c7c7b8a7b346e03c">Gondwana.Configuration.EngineConfiguration</a></li>
 <li>SetCornerRadius()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a7b16e32a441c1836ad9c5489404df1df">Gondwana.Drawing.Direct.DirectRectangle</a></li>
 <li>SetCurrentCycle()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a390c529411ff3fa02d659d5f1dcbedde">Gondwana.Drawing.Animation.Animator</a></li>
@@ -193,6 +194,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>SourceFilePath&#160;:&#160;<a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html#a9beadb625cef7e1db2f3b990314d45ce">Gondwana.Audio.AudioResource</a></li>
 <li>SpawnDistribution&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#a3e2e63e0a18d8e3a9ea343dc94cc1bc7">Gondwana.Drawing.Direct.Particles.ParticleEmitter</a></li>
 <li>SpeedPerSec&#160;:&#160;<a class="el" href="structGondwana_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#aa1dd96e01e460db3bbab458f0d2eb037">Gondwana.Movement.Scripted.ScriptedMovement</a></li>
+<li>SpeedPixelsPerSecond&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html#ad84dd97d51c176b7ab65c8ebc955b1a3">Gondwana.Input.Touch.Gestures.SwipedEventArgs</a></li>
 <li>sprite&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteMovedEventArgs.html#ae3b72ec97951e104d348191e29b05e56">Gondwana.Drawing.Sprites.SpriteMovedEventArgs</a></li>
 <li>SpriteCreated&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a99c0abe0349483b6a76dad08155b771f">Gondwana.Drawing.Sprites.SpriteManager</a></li>
 <li>SpriteMoved&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4d4ae3cd00aac852e64f8e3d49a41170">Gondwana.Drawing.Sprites.Sprite</a></li>
@@ -205,6 +207,8 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>StartMonitoringButton()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller.html#a37b8d8dc38a85154e4efe646b5636612">Gondwana.Input.Gamepad.GamepadEventPoller</a></li>
 <li>StartMonitoringKey()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#ab243f1d9ae1ef9f7906e536d25fe6efc">Gondwana.Input.Keyboard.KeyboardEventPoller</a></li>
 <li>StartMonitoringMouse()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#a5a013ec1fc0742a7efd72631ad13ad68">Gondwana.Input.Mouse.MouseEventPoller</a></li>
+<li>StartMonitoringTouch()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a9374cc6b8ca39d73c6c7a8c5f832ab8b">Gondwana.Input.Touch.TouchEventPoller</a></li>
+<li>StartPosition&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html#af81c05913828c90226ed8cfd5b38e9e3">Gondwana.Input.Touch.Gestures.SwipedEventArgs</a></li>
 <li>StartTimerDriven()&#160;:&#160;<a class="el" href="classGondwana_1_1Engine.html#a498e7766914d124158b6a844b7c48235">Gondwana.Engine</a></li>
 <li>StartTypewriter()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#afc25b305d945a9afbe7f13794157d34f">Gondwana.Drawing.Direct.TextBlock</a></li>
 <li>StartWordReveal()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a797de89011a6192c61e35f4fcd08da25">Gondwana.Drawing.Direct.TextBlock</a></li>
@@ -224,12 +228,18 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>StopMonitoringButton()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller.html#aad6bf5d82f6b171e2425715d53525040">Gondwana.Input.Gamepad.GamepadEventPoller</a></li>
 <li>StopMonitoringKey()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html#a42534518e50bbd625f8c29bc600dc93e">Gondwana.Input.Keyboard.KeyboardEventPoller</a></li>
 <li>StopMonitoringMouse()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#affe11699c919122f54beeebc29fd90ba">Gondwana.Input.Mouse.MouseEventPoller</a></li>
+<li>StopMonitoringTouch()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ad736d5ad5e18bd222559180bfb1e1c79">Gondwana.Input.Touch.TouchEventPoller</a></li>
 <li>Stopped&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a47bd062544a3205996b73987c43ca4aa">Gondwana.Drawing.Animation.Animator</a>, <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a2bdb0600f631a13e91a5c71246aa9e72">Gondwana.Video.IVideoPlayer</a>, <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a65df0784f059714d46cb4a112cd0f3b8">Gondwana.Video.VlcVideoPlayer</a></li>
 <li>StopPulse()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aded93c9ff0f1fef37fc1957e90d72a57">Gondwana.Drawing.Sprites.Sprite</a></li>
 <li>StopPulses()&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a311c1cda35145755c37eb74c627fecc5">Gondwana.Drawing.Direct.DirectRectangle</a></li>
 <li>Stretch&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#af3cc70ded3f6c4bf4169be8d8c44fde2">Gondwana.Drawing.Direct.DirectVideo</a></li>
 <li>Stride&#160;:&#160;<a class="el" href="classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html#aff0389632fd4b356ff1fe9352cc391cc">Gondwana.Video.VideoFrameReadyEventArgs</a></li>
 <li>StrokeAlign&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a539cd00ff56cd777ffea4ab41303bc1e">Gondwana.Drawing.Direct.DirectRectangle</a></li>
+<li>Swipe&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a11da7136852c4d264f610077ed8b94cf">Gondwana.Input.Touch.Gestures.GestureEventArgs</a></li>
+<li>Swiped&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html#a2694933ed889b27591bec7e2eda69a2a">Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer</a></li>
+<li>SwipedEventArgs()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html#aad36e5731f290528c1e90430b193e710">Gondwana.Input.Touch.Gestures.SwipedEventArgs</a></li>
+<li>SwipeGestureRecognizer()&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html#a004979294e9114ade9b0d956075185ae">Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer</a></li>
+<li>SwipeRecognizer&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#af34255dddbb529c9fc5428f9bb8555bf">Gondwana.Input.Touch.TouchEventPoller</a></li>
 <li>SynthesizerSampleProvider()&#160;:&#160;<a class="el" href="classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html#ad462985fb00e4d1d81008595c365b2e3">Gondwana.Audio.Midi.SynthesizerSampleProvider</a></li>
 </ul>
 </div><!-- contents -->

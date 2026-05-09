@@ -4,8 +4,10 @@ var searchData=
   ['empty_1',['empty',['../classGondwana_1_1Scenes_1_1Scene.html#a98e66a9feac69e867a1a0b0ba172642f',1,'Gondwana.Scenes.Scene.Empty'],['../classGondwana_1_1Scenes_1_1SceneLayer.html#ae03f86925d0ed36365f117ce6d419ddb',1,'Gondwana.Scenes.SceneLayer.Empty']]],
   ['enableanimator_2',['EnableAnimator',['../classGondwana_1_1Scenes_1_1SceneLayerTile.html#a61e519fcdea6d73186a7e0c74d435457',1,'Gondwana::Scenes::SceneLayerTile']]],
   ['enablefog_3',['EnableFog',['../classGondwana_1_1Drawing_1_1Tile.html#a0862275089f09bfb25738641365856f6',1,'Gondwana::Drawing::Tile']]],
-  ['engine_4',['Engine',['../classGondwana_1_1Hosting_1_1GameHostBase.html#aea7f4a44e1f5292bc86f8b75c9ba791c',1,'Gondwana::Hosting::GameHostBase']]],
-  ['engineconfig_5',['EngineConfig',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a617d6e239ab02a1a645fa237857fb751',1,'Gondwana::Configuration::EngineConfigurationFile']]],
-  ['enginedispatcher_6',['EngineDispatcher',['../classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04',1,'Gondwana::Engine']]],
-  ['exception_7',['Exception',['../classGondwana_1_1Logging_1_1LoggingErrorEventArgs.html#a67ee3791cd338e43da1594fb1fa0dd15',1,'Gondwana::Logging::LoggingErrorEventArgs']]]
+  ['endposition_4',['EndPosition',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html#a11f369d810b4d239c1e1f2283fcc0933',1,'Gondwana::Input::Touch::Gestures::SwipedEventArgs']]],
+  ['engine_5',['Engine',['../classGondwana_1_1Hosting_1_1GameHostBase.html#aea7f4a44e1f5292bc86f8b75c9ba791c',1,'Gondwana::Hosting::GameHostBase']]],
+  ['engineconfig_6',['EngineConfig',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a617d6e239ab02a1a645fa237857fb751',1,'Gondwana::Configuration::EngineConfigurationFile']]],
+  ['enginedispatcher_7',['EngineDispatcher',['../classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04',1,'Gondwana::Engine']]],
+  ['entities_8',['Entities',['../classGondwana_1_1StudioAssets_1_1SceneAsset.html#a3a83da7d15e2e62d7b31af2503181fbe',1,'Gondwana::StudioAssets::SceneAsset']]],
+  ['exception_9',['Exception',['../classGondwana_1_1Logging_1_1LoggingErrorEventArgs.html#a67ee3791cd338e43da1594fb1fa0dd15',1,'Gondwana::Logging::LoggingErrorEventArgs']]]
 ];

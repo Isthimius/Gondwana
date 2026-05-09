@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -109,6 +109,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abb6185314c900dc1669db5aeb8b69538" id="r_abb6185314c900dc1669db5aeb8b69538"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#abb6185314c900dc1669db5aeb8b69538">Frame</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> tilesheet, int xTile, int yTile)</td></tr>
 <tr class="memdesc:abb6185314c900dc1669db5aeb8b69538"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the Frame struct with the specified tilesheet and tile coordinates.  <br /></td></tr>
 <tr class="separator:abb6185314c900dc1669db5aeb8b69538"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bc45860b906ea88464480bebbac40ee" id="r_a6bc45860b906ea88464480bebbac40ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a6bc45860b906ea88464480bebbac40ee">Frame</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> tilesheet, int xTile, int yTile, double durationSeconds)</td></tr>
+<tr class="memdesc:a6bc45860b906ea88464480bebbac40ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the Frame struct with the specified tilesheet, tile coordinates, and per-frame display duration.  <br /></td></tr>
+<tr class="separator:a6bc45860b906ea88464480bebbac40ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -121,6 +124,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a9193680c068a561792d57fcdd0770db4" id="r_a9193680c068a561792d57fcdd0770db4"><td class="memItemLeft" align="right" valign="top">readonly int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a9193680c068a561792d57fcdd0770db4">YTile</a></td></tr>
 <tr class="memdesc:a9193680c068a561792d57fcdd0770db4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The vertical tile coordinate (row index) within the tilesheet.  <br /></td></tr>
 <tr class="separator:a9193680c068a561792d57fcdd0770db4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a019a192186dfcd4c899c80cf424d5b88" id="r_a019a192186dfcd4c899c80cf424d5b88"><td class="memItemLeft" align="right" valign="top">readonly double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a019a192186dfcd4c899c80cf424d5b88">DurationSeconds</a></td></tr>
+<tr class="memdesc:a019a192186dfcd4c899c80cf424d5b88"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration in seconds this frame should display. A value of 0 means the owning <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Gondwana.Drawing.Animation.Cycle</a>'s <code>ThrottleTime</code> is used instead.  <br /></td></tr>
+<tr class="separator:a019a192186dfcd4c899c80cf424d5b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -146,7 +152,7 @@ Properties</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00011">11</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="abb6185314c900dc1669db5aeb8b69538" name="abb6185314c900dc1669db5aeb8b69538"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb6185314c900dc1669db5aeb8b69538">&#9670;&#160;</a></span>Frame()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abb6185314c900dc1669db5aeb8b69538">&#9670;&#160;</a></span>Frame() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -187,11 +193,82 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00037">37</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00043">43</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6bc45860b906ea88464480bebbac40ee" name="a6bc45860b906ea88464480bebbac40ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bc45860b906ea88464480bebbac40ee">&#9670;&#160;</a></span>Frame() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Gondwana.Drawing.Frame.Frame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td>
+          <td class="paramname"><em>tilesheet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>xTile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>yTile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>durationSeconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes a new instance of the Frame struct with the specified tilesheet, tile coordinates, and per-frame display duration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tilesheet</td><td>The tilesheet containing the source bitmap.</td></tr>
+    <tr><td class="paramname">xTile</td><td>The horizontal tile coordinate (column index) within the tilesheet.</td></tr>
+    <tr><td class="paramname">yTile</td><td>The vertical tile coordinate (row index) within the tilesheet.</td></tr>
+    <tr><td class="paramname">durationSeconds</td><td>How long in seconds this frame should display. 0 defers to the cycle's throttle time.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00057">57</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a019a192186dfcd4c899c80cf424d5b88" name="a019a192186dfcd4c899c80cf424d5b88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a019a192186dfcd4c899c80cf424d5b88">&#9670;&#160;</a></span>DurationSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">readonly double Gondwana.Drawing.Frame.DurationSeconds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The duration in seconds this frame should display. A value of 0 means the owning <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Gondwana.Drawing.Animation.Cycle</a>'s <code>ThrottleTime</code> is used instead. </p>
+
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00035">35</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+
+</div>
+</div>
 <a id="a92a456adc47f8e67af9ae006cdbf61a3" name="a92a456adc47f8e67af9ae006cdbf61a3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a92a456adc47f8e67af9ae006cdbf61a3">&#9670;&#160;</a></span>Tilesheet</h2>
 
@@ -269,7 +346,7 @@ Properties</h2></td></tr>
 
 <p>Gets the base tile size (without overhang) from the tilesheet. Returns Size.Empty if the tilesheet is not available. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00063">63</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00086">86</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -295,7 +372,7 @@ Properties</h2></td></tr>
 
 <p>Gets the overhang dimensions (in pixels) that extend beyond the base tile boundaries. Returns Overhang.None if the tilesheet is not available. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00070">70</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00093">93</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -320,8 +397,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the SkiaSharp bitmap for this frame at the specified tile coordinates. Returns <code>null</code> if the tilesheet is not available. </p>
+<dl class="section return"><dt>Returns</dt><dd>The frame bitmap, or <code>null</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00049">49</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00071">71</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -346,8 +424,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the SkiaSharp image for this frame at the specified tile coordinates. Returns <code>null</code> if the tilesheet is not available. </p>
+<dl class="section return"><dt>Returns</dt><dd>The frame image, or <code>null</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00056">56</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00079">79</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -373,7 +452,7 @@ Properties</h2></td></tr>
 
 <p>Gets the total tile size including overhang pixels in all directions. This is calculated as the base tile size plus the left, right, top, and bottom overhang values. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00077">77</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00100">100</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>

@@ -7,6 +7,7 @@ var classGondwana_1_1Hosting_1_1GameHostBase =
     [ "ConfigureLogging", "classGondwana_1_1Hosting_1_1GameHostBase.html#a3f2e8a93982566e235dd6a738d190568", null ],
     [ "ConfigureMouse", "classGondwana_1_1Hosting_1_1GameHostBase.html#ab89e68f670b31dbc7968ad85a2191442", null ],
     [ "ConfigurePlatform", "classGondwana_1_1Hosting_1_1GameHostBase.html#a102491cbe2c293deae54885bf6d39304", null ],
+    [ "ConfigureTouch", "classGondwana_1_1Hosting_1_1GameHostBase.html#afabc3777509a50b9ab4a3628561fbcdd", null ],
     [ "CreateDirectDrawings", "classGondwana_1_1Hosting_1_1GameHostBase.html#acfeaa79cfc57010d3b3cfba8fcc7af1d", null ],
     [ "CreateInitialScene", "classGondwana_1_1Hosting_1_1GameHostBase.html#ab4fd1229c0ea23e4bc5f288444f92c04", null ],
     [ "CreateInitialViews", "classGondwana_1_1Hosting_1_1GameHostBase.html#a1f97aa37a688df58dba272b5a222a6d8", null ],

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -97,6 +97,7 @@ $(document).ready(function(){initNavTree('functions_prop_s.html',''); initResiza
 <h3><a id="index_s" name="index_s"></a>- s -</h3><ul>
 <li>SamplingTimeForCPS&#160;:&#160;<a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac855c43adbb76108ebf60b3a4e607f37">Gondwana.Configuration.EngineConfiguration</a></li>
 <li>SamplingTimeForCPSTicks&#160;:&#160;<a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a54425e8fee2e8de5f3bb71b94fa9bcbc">Gondwana.Configuration.EngineConfiguration</a></li>
+<li>ScaleDelta&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a6bbff7ce739eebcba20f0303bf52885b">Gondwana.Input.Touch.Gestures.PinchedEventArgs</a></li>
 <li>Scene&#160;:&#160;<a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab1ca5ddd8b4d2aa962f171245c96c94b">Gondwana.Hosting.GameHostBase</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a5443506468c1f60d06d90d65d49ebee7">Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a41d56ce40e10058940fb2f73dcaec343">Gondwana.Rendering.RenderSurfaceHostBase</a>, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#aacf01c57de45ceb7fed3c5ec7b9aab1c">Gondwana.Scenes.SceneLayer</a></li>
 <li>SceneLayer&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ab464e191526e772a9cf74077c7f36f55">Gondwana.Drawing.Direct.DirectDrawingBase</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html#a282c7efff2176b1cc37bb0cf3b237f55">Gondwana.Drawing.Sprites.CompositeSprite</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#adf54b801271083c8d120f6290277dc99">Gondwana.Drawing.Sprites.Sprite</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a3e4ea033721a0b7d9af2c49c2bddc385">Gondwana.Drawing.Tile</a>, <a class="el" href="interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer.html#acc913da83d6dc6c28eed6b66b1c1f981">Gondwana.Movement.IMovableOnSceneLayer</a>, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html#a2ab991bb04576369fca48dfeedf2776f">Gondwana.Scenes.SceneLayerTile</a></li>
 <li>SceneLayerCoordinates&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#ad340d5603c3fea7f053bbfb81e310399">Gondwana.Drawing.Sprites.Sprite</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#afaa33352c2ade338a6ffd65b907c3794">Gondwana.Drawing.Tile</a>, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html#abf50427cb4f1e2bb85d5583cf0cfd289">Gondwana.Scenes.SceneLayerTile</a></li>
@@ -123,12 +124,16 @@ $(document).ready(function(){initNavTree('functions_prop_s.html',''); initResiza
 <li>SourceExtension&#160;:&#160;<a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html#a3794bd2bbe3eb0c4a44cc52ef22d56f9">Gondwana.Audio.AudioResource</a></li>
 <li>SourceFilePath&#160;:&#160;<a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html#a9beadb625cef7e1db2f3b990314d45ce">Gondwana.Audio.AudioResource</a></li>
 <li>SpawnDistribution&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#a3e2e63e0a18d8e3a9ea343dc94cc1bc7">Gondwana.Drawing.Direct.Particles.ParticleEmitter</a></li>
+<li>SpeedPixelsPerSecond&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html#ad84dd97d51c176b7ab65c8ebc955b1a3">Gondwana.Input.Touch.Gestures.SwipedEventArgs</a></li>
 <li>Sprites&#160;:&#160;<a class="el" href="classGondwana_1_1EngineManagers.html#a151b6ca4a77c51657bf3922d1fa1af61">Gondwana.EngineManagers</a>, <a class="el" href="classGondwana_1_1EngineState.html#a2d2019f05693795312c2be0678cfb3b0">Gondwana.EngineState</a></li>
+<li>StartPosition&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html#af81c05913828c90226ed8cfd5b38e9e3">Gondwana.Input.Touch.Gestures.SwipedEventArgs</a></li>
 <li>State&#160;:&#160;<a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html#a1f28dedac906cf7c1c08f4ee4dab7ead">Gondwana.Audio.AudioResource</a>, <a class="el" href="classGondwana_1_1Engine.html#a32e96d66aa1054ff905343cc8f0dc1ac">Gondwana.Engine</a>, <a class="el" href="classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html#ab6f2e38c7f0f1b6df7789862cf207289">Gondwana.Video.VideoStateChangedEventArgs</a></li>
 <li>StateFiles&#160;:&#160;<a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a9b0e346219ec6961dcdfb9425538bc55">Gondwana.Configuration.EngineConfiguration</a></li>
 <li>StaticColliders&#160;:&#160;<a class="el" href="classGondwana_1_1Collisions_1_1ColliderRegistry.html#a4f315aa8e7b7c5e2b52a47e67b06f3f5">Gondwana.Collisions.ColliderRegistry</a></li>
 <li>Stretch&#160;:&#160;<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#af3cc70ded3f6c4bf4169be8d8c44fde2">Gondwana.Drawing.Direct.DirectVideo</a></li>
 <li>Stride&#160;:&#160;<a class="el" href="classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html#aff0389632fd4b356ff1fe9352cc391cc">Gondwana.Video.VideoFrameReadyEventArgs</a></li>
+<li>Swipe&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a11da7136852c4d264f610077ed8b94cf">Gondwana.Input.Touch.Gestures.GestureEventArgs</a></li>
+<li>SwipeRecognizer&#160;:&#160;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#af34255dddbb529c9fc5428f9bb8555bf">Gondwana.Input.Touch.TouchEventPoller</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

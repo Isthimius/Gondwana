@@ -1,6 +1,8 @@
 var structGondwana_1_1Drawing_1_1Frame =
 [
     [ "Frame", "structGondwana_1_1Drawing_1_1Frame.html#abb6185314c900dc1669db5aeb8b69538", null ],
+    [ "Frame", "structGondwana_1_1Drawing_1_1Frame.html#a6bc45860b906ea88464480bebbac40ee", null ],
+    [ "DurationSeconds", "structGondwana_1_1Drawing_1_1Frame.html#a019a192186dfcd4c899c80cf424d5b88", null ],
     [ "Tilesheet", "structGondwana_1_1Drawing_1_1Frame.html#a92a456adc47f8e67af9ae006cdbf61a3", null ],
     [ "XTile", "structGondwana_1_1Drawing_1_1Frame.html#ab51bd0c4cc46a9b63a7d998ff4506fa8", null ],
     [ "YTile", "structGondwana_1_1Drawing_1_1Frame.html#a9193680c068a561792d57fcdd0770db4", null ],

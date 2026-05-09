@@ -24,5 +24,6 @@ var classGondwana_1_1Configuration_1_1EngineConfiguration =
     [ "TimeBetweenGamepadEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a723ed7b99319baaa075ddbe6e2d90699", null ],
     [ "TimeBetweenKeyboardEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac1cf26699f1a240bc2face7c098067d8", null ],
     [ "TimeBetweenMouseEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a5c881d1a987fc214a2f8b4913add7ccd", null ],
+    [ "TimeBetweenTouchEvents", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#af6271aca8aee604872e689b753cb57eb", null ],
     [ "VSync", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#abb8f7812aaf01854910f2230c530ec79", null ]
 ];

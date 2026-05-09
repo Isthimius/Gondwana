@@ -13,5 +13,6 @@ var searchData=
   ['easeoutquad_10',['EaseOutQuad',['../namespaceGondwana_1_1Movement_1_1Easing.html#a74018978c1a1f6aa869a55d97d8dc3d3afa3017a8e690c168c1c1ae13360e65df',1,'Gondwana::Movement::Easing']]],
   ['easeoutquart_11',['EaseOutQuart',['../namespaceGondwana_1_1Movement_1_1Easing.html#a74018978c1a1f6aa869a55d97d8dc3d3a7b438a0c5d49f6c2ac651442d3a0aaa4',1,'Gondwana::Movement::Easing']]],
   ['easeoutquint_12',['EaseOutQuint',['../namespaceGondwana_1_1Movement_1_1Easing.html#a74018978c1a1f6aa869a55d97d8dc3d3a5fb24d5365624d849b2cfc6a6390dc39',1,'Gondwana::Movement::Easing']]],
-  ['ellipse_13',['Ellipse',['../namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1a119518c2134c46108179369f0ce81fa2',1,'Gondwana::Drawing::Direct::Particles']]]
+  ['ellipse_13',['Ellipse',['../namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1a119518c2134c46108179369f0ce81fa2',1,'Gondwana::Drawing::Direct::Particles']]],
+  ['ended_14',['Ended',['../namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a0157fbb99be9622bdaa6e544270c0622',1,'Gondwana::Input::Touch']]]
 ];

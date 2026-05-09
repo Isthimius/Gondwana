@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -137,7 +137,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a102491cbe2c293deae54885bf6d39304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures platform-specific features and adapters for the game host.  <br /></td></tr>
 <tr class="separator:a102491cbe2c293deae54885bf6d39304"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ad0f5ab035962b58e6bcf4a34389fb7" id="r_a0ad0f5ab035962b58e6bcf4a34389fb7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a0ad0f5ab035962b58e6bcf4a34389fb7">ConfigureInput</a> ()</td></tr>
-<tr class="memdesc:a0ad0f5ab035962b58e6bcf4a34389fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures all input devices including keyboard, mouse, and gamepads.  <br /></td></tr>
+<tr class="memdesc:a0ad0f5ab035962b58e6bcf4a34389fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures all input devices including keyboard, mouse, gamepads, and touch.  <br /></td></tr>
 <tr class="separator:a0ad0f5ab035962b58e6bcf4a34389fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a160493972b5095bc4d3b573b8379b45a" id="r_a160493972b5095bc4d3b573b8379b45a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a160493972b5095bc4d3b573b8379b45a">ConfigureKeyboard</a> ()</td></tr>
 <tr class="memdesc:a160493972b5095bc4d3b573b8379b45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the keyboard input adapter. Override to set up keyboard-specific configuration.  <br /></td></tr>
@@ -148,6 +148,9 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a7d2c359977e59989638bd7d801a4a95a" id="r_a7d2c359977e59989638bd7d801a4a95a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a7d2c359977e59989638bd7d801a4a95a">ConfigureGamepads</a> ()</td></tr>
 <tr class="memdesc:a7d2c359977e59989638bd7d801a4a95a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the gamepad manager. Override to set up gamepad-specific configuration.  <br /></td></tr>
 <tr class="separator:a7d2c359977e59989638bd7d801a4a95a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afabc3777509a50b9ab4a3628561fbcdd" id="r_afabc3777509a50b9ab4a3628561fbcdd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#afabc3777509a50b9ab4a3628561fbcdd">ConfigureTouch</a> ()</td></tr>
+<tr class="memdesc:afabc3777509a50b9ab4a3628561fbcdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the touch input adapter. Override to set up touch-specific configuration.  <br /></td></tr>
+<tr class="separator:afabc3777509a50b9ab4a3628561fbcdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69edbdbc859406c360e64aa8a5ba0db9" id="r_a69edbdbc859406c360e64aa8a5ba0db9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a69edbdbc859406c360e64aa8a5ba0db9">InitializeGameContent</a> ()</td></tr>
 <tr class="memdesc:a69edbdbc859406c360e64aa8a5ba0db9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes game-specific content including assets, scenes, and game objects.  <br /></td></tr>
 <tr class="separator:a69edbdbc859406c360e64aa8a5ba0db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,7 +249,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#adfc7937992e7ed48ad39ac8fea88c508">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a27a77b554ffe3fec87b00c692ecf5786">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#acd261a0dc645cbc96bcfda7de8977df8">Gondwana.WinForms.Hosting.WinFormsGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#ad0369264ce46352290a814fbab85a71a">Gondwana.WinForms.Hosting.WinFormsGpuGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00155">155</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00161">161</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -277,7 +280,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#aac689886da61ecde3f301e5443610ae8">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a811dfc0155ff97fb11564aa90f7e35b0">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a93b88ac9577d756add67b951cbc6f5b6">Gondwana.WinForms.Hosting.WinFormsGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#ac8c5ec8dc2dc50aa7e5e7fe69a5111ac">Gondwana.WinForms.Hosting.WinFormsGpuGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00091">91</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00092">92</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -304,7 +307,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures all input devices including keyboard, mouse, and gamepads. </p>
+<p>Configures all input devices including keyboard, mouse, gamepads, and touch. </p>
 
 <p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00071">71</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
@@ -337,7 +340,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#ab5d14a062914560f6303b8e3e7e2f5f3">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a8a11bad2462f5a0c04ada9417c5f943e">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a67d46e96f597fcc46707c6bc083a94e0">Gondwana.WinForms.Hosting.WinFormsGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#ab8e78ac575a4941436c91ba188f439c1">Gondwana.WinForms.Hosting.WinFormsGpuGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00081">81</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00082">82</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -404,7 +407,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a8065adf37bd6e4e58e644e432213d5cf">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#ac3f4a2711f2af9b1b5bb082af55c4760">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a9392e8dd0478b271a9ceafa89fc591ec">Gondwana.WinForms.Hosting.WinFormsGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#abb1fb0bff23f9162bdbd64748d1c0cc1">Gondwana.WinForms.Hosting.WinFormsGpuGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00086">86</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00087">87</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -435,6 +438,37 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="afabc3777509a50b9ab4a3628561fbcdd" name="afabc3777509a50b9ab4a3628561fbcdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afabc3777509a50b9ab4a3628561fbcdd">&#9670;&#160;</a></span>ConfigureTouch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.ConfigureTouch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Configures the touch input adapter. Override to set up touch-specific configuration. </p>
+
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#ae9f9c8eddfdad98377617957b0ba16cd">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a4988b2d0a57aabc6499f949b30dd47b7">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#ac2d048a41ff1a7bda0db0a99983ce42b">Gondwana.WinForms.Hosting.WinFormsGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a53a28fd3bce424eaabb2c4eb083c5db5">Gondwana.WinForms.Hosting.WinFormsGpuGameHost</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00097">97</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+
+</div>
+</div>
 <a id="acfeaa79cfc57010d3b3cfba8fcc7af1d" name="acfeaa79cfc57010d3b3cfba8fcc7af1d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acfeaa79cfc57010d3b3cfba8fcc7af1d">&#9670;&#160;</a></span>CreateDirectDrawings()</h2>
 
@@ -460,7 +494,7 @@ Properties</h2></td></tr>
 
 <p>Creates direct drawing objects in the scene. Override to add custom rendering primitives. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00174">174</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00180">180</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -490,7 +524,7 @@ Properties</h2></td></tr>
 <p>Creates the initial scene for the game. Override to provide a custom starting scene. </p>
 <dl class="section return"><dt>Returns</dt><dd>The initial scene to display.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00142">142</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00148">148</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -519,7 +553,7 @@ Properties</h2></td></tr>
 
 <p>Creates initial views for rendering the scene. Override to set up camera views and viewports. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00150">150</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00156">156</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -548,7 +582,7 @@ Properties</h2></td></tr>
 
 <p>Creates the scene graph including the initial scene and views. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00132">132</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00138">138</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -577,7 +611,7 @@ Properties</h2></td></tr>
 
 <p>Creates sprite objects in the scene. Override to populate the scene with sprites. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00169">169</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00175">175</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -598,7 +632,7 @@ Properties</h2></td></tr>
 
 <p>Releases all resources used by the GameHostBase. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00252">252</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00258">258</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -634,7 +668,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00226">226</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00232">232</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -663,7 +697,7 @@ Properties</h2></td></tr>
 
 <p>Disposes the engine instance during disposal. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00208">208</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00214">214</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -698,7 +732,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00217">217</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00223">223</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -820,7 +854,7 @@ Properties</h2></td></tr>
 
 <p>Initializes game-specific content including assets, scenes, and game objects. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00096">96</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00102">102</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -849,7 +883,7 @@ Properties</h2></td></tr>
 
 <p>Initializes scene objects including sprites and direct drawings. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00160">160</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00166">166</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -878,7 +912,7 @@ Properties</h2></td></tr>
 
 <p>Loads animation cycle definitions. Override to load sprite animation data. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00127">127</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00133">133</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -907,7 +941,7 @@ Properties</h2></td></tr>
 
 <p>Loads game assets. Override to load textures, sounds, and other resources. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00117">117</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00123">123</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -936,7 +970,7 @@ Properties</h2></td></tr>
 
 <p>Loads all game content including assets, tilesheets, and animation cycles. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00107">107</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00113">113</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -965,7 +999,7 @@ Properties</h2></td></tr>
 
 <p>Loads tilesheet definitions. Override to load tileset data for tile-based rendering. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00122">122</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00128">128</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -992,7 +1026,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00190">190</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00196">196</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1029,7 +1063,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a536a62fd84fd846548428d08c5d56d0b">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00180">180</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00186">186</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1060,7 +1094,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#aa5148eb22c6fbf29329e75f22c4e534b">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00200">200</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00206">206</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1089,7 +1123,7 @@ Properties</h2></td></tr>
 
 <p>Unhooks event handlers during disposal. Override to clean up custom event subscriptions. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00195">195</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00201">201</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>

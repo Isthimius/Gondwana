@@ -11,6 +11,7 @@ var searchData=
   ['forecolor_8',['ForeColor',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a5e938a5792ee751a7089db68ea79f7f9',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['framecount_9',['FrameCount',['../structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#aab2d2bced19e77634c7679935b51f517',1,'Gondwana::Drawing::Animation::FrameSequence']]],
   ['framelist_10',['FrameList',['../structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#a8d47cb0a92bf0dabf64f3d56907838b9',1,'Gondwana::Drawing::Animation::FrameSequence']]],
-  ['framespersecond_11',['FramesPerSecond',['../classGondwana_1_1Engine.html#a0b52f9a9161095ea518d6b8bc958762c',1,'Gondwana::Engine']]],
-  ['fullrefreshneeded_12',['FullRefreshNeeded',['../classGondwana_1_1Scenes_1_1Scene.html#a4028379dbb7e8c28a6babd9f878044d2',1,'Gondwana::Scenes::Scene']]]
+  ['frames_11',['Frames',['../classGondwana_1_1StudioAssets_1_1AnimationAsset.html#af606519a61d613492ac8f8b6ac633716',1,'Gondwana::StudioAssets::AnimationAsset']]],
+  ['framespersecond_12',['FramesPerSecond',['../classGondwana_1_1Engine.html#a0b52f9a9161095ea518d6b8bc958762c',1,'Gondwana::Engine']]],
+  ['fullrefreshneeded_13',['FullRefreshNeeded',['../classGondwana_1_1Scenes_1_1Scene.html#a4028379dbb7e8c28a6babd9f878044d2',1,'Gondwana::Scenes::Scene']]]
 ];

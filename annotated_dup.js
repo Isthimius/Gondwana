@@ -30,6 +30,9 @@ var annotated_dup =
           ] ],
           [ "Mouse", "namespaceGondwana_1_1Avalonia_1_1Input_1_1Mouse.html", [
             [ "AvaloniaMouseAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html", "classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter" ]
+          ] ],
+          [ "Touch", "namespaceGondwana_1_1Avalonia_1_1Input_1_1Touch.html", [
+            [ "AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter" ]
           ] ]
         ] ],
         [ "Rendering", "namespaceGondwana_1_1Avalonia_1_1Rendering.html", [
@@ -98,6 +101,9 @@ var annotated_dup =
         [ "IDrawable", "interfaceGondwana_1_1Drawing_1_1IDrawable.html", "interfaceGondwana_1_1Drawing_1_1IDrawable" ],
         [ "Tile", "classGondwana_1_1Drawing_1_1Tile.html", "classGondwana_1_1Drawing_1_1Tile" ]
       ] ],
+      [ "Extensibility", "namespaceGondwana_1_1Extensibility.html", [
+        [ "IEnginePlugin", "interfaceGondwana_1_1Extensibility_1_1IEnginePlugin.html", "interfaceGondwana_1_1Extensibility_1_1IEnginePlugin" ]
+      ] ],
       [ "Hosting", "namespaceGondwana_1_1Hosting.html", [
         [ "GameHostBase", "classGondwana_1_1Hosting_1_1GameHostBase.html", "classGondwana_1_1Hosting_1_1GameHostBase" ]
       ] ],
@@ -126,6 +132,22 @@ var annotated_dup =
           [ "MouseEventArgs", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs" ],
           [ "MouseEventConfiguration", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventConfiguration.html", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventConfiguration" ],
           [ "MouseEventPoller", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller" ]
+        ] ],
+        [ "Touch", "namespaceGondwana_1_1Input_1_1Touch.html", [
+          [ "Gestures", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html", [
+            [ "GestureEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs" ],
+            [ "PinchedEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs" ],
+            [ "PinchGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer" ],
+            [ "SwipedEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs" ],
+            [ "SwipeGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer" ],
+            [ "TapGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TapGestureRecognizer.html", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TapGestureRecognizer" ],
+            [ "TappedEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TappedEventArgs.html", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TappedEventArgs" ]
+          ] ],
+          [ "ITouchAdapter", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter" ],
+          [ "ITouchInput", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput" ],
+          [ "TouchEventArgs", "classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html", "classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs" ],
+          [ "TouchEventConfiguration", "classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html", "classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration" ],
+          [ "TouchEventPoller", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller" ]
         ] ],
         [ "InputEventConfigurationBase", "classGondwana_1_1Input_1_1InputEventConfigurationBase.html", "classGondwana_1_1Input_1_1InputEventConfigurationBase" ]
       ] ],
@@ -168,6 +190,17 @@ var annotated_dup =
         [ "Scene", "classGondwana_1_1Scenes_1_1Scene.html", "classGondwana_1_1Scenes_1_1Scene" ],
         [ "SceneLayer", "classGondwana_1_1Scenes_1_1SceneLayer.html", "classGondwana_1_1Scenes_1_1SceneLayer" ],
         [ "SceneLayerTile", "classGondwana_1_1Scenes_1_1SceneLayerTile.html", "classGondwana_1_1Scenes_1_1SceneLayerTile" ]
+      ] ],
+      [ "StudioAssets", "namespaceGondwana_1_1StudioAssets.html", [
+        [ "AnimationAsset", "classGondwana_1_1StudioAssets_1_1AnimationAsset.html", "classGondwana_1_1StudioAssets_1_1AnimationAsset" ],
+        [ "AnimationFrameAsset", "classGondwana_1_1StudioAssets_1_1AnimationFrameAsset.html", "classGondwana_1_1StudioAssets_1_1AnimationFrameAsset" ],
+        [ "SceneAsset", "classGondwana_1_1StudioAssets_1_1SceneAsset.html", "classGondwana_1_1StudioAssets_1_1SceneAsset" ],
+        [ "SceneColliderAsset", "classGondwana_1_1StudioAssets_1_1SceneColliderAsset.html", "classGondwana_1_1StudioAssets_1_1SceneColliderAsset" ],
+        [ "SceneEntityAsset", "classGondwana_1_1StudioAssets_1_1SceneEntityAsset.html", "classGondwana_1_1StudioAssets_1_1SceneEntityAsset" ],
+        [ "SceneLayerAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerAsset.html", "classGondwana_1_1StudioAssets_1_1SceneLayerAsset" ],
+        [ "SceneLayerTileAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerTileAsset.html", "classGondwana_1_1StudioAssets_1_1SceneLayerTileAsset" ],
+        [ "TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset" ],
+        [ "TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset" ]
       ] ],
       [ "Timers", "namespaceGondwana_1_1Timers.html", [
         [ "Timer", "classGondwana_1_1Timers_1_1Timer.html", "classGondwana_1_1Timers_1_1Timer" ]

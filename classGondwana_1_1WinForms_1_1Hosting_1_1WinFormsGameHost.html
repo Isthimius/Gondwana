@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -129,6 +129,9 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a93b88ac9577d756add67b951cbc6f5b6" id="r_a93b88ac9577d756add67b951cbc6f5b6"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a93b88ac9577d756add67b951cbc6f5b6">ConfigureGamepads</a> ()</td></tr>
 <tr class="memdesc:a93b88ac9577d756add67b951cbc6f5b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the XInput gamepad manager for Xbox controller support.  <br /></td></tr>
 <tr class="separator:a93b88ac9577d756add67b951cbc6f5b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2d048a41ff1a7bda0db0a99983ce42b" id="r_ac2d048a41ff1a7bda0db0a99983ce42b"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#ac2d048a41ff1a7bda0db0a99983ce42b">ConfigureTouch</a> ()</td></tr>
+<tr class="memdesc:ac2d048a41ff1a7bda0db0a99983ce42b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures touch input. Override to provide a platform-specific touch adapter.  <br /></td></tr>
+<tr class="separator:ac2d048a41ff1a7bda0db0a99983ce42b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd261a0dc645cbc96bcfda7de8977df8" id="r_acd261a0dc645cbc96bcfda7de8977df8"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#acd261a0dc645cbc96bcfda7de8977df8">BindScene</a> ()</td></tr>
 <tr class="memdesc:acd261a0dc645cbc96bcfda7de8977df8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the current scene to the render surface host.  <br /></td></tr>
 <tr class="separator:acd261a0dc645cbc96bcfda7de8977df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -144,6 +147,9 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:ae529ebe94a2b0eb752da39e8eb64c2da" id="r_ae529ebe94a2b0eb752da39e8eb64c2da"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#ae529ebe94a2b0eb752da39e8eb64c2da">OnGamepadManagerInitialized</a> ()</td></tr>
 <tr class="memdesc:ae529ebe94a2b0eb752da39e8eb64c2da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after the gamepad manager has been initialized. Override to perform additional gamepad setup.  <br /></td></tr>
 <tr class="separator:ae529ebe94a2b0eb752da39e8eb64c2da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24cd75c5808790c8493305abea249890" id="r_a24cd75c5808790c8493305abea249890"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a24cd75c5808790c8493305abea249890">OnTouchAdapterInitialized</a> ()</td></tr>
+<tr class="memdesc:a24cd75c5808790c8493305abea249890"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after the touch adapter has been initialized. Override to perform additional touch setup, such as attaching gesture recognizers.  <br /></td></tr>
+<tr class="separator:a24cd75c5808790c8493305abea249890"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGondwana_1_1Hosting_1_1GameHostBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html">Gondwana.Hosting.GameHostBase</a></td></tr>
 <tr class="memitem:a3f2e8a93982566e235dd6a738d190568 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a3f2e8a93982566e235dd6a738d190568"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a3f2e8a93982566e235dd6a738d190568">ConfigureLogging</a> (LogLevel logLevel)</td></tr>
 <tr class="memdesc:a3f2e8a93982566e235dd6a738d190568 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the logging level for the engine.  <br /></td></tr>
@@ -155,7 +161,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a102491cbe2c293deae54885bf6d39304 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures platform-specific features and adapters for the game host.  <br /></td></tr>
 <tr class="separator:a102491cbe2c293deae54885bf6d39304 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ad0f5ab035962b58e6bcf4a34389fb7 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a0ad0f5ab035962b58e6bcf4a34389fb7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a0ad0f5ab035962b58e6bcf4a34389fb7">ConfigureInput</a> ()</td></tr>
-<tr class="memdesc:a0ad0f5ab035962b58e6bcf4a34389fb7 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures all input devices including keyboard, mouse, and gamepads.  <br /></td></tr>
+<tr class="memdesc:a0ad0f5ab035962b58e6bcf4a34389fb7 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures all input devices including keyboard, mouse, gamepads, and touch.  <br /></td></tr>
 <tr class="separator:a0ad0f5ab035962b58e6bcf4a34389fb7 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69edbdbc859406c360e64aa8a5ba0db9 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a69edbdbc859406c360e64aa8a5ba0db9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a69edbdbc859406c360e64aa8a5ba0db9">InitializeGameContent</a> ()</td></tr>
 <tr class="memdesc:a69edbdbc859406c360e64aa8a5ba0db9 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes game-specific content including assets, scenes, and game objects.  <br /></td></tr>
@@ -309,7 +315,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4939bab4a421dd31905b5e526f4c7c1b">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00065">65</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00073">73</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -435,6 +441,37 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="ac2d048a41ff1a7bda0db0a99983ce42b" name="ac2d048a41ff1a7bda0db0a99983ce42b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2d048a41ff1a7bda0db0a99983ce42b">&#9670;&#160;</a></span>ConfigureTouch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.WinForms.Hosting.WinFormsGameHost.ConfigureTouch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Configures touch input. Override to provide a platform-specific touch adapter. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#afabc3777509a50b9ab4a3628561fbcdd">Gondwana.Hosting.GameHostBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00065">65</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
+
+</div>
+</div>
 <a id="adedbd81f3bbf880aefd56c137642be95" name="adedbd81f3bbf880aefd56c137642be95"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adedbd81f3bbf880aefd56c137642be95">&#9670;&#160;</a></span>OnConfigurePlatform()</h2>
 
@@ -460,7 +497,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Provides a hook for configuring platform-specific settings during initialization. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00073">73</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00081">81</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -489,7 +526,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the gamepad manager has been initialized. Override to perform additional gamepad setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00088">88</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00096">96</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -518,7 +555,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the keyboard adapter has been initialized. Override to perform additional keyboard setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00078">78</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00086">86</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -547,7 +584,36 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the mouse adapter has been initialized. Override to perform additional mouse setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00083">83</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00091">91</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
+
+</div>
+</div>
+<a id="a24cd75c5808790c8493305abea249890" name="a24cd75c5808790c8493305abea249890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24cd75c5808790c8493305abea249890">&#9670;&#160;</a></span>OnTouchAdapterInitialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Gondwana.WinForms.Hosting.WinFormsGameHost.OnTouchAdapterInitialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called after the touch adapter has been initialized. Override to perform additional touch setup, such as attaching gesture recognizers. </p>
+
+<p class="definition">Definition at line <a class="el" href="WinFormsGameHost_8cs_source.html#l00102">102</a> of file <a class="el" href="WinFormsGameHost_8cs_source.html">WinFormsGameHost.cs</a>.</p>
 
 </div>
 </div>

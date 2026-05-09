@@ -11,7 +11,9 @@ var searchData=
   ['smoothstep_8',['SmoothStep',['../namespaceGondwana_1_1Movement_1_1Easing.html#a74018978c1a1f6aa869a55d97d8dc3d3ab4cb90d3e50a3e043cabff0b7be07f88',1,'Gondwana::Movement::Easing']]],
   ['solid_9',['Solid',['../namespaceGondwana_1_1Collisions.html#af0ee70eb3a5b26e4d773bec1e5e128eeae41480b6bbfbf7407974a88d3d34f4fa',1,'Gondwana::Collisions']]],
   ['sprites_10',['Sprites',['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf',1,'Gondwana']]],
-  ['stretch_11',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560',1,'Gondwana::Drawing::Direct::DirectImage']]],
-  ['sw_12',['sw',['../namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Collisions.SW'],['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Drawing.Coordinates.SW']]],
-  ['synchronous_13',['Synchronous',['../namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249da2fe4167817733fec8e6ba1afddf78f1b',1,'Gondwana::Logging']]]
+  ['stationary_11',['Stationary',['../namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e',1,'Gondwana::Input::Touch']]],
+  ['stretch_12',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560',1,'Gondwana::Drawing::Direct::DirectImage']]],
+  ['sw_13',['sw',['../namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Collisions.SW'],['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Drawing.Coordinates.SW']]],
+  ['swipe_14',['Swipe',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa78076ce792c4640bf99c598c92bd69e7',1,'Gondwana::Input::Touch::Gestures']]],
+  ['synchronous_15',['Synchronous',['../namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249da2fe4167817733fec8e6ba1afddf78f1b',1,'Gondwana::Logging']]]
 ];

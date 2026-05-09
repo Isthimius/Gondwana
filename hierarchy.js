@@ -1,6 +1,8 @@
 var hierarchy =
 [
     [ "Gondwana.Collisions.Aabb", "structGondwana_1_1Collisions_1_1Aabb.html", null ],
+    [ "Gondwana.StudioAssets.AnimationAsset", "classGondwana_1_1StudioAssets_1_1AnimationAsset.html", null ],
+    [ "Gondwana.StudioAssets.AnimationFrameAsset", "classGondwana_1_1StudioAssets_1_1AnimationFrameAsset.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", null ],
@@ -24,6 +26,11 @@ var hierarchy =
       [ "Gondwana.Input.Gamepad.GamepadButtonDownEventArgs", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadButtonDownEventArgs.html", null ],
       [ "Gondwana.Input.Keyboard.KeyDownEventArgs", "classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html", null ],
       [ "Gondwana.Input.Mouse.MouseEventArgs", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html", null ],
+      [ "Gondwana.Input.Touch.Gestures.GestureEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html", null ],
+      [ "Gondwana.Input.Touch.Gestures.PinchedEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html", null ],
+      [ "Gondwana.Input.Touch.Gestures.SwipedEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html", null ],
+      [ "Gondwana.Input.Touch.Gestures.TappedEventArgs", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TappedEventArgs.html", null ],
+      [ "Gondwana.Input.Touch.TouchEventArgs", "classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html", null ],
       [ "Gondwana.Logging.LoggingErrorEventArgs", "classGondwana_1_1Logging_1_1LoggingErrorEventArgs.html", null ],
       [ "Gondwana.Rendering.RenderSurfaceHostBindEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html", null ],
       [ "Gondwana.Video.VideoFrameReadyEventArgs", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html", null ],
@@ -66,6 +73,7 @@ var hierarchy =
       [ "Gondwana.Audio.AudioResource", "classGondwana_1_1Audio_1_1AudioResource.html", null ],
       [ "Gondwana.Audio.AudioResourceManager", "classGondwana_1_1Audio_1_1AudioResourceManager.html", null ],
       [ "Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html", null ],
+      [ "Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", null ],
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Configuration.EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", null ],
@@ -88,6 +96,9 @@ var hierarchy =
         [ "Gondwana.WinForms.Hosting.WinFormsGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html", null ],
         [ "Gondwana.WinForms.Hosting.WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", null ]
       ] ],
+      [ "Gondwana.Input.Touch.Gestures.PinchGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html", null ],
+      [ "Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html", null ],
+      [ "Gondwana.Input.Touch.Gestures.TapGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TapGestureRecognizer.html", null ],
       [ "Gondwana.Movement.MovementController", "classGondwana_1_1Movement_1_1MovementController.html", null ],
       [ "Gondwana.Rendering.Backbuffers.BackbufferBase", "classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html", [
         [ "Gondwana.Rendering.Backbuffers.BitmapBackbuffer", "classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html", null ],
@@ -114,6 +125,7 @@ var hierarchy =
     [ "Gondwana.IEngineDispatcher", "interfaceGondwana_1_1IEngineDispatcher.html", [
       [ "Gondwana.EngineDispatcher", "classGondwana_1_1EngineDispatcher.html", null ]
     ] ],
+    [ "Gondwana.Extensibility.IEnginePlugin", "interfaceGondwana_1_1Extensibility_1_1IEnginePlugin.html", null ],
     [ "IEnumerable", null, [
       [ "Gondwana.Drawing.Animation.FrameSequence", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html", null ],
       [ "Gondwana.Scenes.Scene", "classGondwana_1_1Scenes_1_1Scene.html", null ],
@@ -159,11 +171,18 @@ var hierarchy =
     [ "Gondwana.Input.InputEventConfigurationBase", "classGondwana_1_1Input_1_1InputEventConfigurationBase.html", [
       [ "Gondwana.Input.Gamepad.GamepadButtonEventConfiguration", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadButtonEventConfiguration.html", null ],
       [ "Gondwana.Input.Keyboard.KeyEventConfiguration", "classGondwana_1_1Input_1_1Keyboard_1_1KeyEventConfiguration.html", null ],
-      [ "Gondwana.Input.Mouse.MouseEventConfiguration", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventConfiguration.html", null ]
+      [ "Gondwana.Input.Mouse.MouseEventConfiguration", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventConfiguration.html", null ],
+      [ "Gondwana.Input.Touch.TouchEventConfiguration", "classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html", null ]
     ] ],
     [ "ISampleProvider", null, [
       [ "Gondwana.Audio.Midi.SynthesizerSampleProvider", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html", null ],
       [ "Gondwana.Audio.StereoPanSampleProvider", "classGondwana_1_1Audio_1_1StereoPanSampleProvider.html", null ]
+    ] ],
+    [ "Gondwana.Input.Touch.ITouchAdapter", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html", [
+      [ "Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", null ]
+    ] ],
+    [ "Gondwana.Input.Touch.ITouchInput", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html", [
+      [ "Gondwana.Input.Touch.TouchEventPoller", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html", null ]
     ] ],
     [ "Gondwana.IUiDispatcher", "interfaceGondwana_1_1IUiDispatcher.html", [
       [ "Gondwana.UiDispatcher", "classGondwana_1_1UiDispatcher.html", null ]
@@ -184,7 +203,14 @@ var hierarchy =
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html", null ]
     ] ],
     [ "Gondwana.Rendering.RenderSurfaceAdapterResizedEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html", null ],
+    [ "Gondwana.StudioAssets.SceneAsset", "classGondwana_1_1StudioAssets_1_1SceneAsset.html", null ],
+    [ "Gondwana.StudioAssets.SceneColliderAsset", "classGondwana_1_1StudioAssets_1_1SceneColliderAsset.html", null ],
+    [ "Gondwana.StudioAssets.SceneEntityAsset", "classGondwana_1_1StudioAssets_1_1SceneEntityAsset.html", null ],
+    [ "Gondwana.StudioAssets.SceneLayerAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerAsset.html", null ],
+    [ "Gondwana.StudioAssets.SceneLayerTileAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerTileAsset.html", null ],
     [ "Gondwana.Movement.Scripted.ScriptedMovement", "structGondwana_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", null ],
+    [ "Gondwana.StudioAssets.TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", null ],
+    [ "Gondwana.StudioAssets.TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", null ],
     [ "UserControl", null, [
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html", null ]

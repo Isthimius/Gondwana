@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['horizontalalignment_0',['HorizontalAlignment',['../namespaceGondwana_1_1Drawing_1_1Sprites.html#ab3dde0a5b955ae7bce32212444fdf778',1,'Gondwana::Drawing::Sprites']]]
+  ['gesturetype_0',['GestureType',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563f',1,'Gondwana::Input::Touch::Gestures']]]
 ];

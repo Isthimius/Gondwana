@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['textrevealmode_0',['TextRevealMode',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ad4712552d0393589acf2e3246286eb77',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['timercycles_1',['TimerCycles',['../namespaceGondwana_1_1Timers.html#ae9d007991e00874a718658b6a05bd255',1,'Gondwana::Timers']]],
-  ['timertype_2',['TimerType',['../namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41',1,'Gondwana::Timers']]]
+  ['scalemode_0',['ScaleMode',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3',1,'Gondwana::Drawing::Direct::DirectImage']]],
+  ['stickdirection_1',['StickDirection',['../namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92',1,'Gondwana::Input::Gamepad']]],
+  ['stretchmode_2',['StretchMode',['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93',1,'Gondwana::Drawing::Direct']]],
+  ['strokealign_3',['StrokeAlign',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a539cd00ff56cd777ffea4ab41303bc1e',1,'Gondwana::Drawing::Direct::DirectRectangle']]],
+  ['swipedirection_4',['SwipeDirection',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6',1,'Gondwana::Input::Touch::Gestures']]]
 ];

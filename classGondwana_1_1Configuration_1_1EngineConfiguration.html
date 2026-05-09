@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -162,6 +162,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a5c881d1a987fc214a2f8b4913add7ccd" id="r_a5c881d1a987fc214a2f8b4913add7ccd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a5c881d1a987fc214a2f8b4913add7ccd">TimeBetweenMouseEvents</a> = 0.03<code> [get, set]</code></td></tr>
 <tr class="memdesc:a5c881d1a987fc214a2f8b4913add7ccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with too many events at once (holding down a button, dragging, etc). Default is 0.03 seconds (30 milliseconds).  <br /></td></tr>
 <tr class="separator:a5c881d1a987fc214a2f8b4913add7ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6271aca8aee604872e689b753cb57eb" id="r_af6271aca8aee604872e689b753cb57eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#af6271aca8aee604872e689b753cb57eb">TimeBetweenTouchEvents</a> = 0.03<code> [get, set]</code></td></tr>
+<tr class="memdesc:af6271aca8aee604872e689b753cb57eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time (in seconds) allowed between Touch events. Use this to prevent flooding the system with too many events at once (fast drags, multi-touch, etc). Default is 0.03 seconds (30 milliseconds).  <br /></td></tr>
+<tr class="separator:af6271aca8aee604872e689b753cb57eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2115476b30f35d3cb762a3f2a4a979f" id="r_ab2115476b30f35d3cb762a3f2a4a979f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">EngineLoggingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab2115476b30f35d3cb762a3f2a4a979f">LoggingMode</a> = EngineLoggingMode.Asynchronous<code> [get, set]</code></td></tr>
 <tr class="memdesc:ab2115476b30f35d3cb762a3f2a4a979f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls whether engine logging operations are performed synchronously or asynchronously.  <br /></td></tr>
 <tr class="separator:ab2115476b30f35d3cb762a3f2a4a979f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -214,7 +217,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> if the section existed and was cleared; otherwise, <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00398">398</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00405">405</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -235,7 +238,7 @@ Properties</h2></td></tr>
 
 <p>Removes all configuration sections and all contained key/value pairs. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00412">412</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00419">419</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -264,7 +267,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The existing or newly created dictionary for the specified section. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00278">278</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00285">285</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -293,7 +296,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A read-only dictionary containing the section values, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> if the section does not exist. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00312">312</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00319">319</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -340,7 +343,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The stored configuration value, or <em>defaultValue</em>  if no value exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00347">347</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00354">354</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -369,7 +372,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> if the section exists; otherwise, <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00266">266</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00273">273</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -409,7 +412,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> if the section and key exist; otherwise, <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00329">329</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00336">336</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -438,7 +441,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> if the section was removed; otherwise, <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00298">298</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00305">305</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -478,7 +481,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> if the value was removed; otherwise, <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00382">382</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00389">389</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -524,7 +527,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00364">364</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00371">371</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -563,7 +566,7 @@ Properties</h2></td></tr>
 <div class="line"><a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">var</a> <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">resolution</a> = <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">engineConfiguration</a>.ConfigurationSections[<span class="stringliteral">&quot;graphics&quot;</span>][<span class="stringliteral">&quot;resolution&quot;</span>];</div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost_html"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Gondwana.Rendering.RenderSurfaceHost</a></div><div class="ttdoc">Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceHost_8cs_source.html#l00021">RenderSurfaceHost.cs:23</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00257">257</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00264">264</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -589,7 +592,7 @@ Properties</h2></td></tr>
 
 <p>If true, the engine will attempt to flush queued async log events during shutdown. Default is true. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00213">213</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00220">220</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -618,7 +621,7 @@ Properties</h2></td></tr>
 <p>When set to EngineLoggingMode.Synchronous, log entries are written immediately on the calling thread. This guarantees ordering and delivery but may negatively impact engine performance, especially when logging to the console. </p>
 <p>The logging execution mode. The default value is EngineLoggingMode.Asynchronous. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00185">185</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00192">192</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -650,7 +653,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00198">198</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00205">205</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -758,7 +761,7 @@ Properties</h2></td></tr>
 
 <p>Optional collection of serialized EngineStates to mount at initialization. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00218">218</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00225">225</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -820,7 +823,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The stored configuration value, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00465">465</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00472">472</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -854,7 +857,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The dictionary of key/value pairs for the section, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> if the section does not exist. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00428">428</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00435">435</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -933,6 +936,32 @@ Properties</h2></td></tr>
 <p>Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with too many events at once (holding down a button, dragging, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
 <p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00168">168</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+
+</div>
+</div>
+<a id="af6271aca8aee604872e689b753cb57eb" name="af6271aca8aee604872e689b753cb57eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6271aca8aee604872e689b753cb57eb">&#9670;&#160;</a></span>TimeBetweenTouchEvents</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">double</a> Gondwana.Configuration.EngineConfiguration.TimeBetweenTouchEvents = 0.03</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Minimum time (in seconds) allowed between Touch events. Use this to prevent flooding the system with too many events at once (fast drags, multi-touch, etc). Default is 0.03 seconds (30 milliseconds). </p>
+
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00175">175</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
