@@ -77,8 +77,6 @@ All notable changes to this project will be documented in this file.
 - Make Frame.DurationSeconds readonly for consistency with other fields
 - Fix black content panels, add named tiles filter, per-frame durations, AllowDrop, plugin resolver, and other review fixes
 - Add NotifyCanExecuteChangedFor to ImagePath, TileWidth, TileHeight for RebuildGridCommand
-- Potential fix for pull request finding
-- Potential fix for pull request finding
 - Fix PlantUML repeat syntax in rendering pipeline flowchart
 - Add rendering-pipeline-flowchart.puml with CPU and GPU rendering lines
 - Changed --> Other Changes
@@ -92,8 +90,6 @@ All notable changes to this project will be documented in this file.
 - Document recognizer lifetime ownership on TouchEvent
 - Add GestureType, GestureEventArgs, and TouchEvent on TouchEventPoller
 - Add TouchAdapter setter to EngineInputSystems and wire through Engine.Initialize
-- Potential fix for pull request finding
-- Initial plan
 - Fix gondwana run wasm: publish then serve via dotnet-serve instead of dotnet run
 - Version bump
 - CHANGELOG cleanup
@@ -103,6 +99,7 @@ All notable changes to this project will be documented in this file.
 
 Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 
+---
 
 # v2.2.3 - May 05, 2026
 
@@ -132,8 +129,6 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 - Restore TAG HANDLING inline comments and mention -PreviewOnly in confirmation prompt
 - Align cliff.toml format, harden heading detection, resolve paths from PSScriptRoot
 - Use # headings in cliff.toml, align awk extractor, fix preview and first-run changelog
-- Fetch origin/master and rebase before pushing CHANGELOG to master
-- Push CHANGELOG directly to master instead of via PR in release workflow
 
 
 
