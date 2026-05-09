@@ -2,6 +2,111 @@
 
 All notable changes to this project will be documented in this file.
 
+
+# v2.2.4 - May 09, 2026
+
+
+
+## Added
+- Add studio editors and runtime asset loaders
+- Add core engine/studio plugin infrastructure
+- Add missing new wasm, run, run wasm, and publish wasm rows to HelpCommand
+- Add Git, nbgv, Gondwana CLI, and wasm-tools checks
+- Wire touch adapter into GameHost lifecycle same as keyboard and mouse
+- Add TouchAdapter to EngineInputSystems and wire through Engine.Initialize
+- Refactor touch to poll-driven pattern matching Mouse
+- Add touch input adapter with gesture recognizers for Avalonia (Android/iOS)
+- Add --fix flag to gondwana doctor
+
+
+
+## Fixed
+- Set trim=false and add trailing blank line to fix section boundary
+- Filter merge commits and clean up changelog format
+- Scope git-cliff to repository root
+- Resolve studio build issues and finalize editor integration
+- Add missing [DefaultValue] attributes to Configuration options
+- Resolve ChangelogPath and CliffConfigPath relative to repo root in release.ps1
+- Tighten IsNuGetPackageCached exception handling; document lowercase convention
+- Detect SkiaSharp installed via NuGet global packages cache
+- Drop --columns from template check; probe VLC install dirs on Windows
+- Wrap Where-Object results in @() to avoid .Count on scalar under strict mode
+- Add UTF-8 BOM to remaining ps1 files with non-ASCII characters
+- Add UTF-8 BOM to Setup-Gondwana-Dev.ps1 for PowerShell 5.1 compatibility
+- Safe IsWindows check for PS 5.1; use Invoke-Cmd for winget in step 10
+- Set EnableWindowsTargeting unconditionally in Directory.Build.props
+- Enable Windows targeting for non-Windows restore in Directory.Build.props
+- TouchEnded always drains before throttle; _lastEventTick advances only on emitted events
+- Setter owns adapter disposal; callers assign via TouchAdapter only
+- Add EnableWindowsTargeting to Directory.Build.props for cross-OS restore
+- Address PR review feedback on touch gesture recognizers and adapter
+
+
+
+## Refactoring
+- Address remaining code review feedback
+- Address code review feedback on TouchEventPoller and AvaloniaTouchInputAdapter
+- Address code review feedback on gesture recognizers and touch adapter
+
+
+
+## Documentation
+- Update gondwana doctor docs in README and CLICHEATSHEET
+- Add README for Solution Items/scripts folder
+- Update Packages and Core Namespaces in README
+- Add gondwana doctor --fix to CLICHEATSHEET
+
+
+
+## Maintenance
+- Address validation feedback and finalize implementation
+- Add Setup-Gondwana-Dev.ps1 and update scripts README
+
+
+
+## Other Changes
+- Adding new .puml files to sln
+- Add separate BitmapBackbuffer and GpuBackbuffer flowchart PUML files
+- Improve XML docs on new interfaces
+- Add XML documentation for public/protected members in touched C# files
+- OnPreFrameRender and OnPostFrameRender to IEnginePlugin
+- Remove dead reference
+- Refine ViewLocator content resolution semantics
+- Optimize ViewLocator reflection path and remove redundant null pattern
+- Fix Studio Dock tab content resolution to prevent black editor panels
+- Make Frame.DurationSeconds readonly for consistency with other fields
+- Fix black content panels, add named tiles filter, per-frame durations, AllowDrop, plugin resolver, and other review fixes
+- Add NotifyCanExecuteChangedFor to ImagePath, TileWidth, TileHeight for RebuildGridCommand
+- Potential fix for pull request finding
+- Potential fix for pull request finding
+- Fix PlantUML repeat syntax in rendering pipeline flowchart
+- Add rendering-pipeline-flowchart.puml with CPU and GPU rendering lines
+- Changed --> Other Changes
+- Sln maint
+- Fix .Count on scalar in strict mode for .NET SDK check
+- Script organization
+- Moving .puml to correct folder
+- Add PlantUML diagrams to documentation folder
+- Making dir structure match sln
+- Moving old .puml to old folder
+- Document recognizer lifetime ownership on TouchEvent
+- Add GestureType, GestureEventArgs, and TouchEvent on TouchEventPoller
+- Add TouchAdapter setter to EngineInputSystems and wire through Engine.Initialize
+- Potential fix for pull request finding
+- Initial plan
+- Fix gondwana run wasm: publish then serve via dotnet-serve instead of dotnet run
+- Version bump
+- CHANGELOG cleanup
+- Clean up CHANGELOG v2.2.3
+
+
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
+
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
 # v2.2.3 - May 05, 2026
 
 
