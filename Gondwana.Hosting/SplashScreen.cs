@@ -36,6 +36,21 @@ public sealed class SplashScreen : IDisposable
     /// <summary>Gets or sets the duration of the fade-out animation in seconds.</summary>
     public float FadeOutSec { get; set; } = 0.45f;
 
+    /// <summary>
+    /// Gets or sets an optional callback that runs after the fade-in completes and while the
+    /// splash is being held on screen.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Fade-out will not begin until both <see cref="HoldSec"/> has elapsed and this callback
+    /// has completed.
+    /// </para>
+    /// <para>
+    /// Synchronous work can be wrapped by returning <see cref="Task.CompletedTask"/>.
+    /// </para>
+    /// </remarks>
+    public Func<SplashScreen, Task>? AfterFadeInAsync { get; set; }
+
     private readonly DirectImage _image;
     private readonly SKImage _sourceImage;
     private bool _disposed;
@@ -91,14 +106,20 @@ public sealed class SplashScreen : IDisposable
     }
 
     /// <summary>
-    /// Fades the splash in to full opacity, then holds for <see cref="HoldSec"/> seconds.
-    /// Returns when the hold period expires.
+    /// Fades the splash in to full opacity, then waits for both the hold period and any
+    /// <see cref="AfterFadeInAsync"/> callback to complete.
     /// </summary>
     public async Task ShowAsync()
     {
         await FadeAndWaitAsync(_image, 1f, FadeInSec);
-        if (HoldSec > 0f)
-            await Task.Delay(TimeSpan.FromSeconds(HoldSec));
+
+        var holdTask = HoldSec > 0f
+            ? Task.Delay(TimeSpan.FromSeconds(HoldSec))
+            : Task.CompletedTask;
+
+        var callbackTask = InvokeAfterFadeInAsync();
+
+        await Task.WhenAll(holdTask, callbackTask);
     }
 
     /// <summary>
@@ -115,6 +136,21 @@ public sealed class SplashScreen : IDisposable
         _disposed = true;
         _image.Dispose();
         _sourceImage.Dispose();
+    }
+
+    private Task InvokeAfterFadeInAsync()
+    {
+        if (AfterFadeInAsync == null)
+            return Task.CompletedTask;
+
+        try
+        {
+            return AfterFadeInAsync(this) ?? Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException(ex);
+        }
     }
 
     // Subscribes to terminal events before starting the fade so no completion/disposal event is

@@ -57,8 +57,9 @@ public abstract class GameHostBase : IDisposable
     /// it fully platform-agnostic and reusable across projects.
     /// </para>
     /// <para>
-    /// Override <see cref="CreateSplash"/> in a subclass to provide a custom splash image.
-    /// Override <see cref="GetPrimaryRenderSurfaceHost"/> in platform-specific subclasses to expose
+    /// Override <see cref="CreateSplash"/> in a subclass to provide a custom splash image and to
+    /// configure <see cref="SplashScreen.AfterFadeInAsync"/> for startup work that should run after
+    /// fade-in completes. Override <see cref="GetPrimaryRenderSurfaceHost"/> in platform-specific subclasses to expose
     /// the render surface host that the splash will be attached to.
     /// </para>
     /// </remarks>
@@ -99,7 +100,8 @@ public abstract class GameHostBase : IDisposable
 
     /// <summary>
     /// Creates the splash screen to display during <see cref="InitializeAsync"/>.
-    /// Override to supply a game-specific image; return <see langword="null"/> for no splash.
+    /// Override to supply a game-specific image and any splash callbacks; return
+    /// <see langword="null"/> for no splash.
     /// </summary>
     /// <param name="host">The render surface host that will own the splash overlay.</param>
     /// <returns>A configured <see cref="SplashScreen"/>, or <see langword="null"/>.</returns>
