@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Gondwana.Demos.Spot.Game;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +10,8 @@ internal interface ISpotGameHost : IDisposable
     Engine Engine { get; }
 
     void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
+
+    Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
     void SetMusicEnabled(bool enabled);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Hosting;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
@@ -80,6 +82,12 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost
     }
 
     #region WinFormsGameHost overrides
+
+    protected override SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
+    {
+        var imagePath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo.png");
+        return SplashScreen.TryCreate(host, imagePath);
+    }
 
     protected override void LoadAssets()
     {

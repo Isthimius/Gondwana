@@ -125,16 +125,12 @@ internal partial class GameWindow : Form
             return;
 
         Enabled = false;
-        using var splash = new SpotSplashForm(this);
         try
         {
-            await splash.ShowDuringInitializationAsync(() =>
-            {
-                _gameHost.Initialize(logLevel: LogLevel.Warning);
+            await _gameHost.InitializeAsync(logLevel: LogLevel.Warning);
 
-                // Apply saved settings now that assets are loaded and engine is running.
-                ApplyLoadedSettings();
-            });
+            // Apply saved settings now that assets are loaded and engine is running.
+            ApplyLoadedSettings();
         }
         finally
         {

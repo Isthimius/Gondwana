@@ -1,4 +1,5 @@
 ﻿using Gondwana.Hosting;
+using Gondwana.Rendering;
 using Gondwana.WinForms.Rendering;
 
 namespace Gondwana.WinForms.Hosting;
@@ -75,6 +76,9 @@ public abstract class WinFormsGpuGameHost : GameHostBase
     {
         RenderSurface.Host.Bind(Scene!, false);
     }
+
+    /// <inheritdoc/>
+    protected override RenderSurfaceHostBase GetPrimaryRenderSurfaceHost() => RenderSurface.Host;
 
     /// <summary>
     /// Provides a hook for configuring platform-specific settings during initialization.
