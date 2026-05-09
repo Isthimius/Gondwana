@@ -728,7 +728,7 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>
-    /// Gets the collection of resource managers for audio, sprites, fonts, tilesheets, and direct drawing.
+    /// Gets the collection of resource managers for audio, SVG, sprites, fonts, tilesheets, and direct drawing.
     /// </summary>
     /// <value>An <see cref="EngineManagers"/> instance providing access to all engine resource managers.</value>
     /// <remarks>
@@ -736,8 +736,9 @@ public sealed class Engine : IDisposable
     /// This property provides centralized access to subsystem managers responsible for loading
     /// and managing various types of game resources. Use the nested properties to access
     /// specific managers such as <see cref="EngineManagers.AudioResources"/>, 
-    /// <see cref="EngineManagers.Sprites"/>, <see cref="EngineManagers.Fonts"/>, 
-    /// <see cref="EngineManagers.Tilesheets"/>, and <see cref="EngineManagers.DirectDrawings"/>.
+    /// <see cref="EngineManagers.SvgResources"/>, <see cref="EngineManagers.Sprites"/>,
+    /// <see cref="EngineManagers.Fonts"/>, <see cref="EngineManagers.Tilesheets"/>,
+    /// and <see cref="EngineManagers.DirectDrawings"/>.
     /// </para>
     /// </remarks>
     public EngineManagers Managers { get; } = new();

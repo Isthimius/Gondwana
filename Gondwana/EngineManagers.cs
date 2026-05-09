@@ -1,5 +1,6 @@
-﻿using Gondwana.Audio;
+using Gondwana.Audio;
 using Gondwana.Drawing.Direct;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Rendering.Text;
@@ -37,4 +38,9 @@ public sealed class EngineManagers
     /// Gets the tilesheet registry for managing tilesheet resources.
     /// </summary>
     public TilesheetRegistry Tilesheets { get; } = TilesheetRegistry.Instance;
+
+    /// <summary>
+    /// Gets the SVG resource manager for loading and managing SVG assets.
+    /// </summary>
+    public SvgResourceManager SvgResources { get; } = SvgResourceManager.Instance;
 }

@@ -313,7 +313,7 @@ gondwana assets pack ./Assets ./game.assets --password secret --encrypt
 | Argument / Option | Short | Description |
 |---|---|---|
 | `<file>` | | **Required.** Path to the asset bundle to inspect. |
-| `--type <name>` | `-t` | Filter output to assets of the specified type (e.g. `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Misc`). |
+| `--type <name>` | `-t` | Filter output to assets of the specified type (e.g. `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Svg`, `Misc`). |
 | `--password <pass>` | `-p` | Password required to open a password-protected or encrypted bundle. |
 
 **Example**
@@ -384,8 +384,9 @@ Drop a `gondwana-asset-types.json` in the project directory (or pass `--type-map
   "Audio":  ["wav", "mp3", "ogg", "flac", "aac", "wma", "mid", "midi"],
   "Video":  ["mp4", "avi", "mkv", "mov", "wmv", "webm", "m4v"],
   "Cursor": ["cur", "ani"],
-  "Font":   ["ttf", "otf", "woff", "woff2"]
+  "Font":   ["ttf", "otf", "woff", "woff2"],
+  "Svg":    ["svg"]
 }
 ```
 
-Valid type names match the `AssetTypes` enum: `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Misc`.
+Valid type names match the `AssetTypes` enum: `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Svg`, `Misc`.

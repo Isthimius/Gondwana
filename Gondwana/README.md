@@ -16,6 +16,7 @@ into .NET applications.
 -   Collision detection
 -   Particle effects
 -   SkiaSharp-based rendering
+-   SVG asset support (`SvgResource` + `DirectSvg`) for scalable UI/icon rendering
 -   NAudio-based audio playback
 -   Cross-platform architecture
 

@@ -2,6 +2,7 @@
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Animation;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
@@ -326,7 +327,7 @@ public sealed class EngineState
             ClearSelected(parts);
 
         if (parts.HasFlag(EngineStateParts.AssetsFiles))
-            LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>());
+            LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>(), overwriteExisting);
 
         if (parts.HasFlag(EngineStateParts.Audio))
             MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
@@ -347,7 +348,10 @@ public sealed class EngineState
     private static void ClearSelected(EngineStateParts parts)
     {
         if (parts.HasFlag(EngineStateParts.AssetsFiles))
+        {
             AssetsFile.ClearAll();
+            SvgResourceManager.Instance.Clear();
+        }
 
         if (parts.HasFlag(EngineStateParts.Tilesheets))
             TilesheetRegistry.Instance.Clear();
@@ -365,7 +369,7 @@ public sealed class EngineState
             AudioResourceManager.Instance.Dispose();
     }
 
-    private static void LoadAssetsFiles(IEnumerable<AssetsFile> resourceFiles)
+    private static void LoadAssetsFiles(IEnumerable<AssetsFile> resourceFiles, bool overwriteExisting)
     {
         // Replace raw deserialized resource files with proper loaded instances
         if (resourceFiles.Any())
@@ -374,7 +378,15 @@ public sealed class EngineState
             {
                 try
                 {
-                    AssetsFile.LoadOrCreate(raw.FilePath, raw.Password, raw.UseEncryption);
+                    var loaded = AssetsFile.LoadOrCreate(raw.FilePath, raw.Password, raw.UseEncryption);
+
+                    if (overwriteExisting)
+                    {
+                        foreach (var entry in loaded.GetAllEntries().Where(e => e.AssetType == AssetTypes.Svg))
+                            SvgResourceManager.Instance.Unload(entry.AssetName);
+                    }
+
+                    SvgResourceManager.Instance.LoadFromEngineAssetsFile(loaded);
                 }
                 catch (Exception ex)
                 {

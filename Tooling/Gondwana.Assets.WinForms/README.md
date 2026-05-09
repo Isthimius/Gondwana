@@ -9,6 +9,7 @@ It is intended for development workflows rather than runtime use.
 - Asset file creation and editing
 - Stream-based asset storage
 - Zip-backed asset containers
+- Asset typing support including SVG (`Svg`) entries
 - Designed for integration with Gondwana pipelines
 
 ## Usage
