@@ -1,4 +1,5 @@
 ﻿using Gondwana.Logging;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 
@@ -42,6 +43,46 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
+    /// Initializes the game host, then shows a Gondwana-native splash screen (if one is provided
+    /// by <see cref="CreateSplash"/>) that fades in, holds, and fades out over the running game.
+    /// </summary>
+    /// <param name="configPath">Optional path to the configuration file.</param>
+    /// <param name="autoSaveConfig">Optional flag indicating whether to automatically save configuration changes.</param>
+    /// <param name="logLevel">The log level to use for engine logging. Default is <see cref="LogLevel.Warning"/>.</param>
+    /// <remarks>
+    /// <para>
+    /// Initialization is performed synchronously (identical to <see cref="Initialize"/>), after which
+    /// the engine is already running.  The splash is then created—as a <see cref="Gondwana.Drawing.Direct.DirectImage"/>
+    /// overlay on the primary render surface—and animated using the engine's own fade system, making
+    /// it fully platform-agnostic and reusable across projects.
+    /// </para>
+    /// <para>
+    /// Override <see cref="CreateSplash"/> in a subclass to provide a custom splash image and to
+    /// configure <see cref="SplashScreen.AfterFadeInAsync"/> for startup work that should run after
+    /// fade-in completes.
+    /// </para>
+    /// <para>
+    /// Override <see cref="GetPrimaryRenderSurfaceHost"/> in platform-specific subclasses to
+    /// expose the render surface host that the splash will be attached to.
+    /// </para>
+    /// </remarks>
+    public async Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning)
+    {
+        Initialize(configPath, autoSaveConfig, logLevel);
+
+        var host = GetPrimaryRenderSurfaceHost();
+        if (host == null || host.ViewManager.Views.Count == 0)
+            return;
+
+        using var splash = CreateSplash(host);
+        if (splash == null)
+            return;
+
+        await splash.ShowAsync();
+        await splash.HideAsync();
+    }
+
+    /// <summary>
     /// Configures the logging level for the engine.
     /// </summary>
     /// <param name="logLevel">The log level to set.</param>
@@ -49,6 +90,25 @@ public abstract class GameHostBase : IDisposable
     {
         EngineLogger.SetLogLevel(logLevel);
     }
+
+    /// <summary>
+    /// Returns the primary <see cref="RenderSurfaceHostBase"/> for this host, or
+    /// <see langword="null"/> if none is available.
+    /// </summary>
+    /// <remarks>
+    /// Override in platform-specific subclasses to expose the host's render surface so that
+    /// <see cref="InitializeAsync"/> can attach the <see cref="SplashScreen"/> overlay.
+    /// </remarks>
+    protected virtual RenderSurfaceHostBase? GetPrimaryRenderSurfaceHost() => null;
+
+    /// <summary>
+    /// Creates the splash screen to display during <see cref="InitializeAsync"/>.
+    /// Override to supply a game-specific image and any splash callbacks; return
+    /// <see langword="null"/> for no splash.
+    /// </summary>
+    /// <param name="host">The render surface host that will own the splash overlay.</param>
+    /// <returns>A configured <see cref="SplashScreen"/>, or <see langword="null"/>.</returns>
+    protected virtual SplashScreen? CreateSplash(RenderSurfaceHostBase host) => null;
 
     /// <summary>
     /// Initializes the engine with the specified configuration settings.

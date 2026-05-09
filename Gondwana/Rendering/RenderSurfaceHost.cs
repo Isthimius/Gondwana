@@ -335,7 +335,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </remarks>
     private void RenderToBackbufferGpuFull(long tick)
     {
-        if (Scene.CountOfVisibleLayers == 0)
+        // When there are no views at all, clear the whole surface and bail.
+        // If there ARE views but no scene layers, we fall through so view-mode
+        // DirectDrawings (e.g. a splash screen overlay) are still rendered.
+        if (ViewManager.Views.Count == 0)
         {
             Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
             Scene.FullRefreshNeeded = false;

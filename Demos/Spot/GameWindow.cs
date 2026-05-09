@@ -4,6 +4,7 @@ using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Gondwana.Demos.Spot;
@@ -96,17 +97,47 @@ internal partial class GameWindow : Form
         };
     }
 
-    protected override void OnShown(EventArgs e)
+    protected override async void OnShown(EventArgs e)
     {
         base.OnShown(e);
 
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
+        try
+        {
+            await ShowStartupSplashAndInitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                $"Failed to initialize Spot: {ex.Message}",
+                "Startup Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            Close();
+        }
+    }
 
-        _gameHost!.Initialize(logLevel: LogLevel.Warning);
+    private async Task ShowStartupSplashAndInitializeAsync()
+    {
+        if (_gameHost == null)
+            throw new InvalidOperationException("Game host was not initialized before startup splash initialization.");
 
-        // Apply saved settings now that assets are loaded and engine is running.
-        ApplyLoadedSettings();
+        Enabled = false;
+        try
+        {
+            await _gameHost.InitializeAsync(logLevel: LogLevel.Warning);
+            _gameHost.BeginPostSplashStartup();
+
+            // Apply saved settings now that assets are loaded and engine is running.
+            ApplyLoadedSettings();
+        }
+        finally
+        {
+            Enabled = true;
+            Activate();
+        }
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
@@ -259,6 +290,7 @@ internal partial class GameWindow : Form
         var enabled = _gpuAccelerationMenuItem!.Checked;
         PersistSetting(KeyGpuAcceleration, enabled ? "true" : "false");
         MessageBox.Show(
+            this,
             "GPU Acceleration setting has been changed. Please restart the application to apply this change.",
             "Restart Required",
             MessageBoxButtons.OK,
@@ -276,4 +308,3 @@ internal partial class GameWindow : Form
         }
     }
 }
-
