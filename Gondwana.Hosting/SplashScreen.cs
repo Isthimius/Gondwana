@@ -28,13 +28,13 @@ namespace Gondwana.Hosting;
 public sealed class SplashScreen : IDisposable
 {
     /// <summary>Gets or sets the duration of the fade-in animation in seconds.</summary>
-    public float FadeInSec { get; init; } = 0.45f;
+    public float FadeInSec { get; set; } = 0.45f;
 
     /// <summary>Gets or sets how long the splash is held at full opacity, in seconds.</summary>
-    public float HoldSec { get; init; } = 0.55f;
+    public float HoldSec { get; set; } = 0.55f;
 
     /// <summary>Gets or sets the duration of the fade-out animation in seconds.</summary>
-    public float FadeOutSec { get; init; } = 0.45f;
+    public float FadeOutSec { get; set; } = 0.45f;
 
     private readonly DirectImage _image;
     private readonly SKBitmap _bitmap;

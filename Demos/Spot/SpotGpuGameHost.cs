@@ -74,6 +74,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
     internal SpotGame SpotGame { get; private set; } = null!;
 
     private static readonly Random _rng = new();
+    private bool _startupPresentationShown = false;
 
     internal SpotGpuGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
@@ -85,7 +86,10 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
     protected override SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
         var imagePath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo.png");
-        return SplashScreen.TryCreate(host, imagePath);
+        var splash = SplashScreen.TryCreate(host, imagePath);
+        if (splash != null)
+            splash.HoldSec = 3f;
+        return splash;
     }
 
     protected override void LoadAssets()
@@ -178,34 +182,14 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
 
     protected override void CreateDirectDrawings()
     {
-        Tilesheet tilesheet;
-
-        if (TilesheetRegistry.Instance.TryGet("splash", out tilesheet))
-        {
-            var directImage = new DirectImage(
-                tilesheet.SkBitmap,
-                RenderSurface.Host,
-                Scene[0],
-                new Rectangle(0, 0, 769, 769));
-
-            directImage.ZOrder = 100;
-            directImage.SetScaleMode(DirectImage.ScaleMode.Fit);
-        }
-
-        var particleSurface = new ParticleSurface(
-            RenderSurface.Host,
-            Scene[0],
-            new Rectangle(0, 0, 769, 769));
-
-        particleSurface.CullingMarginX = 1300f;
-        particleSurface.ZOrder = 50;
-        particleSurface.Emitters.Add(GetSpots(769, 769));
+        // Deliberately empty: startup presentation is created in BeginPostSplashStartup()
+        // so it does not appear beneath the Gondwana splash.
     }
 
     protected override void OnStartEngine()
     {
-        _music.Volume = 0.2f;
-        _music.Play();
+        // Deliberately empty: startup music begins in BeginPostSplashStartup()
+        // after the Gondwana splash has fully faded out.
     }
 
     protected override void OnMouseAdapterInitialized()
@@ -238,6 +222,44 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost
     }
 
     #endregion WinFormsGameHost overrides
+
+    public void BeginPostSplashStartup()
+    {
+        if (_startupPresentationShown)
+            return;
+
+        _startupPresentationShown = true;
+
+        Tilesheet tilesheet;
+
+        if (TilesheetRegistry.Instance.TryGet("splash", out tilesheet))
+        {
+            var directImage = new DirectImage(
+                tilesheet.SkBitmap,
+                RenderSurface.Host,
+                Scene[0],
+                new Rectangle(0, 0, 769, 769));
+
+            directImage.ZOrder = 100;
+            directImage.SetScaleMode(DirectImage.ScaleMode.Fit);
+        }
+
+        var particleSurface = new ParticleSurface(
+            RenderSurface.Host,
+            Scene[0],
+            new Rectangle(0, 0, 769, 769));
+
+        particleSurface.CullingMarginX = 1300f;
+        particleSurface.ZOrder = 50;
+        particleSurface.Emitters.Add(GetSpots(769, 769));
+
+        if (MusicEnabled)
+        {
+            _music.Volume = 0.2f;
+            if (!_music.IsPlaying)
+                _music.Play();
+        }
+    }
 
     #region game settings
 

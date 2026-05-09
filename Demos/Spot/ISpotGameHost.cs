@@ -13,6 +13,8 @@ internal interface ISpotGameHost : IDisposable
 
     Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
+    void BeginPostSplashStartup();
+
     void SetMusicEnabled(bool enabled);
 
     void SetSoundEffectsEnabled(bool enabled);

@@ -128,6 +128,7 @@ internal partial class GameWindow : Form
         try
         {
             await _gameHost.InitializeAsync(logLevel: LogLevel.Warning);
+            _gameHost.BeginPostSplashStartup();
 
             // Apply saved settings now that assets are loaded and engine is running.
             ApplyLoadedSettings();
