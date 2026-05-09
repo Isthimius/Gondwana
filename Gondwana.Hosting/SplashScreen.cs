@@ -116,20 +116,44 @@ public sealed class SplashScreen : IDisposable
         _bitmap.Dispose();
     }
 
-    // Subscribes to FadeToCompleted before starting the fade so no completion event is missed,
-    // then returns a Task that resolves when the transition finishes.
+    // Subscribes to terminal events before starting the fade so no completion/disposal event is
+    // missed, then returns a Task that resolves when the transition finishes or is canceled by
+    // disposal.
     private static Task FadeAndWaitAsync(DirectDrawingBase drawing, float targetOpacity, float durationSec)
     {
         var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        void OnComplete(object? sender, DirectDrawingBase _)
+        void Cleanup()
         {
             drawing.FadeToCompleted -= OnComplete;
+            drawing.Disposing -= OnDisposing;
+        }
+
+        void OnComplete(object? sender, DirectDrawingBase _)
+        {
+            Cleanup();
             tcs.TrySetResult();
         }
 
+        void OnDisposing(object? sender, DirectDrawingBase _)
+        {
+            Cleanup();
+            tcs.TrySetCanceled();
+        }
+
         drawing.FadeToCompleted += OnComplete;
-        drawing.FadeTo(targetOpacity, durationSec);
+        drawing.Disposing += OnDisposing;
+
+        try
+        {
+            drawing.FadeTo(targetOpacity, durationSec);
+        }
+        catch
+        {
+            Cleanup();
+            throw;
+        }
+
         return tcs.Task;
     }
 }
