@@ -4,6 +4,26 @@ A recommended reading order for getting up to speed on the Gondwana engine codeb
 
 ---
 
+## ⚡ Optional: Automated Dev Setup (Windows / PowerShell)
+
+If you're on Windows and want to get everything installed in one shot, run the setup script from anywhere inside the cloned repository:
+
+```powershell
+# Full setup — installs .NET 8 SDK (if missing), restores packages, builds the
+# solution, installs the Gondwana CLI + templates, WASM workload, and checks
+# for optional native libraries (SDL2, LibVLC).
+.\Solution Items\scripts\Setup-Gondwana-Dev.ps1
+
+# Core-only — skips the WASM workload, SDL2, and LibVLC checks
+.\Solution Items\scripts\Setup-Gondwana-Dev.ps1 -SkipOptional
+```
+
+The script is idempotent — safe to re-run at any time. It ends with `gondwana doctor` to confirm your environment is healthy.
+
+> **This step is entirely optional.** Everything the script does can also be done manually with `dotnet restore`, `dotnet build`, and `dotnet tool install`. See [`Solution Items/scripts/README.md`](Solution%20Items/scripts/README.md) for a full description of all available scripts.
+
+---
+
 ## 🗺️ Reading Order
 
 ### 1. Get the Big Picture First
