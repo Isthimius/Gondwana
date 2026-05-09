@@ -79,8 +79,7 @@ public sealed class DirectSvg : DirectDrawingMovableBase
 
         if (_cachedBitmap is null || _cachedWidth != width || _cachedHeight != height)
         {
-            _cachedBitmap?.Dispose();
-            _cachedBitmap = _svgResource.Rasterize(width, height).Copy();
+            _cachedBitmap = _svgResource.Rasterize(width, height);
             _cachedWidth = width;
             _cachedHeight = height;
         }
@@ -93,7 +92,6 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     {
         if (disposing)
         {
-            _cachedBitmap?.Dispose();
             _cachedBitmap = null;
             _paint.Dispose();
         }
