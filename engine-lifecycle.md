@@ -1,6 +1,6 @@
 # Gondwana Engine Lifecycle
 
-This document explains how a Gondwana game starts, runs, raises events, and shuts down. It is intended to be the runtime equivalent of the old ASP.NET lifecycle docs: one place to answer **what runs when**, **on which thread**, and **which event or hook to use**.
+This document explains how a Gondwana game starts, runs, raises events, and shuts down. It is intended to be one place to answer **what runs when**, **on which thread**, and **which event or hook to use**.
 
 This document covers the public runtime events exposed by the core `Gondwana` package and the lifecycle hooks in `Gondwana.Hosting` / `IEnginePlugin` that frame them.
 
