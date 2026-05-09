@@ -52,7 +52,7 @@ public abstract class GameHostBase : IDisposable
     /// <remarks>
     /// <para>
     /// Initialization is performed synchronously (identical to <see cref="Initialize"/>), after which
-    /// the engine is already running.  The splash is then created—as a <see cref="DirectImage"/>
+    /// the engine is already running.  The splash is then created—as a <see cref="Gondwana.Drawing.Direct.DirectImage"/>
     /// overlay on the primary render surface—and animated using the engine's own fade system, making
     /// it fully platform-agnostic and reusable across projects.
     /// </para>

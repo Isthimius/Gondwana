@@ -122,7 +122,7 @@ internal partial class GameWindow : Form
     private async Task ShowStartupSplashAndInitializeAsync()
     {
         if (_gameHost == null)
-            return;
+            throw new InvalidOperationException("Game host was not initialized before startup splash initialization.");
 
         Enabled = false;
         try

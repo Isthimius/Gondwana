@@ -37,13 +37,13 @@ public sealed class SplashScreen : IDisposable
     public float FadeOutSec { get; set; } = 0.45f;
 
     private readonly DirectImage _image;
-    private readonly SKBitmap _bitmap;
+    private readonly SKImage _sourceImage;
     private bool _disposed;
 
-    private SplashScreen(DirectImage image, SKBitmap bitmap)
+    private SplashScreen(DirectImage image, SKImage sourceImage)
     {
         _image = image;
-        _bitmap = bitmap;
+        _sourceImage = sourceImage;
     }
 
     /// <summary>
@@ -68,8 +68,9 @@ public sealed class SplashScreen : IDisposable
             return null;
         }
 
-        var bitmap = SKBitmap.Decode(imagePath);
-        if (bitmap == null)
+        using var bitmap = SKBitmap.Decode(imagePath);
+        var sourceImage = bitmap == null ? null : SKImage.FromBitmap(bitmap);
+        if (sourceImage == null)
         {
             EngineLogger.GetLogger<SplashScreen>().LogWarning(
                 "SplashScreen image could not be decoded from '{Path}'; splash will be skipped.", imagePath);
@@ -80,13 +81,13 @@ public sealed class SplashScreen : IDisposable
         var vp = view.Viewport.TargetRectPx;
         var screenBounds = new Rectangle(0, 0, vp.Width, vp.Height);
 
-        var image = new DirectImage(bitmap, host, view, screenBounds, "__gondwana_splash__")
+        var image = new DirectImage(sourceImage, host, view, screenBounds, "__gondwana_splash__")
             .SetScaleMode(DirectImage.ScaleMode.Fit);
 
         image.ZOrder = int.MaxValue;
         image.Opacity = 0f;
 
-        return new SplashScreen(image, bitmap);
+        return new SplashScreen(image, sourceImage);
     }
 
     /// <summary>
@@ -106,30 +107,54 @@ public sealed class SplashScreen : IDisposable
     /// </summary>
     public Task HideAsync() => FadeAndWaitAsync(_image, 0f, FadeOutSec);
 
-    /// <summary>Releases the DirectImage overlay and the loaded bitmap.</summary>
+    /// <summary>Releases the DirectImage overlay and the loaded image.</summary>
     public void Dispose()
     {
         if (_disposed)
             return;
         _disposed = true;
         _image.Dispose();
-        _bitmap.Dispose();
+        _sourceImage.Dispose();
     }
 
-    // Subscribes to FadeToCompleted before starting the fade so no completion event is missed,
-    // then returns a Task that resolves when the transition finishes.
+    // Subscribes to terminal events before starting the fade so no completion/disposal event is
+    // missed, then returns a Task that resolves when the transition finishes or is canceled by
+    // disposal.
     private static Task FadeAndWaitAsync(DirectDrawingBase drawing, float targetOpacity, float durationSec)
     {
         var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        void OnComplete(object? sender, DirectDrawingBase _)
+        void Cleanup()
         {
             drawing.FadeToCompleted -= OnComplete;
+            drawing.Disposing -= OnDisposing;
+        }
+
+        void OnComplete(object? sender, DirectDrawingBase _)
+        {
+            Cleanup();
             tcs.TrySetResult();
         }
 
+        void OnDisposing(object? sender, IDirectDrawable _)
+        {
+            Cleanup();
+            tcs.TrySetCanceled();
+        }
+
         drawing.FadeToCompleted += OnComplete;
-        drawing.FadeTo(targetOpacity, durationSec);
+        drawing.Disposing += OnDisposing;
+
+        try
+        {
+            drawing.FadeTo(targetOpacity, durationSec);
+        }
+        catch
+        {
+            Cleanup();
+            throw;
+        }
+
         return tcs.Task;
     }
 }
