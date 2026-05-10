@@ -209,7 +209,7 @@ if ($SkipOptional) {
     Step '8/11  WASM workload (wasm-tools)'
     if (Test-Workload 'wasm-tools') {
         Invoke-Cmd dotnet @('workload', 'update')
-        OK 'Installed workloads updated (including wasm-tools when updates are available).'
+        OK 'wasm-tools and other installed workloads updated to latest available versions.'
     } else {
         Invoke-Cmd dotnet @('workload', 'install', 'wasm-tools')
         OK 'wasm-tools workload installed.'
