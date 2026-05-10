@@ -114,8 +114,9 @@ internal sealed class PublishWasmCommand : Command<PublishWasmCommand.Settings>
         if (Directory.Exists(appBundle))
         {
             Console.WriteLine(appBundle);
-            AnsiConsole.MarkupLine("[dim]To deploy to itch.io, use scripts/Deploy-Gondwana-Itch.ps1[/]");
-            AnsiConsole.MarkupLine("[dim]To deploy to a website, use scripts/Deploy-Gondwana-Website.ps1[/]");
+            AnsiConsole.MarkupLine("[dim]To package for itch.io, use 'gondwana publish itch'[/]");
+            AnsiConsole.MarkupLine("[dim]To deploy to itch.io, use 'gondwana deploy itch'[/]");
+            AnsiConsole.MarkupLine("[dim]To deploy to a website, use 'gondwana deploy' or 'gondwana deploy wasm'[/]");
         }
         else
         {

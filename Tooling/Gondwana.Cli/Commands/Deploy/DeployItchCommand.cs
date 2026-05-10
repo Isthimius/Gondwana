@@ -36,9 +36,15 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         public bool SkipWorkload { get; init; }
 
         public override ValidationResult Validate()
-            => string.IsNullOrWhiteSpace(ItchGame)
-                ? ValidationResult.Error("--itch-game is required.")
-                : ValidationResult.Success();
+        {
+            if (string.IsNullOrWhiteSpace(ItchGame))
+                return ValidationResult.Error("--itch-game is required.");
+
+            var parts = ItchGame.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return parts.Length == 2
+                ? ValidationResult.Success()
+                : ValidationResult.Error("--itch-game must be in the form 'user/game'.");
+        }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -125,7 +131,8 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         }
 
         AnsiConsole.MarkupLine("[green]Deployed to itch.io![/]");
-        Console.WriteLine($"https://{settings.ItchGame!.Split('/')[0]}.itch.io/{settings.ItchGame.Split('/')[1]}");
+        var itchParts = settings.ItchGame!.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        Console.WriteLine($"https://{itchParts[0]}.itch.io/{itchParts[1]}");
         return 0;
     }
 }
