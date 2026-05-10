@@ -5,18 +5,19 @@
 
 .DESCRIPTION
     Idempotent setup script for new contributors to the Gondwana repository.
-    Safe to run more than once — each step checks whether work is already done
-    before acting.
+    Safe to run more than once — each step installs/restores requirements and
+    applies updates where available.
 
     Steps performed:
       1.  Verifies Git is available on PATH.
       2.  Checks for the .NET 8 SDK; installs it via winget if missing (Windows only).
       3.  Restores local .NET tools (nbgv) from .config/dotnet-tools.json.
-      4.  Restores NuGet packages for the solution.
+      4.  Restores NuGet packages for the solution, forcing dependency
+          reevaluation.
       5.  Builds the solution in Release configuration.
-      6.  Installs the Gondwana CLI global tool (Gondwana.Cli).
-      7.  Installs Gondwana project templates (Gondwana.Templates).
-      8.  Installs the dotnet wasm-tools workload for WebAssembly support.
+      6.  Installs/updates the Gondwana CLI global tool (Gondwana.Cli).
+      7.  Installs/updates Gondwana project templates (Gondwana.Templates).
+      8.  Installs wasm-tools (if missing) and updates installed workloads.
       9.  Checks for SDL2 native binaries required by Gondwana.Input.SDL2.
       10. Checks for LibVLC native binaries required by Gondwana.Video;
           installs VLC (which includes LibVLC) via winget if missing (Windows only).
@@ -151,8 +152,8 @@ if ($hasSdk8) {
 Step '3/11  Local .NET tools (nbgv)'
 Push-Location $repoRoot
 try {
-    Invoke-Cmd dotnet @('tool', 'restore')
-    OK 'Local tools restored (nbgv ready).'
+    Invoke-Cmd dotnet @('tool', 'restore', '--no-cache')
+    OK 'Local tools restored from latest available packages (nbgv ready).'
 } finally {
     Pop-Location
 }
@@ -160,8 +161,8 @@ try {
 # ─── Step 4: NuGet restore ────────────────────────────────────────────────────
 
 Step '4/11  NuGet restore'
-Invoke-Cmd dotnet @('restore', $solutionFile, '--nologo', '/p:EnableWindowsTargeting=true')
-OK 'NuGet packages restored.'
+Invoke-Cmd dotnet @('restore', $solutionFile, '--nologo', '--force', '--no-cache', '/p:EnableWindowsTargeting=true')
+OK 'NuGet packages restored with dependency reevaluation.'
 
 # ─── Step 5: Build ────────────────────────────────────────────────────────────
 
@@ -178,8 +179,9 @@ if ($SkipBuild) {
 
 Step '6/11  Gondwana CLI (Gondwana.Cli)'
 if (Test-GlobalTool 'gondwana.cli') {
+    Invoke-Cmd dotnet @('tool', 'update', '--global', 'Gondwana.Cli')
     $cliLine = (dotnet tool list -g 2>&1) | Where-Object { $_ -match 'gondwana\.cli' } | Select-Object -First 1
-    OK "Already installed: $($cliLine.Trim())"
+    OK "Installed and updated to latest available: $($cliLine.Trim())"
 } else {
     Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli')
     OK 'Gondwana.Cli installed.'
@@ -189,7 +191,8 @@ if (Test-GlobalTool 'gondwana.cli') {
 
 Step '7/11  Gondwana project templates (Gondwana.Templates)'
 if (Test-TemplatesInstalled) {
-    OK 'gondwana-winforms / gondwana-avalonia templates already installed.'
+    Invoke-Cmd dotnet @('new', 'update')
+    OK 'Installed templates checked and updated where available.'
 } else {
     Invoke-Cmd dotnet @('new', 'install', 'Gondwana.Templates')
     OK 'Gondwana.Templates installed.'
@@ -205,7 +208,8 @@ if ($SkipOptional) {
 
     Step '8/11  WASM workload (wasm-tools)'
     if (Test-Workload 'wasm-tools') {
-        OK 'wasm-tools workload already installed.'
+        Invoke-Cmd dotnet @('workload', 'update')
+        OK 'wasm-tools and other installed workloads updated to latest available versions.'
     } else {
         Invoke-Cmd dotnet @('workload', 'install', 'wasm-tools')
         OK 'wasm-tools workload installed.'

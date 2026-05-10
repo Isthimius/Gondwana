@@ -8,17 +8,17 @@ This folder contains PowerShell helper scripts for building, publishing, and rel
 
 ### `Setup-Gondwana-Dev.ps1`
 
-Idempotent one-shot setup script for new contributors. Run it once after cloning the repository to install everything needed to build, run, and develop Gondwana. Safe to re-run — each step checks whether work is already done before acting.
+Idempotent one-shot setup script for new contributors. Run it once after cloning the repository to install everything needed to build, run, and develop Gondwana. Safe to re-run — install/restore steps also refresh to the latest available versions where applicable.
 
 **What it does:**
 1. Verifies Git is available on `PATH`.
 2. Checks for the .NET 8 SDK; installs it via `winget` if missing (Windows only).
-3. Restores local .NET tools (`nbgv`) from `.config/dotnet-tools.json`.
-4. Restores NuGet packages for the solution.
+3. Restores local .NET tools (`nbgv`) from `.config/dotnet-tools.json` with cache bypass.
+4. Restores NuGet packages for the solution with dependency reevaluation.
 5. Builds the solution in `Release` configuration.
-6. Installs the `Gondwana.Cli` global tool (`gondwana`).
-7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`).
-8. Installs the `dotnet wasm-tools` workload for WebAssembly support.
+6. Installs/updates the `Gondwana.Cli` global tool (`gondwana`).
+7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) and applies template updates when already installed.
+8. Installs the `dotnet wasm-tools` workload for WebAssembly support and updates installed workloads when it is already present.
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
 11. Runs `gondwana doctor` to confirm the final environment state.
