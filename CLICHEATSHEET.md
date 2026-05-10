@@ -41,6 +41,7 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana run` | Run the desktop build of the project in the current directory. |
 | `gondwana run wasm` | Build and run the project in the browser (net8.0-browser dev server). |
 | `gondwana publish <subcommand>` | Publish a Gondwana project for distribution. |
+| `gondwana deploy <subcommand>` | Deploy a Gondwana project to a distribution target. |
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
 
 ---
@@ -226,7 +227,34 @@ Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`
 
 | Subcommand | Description |
 |---|---|
+| *(default)* | Publish the desktop build of the current project. |
 | `wasm` | Build and publish the current project for browser/WASM. |
+| `itch` | Package a browser/WASM AppBundle as an itch.io-ready zip. |
+
+### `gondwana publish` (desktop)
+
+Publishes the desktop build of the project in the current directory.
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Release` | Build configuration (`Release`, `Debug`). |
+| `--framework <tfm>` | `-f` | *(auto)* | Desktop target framework to publish. Required only when multiple non-browser target frameworks exist. |
+| `--runtime <rid>` | `-r` | *(none)* | Runtime identifier such as `win-x64`, `linux-x64`, or `osx-arm64`. |
+| `--output <path>` | `-o` | *(dotnet default)* | Publish output directory. |
+| `--self-contained` | | `false` | Publish as self-contained. |
+
+**Examples**
+```
+gondwana publish
+gondwana publish -p ./src/MyGame
+gondwana publish -r win-x64
+gondwana publish -f net8.0 --self-contained
+```
+
+On success, the command prints the publish output directory as a plain line when it can be located.
+
+---
 
 ### `gondwana publish wasm`
 
@@ -246,8 +274,102 @@ gondwana publish wasm -p ./src/MyGame
 gondwana publish wasm --skip-workload -c Debug
 ```
 
-For itch.io and website deployment, see `scripts/Deploy-Gondwana-Itch.ps1` and
-`scripts/Deploy-Gondwana-Website.ps1`.
+For packaging or deployment, see also `gondwana publish itch`, `gondwana deploy`, and `gondwana deploy itch`.
+
+---
+
+### `gondwana publish itch`
+
+Publishes the project for `net8.0-browser` (unless `--skip-build`) and packages the AppBundle contents into an itch.io-ready zip with `index.html` at the zip root.
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Release` | Build configuration (`Release`, `Debug`). |
+| `--output <path>` | `-o` | `bin/<Configuration>/net8.0-browser/browser-wasm/<ProjectName>-itch.zip` | Output zip path. |
+| `--skip-build` | | `false` | Skip the dotnet publish step and package an existing AppBundle. |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+**Examples**
+```
+gondwana publish itch
+gondwana publish itch -p ./src/MyGame
+gondwana publish itch --skip-build
+gondwana publish itch -o ./artifacts/MyGame-itch.zip
+```
+
+On success, the command prints the zip path as a plain line.
+
+---
+
+## `gondwana deploy`
+
+| Subcommand | Description |
+|---|---|
+| *(default)* | Deploy a browser/WASM AppBundle to a static web host. |
+| `wasm` | Deploy a browser/WASM AppBundle to a static web host. |
+| `itch` | Deploy a browser/WASM build to itch.io via `butler`. |
+
+### `gondwana deploy` / `gondwana deploy wasm`
+
+Deploys the project for browser/WASM to a static web host.
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
+| `--configuration <name>` | `-c` | `Release` | Build configuration (`Release`, `Debug`). |
+| `--web-root <path>` | | *(none)* | Local destination directory for the AppBundle contents. |
+| `--remote-host <user@host>` | | *(none)* | SSH remote, used with `--remote-path`. |
+| `--remote-path <path>` | | *(none)* | Remote destination path, used with `--remote-host`. |
+| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing AppBundle. |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+Specify either `--web-root` or `--remote-host` + `--remote-path`, not both.
+
+**Examples**
+```
+gondwana deploy --web-root ./dist/MyGame
+gondwana deploy -p ./src/MyGame --web-root ./dist/MyGame
+gondwana deploy wasm --remote-host deploy@example.com --remote-path /var/www/html/mygame
+gondwana deploy --skip-build --web-root ./dist/MyGame
+```
+
+Web servers must send:
+
+```text
+Cross-Origin-Opener-Policy:   same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+The site must also be served over HTTPS.
+
+---
+
+### `gondwana deploy itch`
+
+Publishes the project for `net8.0-browser` (unless `--skip-build`), packages the AppBundle, and uploads it to itch.io using `butler`.
+
+| Option | Short | Default | Description |
+|---|---|---|---|
+| `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
+| `--itch-game <user/game>` | | *(required)* | The itch.io game slug. |
+| `--itch-channel <name>` | | `html5` | The itch.io release channel name. |
+| `--configuration <name>` | `-c` | `Release` | Build configuration (`Release`, `Debug`). |
+| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing AppBundle. |
+| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+
+**Examples**
+```
+gondwana deploy itch --itch-game user/mygame
+gondwana deploy itch -p ./src/MyGame --itch-game user/mygame
+gondwana deploy itch --itch-game user/mygame --itch-channel html5-beta
+gondwana deploy itch --skip-build --itch-game user/mygame
+```
+
+Prerequisites:
+- `butler` on `PATH`
+- `butler login` already completed
+- the itch.io game already exists
 
 ---
 
