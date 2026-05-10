@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.5</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -176,7 +176,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:ad8821f813581b2d22fabbb4c9c7c3cb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current engine configuration settings.  <br /></td></tr>
 <tr class="separator:ad8821f813581b2d22fabbb4c9c7c3cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93f6aa01595d787e0eb33e4995afc760" id="r_a93f6aa01595d787e0eb33e4995afc760"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1EngineManagers.html">EngineManagers</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Engine.html#a93f6aa01595d787e0eb33e4995afc760">Managers</a> = <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">new</a>()<code> [get]</code></td></tr>
-<tr class="memdesc:a93f6aa01595d787e0eb33e4995afc760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of resource managers for audio, sprites, fonts, tilesheets, and direct drawing.  <br /></td></tr>
+<tr class="memdesc:a93f6aa01595d787e0eb33e4995afc760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of resource managers for audio, SVG, sprites, fonts, tilesheets, and direct drawing.  <br /></td></tr>
 <tr class="separator:a93f6aa01595d787e0eb33e4995afc760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cbd2e084b892eb8fd53fb4c75d2ee77" id="r_a8cbd2e084b892eb8fd53fb4c75d2ee77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1EngineInputSystems.html">EngineInputSystems</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a> = <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">new</a>()<code> [get]</code></td></tr>
 <tr class="memdesc:a8cbd2e084b892eb8fd53fb4c75d2ee77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of input subsystems for keyboard, mouse, touch, and gamepad input.  <br /></td></tr>
@@ -263,7 +263,7 @@ Raising the Disposed event </li>
 </ul>
 <p>After disposal, the engine instance should not be used. To restart the engine, a new application session is required. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l01054">1054</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l01055">1055</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -665,7 +665,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This property provides centralized access to input event pollers and managers for keyboard, mouse, touch, and gamepad devices. Use the nested properties to access specific subsystems such as <a class="el" href="classGondwana_1_1EngineInputSystems.html#a42a45d1dff05513a565d6c760e96b75a" title="Gets the keyboard event polling subsystem, if initialized.">EngineInputSystems.KeyboardEventPoller</a>, <a class="el" href="classGondwana_1_1EngineInputSystems.html#a201f7fdd1abc5ef419a9391f06805119" title="Gets the mouse event polling subsystem, if initialized.">EngineInputSystems.MouseEventPoller</a>, <a class="el" href="classGondwana_1_1EngineInputSystems.html#a6cb1806f9ed4e915bfae5a82570e6f5f" title="Gets the touch event polling subsystem, if initialized.">EngineInputSystems.TouchEventPoller</a>, <a class="el" href="classGondwana_1_1EngineInputSystems.html#ac9312622d39edeaf6df5ff5c318fc6d2" title="Gets the gamepad event polling subsystem, if initialized.">EngineInputSystems.GamepadEventPoller</a>, and <a class="el" href="classGondwana_1_1EngineInputSystems.html#ae10f8d42f3de55ff3bc18e57d5d93c94" title="Gets or sets the gamepad manager responsible for handling gamepad input.">EngineInputSystems.GamepadManager</a>. </p>
 <p>Input adapters must be provided during Initialize for the corresponding input subsystems to become available. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00764">764</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00765">765</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -721,7 +721,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p><code>true</code> if <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose</a> has completed; otherwise, <code>false</code>.</p>
 <p>Once this property is <code>true</code>, the engine instance should not be used further. All managed resources have been released and subsystems have been shut down. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00774">774</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00775">775</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -749,7 +749,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p><code>true</code> if disposal is in progress; otherwise, <code>false</code>.</p>
 <p>This property is set to <code>true</code> at the start of <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose</a> and can be used by subsystems to detect when cleanup is underway. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00784">784</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00785">785</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -885,11 +885,11 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 </table>
 </div><div class="memdoc">
 
-<p>Gets the collection of resource managers for audio, sprites, fonts, tilesheets, and direct drawing. </p>
+<p>Gets the collection of resource managers for audio, SVG, sprites, fonts, tilesheets, and direct drawing. </p>
 <p>An EngineManagers instance providing access to all engine resource managers.</p>
-<p>This property provides centralized access to subsystem managers responsible for loading and managing various types of game resources. Use the nested properties to access specific managers such as <a class="el" href="classGondwana_1_1EngineManagers.html#a4d78547eee177a9fee947d75f697de19" title="Gets the audio resource manager for loading and managing audio assets.">EngineManagers.AudioResources</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a151b6ca4a77c51657bf3922d1fa1af61" title="Gets the sprite manager for managing sprite assets and rendering.">EngineManagers.Sprites</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a3730f4d935be727011143afa01eaf815" title="Gets the font manager for loading and managing font resources.">EngineManagers.Fonts</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a017184c71f7eddfee0e41f43a2092fd1" title="Gets the tilesheet registry for managing tilesheet resources.">EngineManagers.Tilesheets</a>, and <a class="el" href="classGondwana_1_1EngineManagers.html#a2247561795df59bb5d4697f8596e8d3d" title="Gets the direct drawing manager for immediate-mode rendering operations.">EngineManagers.DirectDrawings</a>. </p>
+<p>This property provides centralized access to subsystem managers responsible for loading and managing various types of game resources. Use the nested properties to access specific managers such as <a class="el" href="classGondwana_1_1EngineManagers.html#a4d78547eee177a9fee947d75f697de19" title="Gets the audio resource manager for loading and managing audio assets.">EngineManagers.AudioResources</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a2e0289b5d68de18132f152f0b666cdc8" title="Gets the SVG resource manager for loading and managing SVG assets.">EngineManagers.SvgResources</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a151b6ca4a77c51657bf3922d1fa1af61" title="Gets the sprite manager for managing sprite assets and rendering.">EngineManagers.Sprites</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a3730f4d935be727011143afa01eaf815" title="Gets the font manager for loading and managing font resources.">EngineManagers.Fonts</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a017184c71f7eddfee0e41f43a2092fd1" title="Gets the tilesheet registry for managing tilesheet resources.">EngineManagers.Tilesheets</a>, and <a class="el" href="classGondwana_1_1EngineManagers.html#a2247561795df59bb5d4697f8596e8d3d" title="Gets the direct drawing manager for immediate-mode rendering operations.">EngineManagers.DirectDrawings</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00743">743</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00744">744</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>

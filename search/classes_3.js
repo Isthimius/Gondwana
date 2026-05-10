@@ -6,5 +6,6 @@ var searchData=
   ['directdrawingmovablebase_3',['DirectDrawingMovableBase',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html',1,'Gondwana::Drawing::Direct']]],
   ['directimage_4',['DirectImage',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html',1,'Gondwana::Drawing::Direct']]],
   ['directrectangle_5',['DirectRectangle',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html',1,'Gondwana::Drawing::Direct']]],
-  ['directvideo_6',['DirectVideo',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html',1,'Gondwana::Drawing::Direct']]]
+  ['directsvg_6',['DirectSvg',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html',1,'Gondwana::Drawing::Direct']]],
+  ['directvideo_7',['DirectVideo',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html',1,'Gondwana::Drawing::Direct']]]
 ];

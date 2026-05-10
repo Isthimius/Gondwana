@@ -60,6 +60,7 @@ var hierarchy =
         [ "Gondwana.Drawing.Direct.DirectDrawingMovableBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html", [
           [ "Gondwana.Drawing.Direct.DirectImage", "classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html", null ],
           [ "Gondwana.Drawing.Direct.DirectRectangle", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html", null ],
+          [ "Gondwana.Drawing.Direct.DirectSvg", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html", null ],
           [ "Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html", null ],
           [ "Gondwana.Drawing.Direct.Particles.ParticleSurface", "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html", null ],
           [ "Gondwana.Drawing.Direct.TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", null ]
@@ -86,6 +87,8 @@ var hierarchy =
       ] ],
       [ "Gondwana.Drawing.Sprites.Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", null ],
       [ "Gondwana.Drawing.Sprites.SpriteManager", "classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html", null ],
+      [ "Gondwana.Drawing.SvgResource", "classGondwana_1_1Drawing_1_1SvgResource.html", null ],
+      [ "Gondwana.Drawing.SvgResourceManager", "classGondwana_1_1Drawing_1_1SvgResourceManager.html", null ],
       [ "Gondwana.Drawing.Tile", "classGondwana_1_1Drawing_1_1Tile.html", null ],
       [ "Gondwana.Drawing.Tilesheets.Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html", null ],
       [ "Gondwana.Drawing.Tilesheets.TilesheetRegistry", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html", null ],
@@ -96,6 +99,7 @@ var hierarchy =
         [ "Gondwana.WinForms.Hosting.WinFormsGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html", null ],
         [ "Gondwana.WinForms.Hosting.WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", null ]
       ] ],
+      [ "Gondwana.Hosting.SplashScreen", "classGondwana_1_1Hosting_1_1SplashScreen.html", null ],
       [ "Gondwana.Input.Touch.Gestures.PinchGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html", null ],
       [ "Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html", null ],
       [ "Gondwana.Input.Touch.Gestures.TapGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TapGestureRecognizer.html", null ],

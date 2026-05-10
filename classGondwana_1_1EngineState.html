@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.5</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -150,7 +150,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the complete serializable state of the game engine, including assets, scenes, sprites, audio resources, and custom data. This class provides functionality to save and load engine state to/from files with support for selective state management, compression, and merge operations. The state can be persisted as JSON and optionally compressed using GZip compression. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00020">20</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00021">21</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a3b13b5b6ba86200ef09ecfd9e56df659" name="a3b13b5b6ba86200ef09ecfd9e56df659"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3b13b5b6ba86200ef09ecfd9e56df659">&#9670;&#160;</a></span>LoadFromFile()</h2>
@@ -202,7 +202,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00192">192</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00193">193</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -263,7 +263,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00230">230</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00231">231</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -309,7 +309,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00153">153</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00154">154</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -336,7 +336,7 @@ Properties</h2></td></tr>
 
 <p>Gets the collection of all loaded asset files (resource archives) currently registered with the engine. Asset files contain packed game resources such as images, audio, and data files that have been loaded into memory. This property provides a snapshot of the current asset files for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00042">42</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00043">43</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -362,7 +362,7 @@ Properties</h2></td></tr>
 
 <p>Gets the dictionary of all registered animation cycles, keyed by their unique identifiers. Animation cycles define sprite animation sequences including frame data, timing, and playback behavior. This property provides direct access to the cycle registry for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00058">58</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00059">59</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -388,7 +388,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the JSON serializer settings used for serializing and deserializing engine state. These settings are configured to handle type information, preserve object references, and produce indented (human-readable) JSON output. The default configuration uses automatic type name handling and preserves all object references to maintain complex object graphs. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00028">28</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00029">29</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -414,7 +414,7 @@ Properties</h2></td></tr>
 
 <p>Gets the list of all scenes currently registered with the engine. Scenes represent distinct game locations or levels, containing layers, entities, and scene-specific data. This property provides direct access to the scene collection for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00066">66</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00067">67</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -440,7 +440,7 @@ Properties</h2></td></tr>
 
 <p>Gets the dictionary of all registered audio resources, keyed by their unique identifiers. Audio resources include sound effects, music tracks, and their associated playback settings such as volume, pan, and looping behavior. This property provides access to the audio resource registry for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00083">83</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00084">84</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -466,7 +466,7 @@ Properties</h2></td></tr>
 
 <p>Gets the list of all active sprites currently managed by the sprite manager. Sprites are visual game entities that can be positioned, animated, and rendered on screen. This property provides direct access to the sprite collection for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00074">74</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00075">75</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -492,7 +492,7 @@ Properties</h2></td></tr>
 
 <p>Gets a dictionary of all registered tilesheets, keyed by their unique identifiers. Tilesheets contain tile graphics and metadata used for rendering tile-based game worlds. This property provides access to the current tilesheet registry for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00050">50</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00051">51</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -533,7 +533,7 @@ Properties</h2></td></tr>
 <div class="line"><span class="comment">// Retrieve values</span></div>
 <div class="line">var hp = engineState.ValueBag.Get(NpcHitPoints, <span class="keyword">new</span> Dictionary&lt;string, int&gt;());</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00115">115</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00116">116</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>

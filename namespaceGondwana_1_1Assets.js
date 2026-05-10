@@ -9,6 +9,7 @@ var namespaceGondwana_1_1Assets =
       [ "Video", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a34e2d1989a1dbf75cd631596133ee5ee", null ],
       [ "Cursor", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a9abdae4fa5d93330363a88ed8a5e7946", null ],
       [ "Font", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d", null ],
-      [ "Misc", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a74248c725e00bf9fe04df4e35b249a19", null ]
+      [ "Misc", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a74248c725e00bf9fe04df4e35b249a19", null ],
+      [ "Svg", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1a9a612a14f347adfbf122cc7c0e985b", null ]
     ] ]
 ];

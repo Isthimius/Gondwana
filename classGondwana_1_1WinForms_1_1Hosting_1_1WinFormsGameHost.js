@@ -7,6 +7,7 @@ var classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost =
     [ "ConfigureMouse", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a9392e8dd0478b271a9ceafa89fc591ec", null ],
     [ "ConfigurePlatform", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#ab7d6478f5947eea0e9ebc2f514200e74", null ],
     [ "ConfigureTouch", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#ac2d048a41ff1a7bda0db0a99983ce42b", null ],
+    [ "GetPrimaryRenderSurfaceHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a2ece73d2654d21522fe8afaac7eaa076", null ],
     [ "OnConfigurePlatform", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#adedbd81f3bbf880aefd56c137642be95", null ],
     [ "OnGamepadManagerInitialized", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#ae529ebe94a2b0eb752da39e8eb64c2da", null ],
     [ "OnKeyboardAdapterInitialized", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#ae29a48660cf73af01e8337d0bfc6678a", null ],

@@ -37,6 +37,7 @@ var searchData=
   ['staticcolliders_34',['StaticColliders',['../classGondwana_1_1Collisions_1_1ColliderRegistry.html#a4f315aa8e7b7c5e2b52a47e67b06f3f5',1,'Gondwana::Collisions::ColliderRegistry']]],
   ['stretch_35',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#af3cc70ded3f6c4bf4169be8d8c44fde2',1,'Gondwana::Drawing::Direct::DirectVideo']]],
   ['stride_36',['Stride',['../classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html#aff0389632fd4b356ff1fe9352cc391cc',1,'Gondwana::Video::VideoFrameReadyEventArgs']]],
-  ['swipe_37',['Swipe',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a11da7136852c4d264f610077ed8b94cf',1,'Gondwana::Input::Touch::Gestures::GestureEventArgs']]],
-  ['swiperecognizer_38',['SwipeRecognizer',['../classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#af34255dddbb529c9fc5428f9bb8555bf',1,'Gondwana::Input::Touch::TouchEventPoller']]]
+  ['svgresources_37',['SvgResources',['../classGondwana_1_1EngineManagers.html#a2e0289b5d68de18132f152f0b666cdc8',1,'Gondwana::EngineManagers']]],
+  ['swipe_38',['Swipe',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a11da7136852c4d264f610077ed8b94cf',1,'Gondwana::Input::Touch::Gestures::GestureEventArgs']]],
+  ['swiperecognizer_39',['SwipeRecognizer',['../classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#af34255dddbb529c9fc5428f9bb8555bf',1,'Gondwana::Input::Touch::TouchEventPoller']]]
 ];

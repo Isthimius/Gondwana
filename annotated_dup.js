@@ -82,6 +82,7 @@ var annotated_dup =
           [ "DirectDrawingMovableBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase" ],
           [ "DirectImage", "classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectImage" ],
           [ "DirectRectangle", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle" ],
+          [ "DirectSvg", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg" ],
           [ "DirectVideo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo" ],
           [ "IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable" ],
           [ "TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock" ]
@@ -99,13 +100,16 @@ var annotated_dup =
         ] ],
         [ "Frame", "structGondwana_1_1Drawing_1_1Frame.html", "structGondwana_1_1Drawing_1_1Frame" ],
         [ "IDrawable", "interfaceGondwana_1_1Drawing_1_1IDrawable.html", "interfaceGondwana_1_1Drawing_1_1IDrawable" ],
+        [ "SvgResource", "classGondwana_1_1Drawing_1_1SvgResource.html", "classGondwana_1_1Drawing_1_1SvgResource" ],
+        [ "SvgResourceManager", "classGondwana_1_1Drawing_1_1SvgResourceManager.html", "classGondwana_1_1Drawing_1_1SvgResourceManager" ],
         [ "Tile", "classGondwana_1_1Drawing_1_1Tile.html", "classGondwana_1_1Drawing_1_1Tile" ]
       ] ],
       [ "Extensibility", "namespaceGondwana_1_1Extensibility.html", [
         [ "IEnginePlugin", "interfaceGondwana_1_1Extensibility_1_1IEnginePlugin.html", "interfaceGondwana_1_1Extensibility_1_1IEnginePlugin" ]
       ] ],
       [ "Hosting", "namespaceGondwana_1_1Hosting.html", [
-        [ "GameHostBase", "classGondwana_1_1Hosting_1_1GameHostBase.html", "classGondwana_1_1Hosting_1_1GameHostBase" ]
+        [ "GameHostBase", "classGondwana_1_1Hosting_1_1GameHostBase.html", "classGondwana_1_1Hosting_1_1GameHostBase" ],
+        [ "SplashScreen", "classGondwana_1_1Hosting_1_1SplashScreen.html", "classGondwana_1_1Hosting_1_1SplashScreen" ]
       ] ],
       [ "Input", "namespaceGondwana_1_1Input.html", [
         [ "Gamepad", "namespaceGondwana_1_1Input_1_1Gamepad.html", [

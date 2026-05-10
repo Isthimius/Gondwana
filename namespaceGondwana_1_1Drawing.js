@@ -26,6 +26,8 @@ var namespaceGondwana_1_1Drawing =
     [ "Tilesheets", "namespaceGondwana_1_1Drawing_1_1Tilesheets.html", "namespaceGondwana_1_1Drawing_1_1Tilesheets" ],
     [ "Frame", "structGondwana_1_1Drawing_1_1Frame.html", "structGondwana_1_1Drawing_1_1Frame" ],
     [ "IDrawable", "interfaceGondwana_1_1Drawing_1_1IDrawable.html", "interfaceGondwana_1_1Drawing_1_1IDrawable" ],
+    [ "SvgResource", "classGondwana_1_1Drawing_1_1SvgResource.html", "classGondwana_1_1Drawing_1_1SvgResource" ],
+    [ "SvgResourceManager", "classGondwana_1_1Drawing_1_1SvgResourceManager.html", "classGondwana_1_1Drawing_1_1SvgResourceManager" ],
     [ "Tile", "classGondwana_1_1Drawing_1_1Tile.html", "classGondwana_1_1Drawing_1_1Tile" ],
     [ "Overhang", "namespaceGondwana_1_1Drawing.html#a6fce70584993e761e53ab83006f77912", null ]
 ];

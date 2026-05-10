@@ -8,6 +8,7 @@ var namespaceGondwana_1_1Drawing_1_1Direct =
     [ "DirectDrawingMovableBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase" ],
     [ "DirectImage", "classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectImage" ],
     [ "DirectRectangle", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle" ],
+    [ "DirectSvg", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg" ],
     [ "DirectVideo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo" ],
     [ "IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable" ],
     [ "TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock" ],

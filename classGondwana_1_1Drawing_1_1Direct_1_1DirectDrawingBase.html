@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.4</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.5</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -113,15 +113,16 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectDrawingBase:</div>
  <div class="center">
   <img src="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.png" usemap="#Gondwana.Drawing.Direct.DirectDrawingBase_map" alt=""/>
   <map id="Gondwana.Drawing.Direct.DirectDrawingBase_map" name="Gondwana.Drawing.Direct.DirectDrawingBase_map">
-<area href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="716,56,1064,80"/>
-<area href="interfaceGondwana_1_1Drawing_1_1IDrawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="537,0,885,24"/>
-<area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="716,168,1064,192"/>
-<area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer..." alt="Gondwana.Drawing.Direct.DirectVideo" shape="rect" coords="1074,168,1422,192"/>
+<area href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="895,56,1243,80"/>
+<area href="interfaceGondwana_1_1Drawing_1_1IDrawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="716,0,1064,24"/>
+<area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html" title="Provides an abstract base class for direct drawings that support physics-based movement." alt="Gondwana.Drawing.Direct.DirectDrawingMovableBase" shape="rect" coords="895,168,1243,192"/>
+<area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer..." alt="Gondwana.Drawing.Direct.DirectVideo" shape="rect" coords="1253,168,1601,192"/>
 <area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html" title="Renders a bitmap or image to a rectangular region with support for scaling modes, source clipping,..." alt="Gondwana.Drawing.Direct.DirectImage" shape="rect" coords="0,224,348,248"/>
 <area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html" title="Renders a configurable rectangle with support for fill, border, rounded corners, dash patterns,..." alt="Gondwana.Drawing.Direct.DirectRectangle" shape="rect" coords="358,224,706,248"/>
-<area href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html" title="Represents a lightweight image-instance layer that manages and renders a collection of independently ..." alt="Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer" shape="rect" coords="716,224,1064,248"/>
-<area href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="1074,224,1422,248"/>
-<area href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="1432,224,1780,248"/>
+<area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html" title="Renders an SVG resource directly by rasterizing lazily and caching the bitmap per destination size." alt="Gondwana.Drawing.Direct.DirectSvg" shape="rect" coords="716,224,1064,248"/>
+<area href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html" title="Represents a lightweight image-instance layer that manages and renders a collection of independently ..." alt="Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer" shape="rect" coords="1074,224,1422,248"/>
+<area href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html" title="A flexible particle system for effects like smoke, sparks, fire, or snow, implemented as a DirectDraw..." alt="Gondwana.Drawing.Direct.Particles.ParticleSurface" shape="rect" coords="1432,224,1780,248"/>
+<area href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,..." alt="Gondwana.Drawing.Direct.TextBlock" shape="rect" coords="1790,224,2138,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -554,7 +555,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </ul>
 <p>Override this method in derived classes to release additional resources. Always call <code>base.Dispose(disposing)</code> to ensure proper cleanup of the base class. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#a30dd937e42296bdf2952a6368bd31bc5">Gondwana.Drawing.Direct.DirectVideo</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a05ae37f19bc436a11451bebeb0b2a22a">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a20056eedc80de1146bb183ce93af0179">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Gondwana.Drawing.Direct.TextBlock</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#a30dd937e42296bdf2952a6368bd31bc5">Gondwana.Drawing.Direct.DirectVideo</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html#a9fdc1b2c0c618b479442e15ee0ce316b">Gondwana.Drawing.Direct.DirectSvg</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a05ae37f19bc436a11451bebeb0b2a22a">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a20056eedc80de1146bb183ce93af0179">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Gondwana.Drawing.Direct.TextBlock</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00934">934</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
