@@ -116,6 +116,11 @@ internal sealed class PublishWasmCommand : Command<PublishWasmCommand.Settings>
             AnsiConsole.MarkupLine($"[dim]AppBundle: {Markup.Escape(appBundle)}[/]");
             AnsiConsole.MarkupLine("[dim]To deploy to itch.io, use scripts/Deploy-Gondwana-Itch.ps1[/]");
             AnsiConsole.MarkupLine("[dim]To deploy to a website, use scripts/Deploy-Gondwana-Website.ps1[/]");
+            Console.WriteLine(appBundle);
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("[yellow]Warning:[/] Could not locate AppBundle directory. Check the publish output above.");
         }
 
         return 0;

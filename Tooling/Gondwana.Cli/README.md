@@ -211,6 +211,8 @@ gondwana publish wasm --configuration Debug
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
 
 The output AppBundle is placed at `bin/<Configuration>/net8.0-browser/browser-wasm/AppBundle/`.
+On success, the command also prints the AppBundle path as a plain line (machine-friendly).
+If publish succeeds but AppBundle cannot be located, a warning is printed.
 
 For further deployment see:
 - `scripts/Deploy-Gondwana-Itch.ps1` — upload to itch.io via `butler`
