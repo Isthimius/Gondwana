@@ -1,5 +1,6 @@
 using Gondwana.Cli.Commands;
 using Gondwana.Cli.Commands.Assets;
+using Gondwana.Cli.Commands.Deploy;
 using Gondwana.Cli.Commands.New;
 using Gondwana.Cli.Commands.Publish;
 using Gondwana.Cli.Commands.Run;
@@ -67,6 +68,13 @@ app.Configure(config =>
     {
         branch.SetDescription("Publish a Gondwana project for distribution.");
 
+        branch.SetDefaultCommand<PublishDesktopCommand>();
+
+        branch.AddCommand<PublishItchCommand>("itch")
+              .WithDescription("Package a browser/WASM AppBundle as an itch.io-ready zip.")
+              .WithExample("publish", "itch")
+              .WithExample("publish", "itch", "--project", "./src/MyGame", "--skip-build");
+
         branch.AddCommand<PublishWasmCommand>("wasm")
               .WithDescription("Publish a Gondwana project for browser/WASM (net8.0-browser).")
               .WithExample("publish", "wasm")
@@ -83,6 +91,23 @@ app.Configure(config =>
               .WithDescription("Build and run the project in the browser (net8.0-browser dev server).")
               .WithExample("run", "wasm")
               .WithExample("run", "wasm", "--skip-workload");
+    });
+
+    config.AddBranch("deploy", branch =>
+    {
+        branch.SetDescription("Deploy a Gondwana project to a distribution target.");
+
+        branch.SetDefaultCommand<DeployWasmCommand>();
+
+        branch.AddCommand<DeployWasmCommand>("wasm")
+              .WithDescription("Deploy a browser/WASM AppBundle to a static web host.")
+              .WithExample("deploy", "--web-root", "./dist/MyGame")
+              .WithExample("deploy", "wasm", "--remote-host", "deploy@example.com", "--remote-path", "/var/www/html/mygame");
+
+        branch.AddCommand<DeployItchCommand>("itch")
+              .WithDescription("Deploy a browser/WASM build to itch.io via butler.")
+              .WithExample("deploy", "itch", "--itch-game", "user/mygame")
+              .WithExample("deploy", "itch", "--project", "./src/MyGame", "--itch-game", "user/mygame", "--skip-build");
     });
 
     config.AddBranch("assets", branch =>
