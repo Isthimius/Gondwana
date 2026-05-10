@@ -92,26 +92,16 @@ internal sealed class RunWasmCommand : Command<RunWasmCommand.Settings>
             return publishExit;
         }
 
-        // 3. Locate the AppBundle output directory
-        var projectDir = Path.GetDirectoryName(csprojPath)!;
-        var appBundle = Path.Combine(projectDir, "bin", settings.Configuration, "net8.0-browser", "browser-wasm", "AppBundle");
+        // 3. Locate publish output directory (legacy AppBundle or current publish layout)
+        var outputDirectory = ProjectHelper.TryLocateAppBundle(csprojPath, settings.Configuration)
+            ?? ProjectHelper.TryLocatePublishDirectory(csprojPath, settings.Configuration, "net8.0-browser", runtime: null);
 
-        if (!Directory.Exists(appBundle))
+        if (outputDirectory is null)
         {
-            var binDir = Path.Combine(projectDir, "bin");
-            if (Directory.Exists(binDir))
-            {
-                var candidate = Directory.GetDirectories(binDir, "AppBundle", SearchOption.AllDirectories)
-                                         .FirstOrDefault();
-                if (candidate is not null)
-                    appBundle = candidate;
-            }
-        }
-
-        if (!Directory.Exists(appBundle))
-        {
-            AnsiConsole.MarkupLine("[red]AppBundle not found after publish.[/]");
-            AnsiConsole.MarkupLine("[dim]Expected: bin/<configuration>/net8.0-browser/browser-wasm/AppBundle[/]");
+            AnsiConsole.MarkupLine("[red]WASM publish output not found after publish.[/]");
+            AnsiConsole.MarkupLine("[dim]Expected one of:[/]");
+            AnsiConsole.MarkupLine("[dim]- bin/<configuration>/net8.0-browser/browser-wasm/AppBundle[/]");
+            AnsiConsole.MarkupLine("[dim]- bin/<configuration>/net8.0-browser/publish[/]");
             return 1;
         }
 
@@ -124,12 +114,12 @@ internal sealed class RunWasmCommand : Command<RunWasmCommand.Settings>
             AnsiConsole.MarkupLine("[dim]Run manually: dotnet tool install -g dotnet-serve[/]");
         }
 
-        // 5. Serve AppBundle — dotnet-serve opens the browser automatically
-        AnsiConsole.MarkupLine($"[dim]AppBundle: {Markup.Escape(appBundle)}[/]");
+        // 5. Serve output directory — dotnet-serve opens the browser automatically
+        AnsiConsole.MarkupLine($"[dim]Output: {Markup.Escape(outputDirectory)}[/]");
         AnsiConsole.MarkupLine("[green]Starting local server. Press Ctrl+C to stop.[/]");
         var serveArgs = new List<string>
         {
-            "serve", "-d", appBundle, "--open-browser",
+            "serve", "-d", outputDirectory, "--open-browser",
         };
 
         return ProcessHelper.RunLive("dotnet", serveArgs);
