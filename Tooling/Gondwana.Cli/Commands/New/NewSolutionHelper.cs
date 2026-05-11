@@ -9,6 +9,13 @@ internal static class NewSolutionHelper
         var fullProjectDirectory = Path.GetFullPath(projectDirectory);
         var projectPath = Path.Combine(fullProjectDirectory, $"{projectName}.csproj");
         var defaultSolutionPath = Path.Combine(fullProjectDirectory, $"{projectName}.sln");
+        var createdNewSolution = false;
+
+        if (!Directory.Exists(fullProjectDirectory))
+        {
+            AnsiConsole.MarkupLine($"[yellow]Warning:[/] Expected project directory [dim]{Markup.Escape(fullProjectDirectory)}[/] was not found.");
+            return;
+        }
 
         var existingSolutions = Directory.GetFiles(fullProjectDirectory, "*.sln", SearchOption.TopDirectoryOnly);
         var solutionPath = existingSolutions.Length switch
@@ -32,7 +39,7 @@ internal static class NewSolutionHelper
                 return;
             }
 
-            AnsiConsole.MarkupLine($"[green]Solution '{Markup.Escape($"{projectName}.sln")}' created successfully.[/]");
+            createdNewSolution = true;
         }
 
         var slnAddExit = ProcessHelper.RunLive("dotnet", ["sln", solutionPath, "add", projectPath]);
@@ -41,5 +48,10 @@ internal static class NewSolutionHelper
             AnsiConsole.MarkupLine($"[yellow]Warning:[/] Could not add project to solution [dim]{Markup.Escape(solutionPath)}[/] automatically.");
             return;
         }
+
+        if (createdNewSolution)
+            AnsiConsole.MarkupLine($"[green]Solution '{Markup.Escape(Path.GetFileName(solutionPath))}' created and updated successfully.[/]");
+        else
+            AnsiConsole.MarkupLine($"[green]Project added to existing solution '{Markup.Escape(Path.GetFileName(solutionPath))}'.[/]");
     }
 }
