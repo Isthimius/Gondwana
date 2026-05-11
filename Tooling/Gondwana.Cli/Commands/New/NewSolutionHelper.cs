@@ -1,3 +1,4 @@
+using Gondwana.Cli.Commands;
 using Spectre.Console;
 
 namespace Gondwana.Cli.Commands.New;
