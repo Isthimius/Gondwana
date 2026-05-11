@@ -29,8 +29,10 @@ internal sealed class GpuDirtyFrame
     internal static readonly GpuDirtyFrame Empty = new(0, false, Array.Empty<GpuLayerDirtyRects>());
 
     /// <summary>
-    /// Monotonically increasing counter.  Incremented each time a non-empty frame is
-    /// published by the engine thread.  Used by adapters to detect new work.
+    /// Monotonically increasing counter. Incremented each time a non-empty frame is
+    /// published by the engine thread.
+    /// Preserved on the newest snapshot when frames are merged so the frame version
+    /// remains associated with the latest published work.
     /// </summary>
     internal long Revision { get; }
 
