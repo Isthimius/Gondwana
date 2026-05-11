@@ -5,7 +5,7 @@ namespace Gondwana.Cli.Commands.New;
 
 internal static class NewSolutionHelper
 {
-    public static void TryCreateHoldingSolution(string projectName, string projectDirectory)
+    public static void CreateHoldingSolution(string projectName, string projectDirectory)
     {
         var fullProjectDirectory = Path.GetFullPath(projectDirectory);
         var projectPath = Path.Combine(fullProjectDirectory, $"{projectName}.csproj");
