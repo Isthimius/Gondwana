@@ -133,11 +133,14 @@ public class GpuBackbuffer : BackbufferBase
         : base(width, height)
     {
         // Apply the current engine configuration defaults for the settings this backbuffer
-        // explicitly copies at construction time: TargetFps, VSync, and MsaaSampleCount.
+        // explicitly copies at construction time: TargetFps, VSync, MsaaSampleCount,
+        // GpuDirtyRectanglesEnabled, and ContinuousRender.
         var config = Engine.Instance.Configuration;
         TargetFps = config.TargetFPS;
         VSync = config.VSync;
         MsaaSampleCount = config.MsaaSampleCount;
+        GpuDirtyRectanglesEnabled = config.GpuDirtyRectangles;
+        ContinuousRender = config.ContinuousGpuRender;
 
         CreateCpuSurface(width, height);
     }
@@ -237,6 +240,124 @@ public class GpuBackbuffer : BackbufferBase
         return _surface.Snapshot();
     }
 
+    // ── GPU dirty-rectangle feature flags ────────────────────────────────────
+
+    /// <summary>
+    /// Gets or sets a value indicating whether partial GPU redraws via dirty-rectangle
+    /// tracking are enabled for this backbuffer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When <see langword="false"/> (the default) the GPU path always clears and redraws the
+    /// full surface on every paint callback — identical to the pre-dirty-rect behaviour.
+    /// </para>
+    /// <para>
+    /// Set to <see langword="true"/> to enable partial GPU redraws.  Only the screen regions
+    /// covered by the current <see cref="GpuDirtyFrame"/> are cleared and repainted; unchanged
+    /// pixels remain intact on the GPU surface.  Enable this flag after performance and
+    /// correctness validation in your target environment.
+    /// </para>
+    /// <para>
+    /// This value is kept in sync with
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.GpuDirtyRectangles"/> (which
+    /// propagates its value to all registered GPU backbuffers).
+    /// </para>
+    /// </remarks>
+    public bool GpuDirtyRectanglesEnabled { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a GPU repaint is requested on every engine
+    /// cycle regardless of dirty-rectangle state.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When <see langword="true"/> (the default) the adapter posts an invalidation request
+    /// after every <c>AfterFrameRender</c> event, preserving the original behaviour.
+    /// </para>
+    /// <para>
+    /// Set to <see langword="false"/> to suppress repaint requests when no dirty regions
+    /// exist, reducing GPU load during idle frames.  Only meaningful when
+    /// <see cref="GpuDirtyRectanglesEnabled"/> is also <see langword="true"/>.
+    /// </para>
+    /// <para>
+    /// This value is kept in sync with
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.ContinuousGpuRender"/> (which
+    /// propagates its value to all registered GPU backbuffers).
+    /// </para>
+    /// </remarks>
+    public bool ContinuousRender { get; set; } = true;
+
+    // ── Dirty-frame slot (engine thread → GL thread) ─────────────────────────
+
+    // Holds the latest uncommitted dirty-frame snapshot.  Merges successive engine-side
+    // publishes so that slow GL paints never lose dirty regions.
+    private GpuDirtyFrame _pendingDirtyFrame = GpuDirtyFrame.Empty;
+    private readonly object _pendingDirtyFrameLock = new();
+
+    /// <summary>
+    /// <see langword="true"/> when at least one non-empty <see cref="GpuDirtyFrame"/> has
+    /// been published but not yet consumed by the GL thread.
+    /// </summary>
+    public bool HasNewDirtyFrame
+    {
+        get { lock (_pendingDirtyFrameLock) return !_pendingDirtyFrame.IsEmpty; }
+    }
+
+    /// <summary>
+    /// Merges <paramref name="frame"/> into the pending dirty-frame slot.
+    /// </summary>
+    /// <remarks>
+    /// Must be called on the engine thread.  Thread-safe with respect to
+    /// <see cref="ConsumeDirtyFrame"/> running concurrently on the GL thread.
+    /// </remarks>
+    internal void PublishDirtyFrame(GpuDirtyFrame frame)
+    {
+        lock (_pendingDirtyFrameLock)
+            _pendingDirtyFrame = _pendingDirtyFrame.MergeWith(frame);
+    }
+
+    /// <summary>
+    /// Atomically retrieves and resets the pending dirty frame, returning
+    /// <see cref="GpuDirtyFrame.Empty"/> if no new frame has been published.
+    /// </summary>
+    /// <remarks>
+    /// Must be called on the GL thread.  Thread-safe with respect to
+    /// <see cref="PublishDirtyFrame"/> running concurrently on the engine thread.
+    /// </remarks>
+    internal GpuDirtyFrame ConsumeDirtyFrame()
+    {
+        lock (_pendingDirtyFrameLock)
+        {
+            var frame = _pendingDirtyFrame;
+            _pendingDirtyFrame = GpuDirtyFrame.Empty;
+            return frame;
+        }
+    }
+
+    // ── Rendering telemetry ───────────────────────────────────────────────────
+
+    private long _skippedFrameCount;
+    private long _dirtyRectFrameCount;
+    private long _fullRedrawFrameCount;
+
+    /// <summary>Records that a GPU paint callback was suppressed (no dirty regions, no continuous render).</summary>
+    public void RecordSkippedFrame()    => Interlocked.Increment(ref _skippedFrameCount);
+
+    /// <summary>Records that the GL thread rendered only dirty rectangles for this frame.</summary>
+    internal void RecordDirtyRectFrame()  => Interlocked.Increment(ref _dirtyRectFrameCount);
+
+    /// <summary>Records that the GL thread performed a full-surface redraw for this frame.</summary>
+    internal void RecordFullRedrawFrame() => Interlocked.Increment(ref _fullRedrawFrameCount);
+
+    /// <summary>
+    /// Returns a point-in-time snapshot of rendering telemetry counters and atomically resets
+    /// all counters to zero.
+    /// </summary>
+    public GpuRenderTelemetry ConsumeTelemetry() => new(
+        Interlocked.Exchange(ref _skippedFrameCount,    0),
+        Interlocked.Exchange(ref _dirtyRectFrameCount,  0),
+        Interlocked.Exchange(ref _fullRedrawFrameCount, 0));
+
     // ── Actual FPS tracking ──────────────────────────────────────────────────
 
     /// <summary>
@@ -297,5 +418,34 @@ public class GpuBackbuffer : BackbufferBase
         _disposed = true;
         base.Dispose();
         DisposeSurface();
+    }
+}
+
+/// <summary>
+/// A point-in-time snapshot of GPU rendering telemetry counters consumed from a
+/// <see cref="GpuBackbuffer"/> via <see cref="GpuBackbuffer.ConsumeTelemetry"/>.
+/// </summary>
+public readonly struct GpuRenderTelemetry
+{
+    /// <summary>
+    /// Number of GPU paint callbacks that were suppressed because there were no dirty regions
+    /// and <see cref="GpuBackbuffer.ContinuousRender"/> was <see langword="false"/>.
+    /// </summary>
+    public long SkippedFrames { get; }
+
+    /// <summary>
+    /// Number of GPU frames where only dirty rectangles were rendered
+    /// (partial redraw via <see cref="GpuBackbuffer.GpuDirtyRectanglesEnabled"/>).
+    /// </summary>
+    public long DirtyRectFrames { get; }
+
+    /// <summary>Number of GPU frames where the full surface was redrawn.</summary>
+    public long FullRedrawFrames { get; }
+
+    internal GpuRenderTelemetry(long skipped, long dirtyRect, long fullRedraw)
+    {
+        SkippedFrames    = skipped;
+        DirtyRectFrames  = dirtyRect;
+        FullRedrawFrames = fullRedraw;
     }
 }

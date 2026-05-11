@@ -64,8 +64,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         Host         = new RenderSurfaceHost<GpuBackbuffer>(Adapter);
         _gpuBackbuffer = (GpuBackbuffer)Host.Backbuffer;
 
-        // Pacing: post RequestNextFrameRendering() after each engine foreground cycle.
-        Adapter.AttachToEngine(RequestNextFrameRendering);
+        // Pacing: commit dirty frame + post RequestNextFrameRendering() after each engine foreground cycle.
+        Adapter.AttachToEngine(RequestNextFrameRendering, Host);
     }
 
     // ── OpenGL lifecycle callbacks (called on the GL thread by Avalonia) ─────

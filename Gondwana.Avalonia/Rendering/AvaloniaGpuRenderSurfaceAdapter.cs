@@ -61,15 +61,36 @@ public sealed class AvaloniaGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, 
 
     /// <summary>
     /// Wires the GL repaint callback to the engine's foreground cycle.
-    /// After this call, every <c>Engine.AfterFrameRender</c> event posts
-    /// <paramref name="requestRepaint"/> to the UI thread.
+    /// After this call, every <c>Engine.AfterFrameRender</c> event commits a dirty-frame
+    /// snapshot and, when warranted, posts <paramref name="requestRepaint"/> to the UI thread.
     /// </summary>
-    internal void AttachToEngine(Action requestRepaint)
+    /// <param name="requestRepaint">
+    /// Action that triggers the next GL render callback (e.g.
+    /// <c>RequestNextFrameRendering()</c>).
+    /// </param>
+    /// <param name="host">
+    /// The <see cref="RenderSurfaceHostBase"/> bound to this adapter.  Used to commit dirty
+    /// frame snapshots on the engine thread and to read the
+    /// <see cref="GpuBackbuffer"/> feature flags.
+    /// </param>
+    internal void AttachToEngine(Action requestRepaint, RenderSurfaceHostBase host)
     {
         _afterFrameRenderHandler = () =>
         {
-            if (!_disposed)
+            if (_disposed) return;
+
+            // Commit dirty frame snapshot on the engine thread.
+            host.CommitGpuDirtyFrame();
+
+            // Request a repaint when there is new work or continuous rendering is requested.
+            var gpuBb = host.Backbuffer as GpuBackbuffer;
+            bool hasNewFrame    = gpuBb?.HasNewDirtyFrame ?? true;
+            bool continuousMode = gpuBb?.ContinuousRender ?? true;
+
+            if (hasNewFrame || continuousMode)
                 Engine.Instance.UiDispatcher!.Post(requestRepaint);
+            else
+                gpuBb?.RecordSkippedFrame();
         };
         Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;
     }

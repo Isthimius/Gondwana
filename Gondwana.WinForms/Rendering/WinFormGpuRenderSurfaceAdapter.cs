@@ -134,15 +134,35 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         // Cache the GpuBackbuffer so OnPaintSurface can read its settings.
         _gpuBackbuffer = _host.Backbuffer as GpuBackbuffer;
 
-        // Invalidate the GL control on the UI thread after every engine foreground cycle.
-        // Use _pendingInvalidate to ensure at most one Post(Invalidate) is queued: when the engine
-        // cycle rate exceeds the GPU render rate, excess calls are dropped rather than piling
-        // up in the message queue.  The flag is cleared at the start of each paint.
+        // After every engine foreground cycle:
+        //   1. Snapshot dirty rects into a GpuDirtyFrame (on the engine thread, safe).
+        //   2. Post Invalidate to the UI thread only when there is new work to render
+        //      or ContinuousRender is enabled (default: always, for backward-compat).
+        // The _pendingInvalidate flag ensures at most one Post(Invalidate) is queued;
+        // when the engine cycle rate exceeds the GPU render rate, excess calls are
+        // dropped rather than piling up in the message queue.  The flag is cleared at
+        // the start of each paint.
         _afterFrameRenderHandler = () =>
         {
-            if (!_glControl.IsDisposed
-                && Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) == 0)
-                Engine.Instance.UiDispatcher!.Post(_glControl.Invalidate);
+            if (_glControl.IsDisposed) return;
+
+            // Commit dirty frame snapshot on the engine thread.
+            _host.CommitGpuDirtyFrame();
+
+            // Request a repaint when there is new work or continuous rendering is requested.
+            bool hasNewFrame    = _gpuBackbuffer?.HasNewDirtyFrame ?? true;
+            bool continuousMode = _gpuBackbuffer?.ContinuousRender ?? true;
+
+            if (hasNewFrame || continuousMode)
+            {
+                if (Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) == 0)
+                    Engine.Instance.UiDispatcher!.Post(_glControl.Invalidate);
+            }
+            else
+            {
+                // No new work and continuous mode is off — record as a suppressed frame.
+                _gpuBackbuffer?.RecordSkippedFrame();
+            }
         };
         Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;
     }

@@ -224,6 +224,72 @@ public partial class EngineConfiguration
     /// </summary>
     public List<StateFileMount>? StateFiles { get; set; }
 
+    private bool _gpuDirtyRectangles = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether partial GPU redraws via dirty-rectangle
+    /// tracking are enabled.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When <see langword="false"/> (the default) the GPU path always clears and redraws the
+    /// full surface on every paint callback.  Set to <see langword="true"/> to enable partial
+    /// GPU redraws after performance and correctness validation in your target environment.
+    /// </para>
+    /// <para>
+    /// Setting this property propagates the value to
+    /// <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.GpuDirtyRectanglesEnabled"/>
+    /// on all currently registered GPU surfaces.  It also serves as the default for any new
+    /// <see cref="GpuBackbuffer"/> instances created after this property is set.
+    /// </para>
+    /// </remarks>
+    public bool GpuDirtyRectangles
+    {
+        get => _gpuDirtyRectangles;
+        set
+        {
+            _gpuDirtyRectangles = value;
+            foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
+                if (surface.Backbuffer is GpuBackbuffer gpuBb)
+                    gpuBb.GpuDirtyRectanglesEnabled = value;
+        }
+    }
+
+    private bool _continuousGpuRender = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a GPU repaint is requested on every engine
+    /// cycle regardless of dirty-rectangle state.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When <see langword="true"/> (the default) a repaint is requested after every
+    /// <c>AfterFrameRender</c> event, preserving the original behaviour.
+    /// </para>
+    /// <para>
+    /// Set to <see langword="false"/> to suppress repaint requests on idle frames and
+    /// reduce GPU load at rest.  Only meaningful when <see cref="GpuDirtyRectangles"/> is
+    /// also <see langword="true"/>.
+    /// </para>
+    /// <para>
+    /// Setting this property propagates the value to
+    /// <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.ContinuousRender"/>
+    /// on all currently registered GPU surfaces.  It also serves as the default for any new
+    /// <see cref="GpuBackbuffer"/> instances created after this property is set.
+    /// </para>
+    /// </remarks>
+    public bool ContinuousGpuRender
+    {
+        get => _continuousGpuRender;
+        set
+        {
+            _continuousGpuRender = value;
+            foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
+                if (surface.Backbuffer is GpuBackbuffer gpuBb)
+                    gpuBb.ContinuousRender = value;
+        }
+    }
+
     #region ConfigurationSections
 
     /// <summary>

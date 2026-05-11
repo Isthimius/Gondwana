@@ -101,6 +101,25 @@ public abstract class RenderSurfaceHostBase : IDisposable
     }
 
     /// <summary>
+    /// Snapshots dirty-rectangle state from all visible scene layers and publishes an
+    /// immutable <see cref="GpuDirtyFrame"/> to the backbuffer's pending-frame slot for
+    /// the GL thread to consume.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Must be called on the engine thread (from an <c>AfterFrameRender</c> handler or
+    /// equivalent).  Is a no-op for non-GL-thread-rendered backbuffers.
+    /// </para>
+    /// <para>
+    /// In addition to snapshotting, this method clears the <see cref="RefreshQueue"/>s of
+    /// all visible layers on the engine thread, which is safe because the snapshot is
+    /// already captured.  This eliminates the race where a GL-thread
+    /// <c>ClearRefreshQueue</c> post could discard dirty rects added after the snapshot.
+    /// </para>
+    /// </remarks>
+    public virtual void CommitGpuDirtyFrame() { }
+
+    /// <summary>
     /// Renders all visible scene layers for every configured view onto the backbuffer.
     /// Called as part of DoForegroundTasks().
     /// </summary>

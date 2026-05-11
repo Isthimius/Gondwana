@@ -27,6 +27,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private readonly RenderSurfaceAdapterBase _renderSurfaceAdapter;
     private readonly ViewManager _viewManager;
 
+    // Monotonically increasing counter used to stamp GpuDirtyFrame revisions.
+    private long _gpuDirtyRevision;
+
     /// <summary>
     /// Occurs when a scene is bound to or unbound from this render surface host.
     /// </summary>
@@ -335,6 +338,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </remarks>
     private void RenderToBackbufferGpuFull(long tick)
     {
+        var gpuBb = _backbuffer as GpuBackbuffer;
+
         // When there are no views at all, clear the whole surface and bail.
         // If there ARE views but no scene layers, we fall through so view-mode
         // DirectDrawings (e.g. a splash screen overlay) are still rendered.
@@ -342,8 +347,34 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
             Scene.FullRefreshNeeded = false;
+            gpuBb?.RecordFullRedrawFrame();
             return;
         }
+
+        // Consume the latest dirty-frame snapshot published by CommitGpuDirtyFrame.
+        var dirtyFrame = gpuBb?.ConsumeDirtyFrame() ?? GpuDirtyFrame.Empty;
+
+        // When GPU dirty-rectangle rendering is enabled, route to the appropriate path.
+        if (gpuBb is { GpuDirtyRectanglesEnabled: true })
+        {
+            if (dirtyFrame.IsEmpty)
+            {
+                // Nothing has changed; the surface is already correct.
+                gpuBb.RecordSkippedFrame();
+                return;
+            }
+
+            if (!dirtyFrame.ForceFullRedraw)
+            {
+                // Partial redraw: only repaint the dirty regions.
+                RenderToBackbufferGpuDirty(tick, dirtyFrame);
+                gpuBb.RecordDirtyRectFrame();
+                return;
+            }
+            // ForceFullRedraw: fall through to the existing full-surface path below.
+        }
+
+        gpuBb?.RecordFullRedrawFrame();
 
         foreach (var view in ViewManager.Views)
         {
@@ -524,6 +555,109 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     #endregion DrawRefreshQueueToBackbuffer helpers
 
+    #region GPU dirty-rectangle render helpers
+
+    /// <summary>
+    /// Partial GPU render path used when <see cref="GpuBackbuffer.GpuDirtyRectanglesEnabled"/>
+    /// is <see langword="true"/> and the consumed <see cref="GpuDirtyFrame"/> has dirty regions
+    /// but does not require a full-surface redraw.
+    /// </summary>
+    /// <remarks>
+    /// Algorithm mirrors the bitmap dirty-rect path but uses the immutable
+    /// <paramref name="dirtyFrame"/> snapshot instead of the live <see cref="RefreshQueue"/>.
+    /// The queues have already been cleared on the engine thread by
+    /// <see cref="CommitGpuDirtyFrame"/>, so there is no cross-thread clear race.
+    /// </remarks>
+    private void RenderToBackbufferGpuDirty(long tick, GpuDirtyFrame dirtyFrame)
+    {
+        foreach (var view in ViewManager.Views)
+        {
+            RenderContext.Push(view, tick);
+
+            try
+            {
+                // Force-refresh all DirectDrawings that overlay this view.
+                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+                foreach (var overlay in overlays)
+                    overlay.ForceRefresh();
+
+                var vp = view.Viewport.TargetRectPx;
+
+                // Clip to this view's viewport, excluding regions covered by higher Z-order views.
+                Backbuffer.Canvas.Save();
+                Backbuffer.Canvas.ResetMatrix();
+                Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
+
+                foreach (var blocker in ViewManager.GetViewsAbove(view))
+                {
+                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
+                    if (!overlap.IsEmpty)
+                        Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
+                }
+
+                // Map world dirty rects → screen rects for this view.
+                var dirtyScreenRects = CollectDirtyScreenAreaFromFrame(view, dirtyFrame);
+
+                // Pre-clear each dirty screen patch.
+                foreach (var screenRect in dirtyScreenRects)
+                {
+                    var clamped = Rectangle.Intersect(screenRect, vp);
+                    if (!clamped.IsEmpty)
+                        Backbuffer.ClearRect(clamped);
+                }
+
+                // Render each layer's dirty world regions.
+                foreach (var lr in dirtyFrame.LayerRects)
+                {
+                    foreach (var worldRect in lr.WorldRects)
+                    {
+                        var drawables = lr.Layer.GetDrawablesInWorldRect(worldRect);
+                        var screenRect = view.WorldRectToScreenRect(lr.Layer, worldRect).ToPixelAlignedRect();
+                        Backbuffer.DrawDrawables(view, drawables, screenRect);
+                    }
+                }
+
+                // Render view-based DirectDrawings on top.
+                for (int i = 0; i < overlays.Count; i++)
+                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+
+                Backbuffer.Canvas.Restore();
+            }
+            finally
+            {
+                RenderContext.Pop();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Converts per-layer world-space dirty rectangles from <paramref name="dirtyFrame"/>
+    /// into a deduplicated list of screen-space pixel rectangles clipped to
+    /// <paramref name="view"/>'s viewport.
+    /// </summary>
+    private List<Rectangle> CollectDirtyScreenAreaFromFrame(View view, GpuDirtyFrame dirtyFrame)
+    {
+        // Initial capacity of 64: a typical frame touches O(10–100) dirty screen rects
+        // (one per independently moving sprite or tile batch per view).
+        var dirty = new List<Rectangle>(64);
+        var viewportRect = view.Viewport.TargetRectPx;
+
+        foreach (var lr in dirtyFrame.LayerRects)
+        {
+            foreach (var worldRect in lr.WorldRects)
+            {
+                var screenRectF = view.WorldRectToScreenRect(lr.Layer, worldRect);
+                var rect = Rectangle.Intersect(screenRectF.ToPixelAlignedRect(), viewportRect);
+                if (!rect.IsEmpty)
+                    dirty.AddDeduped(rect);
+            }
+        }
+
+        return dirty;
+    }
+
+    #endregion GPU dirty-rectangle render helpers
+
     /// <summary>
     /// Renders the contents of the backbuffer to the associated UI adapter.
     /// Called as part of DoForegroundTasks().
@@ -600,6 +734,43 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     #endregion IDisposable
 
     #region private methods
+
+    /// <inheritdoc/>
+    public override void CommitGpuDirtyFrame()
+    {
+        if (_backbuffer is not GpuBackbuffer gpuBb)
+            return;
+
+        bool forceFullRedraw = Scene.FullRefreshNeeded;
+        var layers = Scene.VisibleSceneLayers;
+
+        // Snapshot dirty rects from every visible layer (engine thread – safe).
+        var layerRects = new List<GpuLayerDirtyRects>(layers.Count);
+        for (int i = 0; i < layers.Count; i++)
+        {
+            var layer = layers[i];
+            var rects = layer.RefreshQueue.SnapshotWorldRects();
+            if (rects.Length > 0)
+                layerRects.Add(new GpuLayerDirtyRects(layer, rects));
+        }
+
+        bool hasWork = forceFullRedraw || layerRects.Count > 0;
+        if (!hasWork)
+            return;
+
+        // Clear the queues now that we hold an immutable snapshot.
+        // We are on the engine thread so ClearRefreshQueue runs inline (no cross-thread post).
+        for (int i = 0; i < layers.Count; i++)
+            layers[i].RefreshQueue.ClearRefreshQueue();
+
+        // Clear FullRefreshNeeded on the engine thread now that it has been captured.
+        // The GL thread will act on dirtyFrame.ForceFullRedraw from the snapshot.
+        if (forceFullRedraw)
+            Scene.FullRefreshNeeded = false;
+
+        long revision = Interlocked.Increment(ref _gpuDirtyRevision);
+        gpuBb.PublishDirtyFrame(new GpuDirtyFrame(revision, forceFullRedraw, layerRects));
+    }
 
     private void OnSourceDisposing(Scene scene)
     {
