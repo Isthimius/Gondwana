@@ -17,7 +17,32 @@ internal static class NewSolutionHelper
             return;
         }
 
-        var existingSolutions = Directory.GetFiles(fullProjectDirectory, "*.sln", SearchOption.TopDirectoryOnly);
+        if (!File.Exists(projectPath))
+        {
+            var existingProjects = Directory.GetFiles(fullProjectDirectory, "*.csproj", SearchOption.TopDirectoryOnly);
+            projectPath = existingProjects.Length switch
+            {
+                1 => existingProjects[0],
+                _ => existingProjects
+                    .FirstOrDefault(path => string.Equals(
+                        Path.GetFileNameWithoutExtension(path),
+                        projectName,
+                        StringComparison.OrdinalIgnoreCase))
+                    ?? string.Empty,
+            };
+
+            if (string.IsNullOrEmpty(projectPath))
+            {
+                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Could not locate project file to add in [dim]{Markup.Escape(fullProjectDirectory)}[/].");
+                return;
+            }
+        }
+
+        var existingSolutions = Directory
+            .GetFiles(fullProjectDirectory, "*.sln", SearchOption.TopDirectoryOnly)
+            .OrderBy(Path.GetFileName)
+            .ToArray();
+
         var solutionPath = existingSolutions.Length switch
         {
             0 => defaultSolutionPath,
@@ -27,7 +52,7 @@ internal static class NewSolutionHelper
                     Path.GetFileNameWithoutExtension(path),
                     projectName,
                     StringComparison.OrdinalIgnoreCase))
-                ?? defaultSolutionPath,
+                ?? existingSolutions[0],
         };
 
         if (!File.Exists(solutionPath))
