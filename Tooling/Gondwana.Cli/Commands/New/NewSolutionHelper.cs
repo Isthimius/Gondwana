@@ -43,17 +43,29 @@ internal static class NewSolutionHelper
             .OrderBy(Path.GetFileName)
             .ToArray();
 
-        var solutionPath = existingSolutions.Length switch
+        string solutionPath;
+        if (existingSolutions.Length == 0)
         {
-            0 => defaultSolutionPath,
-            1 => existingSolutions[0],
-            _ => existingSolutions
-                .FirstOrDefault(path => string.Equals(
-                    Path.GetFileNameWithoutExtension(path),
-                    projectName,
-                    StringComparison.OrdinalIgnoreCase))
-                ?? existingSolutions[0],
-        };
+            solutionPath = defaultSolutionPath;
+        }
+        else if (existingSolutions.Length == 1)
+        {
+            solutionPath = existingSolutions[0];
+        }
+        else
+        {
+            solutionPath = existingSolutions.FirstOrDefault(path => string.Equals(
+                Path.GetFileNameWithoutExtension(path),
+                projectName,
+                StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
+
+            if (string.IsNullOrEmpty(solutionPath))
+            {
+                AnsiConsole.MarkupLine(
+                    $"[yellow]Warning:[/] Multiple solution files were found in [dim]{Markup.Escape(fullProjectDirectory)}[/], but none matched [dim]{Markup.Escape(projectName)}[/]. Skipping automatic solution update.");
+                return;
+            }
+        }
 
         if (!File.Exists(solutionPath))
         {
