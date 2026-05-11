@@ -230,6 +230,7 @@ gondwana publish
 gondwana publish --project ./src/MyGame
 gondwana publish --runtime win-x64
 gondwana publish --framework net8.0 --self-contained
+gondwana publish --runtime win-x64 --self-contained --publish-single-file
 ```
 
 | Option | Short | Default | Description |
@@ -240,6 +241,7 @@ gondwana publish --framework net8.0 --self-contained
 | `--runtime <rid>` | `-r` | *(none)* | Runtime identifier such as `win-x64`, `linux-x64`, or `osx-arm64`. |
 | `--output <path>` | `-o` | *(dotnet default)* | Publish output directory. |
 | `--self-contained` | | `false` | Publish as self-contained. |
+| `--publish-single-file` | | `false` | Publish as a single-file executable. |
 
 On success, the command prints the publish output directory as a plain line (machine-friendly) when it can be located.
 
@@ -299,6 +301,8 @@ Cross-Origin-Embedder-Policy: require-corp
 ```
 
 The site must also be served over HTTPS.
+
+On success, the command prints the deploy destination as a plain line (machine-friendly): the absolute local path when using `--web-root`, or `user@host:/remote/path/` when using `--remote-host`/`--remote-path`.
 
 ---
 
