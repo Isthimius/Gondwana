@@ -302,6 +302,8 @@ Cross-Origin-Embedder-Policy: require-corp
 
 The site must also be served over HTTPS.
 
+On success, the command prints the deploy destination as a plain line (machine-friendly): the absolute local path when using `--web-root`, or `user@host:/remote/path/` when using `--remote-host`/`--remote-path`.
+
 ---
 
 ### `gondwana deploy wasm`
