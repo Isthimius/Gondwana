@@ -23,11 +23,13 @@ jobs:
           repository: ${{ github.repository }}.wiki
           path: wiki
 
-      - name: Copy wiki pages and remove retired pages
+      - name: Sync wiki pages
         run: |
+          # Remove all existing tracked .md files from the wiki so that
+          # renames and deletions in .github/wiki/ are reflected automatically.
+          find wiki -maxdepth 1 -name "*.md" -exec rm -f {} +
+          # Copy the canonical set of pages from the repo.
           cp .github/wiki/*.md wiki/
-          # Remove the old Getting-Started page now that it has been renamed.
-          rm -f wiki/Getting-Started.md
 
       - name: Commit and push wiki changes
         working-directory: wiki
