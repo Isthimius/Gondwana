@@ -1,3 +1,5 @@
+using Gondwana;
+
 namespace Gondwana.Tests;
 
 public sealed class TypedValueBagTests
