@@ -109,7 +109,7 @@ This scaffolds a project containing:
 
 ## Further reading
 
-- **Getting started (15-minute guide)** — [first-game-in-15-minutes.md](https://github.com/Isthimius/Gondwana/blob/master/first-game-in-15-minutes.md)
+- **Getting started (15-minute guide)** — [Make Your First Game in 15 Minutes](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-15-Minutes)
 - **Wiki** — https://github.com/Isthimius/Gondwana/wiki
 - **API reference** — https://isthimius.github.io/Gondwana/
 - **NuGet packages** — https://www.nuget.org/packages/Gondwana

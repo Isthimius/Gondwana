@@ -1,0 +1,45 @@
+name: Sync wiki pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/wiki/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v4
+
+      - name: Checkout wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+
+      - name: Sync wiki pages
+        run: |
+          # Remove all existing tracked .md files from the wiki so that
+          # renames and deletions in .github/wiki/ are reflected automatically.
+          find wiki -maxdepth 1 -name "*.md" -exec rm -f {} +
+          # Copy the canonical set of pages from the repo.
+          cp .github/wiki/*.md wiki/
+
+      - name: Commit and push wiki changes
+        working-directory: wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No wiki changes to commit."
+          else
+            git commit -m "chore: sync wiki pages from .github/wiki"
+            git push
+          fi
