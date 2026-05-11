@@ -581,10 +581,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             try
             {
-                // Force-refresh all DirectDrawings that overlay this view.
                 var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
-                foreach (var overlay in overlays)
-                    overlay.ForceRefresh();
 
                 var vp = view.Viewport.TargetRectPx;
 
