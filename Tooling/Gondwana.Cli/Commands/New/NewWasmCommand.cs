@@ -39,6 +39,7 @@ internal sealed class NewWasmCommand : Command<NewWasmCommand.Settings>
 
         if (exitCode == 0)
         {
+            NewSolutionHelper.CreateHoldingSolution(settings.Name, settings.Output ?? settings.Name);
             AnsiConsole.MarkupLine($"[green]Project '{Markup.Escape(settings.Name)}' created successfully.[/]");
             AnsiConsole.MarkupLine($"[dim]Desktop: cd {Markup.Escape(settings.Output ?? settings.Name)} && dotnet run[/]");
             AnsiConsole.MarkupLine($"[dim]WASM:    cd {Markup.Escape(settings.Output ?? settings.Name)} && dotnet workload install wasm-tools && dotnet publish -f net8.0-browser[/]");

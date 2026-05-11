@@ -119,6 +119,8 @@ gondwana pack ./Assets ./game.assets --password secret --encrypt
 
 ### `gondwana new winforms <name>`
 
+If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `<name>.sln` and adds the project.
+
 | Argument / Option | Short | Default | Description |
 |---|---|---|---|
 | `<name>` | | | **Required.** Name of the new project. |
@@ -136,6 +138,8 @@ gondwana new winforms MyGame --backbuffer gpu
 
 ### `gondwana new avalonia <name>`
 
+If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `<name>.sln` and adds the project.
+
 | Argument / Option | Short | Default | Description |
 |---|---|---|---|
 | `<name>` | | | **Required.** Name of the new project. |
@@ -152,6 +156,8 @@ gondwana new avalonia MyGame --backbuffer gpu
 ---
 
 ### `gondwana new wasm <name>`
+
+If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `<name>.sln` and adds the project.
 
 | Argument / Option | Short | Default | Description |
 |---|---|---|---|
