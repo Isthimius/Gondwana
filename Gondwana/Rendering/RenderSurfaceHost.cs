@@ -360,7 +360,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             if (dirtyFrame.IsEmpty)
             {
                 // Nothing has changed; the surface is already correct.
-                gpuBb.RecordSkippedFrame();
+                // Do not record this as a skipped frame here: a paint is executing,
+                // but the renderer is choosing to no-op because there is no dirty work.
                 return;
             }
 
