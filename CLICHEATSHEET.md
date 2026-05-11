@@ -243,6 +243,7 @@ Publishes the desktop build of the project in the current directory.
 | `--runtime <rid>` | `-r` | *(none)* | Runtime identifier such as `win-x64`, `linux-x64`, or `osx-arm64`. |
 | `--output <path>` | `-o` | *(dotnet default)* | Publish output directory. |
 | `--self-contained` | | `false` | Publish as self-contained. |
+| `--publish-single-file` | | `false` | Publish as a single-file executable. |
 
 **Examples**
 ```
@@ -250,6 +251,7 @@ gondwana publish
 gondwana publish -p ./src/MyGame
 gondwana publish -r win-x64
 gondwana publish -f net8.0 --self-contained
+gondwana publish -r win-x64 --self-contained --publish-single-file
 ```
 
 On success, the command prints the publish output directory as a plain line when it can be located.

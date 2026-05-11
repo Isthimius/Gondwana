@@ -33,6 +33,10 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
         [CommandOption("--self-contained")]
         [Description("Publish as self-contained.")]
         public bool SelfContained { get; init; }
+
+        [CommandOption("--publish-single-file")]
+        [Description("Publish as a single-file executable.")]
+        public bool PublishSingleFile { get; init; }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -74,6 +78,9 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
 
         if (settings.SelfContained)
             publishArgs.Add("--self-contained");
+
+        if (settings.PublishSingleFile)
+            publishArgs.Add("/p:PublishSingleFile=true");
 
         var exitCode = ProcessHelper.RunLive("dotnet", publishArgs);
         if (exitCode != 0)
