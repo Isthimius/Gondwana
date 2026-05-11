@@ -4,6 +4,7 @@ using EngineTimer = Gondwana.Timers.Timer;
 
 namespace Gondwana.Tests;
 
+[Collection("NonParallelTimerTests")]
 public sealed class TimerTests : IDisposable
 {
     public TimerTests()
@@ -100,7 +101,7 @@ public sealed class TimerTests : IDisposable
         var ticks = 0;
         timer.Tick += () => ticks++;
 
-        var engineTick = HighResTimer.GetCurrentTick() + timer.Length;
+        var engineTick = GetLastEventTick(timer) + timer.Length;
         InvokeRaiseTimerEvents(TimerType.PreCycle, engineTick);
 
         Assert.Equal(1, ticks);
@@ -146,4 +147,14 @@ public sealed class TimerTests : IDisposable
             ?? throw new InvalidOperationException("Could not find Timer.RaiseTimerEvents via reflection.");
         method.Invoke(null, [type, engineTick]);
     }
+
+    private static long GetLastEventTick(EngineTimer timer)
+    {
+        var property = typeof(EngineTimer).GetProperty("_lastEventTick", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("Could not find Timer._lastEventTick via reflection.");
+        return (long)(property.GetValue(timer) ?? throw new InvalidOperationException("Timer._lastEventTick is null."));
+    }
 }
+
+[CollectionDefinition("NonParallelTimerTests", DisableParallelization = true)]
+public sealed class NonParallelTimerTestsCollectionDefinition;

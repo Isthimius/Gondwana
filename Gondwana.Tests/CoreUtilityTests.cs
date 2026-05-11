@@ -1,3 +1,5 @@
+using System.Globalization;
+using Gondwana;
 using Gondwana.Timers;
 
 namespace Gondwana.Tests;
@@ -21,15 +23,16 @@ public sealed class CoreUtilityTests
     public void CyclesPerSecondCalculatedEventArgs_ToString_FormatsWithGpuFps()
     {
         var args = new CyclesPerSecondCalculatedEventArgs(1000, 900, 60, 54, 2, 58.5);
+        var culture = CultureInfo.CurrentCulture;
 
         var text = args.ToString();
 
-        Assert.Contains("Total gross cycles: 1,000", text);
-        Assert.Contains("Total net cycles: 900", text);
-        Assert.Contains("Sampling time: 2.00s", text);
-        Assert.Contains("Gross CPS: 60.00", text);
-        Assert.Contains("Net CPS (FPS): 54.00", text);
-        Assert.Contains("GPU FPS: 58.50", text);
+        Assert.Contains($"Total gross cycles: {1000.ToString("N0", culture)}", text);
+        Assert.Contains($"Total net cycles: {900.ToString("N0", culture)}", text);
+        Assert.Contains($"Sampling time: {2d.ToString("N2", culture)}s", text);
+        Assert.Contains($"Gross CPS: {60d.ToString("N2", culture)}", text);
+        Assert.Contains($"Net CPS (FPS): {54d.ToString("N2", culture)}", text);
+        Assert.Contains($"GPU FPS: {58.5d.ToString("N2", culture)}", text);
     }
 
     [Fact]
