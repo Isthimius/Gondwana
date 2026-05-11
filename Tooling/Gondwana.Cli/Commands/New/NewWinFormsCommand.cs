@@ -55,6 +55,7 @@ internal sealed class NewWinFormsCommand : Command<NewWinFormsCommand.Settings>
 
         if (exitCode == 0)
         {
+            NewSolutionHelper.TryCreateHoldingSolution(settings.Name, settings.Output ?? settings.Name);
             AnsiConsole.MarkupLine($"[green]Project '{Markup.Escape(settings.Name)}' created successfully.[/]");
             AnsiConsole.MarkupLine($"[dim]cd {Markup.Escape(settings.Output ?? settings.Name)} && dotnet run[/]");
         }
