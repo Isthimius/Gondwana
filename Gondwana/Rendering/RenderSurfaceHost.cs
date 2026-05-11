@@ -345,6 +345,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // DirectDrawings (e.g. a splash screen overlay) are still rendered.
         if (ViewManager.Views.Count == 0)
         {
+            // Consume (and discard) any pending dirty frame so HasNewDirtyFrame resets to
+            // false. Without this, adapters would keep posting invalidate requests on every
+            // engine cycle even though there is nothing to render.
+            gpuBb?.ConsumeDirtyFrame();
             Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
             Scene.FullRefreshNeeded = false;
             gpuBb?.RecordFullRedrawFrame();
