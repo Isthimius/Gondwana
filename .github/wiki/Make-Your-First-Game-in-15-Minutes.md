@@ -397,7 +397,7 @@ The CLI creates:
 |---|---|
 | `Wanderer.csproj` | All four Gondwana NuGet packages pre-referenced, plus a commented `<Content>` example for assets |
 | `Program.cs` | Standard `[STAThread]` WinForms entry point |
-| `GameWindow.cs` | `Form` with render surface wired to the host lifecycle — identical to Method A, Step 3 |
+| `GameWindow.cs` | `Form` with render surface wired to the host lifecycle |
 | `GameHost.cs` | `WandererGameHost : WinFormsGameHost` with stub override methods ready to fill in |
 | `assets/README.txt` | Instructions for adding sprite files |
 
@@ -421,13 +421,27 @@ Copy your PNG into the `assets\` subfolder, then uncomment (or add) the `<Conten
 
 ### Step 3 — Understand the host lifecycle
 
-`GameWindow.cs` is already wired correctly (`OnLoad` → `OnShown` → `OnFormClosed`). The same lifecycle diagram applies as in Method A, Step 4 — no changes needed.
+`GameWindow.cs` is already wired correctly (`OnLoad` → `OnShown` → `OnFormClosed`). `WandererGameHost.Initialize()` runs this sequence:
+
+```
+Initialize()
+  → ConfigureLogging
+  → ConfigurePlatform
+  → ConfigureInput
+  → LoadContent
+  → CreateSceneGraph
+  → InitializeSceneObjects
+  → InitializeEngine
+  → StartEngine
+```
+
+No edits are required here unless you want custom startup behavior.
 
 ---
 
 ### Steps 4–7 — Fill in `GameHost.cs`
 
-Open `GameHost.cs`. The scaffolded `WandererGameHost` already has the right base class and empty overrides — add the field declarations and fill in each method with the same logic as Method A.
+Open `GameHost.cs`. The scaffolded `WandererGameHost` already has the right base class and empty overrides — add the field declarations and fill in each method below.
 
 Add these fields at the top of the class:
 
@@ -445,7 +459,7 @@ private bool      _isMoving        = false;
 
 Then fill in the overrides:
 
-**`LoadTilesheets`** (Method A, Step 5):
+**`LoadTilesheets`**:
 ```csharp
 protected override void LoadTilesheets()
 {
@@ -454,7 +468,7 @@ protected override void LoadTilesheets()
 }
 ```
 
-**`CreateInitialScene`** (Method A, Step 6a):
+**`CreateInitialScene`**:
 ```csharp
 protected override Scene CreateInitialScene()
 {
@@ -469,7 +483,7 @@ protected override Scene CreateInitialScene()
 }
 ```
 
-**`CreateSceneGraph`** (Method A, Step 6b):
+**`CreateSceneGraph`**:
 ```csharp
 protected override void CreateSceneGraph()
 {
@@ -483,7 +497,62 @@ protected override void CreateSceneGraph()
 }
 ```
 
-**`OnKeyboardAdapterInitialized`, `UnhookEvents`, and `OnKeyDown`** (Method A, Step 7): copy verbatim — the logic is identical.
+**`OnKeyboardAdapterInitialized`, `UnhookEvents`, and movement handlers**:
+
+```csharp
+protected override void OnKeyboardAdapterInitialized()
+{
+    if (Engine.Input.KeyboardEventPoller is null)
+        return;
+
+    Engine.Input.KeyboardEventPoller.KeyDown += OnKeyDown;
+    Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Left);
+    Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Right);
+    Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Up);
+    Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Down);
+}
+
+protected override void UnhookEvents()
+{
+    if (Engine.Input.KeyboardEventPoller is not null)
+        Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+}
+
+private void OnKeyDown(KeyDownEventArgs args)
+{
+    if (args.KeyAction != KeyAction.Pressed || _isMoving)
+        return;
+
+    var key = WinFormsKeyboardAdapter.GetKeyFromString(args.KeyConfig.Key);
+    int newX = _gridX;
+    int newY = _gridY;
+
+    switch (key)
+    {
+        case Keys.Left:  newX--; break;
+        case Keys.Right: newX++; break;
+        case Keys.Up:    newY--; break;
+        case Keys.Down:  newY++; break;
+        default: return;
+    }
+
+    if (newX < 0 || newX >= Columns || newY < 0 || newY >= Rows)
+        return;
+
+    _gridX = newX;
+    _gridY = newY;
+    _isMoving = true;
+
+    _sprite.Movement.ScriptedMovementStopped += OnMovementStopped;
+    _sprite.Movement.MoveTo(new(_gridX, _gridY), 0.15f, EasingKind.SmootherStep, 0f);
+}
+
+private void OnMovementStopped(Gondwana.Movement.Scripted.ScriptedMovement _)
+{
+    _sprite.Movement.ScriptedMovementStopped -= OnMovementStopped;
+    _isMoving = false;
+}
+```
 
 ---
 
