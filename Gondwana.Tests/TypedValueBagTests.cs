@@ -120,18 +120,24 @@ public sealed class TypedValueBagTests
     public void Clone_CopiesArrayAndCloneableValues()
     {
         var bag = new TypedValueBag();
+        var arrayKey = new ValueKey<int[]?>("arr");
+        var cloneableKey = new ValueKey<CloneableCounter?>("cloneable");
+        var holderKey = new ValueKey<NonCloneableHolder?>("holder");
         var numbers = new[] { 1, 2, 3 };
         var cloneable = new CloneableCounter(5);
         var nonCloneable = new NonCloneableHolder(9);
-        bag.Set(new ValueKey<int[]>("arr"), numbers);
-        bag.Set(new ValueKey<CloneableCounter>("cloneable"), cloneable);
-        bag.Set(new ValueKey<NonCloneableHolder>("holder"), nonCloneable);
+        bag.Set(arrayKey, numbers);
+        bag.Set(cloneableKey, cloneable);
+        bag.Set(holderKey, nonCloneable);
 
         var cloned = bag.Clone();
-        var clonedArray = cloned.Get(new ValueKey<int[]>("arr"));
-        var clonedCloneable = cloned.Get(new ValueKey<CloneableCounter>("cloneable"));
-        var clonedHolder = cloned.Get(new ValueKey<NonCloneableHolder>("holder"));
+        var clonedArray = cloned.Get(arrayKey);
+        var clonedCloneable = cloned.Get(cloneableKey);
+        var clonedHolder = cloned.Get(holderKey);
 
+        Assert.NotNull(clonedArray);
+        Assert.NotNull(clonedCloneable);
+        Assert.NotNull(clonedHolder);
         Assert.NotSame(numbers, clonedArray);
         Assert.Equal(numbers, clonedArray);
         Assert.NotSame(cloneable, clonedCloneable);
