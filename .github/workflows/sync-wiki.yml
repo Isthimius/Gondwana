@@ -1,0 +1,44 @@
+name: Sync wiki pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/wiki/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v4
+
+      - name: Checkout wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+
+      - name: Copy wiki pages and remove retired pages
+        run: |
+          cp .github/wiki/*.md wiki/
+          # Remove the old Getting-Started page now that it has been renamed.
+          rm -f wiki/Getting-Started.md
+
+      - name: Commit and push wiki changes
+        working-directory: wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git rm --cached Getting-Started.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No wiki changes to commit."
+          else
+            git commit -m "chore: sync wiki pages from .github/wiki"
+            git push
+          fi

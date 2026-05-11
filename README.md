@@ -13,7 +13,7 @@
 
 Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers can own their game loop and rendering flow end-to-end when needed, while still benefiting from sensible defaults that allow simpler games to come together quickly. This approach modernizes classic Win32/GDI-era rendering patterns into a clean, modular architecture with explicit control over draw order, dirty-region updates, and timing, yielding a predictable, debuggable engine that works out of the box but does not get in the way as projects grow.
 
-**[Make Your First Game in 15 Minutes with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Getting-Started)**
+**[Make Your First Game in 15 Minutes with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-15-Minutes)**
 
 - 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
 - 🧭 **Engine lifecycle reference** — [engine-lifecycle.md](engine-lifecycle.md)

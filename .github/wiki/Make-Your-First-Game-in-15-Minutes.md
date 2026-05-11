@@ -6,6 +6,18 @@ The completed example mirrors the structure of the **Spot** demo included in thi
 
 ---
 
+## Contents
+
+- [What You'll Build](#what-youll-build)
+- [Prerequisites](#prerequisites)
+- [Method A — Manual setup](#method-a--manual-setup)
+- [Method B — Using the Gondwana CLI](#method-b--using-the-gondwana-cli)
+- [What the Spot Demo adds](#what-the-spot-demo-adds)
+- [Key mental model](#key-mental-model)
+- [Further reading](#further-reading)
+
+---
+
 ## What You'll Build
 
 A tiny game called **Wanderer**: a coloured bubble sits on an 8×8 grid. The player moves it one cell at a time with the arrow keys. The bubble animates smoothly between cells.
@@ -32,7 +44,12 @@ Concepts covered:
 
 ---
 
-## Step 1 — Create the project (2 min)
+## Method A — Manual setup
+
+<details>
+<summary>Click to expand</summary>
+
+### Step 1 — Create the project (2 min)
 
 ```bash
 dotnet new winforms -n Wanderer -f net8.0-windows
@@ -60,7 +77,7 @@ Copy your sprite PNG into an `assets\` subfolder and mark it as content in `Wand
 
 ---
 
-## Step 2 — Wire up the entry point (1 min)
+### Step 2 — Wire up the entry point (1 min)
 
 Replace the generated `Program.cs` with the standard WinForms startup pattern:
 
@@ -84,7 +101,7 @@ internal static class Program
 
 ---
 
-## Step 3 — Create the game window (2 min)
+### Step 3 — Create the game window (2 min)
 
 `GameWindow` is a plain `Form`. Its only job is to own the render surface control and hand it to the game host at the right moment in the form's lifecycle.
 
@@ -144,7 +161,7 @@ internal sealed class GameWindow : Form
 
 ---
 
-## Step 4 — Understand the host lifecycle
+### Step 4 — Understand the host lifecycle
 
 `WandererGameHost` will subclass `WinFormsGameHost`. The full call sequence when `Initialize()` is called is:
 
@@ -169,7 +186,7 @@ You only need to override the methods you care about. Everything else has a safe
 
 ---
 
-## Step 5 — Load the tilesheet and create a sprite (3 min)
+### Step 5 — Load the tilesheet and create a sprite (3 min)
 
 ```csharp
 using System.Drawing;
@@ -216,7 +233,7 @@ internal sealed class WandererGameHost : WinFormsGameHost
 
 ---
 
-## Step 6 — Build the scene and place the sprite (3 min)
+### Step 6 — Build the scene and place the sprite (3 min)
 
 ```csharp
     // ── Step 6a: create the scene ─────────────────────────────────────────
@@ -259,7 +276,7 @@ internal sealed class WandererGameHost : WinFormsGameHost
 
 ---
 
-## Step 7 — Move the sprite with arrow keys (3 min)
+### Step 7 — Move the sprite with arrow keys (3 min)
 
 Gondwana's keyboard adapter fires events on the engine thread. Override `OnKeyboardAdapterInitialized` to subscribe **after** the adapter is ready, and explicitly tell it which keys to watch.
 
@@ -337,7 +354,7 @@ Gondwana's keyboard adapter fires events on the engine thread. Override `OnKeybo
 
 ---
 
-## Step 8 — Run it
+### Step 8 — Run it
 
 ```bash
 dotnet run
@@ -346,6 +363,139 @@ dotnet run
 You should see an 8×8 grid with a bubble in the top-left corner. Arrow keys glide it across the grid.
 
 > **Tip:** press `F5` in Visual Studio to get a debugger-attached run. Gondwana logs at `LogLevel.Warning` by default; bump it to `LogLevel.Debug` in `Initialize()` to see per-frame event output.
+
+</details>
+
+---
+
+## Method B — Using the Gondwana CLI
+
+<details>
+<summary>Click to expand</summary>
+
+The Gondwana CLI scaffolds the boilerplate for you — no manual NuGet installs or hand-written `Program.cs` / `GameWindow.cs`. You write only the game-specific logic.
+
+**Prerequisite:** install the CLI and templates once:
+
+```bash
+dotnet tool install --global Gondwana.Cli
+gondwana templates install
+```
+
+---
+
+### Step 1 — Scaffold the project (1 min)
+
+```bash
+gondwana new winforms Wanderer
+cd Wanderer
+```
+
+The CLI creates:
+
+| File | What it contains |
+|---|---|
+| `Wanderer.csproj` | All four Gondwana NuGet packages pre-referenced, plus a commented `<Content>` example for assets |
+| `Program.cs` | Standard `[STAThread]` WinForms entry point |
+| `GameWindow.cs` | `Form` with render surface wired to the host lifecycle — identical to Method A, Step 3 |
+| `GameHost.cs` | `WandererGameHost : WinFormsGameHost` with stub override methods ready to fill in |
+| `assets/README.txt` | Instructions for adding sprite files |
+
+---
+
+### Step 2 — Add your sprite (1 min)
+
+Copy your PNG into the `assets\` subfolder, then uncomment (or add) the `<Content>` block in `Wanderer.csproj`:
+
+```xml
+<ItemGroup>
+  <Content Include="assets\bubble-blue.png">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
+```
+
+> The `.csproj` already has a commented-out example for exactly this.
+
+---
+
+### Step 3 — Understand the host lifecycle
+
+`GameWindow.cs` is already wired correctly (`OnLoad` → `OnShown` → `OnFormClosed`). The same lifecycle diagram applies as in Method A, Step 4 — no changes needed.
+
+---
+
+### Steps 4–7 — Fill in `GameHost.cs`
+
+Open `GameHost.cs`. The scaffolded `WandererGameHost` already has the right base class and empty overrides — add the field declarations and fill in each method with the same logic as Method A.
+
+Add these fields at the top of the class:
+
+```csharp
+private const int Columns = 8;
+private const int Rows    = 8;
+private const int CellPx  = 64;
+
+private Tilesheet _bubbleTilesheet = null!;
+private Sprite    _sprite          = null!;
+private int       _gridX           = 0;
+private int       _gridY           = 0;
+private bool      _isMoving        = false;
+```
+
+Then fill in the overrides:
+
+**`LoadTilesheets`** (Method A, Step 5):
+```csharp
+protected override void LoadTilesheets()
+{
+    _bubbleTilesheet = new Tilesheet("bubble", @"assets\bubble-blue.png");
+    _bubbleTilesheet.TileSize = new System.Drawing.Size(92, 96);
+}
+```
+
+**`CreateInitialScene`** (Method A, Step 6a):
+```csharp
+protected override Scene CreateInitialScene()
+{
+    var scene = new Scene();
+    scene.AddLayer(
+        columnCount: Columns, rowCount: Rows,
+        width: CellPx, height: CellPx,
+        zOrder: 10, parallax: 1f,
+        coordinateSystem: Gondwana.Drawing.Coordinates.CoordinateSystemTypes.Orthogonal);
+    scene[0].ShowGridLines = true;
+    return scene;
+}
+```
+
+**`CreateSceneGraph`** (Method A, Step 6b):
+```csharp
+protected override void CreateSceneGraph()
+{
+    base.CreateSceneGraph();
+    var frame = new Frame(_bubbleTilesheet, 0, 0);
+    _sprite = SpriteManager.Instance.CreateSprite(Scene![0], frame);
+    _sprite.SetPosition(new(_gridX, _gridY));
+    _sprite.RenderSize = new System.Drawing.Size(56, 56);
+    _sprite.VertAlign  = VerticalAlignment.Middle;
+    _sprite.Visible    = true;
+}
+```
+
+**`OnKeyboardAdapterInitialized`, `UnhookEvents`, and `OnKeyDown`** (Method A, Step 7): copy verbatim — the logic is identical.
+
+---
+
+### Step 8 — Run it
+
+```bash
+dotnet run
+```
+
+Same result: an 8×8 grid with a bubble you can glide around with the arrow keys.
+
+</details>
 
 ---
 
@@ -388,7 +538,7 @@ The engine renders only what changed each frame via a **dirty-region queue** (`R
 
 ## Further reading
 
-- **Engine architecture** — `README.md` in the repo root
-- **Recommended reading order** — https://github.com/Isthimius/Gondwana/wiki/Engine-Architecture-Overview
+- **Engine Architecture Overview** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki/Engine-Architecture-Overview)
+- **Contributor onboarding** — [ONBOARDING.md](https://github.com/Isthimius/Gondwana/blob/master/ONBOARDING.md)
 - **API reference** — https://isthimius.github.io/Gondwana/
 - **Wiki guides** — https://github.com/Isthimius/Gondwana/wiki
