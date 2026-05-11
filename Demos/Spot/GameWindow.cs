@@ -89,6 +89,8 @@ internal partial class GameWindow : Form
                 _gameHost.Engine.Configuration.TargetFPS = GpuTargetFps;
                 _gameHost.Engine.Configuration.VSync = false;
                 _gameHost.Engine.Configuration.MsaaSampleCount = GpuMsaaSampleCount;
+                _gameHost.Engine.Configuration.GpuDirtyRectanglesEnabled = true;
+                _gameHost.Engine.Configuration.ContinuousGpuRender = false;
             }
             else
             {

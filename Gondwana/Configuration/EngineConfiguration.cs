@@ -224,7 +224,7 @@ public partial class EngineConfiguration
     /// </summary>
     public List<StateFileMount>? StateFiles { get; set; }
 
-    private bool _gpuDirtyRectangles = false;
+    private bool _gpuDirtyRectanglesEnabled = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether partial GPU redraws via dirty-rectangle
@@ -243,12 +243,12 @@ public partial class EngineConfiguration
     /// <see cref="GpuBackbuffer"/> instances created after this property is set.
     /// </para>
     /// </remarks>
-    public bool GpuDirtyRectangles
+    public bool GpuDirtyRectanglesEnabled
     {
-        get => _gpuDirtyRectangles;
+        get => _gpuDirtyRectanglesEnabled;
         set
         {
-            _gpuDirtyRectangles = value;
+            _gpuDirtyRectanglesEnabled = value;
             foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
                 if (surface.Backbuffer is GpuBackbuffer gpuBb)
                     gpuBb.GpuDirtyRectanglesEnabled = value;
@@ -268,7 +268,7 @@ public partial class EngineConfiguration
     /// </para>
     /// <para>
     /// Set to <see langword="false"/> to suppress repaint requests on idle frames and
-    /// reduce GPU load at rest.  Only meaningful when <see cref="GpuDirtyRectangles"/> is
+    /// reduce GPU load at rest.  Only meaningful when <see cref="GpuDirtyRectanglesEnabled"/> is
     /// also <see langword="true"/>.
     /// </para>
     /// <para>

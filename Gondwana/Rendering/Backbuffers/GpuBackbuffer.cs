@@ -139,7 +139,7 @@ public class GpuBackbuffer : BackbufferBase
         TargetFps = config.TargetFPS;
         VSync = config.VSync;
         MsaaSampleCount = config.MsaaSampleCount;
-        GpuDirtyRectanglesEnabled = config.GpuDirtyRectangles;
+        GpuDirtyRectanglesEnabled = config.GpuDirtyRectanglesEnabled;
         ContinuousRender = config.ContinuousGpuRender;
 
         CreateCpuSurface(width, height);
@@ -259,7 +259,7 @@ public class GpuBackbuffer : BackbufferBase
     /// </para>
     /// <para>
     /// This value is kept in sync with
-    /// <see cref="Gondwana.Configuration.EngineConfiguration.GpuDirtyRectangles"/> (which
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.GpuDirtyRectanglesEnabled"/> (which
     /// propagates its value to all registered GPU backbuffers).
     /// </para>
     /// </remarks>
