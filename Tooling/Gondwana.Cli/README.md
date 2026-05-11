@@ -65,7 +65,7 @@ gondwana new winforms MyGame
 ```
 
 Equivalent to `dotnet new gondwana-winforms -n MyGame` but with cleaner output.
-Also creates `MyGame.sln` and adds the generated project to it.
+If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `MyGame.sln` and adds the project.
 
 ---
 
@@ -78,7 +78,7 @@ gondwana new avalonia MyGame
 ```
 
 Equivalent to `dotnet new gondwana-avalonia -n MyGame` but with cleaner output.
-Also creates `MyGame.sln` and adds the generated project to it.
+If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `MyGame.sln` and adds the project.
 
 An optional `--output` / `-o` flag can be used to specify the output directory for either `new` command:
 
@@ -110,7 +110,7 @@ gondwana new wasm MyGame
 ```
 
 Equivalent to `dotnet new gondwana-wasm -n MyGame`.
-Also creates `MyGame.sln` and adds the generated project to it.
+If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `MyGame.sln` and adds the project.
 
 An optional `--output` / `-o` flag can be used to specify the output directory:
 

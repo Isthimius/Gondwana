@@ -7,23 +7,39 @@ internal static class NewSolutionHelper
     public static void TryCreateHoldingSolution(string projectName, string projectDirectory)
     {
         var fullProjectDirectory = Path.GetFullPath(projectDirectory);
-        var solutionPath = Path.Combine(fullProjectDirectory, $"{projectName}.sln");
         var projectPath = Path.Combine(fullProjectDirectory, $"{projectName}.csproj");
+        var defaultSolutionPath = Path.Combine(fullProjectDirectory, $"{projectName}.sln");
 
-        var slnCreateExit = ProcessHelper.RunLive("dotnet", ["new", "sln", "-n", projectName, "-o", fullProjectDirectory]);
-        if (slnCreateExit != 0)
+        var existingSolutions = Directory.GetFiles(fullProjectDirectory, "*.sln", SearchOption.TopDirectoryOnly);
+        var solutionPath = existingSolutions.Length switch
         {
-            AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/].");
-            return;
+            0 => defaultSolutionPath,
+            1 => existingSolutions[0],
+            _ => existingSolutions
+                .FirstOrDefault(path => string.Equals(
+                    Path.GetFileNameWithoutExtension(path),
+                    projectName,
+                    StringComparison.OrdinalIgnoreCase))
+                ?? defaultSolutionPath,
+        };
+
+        if (!File.Exists(solutionPath))
+        {
+            var slnCreateExit = ProcessHelper.RunLive("dotnet", ["new", "sln", "-n", projectName, "-o", fullProjectDirectory]);
+            if (slnCreateExit != 0)
+            {
+                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/].");
+                return;
+            }
+
+            AnsiConsole.MarkupLine($"[green]Solution '{Markup.Escape($"{projectName}.sln")}' created successfully.[/]");
         }
 
         var slnAddExit = ProcessHelper.RunLive("dotnet", ["sln", solutionPath, "add", projectPath]);
         if (slnAddExit != 0)
         {
-            AnsiConsole.MarkupLine($"[yellow]Warning:[/] Solution created at [dim]{Markup.Escape(solutionPath)}[/], but project could not be added automatically.");
+            AnsiConsole.MarkupLine($"[yellow]Warning:[/] Could not add project to solution [dim]{Markup.Escape(solutionPath)}[/] automatically.");
             return;
         }
-
-        AnsiConsole.MarkupLine($"[green]Solution '{Markup.Escape($"{projectName}.sln")}' created successfully.[/]");
     }
 }
