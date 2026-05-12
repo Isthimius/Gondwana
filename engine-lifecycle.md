@@ -413,7 +413,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | `RenderSurfaceHost.BindToScene` | A render surface binds to a scene | Includes old/new scene info |
 | `RenderSurfaceHost.RenderBackbufferBegin` | A backbuffer render starts | Render-surface level render hook |
 | `RenderSurfaceHost.RenderBackbufferEnd` | A backbuffer render finishes | Render-surface level render hook |
-| `RenderSurfaceHost.RenderBackbufferPostScene` | All scene content for the frame has been drawn; canvas is ready for post-scene effects | Fires before `RenderBackbufferEnd`; not raised when frame is skipped or surface has no views |
+| `RenderSurfaceHost.RenderBackbufferPostScene` | All scene content for the frame has been drawn; canvas is ready for post-scene effects | Fires before `RenderBackbufferEnd`; not raised when frame is skipped or surface has no views. On CPU/bitmap surfaces using dirty-rectangle presentation (`RedrawDirtyRectangleOnly`), post-scene drawing that changes pixels outside the tracked dirty rect may not be presented; expand the dirty region or disable dirty-rect presentation for full-surface effects. |
 | `RenderSurfaceHost.RenderBackbufferNoOp` | A render is skipped because nothing is dirty | Useful for diagnostics |
 
 ### 10.5 Sprite, movement, and animation events
