@@ -247,6 +247,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
+        if (ViewManager.Views.Count == 0)
+        {
+            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Scene.FullRefreshNeeded = false;
+            RenderBackbufferEnd?.Invoke();
+            return;
+        }
+
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)
         {
