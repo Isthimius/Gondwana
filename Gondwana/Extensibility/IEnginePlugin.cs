@@ -92,7 +92,9 @@ public interface IEnginePlugin
     /// surface has no configured views.
     /// </para>
     /// </remarks>
-    void OnPostRenderCanvas(Engine engine, RenderSurfaceHostBase host, SKCanvas canvas);
+    void OnPostRenderCanvas(Engine engine, RenderSurfaceHostBase host, SKCanvas canvas)
+    {
+    }
 
     /// <summary>
     /// Called when the engine is shutting down.
