@@ -1,4 +1,6 @@
+using Gondwana.Rendering;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Extensibility;
 
@@ -70,6 +72,9 @@ public static class EnginePluginRegistry
 
     internal static void InvokePostFrameRender(Engine engine, double deltaMs) =>
         Invoke(engine, p => p.OnPostFrameRender(engine, deltaMs), "OnPostFrameRender");
+
+    internal static void InvokePostRenderCanvas(Engine engine, RenderSurfaceHostBase host, SKCanvas canvas) =>
+        Invoke(engine, p => p.OnPostRenderCanvas(engine, host, canvas), "OnPostRenderCanvas");
 
     internal static void InvokePostCycle(Engine engine, double deltaMs) =>
         Invoke(engine, p => p.OnPostCycle(engine, deltaMs), "OnPostCycle");

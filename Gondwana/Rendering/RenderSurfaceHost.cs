@@ -1,4 +1,5 @@
 ﻿using Gondwana.Drawing.Direct;
+using Gondwana.Extensibility;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
@@ -51,6 +52,43 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// Occurs when a backbuffer render operation is skipped because the scene is not dirty.
     /// </summary>
     public event Action? RenderBackbufferNoOp;
+
+    /// <summary>
+    /// Occurs after all scene content (layers, sprites, and direct drawings) has been drawn to the
+    /// backbuffer canvas for the current frame, but before the frame is finalised and presented to
+    /// the display adapter.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Subscribe to this event to draw post-scene overlays or visual effects — such as colour-grading
+    /// filters, vignettes, bloom composites, or debug annotations — directly onto the fully-rendered
+    /// canvas.  The canvas matrix is reset to identity and the clip covers the full surface at the
+    /// point this event fires.  Save and restore canvas state around any operations that modify the
+    /// matrix or clip region.
+    /// </para>
+    /// <para>
+    /// <strong>This is the per-surface game-instance hook.</strong>  If you need the same capability
+    /// from an engine-wide plugin, implement <see cref="IEnginePlugin.OnPostRenderCanvas"/> instead.
+    /// </para>
+    /// <para>
+    /// Threading:
+    /// <list type="bullet">
+    /// <item><description>
+    ///   <strong>CPU/bitmap surfaces</strong> — raised on the engine background thread.
+    /// </description></item>
+    /// <item><description>
+    ///   <strong>GPU/GL surfaces</strong> — raised on the GL thread from within
+    ///   <c>PaintSurface</c>, while the <c>GRContext</c> is current.
+    ///   Do not marshal GPU canvas operations to a different thread.
+    /// </description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// This event is not raised when a frame is skipped (scene not dirty) or when the surface has
+    /// no configured views.
+    /// </para>
+    /// </remarks>
+    public event Action<SKCanvas>? RenderBackbufferPostScene;
 
     private RenderSurfaceHost() : base() => _viewManager = new ViewManager(this);
 
@@ -300,6 +338,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         Scene.FullRefreshNeeded = false;
 
+        // Notify subscribers that all scene content has been drawn and the canvas is ready for
+        // post-scene effects.  Fires before RenderBackbufferEnd so subscribers still have a
+        // chance to draw into the canvas before it is presented to the adapter.
+        RenderBackbufferPostScene?.Invoke(Backbuffer.Canvas);
+        EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, this, Backbuffer.Canvas);
+
         RenderBackbufferEnd?.Invoke();
     }
 
@@ -404,6 +448,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         Scene.FullRefreshNeeded = false;
+
+        // Notify subscribers that all scene content has been drawn and the canvas is ready for
+        // post-scene effects.  For GPU surfaces this runs on the GL thread while GRContext is
+        // current, so subscribers may safely issue Skia GPU draw calls.
+        RenderBackbufferPostScene?.Invoke(Backbuffer.Canvas);
+        EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, this, Backbuffer.Canvas);
     }
 
     #region DrawRefreshQueueToBackbuffer helpers

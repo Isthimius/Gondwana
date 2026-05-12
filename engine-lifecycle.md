@@ -50,6 +50,7 @@ Two important rules shape everything else:
 | Input poller events | Engine thread | Same thread as `Tick()` |
 | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` | Engine thread | Same thread as `Tick()` |
 | `BeforeFrameRender` / `AfterFrameRender` | Engine thread | Same thread as `Tick()` |
+| `RenderBackbufferPostScene` / `IEnginePlugin.OnPostRenderCanvas` | Engine thread (CPU surfaces); GL thread (GPU surfaces) | Engine/tick thread (CPU); GL thread (GPU) |
 | `CPSCalculated` | Posted to `UiDispatcher` | Posted to `UiDispatcher` |
 | `Disposing` / `Disposed` on `Engine` | Posted to `UiDispatcher` when available | Posted to `UiDispatcher` when available |
 
@@ -192,6 +193,8 @@ Cycle()
             → BeforeFrameRender
             → DirectDrawingManager.UpdateAll
             → RenderSurfaceHost.RenderToBackbuffer (CPU-backed surfaces)
+            → RenderSurfaceHost.RenderBackbufferPostScene (CPU-backed surfaces, if scene was drawn)
+            → IEnginePlugin.OnPostRenderCanvas (CPU-backed surfaces, if scene was drawn)
             → PresentBackbufferToAdapter (CPU-backed surfaces)
             → Gamepad manager state update
             → AfterFrameRender
@@ -263,7 +266,8 @@ Typical render-surface flow:
 3. `ViewManager` manages one or more `View` instances.
 4. When a frame is rendered, `RenderSurfaceHost` raises `RenderBackbufferBegin`.
 5. If the scene is clean, it raises `RenderBackbufferNoOp` and returns.
-6. Otherwise it redraws dirty content and raises `RenderBackbufferEnd`.
+6. Otherwise it redraws dirty content, raises `RenderBackbufferPostScene` (and invokes
+   `IEnginePlugin.OnPostRenderCanvas` on all plugins), then raises `RenderBackbufferEnd`.
 7. Adapter resize changes raise `RenderSurfaceAdapterBase.Resized`.
 
 View-related lifecycle signals:
@@ -365,6 +369,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | `IEnginePlugin.OnPreCycle` | At the start of each engine cycle |
 | `IEnginePlugin.OnPreFrameRender` | Right before the foreground/render phase |
 | `IEnginePlugin.OnPostFrameRender` | Right after the foreground/render phase |
+| `IEnginePlugin.OnPostRenderCanvas` | After all scene content is drawn to a surface's backbuffer canvas, once per surface per frame (not called when frame is skipped or surface has no views) |
 | `IEnginePlugin.OnPostCycle` | At the end of each engine cycle |
 | `IEnginePlugin.OnShutdown` | After the engine loop has stopped |
 
@@ -408,6 +413,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | `RenderSurfaceHost.BindToScene` | A render surface binds to a scene | Includes old/new scene info |
 | `RenderSurfaceHost.RenderBackbufferBegin` | A backbuffer render starts | Render-surface level render hook |
 | `RenderSurfaceHost.RenderBackbufferEnd` | A backbuffer render finishes | Render-surface level render hook |
+| `RenderSurfaceHost.RenderBackbufferPostScene` | All scene content for the frame has been drawn; canvas is ready for post-scene effects | Fires before `RenderBackbufferEnd`; not raised when frame is skipped or surface has no views |
 | `RenderSurfaceHost.RenderBackbufferNoOp` | A render is skipped because nothing is dirty | Useful for diagnostics |
 
 ### 10.5 Sprite, movement, and animation events
@@ -448,6 +454,8 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | Observe engine initialization completion | `Engine.InitializationComplete` |
 | Run logic every cycle, even if a frame is skipped | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` or plugin cycle hooks |
 | Run logic only when a frame is actually rendered | `BeforeFrameRender` / `AfterFrameRender` |
+| Draw post-scene effects onto a specific surface's canvas (overlays, colour grading, etc.) | `RenderSurfaceHost.RenderBackbufferPostScene` |
+| Draw post-scene effects onto every surface's canvas from a plugin | `IEnginePlugin.OnPostRenderCanvas` |
 | React to keyboard/mouse/touch/gamepad input | Input poller events |
 | Track scene/view/render-surface composition changes | Scene / `ViewManager` / render-surface events |
 | Track animation or scripted movement completion | `Animator` and `MovementController` events |
@@ -471,8 +479,18 @@ Engine Thread (normal mode)
        ├─ plugins pre-cycle
        ├─ background work + input + movement + collisions
        ├─ optional frame render
+       │    ├─ BeforeFrameRender
+       │    ├─ RenderToBackbuffer (CPU surfaces) → RenderBackbufferPostScene
+       │    └─ AfterFrameRender
        ├─ optional CPS sample
        └─ plugins post-cycle
+
+GL Thread (GPU surfaces only)
+  └─ PaintSurface (driven by SKGLControl)
+       ├─ GlRenderAndSnapshot
+       │    ├─ RenderToBackbuffer → RenderBackbufferPostScene
+       │    └─ Snapshot
+       └─ blit to window surface
 
 Shutdown
   └─ GameHostBase.Dispose()
