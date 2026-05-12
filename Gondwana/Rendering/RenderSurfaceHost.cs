@@ -341,8 +341,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // Notify subscribers that all scene content has been drawn and the canvas is ready for
         // post-scene effects.  Fires before RenderBackbufferEnd so subscribers still have a
         // chance to draw into the canvas before it is presented to the adapter.
-        RenderBackbufferPostScene?.Invoke(Backbuffer.Canvas);
-        EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, this, Backbuffer.Canvas);
+        InvokePostSceneCanvasHooks();
 
         RenderBackbufferEnd?.Invoke();
     }
@@ -452,8 +451,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // Notify subscribers that all scene content has been drawn and the canvas is ready for
         // post-scene effects.  For GPU surfaces this runs on the GL thread while GRContext is
         // current, so subscribers may safely issue Skia GPU draw calls.
-        RenderBackbufferPostScene?.Invoke(Backbuffer.Canvas);
-        EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, this, Backbuffer.Canvas);
+        InvokePostSceneCanvasHooks();
     }
 
     #region DrawRefreshQueueToBackbuffer helpers
@@ -712,6 +710,24 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter!.Present(img, dirty.ToSKRectI(), dirty.ToSKRect()));
+    }
+
+    private void InvokePostSceneCanvasHooks()
+    {
+        var hasSurfaceHandlers = RenderBackbufferPostScene is not null;
+        var hasPlugins = EnginePluginRegistry.All.Count > 0;
+
+        if (!hasSurfaceHandlers && !hasPlugins)
+            return;
+
+        if (!Backbuffer.IsGlThreadRendered)
+            Backbuffer.AddToBackbufferDirtyRectangle(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+
+        if (hasSurfaceHandlers)
+            RenderBackbufferPostScene?.Invoke(Backbuffer.Canvas);
+
+        if (hasPlugins)
+            EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, this, Backbuffer.Canvas);
     }
 
     #endregion private methods
