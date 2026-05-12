@@ -60,7 +60,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Subscribe to this event to draw post-scene overlays or visual effects — such as colour-grading
+    /// Subscribe to this event to draw post-scene overlays or visual effects — such as color-grading
     /// filters, vignettes, bloom composites, or debug annotations — directly onto the fully-rendered
     /// canvas.  The canvas matrix is reset to identity and the clip covers the full surface at the
     /// point this event fires.  Save and restore canvas state around any operations that modify the

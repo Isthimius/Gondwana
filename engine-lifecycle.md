@@ -454,7 +454,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | Observe engine initialization completion | `Engine.InitializationComplete` |
 | Run logic every cycle, even if a frame is skipped | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` or plugin cycle hooks |
 | Run logic only when a frame is actually rendered | `BeforeFrameRender` / `AfterFrameRender` |
-| Draw post-scene effects onto a specific surface's canvas (overlays, colour grading, etc.) | `RenderSurfaceHost.RenderBackbufferPostScene` |
+| Draw post-scene effects onto a specific surface's canvas (overlays, color grading, etc.) | `RenderSurfaceHost.RenderBackbufferPostScene` |
 | Draw post-scene effects onto every surface's canvas from a plugin | `IEnginePlugin.OnPostRenderCanvas` |
 | React to keyboard/mouse/touch/gamepad input | Input poller events |
 | Track scene/view/render-surface composition changes | Scene / `ViewManager` / render-surface events |

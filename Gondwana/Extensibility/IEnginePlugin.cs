@@ -68,7 +68,7 @@ public interface IEnginePlugin
     /// </param>
     /// <param name="canvas">
     /// The <see cref="SKCanvas"/> for the backbuffer, ready to receive post-scene drawing
-    /// (overlay effects, colour grading, debug annotations, etc.).
+    /// (overlay effects, color grading, debug annotations, etc.).
     /// The canvas matrix is reset to identity and the clip covers the full surface.
     /// Callers must save and restore canvas state around any operations that change the
     /// matrix or clip region.
