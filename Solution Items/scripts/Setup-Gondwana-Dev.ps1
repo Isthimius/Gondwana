@@ -21,15 +21,17 @@
       9.  Checks for SDL2 native binaries required by Gondwana.Input.SDL2.
       10. Checks for LibVLC native binaries required by Gondwana.Video;
           installs VLC (which includes LibVLC) via winget if missing (Windows only).
-      11. Runs 'gondwana doctor' to confirm the final environment state.
+      11. Ensures git-cliff is installed; updates via winget when available (Windows).
+      12. Ensures butler (itch.io) is installed; updates via winget when available (Windows).
+      13. Runs 'gondwana doctor' to confirm the final environment state.
 
-    Steps 8–10 are skipped when -SkipOptional is supplied.
+    Steps 8–12 are skipped when -SkipOptional is supplied.
 
 .PARAMETER SkipBuild
     Skip step 5 (dotnet build). Restores packages and tools only.
 
 .PARAMETER SkipOptional
-    Skip steps 8–10: wasm-tools workload, SDL2 check, and LibVLC check/install.
+    Skip steps 8–12: wasm-tools, SDL2, LibVLC, git-cliff, and butler checks/install.
 
 .EXAMPLE
     # Full setup — run from anywhere inside the cloned repository
@@ -40,7 +42,7 @@
     .\Setup-Gondwana-Dev.ps1 -SkipBuild
 
 .EXAMPLE
-    # Install core tools only; skip WASM workload, SDL2, and LibVLC
+    # Install core tools only; skip WASM workload, SDL2, LibVLC, git-cliff, and butler
     .\Setup-Gondwana-Dev.ps1 -SkipOptional
 #>
 param(
@@ -93,6 +95,19 @@ function Test-Workload {
     return (@($output | Where-Object { $_ -match "\b$([regex]::Escape($Id))\b" })).Count -gt 0
 }
 
+function Get-CommandVersionLine {
+    param(
+        [string] $Command,
+        [string[]] $VersionArgs = @('--version')
+    )
+
+    try {
+        return ((& $Command @VersionArgs 2>&1) | Select-Object -First 1).ToString().Trim()
+    } catch {
+        return $null
+    }
+}
+
 function Test-NativeDll {
     param([string[]] $Names)
     # Search System32, SysWOW64, known VLC install paths, and every PATH directory
@@ -116,7 +131,7 @@ function Test-NativeDll {
 
 # ─── Step 1: Git ──────────────────────────────────────────────────────────────
 
-Step '1/11  Git'
+Step '1/13  Git'
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw "Git not found on PATH.`nInstall Git from https://git-scm.com and reopen your terminal."
 }
@@ -124,7 +139,7 @@ OK "$(git --version)"
 
 # ─── Step 2: .NET 8 SDK ───────────────────────────────────────────────────────
 
-Step '2/11  .NET 8 SDK'
+Step '2/13  .NET 8 SDK'
 $dotnetFound = $null -ne (Get-Command dotnet -ErrorAction SilentlyContinue)
 $hasSdk8     = $dotnetFound -and
                (@((dotnet --list-sdks 2>&1) | Where-Object { $_ -match '^8\.' })).Count -gt 0
@@ -149,7 +164,7 @@ if ($hasSdk8) {
 
 # ─── Step 3: Local .NET tools (nbgv) ──────────────────────────────────────────
 
-Step '3/11  Local .NET tools (nbgv)'
+Step '3/13  Local .NET tools (nbgv)'
 Push-Location $repoRoot
 try {
     Invoke-Cmd dotnet @('tool', 'restore', '--no-cache')
@@ -160,13 +175,13 @@ try {
 
 # ─── Step 4: NuGet restore ────────────────────────────────────────────────────
 
-Step '4/11  NuGet restore'
+Step '4/13  NuGet restore'
 Invoke-Cmd dotnet @('restore', $solutionFile, '--nologo', '--force', '--no-cache', '/p:EnableWindowsTargeting=true')
 OK 'NuGet packages restored with dependency reevaluation.'
 
 # ─── Step 5: Build ────────────────────────────────────────────────────────────
 
-Step '5/11  Build'
+Step '5/13  Build'
 if ($SkipBuild) {
     INFO 'Skipped (-SkipBuild).'
 } else {
@@ -177,7 +192,7 @@ if ($SkipBuild) {
 
 # ─── Step 6: Gondwana CLI ─────────────────────────────────────────────────────
 
-Step '6/11  Gondwana CLI (Gondwana.Cli)'
+Step '6/13  Gondwana CLI (Gondwana.Cli)'
 if (Test-GlobalTool 'gondwana.cli') {
     Invoke-Cmd dotnet @('tool', 'update', '--global', 'Gondwana.Cli')
     $cliLine = (dotnet tool list -g 2>&1) | Where-Object { $_ -match 'gondwana\.cli' } | Select-Object -First 1
@@ -189,7 +204,7 @@ if (Test-GlobalTool 'gondwana.cli') {
 
 # ─── Step 7: Gondwana project templates ───────────────────────────────────────
 
-Step '7/11  Gondwana project templates (Gondwana.Templates)'
+Step '7/13  Gondwana project templates (Gondwana.Templates)'
 if (Test-TemplatesInstalled) {
     Invoke-Cmd dotnet @('new', 'update')
     OK 'Installed templates checked and updated where available.'
@@ -198,15 +213,15 @@ if (Test-TemplatesInstalled) {
     OK 'Gondwana.Templates installed.'
 }
 
-# ─── Optional steps (8–10) ────────────────────────────────────────────────────
+# ─── Optional steps (8–12) ────────────────────────────────────────────────────
 
 if ($SkipOptional) {
-    Write-Host "`n   · Steps 8–10 skipped (-SkipOptional)."
+    Write-Host "`n   · Steps 8–12 skipped (-SkipOptional)."
 } else {
 
     # ─── Step 8: WASM workload ────────────────────────────────────────────────
 
-    Step '8/11  WASM workload (wasm-tools)'
+    Step '8/13  WASM workload (wasm-tools)'
     if (Test-Workload 'wasm-tools') {
         Invoke-Cmd dotnet @('workload', 'update')
         OK 'wasm-tools and other installed workloads updated to latest available versions.'
@@ -217,7 +232,7 @@ if ($SkipOptional) {
 
     # ─── Step 9: SDL2 native library ──────────────────────────────────────────
 
-    Step '9/11  SDL2 native library (Gondwana.Input.SDL2)'
+    Step '9/13  SDL2 native library (Gondwana.Input.SDL2)'
     $sdl2Dlls = if ($isWindowsOS) { @('SDL2.dll') } else { @('libSDL2-2.0.so.0', 'libSDL2.so') }
     if (Test-NativeDll $sdl2Dlls) {
         OK "SDL2 native library found."
@@ -232,7 +247,7 @@ if ($SkipOptional) {
 
     # ─── Step 10: LibVLC native library ───────────────────────────────────────
 
-    Step '10/11 LibVLC native library (Gondwana.Video)'
+    Step '10/13 LibVLC native library (Gondwana.Video)'
     $vlcDlls = if ($isWindowsOS) { @('libvlc.dll') } else { @('libvlc.so.5', 'libvlc.so') }
     if (Test-NativeDll $vlcDlls) {
         OK "LibVLC native library found."
@@ -264,11 +279,75 @@ if ($SkipOptional) {
             INFO "LibVLC is only required if you use the Gondwana.Video package."
         }
     }
+
+    # ─── Step 11: git-cliff ────────────────────────────────────────────────────
+
+    Step '11/13 git-cliff'
+    if (Get-Command git-cliff -ErrorAction SilentlyContinue) {
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            try {
+                Invoke-Cmd winget @('upgrade', '--id', 'git-cliff.git-cliff', '--exact', '--silent',
+                                    '--accept-source-agreements', '--accept-package-agreements')
+            } catch {
+                WARN "Could not auto-update git-cliff via winget: $_"
+            }
+        }
+
+        $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
+        OK ("git-cliff ready{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
+    } else {
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            try {
+                Invoke-Cmd winget @('install', '--id', 'git-cliff.git-cliff', '--exact', '--silent',
+                                    '--accept-source-agreements', '--accept-package-agreements')
+                $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
+                OK ("git-cliff installed{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
+            } catch {
+                WARN "winget install git-cliff.git-cliff failed: $_"
+                INFO "Install git-cliff manually from https://git-cliff.org/"
+            }
+        } else {
+            WARN "git-cliff not found on PATH."
+            INFO "Install git-cliff from https://git-cliff.org/"
+        }
+    }
+
+    # ─── Step 12: butler ───────────────────────────────────────────────────────
+
+    Step '12/13 butler (itch.io)'
+    if (Get-Command butler -ErrorAction SilentlyContinue) {
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            try {
+                Invoke-Cmd winget @('upgrade', '--id', 'itchio.butler', '--exact', '--silent',
+                                    '--accept-source-agreements', '--accept-package-agreements')
+            } catch {
+                WARN "Could not auto-update butler via winget: $_"
+            }
+        }
+
+        $butlerVersion = Get-CommandVersionLine -Command 'butler'
+        OK ("butler ready{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
+    } else {
+        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+            try {
+                Invoke-Cmd winget @('install', '--id', 'itchio.butler', '--exact', '--silent',
+                                    '--accept-source-agreements', '--accept-package-agreements')
+                $butlerVersion = Get-CommandVersionLine -Command 'butler'
+                OK ("butler installed{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
+            } catch {
+                WARN "winget install itchio.butler failed: $_"
+                INFO "Install butler manually from https://itch.io/docs/butler/"
+            }
+        } else {
+            WARN "butler not found on PATH."
+            INFO "Install butler from https://itch.io/docs/butler/"
+        }
+    }
 }
 
-# ─── Step 11: gondwana doctor ─────────────────────────────────────────────────
+# ─── Step 13: gondwana doctor ─────────────────────────────────────────────────
 
-Step '11/11 gondwana doctor'
+Step '13/13 gondwana doctor'
 if (Get-Command gondwana -ErrorAction SilentlyContinue) {
     gondwana doctor
 } else {

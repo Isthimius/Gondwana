@@ -21,7 +21,9 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 8. Installs the `dotnet wasm-tools` workload for WebAssembly support and updates installed workloads when it is already present.
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
-11. Runs `gondwana doctor` to confirm the final environment state.
+11. Ensures `git-cliff` is installed; updates it via `winget` when available on Windows.
+12. Ensures `butler` (itch.io) is installed; updates it via `winget` when available on Windows.
+13. Runs `gondwana doctor` to confirm the final environment state.
 
 **Prerequisites:**
 - Git on `PATH`
@@ -32,7 +34,7 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 | Parameter | Description | Default |
 |---|---|---|
 | `-SkipBuild` | Skip step 5 (`dotnet build`). Restores packages and tools only. | — |
-| `-SkipOptional` | Skip steps 8–10 (wasm-tools, SDL2, LibVLC). | — |
+| `-SkipOptional` | Skip steps 8–12 (wasm-tools, SDL2, LibVLC, git-cliff, butler). | — |
 
 **Examples:**
 ```powershell
@@ -42,7 +44,7 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 # Skip building the solution
 .\Setup-Gondwana-Dev.ps1 -SkipBuild
 
-# Install core tools only (no WASM workload, SDL2, or LibVLC)
+# Install core tools only (no WASM workload, SDL2, LibVLC, git-cliff, or butler)
 .\Setup-Gondwana-Dev.ps1 -SkipOptional
 ```
 

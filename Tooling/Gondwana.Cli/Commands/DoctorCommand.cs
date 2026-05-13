@@ -27,6 +27,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             ("Gondwana CLI",       CheckGondwanaCli,       FixGondwanaCli),
             ("Gondwana Templates", CheckGondwanaTemplates, FixGondwanaTemplates),
             ("wasm-tools",         CheckWasmTools,         FixWasmTools),
+            ("git-cliff",          CheckGitCliff,          FixGitCliff),
+            ("butler",             CheckButler,            FixButler),
             ("SkiaSharp",          CheckSkiaSharp,         null),
             ("SDL2",               CheckSdl2,              null),
             ("LibVLC",             CheckLibVlc,            null),
@@ -41,12 +43,20 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         int exitCode = PrintSummary(results, remaining: false);
 
-        if (!settings.Fix || exitCode == 0)
+        if (!settings.Fix)
             return exitCode;
+
+        var alwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "git-cliff",
+            "butler",
+        };
 
         var fixable = results
             .Zip(checks, (r, c) => (r.Label, r.Result, c.Fix))
-            .Where(x => x.Result.Status == CheckStatus.Fail && x.Fix != null)
+            .Where(x => x.Fix != null &&
+                        (x.Result.Status == CheckStatus.Fail ||
+                         (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && alwaysFixLabels.Contains(x.Label))))
             .ToList();
 
         AnsiConsole.WriteLine();
@@ -180,6 +190,60 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         ProcessHelper.RunLive("dotnet", ["workload", "install", "wasm-tools"]);
     }
 
+    private static void FixGitCliff()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            AnsiConsole.MarkupLine("[yellow]Automatic install/update for git-cliff is currently supported only on Windows via winget.[/]");
+            AnsiConsole.MarkupLine("[dim]Install from https://git-cliff.org/.[/]");
+            return;
+        }
+
+        var wingetOutput = ProcessHelper.Run("winget", "--version", out var wingetExit);
+        if (wingetExit != 0 || string.IsNullOrWhiteSpace(wingetOutput))
+        {
+            AnsiConsole.MarkupLine("[red]winget not found; cannot auto-install or auto-update git-cliff.[/]");
+            AnsiConsole.MarkupLine("[dim]Install from https://git-cliff.org/.[/]");
+            return;
+        }
+
+        var gitCliffOutput = ProcessHelper.Run("git-cliff", "--version", out var gitCliffExit);
+        if (gitCliffExit == 0 && !string.IsNullOrWhiteSpace(gitCliffOutput))
+        {
+            ProcessHelper.RunLive("winget", ["upgrade", "--id", "git-cliff.git-cliff", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+            return;
+        }
+
+        ProcessHelper.RunLive("winget", ["install", "--id", "git-cliff.git-cliff", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+    }
+
+    private static void FixButler()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            AnsiConsole.MarkupLine("[yellow]Automatic install/update for butler is currently supported only on Windows via winget.[/]");
+            AnsiConsole.MarkupLine("[dim]Install from https://itch.io/docs/butler/.[/]");
+            return;
+        }
+
+        var wingetOutput = ProcessHelper.Run("winget", "--version", out var wingetExit);
+        if (wingetExit != 0 || string.IsNullOrWhiteSpace(wingetOutput))
+        {
+            AnsiConsole.MarkupLine("[red]winget not found; cannot auto-install or auto-update butler.[/]");
+            AnsiConsole.MarkupLine("[dim]Install from https://itch.io/docs/butler/.[/]");
+            return;
+        }
+
+        var butlerOutput = ProcessHelper.Run("butler", "--version", out var butlerExit);
+        if (butlerExit == 0 && !string.IsNullOrWhiteSpace(butlerOutput))
+        {
+            ProcessHelper.RunLive("winget", ["upgrade", "--id", "itchio.butler", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+            return;
+        }
+
+        ProcessHelper.RunLive("winget", ["install", "--id", "itchio.butler", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+    }
+
     // ─── Individual checks ────────────────────────────────────────────────────
 
     private static CheckResult CheckGit()
@@ -275,6 +339,26 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             return CheckResult.Fail("wasm-tools workload not installed. Run: dotnet workload install wasm-tools");
 
         return CheckResult.Ok("wasm-tools installed");
+    }
+
+    private static CheckResult CheckGitCliff()
+    {
+        var output = ProcessHelper.Run("git-cliff", "--version", out int exitCode);
+        if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
+            return CheckResult.Fail("git-cliff not found on PATH. Install from https://git-cliff.org/ (Windows: winget install --id git-cliff.git-cliff).");
+
+        var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+        return CheckResult.Ok(versionLine ?? "found");
+    }
+
+    private static CheckResult CheckButler()
+    {
+        var output = ProcessHelper.Run("butler", "--version", out int exitCode);
+        if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
+            return CheckResult.Fail("butler not found on PATH. Install from https://itch.io/docs/butler/ (Windows: winget install --id itchio.butler).");
+
+        var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+        return CheckResult.Ok(versionLine ?? "found");
     }
 
     private static CheckResult CheckSkiaSharp()
