@@ -56,7 +56,7 @@ Prints a formatted table of all available commands with short descriptions, then
 
 ## `gondwana doctor`
 
-Checks the local environment for all Gondwana prerequisites (.NET SDK, native libraries, templates).
+Checks the local environment for all Gondwana prerequisites (.NET SDK, templates, release/deploy tooling, native libraries).
 
 | Option | Description |
 |---|---|
@@ -66,6 +66,8 @@ Currently auto-fixable:
 - **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
 - **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
 - **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
+- **git-cliff** on Windows → runs `winget install/upgrade --id git-cliff.git-cliff`
+- **butler** on Windows → runs `winget install/upgrade --id itchio.butler`
 
 **Examples**
 ```

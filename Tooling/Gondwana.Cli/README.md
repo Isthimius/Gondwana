@@ -23,6 +23,8 @@ nbgv                 OK  3.9.50
 Gondwana CLI         OK  1.2.0
 Gondwana Templates   OK  gondwana-winforms, gondwana-avalonia, gondwana-wasm found
 wasm-tools           OK  wasm-tools installed
+git-cliff            OK  git-cliff 2.10.0
+butler               OK  v17.0.0, built on ...
 SkiaSharp            OK  found in NuGet global cache
 SDL2                 Missing native library
 LibVLC               Not checked
@@ -37,6 +39,8 @@ Checks performed:
 - Gondwana CLI global tool installed
 - Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) installed
 - `wasm-tools` .NET workload installed
+- `git-cliff` installed
+- `butler` installed
 - SkiaSharp native binaries
 - SDL2 native binaries (for `Gondwana.Input.SDL2`)
 - LibVLC (for `Gondwana.Video`)
@@ -51,6 +55,8 @@ Currently auto-fixable:
 - **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
 - **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
 - **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
+- **git-cliff** on Windows → runs `winget install/upgrade --id git-cliff.git-cliff`
+- **butler** on Windows → runs `winget install/upgrade --id itchio.butler`
 
 After applying fixes, the checks are re-run and the updated results are displayed.
 
