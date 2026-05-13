@@ -99,7 +99,7 @@ jobs:
           path: Gondwana-binaries.zip
 
       - name: Fail job if unit tests failed
-        if: ${{ always() && steps.unit_tests.outcome == 'failure' }}
+        if: ${{ !cancelled() && steps.unit_tests.outcome == 'failure' }}
         run: |
           echo "Unit tests failed. Marking workflow as failed after running remaining steps."
           exit 1
