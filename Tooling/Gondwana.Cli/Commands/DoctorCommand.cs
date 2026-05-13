@@ -53,17 +53,17 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             "git-cliff",
             "butler",
         };
-        bool canRunAlwaysFixes = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-                                 checks.Any(c => c.Fix != null && alwaysFixLabels.Contains(c.Label));
+        bool hasWindowsAlwaysFixes = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+                                     checks.Any(c => c.Fix != null && alwaysFixLabels.Contains(c.Label));
 
-        if (exitCode == 0 && !canRunAlwaysFixes)
+        if (exitCode == 0 && !hasWindowsAlwaysFixes)
             return exitCode;
 
         var fixable = results
             .Zip(checks, (r, c) => (r.Label, r.Result, c.Fix))
             .Where(x => x.Fix != null &&
                         (x.Result.Status == CheckStatus.Fail ||
-                         (canRunAlwaysFixes && alwaysFixLabels.Contains(x.Label))))
+                         (hasWindowsAlwaysFixes && alwaysFixLabels.Contains(x.Label))))
             .ToList();
 
         AnsiConsole.WriteLine();
