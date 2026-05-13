@@ -40,7 +40,7 @@ jobs:
       - name: Unit tests
         id: unit_tests
         continue-on-error: true
-        run: dotnet test --configuration Release --no-build --nologo Gondwana.sln
+        run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Gondwana.sln
 
       - name: Pack (validation only)
         run: dotnet pack --configuration Release --no-build --nologo /p:EnableWindowsTargeting=true
