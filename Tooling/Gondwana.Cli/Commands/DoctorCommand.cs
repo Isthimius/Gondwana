@@ -63,7 +63,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             .Zip(checks, (r, c) => (r.Label, r.Result, c.Fix))
             .Where(x => x.Fix != null &&
                         (x.Result.Status == CheckStatus.Fail ||
-                         (hasWindowsAlwaysFixes && alwaysFixLabels.Contains(x.Label))))
+                         (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && alwaysFixLabels.Contains(x.Label))))
             .ToList();
 
         AnsiConsole.WriteLine();
