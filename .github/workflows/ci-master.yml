@@ -8,6 +8,13 @@ on:
       - '.github/workflows/docs.yml'
       - '.github/release.yml'
       - 'CHANGELOG.md'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+      - '.github/release.yml'
+      - 'CHANGELOG.md'
 
 jobs:
   build:
@@ -29,6 +36,11 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
+
+      - name: Unit tests
+        id: unit_tests
+        continue-on-error: true
+        run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Gondwana.sln
 
       - name: Pack (validation only)
         run: dotnet pack --configuration Release --no-build --nologo /p:EnableWindowsTargeting=true
@@ -85,3 +97,9 @@ jobs:
         with:
           name: Gondwana-binaries
           path: Gondwana-binaries.zip
+
+      - name: Fail job if unit tests failed
+        if: ${{ !cancelled() && steps.unit_tests.outcome == 'failure' }}
+        run: |
+          echo "Unit tests failed. Marking workflow as failed after running remaining steps."
+          exit 1
