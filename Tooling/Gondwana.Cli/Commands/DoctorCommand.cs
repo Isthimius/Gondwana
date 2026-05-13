@@ -46,6 +46,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (!settings.Fix)
             return exitCode;
 
+        // Keep --fix useful even when checks pass by allowing selected tools
+        // to be updated to the latest available versions on Windows.
         var alwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "git-cliff",
@@ -192,56 +194,47 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixGitCliff()
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            AnsiConsole.MarkupLine("[yellow]Automatic install/update for git-cliff is currently supported only on Windows via winget.[/]");
-            AnsiConsole.MarkupLine("[dim]Install from https://git-cliff.org/.[/]");
-            return;
-        }
-
-        var wingetOutput = ProcessHelper.Run("winget", "--version", out var wingetExit);
-        if (wingetExit != 0 || string.IsNullOrWhiteSpace(wingetOutput))
-        {
-            AnsiConsole.MarkupLine("[red]winget not found; cannot auto-install or auto-update git-cliff.[/]");
-            AnsiConsole.MarkupLine("[dim]Install from https://git-cliff.org/.[/]");
-            return;
-        }
-
-        var gitCliffOutput = ProcessHelper.Run("git-cliff", "--version", out var gitCliffExit);
-        if (gitCliffExit == 0 && !string.IsNullOrWhiteSpace(gitCliffOutput))
-        {
-            ProcessHelper.RunLive("winget", ["upgrade", "--id", "git-cliff.git-cliff", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
-            return;
-        }
-
-        ProcessHelper.RunLive("winget", ["install", "--id", "git-cliff.git-cliff", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+        FixViaWinget(
+            toolName: "git-cliff",
+            packageId: "git-cliff.git-cliff",
+            installUrl: "https://git-cliff.org/",
+            versionArgs: "--version");
     }
 
     private static void FixButler()
     {
+        FixViaWinget(
+            toolName: "butler",
+            packageId: "itchio.butler",
+            installUrl: "https://itch.io/docs/butler/",
+            versionArgs: "--version");
+    }
+
+    private static void FixViaWinget(string toolName, string packageId, string installUrl, string versionArgs)
+    {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            AnsiConsole.MarkupLine("[yellow]Automatic install/update for butler is currently supported only on Windows via winget.[/]");
-            AnsiConsole.MarkupLine("[dim]Install from https://itch.io/docs/butler/.[/]");
+            AnsiConsole.MarkupLine($"[yellow]Automatic install/update for {Markup.Escape(toolName)} is currently supported only on Windows via winget.[/]");
+            AnsiConsole.MarkupLine($"[dim]Install from {Markup.Escape(installUrl)}.[/]");
             return;
         }
 
         var wingetOutput = ProcessHelper.Run("winget", "--version", out var wingetExit);
         if (wingetExit != 0 || string.IsNullOrWhiteSpace(wingetOutput))
         {
-            AnsiConsole.MarkupLine("[red]winget not found; cannot auto-install or auto-update butler.[/]");
-            AnsiConsole.MarkupLine("[dim]Install from https://itch.io/docs/butler/.[/]");
+            AnsiConsole.MarkupLine($"[red]winget not found; cannot auto-install or auto-update {Markup.Escape(toolName)}.[/]");
+            AnsiConsole.MarkupLine($"[dim]Install from {Markup.Escape(installUrl)}.[/]");
             return;
         }
 
-        var butlerOutput = ProcessHelper.Run("butler", "--version", out var butlerExit);
-        if (butlerExit == 0 && !string.IsNullOrWhiteSpace(butlerOutput))
+        var toolOutput = ProcessHelper.Run(toolName, versionArgs, out var toolExit);
+        if (toolExit == 0 && !string.IsNullOrWhiteSpace(toolOutput))
         {
-            ProcessHelper.RunLive("winget", ["upgrade", "--id", "itchio.butler", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+            ProcessHelper.RunLive("winget", ["upgrade", "--id", packageId, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
             return;
         }
 
-        ProcessHelper.RunLive("winget", ["install", "--id", "itchio.butler", "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+        ProcessHelper.RunLive("winget", ["install", "--id", packageId, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
     }
 
     // ─── Individual checks ────────────────────────────────────────────────────
