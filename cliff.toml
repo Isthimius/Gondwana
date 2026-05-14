@@ -36,7 +36,7 @@ filter_unconventional = false
 split_commits = false
 protect_breaking_commits = true
 filter_commits = false
-sort_commits = "newest"
+sort_commits = "oldest"
 tag_pattern = "v[0-9].*"
 
 # Strip author/co-author trailer lines (added by GitHub Copilot and GitHub itself).
@@ -48,6 +48,7 @@ commit_preprocessors = [
 
 # Group conventional commits first. Anything else falls through to Other Changes.
 commit_parsers = [
+    { message = "^docs: update changelog", skip = true },
     { message = "^feat", group = "<!-- 0 -->Added" },
     { message = "^fix", group = "<!-- 1 -->Fixed" },
     { message = "^perf", group = "<!-- 2 -->Performance" },

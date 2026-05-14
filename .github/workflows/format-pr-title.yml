@@ -1,0 +1,129 @@
+name: Format PR Title
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  format-title:
+    runs-on: ubuntu-latest
+
+    # Only run on PRs targeting master, and skip the changelog commit PR if
+    # one is ever opened (the release script commits directly, but just in case).
+    if: |
+      github.event.pull_request.base.ref == 'master' &&
+      !startsWith(github.event.pull_request.title, 'docs: update changelog')
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout PR branch (shallow + merge base for diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Fetch master for diff base
+        run: git fetch origin master --depth=50
+
+      - name: Build diff and commit summary
+        id: context
+        run: |
+          BASE=$(git merge-base origin/master HEAD)
+
+          # File-level change summary (max 60 lines to stay within token budget)
+          DIFF_STAT=$(git diff "$BASE"...HEAD --stat | head -60)
+
+          # Commit messages on this branch (max 30)
+          COMMITS=$(git log "$BASE"...HEAD --oneline | head -30)
+
+          # Escape for JSON: replace newlines with \n, escape quotes
+          escape_json() {
+            printf '%s' "$1" \
+              | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()))" \
+              | sed 's/^"//;s/"$//'
+          }
+
+          echo "diff_stat=$(escape_json "$DIFF_STAT")" >> "$GITHUB_OUTPUT"
+          echo "commits=$(escape_json "$COMMITS")"     >> "$GITHUB_OUTPUT"
+
+      - name: Generate conventional commit title via Claude
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          DIFF_STAT="${{ steps.context.outputs.diff_stat }}"
+          COMMITS="${{ steps.context.outputs.commits }}"
+
+          PROMPT="You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.\n\nGenerate a single conventional commit message suitable as a GitHub PR squash-merge title.\n\nRules:\n- Format: type(scope): short description\n- Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert\n- Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, midi, sdl2, core\n- Description: imperative mood, lowercase, no period, max 60 chars\n- Breaking change: append ! after scope, e.g. feat(rendering)!\n- Return ONLY the commit message string. No explanation, no markdown, no quotes.\n\nCommits on this branch:\n$COMMITS\n\nChanged files:\n$DIFF_STAT"
+
+          RESPONSE=$(curl -sf https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "content-type: application/json" \
+            -d "{
+              \"model\": \"claude-sonnet-4-20250514\",
+              \"max_tokens\": 100,
+              \"messages\": [{
+                \"role\": \"user\",
+                \"content\": \"$PROMPT\"
+              }]
+            }")
+
+          if [ $? -ne 0 ] || [ -z "$RESPONSE" ]; then
+            echo "::warning::Anthropic API call failed. Skipping PR title update."
+            echo "title=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          TITLE=$(echo "$RESPONSE" | python3 -c "
+          import sys, json
+          try:
+              data = json.load(sys.stdin)
+              text = data['content'][0]['text'].strip().strip('\"').strip(\"'\")
+              print(text)
+          except Exception as e:
+              print('')
+          ")
+
+          # Basic sanity check: must match conventional commit pattern
+          if echo "$TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
+            echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+            echo "Generated title: $TITLE"
+          else
+            echo "::warning::Generated title did not pass validation: '$TITLE'. Skipping update."
+            echo "title=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update PR title
+        if: steps.generate.outputs.title != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          NEW_TITLE: ${{ steps.generate.outputs.title }}
+        run: |
+          CURRENT_TITLE="${{ github.event.pull_request.title }}"
+
+          if [ "$CURRENT_TITLE" = "$NEW_TITLE" ]; then
+            echo "PR title is already correct. No update needed."
+            exit 0
+          fi
+
+          echo "Updating PR #$PR_NUMBER title:"
+          echo "  From: $CURRENT_TITLE"
+          echo "  To:   $NEW_TITLE"
+
+          gh pr edit "$PR_NUMBER" --title "$NEW_TITLE"
+
+      - name: Post summary comment
+        if: steps.generate.outputs.title != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          NEW_TITLE: ${{ steps.generate.outputs.title }}
+        run: |
+          gh pr comment "$PR_NUMBER" --body "🤖 **PR title updated for squash merge:**\n\n\`$NEW_TITLE\`\n\nThis title will become the commit message on master and the changelog entry. Edit it if it doesn't look right before merging." \
+            --edit-last 2>/dev/null \
+            || gh pr comment "$PR_NUMBER" --body "🤖 **PR title updated for squash merge:**\n\n\`$NEW_TITLE\`\n\nThis title will become the commit message on master and the changelog entry. Edit it if it doesn't look right before merging."
