@@ -49,44 +49,59 @@ jobs:
           echo "diff_stat=$(escape_json "$DIFF_STAT")" >> "$GITHUB_OUTPUT"
           echo "commits=$(escape_json "$COMMITS")"     >> "$GITHUB_OUTPUT"
 
-      - name: Generate conventional commit title via Claude
+      - name: Install GitHub Copilot CLI
+        run: gh extension install github/gh-copilot 2>/dev/null || gh extension upgrade gh-copilot 2>/dev/null || true
+
+      - name: Generate conventional commit title via GitHub Copilot
         id: generate
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
         run: |
           DIFF_STAT="${{ steps.context.outputs.diff_stat }}"
           COMMITS="${{ steps.context.outputs.commits }}"
 
-          PROMPT="You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.\n\nGenerate a single conventional commit message suitable as a GitHub PR squash-merge title.\n\nRules:\n- Format: type(scope): short description\n- Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert\n- Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, midi, sdl2, core\n- Description: imperative mood, lowercase, no period, max 60 chars\n- Breaking change: append ! after scope, e.g. feat(rendering)!\n- Return ONLY the commit message string. No explanation, no markdown, no quotes.\n\nCommits on this branch:\n$COMMITS\n\nChanged files:\n$DIFF_STAT"
+          PROMPT="You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
 
-          RESPONSE=$(curl -sf https://api.anthropic.com/v1/messages \
-            -H "x-api-key: $ANTHROPIC_API_KEY" \
-            -H "anthropic-version: 2023-06-01" \
-            -H "content-type: application/json" \
-            -d "{
-              \"model\": \"claude-sonnet-4-20250514\",
-              \"max_tokens\": 100,
-              \"messages\": [{
-                \"role\": \"user\",
-                \"content\": \"$PROMPT\"
-              }]
-            }")
+Generate a single conventional commit message suitable as a GitHub PR squash-merge title.
 
-          if [ $? -ne 0 ] || [ -z "$RESPONSE" ]; then
-            echo "::warning::Anthropic API call failed. Skipping PR title update."
+Rules:
+- Format: type(scope): short description
+- Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert
+- Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, midi, sdl2, core
+- Description: imperative mood, lowercase, no period, max 60 chars
+- Breaking change: append ! after scope, e.g. feat(rendering)!
+- Return ONLY the commit message string. No explanation, no markdown, no quotes.
+
+Commits on this branch:
+$COMMITS
+
+Changed files:
+$DIFF_STAT"
+
+          RAW=$(printf '%s' "$PROMPT" | gh copilot suggest -t git -p 2>/dev/null || echo "")
+
+          if [ -z "$RAW" ]; then
+            echo "::warning::GitHub Copilot CLI call failed. Skipping PR title update."
             echo "title=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          TITLE=$(echo "$RESPONSE" | python3 -c "
-          import sys, json
-          try:
-              data = json.load(sys.stdin)
-              text = data['content'][0]['text'].strip().strip('\"').strip(\"'\")
-              print(text)
-          except Exception as e:
-              print('')
-          ")
+          TITLE=$(printf '%s' "$RAW" | python3 -c "
+import sys, re
+text = sys.stdin.read().strip()
+# Try to extract message from: git commit -m 'msg' or git commit -m \"msg\"
+m = re.search(r'git commit -m [\"\'](.*?)[\"\']', text, re.DOTALL)
+if m:
+    print(m.group(1).strip().splitlines()[0].strip())
+    sys.exit()
+# Fallback: look for a line that already looks like a conventional commit
+for line in text.splitlines():
+    line = line.strip().strip('\"').strip(\"'\")
+    if re.match(r'^[a-z]+(\([a-z0-9._-]+\))?!?: .', line):
+        print(line)
+        sys.exit()
+print('')
+" 2>/dev/null || echo "")
 
           # Basic sanity check: must match conventional commit pattern
           if echo "$TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
