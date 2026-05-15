@@ -112,10 +112,12 @@ internal sealed class InfoCommand : Command
     private static List<string> GetGondwanaAdapters(XDocument doc)
     {
         var packageAdapters = doc.Descendants("PackageReference")
-            .Select(e => e.Attribute("Include")?.Value ?? string.Empty);
+            .Select(e => e.Attribute("Include")?.Value ?? string.Empty)
+            .Where(name => !string.IsNullOrWhiteSpace(name));
 
         var projectAdapters = doc.Descendants("ProjectReference")
-            .Select(e => GetProjectReferenceName(e.Attribute("Include")?.Value));
+            .Select(e => GetProjectReferenceName(e.Attribute("Include")?.Value))
+            .Where(name => !string.IsNullOrWhiteSpace(name));
 
         return packageAdapters
             .Concat(projectAdapters)
