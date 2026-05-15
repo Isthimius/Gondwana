@@ -41,6 +41,7 @@ tag_pattern = "v[0-9].*"
 
 # Strip author/co-author trailer lines (added by GitHub Copilot and GitHub itself).
 commit_preprocessors = [
+    { pattern = "\\A([^\\r\\n]*?)\\s*\\(#\\d+\\)(?=\\r?\\n|$)", replace = "$1" },
     { pattern = "(?m)^Co-authored-by:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Agent-Logs-Url:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Signed-off-by:.*\r?\n?", replace = "" },
@@ -49,6 +50,7 @@ commit_preprocessors = [
 # Group conventional commits first. Anything else falls through to Other Changes.
 commit_parsers = [
     { message = "^docs: update changelog", skip = true },
+    { message = "^Potential fix for pull request finding$", skip = true },
     { message = "^feat", group = "<!-- 0 -->Added" },
     { message = "^fix", group = "<!-- 1 -->Fixed" },
     { message = "^perf", group = "<!-- 2 -->Performance" },
