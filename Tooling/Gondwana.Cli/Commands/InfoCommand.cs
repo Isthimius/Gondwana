@@ -91,21 +91,38 @@ internal sealed class InfoCommand : Command
 
     private static string? GetGondwanaVersion(XDocument doc)
     {
-        // Look for a PackageReference to Gondwana (exact match, not sub-packages).
-        return doc.Descendants("PackageReference")
-                  .FirstOrDefault(e =>
-                      string.Equals(e.Attribute("Include")?.Value, "Gondwana",
-                                    StringComparison.OrdinalIgnoreCase))
-                  ?.Attribute("Version")?.Value;
+        var packageVersion = doc.Descendants("PackageReference")
+            .FirstOrDefault(e =>
+                string.Equals(e.Attribute("Include")?.Value, "Gondwana",
+                              StringComparison.OrdinalIgnoreCase))
+            ?.Attribute("Version")?.Value;
+
+        if (!string.IsNullOrWhiteSpace(packageVersion))
+            return packageVersion;
+
+        var hasProjectReference = doc.Descendants("ProjectReference")
+            .Any(e =>
+                string.Equals(GetProjectReferenceName(e.Attribute("Include")?.Value),
+                              "Gondwana",
+                              StringComparison.OrdinalIgnoreCase));
+
+        return hasProjectReference ? "project reference" : null;
     }
 
     private static List<string> GetGondwanaAdapters(XDocument doc)
     {
-        return doc.Descendants("PackageReference")
-                  .Select(e => e.Attribute("Include")?.Value ?? string.Empty)
-                  .Where(name => name.StartsWith("Gondwana.", StringComparison.OrdinalIgnoreCase))
-                  .OrderBy(name => name)
-                  .ToList();
+        var packageAdapters = doc.Descendants("PackageReference")
+            .Select(e => e.Attribute("Include")?.Value ?? string.Empty);
+
+        var projectAdapters = doc.Descendants("ProjectReference")
+            .Select(e => GetProjectReferenceName(e.Attribute("Include")?.Value));
+
+        return packageAdapters
+            .Concat(projectAdapters)
+            .Where(name => name.StartsWith("Gondwana.", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(name => name)
+            .ToList();
     }
 
     private static List<string> FindAssetFiles(string directory)
@@ -132,5 +149,13 @@ internal sealed class InfoCommand : Command
             return "Avalonia";
 
         return null;
+    }
+
+    private static string GetProjectReferenceName(string? includePath)
+    {
+        if (string.IsNullOrWhiteSpace(includePath))
+            return string.Empty;
+
+        return Path.GetFileNameWithoutExtension(includePath.Replace('\\', '/'));
     }
 }
