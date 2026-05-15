@@ -41,7 +41,7 @@ tag_pattern = "v[0-9].*"
 
 # Strip author/co-author trailer lines (added by GitHub Copilot and GitHub itself).
 commit_preprocessors = [
-    { pattern = "\\A([^\\r\\n]*?)\\s*\\(#\\d+\\)([\\s\\S]*)\\z", replace = "$1$2" },
+    { pattern = "\\A([^\\r\\n]*?)\\s*\\(#\\d+\\)(?=\\r?\\n|$)", replace = "$1" },
     { pattern = "(?m)^Co-authored-by:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Agent-Logs-Url:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Signed-off-by:.*\r?\n?", replace = "" },
