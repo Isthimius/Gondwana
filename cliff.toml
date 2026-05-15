@@ -50,6 +50,7 @@ commit_preprocessors = [
 # Group conventional commits first. Anything else falls through to Other Changes.
 commit_parsers = [
     { message = "^docs: update changelog", skip = true },
+    { message = "^Potential fix for pull request finding$", skip = true },
     { message = "^feat", group = "<!-- 0 -->Added" },
     { message = "^fix", group = "<!-- 1 -->Fixed" },
     { message = "^perf", group = "<!-- 2 -->Performance" },
