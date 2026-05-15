@@ -158,6 +158,7 @@ internal sealed class InfoCommand : Command
         if (string.IsNullOrWhiteSpace(includePath))
             return string.Empty;
 
-        return Path.GetFileNameWithoutExtension(includePath.Replace('\\', '/'));
+        var fileName = includePath.Split(['\\', '/'], StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+        return Path.GetFileNameWithoutExtension(fileName ?? includePath);
     }
 }
