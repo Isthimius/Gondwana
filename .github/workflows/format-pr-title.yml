@@ -60,23 +60,26 @@ jobs:
           DIFF_STAT="${{ steps.context.outputs.diff_stat }}"
           COMMITS="${{ steps.context.outputs.commits }}"
 
-          PROMPT="You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
+          PROMPT=$(cat <<EOF
+          You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
 
-Generate a single conventional commit message suitable as a GitHub PR squash-merge title.
+          Generate a single conventional commit message suitable as a GitHub PR squash-merge title.
 
-Rules:
-- Format: type(scope): short description
-- Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert
-- Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, midi, sdl2, core
-- Description: imperative mood, lowercase, no period, max 60 chars
-- Breaking change: append ! after scope, e.g. feat(rendering)!
-- Return ONLY the commit message string. No explanation, no markdown, no quotes.
+          Rules:
+          - Format: type(scope): short description
+          - Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert
+          - Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, midi, sdl2, core
+          - Description: imperative mood, lowercase, no period, max 60 chars
+          - Breaking change: append ! after scope, e.g. feat(rendering)!
+          - Return ONLY the commit message string. No explanation, no markdown, no quotes.
 
-Commits on this branch:
-$COMMITS
+          Commits on this branch:
+          $COMMITS
 
-Changed files:
-$DIFF_STAT"
+          Changed files:
+          $DIFF_STAT
+          EOF
+          )
 
           RAW=$(printf '%s' "$PROMPT" | gh copilot suggest -t git -p 2>/dev/null || echo "")
 
@@ -86,22 +89,23 @@ $DIFF_STAT"
             exit 0
           fi
 
-          TITLE=$(printf '%s' "$RAW" | python3 -c "
-import sys, re
-text = sys.stdin.read().strip()
-# Try to extract message from: git commit -m 'msg' or git commit -m \"msg\"
-m = re.search(r'git commit -m [\"\'](.*?)[\"\']', text, re.DOTALL)
-if m:
-    print(m.group(1).strip().splitlines()[0].strip())
-    sys.exit()
-# Fallback: look for a line that already looks like a conventional commit
-for line in text.splitlines():
-    line = line.strip().strip('\"').strip(\"'\")
-    if re.match(r'^[a-z]+(\([a-z0-9._-]+\))?!?: .', line):
-        print(line)
-        sys.exit()
-print('')
-" 2>/dev/null || echo "")
+          TITLE=$(printf '%s' "$RAW" | python3 -c "$(cat <<'PY'
+          import sys, re
+          text = sys.stdin.read().strip()
+          # Try to extract message from: git commit -m 'msg' or git commit -m "msg"
+          m = re.search(r'git commit -m ["\'](.*?)["\']', text, re.DOTALL)
+          if m:
+              print(m.group(1).strip().splitlines()[0].strip())
+              sys.exit()
+          # Fallback: look for a line that already looks like a conventional commit
+          for line in text.splitlines():
+              line = line.strip().strip('"').strip("'")
+              if re.match(r'^[a-z]+(\([a-z0-9._-]+\))?!?: .', line):
+                  print(line)
+                  sys.exit()
+          print('')
+          PY
+          )" 2>/dev/null || echo "")
 
           # Basic sanity check: must match conventional commit pattern
           if echo "$TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
