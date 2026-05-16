@@ -11,4 +11,13 @@ public interface ICollisionMovableEntity : ICollisionEntity
     /// <param name="dx">The horizontal displacement in pixels.</param>
     /// <param name="dy">The vertical displacement in pixels.</param>
     void TranslateWorldPx(int dx, int dy);
+
+    /// <summary>
+    /// Cancels velocity along the specified axes after a solid collision push-out.
+    /// Zeroing only the blocked axis preserves motion along the unblocked axis,
+    /// enabling wall-sliding and platformer-style collision response.
+    /// </summary>
+    /// <param name="cancelX">When <see langword="true"/>, zeroes the horizontal velocity component.</param>
+    /// <param name="cancelY">When <see langword="true"/>, zeroes the vertical velocity component.</param>
+    void CancelVelocityComponent(bool cancelX, bool cancelY);
 }

@@ -58,6 +58,8 @@ internal sealed class CollisionResolver
 
         int totalDx = 0;
         int totalDy = 0;
+        bool hitX = false;
+        bool hitY = false;
 
         foreach (var otherCollider in _queryResults)
         {
@@ -90,9 +92,15 @@ internal sealed class CollisionResolver
             int dy = 0;
 
             if (overlap.Width < overlap.Height)
+            {
                 dx = (centerX < otherCenterX) ? -overlap.Width : overlap.Width;
+                hitX = true;
+            }
             else
+            {
                 dy = (centerY < otherCenterY) ? -overlap.Height : overlap.Height;
+                hitY = true;
+            }
 
             rect.X += dx;
             rect.Y += dy;
@@ -104,6 +112,13 @@ internal sealed class CollisionResolver
         if (totalDx != 0 || totalDy != 0)
         {
             movableOwner.TranslateWorldPx(totalDx, totalDy);
+        }
+
+        // Cancel velocity along any axis that had a solid collision, so the entity
+        // slides along the unblocked axis instead of being stopped entirely.
+        if (hitX || hitY)
+        {
+            movableOwner.CancelVelocityComponent(hitX, hitY);
         }
     }
 }
