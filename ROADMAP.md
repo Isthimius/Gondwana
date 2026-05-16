@@ -34,7 +34,7 @@ A scrolling platformer demo will showcase `PlatformerController`, `NavigationGri
 | **Level** | Side-scrolling level loaded from `Assets/level.tmx` with platforms, pits, and collectibles |
 | **Player** | WASD / arrow keys; `PlatformerController` with jump, coyote-time, double-jump |
 | **Enemy** | A patrolling enemy that uses `NavigationGrid` A* to walk along a tilemap path; reverses at level boundaries |
-| **Collectibles** | Coin sprites; picking up a coin fires `ToastManager.Show(&#34;Coin +1!&#34;)` |
+| **Collectibles** | Coin sprites; picking up a coin fires `ToastManager.Show("Coin +1!")` |
 | **HUD** | Coin counter (`Label`) and health bar (`ProgressBar`) via the UI layer |
 | **Camera** | `MovementController.Follow` with a lead-ahead offset (camera leads the player in the movement direction) |
 
@@ -90,7 +90,7 @@ Must be committed to the repo with the project:
 - At least 2 tile layers (background + foreground with parallax difference)
 - A collision layer defining walkable vs. solid tiles
 - An object layer with ≥ 3 named entities: `player_spawn`, `enemy_spawn`, `exit`
-- Uses a freely licensed 16×16 tilesheet (e.g., <a href="https://kenney.nl/assets">Kenney.nl tilemap packs</a>)
+- Uses a freely licensed 16×16 tilesheet (e.g., [Kenney.nl tilemap packs](https://kenney.nl/assets))
 
 ### Verification
 The level should be editable in Tiled (https://www.mapeditor.org/) and reload in-engine without any code changes.
@@ -138,19 +138,19 @@ Add a `SceneEditorView` (Avalonia UserControl) that:
 ### `.gondwana-scene` File Format
 ```json
 {
-  &#34;layers&#34;: [
+  "layers": [
     {
-      &#34;name&#34;: &#34;background&#34;,
-      &#34;parallax&#34;: 0.5,
-      &#34;tilesheet&#34;: &#34;tiles.gondwana-tilesheet&#34;,
-      &#34;tiles&#34;: [ { &#34;tileIndex&#34;: 3, &#34;x&#34;: 0, &#34;y&#34;: 0 } ]
+      "name": "background",
+      "parallax": 0.5,
+      "tilesheet": "tiles.gondwana-tilesheet",
+      "tiles": [ { "tileIndex": 3, "x": 0, "y": 0 } ]
     }
   ],
-  &#34;entities&#34;: [
-    { &#34;name&#34;: &#34;player_spawn&#34;, &#34;x&#34;: 64, &#34;y&#34;: 64 }
+  "entities": [
+    { "name": "player_spawn", "x": 64, "y": 64 }
   ],
-  &#34;colliders&#34;: [
-    { &#34;x&#34;: 0, &#34;y&#34;: 112, &#34;width&#34;: 320, &#34;height&#34;: 16 }
+  "colliders": [
+    { "x": 0, "y": 112, "width": 320, "height": 16 }
   ]
 }
 ```
@@ -200,13 +200,13 @@ Add an `AnimationEditorView` (Avalonia UserControl) that:
 ### `.gondwana-animation` File Format
 ```json
 {
-  &#34;tilesheetPath&#34;: &#34;sprites.gondwana-tilesheet&#34;,
-  &#34;name&#34;: &#34;walk_right&#34;,
-  &#34;cycleType&#34;: &#34;Loop&#34;,
-  &#34;frames&#34;: [
-    { &#34;tileIndex&#34;: 0, &#34;durationMs&#34;: 100 },
-    { &#34;tileIndex&#34;: 1, &#34;durationMs&#34;: 100 },
-    { &#34;tileIndex&#34;: 2, &#34;durationMs&#34;: 100 }
+  "tilesheetPath": "sprites.gondwana-tilesheet",
+  "name": "walk_right",
+  "cycleType": "Loop",
+  "frames": [
+    { "tileIndex": 0, "durationMs": 100 },
+    { "tileIndex": 1, "durationMs": 100 },
+    { "tileIndex": 2, "durationMs": 100 }
   ]
 }
 ```
@@ -261,12 +261,12 @@ Add a `TilesheetEditorView` (Avalonia UserControl) that:
 ### `.gondwana-tilesheet` File Format
 ```json
 {
-  &#34;imagePath&#34;: &#34;relative/path.png&#34;,
-  &#34;tileWidth&#34;: 16,
-  &#34;tileHeight&#34;: 16,
-  &#34;tiles&#34;: [
-    { &#34;index&#34;: 0, &#34;name&#34;: &#34;grass&#34; },
-    { &#34;index&#34;: 1, &#34;name&#34;: &#34;dirt&#34; }
+  "imagePath": "relative/path.png",
+  "tileWidth": 16,
+  "tileHeight": 16,
+  "tiles": [
+    { "index": 0, "name": "grass" },
+    { "index": 1, "name": "dirt" }
   ]
 }
 ```
@@ -457,7 +457,7 @@ Integration requirements:
 ### Ticket Details
 
 - all System.Drawing to SkiaSharp or Gondwana.Drawing.Primitives namespaces (including Point, Rectangle, Color, etc.)
-- deprecate / remove System.Drawing &lt;--&gt; SkiaSharp helpers in Gondwana
+- deprecate / remove System.Drawing <--> SkiaSharp helpers in Gondwana
 - find any obsolete calls, refactor
 
 -----
@@ -507,8 +507,8 @@ FlatRedBall ships a `ToastManager` for transient notification overlays. Neither 
 ### `ToastManager`
 ```csharp
 // Global singleton, registered with HudLayer
-ToastManager.Show(&#34;Picked up Sword!&#34;, duration: TimeSpan.FromSeconds(2));
-ToastManager.Show(&#34;Level Up!&#34;, style: ToastStyle.Success);
+ToastManager.Show("Picked up Sword!", duration: TimeSpan.FromSeconds(2));
+ToastManager.Show("Level Up!", style: ToastStyle.Success);
 ```
 - Manages a FIFO queue of timed text notifications
 - Slide-in / fade-out animation (configurable duration, easing curve)
@@ -519,8 +519,8 @@ ToastManager.Show(&#34;Level Up!&#34;, style: ToastStyle.Success);
 ```csharp
 var dlg = new DialogueBox();
 dlg.Show(new[] {
-    new DialogueLine(speaker: &#34;Elf&#34;,  text: &#34;The dungeon is dangerous!&#34;),
-    new DialogueLine(speaker: &#34;Hero&#34;, text: &#34;I can handle it.&#34;),
+    new DialogueLine(speaker: "Elf",  text: "The dungeon is dangerous!"),
+    new DialogueLine(speaker: "Hero", text: "I can handle it."),
 });
 dlg.DialogueCompleted += OnDialogueDone;
 ```
@@ -584,7 +584,7 @@ All widgets render via SkiaSharp `SKCanvas`.
 ### Input Wiring
 ```csharp
 // In Engine cycle, HudLayer checks mouse state and dispatches events:
-if (mouseInput.IsLeftButtonJustReleased() &amp;&amp; widget.HitTest(mousePos))
+if (mouseInput.IsLeftButtonJustReleased() && widget.HitTest(mousePos))
     widget.RaiseClicked();
 ```
 
@@ -810,13 +810,13 @@ Custom: implement `IPostProcessPass.Apply(SKSurface input, SKSurface output)`.
 ### SkSL Custom Shaders
 For advanced users: `SkslShaderEffect` compiles a user-supplied SkSL string and binds named uniform parameters:
 ```csharp
-var effect = new SkslShaderEffect(&#34;&#34;&#34;
+var effect = new SkslShaderEffect("""
     uniform float time;
     half4 main(float2 fragCoord) {
         return half4(sin(time + fragCoord.x * 0.01), 0, 0, 1);
     }
-&#34;&#34;&#34;);
-effect.SetUniform(&#34;time&#34;, elapsedSec);
+""");
+effect.SetUniform("time", elapsedSec);
 ```
 
 ## Acceptance Criteria
@@ -1001,9 +1001,9 @@ Call this at the start of DrawDrawables (or wherever you know Canvas size is val
 ```
 private void EnsureFogSurface()
 {
-    if (_fogSurface != null &amp;&amp;
-        _fogSurface.Canvas != null &amp;&amp;
-        _fogSurface.Width == Width &amp;&amp;
+    if (_fogSurface != null &&
+        _fogSurface.Canvas != null &&
+        _fogSurface.Width == Width &&
         _fogSurface.Height == Height)
         return;
 
@@ -1063,7 +1063,7 @@ private void PostDrawTiles(View view, List tiles, Rectangle clipRect)
         var worldPts = tile.OutlinePointsWorld;
         var ptsScreen = new SKPoint[worldPts.Length];
 
-        for (int i = 0; i &lt; worldPts.Length; i++)
+        for (int i = 0; i < worldPts.Length; i++)
         {
             var p = worldPts[i];
             var sp = view.WorldPxToScreenPx(tile.SceneLayer, new PointF(p.X, p.Y));
@@ -1092,10 +1092,10 @@ private void PostDrawTiles(View view, List tiles, Rectangle clipRect)
         }
 
         // Keep grid/collision on the main canvas (or move them too if desired)
-        if (tile.SceneLayer.ShowGridLines &amp;&amp; tile.Visible &amp;&amp; tile.IsPositionFixed)
+        if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
             Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), GridLinePaint);
 
-        if (tile.SceneLayer.ShowCollisionBoxes &amp;&amp; tile.Visible)
+        if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)
             Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), CollisionBoxPaint);
     }
 
@@ -1142,14 +1142,14 @@ FlatRedBall has native drag-and-drop `.aseprite` support. Gondwana has no import
 
 ### Public API
 ```csharp
-var imported = AsepriteImporter.Load(&#34;hero.aseprite&#34;);
+var imported = AsepriteImporter.Load("hero.aseprite");
 Tilesheet tilesheet = imported.Tilesheet;
-FrameSequence walkRight = imported.Animations[&#34;walk_right&#34;];
-FrameSequence idle = imported.Animations[&#34;idle&#34;];
+FrameSequence walkRight = imported.Animations["walk_right"];
+FrameSequence idle = imported.Animations["idle"];
 
 // Optional: save to disk
-imported.ExportTilesheet(&#34;hero.gondwana-tilesheet&#34;);
-imported.ExportAnimations(&#34;hero/&#34;);
+imported.ExportTilesheet("hero.gondwana-tilesheet");
+imported.ExportAnimations("hero/");
 ```
 
 ### Notes
@@ -1184,7 +1184,7 @@ imported.ExportAnimations(&#34;hero/&#34;);
 ### Ticket Details
 
 ## Summary
-Gondwana currently has no way to load levels authored in <a href="https://www.mapeditor.org/">Tiled</a> (.tmx files). Both FlatRedBall and GameMaker offer native Tiled/room-editor integration, giving developers a visual level-design workflow. This issue tracks adding a first-class `.tmx` import pipeline.
+Gondwana currently has no way to load levels authored in [Tiled](https://www.mapeditor.org/) (.tmx files). Both FlatRedBall and GameMaker offer native Tiled/room-editor integration, giving developers a visual level-design workflow. This issue tracks adding a first-class `.tmx` import pipeline.
 
 ## Background
 Gondwana already has `SceneLayer`, `Tile`, and `TilesheetRegistry` primitives. The missing piece is a parser that maps Tiled's XML layer structure onto these abstractions.
@@ -1241,7 +1241,7 @@ Gondwana already has `SceneLayer`, `Tile`, and `TilesheetRegistry` primitives. T
 
 ### Ticket Details
 
-<a href="https://chatgpt.com/c/69330d23-c550-832a-894b-93d1d462082d">more robust Animator / animation graphs</a>
+[more robust Animator / animation graphs](https://chatgpt.com/c/69330d23-c550-832a-894b-93d1d462082d)
 
 ?? include Sprite.Resize as part of Animation ??
 ?? Sprite rotation as part of Animation ??
@@ -1297,7 +1297,7 @@ Implementations: `TcpGameTransport` (reliable, ordered), `UdpGameTransport` (unr
 Received messages arrive on a background thread; they must be queued and dispatched on the engine cycle thread:
 ```csharp
 // In network receive callback:
-engine.Dispatcher.InvokeOnCycle(() =&gt; messageRouter.Dispatch(msg));
+engine.Dispatcher.InvokeOnCycle(() => messageRouter.Dispatch(msg));
 ```
 
 ## Acceptance Criteria
@@ -1395,7 +1395,7 @@ public class HotReloadWatcher : IDisposable
 ### `GameHostBase` Integration
 ```csharp
 // In game host setup:
-host.EnableHotReload(assetRoot: &#34;Assets/&#34;);
+host.EnableHotReload(assetRoot: "Assets/");
 ```
 `EnableHotReload` is a no-op on platforms that don't support `FileSystemWatcher` (WASM).
 
@@ -1425,6 +1425,6 @@ host.EnableHotReload(assetRoot: &#34;Assets/&#34;);
 
 ### Ticket Details
 
-- could / should: forceFullRedraw -&gt; should it be based on View now? Camera move only force View to full redraw?
+- could / should: forceFullRedraw -> should it be based on View now? Camera move only force View to full redraw?
 
 </details>
