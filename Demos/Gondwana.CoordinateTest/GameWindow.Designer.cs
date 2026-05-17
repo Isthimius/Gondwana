@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameWindow));
-            renderSurface = new Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl();
+            renderSurface = new Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceControl();
             SuspendLayout();
             // 
             // renderSurface
@@ -54,6 +54,6 @@
 
         #endregion
 
-        private WinForms.Rendering.WinFormBitmapRenderSurfaceControl renderSurface;
+        private WinForms.Rendering.WinFormGpuRenderSurfaceControl renderSurface;
     }
 }
