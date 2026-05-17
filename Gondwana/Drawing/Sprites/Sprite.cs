@@ -427,10 +427,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     #region internal methods
 
     /// <summary>
-    /// Converts a sprite�s world-pixel rectangle back into SceneLayer coordinates,
+    /// Converts a sprite's world-pixel rectangle back into SceneLayer coordinates,
     /// reversing any visual placement adjustments (nudges and alignment) applied
     /// during rendering. This is primarily used when collision resolution modifies
-    /// a sprite�s position in pixel space and the sprite�s SceneLayer position
+    /// a sprite's position in pixel space and the sprite's SceneLayer position
     /// must be updated to match.
     /// </summary>
     /// <param name="worldRectPx">The world-pixel rectangle to convert.</param>
