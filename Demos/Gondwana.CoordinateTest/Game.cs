@@ -19,11 +19,11 @@ namespace Gondwana.Demos.CoordinateTest;
 
 public class Game : IDisposable
 {
-    public WinFormBitmapRenderSurfaceControl RenderSurface { get; private set; }
+    public WinFormGpuRenderSurfaceControl RenderSurface { get; private set; }
 
     public Scene Scene { get; private set; }
 
-    public Game(WinFormBitmapRenderSurfaceControl renderSurface)
+    public Game(WinFormGpuRenderSurfaceControl renderSurface)
     {
         RenderSurface = renderSurface;
     }
