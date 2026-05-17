@@ -94,12 +94,12 @@ internal sealed class CollisionResolver
             if (overlap.Width < overlap.Height)
             {
                 dx = (centerX < otherCenterX) ? -overlap.Width : overlap.Width;
-                hitX |= true;
+                hitX = true;
             }
             else
             {
                 dy = (centerY < otherCenterY) ? -overlap.Height : overlap.Height;
-                hitY |= true;
+                hitY = true;
             }
 
             rect.X += dx;
