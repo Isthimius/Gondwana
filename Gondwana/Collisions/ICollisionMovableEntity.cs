@@ -19,5 +19,7 @@ public interface ICollisionMovableEntity : ICollisionEntity
     /// </summary>
     /// <param name="cancelX">When <see langword="true"/>, zeroes the horizontal velocity component.</param>
     /// <param name="cancelY">When <see langword="true"/>, zeroes the vertical velocity component.</param>
-    void CancelVelocityComponent(bool cancelX, bool cancelY);
+    void CancelVelocityComponent(bool cancelX, bool cancelY)
+    {
+    }
 }
