@@ -48,7 +48,26 @@ function Get-NbgvPackageVersion {
     return $version
 }
 
+function Invoke-UnitTests {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepoRoot
+    )
+
+    $testProjectPath = Join-Path $RepoRoot "Gondwana.Tests/Gondwana.Tests.csproj"
+    if (-not (Test-Path $testProjectPath)) {
+        throw "Expected test project was not found at $testProjectPath."
+    }
+
+    Write-Host "Running Gondwana.Tests unit tests..."
+    & dotnet test $testProjectPath --configuration Release --nologo /p:EnableWindowsTargeting=true
+    if ($LASTEXITCODE -ne 0) {
+        throw "Gondwana.Tests unit tests failed. Aborting deployment."
+    }
+}
+
 Require-Command git "Install Git for Windows, then reopen your terminal."
+Require-Command dotnet "Install .NET SDK 8.0+, then reopen your terminal."
 Require-Command nbgv "Install with: dotnet tool install -g nbgv"
 Require-Command git-cliff "Install with: winget install git-cliff"
 
@@ -103,6 +122,8 @@ git diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
     throw "Working tree has staged but uncommitted changes. Commit or unstage them first."
 }
+
+Invoke-UnitTests -RepoRoot $repoRoot
 
 $version = Get-NbgvPackageVersion
 $tagName = "v$version"
