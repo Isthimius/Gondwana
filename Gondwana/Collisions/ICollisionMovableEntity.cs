@@ -20,4 +20,11 @@ public interface ICollisionMovableEntity : ICollisionEntity
     /// <param name="cancelX">When <see langword="true"/>, zeroes the horizontal velocity component.</param>
     /// <param name="cancelY">When <see langword="true"/>, zeroes the vertical velocity component.</param>
     void CancelVelocityComponent(bool cancelX, bool cancelY);
+
+    /// <summary>
+    /// Marks collision-blocked axes for suppression during the next integrated movement step.
+    /// </summary>
+    /// <param name="blockX">When <see langword="true"/>, suppresses horizontal re-acceleration on the next integration step.</param>
+    /// <param name="blockY">When <see langword="true"/>, suppresses vertical re-acceleration on the next integration step.</param>
+    void SetBlockedAxesForNextIntegratedStep(bool blockX, bool blockY);
 }

@@ -124,6 +124,7 @@ internal sealed class CollisionResolver
         {
             var (cancelX, cancelY) = SelectVelocityCancellationAxes(hitX, hitY, totalAbsDx, totalAbsDy);
             movableOwner.CancelVelocityComponent(cancelX, cancelY);
+            movableOwner.SetBlockedAxesForNextIntegratedStep(cancelX, cancelY);
         }
     }
 

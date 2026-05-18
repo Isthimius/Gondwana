@@ -52,6 +52,17 @@ public sealed partial class MovementController
         _state.LinearDamping = MathF.Max(0f, dampingPerSec);
     }
 
+    /// <summary>
+    /// Marks integrated axes that should be suppressed during the next physics step.
+    /// </summary>
+    /// <param name="blockX">When <see langword="true"/>, suppresses horizontal re-acceleration for the next step.</param>
+    /// <param name="blockY">When <see langword="true"/>, suppresses vertical re-acceleration for the next step.</param>
+    internal void SetBlockedAxesForNextIntegratedStep(bool blockX, bool blockY)
+    {
+        _blockAxisXOnNextIntegratedStep |= blockX;
+        _blockAxisYOnNextIntegratedStep |= blockY;
+    }
+
     private bool AdvanceIntegrated(float dt)
     {
         if (_state.HasMotion)
@@ -68,8 +79,25 @@ public sealed partial class MovementController
     /// </summary>
     private void Step(float dt)
     {
+        var acceleration = _state.Acceleration;
+
+        if (_blockAxisXOnNextIntegratedStep)
+        {
+            _state.Velocity = new Vector2(0f, _state.Velocity.Y);
+            acceleration.X = 0f;
+        }
+
+        if (_blockAxisYOnNextIntegratedStep)
+        {
+            _state.Velocity = new Vector2(_state.Velocity.X, 0f);
+            acceleration.Y = 0f;
+        }
+
+        _blockAxisXOnNextIntegratedStep = false;
+        _blockAxisYOnNextIntegratedStep = false;
+
         // integrate kinematics in the mover's own space
-        _state.Velocity += _state.Acceleration * dt;
+        _state.Velocity += acceleration * dt;
         ClampVelocity();
 
         // exponential damping (frame-rate independent)

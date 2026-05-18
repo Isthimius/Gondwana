@@ -198,6 +198,12 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         Movement.ZeroVelocityComponent(cancelX, cancelY);
     }
 
+    /// <inheritdoc/>
+    public void SetBlockedAxesForNextIntegratedStep(bool blockX, bool blockY)
+    {
+        Movement.SetBlockedAxesForNextIntegratedStep(blockX, blockY);
+    }
+
     #endregion IMovable / ICollisionMovableEntity Members
 
     #region public properties

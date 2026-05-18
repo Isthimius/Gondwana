@@ -21,6 +21,8 @@ public sealed partial class MovementController : IDisposable
     private readonly SceneLayer? _sceneLayer;
     private readonly IMovable _mover;
     private MovementState _state;
+    private bool _blockAxisXOnNextIntegratedStep;
+    private bool _blockAxisYOnNextIntegratedStep;
 
     /// <summary>
     /// Raised when a scripted movement (tween or MoveToward) begins.
