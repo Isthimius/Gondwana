@@ -3,12 +3,13 @@ using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Movement;
 using Gondwana.Scenes;
-using System.Reflection;
 
 namespace Gondwana.Tests;
 
 public sealed class MovementControllerIntegratedTests
 {
+    private const int FloatComparisonPrecision = 4;
+
     [Theory]
     [InlineData(1f, -1.5f)]
     [InlineData(-1.5f, 1f)]
@@ -16,41 +17,19 @@ public sealed class MovementControllerIntegratedTests
     {
         using var sceneLayer = new TestSceneLayer(10, 10, 32, 16, CoordinateSystemTypes.IsometricRhombic);
         var mover = new TestMover(new Vector2(5f, 5f));
-        var controller = CreateMovementController(mover, sceneLayer);
+        var controller = new MovementController(mover, MovementState.ForSceneLayer(), sceneLayer);
 
         controller.SetVelocity(new Vector2(gridVelocityX, gridVelocityY));
 
         var before = GetWorldVelocity(sceneLayer, mover.GetPosition(), controller.MovementState.Velocity);
+        Assert.NotEqual(0f, before.X);
         Assert.True(before.Y < 0f);
 
-        InvokeZeroVelocityComponent(controller, zeroX: false, zeroY: true);
+        controller.ZeroVelocityComponent(zeroX: false, zeroY: true);
 
         var after = GetWorldVelocity(sceneLayer, mover.GetPosition(), controller.MovementState.Velocity);
-        Assert.Equal(before.X, after.X, 4);
-        Assert.Equal(0f, after.Y, 4);
-    }
-
-    private static MovementController CreateMovementController(IMovable mover, SceneLayer sceneLayer)
-    {
-        var initialStateFactory = typeof(MovementState).GetMethod("ForSceneLayer", BindingFlags.NonPublic | BindingFlags.Static)
-            ?? throw new InvalidOperationException("MovementState.ForSceneLayer was not found.");
-        var initialState = initialStateFactory.Invoke(null, new object[] { 0f })
-            ?? throw new InvalidOperationException("MovementState.ForSceneLayer returned null.");
-
-        return (MovementController)(Activator.CreateInstance(
-            typeof(MovementController),
-            BindingFlags.NonPublic | BindingFlags.Instance,
-            binder: null,
-            args: [mover, initialState, sceneLayer],
-            culture: null)
-            ?? throw new InvalidOperationException("MovementController constructor returned null."));
-    }
-
-    private static void InvokeZeroVelocityComponent(MovementController controller, bool zeroX, bool zeroY)
-    {
-        var zeroVelocityMethod = typeof(MovementController).GetMethod("ZeroVelocityComponent", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?? throw new InvalidOperationException("MovementController.ZeroVelocityComponent was not found.");
-        zeroVelocityMethod.Invoke(controller, [zeroX, zeroY]);
+        Assert.Equal(before.X, after.X, FloatComparisonPrecision);
+        Assert.Equal(0f, after.Y, FloatComparisonPrecision);
     }
 
     private static Vector2 GetWorldVelocity(SceneLayer sceneLayer, Vector2 gridPosition, Vector2 gridVelocity)

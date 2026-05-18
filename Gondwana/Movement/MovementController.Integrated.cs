@@ -5,6 +5,10 @@ namespace Gondwana.Movement;
 
 public sealed partial class MovementController
 {
+    // Small epsilon to guard against degenerate or near-degenerate grid->world bases
+    // before dividing by the determinant during inverse projection.
+    private const float MinDeterminantThreshold = 0.0001f;
+
     /// <summary>
     /// Sets the velocity of the object.
     /// </summary>
@@ -137,7 +141,7 @@ public sealed partial class MovementController
         var worldBasisY = new Vector2(stepYPx.X - originPx.X, stepYPx.Y - originPx.Y);
         float determinant = (worldBasisX.X * worldBasisY.Y) - (worldBasisX.Y * worldBasisY.X);
 
-        if (MathF.Abs(determinant) < 0.0001f)
+        if (MathF.Abs(determinant) < MinDeterminantThreshold)
         {
             _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
             return;
@@ -153,7 +157,7 @@ public sealed partial class MovementController
 
         _state.Velocity = new Vector2(
             ((worldVelocity.X * worldBasisY.Y) - (worldVelocity.Y * worldBasisY.X)) / determinant,
-            ((worldBasisX.X * worldVelocity.Y) - (worldBasisX.Y * worldVelocity.X)) / determinant);
+            ((worldVelocity.Y * worldBasisX.X) - (worldVelocity.X * worldBasisX.Y)) / determinant);
     }
 
     /// <summary>
