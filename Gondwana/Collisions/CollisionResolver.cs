@@ -58,6 +58,8 @@ internal sealed class CollisionResolver
 
         int totalDx = 0;
         int totalDy = 0;
+        int totalAbsDx = 0;
+        int totalAbsDy = 0;
         bool hitX = false;
         bool hitY = false;
 
@@ -107,6 +109,8 @@ internal sealed class CollisionResolver
 
             totalDx += dx;
             totalDy += dy;
+            totalAbsDx += Math.Abs(dx);
+            totalAbsDy += Math.Abs(dy);
         }
 
         if (totalDx != 0 || totalDy != 0)
@@ -118,7 +122,8 @@ internal sealed class CollisionResolver
         // slides along the unblocked axis instead of being stopped entirely.
         if (hitX || hitY)
         {
-            movableOwner.CancelVelocityComponent(hitX, hitY);
+            var (cancelX, cancelY) = SelectVelocityCancellationAxes(hitX, hitY, totalAbsDx, totalAbsDy);
+            movableOwner.CancelVelocityComponent(cancelX, cancelY);
         }
     }
 
@@ -138,5 +143,28 @@ internal sealed class CollisionResolver
             return true;
 
         return overlapPrefersX;
+    }
+
+    internal static (bool CancelX, bool CancelY) SelectVelocityCancellationAxes(bool hitX, bool hitY, int totalAbsDx, int totalAbsDy)
+    {
+        if (!hitX && !hitY)
+            return (false, false);
+
+        if (hitX && !hitY)
+            return (true, false);
+
+        if (!hitX && hitY)
+            return (false, true);
+
+        // Both axes collided this frame; prefer cancelling the axis with the
+        // larger accumulated push-out so wall/floor slides keep the tangent component.
+        if (totalAbsDx > totalAbsDy)
+            return (true, false);
+
+        if (totalAbsDy > totalAbsDx)
+            return (false, true);
+
+        // Equal penetration is ambiguous (e.g., corner impact), so cancel both.
+        return (true, true);
     }
 }

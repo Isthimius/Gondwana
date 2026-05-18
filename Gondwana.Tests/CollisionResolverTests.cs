@@ -30,4 +30,24 @@ public sealed class CollisionResolverTests
 
         Assert.Equal(expectedResolveAlongX, resolveAlongX);
     }
+
+    [Theory]
+    [InlineData(true, false, 8, 0, true, false)]
+    [InlineData(false, true, 0, 8, false, true)]
+    [InlineData(true, true, 10, 2, true, false)]
+    [InlineData(true, true, 2, 10, false, true)]
+    [InlineData(true, true, 6, 6, true, true)]
+    public void SelectVelocityCancellationAxes_PrefersDominantPenetrationAxis_WhenBothAxesCollide(
+        bool hitX,
+        bool hitY,
+        int totalAbsDx,
+        int totalAbsDy,
+        bool expectedCancelX,
+        bool expectedCancelY)
+    {
+        var (cancelX, cancelY) = CollisionResolver.SelectVelocityCancellationAxes(hitX, hitY, totalAbsDx, totalAbsDy);
+
+        Assert.Equal(expectedCancelX, cancelX);
+        Assert.Equal(expectedCancelY, cancelY);
+    }
 }
