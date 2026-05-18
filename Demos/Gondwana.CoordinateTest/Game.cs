@@ -165,7 +165,7 @@ public class Game : IDisposable
                                         null);
         _textBlockMouse.SetColors(Color.Black, Color.Wheat).ZOrder = 10;
 
-        //InitializeParticles();
+        InitializeParticles();
 
         _spriteNameTag = new TextBlock(RenderSurface.Host,
                                                        Scene[0],
