@@ -108,20 +108,52 @@ public sealed partial class MovementController
     }
 
     /// <summary>
-    /// Zeroes out velocity components along the specified axes.
+    /// Zeroes out velocity components along the specified world axes.
     /// Used by collision resolution to cancel movement into a surface while
     /// preserving motion along unblocked axes (e.g. wall-sliding in a platformer).
     /// Does not cancel scripted movement.
     /// </summary>
-    /// <param name="zeroX">When <see langword="true"/>, zeroes the horizontal velocity component.</param>
-    /// <param name="zeroY">When <see langword="true"/>, zeroes the vertical velocity component.</param>
+    /// <param name="zeroX">When <see langword="true"/>, zeroes the horizontal world-space velocity component.</param>
+    /// <param name="zeroY">When <see langword="true"/>, zeroes the vertical world-space velocity component.</param>
     internal void ZeroVelocityComponent(bool zeroX, bool zeroY)
     {
         if (!zeroX && !zeroY)
             return;
 
         var v = _state.Velocity;
-        _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
+
+        if (_mover.PositionSpace != MovementSpace.Grid || _sceneLayer is null)
+        {
+            _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
+            return;
+        }
+
+        var gridPosition = _mover.GetPosition();
+        var originPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X, gridPosition.Y));
+        var stepXPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X + 1f, gridPosition.Y));
+        var stepYPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X, gridPosition.Y + 1f));
+
+        var worldBasisX = new Vector2(stepXPx.X - originPx.X, stepXPx.Y - originPx.Y);
+        var worldBasisY = new Vector2(stepYPx.X - originPx.X, stepYPx.Y - originPx.Y);
+        float determinant = (worldBasisX.X * worldBasisY.Y) - (worldBasisX.Y * worldBasisY.X);
+
+        if (MathF.Abs(determinant) < 0.0001f)
+        {
+            _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
+            return;
+        }
+
+        var worldVelocity = (worldBasisX * v.X) + (worldBasisY * v.Y);
+
+        if (zeroX)
+            worldVelocity.X = 0f;
+
+        if (zeroY)
+            worldVelocity.Y = 0f;
+
+        _state.Velocity = new Vector2(
+            ((worldVelocity.X * worldBasisY.Y) - (worldVelocity.Y * worldBasisY.X)) / determinant,
+            ((worldBasisX.X * worldVelocity.Y) - (worldBasisX.Y * worldVelocity.X)) / determinant);
     }
 
     /// <summary>
