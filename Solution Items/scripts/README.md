@@ -22,7 +22,7 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
 11. Ensures `git-cliff` is installed; updates it via `winget` when available on Windows.
-12. Ensures `butler` (itch.io) is installed; updates it via `winget` when available on Windows.
+12. Checks whether `butler` (itch.io) is installed and prints manual install guidance if missing.
 13. Runs `gondwana doctor` to confirm the final environment state.
 
 **Prerequisites:**

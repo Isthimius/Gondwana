@@ -22,7 +22,7 @@
       10. Checks for LibVLC native binaries required by Gondwana.Video;
           installs VLC (which includes LibVLC) via winget if missing (Windows only).
       11. Ensures git-cliff is installed; updates via winget when available (Windows).
-      12. Ensures butler (itch.io) is installed; updates via winget when available (Windows).
+      12. Checks whether butler (itch.io) is installed and prints manual install guidance if missing.
       13. Runs 'gondwana doctor' to confirm the final environment state.
 
     Steps 8–12 are skipped when -SkipOptional is supplied.
@@ -286,7 +286,7 @@ if ($SkipOptional) {
     if (Get-Command git-cliff -ErrorAction SilentlyContinue) {
         if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
             try {
-                Invoke-Cmd winget @('upgrade', '--id', 'git-cliff.git-cliff', '--exact', '--silent',
+                Invoke-Cmd winget @('upgrade', '--id', 'orhun.git-cliff', '--exact', '--silent',
                                     '--accept-source-agreements', '--accept-package-agreements')
             } catch {
                 WARN "Could not auto-update git-cliff via winget: $_"
@@ -298,12 +298,12 @@ if ($SkipOptional) {
     } else {
         if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
             try {
-                Invoke-Cmd winget @('install', '--id', 'git-cliff.git-cliff', '--exact', '--silent',
+                Invoke-Cmd winget @('install', '--id', 'orhun.git-cliff', '--exact', '--silent',
                                     '--accept-source-agreements', '--accept-package-agreements')
                 $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
                 OK ("git-cliff installed{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
             } catch {
-                WARN "winget install git-cliff.git-cliff failed: $_"
+                WARN "winget install orhun.git-cliff failed: $_"
                 INFO "Install git-cliff manually from https://git-cliff.org/"
             }
         } else {
@@ -316,32 +316,11 @@ if ($SkipOptional) {
 
     Step '12/13 butler (itch.io)'
     if (Get-Command butler -ErrorAction SilentlyContinue) {
-        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
-            try {
-                Invoke-Cmd winget @('upgrade', '--id', 'itchio.butler', '--exact', '--silent',
-                                    '--accept-source-agreements', '--accept-package-agreements')
-            } catch {
-                WARN "Could not auto-update butler via winget: $_"
-            }
-        }
-
         $butlerVersion = Get-CommandVersionLine -Command 'butler'
         OK ("butler ready{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
     } else {
-        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
-            try {
-                Invoke-Cmd winget @('install', '--id', 'itchio.butler', '--exact', '--silent',
-                                    '--accept-source-agreements', '--accept-package-agreements')
-                $butlerVersion = Get-CommandVersionLine -Command 'butler'
-                OK ("butler installed{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
-            } catch {
-                WARN "winget install itchio.butler failed: $_"
-                INFO "Install butler manually from https://itch.io/docs/butler/"
-            }
-        } else {
-            WARN "butler not found on PATH."
-            INFO "Install butler from https://itch.io/docs/butler/"
-        }
+        WARN "butler not found on PATH."
+        INFO "Install butler from https://itch.io/docs/butler/"
     }
 }
 
