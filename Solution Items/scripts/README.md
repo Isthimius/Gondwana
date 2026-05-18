@@ -52,12 +52,12 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 
 ### `Reinstall-Gondwana-Cli.ps1`
 
-Packs `Tooling/Gondwana.Cli` and reinstalls the global `gondwana` tool from a local package source. Useful for repeated local CLI testing when the package version has not changed.
+Packs `Tooling/Gondwana.Cli` and reinstalls the global `gondwana` tool from an isolated local package source. Useful for repeated local CLI testing when the package version has not changed.
 
 **What it does:**
 1. Packs `Tooling/Gondwana.Cli/Gondwana.Cli.csproj` into a local package feed.
 2. Uninstalls the existing global `Gondwana.Cli` tool when present.
-3. Reinstalls `Gondwana.Cli` globally from the freshly packed local package feed.
+3. Reinstalls `Gondwana.Cli` globally from the freshly packed local package feed using `--source`, `--no-http-cache`, and a temporary `NUGET_PACKAGES` directory so the local package is chosen deterministically.
 4. Prints the installed `gondwana --version` output when available in the current shell.
 
 **Prerequisites:**
