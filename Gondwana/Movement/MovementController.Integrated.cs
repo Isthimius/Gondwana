@@ -59,6 +59,8 @@ public sealed partial class MovementController
     /// <param name="blockY">When <see langword="true"/>, suppresses vertical re-acceleration for the next step.</param>
     internal void SetBlockedAxesForNextIntegratedStep(bool blockX, bool blockY)
     {
+        // Multiple collisions in one resolve pass can report blocking on different axes.
+        // Accumulate flags until the next Step() consumes and clears them.
         _blockAxisXOnNextIntegratedStep |= blockX;
         _blockAxisYOnNextIntegratedStep |= blockY;
     }
