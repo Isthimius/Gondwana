@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 
 namespace Gondwana.Collisions;
 
@@ -91,7 +91,7 @@ internal sealed class CollisionResolver
             int dx = 0;
             int dy = 0;
 
-            if (overlap.Width < overlap.Height)
+            if (ShouldResolveAlongXAxis(overlap, centerX, centerY, otherCenterX, otherCenterY))
             {
                 dx = (centerX < otherCenterX) ? -overlap.Width : overlap.Width;
                 hitX = true;
@@ -120,5 +120,23 @@ internal sealed class CollisionResolver
         {
             movableOwner.CancelVelocityComponent(hitX, hitY);
         }
+    }
+
+    internal static bool ShouldResolveAlongXAxis(Rectangle overlap, float centerX, float centerY, float otherCenterX, float otherCenterY)
+    {
+        bool overlapPrefersX = overlap.Width < overlap.Height;
+        float centerDeltaX = MathF.Abs(otherCenterX - centerX);
+        float centerDeltaY = MathF.Abs(otherCenterY - centerY);
+
+        // For skewed projections, AABB overlap size alone can misclassify
+        // floor/ceiling contacts as horizontal. When center separation strongly
+        // indicates the opposite axis, prefer center-delta orientation.
+        if (overlapPrefersX && centerDeltaY > centerDeltaX)
+            return false;
+
+        if (!overlapPrefersX && centerDeltaX > centerDeltaY)
+            return true;
+
+        return overlapPrefersX;
     }
 }
