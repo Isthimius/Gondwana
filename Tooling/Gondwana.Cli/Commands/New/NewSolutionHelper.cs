@@ -88,8 +88,13 @@ internal static class NewSolutionHelper
         }
 
         if (createdNewSolution)
-            AnsiConsole.MarkupLine($"[green]Solution '{Markup.Escape(Path.GetFileName(solutionPath))}' created and updated successfully.[/]");
+            AnsiConsole.MarkupLine($"[green]Solution created and updated successfully.[/]");
         else
             AnsiConsole.MarkupLine($"[green]Project added to existing solution '{Markup.Escape(Path.GetFileName(solutionPath))}'.[/]");
+
+        AnsiConsole.MarkupLine($"[green]Project file:[/] [dim]{Markup.Escape(projectPath)}[/]");
+        AnsiConsole.MarkupLine($"[green]Associated solution:[/] [dim]{Markup.Escape(Path.GetFileName(solutionPath))}[/]");
+        if (createdNewSolution)
+            AnsiConsole.MarkupLine($"[green]Created solution file:[/] [dim]{Markup.Escape(solutionPath)}[/]");
     }
 }
