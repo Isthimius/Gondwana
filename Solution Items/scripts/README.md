@@ -50,6 +50,41 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 
 ---
 
+### `Reinstall-Gondwana-Cli.ps1`
+
+Packs `Tooling/Gondwana.Cli` and reinstalls the global `gondwana` tool from an isolated local package source. Useful for repeated local CLI testing when the package version has not changed.
+
+**What it does:**
+1. Packs `Tooling/Gondwana.Cli/Gondwana.Cli.csproj` into a local package feed.
+2. Uninstalls the existing global `Gondwana.Cli` tool when present.
+3. Reinstalls `Gondwana.Cli` globally from the freshly packed local package feed using `--source`, `--no-http-cache`, and a temporary `NUGET_PACKAGES` directory so the local package is chosen deterministically.
+4. Prints the installed `gondwana --version` output when available in the current shell.
+
+**Prerequisites:**
+- .NET 8 SDK
+- PowerShell 5.1 or later
+
+**Parameters:**
+
+| Parameter | Description | Default |
+|---|---|---|
+| `-Configuration` | Build configuration passed to `dotnet pack`. | `Release` |
+| `-PackageOutput` | Local package-feed directory. Relative paths are resolved from the repository root. | `.local-nuget` |
+
+**Examples:**
+```powershell
+# Repack and reinstall the local CLI from the repository default package feed
+.\Reinstall-Gondwana-Cli.ps1
+
+# Use a different build configuration
+.\Reinstall-Gondwana-Cli.ps1 -Configuration Debug
+
+# Use a custom local package-feed directory
+.\Reinstall-Gondwana-Cli.ps1 -PackageOutput artifacts\local-tools
+```
+
+---
+
 ### `Publish-Gondwana-Wasm.ps1`
 
 Builds and publishes a Gondwana project for browser (WASM) deployment.
