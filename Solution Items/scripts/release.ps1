@@ -8,6 +8,84 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# ---------------------------------------------------------------------------
+# Project changelog groups — one entry per project/area.
+# Each group collects commits that touched any of its IncludePaths.
+# Duplicates across groups are intentional; a commit touching both
+# Gondwana/**/* and Tooling/Gondwana.Cli/**/* appears under both.
+# ---------------------------------------------------------------------------
+$ProjectChangelogGroups = @(
+    [pscustomobject]@{
+        Name         = "Gondwana"
+        IncludePaths = @("Gondwana/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Audio.Browser"
+        IncludePaths = @("Gondwana.Audio.Browser/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Audio.Midi"
+        IncludePaths = @("Gondwana.Audio.Midi/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Avalonia"
+        IncludePaths = @("Gondwana.Avalonia/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Avalonia.Hosting"
+        IncludePaths = @("Gondwana.Avalonia.Hosting/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Hosting"
+        IncludePaths = @("Gondwana.Hosting/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Input.SDL2"
+        IncludePaths = @("Gondwana.Input.SDL2/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Video"
+        IncludePaths = @("Gondwana.Video/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.WinForms"
+        IncludePaths = @("Gondwana.WinForms/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.WinForms.Hosting"
+        IncludePaths = @("Gondwana.WinForms.Hosting/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Cli"
+        IncludePaths = @("Tooling/Gondwana.Cli/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Studio"
+        IncludePaths = @("Tooling/Gondwana.Studio/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Templates"
+        IncludePaths = @("Tooling/Gondwana.Templates/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Assets.WinForms"
+        IncludePaths = @("Tooling/Gondwana.Assets.WinForms/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Build / Repository"
+        IncludePaths = @(
+            ".github/**/*",
+            "Solution Items/**/*",
+            "Directory.Build.props",
+            "Directory.Build.targets",
+            "version.json",
+            "cliff.toml",
+            "*.sln",
+            "README.md"
+        )
+    }
+)
+
 function Require-Command {
     param(
         [Parameter(Mandatory = $true)]
@@ -133,37 +211,215 @@ Write-Host "Resolved version: $version"
 Write-Host "Resolved tag: $tagName"
 Write-Host ""
 
+# ---------------------------------------------------------------------------
+# CHANGELOG HELPER FUNCTIONS
+# ---------------------------------------------------------------------------
+
+function Get-GeneratedReleaseBody {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$GeneratedChangelogPath
+    )
+
+    $lines = @(Get-Content $GeneratedChangelogPath)
+
+    if ($lines.Count -eq 0) {
+        return ""
+    }
+
+    # Find the first release heading.
+    # Handles formats like:
+    #   # v1.2.3
+    #   # [v1.2.3]
+    #   ## v1.2.3
+    #   ## [1.2.3]
+    $startIndex = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^\s*#+\s+\[?v?\d+\.\d+\.\d+') {
+            $startIndex = $i
+            break
+        }
+    }
+
+    if ($startIndex -lt 0) {
+        return ""
+    }
+
+    $bodyLines = @()
+
+    for ($i = $startIndex + 1; $i -lt $lines.Count; $i++) {
+        # Stop if another release heading appears.
+        if ($lines[$i] -match '^\s*#+\s+\[?v?\d+\.\d+\.\d+') {
+            break
+        }
+
+        $bodyLines += $lines[$i]
+    }
+
+    $body = ($bodyLines -join [Environment]::NewLine).Trim()
+
+    if ([string]::IsNullOrWhiteSpace($body)) {
+        return ""
+    }
+
+    return $body
+}
+
+function ConvertTo-ChildHeadings {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Markdown
+    )
+
+    # Demote headings by one level:
+    #   ## Added  -> ### Added
+    #   ### Fixed -> #### Fixed
+    #
+    # This lets project headings sit above git-cliff's category headings.
+    return ($Markdown -replace '(?m)^(#{1,5})\s+', '#$1 ')
+}
+
+function Get-ProjectChangelogBody {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$ProjectGroup,
+
+        [Parameter(Mandatory = $true)]
+        [string]$TagName,
+
+        [Parameter(Mandatory = $true)]
+        [string]$RepoRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string]$CliffConfigPath
+    )
+
+    $safeName = ($ProjectGroup.Name -replace '[^a-zA-Z0-9.-]', '-')
+    $tempProjectChangelog = Join-Path $env:TEMP "gondwana-$safeName-$TagName.md"
+
+    if (Test-Path $tempProjectChangelog) {
+        Remove-Item $tempProjectChangelog -Force
+    }
+
+    $cliffArgs = @(
+        "--config", $CliffConfigPath,
+        "--repository", $RepoRoot,
+        "--unreleased",
+        "--tag", $TagName
+    )
+
+    foreach ($includePath in $ProjectGroup.IncludePaths) {
+        $cliffArgs += @("--include-path", $includePath)
+    }
+
+    $cliffArgs += @("--output", $tempProjectChangelog)
+
+    & git-cliff @cliffArgs
+    if ($LASTEXITCODE -ne 0) {
+        throw "git-cliff failed while generating changelog section for '$($ProjectGroup.Name)'."
+    }
+
+    $body = Get-GeneratedReleaseBody -GeneratedChangelogPath $tempProjectChangelog
+
+    if ([string]::IsNullOrWhiteSpace($body)) {
+        return ""
+    }
+
+    return ConvertTo-ChildHeadings -Markdown $body
+}
+
+function New-GroupedReleaseSection {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object[]]$ProjectGroups,
+
+        [Parameter(Mandatory = $true)]
+        [string]$TagName,
+
+        [Parameter(Mandatory = $true)]
+        [string]$RepoRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string]$CliffConfigPath
+    )
+
+    $today = Get-Date -Format "yyyy-MM-dd"
+    $lines = @()
+    $lines += "# $TagName - $today"
+
+    $hasProjectChanges = $false
+
+    foreach ($projectGroup in $ProjectGroups) {
+        $body = Get-ProjectChangelogBody `
+            -ProjectGroup $projectGroup `
+            -TagName $TagName `
+            -RepoRoot $RepoRoot `
+            -CliffConfigPath $CliffConfigPath
+
+        if ([string]::IsNullOrWhiteSpace($body)) {
+            continue
+        }
+
+        $hasProjectChanges = $true
+
+        $lines += ""
+        $lines += "## $($projectGroup.Name)"
+        $lines += ""
+        $lines += $body
+    }
+
+    if (-not $hasProjectChanges) {
+        return ""
+    }
+
+    return (($lines -join [Environment]::NewLine).Trim() + [Environment]::NewLine + [Environment]::NewLine)
+}
+
+function Write-GroupedChangelog {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ChangelogPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ReleaseSection
+    )
+
+    $changelogIsNew = (-not (Test-Path $ChangelogPath)) -or ((Get-Item $ChangelogPath).Length -eq 0)
+
+    if ($changelogIsNew) {
+        $content = @(
+            "# Changelog",
+            "",
+            "All notable changes to this project will be documented in this file.",
+            "",
+            $ReleaseSection.TrimEnd()
+        ) -join [Environment]::NewLine
+    }
+    else {
+        $existingContent = Get-Content $ChangelogPath -Raw
+        $content = $ReleaseSection + $existingContent.TrimStart()
+    }
+
+    Set-Content -Path $ChangelogPath -Value $content -Encoding UTF8
+}
+
 # ----------------------------------------
 # RELEASE NOTES PREVIEW
 # ----------------------------------------
 
-# Preview by prepending to a temp copy of the changelog so the output matches
-# exactly what --prepend will write (no header block, just the new section body).
-$tempChangelog = Join-Path $env:TEMP "gondwana-changelog-preview-$tagName.md"
-if (Test-Path $ChangelogPath) {
-    Copy-Item $ChangelogPath $tempChangelog
-}
-else {
-    New-Item -ItemType File -Path $tempChangelog -Force | Out-Null
-}
+$releaseSection = New-GroupedReleaseSection `
+    -ProjectGroups $ProjectChangelogGroups `
+    -TagName $tagName `
+    -RepoRoot $repoRoot `
+    -CliffConfigPath $CliffConfigPath
 
-& git-cliff --config $CliffConfigPath --repository $repoRoot --unreleased --tag $tagName --prepend $tempChangelog
-if ($LASTEXITCODE -ne 0) {
-    throw "git-cliff failed while generating release notes preview."
+if ([string]::IsNullOrWhiteSpace($releaseSection)) {
+    throw "No changelog entries were generated for $tagName."
 }
 
 Write-Host "Release notes preview from git-cliff:"
 Write-Host "-------------------------------------"
-# Show only the new section (everything before the next top-level release heading).
-# Matches both git-cliff format (# [version]) and the legacy repo format (# vX.Y.Z).
-$inSection = $false
-foreach ($line in (Get-Content $tempChangelog)) {
-    if ($line -match '^# (\[|v\d)') {
-        if ($inSection) { break }
-        $inSection = $true
-    }
-    if ($inSection) { Write-Host $line }
-}
+Write-Host $releaseSection
 Write-Host "-------------------------------------"
 Write-Host ""
 
@@ -187,19 +443,9 @@ if ($confirmation -cne "DEPLOY") {
 # CHANGELOG UPDATE
 # ----------------------------------------
 
-$changelogIsNew = (-not (Test-Path $ChangelogPath)) -or ((Get-Item $ChangelogPath).Length -eq 0)
-
-if ($changelogIsNew) {
-    # First-ever changelog: use --output so the "# Changelog" header is written.
-    & git-cliff --config $CliffConfigPath --repository $repoRoot --tag $tagName --output $ChangelogPath
-}
-else {
-    # Existing changelog: prepend only the new section body, preserving history.
-    & git-cliff --config $CliffConfigPath --repository $repoRoot --unreleased --tag $tagName --prepend $ChangelogPath
-}
-if ($LASTEXITCODE -ne 0) {
-    throw "git-cliff failed while updating $ChangelogPath."
-}
+Write-GroupedChangelog `
+    -ChangelogPath $ChangelogPath `
+    -ReleaseSection $releaseSection
 
 # Stage and commit the canonical repository changelog only.
 Invoke-Git @("add", "--", $ChangelogPath)
