@@ -76,10 +76,16 @@ $ProjectChangelogGroups = @(
         IncludePaths = @(
             ".github/**/*",
             "Solution Items/**/*",
+            "docs/**/*",
             "Directory.Build.props",
             "Directory.Build.targets",
+            "Directory.Packages.props",
             "version.json",
+            "global.json",
+            "NuGet.config",
             "cliff.toml",
+            ".editorconfig",
+            ".gitignore",
             "*.sln",
             "README.md"
         )
@@ -345,7 +351,7 @@ function New-GroupedReleaseSection {
 
     $today = Get-Date -Format "yyyy-MM-dd"
     $lines = @()
-    $lines += "# $TagName - $today"
+    $lines += "# [$TagName] - $today"
 
     $hasProjectChanges = $false
 
@@ -397,10 +403,35 @@ function Write-GroupedChangelog {
     }
     else {
         $existingContent = Get-Content $ChangelogPath -Raw
-        $content = $ReleaseSection + $existingContent.TrimStart()
+
+        # Insert before the first existing release heading, preserving any file header (e.g. "# Changelog").
+        $releaseHeadingPattern = '(?m)^#\s+\[?v?\d+\.\d+\.\d+'
+        $match = [regex]::Match($existingContent, $releaseHeadingPattern)
+
+        if ($match.Success) {
+            $before = $existingContent.Substring(0, $match.Index).TrimEnd()
+            $after  = $existingContent.Substring($match.Index).TrimStart()
+
+            if ([string]::IsNullOrWhiteSpace($before)) {
+                $content = $ReleaseSection + $after
+            }
+            else {
+                $content = $before + [Environment]::NewLine + [Environment]::NewLine +
+                           $ReleaseSection +
+                           $after
+            }
+        }
+        else {
+            # Fallback: no existing release heading — append after existing content.
+            $content = $existingContent.TrimEnd() +
+                       [Environment]::NewLine + [Environment]::NewLine +
+                       $ReleaseSection.TrimEnd() +
+                       [Environment]::NewLine
+        }
     }
 
-    Set-Content -Path $ChangelogPath -Value $content -Encoding UTF8
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($ChangelogPath, $content, $utf8NoBom)
 }
 
 # ----------------------------------------
