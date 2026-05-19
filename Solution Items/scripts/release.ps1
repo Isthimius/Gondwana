@@ -69,7 +69,7 @@ function Invoke-UnitTests {
 Require-Command git "Install Git for Windows, then reopen your terminal."
 Require-Command dotnet "Install .NET SDK 8.0+, then reopen your terminal."
 Require-Command nbgv "Install with: dotnet tool install -g nbgv"
-Require-Command git-cliff "Install with: winget install git-cliff"
+Require-Command git-cliff "Install with: winget install --id orhun.git-cliff"
 
 # Resolve relative paths against the repo root (two levels above this script:
 # Solution Items/scripts/ → root) so the script works correctly when invoked
