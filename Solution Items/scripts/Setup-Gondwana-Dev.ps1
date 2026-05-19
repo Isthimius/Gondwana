@@ -300,6 +300,9 @@ if ($SkipOptional) {
             try {
                 Invoke-Cmd winget @('install', '--id', 'orhun.git-cliff', '--exact', '--silent',
                                     '--accept-source-agreements', '--accept-package-agreements')
+                # Refresh PATH so the newly installed git-cliff is usable in this session
+                $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
+                            [System.Environment]::GetEnvironmentVariable('PATH', 'User')
                 $gitCliffVersion = Get-CommandVersionLine -Command 'git-cliff'
                 OK ("git-cliff installed{0}" -f $(if ($gitCliffVersion) { ": $gitCliffVersion" } else { "." }))
             } catch {
