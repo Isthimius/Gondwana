@@ -179,20 +179,22 @@ if ($LASTEXITCODE -ne 0) {
 # PRE-FLIGHT CHECKS
 # ----------------------------------------
 
-# Ensure correct branch.
+# Ensure correct branch (skipped in -PreviewOnly mode to allow previewing from any branch).
 $currentBranch = git branch --show-current
-if ($currentBranch -ne $RequiredBranch) {
+if (-not $PreviewOnly -and $currentBranch -ne $RequiredBranch) {
     throw "You must be on '$RequiredBranch' to create a release tag. Current branch: $currentBranch"
 }
 
 # Refresh remote branch/tag state before checks.
 Invoke-Git @("fetch", "--prune", "--tags", "--force", $Remote)
 
-# Ensure local branch is not behind remote.
-$localHead = git rev-parse HEAD
-$remoteHead = git rev-parse "$Remote/$RequiredBranch"
-if ($localHead -ne $remoteHead) {
-    throw "Local '$RequiredBranch' is not aligned with '$Remote/$RequiredBranch'. Pull/rebase first, then retry."
+# Ensure local branch is not behind remote (skipped in -PreviewOnly mode).
+if (-not $PreviewOnly) {
+    $localHead = git rev-parse HEAD
+    $remoteHead = git rev-parse "$Remote/$RequiredBranch"
+    if ($localHead -ne $remoteHead) {
+        throw "Local '$RequiredBranch' is not aligned with '$Remote/$RequiredBranch'. Pull/rebase first, then retry."
+    }
 }
 
 # Ensure clean working tree before generating the changelog.
