@@ -152,6 +152,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{54A0
 		Solution Items\scripts\Deploy-Gondwana-Website.ps1 = Solution Items\scripts\Deploy-Gondwana-Website.ps1
 		Solution Items\scripts\Publish-Gondwana-Wasm.ps1 = Solution Items\scripts\Publish-Gondwana-Wasm.ps1
 		Solution Items\scripts\README.md = Solution Items\scripts\README.md
+		Solution Items\scripts\Reinstall-Gondwana-Cli.ps1 = Solution Items\scripts\Reinstall-Gondwana-Cli.ps1
 		Solution Items\scripts\release.ps1 = Solution Items\scripts\release.ps1
 		Solution Items\scripts\Setup-Gondwana-Dev.ps1 = Solution Items\scripts\Setup-Gondwana-Dev.ps1
 	EndProjectSection

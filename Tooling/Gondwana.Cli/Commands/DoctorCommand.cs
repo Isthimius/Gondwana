@@ -28,7 +28,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             ("Gondwana Templates", CheckGondwanaTemplates, FixGondwanaTemplates),
             ("wasm-tools",         CheckWasmTools,         FixWasmTools),
             ("git-cliff",          CheckGitCliff,          FixGitCliff),
-            ("butler",             CheckButler,            FixButler),
+            ("butler",             CheckButler,            null),
             ("SkiaSharp",          CheckSkiaSharp,         null),
             ("SDL2",               CheckSdl2,              null),
             ("LibVLC",             CheckLibVlc,            null),
@@ -51,7 +51,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var alwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "git-cliff",
-            "butler",
         };
         bool hasWindowsAlwaysFixes = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
                                      checks.Any(c => c.Fix != null && alwaysFixLabels.Contains(c.Label));
@@ -201,17 +200,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     {
         FixViaWinget(
             toolName: "git-cliff",
-            packageId: "git-cliff.git-cliff",
+            packageId: "orhun.git-cliff",
             installUrl: "https://git-cliff.org/",
-            versionArgs: "--version");
-    }
-
-    private static void FixButler()
-    {
-        FixViaWinget(
-            toolName: "butler",
-            packageId: "itchio.butler",
-            installUrl: "https://itch.io/docs/butler/",
             versionArgs: "--version");
     }
 
@@ -343,7 +333,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     {
         var output = ProcessHelper.Run("git-cliff", "--version", out int exitCode);
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("git-cliff not found on PATH. Install from https://git-cliff.org/ (Windows: winget install --id git-cliff.git-cliff).");
+            return CheckResult.Fail("git-cliff not found on PATH. Install from https://git-cliff.org/ (Windows: winget install --id orhun.git-cliff).");
 
         var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
         return CheckResult.Ok(versionLine ?? "found");
@@ -353,7 +343,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     {
         var output = ProcessHelper.Run("butler", "--version", out int exitCode);
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("butler not found on PATH. Install from https://itch.io/docs/butler/ (Windows: winget install --id itchio.butler).");
+            return CheckResult.Fail("butler not found on PATH. Install from https://itch.io/docs/butler/.");
 
         var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
         return CheckResult.Ok(versionLine ?? "found");

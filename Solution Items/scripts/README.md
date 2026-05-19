@@ -22,7 +22,7 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
 11. Ensures `git-cliff` is installed; updates it via `winget` when available on Windows.
-12. Ensures `butler` (itch.io) is installed; updates it via `winget` when available on Windows.
+12. Checks whether `butler` (itch.io) is installed and prints manual install guidance if missing.
 13. Runs `gondwana doctor` to confirm the final environment state.
 
 **Prerequisites:**
@@ -46,6 +46,41 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 
 # Install core tools only (no WASM workload, SDL2, LibVLC, git-cliff, or butler)
 .\Setup-Gondwana-Dev.ps1 -SkipOptional
+```
+
+---
+
+### `Reinstall-Gondwana-Cli.ps1`
+
+Packs `Tooling/Gondwana.Cli` and reinstalls the global `gondwana` tool from an isolated local package source. Useful for repeated local CLI testing when the package version has not changed.
+
+**What it does:**
+1. Packs `Tooling/Gondwana.Cli/Gondwana.Cli.csproj` into a local package feed.
+2. Uninstalls the existing global `Gondwana.Cli` tool when present.
+3. Reinstalls `Gondwana.Cli` globally from the freshly packed local package feed using `--source`, `--no-http-cache`, and a temporary `NUGET_PACKAGES` directory so the local package is chosen deterministically.
+4. Prints the installed `gondwana --version` output when available in the current shell.
+
+**Prerequisites:**
+- .NET 8 SDK
+- PowerShell 5.1 or later
+
+**Parameters:**
+
+| Parameter | Description | Default |
+|---|---|---|
+| `-Configuration` | Build configuration passed to `dotnet pack`. | `Release` |
+| `-PackageOutput` | Local package-feed directory. Relative paths are resolved from the repository root. | `.local-nuget` |
+
+**Examples:**
+```powershell
+# Repack and reinstall the local CLI from the repository default package feed
+.\Reinstall-Gondwana-Cli.ps1
+
+# Use a different build configuration
+.\Reinstall-Gondwana-Cli.ps1 -Configuration Debug
+
+# Use a custom local package-feed directory
+.\Reinstall-Gondwana-Cli.ps1 -PackageOutput artifacts\local-tools
 ```
 
 ---

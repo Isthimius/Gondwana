@@ -55,8 +55,9 @@ Currently auto-fixable:
 - **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
 - **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
 - **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
-- **git-cliff** on Windows → runs `winget install/upgrade --id git-cliff.git-cliff`
-- **butler** on Windows → runs `winget install/upgrade --id itchio.butler`
+- **git-cliff** on Windows → runs `winget install/upgrade --id orhun.git-cliff`
+
+`butler` is still checked and reported by `gondwana doctor`, but currently requires manual installation from https://itch.io/docs/butler/.
 
 After applying fixes, the checks are re-run and the updated results are displayed.
 
