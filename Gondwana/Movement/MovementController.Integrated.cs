@@ -108,6 +108,23 @@ public sealed partial class MovementController
     }
 
     /// <summary>
+    /// Zeroes out velocity components along the specified axes.
+    /// Used by collision resolution to cancel movement into a surface while
+    /// preserving motion along unblocked axes (e.g. wall-sliding in a platformer).
+    /// Does not cancel scripted movement.
+    /// </summary>
+    /// <param name="zeroX">When <see langword="true"/>, zeroes the horizontal velocity component.</param>
+    /// <param name="zeroY">When <see langword="true"/>, zeroes the vertical velocity component.</param>
+    internal void ZeroVelocityComponent(bool zeroX, bool zeroY)
+    {
+        if (!zeroX && !zeroY)
+            return;
+
+        var v = _state.Velocity;
+        _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
+    }
+
+    /// <summary>
     /// Limits the current velocity to the maximum speed, if specified.
     /// </summary>
     /// <remarks>If <see cref="MaxSpeed"/> is not set, the method does nothing. If the current velocity
