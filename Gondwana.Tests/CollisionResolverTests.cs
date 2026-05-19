@@ -15,6 +15,9 @@ public sealed class CollisionResolverTests
     [InlineData(1, 10, 0f, 0f, 9f, 12f, true)]
     // Same wall, mover has slid far: center-delta Y (55) vs X (9) = 6.1:1, still < 10:1 overlap ratio.
     [InlineData(1, 10, 0f, 50f, 9f, 5f, true)]
+    // Very strong overlap evidence (10:1) must not be overturned by extreme tangential separation.
+    [InlineData(1, 10, 0f, 0f, 9f, 400f, true)]
+    [InlineData(10, 1, 0f, 0f, 400f, 9f, false)]
     public void ShouldResolveAlongXAxis_UsesCenterDeltasToCorrectAmbiguousProjectionCases(
         int overlapWidth,
         int overlapHeight,

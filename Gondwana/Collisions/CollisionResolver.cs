@@ -9,6 +9,11 @@ namespace Gondwana.Collisions;
 /// </summary>
 internal sealed class CollisionResolver
 {
+    // Center-delta overrides help with ambiguous/skewed overlaps, but when overlap
+    // ratio is already strongly dominant, large tangential center separation can
+    // incorrectly flip wall/floor contact axes during long slides.
+    private const float MaxOverlapRatioForCenterDeltaOverride = 3f;
+
     private readonly List<ICollider> _queryResults = new();
     private readonly ColliderRegistry _world;
 
@@ -144,16 +149,22 @@ internal sealed class CollisionResolver
         if (overlapPrefersX)
         {
             float overlapRatio = (float)overlap.Height / overlap.Width;
-            float centerDeltaRatio = centerDeltaX > 0 ? centerDeltaY / centerDeltaX : float.MaxValue;
-            if (centerDeltaRatio > overlapRatio)
-                return false;
+            if (overlapRatio <= MaxOverlapRatioForCenterDeltaOverride)
+            {
+                float centerDeltaRatio = centerDeltaX > 0 ? centerDeltaY / centerDeltaX : float.MaxValue;
+                if (centerDeltaRatio > overlapRatio)
+                    return false;
+            }
         }
         else
         {
             float overlapRatio = (float)overlap.Width / overlap.Height;
-            float centerDeltaRatio = centerDeltaY > 0 ? centerDeltaX / centerDeltaY : float.MaxValue;
-            if (centerDeltaRatio > overlapRatio)
-                return true;
+            if (overlapRatio <= MaxOverlapRatioForCenterDeltaOverride)
+            {
+                float centerDeltaRatio = centerDeltaY > 0 ? centerDeltaX / centerDeltaY : float.MaxValue;
+                if (centerDeltaRatio > overlapRatio)
+                    return true;
+            }
         }
 
         return overlapPrefersX;
