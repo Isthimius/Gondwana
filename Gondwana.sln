@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 		CLICHEATSHEET.md = CLICHEATSHEET.md
 		Directory.Build.props = Directory.Build.props
+		Solution Items\scripts\Generate-Project-Changelogs.ps1 = Solution Items\scripts\Generate-Project-Changelogs.ps1
 		gondwana-logo.png = gondwana-logo.png
 		version.json = version.json
 	EndProjectSection
