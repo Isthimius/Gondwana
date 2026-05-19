@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.5</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -128,6 +128,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0786f02005a6fa9358a26bcfe30b5144" id="r_a0786f02005a6fa9358a26bcfe30b5144"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a0786f02005a6fa9358a26bcfe30b5144">TranslateWorldPx</a> (int dx, int dy)</td></tr>
 <tr class="memdesc:a0786f02005a6fa9358a26bcfe30b5144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a world-pixel translation. Used by collision resolution.  <br /></td></tr>
 <tr class="separator:a0786f02005a6fa9358a26bcfe30b5144"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e8330739bf50c5672420653fae7802b" id="r_a4e8330739bf50c5672420653fae7802b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4e8330739bf50c5672420653fae7802b">CancelVelocityComponent</a> (bool cancelX, bool cancelY)</td></tr>
+<tr class="memdesc:a4e8330739bf50c5672420653fae7802b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels velocity along the specified axes after a solid collision push-out. Zeroing only the blocked axis preserves motion along the unblocked axis, enabling wall-sliding and platformer-style collision response.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cancelX</td><td>When <code>true</code>, zeroes the horizontal velocity component.</td></tr>
+    <tr><td class="paramname">cancelY</td><td>When <code>true</code>, zeroes the vertical velocity component.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
+<tr class="separator:a4e8330739bf50c5672420653fae7802b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3c760f6aeae24f2a907da2f254cc84a" id="r_aa3c760f6aeae24f2a907da2f254cc84a"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa3c760f6aeae24f2a907da2f254cc84a">Dispose</a> ()</td></tr>
 <tr class="memdesc:aa3c760f6aeae24f2a907da2f254cc84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the sprite and removes it from the sprite manager.  <br /></td></tr>
 <tr class="separator:aa3c760f6aeae24f2a907da2f254cc84a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -329,6 +339,47 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a4e8330739bf50c5672420653fae7802b" name="a4e8330739bf50c5672420653fae7802b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e8330739bf50c5672420653fae7802b">&#9670;&#160;</a></span>CancelVelocityComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Sprites.Sprite.CancelVelocityComponent </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cancelX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cancelY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels velocity along the specified axes after a solid collision push-out. Zeroing only the blocked axis preserves motion along the unblocked axis, enabling wall-sliding and platformer-style collision response.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cancelX</td><td>When <code>true</code>, zeroes the horizontal velocity component.</td></tr>
+    <tr><td class="paramname">cancelY</td><td>When <code>true</code>, zeroes the vertical velocity component.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Implements <a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollisionMovableEntity.html#a4808e14f7ec41e7de55e26978124678e">Gondwana.Collisions.ICollisionMovableEntity</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00196">196</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
 <a id="aa3c760f6aeae24f2a907da2f254cc84a" name="aa3c760f6aeae24f2a907da2f254cc84a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa3c760f6aeae24f2a907da2f254cc84a">&#9670;&#160;</a></span>Dispose()</h2>
 
@@ -356,7 +407,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022">Gondwana.Drawing.Tile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00497">497</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00503">503</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -853,7 +904,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the world-space pixel rectangle where the sprite will be drawn, taking into account alignment, size, and nudge offsets. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00322">322</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00328">328</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -879,7 +930,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the horizontal alignment of the sprite relative to its scene layer coordinates. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00209">209</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00215">215</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -931,7 +982,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets a value indicating whether the sprite's position is fixed. Always returns false for sprites. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00388">388</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00394">394</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1009,7 +1060,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the movement controller for this sprite. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00203">203</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00209">209</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1035,7 +1086,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the horizontal pixel offset (nudge) to apply to the sprite's position. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00253">253</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00259">259</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1061,7 +1112,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the vertical pixel offset (nudge) to apply to the sprite's position. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00275">275</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00281">281</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1113,7 +1164,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the size at which the sprite will be rendered. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00297">297</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00303">303</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1139,7 +1190,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the scene layer that this sprite is attached to. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00400">400</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00406">406</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1165,7 +1216,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the scene layer coordinates of the sprite. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00394">394</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00400">400</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1191,7 +1242,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the vertical alignment of the sprite relative to its scene layer coordinates. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00231">231</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00237">237</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1219,7 +1270,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00407">407</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00413">413</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>

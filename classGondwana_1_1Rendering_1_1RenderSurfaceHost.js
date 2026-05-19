@@ -12,5 +12,6 @@ var classGondwana_1_1Rendering_1_1RenderSurfaceHost =
     [ "BindToScene", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#af8bbb7657b2a182575fabb206ea4d974", null ],
     [ "RenderBackbufferBegin", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#adbd585d2a9ebe5f4224fd621ad2c72eb", null ],
     [ "RenderBackbufferEnd", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a67f94f0c04700627f1f85fa5b7927eee", null ],
-    [ "RenderBackbufferNoOp", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#acfa3a199fe952ad768ce944219d40ac2", null ]
+    [ "RenderBackbufferNoOp", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#acfa3a199fe952ad768ce944219d40ac2", null ],
+    [ "RenderBackbufferPostScene", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a151554f182dd08531fd615f01e0e1272", null ]
 ];

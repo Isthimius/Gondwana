@@ -206,6 +206,11 @@ var annotated_dup =
         [ "TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset" ],
         [ "TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset" ]
       ] ],
+      [ "Tests", "namespaceGondwana_1_1Tests.html", [
+        [ "CoreUtilityTests", "classGondwana_1_1Tests_1_1CoreUtilityTests.html", "classGondwana_1_1Tests_1_1CoreUtilityTests" ],
+        [ "TimerTests", "classGondwana_1_1Tests_1_1TimerTests.html", "classGondwana_1_1Tests_1_1TimerTests" ],
+        [ "TypedValueBagTests", "classGondwana_1_1Tests_1_1TypedValueBagTests.html", "classGondwana_1_1Tests_1_1TypedValueBagTests" ]
+      ] ],
       [ "Timers", "namespaceGondwana_1_1Timers.html", [
         [ "Timer", "classGondwana_1_1Timers_1_1Timer.html", "classGondwana_1_1Timers_1_1Timer" ]
       ] ],

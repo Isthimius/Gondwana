@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.5</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -180,6 +180,9 @@ Events</h2></td></tr>
 <tr class="memitem:acfa3a199fe952ad768ce944219d40ac2" id="r_acfa3a199fe952ad768ce944219d40ac2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#acfa3a199fe952ad768ce944219d40ac2">RenderBackbufferNoOp</a></td></tr>
 <tr class="memdesc:acfa3a199fe952ad768ce944219d40ac2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a backbuffer render operation is skipped because the scene is not dirty.  <br /></td></tr>
 <tr class="separator:acfa3a199fe952ad768ce944219d40ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a151554f182dd08531fd615f01e0e1272" id="r_a151554f182dd08531fd615f01e0e1272"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKCanvas</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a151554f182dd08531fd615f01e0e1272">RenderBackbufferPostScene</a></td></tr>
+<tr class="memdesc:a151554f182dd08531fd615f01e0e1272"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs after all scene content (layers, sprites, and direct drawings) has been drawn to the backbuffer canvas for the current frame, but before the frame is finalised and presented to the display adapter.  <br /></td></tr>
+<tr class="separator:a151554f182dd08531fd615f01e0e1272"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -206,7 +209,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 </div>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00021">21</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00022">22</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6df1d4dbd2be4ad06f17518294425948" name="a6df1d4dbd2be4ad06f17518294425948"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6df1d4dbd2be4ad06f17518294425948">&#9670;&#160;</a></span>RenderSurfaceHost()</h2>
@@ -239,7 +242,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00063">63</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00101">101</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -287,7 +290,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Binding a scene unregisters event handlers from the previous scene (if any), registers handlers with the new scene, and triggers a full refresh on the next frame. The BindToScene event fires after the binding operation completes. </p>
 <p>If the specified scene is already bound, this method returns immediately without performing any operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00168">168</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00206">206</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -310,7 +313,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This method releases managed resources including the backbuffer. It does not unregister from the scene; that should be handled by the scene's disposal logic. </p>
 <p>After calling Dispose(), this instance should not be used. Calling Dispose() multiple times is safe and has no additional effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00568">568</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00624">624</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -349,7 +352,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a32a3f463b8575f0e76057f9312c43125">Gondwana.Rendering.RenderSurfaceHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00584">584</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00640">640</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -378,7 +381,7 @@ Additional Inherited Members</h2></td></tr>
 <p>The BackbufferBase instance managing the render target canvas and dirty-rectangle tracking. </p>
 <p>The backbuffer holds the rendered frame content and tracks which regions have changed since the last presentation. All rendering operations are performed on the backbuffer's canvas before being copied to the UI adapter during presentation. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00093">93</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00131">131</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -406,7 +409,7 @@ Additional Inherited Members</h2></td></tr>
 <p><code>true</code> to present only dirty regions (default); <code>false</code> to present the entire backbuffer every frame. </p>
 <p>Enabling dirty-rectangle-only presentation improves performance by reducing the amount of data transferred to the UI adapter. Disable this when troubleshooting rendering issues or when the adapter does not support partial updates. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00146">146</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00184">184</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -434,7 +437,7 @@ Additional Inherited Members</h2></td></tr>
 <p>The RenderSurfaceAdapterBase instance representing the UI control or window where rendered content is displayed. </p>
 <p>The adapter handles platform-specific presentation details and provides size/resize notifications. The backbuffer dimensions are synchronized with the adapter's size. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00118">118</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00156">156</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -462,7 +465,7 @@ Additional Inherited Members</h2></td></tr>
 <p>The Scene instance being rendered, or <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html#a98e66a9feac69e867a1a0b0ba172642f" title="Gets the singleton empty scene instance.">Scene.Empty</a> if no scene is bound. </p>
 <p>The scene contains all layers, sprites, and direct drawings that are rendered each frame. Use Bind to change the active scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00105">105</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00143">143</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -490,7 +493,7 @@ Additional Inherited Members</h2></td></tr>
 <p>The ViewManager instance managing all views associated with this render surface host. </p>
 <p>Use the view manager to create, configure, and remove views. Each view defines a viewport rectangle on the backbuffer, a camera position in the scene, and zoom/parallax settings. Views enable split-screen, picture-in-picture, and minimap rendering. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00131">131</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00169">169</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -510,7 +513,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Occurs when a scene is bound to or unbound from this render surface host. </p>
 <p>This event fires after the scene binding operation completes. Event handlers receive information about the previously bound scene (if any) and the newly bound scene. Use this event to respond to scene changes, such as updating UI elements or resetting state that depends on the active scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00038">38</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00039">39</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -528,7 +531,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Occurs at the beginning of the backbuffer rendering process. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00043">43</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00044">44</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -546,7 +549,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Occurs at the end of the backbuffer rendering process. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00048">48</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00049">49</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -564,7 +567,34 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Occurs when a backbuffer render operation is skipped because the scene is not dirty. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00053">53</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00054">54</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+
+</div>
+</div>
+<a id="a151554f182dd08531fd615f01e0e1272" name="a151554f182dd08531fd615f01e0e1272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a151554f182dd08531fd615f01e0e1272">&#9670;&#160;</a></span>RenderBackbufferPostScene</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt;<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKCanvas</a>&gt;? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Gondwana.Rendering.RenderSurfaceHost</a>&lt; <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">TBackbuffer</a> &gt;.RenderBackbufferPostScene</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs after all scene content (layers, sprites, and direct drawings) has been drawn to the backbuffer canvas for the current frame, but before the frame is finalised and presented to the display adapter. </p>
+<p>Subscribe to this event to draw post-scene overlays or visual effects — such as color-grading filters, vignettes, bloom composites, or debug annotations — directly onto the fully-rendered canvas. The canvas matrix is reset to identity and the clip covers the full surface at the point this event fires. Save and restore canvas state around any operations that modify the matrix or clip region. </p>
+<p><b>This is the per-surface game-instance hook.</b> If you need the same capability from an engine-wide plugin, implement <a class="el" href="interfaceGondwana_1_1Extensibility_1_1IEnginePlugin.html#aa62945de56ac11d167c72f14b35cedbf" title="Called after all scene content for a surface has been drawn to the backbuffer canvas,...">IEnginePlugin.OnPostRenderCanvas</a> instead. </p>
+<p>Threading: </p><ul>
+<li>
+<b>CPU/bitmap surfaces</b> — raised on the engine background thread.  </li>
+<li>
+<b>GPU/GL surfaces</b> — raised on the GL thread from within <code>PaintSurface</code>, while the <code>GRContext</code> is current. Do not marshal GPU canvas operations to a different thread.  </li>
+</ul>
+<p>This event is not raised when a frame is skipped (scene not dirty) or when the surface has no configured views. </p>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00091">91</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>

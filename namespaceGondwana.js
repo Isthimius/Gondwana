@@ -15,6 +15,7 @@ var namespaceGondwana =
     [ "Scenes", "namespaceGondwana_1_1Scenes.html", "namespaceGondwana_1_1Scenes" ],
     [ "SkiaSharp", "namespaceGondwana_1_1SkiaSharp.html", null ],
     [ "StudioAssets", "namespaceGondwana_1_1StudioAssets.html", "namespaceGondwana_1_1StudioAssets" ],
+    [ "Tests", "namespaceGondwana_1_1Tests.html", "namespaceGondwana_1_1Tests" ],
     [ "Timers", "namespaceGondwana_1_1Timers.html", "namespaceGondwana_1_1Timers" ],
     [ "Video", "namespaceGondwana_1_1Video.html", "namespaceGondwana_1_1Video" ],
     [ "WinForms", "namespaceGondwana_1_1WinForms.html", "namespaceGondwana_1_1WinForms" ],

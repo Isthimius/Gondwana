@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.2.5</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -117,6 +117,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a68cbb7534fb9961e9f46560bfaf616cf" id="r_a68cbb7534fb9961e9f46560bfaf616cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollisionMovableEntity.html#a68cbb7534fb9961e9f46560bfaf616cf">TranslateWorldPx</a> (int dx, int dy)</td></tr>
 <tr class="memdesc:a68cbb7534fb9961e9f46560bfaf616cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a translation in world pixel space.  <br /></td></tr>
 <tr class="separator:a68cbb7534fb9961e9f46560bfaf616cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4808e14f7ec41e7de55e26978124678e" id="r_a4808e14f7ec41e7de55e26978124678e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollisionMovableEntity.html#a4808e14f7ec41e7de55e26978124678e">CancelVelocityComponent</a> (bool cancelX, bool cancelY)</td></tr>
+<tr class="memdesc:a4808e14f7ec41e7de55e26978124678e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels velocity along the specified axes after a solid collision push-out. Zeroing only the blocked axis preserves motion along the unblocked axis, enabling wall-sliding and platformer-style collision response.  <br /></td></tr>
+<tr class="separator:a4808e14f7ec41e7de55e26978124678e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -130,6 +133,45 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="ICollisionMovableEntity_8cs_source.html#l00006">6</a> of file <a class="el" href="ICollisionMovableEntity_8cs_source.html">ICollisionMovableEntity.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a4808e14f7ec41e7de55e26978124678e" name="a4808e14f7ec41e7de55e26978124678e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4808e14f7ec41e7de55e26978124678e">&#9670;&#160;</a></span>CancelVelocityComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Collisions.ICollisionMovableEntity.CancelVelocityComponent </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cancelX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cancelY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels velocity along the specified axes after a solid collision push-out. Zeroing only the blocked axis preserves motion along the unblocked axis, enabling wall-sliding and platformer-style collision response. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cancelX</td><td>When <code>true</code>, zeroes the horizontal velocity component.</td></tr>
+    <tr><td class="paramname">cancelY</td><td>When <code>true</code>, zeroes the vertical velocity component.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4e8330739bf50c5672420653fae7802b">Gondwana.Drawing.Sprites.Sprite</a>.</p>
+
+</div>
+</div>
 <a id="a68cbb7534fb9961e9f46560bfaf616cf" name="a68cbb7534fb9961e9f46560bfaf616cf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a68cbb7534fb9961e9f46560bfaf616cf">&#9670;&#160;</a></span>TranslateWorldPx()</h2>
 
