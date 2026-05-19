@@ -230,6 +230,14 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
 
         ProcessHelper.RunLive("winget", ["install", "--id", packageId, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
+
+        // Refresh PATH so the newly installed tool is visible to subsequent checks,
+        // mirroring Setup-Gondwana-Dev.ps1's $env:PATH refresh after winget installs.
+        var machinePath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine) ?? string.Empty;
+        var userPath    = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User)    ?? string.Empty;
+        var refreshedPath = string.Join(";", new[] { machinePath, userPath }
+            .Where(p => !string.IsNullOrEmpty(p)));
+        Environment.SetEnvironmentVariable("PATH", refreshedPath, EnvironmentVariableTarget.Process);
     }
 
     // ─── Individual checks ────────────────────────────────────────────────────
