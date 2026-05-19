@@ -203,6 +203,49 @@ Publishes a Gondwana WASM build to a personal static website — either a local 
 
 ---
 
+### `Generate-Project-Changelogs.ps1`
+
+Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. It is also called automatically by `release.ps1` as part of every release.
+
+**What it does:**
+1. Iterates over the default set of library/tooling projects (all `Gondwana.*` projects and `Tooling/*` projects; Demos and `Gondwana.Tests` are excluded).
+2. Runs `git-cliff --include-path "Project/**/*"` for each project.
+3. Writes the result to `<ProjectFolder>/CHANGELOG.md`, using `--output` for new files and `--prepend` to add a new section to existing ones.
+4. Reports all failures at the end rather than stopping on the first.
+
+> A single commit that touches multiple projects will appear in each matching project changelog — correct behaviour for a monorepo.
+
+**Prerequisites:**
+- [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.
+- A `cliff.toml` config file at the repository root.
+
+**Parameters:**
+
+| Parameter | Description | Default |
+|---|---|---|
+| `-Tag` | Version tag to stamp on unreleased commits (e.g. `v1.2.3`). | — |
+| `-Unreleased` | Pass `--unreleased` to git-cliff; only commits since the last tag are shown. | — |
+| `-PreviewOnly` | Print generated sections to the console without writing any files. | — |
+| `-Projects` | Override the default project list (relative paths from repo root). | All library projects |
+| `-CliffConfigPath` | Path to the `cliff.toml` config. Relative paths are resolved from the repo root. | `cliff.toml` |
+
+**Examples:**
+```powershell
+# Preview unreleased changes for all projects without touching disk
+.\Generate-Project-Changelogs.ps1 -Unreleased -PreviewOnly
+
+# Write changelogs for all projects (unreleased commits)
+.\Generate-Project-Changelogs.ps1 -Unreleased
+
+# Generate changelogs for a specific release tag
+.\Generate-Project-Changelogs.ps1 -Tag v1.2.3 -Unreleased
+
+# Generate changelogs for a subset of projects only
+.\Generate-Project-Changelogs.ps1 -Projects @("Gondwana", "Gondwana.WinForms") -Unreleased
+```
+
+---
+
 ### `release.ps1`
 
 Creates a new versioned release of Gondwana: updates the changelog, commits it, creates a Git tag, and pushes everything to trigger the GitHub Actions release workflow.

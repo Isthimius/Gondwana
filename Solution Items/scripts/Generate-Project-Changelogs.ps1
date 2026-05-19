@@ -107,7 +107,7 @@ foreach ($project in $Projects) {
         continue
     }
 
-    $includePath = "$($project.Replace('\','/'))/**/*"
+    $includePath = "$($project -replace '\\', '/')/**/*"
     $changelogPath = Join-Path $projectFolder "CHANGELOG.md"
 
     Write-Host ""
