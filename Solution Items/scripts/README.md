@@ -221,7 +221,7 @@ Creates a new versioned release of Gondwana: updates the changelog, commits it, 
 - [.NET SDK 8.0+](https://dotnet.microsoft.com/download) on `PATH`.
 - [`git`](https://git-scm.com/) on `PATH`.
 - [`nbgv`](https://github.com/dotnet/Nerdbank.GitVersioning) on `PATH` — install with `dotnet tool install -g nbgv`.
-- [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install git-cliff`.
+- [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.
 - A `cliff.toml` config file at the repository root.
 
 **Parameters:**
