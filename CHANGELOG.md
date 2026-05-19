@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.3.0 - May 19, 2026
+
+
+
+## Added
+- Replace SpotSplashForm with platform-agnostic DirectImage splash
+- Add publish and deploy CLI commands
+- Update setup script to refresh tool/template/workload installs
+- Add --publish-single-file option to gondwana publish (desktop)
+- Create holding sln in gondwana new commands
+- Reuse existing solution when scaffolding new project
+- Add RenderBackbufferPostScene event and OnPostRenderCanvas plugin hook
+
+
+
+## Fixed
+- Add log warnings to SplashScreen.TryCreate for missing/invalid image file
+- Delay Spot startup visuals/music until post-splash and hold Gondwana splash for 3s
+- Make gpu acceleration restart prompt owned by Spot window
+- Cache splash image as SKImage and fix disposing event handler type
+- Decode splash asset once and cache as SKImage
+- Tighten itch deploy validation
+- Support wasm publish output directory in run command
+- Remove redundant git rm --cached in sync-wiki workflow
+- Update stale first-game-in-15-minutes.md links across all templates and Gondwana.Templates README
+- Harden and clarify solution association messages
+- Prefer existing solutions and robustly locate csproj
+- Add explicit ProcessHelper namespace import
+- Standardise color spelling in new XML docs and lifecycle doc
+- Git-cliff PATH not refreshed after winget install; wrong winget ID in release hint
+- Gondwana doctor --fix PATH not refreshed after winget install; wrong winget ID in release.ps1
+
+
+
+## Refactoring
+- Rename holding solution helper to non-Try name
+
+
+
+## Documentation
+- Add optional ps1 setup section to ONBOARDING.md
+- Add InitializeGameContent to ONBOARDING.md lifecycle diagram
+- Update CLI publish and deploy guides
+- Add output-location notes to publish wasm, deploy, and deploy itch sections
+- Replace first-game-in-15-minutes.md with wiki page; add CLI method tutorial
+- Make Method B in first-game guide fully standalone
+
+
+
+## CI
+- Swap Anthropic API for GitHub Copilot CLI in format-pr-title workflow
+
+
+
+## Maintenance
+- Refine workload update messaging in setup script
+
+
+
+## Other Changes
+- Add first-class SVG asset support (`AssetTypes.Svg`) with `SvgResource` and `DirectSvg`
+- Fix SVG bitmap ownership and DirectSvg disposal issues
+- Avoid redundant bitmap copies in DirectSvg
+- Clarify DirectSvg bitmap ownership in dispose path
+- Add engine lifecycle documentation
+- Clarify engine lifecycle document introduction
+- Add TOC to engine-lifecycle.md
+- Add Spot startup splash with fade in/out and init overlay
+- Harden Spot splash startup exception handling
+- Fix Spot splash fade hang in GPU mode
+- Adding gondwana-logo-text
+- Including new image in assets/
+- Add splash post-fade-in callback
+- Refine splash callback docs
+- Clarify splash callback comment
+- Make publish wasm emit AppBundle path and warn when missing
+- Remove duplicate AppBundle path line in publish wasm output
+- Emit AppBundle path before publish guidance output
+- Bump for next version
+- Add recovered wiki pages to .github/wiki with updated links
+- Removing defunct one-time use files
+- Add core Gondwana unit test project and initial coverage suite
+- Refine core test coverage and verify solution tests
+- Add explicit Gondwana namespace import in TypedValueBag tests
+- Fix remaining test-review issues in CoreUtility and Timer tests
+- Ensure post-scene canvas hooks invalidate CPU backbuffers
+- Skip post-scene hooks when no views exist
+- Update CI master and labeler PR workflow behavior
+- Refine CI failure gate condition for unit test step
+- Add git-cliff and butler setup + doctor checks/docs
+- Refactor doctor winget fix logic for git-cliff and butler
+- Fix doctor --fix early return when no issues off Windows
+- Rename doctor always-fix flag for clarity
+- Tighten doctor always-fix predicate per item
+- Updating cliff.toml
+- Fix malformed `format-pr-title` workflow YAML by hardening multiline script blocks
+- Detect Gondwana project references in `gondwana info`
+- Enforce Gondwana.Tests in PR checks and release pre-flight
+- Migrate CoordinateTest demo from BitmapBackbuffer to GPU backbuffer path
+- Add repository ROADMAP.md generated from open issues with grouped, collapsible ticket details
+- Improve `gondwana new` output with explicit project and solution locations
+- Add local `Gondwana.Cli` reinstall script under `Solution Items/scripts`
+- Correct git-cliff winget ID and make butler check-only in setup/doctor flows
+- Collision detection helper
+
+
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.4...v2.3.0
+
+
 # v2.2.4 - May 09, 2026
 
 
