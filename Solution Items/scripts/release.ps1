@@ -379,6 +379,15 @@ function New-GroupedReleaseSection {
         return ""
     }
 
+    # Append the Full Changelog comparison link once at the very bottom.
+    $previousTag = git tag --sort=-version:refname |
+        Where-Object { $_ -ne $TagName } |
+        Select-Object -First 1
+    if ($previousTag) {
+        $lines += ""
+        $lines += "Full Changelog: https://github.com/Isthimius/Gondwana/compare/$previousTag...$TagName"
+    }
+
     return (($lines -join [Environment]::NewLine).Trim() + [Environment]::NewLine + [Environment]::NewLine)
 }
 
