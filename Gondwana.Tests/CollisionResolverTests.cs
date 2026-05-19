@@ -10,6 +10,11 @@ public sealed class CollisionResolverTests
     [InlineData(4, 10, 0f, 0f, 2f, 20f, false)]
     [InlineData(10, 4, 0f, 0f, 2f, 20f, false)]
     [InlineData(10, 4, 0f, 0f, 20f, 2f, true)]
+    // Orthogonal wall-slide: thin X overlap (1px wide, 10px tall) is 10:1 in favor of X.
+    // Center-delta must be >10:1 before it can override — a modest 12:9 ratio must not.
+    [InlineData(1, 10, 0f, 0f, 9f, 12f, true)]
+    // Same wall, mover has slid far: center-delta Y (55) vs X (9) = 6.1:1, still < 10:1 overlap ratio.
+    [InlineData(1, 10, 0f, 50f, 9f, 5f, true)]
     public void ShouldResolveAlongXAxis_UsesCenterDeltasToCorrectAmbiguousProjectionCases(
         int overlapWidth,
         int overlapHeight,

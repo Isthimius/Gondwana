@@ -155,39 +155,64 @@ public sealed partial class MovementController
             return;
 
         var v = _state.Velocity;
+        float speedBefore = v.Length();
 
         if (_mover.PositionSpace != MovementSpace.Grid || _sceneLayer is null)
         {
             _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
-            return;
         }
-
-        var gridPosition = _mover.GetPosition();
-        var originPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X, gridPosition.Y));
-        var stepXPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X + 1f, gridPosition.Y));
-        var stepYPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X, gridPosition.Y + 1f));
-
-        var worldBasisX = new Vector2(stepXPx.X - originPx.X, stepXPx.Y - originPx.Y);
-        var worldBasisY = new Vector2(stepYPx.X - originPx.X, stepYPx.Y - originPx.Y);
-        float determinant = (worldBasisX.X * worldBasisY.Y) - (worldBasisX.Y * worldBasisY.X);
-
-        if (MathF.Abs(determinant) < MinDeterminantThreshold)
+        else
         {
-            _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
-            return;
+            var gridPosition = _mover.GetPosition();
+            var originPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X, gridPosition.Y));
+            var stepXPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X + 1f, gridPosition.Y));
+            var stepYPx = _sceneLayer.GridToWorldPx(new PointF(gridPosition.X, gridPosition.Y + 1f));
+
+            var worldBasisX = new Vector2(stepXPx.X - originPx.X, stepXPx.Y - originPx.Y);
+            var worldBasisY = new Vector2(stepYPx.X - originPx.X, stepYPx.Y - originPx.Y);
+            float determinant = (worldBasisX.X * worldBasisY.Y) - (worldBasisX.Y * worldBasisY.X);
+
+            if (MathF.Abs(determinant) < MinDeterminantThreshold)
+            {
+                _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
+            }
+            else
+            {
+                var worldVelocity = (worldBasisX * v.X) + (worldBasisY * v.Y);
+
+                if (zeroX)
+                    worldVelocity.X = 0f;
+
+                if (zeroY)
+                    worldVelocity.Y = 0f;
+
+                _state.Velocity = new Vector2(
+                    ((worldVelocity.X * worldBasisY.Y) - (worldVelocity.Y * worldBasisY.X)) / determinant,
+                    ((worldVelocity.Y * worldBasisX.X) - (worldVelocity.X * worldBasisX.Y)) / determinant);
+            }
         }
 
-        var worldVelocity = (worldBasisX * v.X) + (worldBasisY * v.Y);
+        // When the blocked-axis velocity was part of the max-speed budget, cancelling it
+        // leaves the tangent velocity below max speed. Re-expand the tangent velocity back
+        // to max speed so that wall-contact does not permanently drain tangent speed.
+        ExpandTangentToMaxSpeedAfterCancellation(speedBefore);
+    }
 
-        if (zeroX)
-            worldVelocity.X = 0f;
+    private void ExpandTangentToMaxSpeedAfterCancellation(float speedBefore)
+    {
+        if (!_state.MaxSpeed.HasValue || _state.MaxSpeed.Value <= 0f)
+            return;
 
-        if (zeroY)
-            worldVelocity.Y = 0f;
+        const float tolerance = 1e-4f;
+        float max = _state.MaxSpeed.Value;
+        float speedAfter = _state.Velocity.Length();
 
-        _state.Velocity = new Vector2(
-            ((worldVelocity.X * worldBasisY.Y) - (worldVelocity.Y * worldBasisY.X)) / determinant,
-            ((worldVelocity.Y * worldBasisX.X) - (worldVelocity.X * worldBasisX.Y)) / determinant);
+        if (speedAfter > 0f &&
+            speedAfter < max - tolerance &&
+            speedBefore >= max - tolerance)
+        {
+            _state.Velocity *= max / speedAfter;
+        }
     }
 
     /// <summary>

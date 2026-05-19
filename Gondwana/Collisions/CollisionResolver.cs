@@ -135,13 +135,26 @@ internal sealed class CollisionResolver
         float centerDeltaY = MathF.Abs(otherCenterY - centerY);
 
         // For skewed projections, AABB overlap size alone can misclassify
-        // floor/ceiling contacts as horizontal. When center separation strongly
-        // indicates the opposite axis, prefer center-delta orientation.
-        if (overlapPrefersX && centerDeltaY > centerDeltaX)
-            return false;
-
-        if (!overlapPrefersX && centerDeltaX > centerDeltaY)
-            return true;
+        // floor/ceiling contacts as horizontal. The center-delta override corrects
+        // this, but must only fire when the center-delta evidence is proportionally
+        // stronger than the overlap evidence. Requiring centerDeltaRatio > overlapRatio
+        // prevents false overrides when the mover has slid far along a tall wall,
+        // which inflates the perpendicular center-delta without changing the actual
+        // contact axis.
+        if (overlapPrefersX)
+        {
+            float overlapRatio = (float)overlap.Height / overlap.Width;
+            float centerDeltaRatio = centerDeltaX > 0 ? centerDeltaY / centerDeltaX : float.MaxValue;
+            if (centerDeltaRatio > overlapRatio)
+                return false;
+        }
+        else
+        {
+            float overlapRatio = (float)overlap.Width / overlap.Height;
+            float centerDeltaRatio = centerDeltaY > 0 ? centerDeltaX / centerDeltaY : float.MaxValue;
+            if (centerDeltaRatio > overlapRatio)
+                return true;
+        }
 
         return overlapPrefersX;
     }

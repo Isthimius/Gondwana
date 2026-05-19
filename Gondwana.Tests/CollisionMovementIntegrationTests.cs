@@ -26,8 +26,13 @@ public sealed class CollisionMovementIntegrationTests
     }
 
     [Fact]
-    public void Resolve_WhenBlockedAxisIsReacceleratedWithMaxSpeed_PreservesTangentVelocityAfterInitialContact()
+    public void Resolve_WhenBlockedAxisIsReacceleratedWithMaxSpeed_PreservesFullTangentVelocityOnFirstContact()
     {
+        // Player is moving along a wall at max speed while pressing into it.
+        // The blocked-axis velocity temporarily builds up each frame before collision
+        // correction. The max-speed clamp steals from the tangent axis to compensate —
+        // this test asserts that tangent speed is fully restored to max speed after
+        // the blocked axis is zeroed, both on first contact and on subsequent frames.
         var simulation = new WallSlideSimulation(
             initialPosition: new Vector2(11f, 0f),
             initialVelocity: new Vector2(0f, 8f),
@@ -36,11 +41,33 @@ public sealed class CollisionMovementIntegrationTests
 
         simulation.Step(0.1f);
         float speedAfterFirstContact = simulation.Mover.Movement.MovementState.Velocity.Y;
-        simulation.Step(0.1f);
-        float speedAfterSecondFrame = simulation.Mover.Movement.MovementState.Velocity.Y;
 
-        Assert.Equal(speedAfterFirstContact, speedAfterSecondFrame, 3);
+        // Tangent speed must be restored to max speed after the first contact cancels the blocked axis.
+        Assert.Equal(8f, speedAfterFirstContact, 3);
         Assert.Equal(0f, simulation.Mover.Movement.MovementState.Velocity.X, 4);
+    }
+
+    [Fact]
+    public void Resolve_WhenBlockedAxisIsReacceleratedWithMaxSpeed_PreservesTangentVelocityOnSubsequentFrames()
+    {
+        var simulation = new WallSlideSimulation(
+            initialPosition: new Vector2(11f, 0f),
+            initialVelocity: new Vector2(0f, 8f),
+            acceleration: new Vector2(40f, 0f),
+            maxSpeed: 8f);
+
+        // Run many frames — tangent speed must not drain toward 0 as it did before the fix.
+        // The old behavior: X acceleration + max-speed clamp stole from Y each frame,
+        // and a flipped axis-selection zeroed Y entirely after ~7 frames.
+        // Post-fix: Y is restored after each contact and stays near max speed.
+        for (int i = 0; i < 20; i++)
+            simulation.Step(0.1f);
+
+        float speedAfter20Frames = simulation.Mover.Movement.MovementState.Velocity.Y;
+
+        Assert.True(speedAfter20Frames > 6f,
+            // 6 = 75 % of max speed 8; the old bug zeroed tangent speed entirely within ~7 frames.
+            $"Expected tangent speed > 6 after 20 frames, got {speedAfter20Frames}");
     }
 
     private sealed class WallSlideSimulation
