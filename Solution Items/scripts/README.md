@@ -205,7 +205,7 @@ Publishes a Gondwana WASM build to a personal static website — either a local 
 
 ### `Generate-Project-Changelogs.ps1`
 
-Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. It is also called automatically by `release.ps1` as part of every release.
+Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. This script is optional/manual and is not part of the default `release.ps1` flow.
 
 **What it does:**
 1. Iterates over the default set of library/tooling projects (all `Gondwana.*` projects and `Tooling/*` projects; Demos and `Gondwana.Tests` are excluded).
@@ -214,6 +214,8 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 4. Reports all failures at the end rather than stopping on the first.
 
 > A single commit that touches multiple projects will appear in each matching project changelog — correct behaviour for a monorepo.
+>
+> The repository's canonical release history remains the root `CHANGELOG.md`, which includes all release changes across projects.
 
 **Prerequisites:**
 - [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.

@@ -201,24 +201,9 @@ if ($LASTEXITCODE -ne 0) {
     throw "git-cliff failed while updating $ChangelogPath."
 }
 
-# Also generate per-project changelogs.
-$generateScript = Join-Path $PSScriptRoot "Generate-Project-Changelogs.ps1"
-if (Test-Path $generateScript) {
-    Write-Host "Generating per-project changelogs..."
-    & $generateScript -Tag $tagName -Unreleased -CliffConfigPath $CliffConfigPath
-    if ($LASTEXITCODE -ne 0) {
-        throw "Generate-Project-Changelogs.ps1 failed while generating per-project changelogs."
-    }
-}
-else {
-    Write-Warning "Generate-Project-Changelogs.ps1 not found at '$generateScript'. Skipping per-project changelogs."
-}
-
-# Stage the root changelog and all per-project changelogs, then commit if anything changed.
-Push-Location $repoRoot
-Invoke-Git @("add", "--", $ChangelogPath, "**/CHANGELOG.md")
-Pop-Location
-git diff --cached --quiet
+# Stage and commit the canonical repository changelog only.
+Invoke-Git @("add", "--", $ChangelogPath)
+git diff --cached --quiet -- $ChangelogPath
 if ($LASTEXITCODE -ne 0) {
     Invoke-Git @("commit", "-m", "docs: update changelog for $tagName")
     Invoke-Git @("push", $Remote, $RequiredBranch)
