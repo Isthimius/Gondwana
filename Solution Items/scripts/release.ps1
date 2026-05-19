@@ -149,6 +149,33 @@ function Invoke-UnitTests {
     }
 }
 
+function Invoke-ProjectChangelogGeneration {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$TagName,
+
+        [Parameter(Mandatory = $true)]
+        [string]$CliffConfigPath
+    )
+
+    $projectChangelogScript = Join-Path $PSScriptRoot "Generate-Project-Changelogs.ps1"
+    if (-not (Test-Path $projectChangelogScript)) {
+        throw "Project changelog script not found at '$projectChangelogScript'."
+    }
+
+    Write-Host ""
+    Write-Host "Updating per-project changelogs..."
+
+    & $projectChangelogScript `
+        -Tag $TagName `
+        -Unreleased `
+        -CliffConfigPath $CliffConfigPath
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Generate-Project-Changelogs.ps1 failed."
+    }
+}
+
 Require-Command git "Install Git for Windows, then reopen your terminal."
 Require-Command dotnet "Install .NET SDK 8.0+, then reopen your terminal."
 Require-Command nbgv "Install with: dotnet tool install -g nbgv"
@@ -488,9 +515,14 @@ Write-GroupedChangelog `
     -ChangelogPath $ChangelogPath `
     -ReleaseSection $releaseSection
 
-# Stage and commit the canonical repository changelog only.
+Invoke-ProjectChangelogGeneration `
+    -TagName $tagName `
+    -CliffConfigPath $CliffConfigPath
+
+# Stage and commit changelog updates.
 Invoke-Git @("add", "--", $ChangelogPath)
-git diff --cached --quiet -- $ChangelogPath
+Invoke-Git @("add", "--", "Gondwana*/CHANGELOG.md", "Tooling/*/CHANGELOG.md")
+git diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
     Invoke-Git @("commit", "-m", "docs: update changelog for $tagName")
     Invoke-Git @("push", $Remote, $RequiredBranch)
