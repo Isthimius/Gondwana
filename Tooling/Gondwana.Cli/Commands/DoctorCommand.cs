@@ -232,11 +232,24 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         ProcessHelper.RunLive("winget", ["install", "--id", packageId, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
 
         // Refresh PATH so the newly installed tool is visible to subsequent checks,
-        // mirroring Setup-Gondwana-Dev.ps1's $env:PATH refresh after winget installs.
+        // mirroring Setup-Gondwana-Dev.ps1's $env:PATH refresh after winget installs,
+        // while preserving any entries that exist only in the current process.
+        var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
         var machinePath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine) ?? string.Empty;
         var userPath    = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User)    ?? string.Empty;
-        var refreshedPath = string.Join(";", new[] { machinePath, userPath }
-            .Where(p => !string.IsNullOrEmpty(p)));
+
+        var mergedPathEntries = new List<string>();
+        var seenPathEntries = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var pathEntry in new[] { processPath, machinePath, userPath }
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .SelectMany(p => p.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)))
+        {
+            if (seenPathEntries.Add(pathEntry))
+                mergedPathEntries.Add(pathEntry);
+        }
+
+        var refreshedPath = string.Join(";", mergedPathEntries);
         Environment.SetEnvironmentVariable("PATH", refreshedPath, EnvironmentVariableTarget.Process);
     }
 
