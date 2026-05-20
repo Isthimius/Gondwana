@@ -16,6 +16,7 @@
         <PackageTags>game-engine gamedev csharp dotnet winforms windows hosting implementation desktop bootstrap lifecycle game-loop initialization engine-host</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
+        <NoWarn>$(NoWarn);NU1701</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

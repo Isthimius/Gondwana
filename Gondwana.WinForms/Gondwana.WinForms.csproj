@@ -20,6 +20,7 @@
         <PackageTags>game-engine gamedev csharp dotnet winforms windows desktop rendering input audio</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
+        <NoWarn>$(NoWarn);NU1701</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
