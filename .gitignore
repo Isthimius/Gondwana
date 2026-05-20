@@ -420,3 +420,4 @@ FodyWeavers.xsd
 /Gondwana/doxygen/docbook
 /Gondwana/doxygen
 /puml
+/package-lock.json
