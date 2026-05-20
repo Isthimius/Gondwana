@@ -1,18 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net8.0-windows</TargetFramework>
-        <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-        <OutputType>WinExe</OutputType>
-        <SccProjectName>SAK</SccProjectName>
-        <SccLocalPath>SAK</SccLocalPath>
-        <SccAuxPath>SAK</SccAuxPath>
-        <SccProvider>SAK</SccProvider>
-        <UseWindowsForms>true</UseWindowsForms>
-        <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-        <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-        <IsPackable>false</IsPackable>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>true</SelfContained>
+		<PublishSingleFile>true</PublishSingleFile>
+
+		<Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+		<OutputType>WinExe</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+		<RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<IsPackable>false</IsPackable>
+		<Nullable>enable</Nullable>
+		<ApplicationIcon>assets\spot_ico.ico</ApplicationIcon>
+	</PropertyGroup>
+	
     <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
