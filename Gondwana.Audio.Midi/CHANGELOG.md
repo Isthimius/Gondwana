@@ -1,0 +1,48 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+
+# v2.3.0 - May 20, 2026
+
+
+
+## Fixed
+- Fix for 2.1.1 patch
+
+
+
+## Other Changes
+- Reorganize README to improve structure
+- Moving project tags explicitly to individual projects
+
+
+
+# v2.1.0 - April 20, 2026
+
+
+
+## Fixed
+- Fix for midi file playback
+
+
+
+## Other Changes
+- Moving midi to seperate assembly
+- GondwanaInitRunner, ILogger, update Gondwana.Audio.Midi, general cleanup
+- Logging, PreInit, PostInit, InitComplete
+- Small bit of cleanup
+- Engine.Pause(), misc cleanup
+- I think midi works now...
+- EngineExtensions
+- A few more Audio / midi tweaks; fix for panning
+- Logging / troubleshooting
+- *** massive CodeMaid cleanup ***
+- New test ParticleEmitters, and adapter xml comments
+- Spot movement; suddenly an Input class appears
+- Copying README; solution org
+- Project settings and files for NuGet publication
+- Per project README files
+
+
+
