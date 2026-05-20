@@ -17,7 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 		CLICHEATSHEET.md = CLICHEATSHEET.md
 		Directory.Build.props = Directory.Build.props
+		engine-lifecycle.md = engine-lifecycle.md
 		gondwana-logo.png = gondwana-logo.png
+		ONBOARDING.md = ONBOARDING.md
+		README.md = README.md
+		ROADMAP.md = ROADMAP.md
 		version.json = version.json
 	EndProjectSection
 EndProject
@@ -112,6 +116,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Input.SDL2", "Gondwana.Input.SDL2\Gondwana.Input.SDL2.csproj", "{46216497-3C9B-48A6-A03F-970B64DFFCCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{AD16FE1C-14B5-4F89-83DD-933D044DC211}"
+	ProjectSection(SolutionItems) = preProject
+		Tooling\README.md = Tooling\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{3752648C-1686-442C-B3CB-D6E2DFD260CA}"
 	ProjectSection(SolutionItems) = preProject
@@ -146,18 +153,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{02EA681E-C7D
 		Solution Items\documentation\old\World-Screen.puml = Solution Items\documentation\old\World-Screen.puml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{54A066E5-41AB-466E-BE27-7B6817B6C1A9}"
-	ProjectSection(SolutionItems) = preProject
-		Solution Items\scripts\Deploy-Gondwana-Itch.ps1 = Solution Items\scripts\Deploy-Gondwana-Itch.ps1
-		Solution Items\scripts\Deploy-Gondwana-Website.ps1 = Solution Items\scripts\Deploy-Gondwana-Website.ps1
-		Solution Items\scripts\Publish-Gondwana-Wasm.ps1 = Solution Items\scripts\Publish-Gondwana-Wasm.ps1
-		Solution Items\scripts\README.md = Solution Items\scripts\README.md
-		Solution Items\scripts\Reinstall-Gondwana-Cli.ps1 = Solution Items\scripts\Reinstall-Gondwana-Cli.ps1
-		Solution Items\scripts\release.ps1 = Solution Items\scripts\release.ps1
-		Solution Items\scripts\Setup-Gondwana-Dev.ps1 = Solution Items\scripts\Setup-Gondwana-Dev.ps1
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tests", "Gondwana.Tests\Gondwana.Tests.csproj", "{2C6214AD-7B53-44E5-AC52-67A5E74A296B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{B3863636-AEE0-487D-91B4-A12328913A48}"
+	ProjectSection(SolutionItems) = preProject
+		Tooling\scripts\Deploy-Gondwana-Itch.ps1 = Tooling\scripts\Deploy-Gondwana-Itch.ps1
+		Tooling\scripts\Deploy-Gondwana-Website.ps1 = Tooling\scripts\Deploy-Gondwana-Website.ps1
+		Tooling\scripts\Generate-Project-Changelogs.ps1 = Tooling\scripts\Generate-Project-Changelogs.ps1
+		Tooling\scripts\Publish-Gondwana-Wasm.ps1 = Tooling\scripts\Publish-Gondwana-Wasm.ps1
+		Tooling\scripts\README.md = Tooling\scripts\README.md
+		Tooling\scripts\Reinstall-Gondwana-Cli.ps1 = Tooling\scripts\Reinstall-Gondwana-Cli.ps1
+		Tooling\scripts\release.ps1 = Tooling\scripts\release.ps1
+		Tooling\scripts\Setup-Gondwana-Dev.ps1 = Tooling\scripts\Setup-Gondwana-Dev.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -503,7 +511,7 @@ Global
 		{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {3752648C-1686-442C-B3CB-D6E2DFD260CA}
-		{54A066E5-41AB-466E-BE27-7B6817B6C1A9} = {FC217C36-1278-4820-86D5-951EFEF6E28D}
+		{B3863636-AEE0-487D-91B4-A12328913A48} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}

@@ -23,8 +23,6 @@ body = """
 {% endfor %}
 
 {% endfor %}
-{% if previous.version %}Full Changelog: https://github.com/Isthimius/Gondwana/compare/{{ previous.version }}...{{ version }}{% endif %}
-
 """
 trim = false
 postprocessors = []
