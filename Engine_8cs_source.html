@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -352,9 +352,9 @@ $(document).ready(function(){initNavTree('Engine_8cs_source.html',''); initResiz
 <div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>        {</div>
 <div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>            <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">cycleTask</a>.ContinueWith(</div>
 <div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">_</a> =&gt; EnginePluginRegistry.InvokeShutdown(<span class="keyword">this</span>),</div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>                System.Threading.CancellationToken.None,</div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously,</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                System.Threading.Tasks.TaskScheduler.Default);</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>                <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">System</a>.Threading.CancellationToken.None,</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">System</a>.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously,</div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">System</a>.Threading.Tasks.TaskScheduler.Default);</div>
 <div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>            <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>        }</div>
 <div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span> </div>
