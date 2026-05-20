@@ -17,7 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 		CLICHEATSHEET.md = CLICHEATSHEET.md
 		Directory.Build.props = Directory.Build.props
+		engine-lifecycle.md = engine-lifecycle.md
 		gondwana-logo.png = gondwana-logo.png
+		ONBOARDING.md = ONBOARDING.md
+		README.md = README.md
+		ROADMAP.md = ROADMAP.md
 		version.json = version.json
 	EndProjectSection
 EndProject
@@ -112,6 +116,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Input.SDL2", "Gondwana.Input.SDL2\Gondwana.Input.SDL2.csproj", "{46216497-3C9B-48A6-A03F-970B64DFFCCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{AD16FE1C-14B5-4F89-83DD-933D044DC211}"
+	ProjectSection(SolutionItems) = preProject
+		Tooling\README.md = Tooling\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{3752648C-1686-442C-B3CB-D6E2DFD260CA}"
 	ProjectSection(SolutionItems) = preProject
