@@ -12,6 +12,7 @@
         <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
+        <NoWarn>$(NoWarn);NU1701</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">

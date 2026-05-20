@@ -9,7 +9,6 @@ using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
-using Microsoft.Extensions.Logging;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Sprites;
 using System.Numerics;

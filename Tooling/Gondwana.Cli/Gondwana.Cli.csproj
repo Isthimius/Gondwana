@@ -45,8 +45,6 @@
         <!-- Default asset-type mapping; shipped alongside the executable -->
         <Content Include="gondwana-asset-types.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Pack>true</Pack>
-            <PackagePath>tools/net8.0/any/</PackagePath>
         </Content>
     </ItemGroup>
 
