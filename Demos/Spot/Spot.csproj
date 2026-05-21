@@ -6,6 +6,8 @@
 		<PublishSingleFile>true</PublishSingleFile>
 
 		<Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+		<PlatformTarget>x64</PlatformTarget>
+		
 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
