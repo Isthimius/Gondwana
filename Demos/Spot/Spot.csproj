@@ -1,10 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<SelfContained>true</SelfContained>
-		<PublishSingleFile>true</PublishSingleFile>
-
 		<Platform Condition=" '$(Platform)' == '' ">x64</Platform>
 		<PlatformTarget>x64</PlatformTarget>
 		
@@ -15,6 +11,12 @@
 		<IsPackable>false</IsPackable>
 		<Nullable>enable</Nullable>
 		<ApplicationIcon>assets\spot_ico.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>true</SelfContained>
+		<PublishSingleFile>true</PublishSingleFile>
 	</PropertyGroup>
 	
     <ItemGroup>
