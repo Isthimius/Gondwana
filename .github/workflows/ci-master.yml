@@ -32,7 +32,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore --nologo /p:EnableWindowsTargeting=true
+        run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
