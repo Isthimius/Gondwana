@@ -253,6 +253,8 @@ gondwana publish --runtime win-x64 --self-contained --publish-single-file
 | `--self-contained` | | `false` | Publish as self-contained. |
 | `--publish-single-file` | | `false` | Publish as a single-file executable. |
 
+Equivalent to `dotnet publish <path> -c <configuration> -f <framework>` with optional `-r <rid>`, `-o <path>`, `--self-contained`, and `/p:PublishSingleFile=true`.
+
 On success, the command prints the publish output directory as a plain line (machine-friendly) when it can be located.
 
 ---

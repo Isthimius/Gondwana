@@ -59,7 +59,7 @@ internal sealed class PublishDesktopCommand : Command<PublishDesktopCommand.Sett
 
         var publishArgs = new List<string>
         {
-            "publish", "--project", csprojPath!,
+            "publish", csprojPath!,
             "-c", settings.Configuration,
             "-f", framework!
         };
