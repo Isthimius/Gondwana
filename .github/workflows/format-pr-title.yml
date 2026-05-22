@@ -39,13 +39,15 @@ jobs:
           # Commit messages on this branch (max 30)
           COMMITS=$(git log "$BASE"...HEAD --oneline | head -30)
 
+          OUTPUT_DELIM=$(uuidgen)
+
           {
-            echo "diff_stat<<EOF"
+            echo "diff_stat<<$OUTPUT_DELIM"
             printf '%s\n' "$DIFF_STAT"
-            echo "EOF"
-            echo "commits<<EOF"
+            echo "$OUTPUT_DELIM"
+            echo "commits<<$OUTPUT_DELIM"
             printf '%s\n' "$COMMITS"
-            echo "EOF"
+            echo "$OUTPUT_DELIM"
           } >> "$GITHUB_OUTPUT"
 
       - name: Install GitHub Copilot CLI
