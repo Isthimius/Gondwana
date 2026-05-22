@@ -32,6 +32,9 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
+        # /p:Configuration=Release is required so NuGet resolves RID-specific assets
+        # (e.g. Spot win-x64 runtime assets) that are only available in the Release
+        # configuration, preventing NETSDK1047 errors in the subsequent --no-restore build.
         run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
       - name: Build
