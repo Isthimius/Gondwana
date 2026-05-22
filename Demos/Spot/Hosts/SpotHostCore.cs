@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
-using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;

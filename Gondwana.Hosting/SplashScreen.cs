@@ -27,6 +27,11 @@ namespace Gondwana.Hosting;
 /// </remarks>
 public sealed class SplashScreen : IDisposable
 {
+    /// <summary>
+    /// The nickname used for the DirectImage overlay that displays the splash.
+    /// </summary>
+    public static readonly string SplashImageNickname = "__gondwana_splash__";
+
     /// <summary>Gets or sets the duration of the fade-in animation in seconds.</summary>
     public float FadeInSec { get; set; } = 0.45f;
 
@@ -96,7 +101,7 @@ public sealed class SplashScreen : IDisposable
         var vp = view.Viewport.TargetRectPx;
         var screenBounds = new Rectangle(0, 0, vp.Width, vp.Height);
 
-        var image = new DirectImage(sourceImage, host, view, screenBounds, "__gondwana_splash__")
+        var image = new DirectImage(sourceImage, host, view, screenBounds, SplashImageNickname)
             .SetScaleMode(DirectImage.ScaleMode.Fit);
 
         image.ZOrder = int.MaxValue;

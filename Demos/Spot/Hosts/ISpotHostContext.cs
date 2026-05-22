@@ -6,7 +6,7 @@ namespace Gondwana.Demos.Spot;
 /// <summary>
 /// Provides the rendering-backend-specific context that <see cref="SpotHostCore"/> needs
 /// to remain independent of the concrete <c>WinFormsGameHost</c> / <c>WinFormsGpuGameHost</c>
-/// base classes.
+/// base classes. This is only needed to allow for both Bitmap and GPU rendering from the same project.
 /// </summary>
 internal interface ISpotHostContext
 {
