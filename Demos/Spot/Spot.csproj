@@ -1,24 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-		<PlatformTarget>x64</PlatformTarget>
-		
-		<OutputType>WinExe</OutputType>
-		<UseWindowsForms>true</UseWindowsForms>
-		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-		<RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<IsPackable>false</IsPackable>
-		<Nullable>enable</Nullable>
-		<ApplicationIcon>assets\spot_ico.ico</ApplicationIcon>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+        <PlatformTarget>x64</PlatformTarget>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<SelfContained>true</SelfContained>
-		<PublishSingleFile>true</PublishSingleFile>
-	</PropertyGroup>
-	
+        <OutputType>WinExe</OutputType>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+        <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+        <ApplicationIcon>assets\spot_ico.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <SelfContained>true</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
+    </PropertyGroup>
+
     <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
