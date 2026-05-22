@@ -157,10 +157,11 @@ jobs:
           # Basic sanity check: must match conventional commit pattern
           if echo "$TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
             echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+            SUMMARY_DELIM="SUMMARY_$(uuidgen)"
             {
-              echo "summary<<EOF"
+              echo "summary<<$SUMMARY_DELIM"
               printf '%s\n' "$SUMMARY"
-              echo "EOF"
+              echo "$SUMMARY_DELIM"
             } >> "$GITHUB_OUTPUT"
             echo "Generated title: $TITLE"
           else
