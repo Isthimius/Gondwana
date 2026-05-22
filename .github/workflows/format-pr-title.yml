@@ -205,16 +205,19 @@ jobs:
           NEW_TITLE: ${{ steps.generate.outputs.title }}
           PR_SUMMARY: ${{ steps.generate.outputs.summary }}
         run: |
+          BOT_MARKER="<!-- gondwana-pr-title-summary -->"
           ENTRY=$(printf '%s\n\n`%s`\n\n%s\n%s\n\n%s\n' \
-            "🤖 **PR title updated for squash merge:**" \
+            "🤖 **PR title suggestion for squash merge:**" \
             "$NEW_TITLE" \
             "**Overall PR summary so far:**" \
             "$PR_SUMMARY" \
             "This summary covers all commits currently in the PR. Edit the title if it doesn't look right before merging.")
+          ENTRY=$(printf '%s\n\n%s\n' "$ENTRY" "$BOT_MARKER")
 
-          EXISTING_JSON=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate --jq \
-            '[.[] | select(.user.login == "github-actions[bot]" and (.body | contains("🤖 **PR title updated for squash merge:**")))] | last' \
-            2>/dev/null || echo "null")
+          EXISTING_JSON=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate 2>/dev/null \
+            | jq -sc --arg marker "$BOT_MARKER" \
+                '[.[] | .[] | select(.user.login == "github-actions[bot]" and (.body | contains($marker)))] | last // null' \
+            || echo "null")
 
           if [ "$EXISTING_JSON" = "null" ] || [ -z "$EXISTING_JSON" ]; then
             gh pr comment "$PR_NUMBER" --body "$ENTRY"
