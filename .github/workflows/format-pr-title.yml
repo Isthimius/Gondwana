@@ -179,6 +179,12 @@ jobs:
         run: |
           CURRENT_TITLE="${{ github.event.pull_request.title }}"
 
+          # Lock title once it is in conventional commit format.
+          if echo "$CURRENT_TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
+            echo "PR title is already conventional. Skipping update."
+            exit 0
+          fi
+
           if [ "$CURRENT_TITLE" = "$NEW_TITLE" ]; then
             echo "PR title is already correct. No update needed."
             exit 0
@@ -190,21 +196,38 @@ jobs:
 
           gh pr edit "$PR_NUMBER" --title "$NEW_TITLE"
 
-      - name: Post summary comment
+      - name: Append summary comment
         if: steps.generate.outputs.title != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           NEW_TITLE: ${{ steps.generate.outputs.title }}
           PR_SUMMARY: ${{ steps.generate.outputs.summary }}
         run: |
-          BODY=$(printf '%s\n\n`%s`\n\n%s\n%s\n\n%s\n' \
+          ENTRY=$(printf '%s\n\n`%s`\n\n%s\n%s\n\n%s\n' \
             "🤖 **PR title updated for squash merge:**" \
             "$NEW_TITLE" \
             "**Overall PR summary so far:**" \
             "$PR_SUMMARY" \
             "This summary covers all commits currently in the PR. Edit the title if it doesn't look right before merging.")
 
-          gh pr comment "$PR_NUMBER" --body "$BODY" \
-            --edit-last 2>/dev/null \
-            || gh pr comment "$PR_NUMBER" --body "$BODY"
+          EXISTING_JSON=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate --jq \
+            '[.[] | select(.user.login == "github-actions[bot]" and (.body | contains("🤖 **PR title updated for squash merge:**")))] | last' \
+            2>/dev/null || echo "null")
+
+          if [ "$EXISTING_JSON" = "null" ] || [ -z "$EXISTING_JSON" ]; then
+            gh pr comment "$PR_NUMBER" --body "$ENTRY"
+            exit 0
+          fi
+
+          COMMENT_ID=$(printf '%s' "$EXISTING_JSON" | jq -r '.id // empty')
+          EXISTING_BODY=$(printf '%s' "$EXISTING_JSON" | jq -r '.body // empty')
+
+          if [ -z "$COMMENT_ID" ]; then
+            gh pr comment "$PR_NUMBER" --body "$ENTRY"
+            exit 0
+          fi
+
+          UPDATED_BODY=$(printf '%s\n\n---\n\n%s\n' "$EXISTING_BODY" "$ENTRY")
+          gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -f body="$UPDATED_BODY"
