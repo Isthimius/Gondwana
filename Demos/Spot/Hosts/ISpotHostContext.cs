@@ -10,7 +10,7 @@ namespace Gondwana.Demos.Spot;
 /// </summary>
 internal interface ISpotHostContext
 {
-    Engine Engine { get; }
+    Gondwana.Engine Engine { get; }
     Scene Scene { get; }
     RenderSurfaceHostBase SurfaceHost { get; }
     int SurfaceWidth { get; }
