@@ -195,7 +195,17 @@ jobs:
           NEW_TITLE: ${{ steps.generate.outputs.title }}
           PR_SUMMARY: ${{ steps.generate.outputs.summary }}
         run: |
-          BODY="🤖 **PR title updated for squash merge:**\n\n\`$NEW_TITLE\`\n\n**Overall PR summary so far:**\n$PR_SUMMARY\n\nThis summary covers all commits currently in the PR. Edit the title if it doesn't look right before merging."
+          BODY=$(cat <<EOF
+          🤖 **PR title updated for squash merge:**
+
+          \`$NEW_TITLE\`
+
+          **Overall PR summary so far:**
+          $PR_SUMMARY
+
+          This summary covers all commits currently in the PR. Edit the title if it doesn't look right before merging.
+          EOF
+          )
 
           gh pr comment "$PR_NUMBER" --body "$BODY" \
             --edit-last 2>/dev/null \
