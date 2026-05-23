@@ -39,20 +39,21 @@ jobs:
           # Commit messages on this branch (max 30)
           COMMITS=$(git log "$BASE"...HEAD --oneline | head -30)
 
-          # Escape for JSON: replace newlines with \n, escape quotes
-          escape_json() {
-            printf '%s' "$1" \
-              | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()))" \
-              | sed 's/^"//;s/"$//'
-          }
+          OUTPUT_DELIM=$(uuidgen)
 
-          echo "diff_stat=$(escape_json "$DIFF_STAT")" >> "$GITHUB_OUTPUT"
-          echo "commits=$(escape_json "$COMMITS")"     >> "$GITHUB_OUTPUT"
+          {
+            echo "diff_stat<<$OUTPUT_DELIM"
+            printf '%s\n' "$DIFF_STAT"
+            echo "$OUTPUT_DELIM"
+            echo "commits<<$OUTPUT_DELIM"
+            printf '%s\n' "$COMMITS"
+            echo "$OUTPUT_DELIM"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Install GitHub Copilot CLI
         run: gh extension install github/gh-copilot 2>/dev/null || gh extension upgrade gh-copilot 2>/dev/null || true
 
-      - name: Generate conventional commit title via GitHub Copilot
+      - name: Generate PR title and summary via GitHub Copilot
         id: generate
         env:
           GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
@@ -63,15 +64,23 @@ jobs:
           PROMPT=$(cat <<EOF
           You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
 
-          Generate a single conventional commit message suitable as a GitHub PR squash-merge title.
+          Review the full set of changes currently in this pull request and generate:
+          1. A single conventional commit message suitable as the GitHub PR squash-merge title.
+          2. A concise summary of the overall PR changes so far.
 
           Rules:
-          - Format: type(scope): short description
+          - The title must follow: type(scope): short description
           - Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert
           - Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, midi, sdl2, core
-          - Description: imperative mood, lowercase, no period, max 60 chars
+          - Title description: imperative mood, lowercase, no period, max 60 chars
           - Breaking change: append ! after scope, e.g. feat(rendering)!
-          - Return ONLY the commit message string. No explanation, no markdown, no quotes.
+          - The summary must cover the whole PR, not just the latest commit
+          - The summary must be 2-4 markdown bullet points
+          - Return ONLY this format:
+            TITLE: <commit message>
+            SUMMARY:
+            - <bullet 1>
+            - <bullet 2>
 
           Commits on this branch:
           $COMMITS
@@ -89,31 +98,76 @@ jobs:
             exit 0
           fi
 
-          TITLE=$(printf '%s' "$RAW" | python3 -c "$(cat <<'PY'
-          import sys, re
+          PARSED=$(printf '%s' "$RAW" | python3 -c "$(cat <<'PY'
+          import sys, re, json
           text = sys.stdin.read().strip()
-          # Try to extract message from: git commit -m 'msg' or git commit -m "msg"
-          m = re.search(r'git commit -m ["\'](.*?)["\']', text, re.DOTALL)
+          title = ''
+          summary_lines = []
+
+          m = re.search(r'TITLE:\s*(.+)', text)
           if m:
-              print(m.group(1).strip().splitlines()[0].strip())
-              sys.exit()
-          # Fallback: look for a line that already looks like a conventional commit
-          for line in text.splitlines():
-              line = line.strip().strip('"').strip("'")
-              if re.match(r'^[a-z]+(\([a-z0-9._-]+\))?!?: .', line):
-                  print(line)
-                  sys.exit()
-          print('')
+              title = m.group(1).strip().strip('"').strip("'")
+
+          summary_match = re.search(r'SUMMARY:\s*(.*)', text, re.DOTALL)
+          if summary_match:
+              for line in summary_match.group(1).splitlines():
+                  cleaned = line.strip()
+                  if cleaned.startswith(('- ', '* ')):
+                      summary_lines.append('- ' + cleaned[2:].strip())
+
+          if not title:
+              m = re.search(r'git commit -m ["\'](.*?)["\']', text, re.DOTALL)
+              if m:
+                  title = m.group(1).strip().splitlines()[0].strip()
+
+          if not title:
+              for line in text.splitlines():
+                  line = line.strip().strip('"').strip("'")
+                  if re.match(r'^[a-z]+(\([a-z0-9._-]+\))?!?: .', line):
+                      title = line
+                      break
+
+          print(json.dumps({"title": title, "summary": "\n".join(summary_lines)}))
+          PY
+          )" 2>/dev/null || echo '{}')
+
+          TITLE=$(printf '%s' "$PARSED" | python3 -c 'import sys, json; print(json.load(sys.stdin).get("title", ""))' 2>/dev/null || echo "")
+          SUMMARY=$(printf '%s' "$PARSED" | python3 -c 'import sys, json; print(json.load(sys.stdin).get("summary", ""))' 2>/dev/null || echo "")
+
+          if [ -z "$SUMMARY" ]; then
+            SUMMARY=$(printf '%s\n' "$COMMITS" | python3 -c "$(cat <<'PY'
+          import sys
+          bullets = []
+          for line in sys.stdin:
+              line = line.strip()
+              if not line:
+                  continue
+              parts = line.split(' ', 1)
+              if len(parts) == 2:
+                  bullets.append(f"- {parts[1].strip()}")
+              else:
+                  bullets.append(f"- {line}")
+              if len(bullets) == 4:
+                  break
+          print("\n".join(bullets))
           PY
           )" 2>/dev/null || echo "")
+          fi
 
           # Basic sanity check: must match conventional commit pattern
           if echo "$TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
             echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+            SUMMARY_DELIM="SUMMARY_$(uuidgen)"
+            {
+              echo "summary<<$SUMMARY_DELIM"
+              printf '%s\n' "$SUMMARY"
+              echo "$SUMMARY_DELIM"
+            } >> "$GITHUB_OUTPUT"
             echo "Generated title: $TITLE"
           else
             echo "::warning::Generated title did not pass validation: '$TITLE'. Skipping update."
             echo "title=" >> "$GITHUB_OUTPUT"
+            echo "summary=" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Update PR title
@@ -124,6 +178,12 @@ jobs:
           NEW_TITLE: ${{ steps.generate.outputs.title }}
         run: |
           CURRENT_TITLE="${{ github.event.pull_request.title }}"
+
+          # Lock title once it is in conventional commit format.
+          if echo "$CURRENT_TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
+            echo "PR title is already conventional. Skipping update."
+            exit 0
+          fi
 
           if [ "$CURRENT_TITLE" = "$NEW_TITLE" ]; then
             echo "PR title is already correct. No update needed."
@@ -136,13 +196,41 @@ jobs:
 
           gh pr edit "$PR_NUMBER" --title "$NEW_TITLE"
 
-      - name: Post summary comment
+      - name: Append summary comment
         if: steps.generate.outputs.title != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           NEW_TITLE: ${{ steps.generate.outputs.title }}
+          PR_SUMMARY: ${{ steps.generate.outputs.summary }}
         run: |
-          gh pr comment "$PR_NUMBER" --body "🤖 **PR title updated for squash merge:**\n\n\`$NEW_TITLE\`\n\nThis title will become the commit message on master and the changelog entry. Edit it if it doesn't look right before merging." \
-            --edit-last 2>/dev/null \
-            || gh pr comment "$PR_NUMBER" --body "🤖 **PR title updated for squash merge:**\n\n\`$NEW_TITLE\`\n\nThis title will become the commit message on master and the changelog entry. Edit it if it doesn't look right before merging."
+          BOT_MARKER="<!-- gondwana-pr-title-summary -->"
+          ENTRY=$(printf '%s\n\n`%s`\n\n%s\n%s\n\n%s\n' \
+            "🤖 **PR title suggestion for squash merge:**" \
+            "$NEW_TITLE" \
+            "**Overall PR summary so far:**" \
+            "$PR_SUMMARY" \
+            "This summary covers all commits currently in the PR. Edit the title if it doesn't look right before merging.")
+          ENTRY=$(printf '%s\n\n%s\n' "$ENTRY" "$BOT_MARKER")
+
+          EXISTING_JSON=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate 2>/dev/null \
+            | jq -sc --arg marker "$BOT_MARKER" \
+                '[.[] | .[] | select(.user.login == "github-actions[bot]" and (.body | contains($marker)))] | last // null' \
+            || echo "null")
+
+          if [ "$EXISTING_JSON" = "null" ] || [ -z "$EXISTING_JSON" ]; then
+            gh pr comment "$PR_NUMBER" --body "$ENTRY"
+            exit 0
+          fi
+
+          COMMENT_ID=$(printf '%s' "$EXISTING_JSON" | jq -r '.id // empty')
+          EXISTING_BODY=$(printf '%s' "$EXISTING_JSON" | jq -r '.body // empty')
+
+          if [ -z "$COMMENT_ID" ]; then
+            gh pr comment "$PR_NUMBER" --body "$ENTRY"
+            exit 0
+          fi
+
+          UPDATED_BODY=$(printf '%s\n\n---\n\n%s\n' "$EXISTING_BODY" "$ENTRY")
+          gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -f body="$UPDATED_BODY"

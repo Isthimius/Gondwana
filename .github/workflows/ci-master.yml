@@ -32,13 +32,16 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
+        # /p:Configuration=Release is required so NuGet resolves RID-specific assets
+        # (e.g. Spot win-x64 runtime assets) that are only available in the Release
+        # configuration, preventing NETSDK1047 errors in the subsequent --no-restore build.
         run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
 
       - name: Gondwana.Tests unit tests
-        run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Gondwana.Tests/Gondwana.Tests.csproj
+        run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
 
       - name: Pack (validation only)
         run: dotnet pack --configuration Release --no-build --nologo /p:EnableWindowsTargeting=true
