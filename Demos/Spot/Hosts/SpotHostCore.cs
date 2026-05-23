@@ -19,6 +19,7 @@ using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.Demos.Spot.Game;
+using Gondwana.Rendering;
 
 namespace Gondwana.Demos.Spot;
 
@@ -26,6 +27,7 @@ namespace Gondwana.Demos.Spot;
 /// Contains all Spot game host behavior, independent of the rendering backend.
 /// Both <see cref="SpotGameHost"/> (bitmap) and <see cref="SpotGpuGameHost"/> (GPU)
 /// delegate to an instance of this class and expose themselves as <see cref="ISpotHostContext"/>.
+/// This is only needed to allow for both Bitmap and GPU rendering from the same project.
 /// </summary>
 internal sealed class SpotHostCore
 {
@@ -33,7 +35,7 @@ internal sealed class SpotHostCore
 
     private Engine Engine => _ctx.Engine;
     private Scene Scene => _ctx.Scene;
-    private Gondwana.Rendering.RenderSurfaceHostBase SurfaceHost => _ctx.SurfaceHost;
+    private RenderSurfaceHostBase SurfaceHost => _ctx.SurfaceHost;
     private int SurfaceWidth => _ctx.SurfaceWidth;
     private int SurfaceHeight => _ctx.SurfaceHeight;
 
@@ -152,19 +154,19 @@ internal sealed class SpotHostCore
 
         // selected sprites
         _blueSpotHappy = new Tilesheet("blueSpotHappy", "assets\\bubble-blue-happy.png");
-        _blueSpotHappy.TileSize = new Size(1024, 1024);
+        _blueSpotHappy.TileSize = new Size(64, 64);
 
         _greenSpotHappy = new Tilesheet("greenSpotHappy", "assets\\bubble-green-happy.png");
-        _greenSpotHappy.TileSize = new Size(1024, 1024);
+        _greenSpotHappy.TileSize = new Size(64, 64);
 
         _pinkSpotHappy = new Tilesheet("pinkSpotHappy", "assets\\bubble-pink-happy.png");
-        _pinkSpotHappy.TileSize = new Size(1024, 1024);
+        _pinkSpotHappy.TileSize = new Size(64, 64);
 
         _redSpotHappy = new Tilesheet("redSpotHappy", "assets\\bubble-red-happy.png");
-        _redSpotHappy.TileSize = new Size(1024, 1024);
+        _redSpotHappy.TileSize = new Size(64, 64);
 
         _yellowSpotHappy = new Tilesheet("yellowSpotHappy", "assets\\bubble-yellow-happy.png");
-        _yellowSpotHappy.TileSize = new Size(1024, 1024);
+        _yellowSpotHappy.TileSize = new Size(64, 64);
 
         _clouds = new Tilesheet("clouds", "assets\\clouds.png");
     }
