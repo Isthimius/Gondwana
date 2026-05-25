@@ -261,13 +261,15 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
             using var http = new HttpClient();
             http.Timeout = TimeSpan.FromMinutes(5);
-            using var response = http.Send(
-                new HttpRequestMessage(HttpMethod.Get, url),
-                HttpCompletionOption.ResponseHeadersRead);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            using var response = http.SendAsync(
+                request,
+                HttpCompletionOption.ResponseHeadersRead,
+                System.Threading.CancellationToken.None).GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
-            using var responseStream = response.Content.ReadAsStream();
+            using var responseStream = response.Content.ReadAsStreamAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult();
             using (var fs = new FileStream(zipPath, FileMode.Create, FileAccess.Write))
-                responseStream.CopyTo(fs);
+                responseStream.CopyToAsync(fs, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
 
             ZipFile.ExtractToDirectory(zipPath, installDir, overwriteFiles: true);
 
