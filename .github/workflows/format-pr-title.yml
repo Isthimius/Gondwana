@@ -50,10 +50,7 @@ jobs:
             echo "$OUTPUT_DELIM"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Install GitHub Copilot CLI
-        run: gh extension install github/gh-copilot 2>/dev/null || gh extension upgrade gh-copilot 2>/dev/null || true
-
-      - name: Generate PR title and summary via GitHub Copilot
+      - name: Generate PR title and summary via GitHub Models
         id: generate
         env:
           GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
@@ -90,10 +87,27 @@ jobs:
           EOF
           )
 
-          RAW=$(printf '%s' "$PROMPT" | gh copilot suggest -t git -p 2>/dev/null || echo "")
+          REQUEST_BODY=$(python3 -c "
+          import sys, json
+          prompt = sys.stdin.read()
+          print(json.dumps({
+            'model': 'gpt-4o-mini',
+            'messages': [{'role': 'user', 'content': prompt}],
+            'max_tokens': 500,
+            'temperature': 0.3
+          }))
+          " <<< "$PROMPT")
+
+          RAW=$(curl -sf -X POST \
+            "https://models.inference.ai.azure.com/chat/completions" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$REQUEST_BODY" \
+          | python3 -c 'import sys, json; d=json.load(sys.stdin); print(d["choices"][0]["message"]["content"])' \
+          2>/dev/null || echo "")
 
           if [ -z "$RAW" ]; then
-            echo "::warning::GitHub Copilot CLI call failed. Skipping PR title update."
+            echo "::warning::GitHub Models API call failed. Skipping PR title update."
             echo "title=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
