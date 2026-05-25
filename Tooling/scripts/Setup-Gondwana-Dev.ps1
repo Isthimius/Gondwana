@@ -22,7 +22,10 @@
       10. Checks for LibVLC native binaries required by Gondwana.Video;
           installs VLC (which includes LibVLC) via winget if missing (Windows only).
       11. Ensures git-cliff is installed; updates via winget when available (Windows).
-      12. Checks whether butler (itch.io) is installed and prints manual install guidance if missing.
+      12. Installs butler (itch.io) by downloading the latest binary from the broth CDN
+          (https://itch.io/docs/butler/installing.html) and extracting it to
+          %LOCALAPPDATA%\itch\butler (Windows) or ~/.itch/butler (Linux/macOS). Prints a
+          reminder to add the directory to PATH and run 'butler login'.
       13. Runs 'gondwana doctor' to confirm the final environment state.
 
     Steps 8–12 are skipped when -SkipOptional is supplied.
@@ -322,8 +325,54 @@ if ($SkipOptional) {
         $butlerVersion = Get-CommandVersionLine -Command 'butler'
         OK ("butler ready{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
     } else {
-        WARN "butler not found on PATH."
-        INFO "Install butler from https://itch.io/docs/butler/"
+        # Determine the broth CDN platform slug and executable name.
+        $isMacOSPlatform = if (Get-Variable -Name 'IsMacOS' -ErrorAction SilentlyContinue) { $IsMacOS } else { $false }
+
+        $butlerPlatform = if ($isWindowsOS) { 'windows-amd64' }
+                          elseif ($isMacOSPlatform) { 'darwin-amd64' }
+                          else { 'linux-amd64' }
+
+        $butlerExeName = if ($isWindowsOS) { 'butler.exe' } else { 'butler' }
+
+        $butlerInstallDir = if ($isWindowsOS) {
+            Join-Path (Join-Path $env:LOCALAPPDATA 'itch') 'butler'
+        } else {
+            Join-Path (Join-Path $HOME '.itch') 'butler'
+        }
+
+        $butlerUrl = "https://broth.itch.ovh/butler/$butlerPlatform/LATEST/archive/default"
+        $butlerZip = Join-Path ([System.IO.Path]::GetTempPath()) 'butler-install.zip'
+
+        INFO "butler not found — downloading from $butlerUrl ..."
+        try {
+            if (-not (Test-Path $butlerInstallDir)) {
+                [System.IO.Directory]::CreateDirectory($butlerInstallDir) | Out-Null
+            }
+
+            Invoke-WebRequest -Uri $butlerUrl -OutFile $butlerZip -UseBasicParsing
+
+            Expand-Archive -Path $butlerZip -DestinationPath $butlerInstallDir -Force
+
+            # Set executable bit on non-Windows platforms.
+            if (-not $isWindowsOS) {
+                & chmod +x (Join-Path $butlerInstallDir $butlerExeName)
+            }
+
+            # Add to PATH for the current session so gondwana doctor can find it.
+            if ($env:PATH -notlike "*$butlerInstallDir*") {
+                $env:PATH = "$env:PATH$([System.IO.Path]::PathSeparator)$butlerInstallDir"
+            }
+
+            $butlerVersion = Get-CommandVersionLine -Command 'butler'
+            OK ("butler installed to $butlerInstallDir{0}" -f $(if ($butlerVersion) { ": $butlerVersion" } else { "." }))
+            WARN "Add '$butlerInstallDir' to your PATH to use butler in future terminal sessions."
+            INFO "Run 'butler login' to authenticate with itch.io."
+        } catch {
+            WARN "Failed to download/install butler: $_"
+            INFO "Install butler manually from https://itch.io/docs/butler/installing.html"
+        } finally {
+            if (Test-Path $butlerZip) { Remove-Item $butlerZip -Force -ErrorAction SilentlyContinue }
+        }
     }
 }
 
