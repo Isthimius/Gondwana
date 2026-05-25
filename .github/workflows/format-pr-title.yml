@@ -98,13 +98,23 @@ jobs:
           }))
           " <<< "$PROMPT")
 
-          RAW=$(curl -sf -X POST \
+          API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "https://models.inference.ai.azure.com/chat/completions" \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "$REQUEST_BODY" \
-          | python3 -c 'import sys, json; d=json.load(sys.stdin); print(d["choices"][0]["message"]["content"])' \
-          2>/dev/null || echo "")
+            -d "$REQUEST_BODY" 2>/dev/null || echo "")
+
+          HTTP_STATUS=$(printf '%s' "$API_RESPONSE" | tail -1)
+          RESPONSE_BODY=$(printf '%s' "$API_RESPONSE" | head -n -1)
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::warning::GitHub Models API returned HTTP $HTTP_STATUS. Skipping PR title update."
+            RAW=""
+          else
+            RAW=$(printf '%s' "$RESPONSE_BODY" \
+              | python3 -c 'import sys, json; d=json.load(sys.stdin); print(d.get("choices", [{}])[0].get("message", {}).get("content", ""))' \
+              2>/dev/null || echo "")
+          fi
 
           if [ -z "$RAW" ]; then
             echo "::warning::GitHub Models API call failed. Skipping PR title update."
