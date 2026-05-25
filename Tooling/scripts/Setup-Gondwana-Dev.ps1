@@ -199,9 +199,30 @@ if ($SkipBuild) {
 
 Step '6/13  Gondwana CLI (Gondwana.Cli)'
 if (Test-GlobalTool 'gondwana.cli') {
-    Invoke-Cmd dotnet @('tool', 'update', '--global', 'Gondwana.Cli')
-    $cliLine = (dotnet tool list -g 2>&1) | Where-Object { $_ -match 'gondwana\.cli' } | Select-Object -First 1
-    OK "Installed and updated to latest available: $($cliLine.Trim())"
+    $updateOutput = & dotnet tool update --global Gondwana.Cli 2>&1
+    $updateExitCode = $LASTEXITCODE
+
+    if ($updateExitCode -eq 0) {
+        $cliLine = (dotnet tool list -g 2>&1) | Where-Object { $_ -match 'gondwana\.cli' } | Select-Object -First 1
+        OK "Installed and updated to latest available: $($cliLine.Trim())"
+    } else {
+        $isRequestedVersionLower = @($updateOutput | Where-Object {
+            $_ -and $_.ToString() -match 'requested version .* lower than existing version'
+        }).Count -gt 0
+
+        if ($isRequestedVersionLower) {
+            INFO 'Configured source offers an older Gondwana.Cli version than the one already installed; keeping current version.'
+            $cliLine = (dotnet tool list -g 2>&1) | Where-Object { $_ -match 'gondwana\.cli' } | Select-Object -First 1
+            if ($cliLine) {
+                OK "Current global version retained: $($cliLine.Trim())"
+            } else {
+                OK 'Current global version retained.'
+            }
+        } else {
+            $updateOutputText = ($updateOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+            throw "'dotnet tool update --global Gondwana.Cli' exited with code $updateExitCode.`n$updateOutputText"
+        }
+    }
 } else {
     Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli')
     OK 'Gondwana.Cli installed.'
