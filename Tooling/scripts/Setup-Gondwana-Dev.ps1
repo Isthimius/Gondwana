@@ -180,7 +180,8 @@ try {
 # ─── Step 4: NuGet restore ────────────────────────────────────────────────────
 
 Step '4/13  NuGet restore'
-Invoke-Cmd dotnet @('restore', $solutionFile, '--nologo', '--force', '--no-cache', '/p:EnableWindowsTargeting=true')
+Invoke-Cmd dotnet @('restore', $solutionFile, '--nologo', '--force', '--no-cache',
+                    '/p:Configuration=Release', '/p:EnableWindowsTargeting=true')
 OK 'NuGet packages restored with dependency reevaluation.'
 
 # ─── Step 5: Build ────────────────────────────────────────────────────────────
