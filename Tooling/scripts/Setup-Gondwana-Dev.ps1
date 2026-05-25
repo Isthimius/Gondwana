@@ -386,7 +386,7 @@ if ($SkipOptional) {
                     break
                 } catch {
                     $lastDownloadError = $_
-                    WARN "Download failed from $butlerUrl: $($_.Exception.Message)"
+                    WARN "Download failed from ${butlerUrl}: $($_.Exception.Message)"
                 }
             }
 
