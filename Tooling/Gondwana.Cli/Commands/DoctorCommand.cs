@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -28,7 +29,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             ("Gondwana Templates", CheckGondwanaTemplates, FixGondwanaTemplates),
             ("wasm-tools",         CheckWasmTools,         FixWasmTools),
             ("git-cliff",          CheckGitCliff,          FixGitCliff),
-            ("butler",             CheckButler,            null),
+            ("butler",             CheckButler,            FixButler),
             ("SkiaSharp",          CheckSkiaSharp,         null),
             ("SDL2",               CheckSdl2,              null),
             ("LibVLC",             CheckLibVlc,            null),
@@ -205,6 +206,134 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             versionArgs: "--version");
     }
 
+    private static void FixButler()
+    {
+        // Determine the broth CDN platform slug and executable name.
+        var architecture = RuntimeInformation.ProcessArchitecture switch
+        {
+            Architecture.X64 => "amd64",
+            Architecture.Arm64 => "arm64",
+            _ => throw new PlatformNotSupportedException(
+                $"Unsupported CPU architecture for butler installation: {RuntimeInformation.ProcessArchitecture}.")
+        };
+
+        string platform;
+        string exe;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            platform = $"windows-{architecture}";
+            exe = "butler.exe";
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            platform = $"darwin-{architecture}";
+            exe = "butler";
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            platform = $"linux-{architecture}";
+            exe = "butler";
+        }
+        else
+        {
+            throw new PlatformNotSupportedException(
+                $"Unsupported operating system for butler installation: {RuntimeInformation.OSDescription} ({RuntimeInformation.ProcessArchitecture}).");
+        }
+
+        // Install to a user-local directory so no elevated permissions are needed.
+        var installDir = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "itch", "butler")
+            : Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ".itch", "butler");
+
+        var url     = $"https://broth.itch.ovh/butler/{platform}/LATEST/archive/default";
+        var zipPath = Path.Combine(Path.GetTempPath(), $"butler-install-{Guid.NewGuid():N}.zip");
+
+        AnsiConsole.MarkupLine($"[dim]Downloading butler from {Markup.Escape(url)}...[/]");
+
+        try
+        {
+            Directory.CreateDirectory(installDir);
+
+            using var http = new HttpClient();
+            http.Timeout = TimeSpan.FromMinutes(5);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            using var response = http.SendAsync(
+                request,
+                HttpCompletionOption.ResponseHeadersRead,
+                System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+            response.EnsureSuccessStatusCode();
+            using var responseStream = response.Content.ReadAsStreamAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+            using (var fs = new FileStream(zipPath, FileMode.Create, FileAccess.Write))
+                responseStream.CopyToAsync(fs, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+
+            ZipFile.ExtractToDirectory(zipPath, installDir, overwriteFiles: true);
+
+            var butlerExe = Path.Combine(installDir, exe);
+
+            // Set executable bit on non-Windows platforms.
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                File.SetUnixFileMode(butlerExe,
+                    UnixFileMode.UserRead    | UnixFileMode.UserWrite  | UnixFileMode.UserExecute |
+                    UnixFileMode.GroupRead   | UnixFileMode.GroupExecute |
+                    UnixFileMode.OtherRead   | UnixFileMode.OtherExecute);
+            }
+
+            // Add the install directory to the current process PATH so the re-check finds butler.
+            var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
+            static string NormalizePathEntry(string path)
+            {
+                var trimmed = path.Trim().Trim('"');
+                if (trimmed.Length == 0)
+                    return string.Empty;
+                try
+                {
+                    return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
+                }
+                catch
+                {
+                    return Path.TrimEndingDirectorySeparator(trimmed);
+                }
+            }
+
+            var normalizedInstallDir = NormalizePathEntry(installDir);
+            var pathComparison = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+            bool alreadyInPath = processPath
+                .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
+                .Select(NormalizePathEntry)
+                .Any(p => p.Equals(normalizedInstallDir, pathComparison));
+            if (!alreadyInPath)
+            {
+                Environment.SetEnvironmentVariable(
+                    "PATH",
+                    string.IsNullOrWhiteSpace(processPath)
+                        ? installDir
+                        : processPath + Path.PathSeparator + installDir,
+                    EnvironmentVariableTarget.Process);
+            }
+
+            AnsiConsole.MarkupLine($"[green]butler installed to {Markup.Escape(installDir)}.[/]");
+            AnsiConsole.MarkupLine($"[yellow]Add '{Markup.Escape(installDir)}' to your PATH to use butler in future terminal sessions.[/]");
+            AnsiConsole.MarkupLine("[dim]Run 'butler login' to authenticate with itch.io.[/]");
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.MarkupLine($"[red]Failed to install butler: {Markup.Escape(ex.Message)}[/]");
+            AnsiConsole.MarkupLine("[dim]Install manually from https://itch.io/docs/butler/installing.html[/]");
+        }
+        finally
+        {
+            try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { /* ignore cleanup errors */ }
+        }
+    }
+
     private static void FixViaWinget(string toolName, string packageId, string installUrl, string versionArgs)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -364,7 +493,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     {
         var output = ProcessHelper.Run("butler", "--version", out int exitCode);
         if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("butler not found on PATH. Install from https://itch.io/docs/butler/.");
+            return CheckResult.Fail("butler not found on PATH. Run: gondwana doctor --fix");
 
         var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
         return CheckResult.Ok(versionLine ?? "found");
