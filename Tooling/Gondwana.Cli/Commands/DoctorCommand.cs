@@ -209,23 +209,36 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static void FixButler()
     {
         // Determine the broth CDN platform slug and executable name.
+        var architecture = RuntimeInformation.ProcessArchitecture switch
+        {
+            Architecture.X64 => "amd64",
+            Architecture.Arm64 => "arm64",
+            _ => throw new PlatformNotSupportedException(
+                $"Unsupported CPU architecture for butler installation: {RuntimeInformation.ProcessArchitecture}.")
+        };
+
         string platform;
         string exe;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            platform = "windows-amd64";
+            platform = $"windows-{architecture}";
             exe = "butler.exe";
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            platform = "darwin-amd64";
+            platform = $"darwin-{architecture}";
+            exe = "butler";
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            platform = $"linux-{architecture}";
             exe = "butler";
         }
         else
         {
-            platform = "linux-amd64";
-            exe = "butler";
+            throw new PlatformNotSupportedException(
+                $"Unsupported operating system for butler installation: {RuntimeInformation.OSDescription} ({RuntimeInformation.ProcessArchitecture}).");
         }
 
         // Install to a user-local directory so no elevated permissions are needed.
