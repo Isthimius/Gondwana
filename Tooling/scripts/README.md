@@ -19,10 +19,10 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 6. Installs/updates the `Gondwana.Cli` global tool (`gondwana`).
 7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) and applies template updates when already installed.
 8. Installs the `dotnet wasm-tools` workload for WebAssembly support and updates installed workloads when it is already present.
-9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance if missing.
+9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance (including the official SDL releases page) if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
 11. Ensures `git-cliff` is installed; updates it via `winget` when available on Windows.
-12. Installs `butler` (itch.io) by downloading the latest binary from the [broth CDN](https://itch.io/docs/butler/installing.html) and extracting it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Adds the directory to the current session PATH and prints a reminder to add it permanently. Prints `butler login` instructions after install.
+12. Installs `butler` (itch.io) by downloading the latest binary from the [broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, and extracting it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Adds the directory to the current session PATH and prints a reminder to add it permanently. Prints `butler login` instructions after install.
 13. Runs `gondwana doctor` to confirm the final environment state.
 
 **Prerequisites:**

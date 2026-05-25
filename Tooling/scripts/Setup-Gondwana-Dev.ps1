@@ -23,7 +23,8 @@
           installs VLC (which includes LibVLC) via winget if missing (Windows only).
       11. Ensures git-cliff is installed; updates via winget when available (Windows).
       12. Installs butler (itch.io) by downloading the latest binary from the broth CDN
-          (https://itch.io/docs/butler/installing.html) and extracting it to
+          (with fallback endpoints documented at https://itch.io/docs/butler/installing.html)
+          and extracting it to
           %LOCALAPPDATA%\itch\butler (Windows) or ~/.itch/butler (Linux/macOS). Prints a
           reminder to add the directory to PATH and run 'butler login'.
       13. Runs 'gondwana doctor' to confirm the final environment state.
@@ -363,16 +364,35 @@ if ($SkipOptional) {
             Join-Path (Join-Path $HOME '.itch') 'butler'
         }
 
-        $butlerUrl = "https://broth.itch.ovh/butler/$butlerPlatform/LATEST/archive/default"
+        $butlerUrls = @(
+            "https://broth.itch.ovh/butler/$butlerPlatform/LATEST/archive/default",
+            "https://broth.itch.zone/butler/$butlerPlatform/LATEST/archive/default"
+        )
         $butlerZip = Join-Path ([System.IO.Path]::GetTempPath()) ("butler-install-{0}.zip" -f ([System.Guid]::NewGuid().ToString('N')))
 
-        INFO "butler not found — downloading from $butlerUrl ..."
         try {
             if (-not (Test-Path $butlerInstallDir)) {
                 [System.IO.Directory]::CreateDirectory($butlerInstallDir) | Out-Null
             }
 
-            Invoke-WebRequest -Uri $butlerUrl -OutFile $butlerZip -UseBasicParsing
+            $downloadSucceeded = $false
+            $lastDownloadError = $null
+            foreach ($butlerUrl in $butlerUrls) {
+                INFO "butler not found — downloading from $butlerUrl ..."
+                try {
+                    if (Test-Path $butlerZip) { Remove-Item $butlerZip -Force -ErrorAction SilentlyContinue }
+                    Invoke-WebRequest -Uri $butlerUrl -OutFile $butlerZip -UseBasicParsing
+                    $downloadSucceeded = $true
+                    break
+                } catch {
+                    $lastDownloadError = $_
+                    WARN "Download failed from $butlerUrl: $($_.Exception.Message)"
+                }
+            }
+
+            if (-not $downloadSucceeded) {
+                throw "Could not download butler from any known source. Last error: $($lastDownloadError.Exception.Message)"
+            }
 
             Expand-Archive -Path $butlerZip -DestinationPath $butlerInstallDir -Force
 
