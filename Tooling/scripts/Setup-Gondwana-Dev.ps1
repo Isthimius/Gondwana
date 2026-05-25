@@ -327,10 +327,33 @@ if ($SkipOptional) {
     } else {
         # Determine the broth CDN platform slug and executable name.
         $isMacOSPlatform = if (Get-Variable -Name 'IsMacOS' -ErrorAction SilentlyContinue) { $IsMacOS } else { $false }
+        $butlerArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
 
-        $butlerPlatform = if ($isWindowsOS) { 'windows-amd64' }
-                          elseif ($isMacOSPlatform) { 'darwin-amd64' }
-                          else { 'linux-amd64' }
+        $butlerPlatform = if ($isWindowsOS) {
+            if ($butlerArchitecture -ne 'x64') {
+                WARN "No native butler package mapping is defined for Windows '$butlerArchitecture'; falling back to windows-amd64."
+            }
+
+            'windows-amd64'
+        } elseif ($isMacOSPlatform) {
+            switch ($butlerArchitecture) {
+                'arm64' { 'darwin-arm64' }
+                'x64'   { 'darwin-amd64' }
+                default {
+                    WARN "No native butler package mapping is defined for macOS '$butlerArchitecture'; falling back to darwin-amd64."
+                    'darwin-amd64'
+                }
+            }
+        } else {
+            switch ($butlerArchitecture) {
+                'arm64' { 'linux-arm64' }
+                'x64'   { 'linux-amd64' }
+                default {
+                    WARN "No native butler package mapping is defined for Linux '$butlerArchitecture'; falling back to linux-amd64."
+                    'linux-amd64'
+                }
+            }
+        }
 
         $butlerExeName = if ($isWindowsOS) { 'butler.exe' } else { 'butler' }
 
