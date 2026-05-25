@@ -250,26 +250,49 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 ".itch", "butler");
 
-        var url     = $"https://broth.itch.ovh/butler/{platform}/LATEST/archive/default";
+        var urls = new[]
+        {
+            $"https://broth.itch.ovh/butler/{platform}/LATEST/archive/default",
+            $"https://broth.itch.zone/butler/{platform}/LATEST/archive/default",
+        };
         var zipPath = Path.Combine(Path.GetTempPath(), $"butler-install-{Guid.NewGuid():N}.zip");
-
-        AnsiConsole.MarkupLine($"[dim]Downloading butler from {Markup.Escape(url)}...[/]");
 
         try
         {
             Directory.CreateDirectory(installDir);
 
-            using var http = new HttpClient();
-            http.Timeout = TimeSpan.FromMinutes(5);
-            using var request = new HttpRequestMessage(HttpMethod.Get, url);
-            using var response = http.SendAsync(
-                request,
-                HttpCompletionOption.ResponseHeadersRead,
-                System.Threading.CancellationToken.None).GetAwaiter().GetResult();
-            response.EnsureSuccessStatusCode();
-            using var responseStream = response.Content.ReadAsStreamAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult();
-            using (var fs = new FileStream(zipPath, FileMode.Create, FileAccess.Write))
-                responseStream.CopyToAsync(fs, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+            using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
+
+            Exception? lastDownloadError = null;
+            foreach (var url in urls)
+            {
+                AnsiConsole.MarkupLine($"[dim]Downloading butler from {Markup.Escape(url)}...[/]");
+                try
+                {
+                    try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { /* ignore cleanup errors */ }
+
+                    using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                    using var response = http.SendAsync(
+                        request,
+                        HttpCompletionOption.ResponseHeadersRead,
+                        System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+                    response.EnsureSuccessStatusCode();
+                    using var responseStream = response.Content.ReadAsStreamAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+                    using (var fs = new FileStream(zipPath, FileMode.Create, FileAccess.Write))
+                        responseStream.CopyToAsync(fs, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+
+                    lastDownloadError = null;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    lastDownloadError = ex;
+                    AnsiConsole.MarkupLine($"[yellow]Download failed from {Markup.Escape(url)}: {Markup.Escape(ex.Message)}[/]");
+                }
+            }
+
+            if (lastDownloadError is not null)
+                throw new InvalidOperationException($"Could not download butler from any known source. Last error: {lastDownloadError.Message}", lastDownloadError);
 
             ZipFile.ExtractToDirectory(zipPath, installDir, overwriteFiles: true);
 
@@ -565,7 +588,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 return CheckResult.Ok(candidate);
         }
 
-        return CheckResult.Fail("SDL2 native library not found. Required by Gondwana.Input.SDL2.");
+        return CheckResult.Fail("SDL2 native library not found. Required by Gondwana.Input.SDL2. Install from https://github.com/libsdl-org/SDL/releases if you need a system-wide runtime.");
     }
 
     private static CheckResult CheckLibVlc()
