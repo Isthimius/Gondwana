@@ -1,7 +1,7 @@
 name: Format PR Title
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize]
 
 jobs:
@@ -12,6 +12,7 @@ jobs:
     # one is ever opened (the release script commits directly, but just in case).
     if: |
       github.event.pull_request.base.ref == 'master' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
       !startsWith(github.event.pull_request.title, 'docs: update changelog')
 
     permissions:
