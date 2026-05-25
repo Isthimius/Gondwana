@@ -238,7 +238,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 ".itch", "butler");
 
         var url     = $"https://broth.itch.ovh/butler/{platform}/LATEST/archive/default";
-        var zipPath = Path.Combine(Path.GetTempPath(), "butler-install.zip");
+        var zipPath = Path.Combine(Path.GetTempPath(), $"butler-install-{Guid.NewGuid():N}.zip");
 
         AnsiConsole.MarkupLine($"[dim]Downloading butler from {Markup.Escape(url)}...[/]");
 
@@ -248,10 +248,13 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
             using var http = new HttpClient();
             http.Timeout = TimeSpan.FromMinutes(5);
-            using var response = http.Send(new HttpRequestMessage(HttpMethod.Get, url));
+            using var response = http.Send(
+                new HttpRequestMessage(HttpMethod.Get, url),
+                HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
+            using var responseStream = response.Content.ReadAsStream();
             using (var fs = new FileStream(zipPath, FileMode.Create, FileAccess.Write))
-                response.Content.ReadAsStream().CopyTo(fs);
+                responseStream.CopyTo(fs);
 
             ZipFile.ExtractToDirectory(zipPath, installDir, overwriteFiles: true);
 
@@ -268,12 +271,36 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
             // Add the install directory to the current process PATH so the re-check finds butler.
             var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
-            if (!processPath.Split(Path.PathSeparator)
-                            .Any(p => p.Equals(installDir, StringComparison.OrdinalIgnoreCase)))
+            static string NormalizePathEntry(string path)
+            {
+                var trimmed = path.Trim().Trim('"');
+                if (trimmed.Length == 0)
+                    return string.Empty;
+                try
+                {
+                    return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
+                }
+                catch
+                {
+                    return Path.TrimEndingDirectorySeparator(trimmed);
+                }
+            }
+
+            var normalizedInstallDir = NormalizePathEntry(installDir);
+            var pathComparison = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+            bool alreadyInPath = processPath
+                .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
+                .Select(NormalizePathEntry)
+                .Any(p => p.Equals(normalizedInstallDir, pathComparison));
+            if (!alreadyInPath)
             {
                 Environment.SetEnvironmentVariable(
                     "PATH",
-                    processPath + Path.PathSeparator + installDir,
+                    string.IsNullOrWhiteSpace(processPath)
+                        ? installDir
+                        : processPath + Path.PathSeparator + installDir,
                     EnvironmentVariableTarget.Process);
             }
 

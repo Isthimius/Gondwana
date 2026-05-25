@@ -359,8 +359,27 @@ if ($SkipOptional) {
             }
 
             # Add to PATH for the current session so gondwana doctor can find it.
-            if ($env:PATH -notlike "*$butlerInstallDir*") {
-                $env:PATH = "$env:PATH$([System.IO.Path]::PathSeparator)$butlerInstallDir"
+            $normalizedButlerInstallDir = [System.IO.Path]::TrimEndingDirectorySeparator($butlerInstallDir).Trim().Trim('"')
+            $pathEntries = @()
+            if (-not [string]::IsNullOrWhiteSpace($env:PATH)) {
+                $pathEntries = $env:PATH.Split([System.IO.Path]::PathSeparator, [System.StringSplitOptions]::RemoveEmptyEntries)
+            }
+
+            $hasButlerInstallDir = $false
+            foreach ($entry in $pathEntries) {
+                $normalizedEntry = [System.IO.Path]::TrimEndingDirectorySeparator($entry).Trim().Trim('"')
+                if ($normalizedEntry -ieq $normalizedButlerInstallDir) {
+                    $hasButlerInstallDir = $true
+                    break
+                }
+            }
+
+            if (-not $hasButlerInstallDir) {
+                if ([string]::IsNullOrWhiteSpace($env:PATH)) {
+                    $env:PATH = $butlerInstallDir
+                } else {
+                    $env:PATH = "$env:PATH$([System.IO.Path]::PathSeparator)$butlerInstallDir"
+                }
             }
 
             $butlerVersion = Get-CommandVersionLine -Command 'butler'
