@@ -364,7 +364,7 @@ if ($SkipOptional) {
         }
 
         $butlerUrl = "https://broth.itch.ovh/butler/$butlerPlatform/LATEST/archive/default"
-        $butlerZip = Join-Path ([System.IO.Path]::GetTempPath()) 'butler-install.zip'
+        $butlerZip = Join-Path ([System.IO.Path]::GetTempPath()) ("butler-install-{0}.zip" -f ([System.Guid]::NewGuid().ToString('N')))
 
         INFO "butler not found — downloading from $butlerUrl ..."
         try {
