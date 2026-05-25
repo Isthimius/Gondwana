@@ -42,7 +42,7 @@ Checks performed:
 - `git-cliff` installed
 - `butler` installed
 - SkiaSharp native binaries
-- SDL2 native binaries (for `Gondwana.Input.SDL2`)
+- SDL2 native binaries (for `Gondwana.Input.SDL2`; system-wide runtime available from [libsdl-org/SDL releases](https://github.com/libsdl-org/SDL/releases))
 - LibVLC (for `Gondwana.Video`)
 
 Pass `--fix` to automatically resolve issues that have a known fix:
@@ -56,7 +56,7 @@ Currently auto-fixable:
 - **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
 - **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
 - **git-cliff** on Windows → runs `winget install/upgrade --id orhun.git-cliff`
-- **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html) and installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Run `butler login` after installation to authenticate with itch.io.
+- **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, then installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Run `butler login` after installation to authenticate with itch.io.
 
 After applying fixes, the checks are re-run and the updated results are displayed.
 
