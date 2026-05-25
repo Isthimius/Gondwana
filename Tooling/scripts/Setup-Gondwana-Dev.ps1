@@ -382,7 +382,7 @@ if ($SkipOptional) {
             }
 
             # Add to PATH for the current session so gondwana doctor can find it.
-            $normalizedButlerInstallDir = [System.IO.Path]::TrimEndingDirectorySeparator($butlerInstallDir).Trim().Trim('"')
+            $normalizedButlerInstallDir = $butlerInstallDir.Trim().Trim('"').TrimEnd('\', '/')
             $pathEntries = @()
             if (-not [string]::IsNullOrWhiteSpace($env:PATH)) {
                 $pathEntries = $env:PATH.Split([System.IO.Path]::PathSeparator, [System.StringSplitOptions]::RemoveEmptyEntries)
@@ -390,7 +390,7 @@ if ($SkipOptional) {
 
             $hasButlerInstallDir = $false
             foreach ($entry in $pathEntries) {
-                $normalizedEntry = [System.IO.Path]::TrimEndingDirectorySeparator($entry).Trim().Trim('"')
+                $normalizedEntry = $entry.Trim().Trim('"').TrimEnd('\', '/')
                 if (($isWindowsOS -and $normalizedEntry -ieq $normalizedButlerInstallDir) -or
                     (-not $isWindowsOS -and $normalizedEntry -ceq $normalizedButlerInstallDir)) {
                     $hasButlerInstallDir = $true
