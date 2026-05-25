@@ -391,7 +391,8 @@ if ($SkipOptional) {
             $hasButlerInstallDir = $false
             foreach ($entry in $pathEntries) {
                 $normalizedEntry = [System.IO.Path]::TrimEndingDirectorySeparator($entry).Trim().Trim('"')
-                if ($normalizedEntry -ieq $normalizedButlerInstallDir) {
+                if (($isWindowsOS -and $normalizedEntry -ieq $normalizedButlerInstallDir) -or
+                    (-not $isWindowsOS -and $normalizedEntry -ceq $normalizedButlerInstallDir)) {
                     $hasButlerInstallDir = $true
                     break
                 }
