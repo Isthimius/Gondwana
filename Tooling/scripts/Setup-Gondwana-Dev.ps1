@@ -199,8 +199,15 @@ if ($SkipBuild) {
 
 Step '6/13  Gondwana CLI (Gondwana.Cli)'
 if (Test-GlobalTool 'gondwana.cli') {
-    $updateOutput = & dotnet tool update --global Gondwana.Cli 2>&1
-    $updateExitCode = $LASTEXITCODE
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        # dotnet may print handled downgrade messages to stderr; keep processing based on exit code/text.
+        $ErrorActionPreference = 'Continue'
+        $updateOutput = & dotnet tool update --global Gondwana.Cli 2>&1
+        $updateExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
     $updateOutputText = ($updateOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
 
     if ($updateExitCode -eq 0) {
