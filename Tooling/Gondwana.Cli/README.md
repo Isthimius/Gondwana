@@ -21,12 +21,12 @@ Git                  OK  git version 2.47.0.windows.2
 .NET SDK             OK  10.0.201
 nbgv                 OK  3.9.50
 Gondwana CLI         OK  1.2.0
-Gondwana Templates   OK  gondwana-winforms, gondwana-avalonia, gondwana-wasm found
-wasm-tools           OK  wasm-tools installed
+Gondwana Templates   OK  1.2.0
+wasm-tools           OK  10.0.300
 git-cliff            OK  git-cliff 2.10.0
 butler               OK  v17.0.0, built on ...
-SkiaSharp            OK  found in NuGet global cache
-SDL2                 Missing native library
+SkiaSharp            OK  3.119.2 (NuGet cache)
+SDL2                 OK  1.0.82 (SDL2.dll)
 LibVLC               Not checked
 
 1 issue found.

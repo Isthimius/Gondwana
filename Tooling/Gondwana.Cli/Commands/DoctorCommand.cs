@@ -510,7 +510,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (!output.Contains("wasm-tools", StringComparison.OrdinalIgnoreCase))
             return CheckResult.Fail("wasm-tools workload not installed. Run: dotnet workload install wasm-tools");
 
-        return CheckResult.Ok("wasm-tools installed");
+        var version = GetWorkloadManifestVersion(output, "wasm-tools");
+        return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
+            ? "wasm-tools installed"
+            : version);
     }
 
     private static CheckResult CheckGitCliff()
@@ -548,40 +551,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         foreach (var candidate in candidates)
         {
             if (NativeLibraryProbe.CanLoad(candidate))
-                return CheckResult.Ok(candidate);
+            {
+                var version = GetLatestNuGetPackageVersion("skiasharp");
+                return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
+                    ? candidate
+                    : $"{version} ({candidate})");
+            }
         }
 
         // SkiaSharp is typically installed via NuGet and bundled into the project output
         // at build time — its native DLL is never placed on the system PATH.
         // Check the NuGet global packages cache so that a NuGet install is recognised.
-        if (IsNuGetPackageCached("skiasharp"))
-            return CheckResult.Ok("found in NuGet global cache");
+        var cachedVersion = GetLatestNuGetPackageVersion("skiasharp");
+        if (!string.IsNullOrWhiteSpace(cachedVersion))
+            return CheckResult.Ok($"{cachedVersion} (NuGet cache)");
 
         return CheckResult.Fail("SkiaSharp not found. Restore a project that references SkiaSharp, or run: dotnet add package SkiaSharp");
-    }
-
-    /// <summary>
-    /// Returns true if at least one version of the given NuGet package exists in the
-    /// global packages cache. <paramref name="packageId"/> must be lowercase — NuGet
-    /// normalises package IDs to lowercase when writing to the cache on all platforms.
-    /// </summary>
-    private static bool IsNuGetPackageCached(string packageId)
-    {
-        try
-        {
-            // NUGET_PACKAGES env var overrides the default cache location.
-            var nugetHome = Environment.GetEnvironmentVariable("NUGET_PACKAGES")
-                ?? Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    ".nuget", "packages");
-
-            var packageDir = Path.Combine(nugetHome, packageId);
-            return Directory.Exists(packageDir) && Directory.EnumerateDirectories(packageDir).Any();
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            return false;
-        }
     }
 
     private static CheckResult CheckSdl2()
@@ -596,7 +581,13 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         foreach (var candidate in candidates)
         {
             if (NativeLibraryProbe.CanLoad(candidate))
-                return CheckResult.Ok(candidate);
+            {
+                // Gondwana.Input.SDL2 references the ppy.SDL2-CS package.
+                var version = GetLatestNuGetPackageVersion("ppy.sdl2-cs");
+                return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
+                    ? candidate
+                    : $"{version} ({candidate})");
+            }
         }
 
         return CheckResult.Fail("SDL2 native library not found. Required by Gondwana.Input.SDL2. Install from https://github.com/libsdl-org/SDL/releases if you need a system-wide runtime.");
@@ -651,6 +642,72 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         // LibVLC is optional; only needed if Gondwana.Video is used.
         return CheckResult.Skip();
     }
+
+    private static string? GetWorkloadManifestVersion(string workloadListOutput, string workloadId)
+    {
+        foreach (var rawLine in workloadListOutput.Replace("\r", string.Empty).Split('\n'))
+        {
+            var line = rawLine.Trim();
+            if (line.Length == 0)
+                continue;
+
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2)
+                continue;
+
+            if (!string.Equals(parts[0], workloadId, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            return parts[1];
+        }
+
+        return null;
+    }
+
+    private static string? GetLatestNuGetPackageVersion(string packageId)
+    {
+        try
+        {
+            var packageDir = Path.Combine(GetNuGetPackagesPath(), packageId);
+            if (!Directory.Exists(packageDir))
+                return null;
+
+            string? latestRawVersion = null;
+            Version? latestParsedVersion = null;
+
+            foreach (var directory in Directory.EnumerateDirectories(packageDir))
+            {
+                var rawVersion = Path.GetFileName(directory);
+                if (string.IsNullOrWhiteSpace(rawVersion))
+                    continue;
+
+                var normalizedVersion = rawVersion.Split('-', 2)[0];
+                if (!Version.TryParse(normalizedVersion, out var parsedVersion))
+                {
+                    latestRawVersion ??= rawVersion;
+                    continue;
+                }
+
+                if (latestParsedVersion is null || parsedVersion > latestParsedVersion)
+                {
+                    latestParsedVersion = parsedVersion;
+                    latestRawVersion = rawVersion;
+                }
+            }
+
+            return latestRawVersion;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    private static string GetNuGetPackagesPath() =>
+        Environment.GetEnvironmentVariable("NUGET_PACKAGES")
+        ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".nuget", "packages");
 }
 
 internal enum CheckStatus { Ok, Warning, Fail, Skip }
