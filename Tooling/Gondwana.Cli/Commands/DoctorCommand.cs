@@ -472,7 +472,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (hasWinForms && hasAvalonia && hasWasm)
             return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
                 ? $"{templateNames} found"
-                : $"{installedVersion} ({templateNames})");
+                : $"Gondwana.Templates {installedVersion} ({templateNames})");
 
         var found = new List<string>();
         if (hasWinForms) found.Add("gondwana-winforms");
@@ -482,7 +482,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (found.Count > 0)
             return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
                 ? string.Join(", ", found) + " found"
-                : $"{installedVersion} ({string.Join(", ", found)})");
+                : $"Gondwana.Templates {installedVersion} ({string.Join(", ", found)})");
 
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
     }
@@ -622,7 +622,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 if (NativeLibraryProbe.CanLoad(candidate))
                 {
                     var location = TryResolveNativeLibraryPath(candidate);
-                    var version = TryGetNativeLibraryVersion(location);
+                    var version = TryGetNativeLibraryVersion(location)
+                        ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
                     return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
                 }
             }
@@ -638,7 +639,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 if (NativeLibraryProbe.CanLoad(candidate))
                 {
                     var location = TryResolveNativeLibraryPath(candidate);
-                    var version = TryGetNativeLibraryVersion(location);
+                    var version = TryGetNativeLibraryVersion(location)
+                        ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
                     return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
                 }
             }
@@ -816,6 +818,39 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
 
         return null;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate IntPtr LibVlcGetVersionDelegate();
+
+    private static string? TryGetLibVlcRuntimeVersion(string libraryPathOrName)
+    {
+        if (string.IsNullOrWhiteSpace(libraryPathOrName))
+            return null;
+
+        IntPtr handle = IntPtr.Zero;
+        try
+        {
+            if (!NativeLibrary.TryLoad(libraryPathOrName, out handle) || handle == IntPtr.Zero)
+                return null;
+
+            if (!NativeLibrary.TryGetExport(handle, "libvlc_get_version", out var export) || export == IntPtr.Zero)
+                return null;
+
+            var getVersion = Marshal.GetDelegateForFunctionPointer<LibVlcGetVersionDelegate>(export);
+            var versionPtr = getVersion();
+            var version = Marshal.PtrToStringAnsi(versionPtr)?.Trim();
+            return string.IsNullOrWhiteSpace(version) ? null : version;
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            if (handle != IntPtr.Zero)
+                NativeLibrary.Free(handle);
+        }
     }
 
     private static bool TryGetButlerFromKnownLocations(out string butlerPath)
