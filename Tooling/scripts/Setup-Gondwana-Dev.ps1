@@ -324,11 +324,18 @@ if ($SkipOptional) {
     Step '11/13 git-cliff'
     if (Get-Command git-cliff -ErrorAction SilentlyContinue) {
         if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
-            try {
-                Invoke-Cmd winget @('upgrade', '--id', 'orhun.git-cliff', '--exact', '--silent',
-                                    '--accept-source-agreements', '--accept-package-agreements')
-            } catch {
-                WARN "Could not auto-update git-cliff via winget: $_"
+            $wingetUpgradeOutput = & winget upgrade --id orhun.git-cliff --exact --silent `
+                --accept-source-agreements --accept-package-agreements 2>&1
+            $wingetUpgradeExitCode = $LASTEXITCODE
+            $wingetUpgradeText = ($wingetUpgradeOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+
+            $isNoUpgrade = ($wingetUpgradeExitCode -ne 0) -and (
+                $wingetUpgradeText -match 'No available upgrade found' -or
+                $wingetUpgradeText -match 'No newer package' -or
+                $wingetUpgradeText -match 'No applicable update'
+            )
+            if ($wingetUpgradeExitCode -ne 0 -and -not $isNoUpgrade) {
+                WARN "Could not auto-update git-cliff via winget: 'winget upgrade ...' exited with code $wingetUpgradeExitCode."
             }
         }
 
@@ -363,7 +370,21 @@ if ($SkipOptional) {
     } else {
         # Determine the broth CDN platform slug and executable name.
         $isMacOSPlatform = if (Get-Variable -Name 'IsMacOS' -ErrorAction SilentlyContinue) { $IsMacOS } else { $false }
-        $butlerArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
+        # $env:PROCESSOR_ARCHITECTURE is always set on Windows (AMD64, ARM64, x86).
+        # RuntimeInformation.ProcessArchitecture is only reliably available in PS Core 6+; avoid it in PS 5.1.
+        $butlerArchitecture = if ($isWindowsOS -and $env:PROCESSOR_ARCHITECTURE) {
+            switch ($env:PROCESSOR_ARCHITECTURE.ToUpperInvariant()) {
+                'AMD64' { 'x64' }
+                'ARM64' { 'arm64' }
+                default { 'x86' }
+            }
+        } else {
+            try {
+                [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
+            } catch {
+                'x64'
+            }
+        }
 
         $butlerPlatform = if ($isWindowsOS) {
             if ($butlerArchitecture -ne 'x64') {
