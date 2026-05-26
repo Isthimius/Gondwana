@@ -93,7 +93,12 @@ function Get-InstalledTemplatePackageVersion {
     $lines = @($output | ForEach-Object { $_.ToString() })
 
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        if ($lines[$i].Trim() -ieq 'Gondwana.Templates') {
+        $packageLine = $lines[$i].Trim()
+        if ($packageLine -match '^Gondwana\.Templates(?:\s*::\s*(.+?))?\s*$') {
+            if ($Matches[1]) {
+                return $Matches[1].Trim()
+            }
+
             for ($j = $i + 1; $j -lt $lines.Count; $j++) {
                 $line = $lines[$j]
                 if ($line -match '^\s*Version:\s*(.+?)\s*$') {
