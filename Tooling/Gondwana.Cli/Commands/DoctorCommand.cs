@@ -213,6 +213,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixButler()
     {
+        if (TryGetButlerFromKnownLocations(out var existingButlerPath))
+        {
+            var existingInstallDir = Path.GetDirectoryName(existingButlerPath)!;
+            AddDirectoryToProcessPath(existingInstallDir);
+
+            var existingOutput = ProcessHelper.Run(existingButlerPath, "--version", out var existingExitCode);
+            var existingVersion = existingOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            if (existingExitCode == 0 && !string.IsNullOrWhiteSpace(existingVersion))
+                AnsiConsole.MarkupLine($"[green]butler already installed: {Markup.Escape(existingVersion)}[/]");
+            else
+                AnsiConsole.MarkupLine($"[green]butler already installed at {Markup.Escape(existingButlerPath)}[/]");
+
+            AnsiConsole.MarkupLine($"[yellow]Add '{Markup.Escape(existingInstallDir)}' to your PATH to use butler in future terminal sessions.[/]");
+            return;
+        }
+
         // Determine the broth CDN platform slug and executable name.
         var architecture = RuntimeInformation.ProcessArchitecture switch
         {
@@ -313,39 +329,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             }
 
             // Add the install directory to the current process PATH so the re-check finds butler.
-            var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
-            static string NormalizePathEntry(string path)
-            {
-                var trimmed = path.Trim().Trim('"');
-                if (trimmed.Length == 0)
-                    return string.Empty;
-                try
-                {
-                    return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
-                }
-                catch
-                {
-                    return Path.TrimEndingDirectorySeparator(trimmed);
-                }
-            }
-
-            var normalizedInstallDir = NormalizePathEntry(installDir);
-            var pathComparison = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? StringComparison.OrdinalIgnoreCase
-                : StringComparison.Ordinal;
-            bool alreadyInPath = processPath
-                .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
-                .Select(NormalizePathEntry)
-                .Any(p => p.Equals(normalizedInstallDir, pathComparison));
-            if (!alreadyInPath)
-            {
-                Environment.SetEnvironmentVariable(
-                    "PATH",
-                    string.IsNullOrWhiteSpace(processPath)
-                        ? installDir
-                        : processPath + Path.PathSeparator + installDir,
-                    EnvironmentVariableTarget.Process);
-            }
+            AddDirectoryToProcessPath(installDir);
 
             AnsiConsole.MarkupLine($"[green]butler installed to {Markup.Escape(installDir)}.[/]");
             AnsiConsole.MarkupLine($"[yellow]Add '{Markup.Escape(installDir)}' to your PATH to use butler in future terminal sessions.[/]");
@@ -529,11 +513,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static CheckResult CheckButler()
     {
         var output = ProcessHelper.Run("butler", "--version", out int exitCode);
-        if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("butler not found on PATH. Run: gondwana doctor --fix");
+        if (exitCode == 0 && !string.IsNullOrWhiteSpace(output))
+        {
+            var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            return CheckResult.Ok(versionLine ?? "found");
+        }
 
-        var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-        return CheckResult.Ok(versionLine ?? "found");
+        if (TryGetButlerFromKnownLocations(out var butlerPath))
+        {
+            var fileOutput = ProcessHelper.Run(butlerPath, "--version", out int fileExitCode);
+            var versionLine = fileOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            return fileExitCode == 0 && !string.IsNullOrWhiteSpace(versionLine)
+                ? CheckResult.Ok($"{versionLine} ({butlerPath})")
+                : CheckResult.Ok($"installed at {butlerPath}");
+        }
+
+        return CheckResult.Fail("butler not found on PATH or standard install directories. Run: gondwana doctor --fix");
     }
 
     private static CheckResult CheckSkiaSharp()
@@ -682,6 +677,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                     continue;
 
                 var normalizedVersion = rawVersion.Split('-', 2)[0];
+                if (string.IsNullOrWhiteSpace(normalizedVersion))
+                    continue;
                 if (!Version.TryParse(normalizedVersion, out var parsedVersion))
                 {
                     latestRawVersion ??= rawVersion;
@@ -708,6 +705,80 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             ".nuget", "packages");
+
+    private static bool TryGetButlerFromKnownLocations(out string butlerPath)
+    {
+        foreach (var candidate in EnumerateKnownButlerPaths())
+        {
+            if (File.Exists(candidate))
+            {
+                butlerPath = candidate;
+                return true;
+            }
+        }
+
+        butlerPath = string.Empty;
+        return false;
+    }
+
+    private static IEnumerable<string> EnumerateKnownButlerPaths()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            if (!string.IsNullOrWhiteSpace(localAppData))
+                yield return Path.Combine(localAppData, "itch", "butler", "butler.exe");
+
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (!string.IsNullOrWhiteSpace(userProfile))
+                yield return Path.Combine(userProfile, ".itch", "butler", "butler.exe");
+
+            yield break;
+        }
+
+        var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (!string.IsNullOrWhiteSpace(userHome))
+            yield return Path.Combine(userHome, ".itch", "butler", "butler");
+    }
+
+    private static void AddDirectoryToProcessPath(string directoryPath)
+    {
+        var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
+
+        static string NormalizePathEntry(string path)
+        {
+            var trimmed = path.Trim().Trim('"');
+            if (trimmed.Length == 0)
+                return string.Empty;
+            try
+            {
+                return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
+            }
+            catch
+            {
+                return Path.TrimEndingDirectorySeparator(trimmed);
+            }
+        }
+
+        var normalizedDirectoryPath = NormalizePathEntry(directoryPath);
+        var pathComparison = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        bool alreadyInPath = processPath
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
+            .Select(NormalizePathEntry)
+            .Any(p => p.Equals(normalizedDirectoryPath, pathComparison));
+
+        if (!alreadyInPath)
+        {
+            Environment.SetEnvironmentVariable(
+                "PATH",
+                string.IsNullOrWhiteSpace(processPath)
+                    ? directoryPath
+                    : processPath + Path.PathSeparator + directoryPath,
+                EnvironmentVariableTarget.Process);
+        }
+    }
 }
 
 internal enum CheckStatus { Ok, Warning, Fail, Skip }

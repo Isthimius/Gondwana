@@ -1,4 +1,5 @@
 using Spectre.Console;
+using System.Text.RegularExpressions;
 
 namespace Gondwana.Cli.Commands;
 
@@ -15,8 +16,13 @@ internal static class TemplatePackageHelper
         var lines = output.Replace("\r", string.Empty).Split('\n');
         for (var i = 0; i < lines.Length; i++)
         {
-            if (!string.Equals(lines[i].Trim(), PackageId, StringComparison.OrdinalIgnoreCase))
+            var currentLine = lines[i];
+            if (!currentLine.Contains(PackageId, StringComparison.OrdinalIgnoreCase))
                 continue;
+
+            var inlineVersion = TryExtractVersion(currentLine);
+            if (!string.IsNullOrWhiteSpace(inlineVersion))
+                return inlineVersion;
 
             for (var j = i + 1; j < lines.Length; j++)
             {
@@ -28,11 +34,44 @@ internal static class TemplatePackageHelper
                 if (trimmed.StartsWith("Version:", StringComparison.OrdinalIgnoreCase))
                     return trimmed["Version:".Length..].Trim();
 
+                var nearbyVersion = TryExtractVersion(line);
+                if (!string.IsNullOrWhiteSpace(nearbyVersion))
+                    return nearbyVersion;
+
                 if (!char.IsWhiteSpace(line[0]))
                     break;
             }
 
             return "installed";
+        }
+
+        return null;
+    }
+
+    private static string? TryExtractVersion(string line)
+    {
+        if (string.IsNullOrWhiteSpace(line))
+            return null;
+
+        var packageVersionMatch = Regex.Match(
+            line,
+            $@"{Regex.Escape(PackageId)}\s*::\s*(?<version>[^\s,;]+)",
+            RegexOptions.IgnoreCase);
+        if (packageVersionMatch.Success)
+            return packageVersionMatch.Groups["version"].Value.Trim();
+
+        var versionLabelMatch = Regex.Match(
+            line,
+            @"\bVersion\s*:\s*(?<version>[^\s,;]+)",
+            RegexOptions.IgnoreCase);
+        if (versionLabelMatch.Success)
+            return versionLabelMatch.Groups["version"].Value.Trim();
+
+        foreach (var token in line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var candidate = token.Trim().Trim(',', ';', ':');
+            if (Regex.IsMatch(candidate, @"^\d+(?:\.\d+){1,3}(?:[-+][0-9A-Za-z.\-]+)?$"))
+                return candidate;
         }
 
         return null;

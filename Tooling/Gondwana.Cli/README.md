@@ -40,7 +40,7 @@ Checks performed:
 - Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) installed
 - `wasm-tools` .NET workload installed
 - `git-cliff` installed
-- `butler` installed
+- `butler` installed (from `PATH` or the default user install directory used by `gondwana doctor --fix`)
 - SkiaSharp native binaries
 - SDL2 native binaries (for `Gondwana.Input.SDL2`; system-wide runtime available from [libsdl-org/SDL releases](https://github.com/libsdl-org/SDL/releases))
 - LibVLC (for `Gondwana.Video`)
