@@ -88,9 +88,36 @@ function Test-GlobalTool {
     return (@($output | Where-Object { $_ -match [regex]::Escape($PackageId) })).Count -gt 0
 }
 
+function Get-InstalledTemplatePackageVersion {
+    $output = dotnet new uninstall 2>&1
+    $lines = @($output | ForEach-Object { $_.ToString() })
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $packageLine = $lines[$i].Trim()
+        if ($packageLine -match '^Gondwana\.Templates(?:\s*::\s*(.+?))?\s*$') {
+            if ($Matches[1]) {
+                return $Matches[1].Trim()
+            }
+
+            for ($j = $i + 1; $j -lt $lines.Count; $j++) {
+                $line = $lines[$j]
+                if ($line -match '^\s*Version:\s*(.+?)\s*$') {
+                    return $Matches[1].Trim()
+                }
+                if ($line -match '^\S') {
+                    break
+                }
+            }
+
+            return 'installed'
+        }
+    }
+
+    return $null
+}
+
 function Test-TemplatesInstalled {
-    $output = dotnet new list 2>&1
-    return (@($output | Where-Object { $_ -match 'gondwana-winforms' })).Count -gt 0
+    return -not [string]::IsNullOrWhiteSpace((Get-InstalledTemplatePackageVersion))
 }
 
 function Test-Workload {
@@ -199,8 +226,15 @@ if ($SkipBuild) {
 
 Step '6/13  Gondwana CLI (Gondwana.Cli)'
 if (Test-GlobalTool 'gondwana.cli') {
-    $updateOutput = & dotnet tool update --global Gondwana.Cli 2>&1
-    $updateExitCode = $LASTEXITCODE
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        # dotnet may print handled downgrade messages to stderr; keep processing based on exit code/text.
+        $ErrorActionPreference = 'Continue'
+        $updateOutput = & dotnet tool update --global Gondwana.Cli 2>&1
+        $updateExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
     $updateOutputText = ($updateOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
 
     if ($updateExitCode -eq 0) {
@@ -237,12 +271,37 @@ if (Test-GlobalTool 'gondwana.cli') {
 # ─── Step 7: Gondwana project templates ───────────────────────────────────────
 
 Step '7/13  Gondwana project templates (Gondwana.Templates)'
-if (Test-TemplatesInstalled) {
-    Invoke-Cmd dotnet @('new', 'update')
-    OK 'Installed templates checked and updated where available.'
+$installedTemplateVersion = Get-InstalledTemplatePackageVersion
+if (-not [string]::IsNullOrWhiteSpace($installedTemplateVersion)) {
+    $updateOutput = & dotnet new update 2>&1
+    $updateExitCode = $LASTEXITCODE
+    $updateOutputText = ($updateOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+
+    if ($updateExitCode -ne 0) {
+        throw "'dotnet new update' exited with code $updateExitCode.`n$updateOutputText"
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($updateOutputText)) {
+        Write-Host $updateOutputText
+    }
+
+    $currentTemplateVersion = Get-InstalledTemplatePackageVersion
+    if (-not [string]::IsNullOrWhiteSpace($currentTemplateVersion) -and
+        $currentTemplateVersion -ne $installedTemplateVersion) {
+        OK "Gondwana.Templates updated to latest available: $currentTemplateVersion"
+    } elseif (-not [string]::IsNullOrWhiteSpace($currentTemplateVersion)) {
+        OK "Installed templates checked; current version retained: $currentTemplateVersion"
+    } else {
+        OK 'Installed templates checked and kept at the current version.'
+    }
 } else {
     Invoke-Cmd dotnet @('new', 'install', 'Gondwana.Templates')
-    OK 'Gondwana.Templates installed.'
+    $currentTemplateVersion = Get-InstalledTemplatePackageVersion
+    if (-not [string]::IsNullOrWhiteSpace($currentTemplateVersion)) {
+        OK "Gondwana.Templates installed: $currentTemplateVersion"
+    } else {
+        OK 'Gondwana.Templates installed.'
+    }
 }
 
 # ─── Optional steps (8–12) ────────────────────────────────────────────────────
@@ -317,11 +376,18 @@ if ($SkipOptional) {
     Step '11/13 git-cliff'
     if (Get-Command git-cliff -ErrorAction SilentlyContinue) {
         if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
-            try {
-                Invoke-Cmd winget @('upgrade', '--id', 'orhun.git-cliff', '--exact', '--silent',
-                                    '--accept-source-agreements', '--accept-package-agreements')
-            } catch {
-                WARN "Could not auto-update git-cliff via winget: $_"
+            $wingetUpgradeOutput = & winget upgrade --id orhun.git-cliff --exact --silent `
+                --accept-source-agreements --accept-package-agreements 2>&1
+            $wingetUpgradeExitCode = $LASTEXITCODE
+            $wingetUpgradeText = ($wingetUpgradeOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+
+            $isNoUpgrade = ($wingetUpgradeExitCode -ne 0) -and (
+                $wingetUpgradeText -match 'No available upgrade found' -or
+                $wingetUpgradeText -match 'No newer package' -or
+                $wingetUpgradeText -match 'No applicable update'
+            )
+            if ($wingetUpgradeExitCode -ne 0 -and -not $isNoUpgrade) {
+                WARN "Could not auto-update git-cliff via winget: 'winget upgrade ...' exited with code $wingetUpgradeExitCode."
             }
         }
 
@@ -356,7 +422,21 @@ if ($SkipOptional) {
     } else {
         # Determine the broth CDN platform slug and executable name.
         $isMacOSPlatform = if (Get-Variable -Name 'IsMacOS' -ErrorAction SilentlyContinue) { $IsMacOS } else { $false }
-        $butlerArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
+        # $env:PROCESSOR_ARCHITECTURE is always set on Windows (AMD64, ARM64, x86).
+        # RuntimeInformation.ProcessArchitecture is only reliably available in PS Core 6+; avoid it in PS 5.1.
+        $butlerArchitecture = if ($isWindowsOS -and $env:PROCESSOR_ARCHITECTURE) {
+            switch ($env:PROCESSOR_ARCHITECTURE.ToUpperInvariant()) {
+                'AMD64' { 'x64' }
+                'ARM64' { 'arm64' }
+                default { 'x86' }
+            }
+        } else {
+            try {
+                [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
+            } catch {
+                'x64'
+            }
+        }
 
         $butlerPlatform = if ($isWindowsOS) {
             if ($butlerArchitecture -ne 'x64') {

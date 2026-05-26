@@ -21,12 +21,12 @@ Git                  OK  git version 2.47.0.windows.2
 .NET SDK             OK  10.0.201
 nbgv                 OK  3.9.50
 Gondwana CLI         OK  1.2.0
-Gondwana Templates   OK  gondwana-winforms, gondwana-avalonia, gondwana-wasm found
-wasm-tools           OK  wasm-tools installed
+Gondwana Templates   OK  Gondwana.Templates 1.2.0 (gondwana-winforms, gondwana-avalonia, gondwana-wasm)
+wasm-tools           OK  10.0.300
 git-cliff            OK  git-cliff 2.10.0
 butler               OK  v17.0.0, built on ...
-SkiaSharp            OK  found in NuGet global cache
-SDL2                 Missing native library
+SkiaSharp            OK  3.119.2 (NuGet cache)
+SDL2                 OK  1.0.82 (SDL2.dll)
 LibVLC               Not checked
 
 1 issue found.
@@ -40,7 +40,7 @@ Checks performed:
 - Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) installed
 - `wasm-tools` .NET workload installed
 - `git-cliff` installed
-- `butler` installed
+- `butler` installed (from `PATH` or the default user install directory used by `gondwana doctor --fix`)
 - SkiaSharp native binaries
 - SDL2 native binaries (for `Gondwana.Input.SDL2`; system-wide runtime available from [libsdl-org/SDL releases](https://github.com/libsdl-org/SDL/releases))
 - LibVLC (for `Gondwana.Video`)
@@ -53,7 +53,7 @@ gondwana doctor --fix
 
 Currently auto-fixable:
 - **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
-- **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
+- **Gondwana Templates** missing → runs `dotnet new install Gondwana.Templates`; if already installed, `--fix` runs `dotnet new update` instead so newer local template packages are retained rather than downgraded
 - **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
 - **git-cliff** on Windows → runs `winget install/upgrade --id orhun.git-cliff`
 - **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, then installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Run `butler login` after installation to authenticate with itch.io.
@@ -357,8 +357,8 @@ On success, the command prints the game URL as a plain line (machine-friendly).
 Manage Gondwana project templates.
 
 ```bash
-gondwana templates install   # Install Gondwana.Templates from NuGet
-gondwana templates update    # Update installed templates
+gondwana templates install   # Install Gondwana.Templates, or check for updates if already installed
+gondwana templates update    # Check installed templates for updates without downgrading newer local versions
 gondwana templates list      # List installed Gondwana templates
 ```
 
