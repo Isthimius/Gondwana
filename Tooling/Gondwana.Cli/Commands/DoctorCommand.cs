@@ -49,7 +49,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             return exitCode;
 
         // Keep --fix useful even when checks pass by allowing selected tools
-        // to be updated to the latest available versions on Windows.
+        // to be updated to the latest available versions. Some always-fix
+        // checks apply cross-platform; others apply on Windows only.
         var alwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Gondwana Templates",
