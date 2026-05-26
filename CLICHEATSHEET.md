@@ -64,7 +64,7 @@ Checks the local environment for all Gondwana prerequisites (.NET SDK, templates
 
 Currently auto-fixable:
 - **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
-- **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
+- **Gondwana Templates** missing → runs `dotnet new install Gondwana.Templates`; if already installed, `--fix` runs `dotnet new update` instead so newer local template packages are retained rather than downgraded
 - **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
 - **git-cliff** on Windows → runs `winget install/upgrade --id orhun.git-cliff`
 - **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html) and installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Run `butler login` after installation to authenticate with itch.io.
@@ -395,17 +395,17 @@ On success, the command prints the game URL as a plain line (e.g. `https://user.
 
 | Subcommand | Description |
 |---|---|
-| `install` | Install `Gondwana.Templates` from NuGet. |
-| `update` | Update installed Gondwana templates. |
+| `install` | Install `Gondwana.Templates`, or check for updates if already installed. |
+| `update` | Check installed Gondwana templates for updates without downgrading newer local versions. |
 | `list` | List installed Gondwana templates. |
 
 ### `gondwana templates install`
 
-Runs `dotnet new install Gondwana.Templates`. *No arguments or options.*
+Installs `Gondwana.Templates` from NuGet when it is missing. If it is already installed, this command checks for template updates instead so a newer local package is retained. *No arguments or options.*
 
 ### `gondwana templates update`
 
-Runs `dotnet new update Gondwana.Templates`. *No arguments or options.*
+Runs `dotnet new update`. This checks installed template packages for updates without downgrading a newer already-installed local `Gondwana.Templates` package. *No arguments or options.*
 
 ### `gondwana templates list`
 

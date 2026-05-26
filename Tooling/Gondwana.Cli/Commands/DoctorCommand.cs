@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using Spectre.Console;
@@ -48,22 +49,28 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             return exitCode;
 
         // Keep --fix useful even when checks pass by allowing selected tools
-        // to be updated to the latest available versions on Windows.
+        // to be updated to the latest available versions. Some always-fix
+        // checks apply cross-platform; others apply on Windows only.
         var alwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Gondwana Templates",
+        };
+        var windowsOnlyAlwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "git-cliff",
         };
-        bool hasWindowsAlwaysFixes = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-                                     checks.Any(c => c.Fix != null && alwaysFixLabels.Contains(c.Label));
+        bool ShouldAlwaysFix(string label) =>
+            alwaysFixLabels.Contains(label) ||
+            (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && windowsOnlyAlwaysFixLabels.Contains(label));
+        bool hasAlwaysFixes = checks.Any(c => c.Fix != null && ShouldAlwaysFix(c.Label));
 
-        if (exitCode == 0 && !hasWindowsAlwaysFixes)
+        if (exitCode == 0 && !hasAlwaysFixes)
             return exitCode;
 
         var fixable = results
             .Zip(checks, (r, c) => (r.Label, r.Result, c.Fix))
             .Where(x => x.Fix != null &&
-                        (x.Result.Status == CheckStatus.Fail ||
-                         (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && alwaysFixLabels.Contains(x.Label))))
+                        (x.Result.Status == CheckStatus.Fail || ShouldAlwaysFix(x.Label)))
             .ToList();
 
         AnsiConsole.WriteLine();
@@ -189,7 +196,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixGondwanaTemplates()
     {
-        ProcessHelper.RunLive("dotnet", "new install Gondwana.Templates");
+        TemplatePackageHelper.EnsureInstalledOrUpdated();
     }
 
     private static void FixWasmTools()
@@ -208,6 +215,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixButler()
     {
+        if (TryGetButlerFromKnownLocations(out var existingButlerPath))
+        {
+            var existingInstallDir = Path.GetDirectoryName(existingButlerPath)!;
+            AddDirectoryToProcessPath(existingInstallDir);
+
+            var existingOutput = ProcessHelper.Run(existingButlerPath, "--version", out var existingExitCode);
+            var existingVersion = existingOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            if (existingExitCode == 0 && !string.IsNullOrWhiteSpace(existingVersion))
+                AnsiConsole.MarkupLine($"[green]butler already installed: {Markup.Escape(existingVersion)}[/]");
+            else
+                AnsiConsole.MarkupLine($"[green]butler already installed at {Markup.Escape(existingButlerPath)}[/]");
+
+            AnsiConsole.MarkupLine($"[yellow]Add '{Markup.Escape(existingInstallDir)}' to your PATH to use butler in future terminal sessions.[/]");
+            return;
+        }
+
         // Determine the broth CDN platform slug and executable name.
         var architecture = RuntimeInformation.ProcessArchitecture switch
         {
@@ -308,39 +331,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             }
 
             // Add the install directory to the current process PATH so the re-check finds butler.
-            var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
-            static string NormalizePathEntry(string path)
-            {
-                var trimmed = path.Trim().Trim('"');
-                if (trimmed.Length == 0)
-                    return string.Empty;
-                try
-                {
-                    return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
-                }
-                catch
-                {
-                    return Path.TrimEndingDirectorySeparator(trimmed);
-                }
-            }
-
-            var normalizedInstallDir = NormalizePathEntry(installDir);
-            var pathComparison = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? StringComparison.OrdinalIgnoreCase
-                : StringComparison.Ordinal;
-            bool alreadyInPath = processPath
-                .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
-                .Select(NormalizePathEntry)
-                .Any(p => p.Equals(normalizedInstallDir, pathComparison));
-            if (!alreadyInPath)
-            {
-                Environment.SetEnvironmentVariable(
-                    "PATH",
-                    string.IsNullOrWhiteSpace(processPath)
-                        ? installDir
-                        : processPath + Path.PathSeparator + installDir,
-                    EnvironmentVariableTarget.Process);
-            }
+            AddDirectoryToProcessPath(installDir);
 
             AnsiConsole.MarkupLine($"[green]butler installed to {Markup.Escape(installDir)}.[/]");
             AnsiConsole.MarkupLine($"[yellow]Add '{Markup.Escape(installDir)}' to your PATH to use butler in future terminal sessions.[/]");
@@ -476,8 +467,13 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
         bool hasWasm     = output.Contains("gondwana-wasm",     StringComparison.OrdinalIgnoreCase);
 
+        const string templateNames = "gondwana-winforms, gondwana-avalonia, gondwana-wasm";
+        var installedVersion = TemplatePackageHelper.GetInstalledVersion();
+
         if (hasWinForms && hasAvalonia && hasWasm)
-            return CheckResult.Ok("gondwana-winforms, gondwana-avalonia, gondwana-wasm found");
+            return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
+                ? $"{templateNames} found"
+                : $"Gondwana.Templates {installedVersion} ({templateNames})");
 
         var found = new List<string>();
         if (hasWinForms) found.Add("gondwana-winforms");
@@ -485,7 +481,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (hasWasm)     found.Add("gondwana-wasm");
 
         if (found.Count > 0)
-            return CheckResult.Ok(string.Join(", ", found) + " found");
+            return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
+                ? string.Join(", ", found) + " found"
+                : $"Gondwana.Templates {installedVersion} ({string.Join(", ", found)})");
 
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
     }
@@ -499,7 +497,10 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (!output.Contains("wasm-tools", StringComparison.OrdinalIgnoreCase))
             return CheckResult.Fail("wasm-tools workload not installed. Run: dotnet workload install wasm-tools");
 
-        return CheckResult.Ok("wasm-tools installed");
+        var version = GetWorkloadManifestVersion(output, "wasm-tools");
+        return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
+            ? "wasm-tools installed"
+            : version);
     }
 
     private static CheckResult CheckGitCliff()
@@ -515,11 +516,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     private static CheckResult CheckButler()
     {
         var output = ProcessHelper.Run("butler", "--version", out int exitCode);
-        if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
-            return CheckResult.Fail("butler not found on PATH. Run: gondwana doctor --fix");
+        if (exitCode == 0 && !string.IsNullOrWhiteSpace(output))
+        {
+            var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            return CheckResult.Ok(versionLine ?? "found");
+        }
 
-        var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-        return CheckResult.Ok(versionLine ?? "found");
+        if (TryGetButlerFromKnownLocations(out var butlerPath))
+        {
+            var fileOutput = ProcessHelper.Run(butlerPath, "--version", out int fileExitCode);
+            var versionLine = fileOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            return fileExitCode == 0 && !string.IsNullOrWhiteSpace(versionLine)
+                ? CheckResult.Ok($"{versionLine} ({butlerPath})")
+                : CheckResult.Ok($"installed at {butlerPath}");
+        }
+
+        return CheckResult.Fail("butler not found on PATH or standard install directories. Run: gondwana doctor --fix");
     }
 
     private static CheckResult CheckSkiaSharp()
@@ -537,40 +549,22 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         foreach (var candidate in candidates)
         {
             if (NativeLibraryProbe.CanLoad(candidate))
-                return CheckResult.Ok(candidate);
+            {
+                var version = GetLatestNuGetPackageVersion("skiasharp");
+                return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
+                    ? candidate
+                    : $"{version} ({candidate})");
+            }
         }
 
         // SkiaSharp is typically installed via NuGet and bundled into the project output
         // at build time — its native DLL is never placed on the system PATH.
         // Check the NuGet global packages cache so that a NuGet install is recognised.
-        if (IsNuGetPackageCached("skiasharp"))
-            return CheckResult.Ok("found in NuGet global cache");
+        var cachedVersion = GetLatestNuGetPackageVersion("skiasharp");
+        if (!string.IsNullOrWhiteSpace(cachedVersion))
+            return CheckResult.Ok($"{cachedVersion} (NuGet cache)");
 
         return CheckResult.Fail("SkiaSharp not found. Restore a project that references SkiaSharp, or run: dotnet add package SkiaSharp");
-    }
-
-    /// <summary>
-    /// Returns true if at least one version of the given NuGet package exists in the
-    /// global packages cache. <paramref name="packageId"/> must be lowercase — NuGet
-    /// normalises package IDs to lowercase when writing to the cache on all platforms.
-    /// </summary>
-    private static bool IsNuGetPackageCached(string packageId)
-    {
-        try
-        {
-            // NUGET_PACKAGES env var overrides the default cache location.
-            var nugetHome = Environment.GetEnvironmentVariable("NUGET_PACKAGES")
-                ?? Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    ".nuget", "packages");
-
-            var packageDir = Path.Combine(nugetHome, packageId);
-            return Directory.Exists(packageDir) && Directory.EnumerateDirectories(packageDir).Any();
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            return false;
-        }
     }
 
     private static CheckResult CheckSdl2()
@@ -585,7 +579,13 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         foreach (var candidate in candidates)
         {
             if (NativeLibraryProbe.CanLoad(candidate))
-                return CheckResult.Ok(candidate);
+            {
+                // Gondwana.Input.SDL2 references the ppy.SDL2-CS package.
+                var version = GetLatestNuGetPackageVersion("ppy.sdl2-cs");
+                return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
+                    ? candidate
+                    : $"{version} ({candidate})");
+            }
         }
 
         return CheckResult.Fail("SDL2 native library not found. Required by Gondwana.Input.SDL2. Install from https://github.com/libsdl-org/SDL/releases if you need a system-wide runtime.");
@@ -621,7 +621,12 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             foreach (var candidate in windowsCandidates)
             {
                 if (NativeLibraryProbe.CanLoad(candidate))
-                    return CheckResult.Ok(candidate);
+                {
+                    var location = TryResolveNativeLibraryPath(candidate);
+                    var version = TryGetNativeLibraryVersion(location)
+                        ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
+                    return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
+                }
             }
         }
         else
@@ -633,12 +638,294 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             foreach (var candidate in candidates)
             {
                 if (NativeLibraryProbe.CanLoad(candidate))
-                    return CheckResult.Ok(candidate);
+                {
+                    var location = TryResolveNativeLibraryPath(candidate);
+                    var version = TryGetNativeLibraryVersion(location)
+                        ?? TryGetLibVlcRuntimeVersion(location ?? candidate);
+                    return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
+                }
             }
         }
 
         // LibVLC is optional; only needed if Gondwana.Video is used.
         return CheckResult.Skip();
+    }
+
+    private static string? GetWorkloadManifestVersion(string workloadListOutput, string workloadId)
+    {
+        foreach (var rawLine in workloadListOutput.Replace("\r", string.Empty).Split('\n'))
+        {
+            var line = rawLine.Trim();
+            if (line.Length == 0)
+                continue;
+
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2)
+                continue;
+
+            if (!string.Equals(parts[0], workloadId, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            return parts[1];
+        }
+
+        return null;
+    }
+
+    private static string? GetLatestNuGetPackageVersion(string packageId)
+    {
+        try
+        {
+            var packageDir = Path.Combine(GetNuGetPackagesPath(), packageId);
+            if (!Directory.Exists(packageDir))
+                return null;
+
+            string? latestRawVersion = null;
+            Version? latestParsedVersion = null;
+
+            foreach (var directory in Directory.EnumerateDirectories(packageDir))
+            {
+                var rawVersion = Path.GetFileName(directory);
+                if (string.IsNullOrWhiteSpace(rawVersion))
+                    continue;
+
+                var normalizedVersion = rawVersion.Split('-', 2)[0];
+                if (string.IsNullOrWhiteSpace(normalizedVersion))
+                    continue;
+                if (!Version.TryParse(normalizedVersion, out var parsedVersion))
+                {
+                    latestRawVersion ??= rawVersion;
+                    continue;
+                }
+
+                if (latestParsedVersion is null || parsedVersion > latestParsedVersion)
+                {
+                    latestParsedVersion = parsedVersion;
+                    latestRawVersion = rawVersion;
+                }
+            }
+
+            return latestRawVersion;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    private static string GetNuGetPackagesPath() =>
+        Environment.GetEnvironmentVariable("NUGET_PACKAGES")
+        ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".nuget", "packages");
+
+    private static string FormatNativeLibraryDetail(string fallbackName, string? location, string? version)
+    {
+        var preferredLocation = string.IsNullOrWhiteSpace(location) ? fallbackName : location;
+        return string.IsNullOrWhiteSpace(version)
+            ? preferredLocation
+            : $"{version} ({preferredLocation})";
+    }
+
+    private static string? TryResolveNativeLibraryPath(string candidate)
+    {
+        if (Path.IsPathRooted(candidate) && File.Exists(candidate))
+            return candidate;
+
+        var fileName = Path.GetFileName(candidate);
+        if (string.IsNullOrWhiteSpace(fileName))
+            return null;
+
+        if (TryFindInDirectories(fileName, EnumeratePathDirectories(), out var pathLocation))
+            return pathLocation;
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+            TryFindInDirectories(fileName, EnumerateCommonUnixLibraryDirectories(), out var unixLocation))
+        {
+            return unixLocation;
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<string> EnumeratePathDirectories()
+    {
+        var path = Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrWhiteSpace(path))
+            yield break;
+
+        foreach (var entry in path.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var trimmed = entry.Trim().Trim('"');
+            if (string.IsNullOrWhiteSpace(trimmed))
+                continue;
+
+            yield return trimmed;
+        }
+    }
+
+    private static IEnumerable<string> EnumerateCommonUnixLibraryDirectories()
+    {
+        yield return "/usr/lib";
+        yield return "/usr/local/lib";
+        yield return "/lib";
+        yield return "/opt/homebrew/lib";
+        yield return "/usr/lib/x86_64-linux-gnu";
+        yield return "/usr/lib/aarch64-linux-gnu";
+    }
+
+    private static bool TryFindInDirectories(string fileName, IEnumerable<string> directories, out string path)
+    {
+        foreach (var directory in directories)
+        {
+            try
+            {
+                var fullPath = Path.Combine(directory, fileName);
+                if (File.Exists(fullPath))
+                {
+                    path = fullPath;
+                    return true;
+                }
+            }
+            catch (ArgumentException)
+            {
+                // Skip malformed directories in PATH/environment values.
+            }
+        }
+
+        path = string.Empty;
+        return false;
+    }
+
+    private static string? TryGetNativeLibraryVersion(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            return null;
+
+        try
+        {
+            var versionInfo = FileVersionInfo.GetVersionInfo(path);
+            var productVersion = versionInfo.ProductVersion?.Trim();
+            if (!string.IsNullOrWhiteSpace(productVersion))
+                return productVersion;
+
+            var fileVersion = versionInfo.FileVersion?.Trim();
+            if (!string.IsNullOrWhiteSpace(fileVersion))
+                return fileVersion;
+        }
+        catch
+        {
+            // Version metadata is optional for native libraries on some platforms.
+        }
+
+        return null;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate IntPtr LibVlcGetVersionDelegate();
+
+    private static string? TryGetLibVlcRuntimeVersion(string libraryPathOrName)
+    {
+        if (string.IsNullOrWhiteSpace(libraryPathOrName))
+            return null;
+
+        IntPtr handle = IntPtr.Zero;
+        try
+        {
+            if (!NativeLibrary.TryLoad(libraryPathOrName, out handle) || handle == IntPtr.Zero)
+                return null;
+
+            if (!NativeLibrary.TryGetExport(handle, "libvlc_get_version", out var export) || export == IntPtr.Zero)
+                return null;
+
+            var getVersion = Marshal.GetDelegateForFunctionPointer<LibVlcGetVersionDelegate>(export);
+            var versionPtr = getVersion();
+            var version = Marshal.PtrToStringAnsi(versionPtr)?.Trim();
+            return string.IsNullOrWhiteSpace(version) ? null : version;
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            if (handle != IntPtr.Zero)
+                NativeLibrary.Free(handle);
+        }
+    }
+
+    private static bool TryGetButlerFromKnownLocations(out string butlerPath)
+    {
+        foreach (var candidate in EnumerateKnownButlerPaths())
+        {
+            if (File.Exists(candidate))
+            {
+                butlerPath = candidate;
+                return true;
+            }
+        }
+
+        butlerPath = string.Empty;
+        return false;
+    }
+
+    private static IEnumerable<string> EnumerateKnownButlerPaths()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            if (!string.IsNullOrWhiteSpace(localAppData))
+                yield return Path.Combine(localAppData, "itch", "butler", "butler.exe");
+
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (!string.IsNullOrWhiteSpace(userProfile))
+                yield return Path.Combine(userProfile, ".itch", "butler", "butler.exe");
+
+            yield break;
+        }
+
+        var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (!string.IsNullOrWhiteSpace(userHome))
+            yield return Path.Combine(userHome, ".itch", "butler", "butler");
+    }
+
+    private static void AddDirectoryToProcessPath(string directoryPath)
+    {
+        var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
+
+        static string NormalizePathEntry(string path)
+        {
+            var trimmed = path.Trim().Trim('"');
+            if (trimmed.Length == 0)
+                return string.Empty;
+            try
+            {
+                return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
+            }
+            catch
+            {
+                return Path.TrimEndingDirectorySeparator(trimmed);
+            }
+        }
+
+        var normalizedDirectoryPath = NormalizePathEntry(directoryPath);
+        var pathComparison = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        bool alreadyInPath = processPath
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
+            .Select(NormalizePathEntry)
+            .Any(p => p.Equals(normalizedDirectoryPath, pathComparison));
+
+        if (!alreadyInPath)
+        {
+            Environment.SetEnvironmentVariable(
+                "PATH",
+                string.IsNullOrWhiteSpace(processPath)
+                    ? directoryPath
+                    : processPath + Path.PathSeparator + directoryPath,
+                EnvironmentVariableTarget.Process);
+        }
     }
 }
 

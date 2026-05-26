@@ -51,10 +51,10 @@ app.Configure(config =>
         branch.SetDescription("Manage Gondwana dotnet new templates.");
 
         branch.AddCommand<TemplatesInstallCommand>("install")
-              .WithDescription("Install Gondwana.Templates from NuGet.");
+              .WithDescription("Install Gondwana.Templates from NuGet, or check for updates if already installed.");
 
         branch.AddCommand<TemplatesUpdateCommand>("update")
-              .WithDescription("Update installed Gondwana templates.");
+              .WithDescription("Check installed Gondwana templates for updates without downgrading newer local versions.");
 
         branch.AddCommand<TemplatesListCommand>("list")
               .WithDescription("List installed Gondwana templates.");
