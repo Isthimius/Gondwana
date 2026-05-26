@@ -53,7 +53,7 @@ gondwana doctor --fix
 
 Currently auto-fixable:
 - **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
-- **Gondwana Templates** not installed → runs `dotnet new install Gondwana.Templates`
+- **Gondwana Templates** missing → runs `dotnet new install Gondwana.Templates`; if already installed, `--fix` runs `dotnet new update` instead so newer local template packages are retained rather than downgraded
 - **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
 - **git-cliff** on Windows → runs `winget install/upgrade --id orhun.git-cliff`
 - **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, then installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Run `butler login` after installation to authenticate with itch.io.
@@ -357,8 +357,8 @@ On success, the command prints the game URL as a plain line (machine-friendly).
 Manage Gondwana project templates.
 
 ```bash
-gondwana templates install   # Install Gondwana.Templates from NuGet
-gondwana templates update    # Update installed templates
+gondwana templates install   # Install Gondwana.Templates, or check for updates if already installed
+gondwana templates update    # Check installed templates for updates without downgrading newer local versions
 gondwana templates list      # List installed Gondwana templates
 ```
 

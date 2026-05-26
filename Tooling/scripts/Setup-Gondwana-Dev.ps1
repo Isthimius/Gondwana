@@ -88,9 +88,31 @@ function Test-GlobalTool {
     return (@($output | Where-Object { $_ -match [regex]::Escape($PackageId) })).Count -gt 0
 }
 
+function Get-InstalledTemplatePackageVersion {
+    $output = dotnet new uninstall 2>&1
+    $lines = @($output | ForEach-Object { $_.ToString() })
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i].Trim() -ieq 'Gondwana.Templates') {
+            for ($j = $i + 1; $j -lt $lines.Count; $j++) {
+                $line = $lines[$j]
+                if ($line -match '^\s*Version:\s*(.+?)\s*$') {
+                    return $Matches[1].Trim()
+                }
+                if ($line -match '^\S') {
+                    break
+                }
+            }
+
+            return 'installed'
+        }
+    }
+
+    return $null
+}
+
 function Test-TemplatesInstalled {
-    $output = dotnet new list 2>&1
-    return (@($output | Where-Object { $_ -match 'gondwana-winforms' })).Count -gt 0
+    return -not [string]::IsNullOrWhiteSpace((Get-InstalledTemplatePackageVersion))
 }
 
 function Test-Workload {
@@ -244,12 +266,37 @@ if (Test-GlobalTool 'gondwana.cli') {
 # ─── Step 7: Gondwana project templates ───────────────────────────────────────
 
 Step '7/13  Gondwana project templates (Gondwana.Templates)'
-if (Test-TemplatesInstalled) {
-    Invoke-Cmd dotnet @('new', 'update')
-    OK 'Installed templates checked and updated where available.'
+$installedTemplateVersion = Get-InstalledTemplatePackageVersion
+if (-not [string]::IsNullOrWhiteSpace($installedTemplateVersion)) {
+    $updateOutput = & dotnet new update 2>&1
+    $updateExitCode = $LASTEXITCODE
+    $updateOutputText = ($updateOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+
+    if ($updateExitCode -ne 0) {
+        throw "'dotnet new update' exited with code $updateExitCode.`n$updateOutputText"
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($updateOutputText)) {
+        Write-Host $updateOutputText
+    }
+
+    $currentTemplateVersion = Get-InstalledTemplatePackageVersion
+    if (-not [string]::IsNullOrWhiteSpace($currentTemplateVersion) -and
+        $currentTemplateVersion -ne $installedTemplateVersion) {
+        OK "Gondwana.Templates updated to latest available: $currentTemplateVersion"
+    } elseif (-not [string]::IsNullOrWhiteSpace($currentTemplateVersion)) {
+        OK "Installed templates checked; current version retained: $currentTemplateVersion"
+    } else {
+        OK 'Installed templates checked and kept at the current version.'
+    }
 } else {
     Invoke-Cmd dotnet @('new', 'install', 'Gondwana.Templates')
-    OK 'Gondwana.Templates installed.'
+    $currentTemplateVersion = Get-InstalledTemplatePackageVersion
+    if (-not [string]::IsNullOrWhiteSpace($currentTemplateVersion)) {
+        OK "Gondwana.Templates installed: $currentTemplateVersion"
+    } else {
+        OK 'Gondwana.Templates installed.'
+    }
 }
 
 # ─── Optional steps (8–12) ────────────────────────────────────────────────────

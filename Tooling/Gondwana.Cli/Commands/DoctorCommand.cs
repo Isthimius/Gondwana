@@ -51,19 +51,24 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         // to be updated to the latest available versions on Windows.
         var alwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
+            "Gondwana Templates",
+        };
+        var windowsOnlyAlwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
             "git-cliff",
         };
-        bool hasWindowsAlwaysFixes = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-                                     checks.Any(c => c.Fix != null && alwaysFixLabels.Contains(c.Label));
+        bool ShouldAlwaysFix(string label) =>
+            alwaysFixLabels.Contains(label) ||
+            (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && windowsOnlyAlwaysFixLabels.Contains(label));
+        bool hasAlwaysFixes = checks.Any(c => c.Fix != null && ShouldAlwaysFix(c.Label));
 
-        if (exitCode == 0 && !hasWindowsAlwaysFixes)
+        if (exitCode == 0 && !hasAlwaysFixes)
             return exitCode;
 
         var fixable = results
             .Zip(checks, (r, c) => (r.Label, r.Result, c.Fix))
             .Where(x => x.Fix != null &&
-                        (x.Result.Status == CheckStatus.Fail ||
-                         (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && alwaysFixLabels.Contains(x.Label))))
+                        (x.Result.Status == CheckStatus.Fail || ShouldAlwaysFix(x.Label)))
             .ToList();
 
         AnsiConsole.WriteLine();
@@ -189,7 +194,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixGondwanaTemplates()
     {
-        ProcessHelper.RunLive("dotnet", "new install Gondwana.Templates");
+        TemplatePackageHelper.EnsureInstalledOrUpdated();
     }
 
     private static void FixWasmTools()
@@ -476,8 +481,12 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
         bool hasWasm     = output.Contains("gondwana-wasm",     StringComparison.OrdinalIgnoreCase);
 
+        var installedVersion = TemplatePackageHelper.GetInstalledVersion();
+
         if (hasWinForms && hasAvalonia && hasWasm)
-            return CheckResult.Ok("gondwana-winforms, gondwana-avalonia, gondwana-wasm found");
+            return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
+                ? "gondwana-winforms, gondwana-avalonia, gondwana-wasm found"
+                : installedVersion);
 
         var found = new List<string>();
         if (hasWinForms) found.Add("gondwana-winforms");
@@ -485,7 +494,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (hasWasm)     found.Add("gondwana-wasm");
 
         if (found.Count > 0)
-            return CheckResult.Ok(string.Join(", ", found) + " found");
+            return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
+                ? string.Join(", ", found) + " found"
+                : $"{installedVersion} ({string.Join(", ", found)})");
 
         return CheckResult.Fail("Gondwana templates not installed. Run: gondwana templates install");
     }

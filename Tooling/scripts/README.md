@@ -8,7 +8,7 @@ This folder contains PowerShell helper scripts for building, publishing, and rel
 
 ### `Setup-Gondwana-Dev.ps1`
 
-Idempotent one-shot setup script for new contributors. Run it once after cloning the repository to install everything needed to build, run, and develop Gondwana. Safe to re-run — install/restore steps also refresh to the latest available versions where applicable.
+Idempotent one-shot setup script for new contributors. Run it once after cloning the repository to install everything needed to build, run, and develop Gondwana. Safe to re-run — install/restore steps also refresh to the latest available versions where applicable while retaining a newer already-installed `Gondwana.Templates` package.
 
 **What it does:**
 1. Verifies Git is available on `PATH`.
@@ -17,7 +17,7 @@ Idempotent one-shot setup script for new contributors. Run it once after cloning
 4. Restores NuGet packages for the solution with dependency reevaluation.
 5. Builds the solution in `Release` configuration.
 6. Installs/updates the `Gondwana.Cli` global tool (`gondwana`).
-7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) and applies template updates when already installed.
+7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
 8. Installs the `dotnet wasm-tools` workload for WebAssembly support and updates installed workloads when it is already present.
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance (including the official SDL releases page) if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
@@ -81,6 +81,42 @@ Packs `Tooling/Gondwana.Cli` and reinstalls the global `gondwana` tool from an i
 
 # Use a custom local package-feed directory
 .\Reinstall-Gondwana-Cli.ps1 -PackageOutput artifacts\local-tools
+```
+
+---
+
+### `Reinstall-Gondwana-Templates.ps1`
+
+Packs `Tooling/Gondwana.Templates` and reinstalls the exact freshly packed template package from an isolated local package source. Useful for repeated local template iteration before a package version is published to NuGet.
+
+**What it does:**
+1. Packs `Tooling/Gondwana.Templates/Gondwana.Templates.csproj` into a local package feed.
+2. Detects the exact version that was just packed.
+3. Uninstalls the existing `Gondwana.Templates` package when present.
+4. Reinstalls that exact packed version using `dotnet new install Gondwana.Templates@<packed-version> --add-source <feed> --force` and a temporary `NUGET_PACKAGES` directory so the local package is chosen deterministically.
+5. Prints the installed template package version and the currently available Gondwana templates.
+
+**Prerequisites:**
+- .NET 8 SDK
+- PowerShell 5.1 or later
+
+**Parameters:**
+
+| Parameter | Description | Default |
+|---|---|---|
+| `-Configuration` | Build configuration passed to `dotnet pack`. | `Release` |
+| `-PackageOutput` | Local package-feed directory. Relative paths are resolved from the repository root. | `.local-nuget` |
+
+**Examples:**
+```powershell
+# Repack and reinstall the local templates from the repository default package feed
+.\Reinstall-Gondwana-Templates.ps1
+
+# Use a different build configuration
+.\Reinstall-Gondwana-Templates.ps1 -Configuration Debug
+
+# Use a custom local package-feed directory
+.\Reinstall-Gondwana-Templates.ps1 -PackageOutput artifacts\local-templates
 ```
 
 ---
