@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using Spectre.Console;
@@ -465,12 +466,13 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
         bool hasWasm     = output.Contains("gondwana-wasm",     StringComparison.OrdinalIgnoreCase);
 
+        const string templateNames = "gondwana-winforms, gondwana-avalonia, gondwana-wasm";
         var installedVersion = TemplatePackageHelper.GetInstalledVersion();
 
         if (hasWinForms && hasAvalonia && hasWasm)
             return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
-                ? "gondwana-winforms, gondwana-avalonia, gondwana-wasm found"
-                : installedVersion);
+                ? $"{templateNames} found"
+                : $"{installedVersion} ({templateNames})");
 
         var found = new List<string>();
         if (hasWinForms) found.Add("gondwana-winforms");
@@ -618,7 +620,11 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             foreach (var candidate in windowsCandidates)
             {
                 if (NativeLibraryProbe.CanLoad(candidate))
-                    return CheckResult.Ok(candidate);
+                {
+                    var location = TryResolveNativeLibraryPath(candidate);
+                    var version = TryGetNativeLibraryVersion(location);
+                    return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
+                }
             }
         }
         else
@@ -630,7 +636,11 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             foreach (var candidate in candidates)
             {
                 if (NativeLibraryProbe.CanLoad(candidate))
-                    return CheckResult.Ok(candidate);
+                {
+                    var location = TryResolveNativeLibraryPath(candidate);
+                    var version = TryGetNativeLibraryVersion(location);
+                    return CheckResult.Ok(FormatNativeLibraryDetail(candidate, location, version));
+                }
             }
         }
 
@@ -705,6 +715,108 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             ".nuget", "packages");
+
+    private static string FormatNativeLibraryDetail(string fallbackName, string? location, string? version)
+    {
+        var preferredLocation = string.IsNullOrWhiteSpace(location) ? fallbackName : location;
+        return string.IsNullOrWhiteSpace(version)
+            ? preferredLocation
+            : $"{version} ({preferredLocation})";
+    }
+
+    private static string? TryResolveNativeLibraryPath(string candidate)
+    {
+        if (Path.IsPathRooted(candidate) && File.Exists(candidate))
+            return candidate;
+
+        var fileName = Path.GetFileName(candidate);
+        if (string.IsNullOrWhiteSpace(fileName))
+            return null;
+
+        if (TryFindInDirectories(fileName, EnumeratePathDirectories(), out var pathLocation))
+            return pathLocation;
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+            TryFindInDirectories(fileName, EnumerateCommonUnixLibraryDirectories(), out var unixLocation))
+        {
+            return unixLocation;
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<string> EnumeratePathDirectories()
+    {
+        var path = Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrWhiteSpace(path))
+            yield break;
+
+        foreach (var entry in path.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var trimmed = entry.Trim().Trim('"');
+            if (string.IsNullOrWhiteSpace(trimmed))
+                continue;
+
+            yield return trimmed;
+        }
+    }
+
+    private static IEnumerable<string> EnumerateCommonUnixLibraryDirectories()
+    {
+        yield return "/usr/lib";
+        yield return "/usr/local/lib";
+        yield return "/lib";
+        yield return "/opt/homebrew/lib";
+        yield return "/usr/lib/x86_64-linux-gnu";
+        yield return "/usr/lib/aarch64-linux-gnu";
+    }
+
+    private static bool TryFindInDirectories(string fileName, IEnumerable<string> directories, out string path)
+    {
+        foreach (var directory in directories)
+        {
+            try
+            {
+                var fullPath = Path.Combine(directory, fileName);
+                if (File.Exists(fullPath))
+                {
+                    path = fullPath;
+                    return true;
+                }
+            }
+            catch (ArgumentException)
+            {
+                // Skip malformed directories in PATH/environment values.
+            }
+        }
+
+        path = string.Empty;
+        return false;
+    }
+
+    private static string? TryGetNativeLibraryVersion(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            return null;
+
+        try
+        {
+            var versionInfo = FileVersionInfo.GetVersionInfo(path);
+            var productVersion = versionInfo.ProductVersion?.Trim();
+            if (!string.IsNullOrWhiteSpace(productVersion))
+                return productVersion;
+
+            var fileVersion = versionInfo.FileVersion?.Trim();
+            if (!string.IsNullOrWhiteSpace(fileVersion))
+                return fileVersion;
+        }
+        catch
+        {
+            // Version metadata is optional for native libraries on some platforms.
+        }
+
+        return null;
+    }
 
     private static bool TryGetButlerFromKnownLocations(out string butlerPath)
     {
