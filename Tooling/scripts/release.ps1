@@ -137,7 +137,7 @@ function Invoke-UnitTests {
         [string]$RepoRoot
     )
 
-    $testProjectPath = Join-Path $RepoRoot "Gondwana.Tests/Gondwana.Tests.csproj"
+    $testProjectPath = Join-Path $RepoRoot "Testing/Gondwana.Tests/Gondwana.Tests.csproj"
     if (-not (Test-Path $testProjectPath)) {
         throw "Expected test project was not found at $testProjectPath."
     }
