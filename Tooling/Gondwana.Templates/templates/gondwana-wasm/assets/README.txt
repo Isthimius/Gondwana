@@ -8,7 +8,7 @@ After adding a file, register it in your .csproj so it is copied to the output d
         </Content>
     </ItemGroup>
 
-Then load it in GameHost.cs:
+Then load it in MyGameHost.cs:
 
     Tilesheets:  new Tilesheet("name", @"assets\your-sprite.png")
     Audio:       Engine.Managers.AudioResources.LoadFromFile("name", @"assets\theme.mp3")   // desktop
