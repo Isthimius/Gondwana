@@ -161,6 +161,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{B386
 		Tooling\scripts\Publish-Gondwana-Wasm.ps1 = Tooling\scripts\Publish-Gondwana-Wasm.ps1
 		Tooling\scripts\README.md = Tooling\scripts\README.md
 		Tooling\scripts\Reinstall-Gondwana-Cli.ps1 = Tooling\scripts\Reinstall-Gondwana-Cli.ps1
+		Tooling\scripts\Reinstall-Gondwana-Templates.ps1 = Tooling\scripts\Reinstall-Gondwana-Templates.ps1
 		Tooling\scripts\release.ps1 = Tooling\scripts\release.ps1
 		Tooling\scripts\Setup-Gondwana-Dev.ps1 = Tooling\scripts\Setup-Gondwana-Dev.ps1
 	EndProjectSection
