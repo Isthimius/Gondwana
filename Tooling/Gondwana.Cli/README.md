@@ -132,7 +132,7 @@ The scaffolded project contains:
 - `GameWindow.cs` — desktop `Window` (compiled only for `net8.0`)
 - `GameView.cs` — browser `UserControl` (compiled for both targets, used only in WASM)
 - `GameRenderSurface.cs` — thin subclass of `AvaloniaBitmapRenderSurfaceControl`
-- `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs that show both desktop and browser audio patterns
+- `MyGameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs that show both desktop and browser audio patterns
 - `wwwroot/gondwana-audio.js` — the Gondwana browser audio module
 - `assets/README.txt` — instructions for adding sprites and other assets
 

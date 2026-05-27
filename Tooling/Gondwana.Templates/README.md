@@ -35,7 +35,7 @@ This scaffolds a ready-to-run WinForms project containing:
 - `MyGame.csproj` — targets `net8.0-windows` with the four Gondwana packages pre-referenced
 - `Program.cs` — `[STAThread]` WinForms entry point
 - `GameWindow.cs` — `Form` wired to the engine lifecycle (`OnLoad` → host, `OnShown` → `Initialize`, `OnFormClosed` → `Dispose`)
-- `GameHost.cs` — `WinFormsGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
+- `MyGameHost.cs` — `WinFormsGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
 - `assets/README.txt` — instructions for adding sprites and other asset files
 
 ### Avalonia (Windows, macOS, Linux)
@@ -52,7 +52,7 @@ This scaffolds a ready-to-run Avalonia project containing:
 - `Program.cs` — Avalonia `AppBuilder` entry point using `UsePlatformDetect()`
 - `App.cs` — `Application` subclass that creates the main window on startup
 - `GameWindow.cs` — `Window` wired to the engine lifecycle (`OnOpened` → host + `Initialize`, `OnClosed` → `Dispose`)
-- `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
+- `MyGameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
 - `assets/README.txt` — instructions for adding sprites and other asset files
 
 ### Choosing a backbuffer
@@ -76,7 +76,7 @@ Omitting `--Backbuffer` is equivalent to passing `--Backbuffer bitmap`.
 
 When `--Backbuffer gpu` is used:
 - `GameWindow.cs` uses `WinFormGpuRenderSurfaceControl` / `AvaloniaGpuRenderSurfaceControl` instead of the bitmap variant.
-- `GameHost.cs` derives from `WinFormsGpuGameHost` / `AvaloniaGpuGameHost` instead of `WinFormsGameHost` / `AvaloniaGameHost`.
+- `MyGameHost.cs` derives from `WinFormsGpuGameHost` / `AvaloniaGpuGameHost` instead of `WinFormsGameHost` / `AvaloniaGameHost`.
 
 ### Avalonia WASM (desktop + browser)
 
@@ -103,7 +103,7 @@ This scaffolds a project containing:
 - `GameWindow.cs` — desktop `Window` (compiled only when `BROWSER` is not defined)
 - `GameView.cs` — browser single-view `UserControl`
 - `GameRenderSurface.cs` — thin project-specific subclass of `AvaloniaBitmapRenderSurfaceControl`
-- `GameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs showing both desktop and browser audio patterns
+- `MyGameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs showing both desktop and browser audio patterns
 - `wwwroot/gondwana-audio.js` — the Gondwana browser audio JS module, also shipped by the `Gondwana.Audio.Browser` NuGet package as a content file
 - `assets/README.txt` — instructions for adding sprites and other assets
 
