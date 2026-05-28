@@ -71,6 +71,7 @@ public sealed class SvgResource : IDisposable
 
         if (width <= 0)
             throw new ArgumentOutOfRangeException(nameof(width), "Width must be greater than 0.");
+
         if (height <= 0)
             throw new ArgumentOutOfRangeException(nameof(height), "Height must be greater than 0.");
 

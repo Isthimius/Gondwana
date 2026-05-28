@@ -78,4 +78,87 @@ public static class SkiaExtensions
 
         return result;
     }
+
+    /// <summary>
+    /// Copies a region from a source SKBitmap to a new SKBitmap.
+    /// </summary>
+    /// <param name="source">The source SKBitmap.</param>
+    /// <param name="sourceRect">The rectangle region to copy.</param>
+    /// <returns>A new SKBitmap containing the copied region.</returns>
+    public static SKBitmap CopyRegion(this SKBitmap source, Rectangle sourceRect)
+    {
+        if (source == null || source.IsEmpty)
+            throw new ArgumentException("Invalid source bitmap.", nameof(source));
+
+        if (sourceRect.Width <= 0 || sourceRect.Height <= 0)
+            throw new ArgumentException("Source rectangle must have positive size.", nameof(sourceRect));
+
+        var skSourceRect = sourceRect.ToSKRectI();
+
+        if (!source.Info.Rect.Contains(skSourceRect))
+            throw new ArgumentOutOfRangeException(nameof(sourceRect), "Source rectangle is outside the bitmap bounds.");
+
+        var copy = new SKBitmap(new SKImageInfo(
+            sourceRect.Width,
+            sourceRect.Height,
+            source.Info.ColorType,
+            source.Info.AlphaType));
+
+        using var canvas = new SKCanvas(copy);
+
+        canvas.Clear(SKColors.Transparent);
+
+        canvas.DrawBitmap(
+            source,
+            skSourceRect,
+            new SKRect(0, 0, sourceRect.Width, sourceRect.Height));
+
+        return copy;
+    }
+
+    /// <summary>
+    /// Copies a region from a source SKImage to a new SKImage.
+    /// </summary>
+    /// <param name="source">The source SKImage.</param>
+    /// <param name="sourceRect">The rectangle region to copy.</param>
+    /// <returns>A new SKImage containing the copied region.</returns>
+    public static SKImage CopyRegion(this SKImage source, Rectangle sourceRect)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        if (sourceRect.Width <= 0 || sourceRect.Height <= 0)
+            throw new ArgumentException("Source rectangle must have positive size.", nameof(sourceRect));
+
+        var skSourceRect = new SKRect(
+            sourceRect.Left,
+            sourceRect.Top,
+            sourceRect.Right,
+            sourceRect.Bottom);
+
+        var skDestRect = new SKRect(
+            0,
+            0,
+            sourceRect.Width,
+            sourceRect.Height);
+
+        var imageInfo = new SKImageInfo(
+            sourceRect.Width,
+            sourceRect.Height,
+            source.ColorType,
+            source.AlphaType,
+            source.ColorSpace);
+
+        using var surface = SKSurface.Create(imageInfo)
+            ?? throw new InvalidOperationException("Could not create SKSurface.");
+
+        surface.Canvas.Clear(SKColors.Transparent);
+
+        surface.Canvas.DrawImage(
+            source,
+            skSourceRect,
+            skDestRect);
+
+        return surface.Snapshot();
+    }
 }

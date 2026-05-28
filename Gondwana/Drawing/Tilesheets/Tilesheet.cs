@@ -13,24 +13,12 @@ namespace Gondwana.Drawing.Tilesheets;
 [JsonObject(IsReference = true)]
 public sealed class Tilesheet : IDisposable
 {
-    private readonly struct TilesheetSlice
-    {
-        public readonly SKBitmap Bitmap;
-        public readonly SKImage Image;
-
-        public TilesheetSlice(SKBitmap bmp, SKImage img)
-        {
-            Bitmap = bmp;
-            Image = img;
-        }
-    }
-
-    private TilesheetSlice?[,]? _tileCache;
-
     /// <summary>
     /// Occurs when this tilesheet is disposed.
     /// </summary>
-    public event EventHandler<TilesheetDisposedEventArgs> Disposed;
+    public event Action Disposed;
+
+    #region ctors
 
     private Tilesheet()
     { }
@@ -128,6 +116,8 @@ public sealed class Tilesheet : IDisposable
 
         TilesheetRegistry.Instance.Register(this);
     }
+
+    #endregion ctors
 
     /// <summary>
     /// Gets the SkiaSharp bitmap containing the tilesheet image.
@@ -303,6 +293,8 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     public bool Premultiplied { get; private set; } = false;
 
+    #region Methods
+
     /// <summary>
     /// Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent,
     /// and then premultiplies the alpha channel.
@@ -386,72 +378,6 @@ public sealed class Tilesheet : IDisposable
         int x = xTile * (_tileSize.Width + XPixelsBetweenTiles) + InitialOffsetX;
         int y = yTile * (_tileSize.Height + YPixelsBetweenTiles) + InitialOffsetY;
         return new Rectangle(new Point(x, y), _tileSize);
-    }
-
-    private void BuildTileCache()
-    {
-        ClearCache();
-
-        if (TileSize.Width <= 0 || TileSize.Height <= 0)
-            return;
-
-        int xTiles = (SkBitmap.Width - InitialOffsetX + XPixelsBetweenTiles) / (_tileSize.Width + XPixelsBetweenTiles);
-        int yTiles = (SkBitmap.Height - InitialOffsetY + YPixelsBetweenTiles) / (_tileSize.Height + YPixelsBetweenTiles);
-
-        _tileCache = new TilesheetSlice?[xTiles, yTiles];
-
-        for (int y = 0; y < yTiles; y++)
-        {
-            for (int x = 0; x < xTiles; x++)
-            {
-                var srcRect = GetTileBounds(x, y);
-                if (!SkBitmap.Info.Rect.Contains(srcRect.ToSKRectI()))
-                    continue;
-
-                var srcInfo = SkBitmap.Info;
-
-                // IMPORTANT: preserve alpha + color type from the masked tilesheet bitmap
-                var sliceInfo = new SKImageInfo(
-                    _tileSize.Width,
-                    _tileSize.Height,
-                    srcInfo.ColorType,
-                    srcInfo.AlphaType
-                );
-
-                var bmp = new SKBitmap(sliceInfo);
-
-                // ensure any untouched pixels are transparent
-                bmp.Erase(SKColors.Transparent);
-
-                if (SkBitmap.ExtractSubset(bmp, srcRect.ToSKRectI()))
-                {
-                    var img = SKImage.FromBitmap(bmp);
-                    _tileCache[x, y] = new TilesheetSlice(bmp, img);
-                }
-                else
-                {
-                    bmp.Dispose();
-                }
-            }
-        }
-    }
-
-    private void ClearCache()
-    {
-        if (_tileCache == null)
-            return;
-
-        for (int y = 0; y < _tileCache.GetLength(1); y++)
-        {
-            for (int x = 0; x < _tileCache.GetLength(0); x++)
-            {
-                _tileCache[x, y]?.Bitmap.Dispose();
-                _tileCache[x, y]?.Image.Dispose();
-                _tileCache[x, y] = null;
-            }
-        }
-
-        _tileCache = null;
     }
 
     /// <summary>
@@ -573,6 +499,8 @@ public sealed class Tilesheet : IDisposable
     /// <param name="y">Zero-based tile row index.</param>
     public Frame this[int x, int y] => new Frame(this, x, y);
 
+    #endregion Methods
+
     // --- IDisposable pattern ---
     private bool _disposed;
 
@@ -616,7 +544,7 @@ public sealed class Tilesheet : IDisposable
 
             try
             {
-                Disposed?.Invoke(this, new TilesheetDisposedEventArgs(this));
+                Disposed?.Invoke();
             }
             catch (Exception ex)
             {
