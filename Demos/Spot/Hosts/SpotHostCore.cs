@@ -642,7 +642,7 @@ internal sealed class SpotHostCore
                              .SetFilled(true);
         }
 
-        if (SpotGame.SpotGameField.GridColumnCount > 10 || SpotGame.SpotGameField.GridRowCount > 10)
+        if (SpotGame.SpotGameField.GridRowCount > 10)
         {
             SetScoreVisible(false);
         }
