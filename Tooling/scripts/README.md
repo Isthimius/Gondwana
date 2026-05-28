@@ -2,6 +2,17 @@
 
 This folder contains PowerShell helper scripts for building, publishing, and releasing Gondwana projects. All scripts require **PowerShell 5.1** or later.
 
+## Table of contents
+
+- [`Setup-Gondwana-Dev.ps1`](#setup-gondwana-devps1)
+- [`Reinstall-Gondwana-Cli.ps1`](#reinstall-gondwana-clips1)
+- [`Reinstall-Gondwana-Templates.ps1`](#reinstall-gondwana-templatesps1)
+- [`Publish-Gondwana-Wasm.ps1`](#publish-gondwana-wasmps1)
+- [`Deploy-Gondwana-Itch.ps1`](#deploy-gondwana-itchps1)
+- [`Deploy-Gondwana-Website.ps1`](#deploy-gondwana-websiteps1)
+- [`Generate-Project-Changelogs.ps1`](#generate-project-changelogsps1)
+- [`release.ps1`](#releaseps1)
+
 ---
 
 ## Scripts
