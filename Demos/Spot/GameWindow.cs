@@ -1,11 +1,10 @@
-using Gondwana;
-using Gondwana.Configuration;
-using Gondwana.WinForms.Rendering;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Extensions.Logging;
+using Gondwana.Configuration;
+using Gondwana.WinForms.Rendering;
 
 namespace Gondwana.Demos.Spot;
 
@@ -194,6 +193,7 @@ internal partial class GameWindow : Form
     {
         _menuStrip = new MenuStrip();
 
+        #region Game menu
         var gameMenu = new ToolStripMenuItem("Game");
         var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => OpenNewGameDialog());
         var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => Close());
@@ -201,7 +201,9 @@ internal partial class GameWindow : Form
         gameMenu.DropDownItems.Add(newGameMenuItem);
         gameMenu.DropDownItems.Add(new ToolStripSeparator());
         gameMenu.DropDownItems.Add(exitMenuItem);
+        #endregion Game menu
 
+        #region Options menu
         var optionsMenu = new ToolStripMenuItem("Options");
 
         _musicMenuItem = new ToolStripMenuItem("Music")
@@ -245,9 +247,17 @@ internal partial class GameWindow : Form
         optionsMenu.DropDownItems.Add(_cloudsMenuItem);
         optionsMenu.DropDownItems.Add(new ToolStripSeparator());
         optionsMenu.DropDownItems.Add(_gpuAccelerationMenuItem);
+        #endregion Options menu
+
+        #region Help menu
+        var helpMenu = new ToolStripMenuItem("Help");
+        var aboutMenuItem = new ToolStripMenuItem("About", null, (s, e) => OpenAboutDialog());
+        helpMenu.DropDownItems.Add(aboutMenuItem);
+        #endregion Help menu
 
         _menuStrip.Items.Add(gameMenu);
         _menuStrip.Items.Add(optionsMenu);
+        _menuStrip.Items.Add(helpMenu);
 
         MainMenuStrip = _menuStrip;
         Controls.Add(_menuStrip);
@@ -318,5 +328,11 @@ internal partial class GameWindow : Form
             var options = dialog.Options;
             _gameHost!.Engine.EngineDispatcher.Post(() => _gameHost.StartNewGame(options));
         }
+    }
+
+    private void OpenAboutDialog()
+    {
+        using var dialog = new AboutDialog();
+        dialog.ShowDialog(this);
     }
 }
