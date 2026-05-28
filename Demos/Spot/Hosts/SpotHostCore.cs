@@ -215,7 +215,7 @@ internal sealed class SpotHostCore
             return;
 
         Engine.Input.KeyboardEventPoller.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.S);
+        Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Oemtilde);
     }
 
     internal void UnhookEvents()
@@ -357,7 +357,7 @@ internal sealed class SpotHostCore
         var key = WinFormsKeyboardAdapter.GetKeyFromString(args.KeyConfig.Key);
         switch (key)
         {
-            case Keys.S:
+            case Keys.Oemtilde:
                 SetScoreVisible(!_showScores);
                 break;
             default:
