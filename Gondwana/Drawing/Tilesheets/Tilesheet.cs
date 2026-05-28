@@ -420,7 +420,7 @@ public sealed class Tilesheet : IDisposable
 
                 var bmp = new SKBitmap(sliceInfo);
 
-                // Optional but nice: ensure any untouched pixels are transparent
+                // ensure any untouched pixels are transparent
                 bmp.Erase(SKColors.Transparent);
 
                 if (SkBitmap.ExtractSubset(bmp, srcRect.ToSKRectI()))

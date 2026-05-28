@@ -91,8 +91,10 @@ public sealed class EngineState
     /// core <see cref="EngineState"/> schema.
     /// </para>
     /// <para>
-    /// Values are accessed using strongly-typed <see cref="ValueKey{T}"/> instances to ensure
-    /// compile-time safety while preserving a flexible serialized representation.
+    /// Values are accessed using strongly-typed <see cref="ValueKey{T}"/> instances.
+    /// </para>
+    /// <para>
+    /// *** NOTE: This property is NOT included in the serialized JSON. ***
     /// </para>
     /// </summary>
     /// <example>
