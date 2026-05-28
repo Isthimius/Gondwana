@@ -1,4 +1,6 @@
-﻿namespace Gondwana.Drawing;
+﻿using Newtonsoft.Json;
+
+namespace Gondwana.Drawing;
 
 /// <summary>
 /// Represents the overhang dimensions (in pixels) that extend beyond a tile's primary area.
@@ -9,17 +11,22 @@
 /// <param name="Top">The number of pixels the tile extends beyond its top boundary.</param>
 /// <param name="Right">The number of pixels the tile extends beyond its right boundary.</param>
 /// <param name="Bottom">The number of pixels the tile extends beyond its bottom boundary.</param>
-public record struct Overhang(int Left, int Top, int Right, int Bottom)
+public record struct Overhang(
+    [property: JsonProperty("left")] int Left,
+    [property: JsonProperty("top")] int Top,
+    [property: JsonProperty("right")] int Right,
+    [property: JsonProperty("bottom")] int Bottom)
 {
     /// <summary>
     /// Represents an overhang with no extension in any direction (all values are zero).
     /// </summary>
     public static readonly Overhang None = new(0, 0, 0, 0);
-    
+
     /// <summary>
     /// Gets a value indicating whether this overhang has no extension in any direction.
     /// Returns <see langword="true"/> if all overhang values (Left, Top, Right, Bottom) are zero;
     /// otherwise, <see langword="false"/>.
     /// </summary>
+    [JsonIgnore]
     public bool IsEmpty => Left == 0 && Top == 0 && Right == 0 && Bottom == 0;
 }

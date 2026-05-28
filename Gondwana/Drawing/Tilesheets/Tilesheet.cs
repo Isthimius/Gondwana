@@ -155,103 +155,6 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    [JsonProperty]
-    private Size _tileSize;
-
-    /// <summary>
-    /// Gets or sets the size of each individual tile in the tilesheet.
-    /// Setting this property rebuilds the internal tile cache.
-    /// </summary>
-    [JsonIgnore]
-    public Size TileSize
-    {
-        get => _tileSize;
-        set
-        {
-            _tileSize = value;
-            BuildTileCache();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the overhang dimensions (in pixels) that extend beyond each tile's base boundaries;
-    /// i.e., how much of the tile should be considered the "overhang" portion when rendering.
-    /// </summary>
-    [JsonProperty]
-    public Overhang OverhangPixels { get; set; } = Overhang.None;
-
-    [JsonProperty]
-    private int _initialOffsetX;
-
-    /// <summary>
-    /// Gets or sets the horizontal offset (in pixels) from the left edge of the tilesheet to the first tile.
-    /// Setting this property rebuilds the internal tile cache.
-    /// </summary>
-    [JsonIgnore]
-    public int InitialOffsetX
-    {
-        get => _initialOffsetX;
-        set
-        {
-            _initialOffsetX = value;
-            BuildTileCache();
-        }
-    }
-
-    [JsonProperty]
-    private int _initialOffsetY;
-
-    /// <summary>
-    /// Gets or sets the vertical offset (in pixels) from the top edge of the tilesheet to the first tile.
-    /// Setting this property rebuilds the internal tile cache.
-    /// </summary>
-    [JsonIgnore]
-    public int InitialOffsetY
-    {
-        get => _initialOffsetY;
-        set
-        {
-            _initialOffsetY = value;
-            BuildTileCache();
-        }
-    }
-
-    [JsonProperty]
-    private int _xPixelsBetweenTiles;
-
-    /// <summary>
-    /// Gets or sets the horizontal spacing (in pixels) between tiles in the tilesheet.
-    /// Setting this property rebuilds the internal tile cache.
-    /// </summary>
-    [JsonIgnore]
-    public int XPixelsBetweenTiles
-    {
-        get => _xPixelsBetweenTiles;
-        set
-        {
-            _xPixelsBetweenTiles = value;
-            BuildTileCache();
-        }
-    }
-
-    [JsonProperty]
-    private int _yPixelsBetweenTiles;
-
-    /// <summary>
-    /// Gets or sets the vertical spacing (in pixels) between tiles in the tilesheet.
-    /// Setting this property rebuilds the internal tile cache.
-    /// </summary>
-    [JsonIgnore]
-    public int YPixelsBetweenTiles
-    {
-        get => _yPixelsBetweenTiles;
-        set
-        {
-            _yPixelsBetweenTiles = value;
-            BuildTileCache();
-        }
-    }
-
     /// <summary>
     /// Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.
     /// </summary>
@@ -335,8 +238,8 @@ public sealed class Tilesheet : IDisposable
 
         SkBitmapOriginal = SkBitmap.Copy();
 
-        SkiaHelper.ApplyAlphaMask(SkBitmap, targetColor, tolerance);
-        SkBitmap = SkiaHelper.PremultiplyAlpha(SkBitmap);
+        SkBitmap.ApplyAlphaMask(targetColor, tolerance);
+        SkBitmap = SkBitmap.PremultiplyAlpha();
 
         BuildTileCache();
     }
@@ -354,7 +257,7 @@ public sealed class Tilesheet : IDisposable
         Premultiplied = true;
 
         SkBitmapOriginal = SkBitmap.Copy();
-        SkBitmap = SkiaHelper.PremultiplyAlpha(SkBitmap);
+        SkBitmap = SkBitmap.PremultiplyAlpha();
         BuildTileCache();
     }
 
@@ -370,14 +273,7 @@ public sealed class Tilesheet : IDisposable
         if (SkBitmap == null || SkBitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
 
-        return SkiaHelper.EncodeBitmapToBytes(SkBitmap, format, quality);
-    }
-
-    private Rectangle GetTileBounds(int xTile, int yTile)
-    {
-        int x = xTile * (_tileSize.Width + XPixelsBetweenTiles) + InitialOffsetX;
-        int y = yTile * (_tileSize.Height + YPixelsBetweenTiles) + InitialOffsetY;
-        return new Rectangle(new Point(x, y), _tileSize);
+        return SkBitmap.EncodeBitmapToBytes(format, quality);
     }
 
     /// <summary>
