@@ -16,7 +16,7 @@ public sealed class Tilesheet : IDisposable
     /// <summary>
     /// Occurs when this tilesheet is disposed.
     /// </summary>
-    public event Action Disposed;
+    public event Action? Disposed;
 
     #region ctors
 
@@ -32,7 +32,7 @@ public sealed class Tilesheet : IDisposable
         : this()
     {
         _name = name;
-        SkBitmap = bitmap;
+        SkBitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
         TilesheetRegistry.Instance.Register(this);
     }
 
@@ -102,17 +102,26 @@ public sealed class Tilesheet : IDisposable
     /// <param name="file">The path to the image file.</param>
     public Tilesheet(Tilesheet baseSheet, string name, string file)
     {
-        InitialOffsetX = baseSheet.InitialOffsetX;
-        InitialOffsetY = baseSheet.InitialOffsetY;
-        XPixelsBetweenTiles = baseSheet.XPixelsBetweenTiles;
-        YPixelsBetweenTiles = baseSheet.YPixelsBetweenTiles;
-        _tileSize = baseSheet._tileSize;
-        OverhangPixels = baseSheet.OverhangPixels;
-        ValueBag = new(baseSheet.ValueBag);
+        if (baseSheet is null)
+            throw new ArgumentNullException(nameof(baseSheet));
 
         _name = name;
-        SkBitmap = SKBitmap.Decode(file);
+
+        SkBitmap = SKBitmap.Decode(file)
+            ?? throw new ArgumentException($"Invalid image file: {file}");
+
         ImageFilePath = file;
+        ValueBag = new(baseSheet.ValueBag);
+
+        foreach (var region in baseSheet.Regions)
+        {
+            AddRegion(
+                region.Name,
+                region.Area,
+                region.Spacing,
+                region.TileSize,
+                region.OverhangPixels);
+        }
 
         TilesheetRegistry.Instance.Register(this);
     }
@@ -124,7 +133,7 @@ public sealed class Tilesheet : IDisposable
     /// This may be a modified version if alpha masking or premultiplication has been applied.
     /// </summary>
     [JsonIgnore]
-    public SKBitmap SkBitmap { get; private set; }
+    public SKBitmap SkBitmap { get; private set; } = null!;
 
     /// <summary>
     /// Gets the original SkiaSharp bitmap before any alpha masking or premultiplication was applied.
@@ -133,7 +142,7 @@ public sealed class Tilesheet : IDisposable
     [JsonIgnore]
     public SKBitmap? SkBitmapOriginal { get; private set; } = null;
 
-    [JsonProperty]
+    [JsonProperty("name")]
     private string _name = string.Empty;
 
     /// <summary>
@@ -154,6 +163,13 @@ public sealed class Tilesheet : IDisposable
             TilesheetRegistry.Instance.OnTilesheetRenamed(old, _name, this);
         }
     }
+
+    /// <summary>
+    /// Gets the regions that define tile layouts within this tilesheet.
+    /// Each region may define its own area, tile size, spacing, and overhang settings.
+    /// </summary>
+    [JsonProperty("regions")]
+    public List<TilesheetRegion> Regions { get; private set; } = new();
 
     /// <summary>
     /// Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.
@@ -199,6 +215,103 @@ public sealed class Tilesheet : IDisposable
     #region Methods
 
     /// <summary>
+    /// Adds a region to this tilesheet.
+    /// </summary>
+    /// <param name="name">The name to assign to this region.</param>
+    /// <param name="area">The rectangular area of the source image occupied by this region.</param>
+    /// <param name="spacing">The horizontal and vertical spacing between tiles in this region.</param>
+    /// <param name="tileSize">The size of each individual tile in this region.</param>
+    /// <param name="overhangPixels">The overhang dimensions for tiles in this region.</param>
+    /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when the region name is null, whitespace, or already exists.</exception>
+    public TilesheetRegion AddRegion(
+        string name,
+        Rectangle area,
+        Size spacing,
+        Size tileSize,
+        Overhang overhangPixels)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Region name must be a non-empty string.", nameof(name));
+
+        if (GetRegion(name) != null)
+            throw new ArgumentException($"A tilesheet region named '{name}' already exists.", nameof(name));
+
+        var region = new TilesheetRegion(
+            this,
+            name,
+            area,
+            spacing,
+            tileSize,
+            overhangPixels);
+
+        Regions.Add(region);
+
+        return region;
+    }
+
+    /// <summary>
+    /// Adds a region to this tilesheet.
+    /// </summary>
+    /// <param name="name">The name to assign to this region.</param>
+    /// <param name="area">The rectangular area of the source image occupied by this region.</param>
+    /// <param name="spacing">The horizontal and vertical spacing between tiles in this region.</param>
+    /// <param name="tileSize">The size of each individual tile in this region.</param>
+    /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
+    public TilesheetRegion AddRegion(
+        string name,
+        Rectangle area,
+        Size spacing,
+        Size tileSize)
+    {
+        return AddRegion(name, area, spacing, tileSize, Overhang.None);
+    }
+
+    /// <summary>
+    /// Retrieves the tilesheet region with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the region to retrieve.</param>
+    /// <returns>
+    /// The matching <see cref="TilesheetRegion"/>, or <see langword="null"/> if no matching region exists.
+    /// </returns>
+    public TilesheetRegion? GetRegion(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return null;
+
+        foreach (var region in Regions)
+        {
+            if (string.Equals(region.Name, name, StringComparison.OrdinalIgnoreCase))
+                return region;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Removes the tilesheet region with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the region to remove.</param>
+    /// <param name="dispose">Whether the removed region should be disposed.</param>
+    /// <returns>
+    /// <see langword="true"/> if a matching region was found and removed; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool RemoveRegion(string name, bool dispose = true)
+    {
+        var region = GetRegion(name);
+
+        if (region == null)
+            return false;
+
+        Regions.Remove(region);
+
+        if (dispose)
+            region.Dispose();
+
+        return true;
+    }
+
+    /// <summary>
     /// Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent,
     /// and then premultiplies the alpha channel.
     /// </summary>
@@ -215,6 +328,8 @@ public sealed class Tilesheet : IDisposable
         Premultiplied = true;
 
         var targetColor = maskColor ?? SKColors.White;
+
+        ClearTileCache();
 
         // ensure the bitmap actually supports alpha
         if (SkBitmap.Info.AlphaType == SKAlphaType.Opaque)
@@ -236,6 +351,7 @@ public sealed class Tilesheet : IDisposable
             SkBitmap = withAlpha;
         }
 
+        SkBitmapOriginal?.Dispose();
         SkBitmapOriginal = SkBitmap.Copy();
 
         SkBitmap.ApplyAlphaMask(targetColor, tolerance);
@@ -256,8 +372,13 @@ public sealed class Tilesheet : IDisposable
 
         Premultiplied = true;
 
+        ClearTileCache();
+
+        SkBitmapOriginal?.Dispose();
         SkBitmapOriginal = SkBitmap.Copy();
+
         SkBitmap = SkBitmap.PremultiplyAlpha();
+
         BuildTileCache();
     }
 
@@ -277,77 +398,63 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Retrieves the SkiaSharp image for the tile at the specified coordinates.
+    /// Retrieves the SkiaSharp image for the tile at the specified region and coordinates.
     /// </summary>
-    /// <param name="x">The zero-based tile column index.</param>
-    /// <param name="y">The zero-based tile row index.</param>
+    /// <param name="regionName">The name of the tilesheet region.</param>
+    /// <param name="x">The zero-based tile column index within the region.</param>
+    /// <param name="y">The zero-based tile row index within the region.</param>
     /// <returns>
-    /// The <see cref="SKImage"/> for the specified tile, or <see langword="null"/> if the coordinates
+    /// The <see cref="SKImage"/> for the specified tile, or <see langword="null"/> if the region or coordinates
     /// are out of bounds or the tile cache is not initialized.
     /// </returns>
-    public SKImage? GetImage(int x, int y)
+    public SKImage? GetImage(string regionName, int x, int y)
     {
-        if (_tileCache == null)
-            BuildTileCache();
+        var region = GetRegion(regionName);
 
-        if (_tileCache == null)
+        if (region == null)
             return null;
 
-        if ((uint)x >= (uint)_tileCache.GetLength(0) || (uint)y >= (uint)_tileCache.GetLength(1))
-            return null;
-
-        return _tileCache?[x, y]?.Image;
+        return region.GetImage(x, y);
     }
 
     /// <summary>
-    /// Retrieves the SkiaSharp bitmap for the tile at the specified coordinates.
+    /// Retrieves the SkiaSharp bitmap for the tile at the specified region and coordinates.
     /// </summary>
-    /// <param name="x">The zero-based tile column index.</param>
-    /// <param name="y">The zero-based tile row index.</param>
+    /// <param name="regionName">The name of the tilesheet region.</param>
+    /// <param name="x">The zero-based tile column index within the region.</param>
+    /// <param name="y">The zero-based tile row index within the region.</param>
     /// <returns>
-    /// The <see cref="SKBitmap"/> for the specified tile, or <see langword="null"/> if the coordinates
+    /// The <see cref="SKBitmap"/> for the specified tile, or <see langword="null"/> if the region or coordinates
     /// are out of bounds or the tile cache is not initialized.
     /// </returns>
-    public SKBitmap? GetBitmap(int x, int y)
+    public SKBitmap? GetBitmap(string regionName, int x, int y)
     {
-        if (_tileCache == null)
-            BuildTileCache();
+        var region = GetRegion(regionName);
 
-        if (_tileCache == null)
+        if (region == null)
             return null;
 
-        if ((uint)x >= (uint)_tileCache.GetLength(0) || (uint)y >= (uint)_tileCache.GetLength(1))
-            return null;
-
-        return _tileCache?[x, y]?.Bitmap;
+        return region.GetBitmap(x, y);
     }
 
     /// <summary>
-    /// Retrieves all tile bitmaps from the tilesheet as a dictionary indexed by their coordinates.
+    /// Retrieves all tile bitmaps from the tilesheet as a dictionary indexed by their region and coordinates.
     /// </summary>
     /// <returns>
-    /// A dictionary where keys are (x, y) tuples representing tile coordinates and values are the
+    /// A dictionary where keys are (regionName, x, y) tuples representing tile coordinates and values are the
     /// corresponding <see cref="SKBitmap"/> instances.
     /// </returns>
-    public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
+    public Dictionary<(string regionName, int x, int y), SKBitmap> GetAllBitmaps()
     {
-        if (_tileCache == null)
-            BuildTileCache();
+        var tiles = new Dictionary<(string regionName, int x, int y), SKBitmap>();
 
-        var tiles = new Dictionary<(int x, int y), SKBitmap>();
-        if (_tileCache == null)
-            return tiles;
-
-        int xTiles = _tileCache.GetLength(0);
-        int yTiles = _tileCache.GetLength(1);
-
-        for (int y = 0; y < yTiles; y++)
+        foreach (var region in Regions)
         {
-            for (int x = 0; x < xTiles; x++)
+            var regionTiles = region.GetAllBitmaps();
+
+            foreach (var tile in regionTiles)
             {
-                var slice = _tileCache[x, y];
-                if (slice.HasValue)
-                    tiles[(x, y)] = slice.Value.Bitmap;
+                tiles[(region.Name, tile.Key.x, tile.Key.y)] = tile.Value;
             }
         }
 
@@ -355,45 +462,54 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Retrieves all tile images from the tilesheet as a dictionary indexed by their coordinates.
+    /// Retrieves all tile images from the tilesheet as a dictionary indexed by their region and coordinates.
     /// </summary>
     /// <returns>
-    /// A dictionary where keys are (x, y) tuples representing tile coordinates and values are the
+    /// A dictionary where keys are (regionName, x, y) tuples representing tile coordinates and values are the
     /// corresponding <see cref="SKImage"/> instances.
     /// </returns>
-    public Dictionary<(int x, int y), SKImage> GetAllImages()
+    public Dictionary<(string regionName, int x, int y), SKImage> GetAllImages()
     {
-        if (_tileCache == null)
-            BuildTileCache();
+        var tiles = new Dictionary<(string regionName, int x, int y), SKImage>();
 
-        var tiles = new Dictionary<(int x, int y), SKImage>();
-        if (_tileCache == null)
-            return tiles;
-
-        int xTiles = _tileCache.GetLength(0);
-        int yTiles = _tileCache.GetLength(1);
-
-        for (int y = 0; y < yTiles; y++)
+        foreach (var region in Regions)
         {
-            for (int x = 0; x < xTiles; x++)
+            var regionTiles = region.GetAllImages();
+
+            foreach (var tile in regionTiles)
             {
-                var slice = _tileCache[x, y];
-                if (slice.HasValue)
-                    tiles[(x, y)] = slice.Value.Image;
+                tiles[(region.Name, tile.Key.x, tile.Key.y)] = tile.Value;
             }
         }
 
         return tiles;
+    }
+
+    private void BuildTileCache()
+    {
+        foreach (var region in Regions)
+        {
+            region.BuildTileCache();
+        }
+    }
+
+    private void ClearTileCache()
+    {
+        foreach (var region in Regions)
+        {
+            region.ClearTileCache();
+        }
     }
 
     // Inside Tilesheet
     /// <summary>
     /// Returns a <see cref="Frame"/> representing the tile at the given
-    /// sheet coordinates.
+    /// region and sheet coordinates.
     /// </summary>
-    /// <param name="x">Zero-based tile column index.</param>
-    /// <param name="y">Zero-based tile row index.</param>
-    public Frame this[int x, int y] => new Frame(this, x, y);
+    /// <param name="regionName">The name of the tilesheet region.</param>
+    /// <param name="x">Zero-based tile column index within the region.</param>
+    /// <param name="y">Zero-based tile row index within the region.</param>
+    public Frame this[string regionName, int x, int y] => new Frame(this, regionName, x, y);
 
     #endregion Methods
 
@@ -421,18 +537,12 @@ public sealed class Tilesheet : IDisposable
             TilesheetRegistry.Instance.Remove(_name, this, dispose: false);
 
             // clean up tile cache
-            if (_tileCache != null)
+            foreach (var region in Regions)
             {
-                for (int x = 0; x < _tileCache.GetLength(0); x++)
-                {
-                    for (int y = 0; y < _tileCache.GetLength(1); y++)
-                    {
-                        _tileCache[x, y]?.Bitmap?.Dispose();
-                        _tileCache[x, y]?.Image?.Dispose();
-                    }
-                }
-                _tileCache = null;
+                region.Dispose();
             }
+
+            Regions.Clear();
 
             // dispose the main bitmaps
             SkBitmap?.Dispose();
