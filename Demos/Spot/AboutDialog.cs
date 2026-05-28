@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 
@@ -9,6 +10,10 @@ namespace Gondwana.Demos.Spot;
 public sealed class AboutDialog : Form
 {
     private const string REPO_URL = "https://github.com/isthimius/gondwana";
+
+    private readonly PrivateFontCollection _privateFonts = new();
+    private Font? _madeWithFont;
+    private Font? _linkFont;
 
     public AboutDialog()
     {
@@ -24,6 +29,11 @@ public sealed class AboutDialog : Form
 
         var logoPath1 = Path.Combine(AppContext.BaseDirectory, "assets", "spot.png");
         var logoPath2 = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
+        var fontPath = Path.Combine(AppContext.BaseDirectory, "assets", "ArchitectsDaughter-Regular.ttf");
+
+        _privateFonts.AddFontFile(fontPath);
+        _madeWithFont = new Font(_privateFonts.Families[0], 16f, FontStyle.Bold);
+        _linkFont = new Font(_privateFonts.Families[0], 16f, FontStyle.Regular);
 
         var logo1 = new PictureBox
         {
@@ -44,22 +54,22 @@ public sealed class AboutDialog : Form
         var description = new Label
         {
             Text = "Built with Gondwana Game Engine",
-            Font = new Font(Font.FontFamily, 14, FontStyle.Bold),
+            Font = _madeWithFont,
             TextAlign = ContentAlignment.MiddleCenter,
-            Location = new Point(30, 410),
-            Size = new Size(360, 30)
+            Location = new Point(0, 405),
+            Size = new Size(420, 30)
         };
 
         var repoLink = new LinkLabel
         {
             Text = "View Gondwana on GitHub",
-            Font = new Font(Font.FontFamily, 12),
+            Font = _linkFont,
             LinkColor = Color.LightSkyBlue,
             ActiveLinkColor = Color.White,
             VisitedLinkColor = Color.LightSkyBlue,
             TextAlign = ContentAlignment.MiddleCenter,
-            Location = new Point(30, 450),
-            Size = new Size(360, 25)
+            Location = new Point(0, 450),
+            Size = new Size(420, 25)
         };
 
         repoLink.LinkClicked += (_, _) =>
@@ -89,5 +99,16 @@ public sealed class AboutDialog : Form
         Controls.Add(okButton);
 
         logo2.BringToFront();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _linkFont?.Dispose();
+            _privateFonts.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 }
