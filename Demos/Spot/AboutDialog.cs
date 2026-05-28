@@ -33,7 +33,7 @@ public sealed class AboutDialog : Form
 
         _privateFonts.AddFontFile(fontPath);
         _madeWithFont = new Font(_privateFonts.Families[0], 16f, FontStyle.Bold);
-        _linkFont = new Font(_privateFonts.Families[0], 16f, FontStyle.Regular);
+        _linkFont = new Font(Font.FontFamily, 14f, FontStyle.Underline);
 
         var logo1 = new PictureBox
         {
