@@ -102,7 +102,7 @@
             groupBox1.Size = new System.Drawing.Size(461, 57);
             groupBox1.TabIndex = 3;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Player 1";
+            groupBox1.Text = "Eugene";
             // 
             // cboColor1
             // 
@@ -131,7 +131,7 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new System.Drawing.Size(191, 23);
             textBox1.TabIndex = 5;
-            textBox1.Text = "Player 1";
+            textBox1.Text = "Eugene";
             textBox1.TextChanged += textBox1_TextChanged;
             // 
             // groupBox2
@@ -144,7 +144,7 @@
             groupBox2.Size = new System.Drawing.Size(461, 57);
             groupBox2.TabIndex = 4;
             groupBox2.TabStop = false;
-            groupBox2.Text = "Player 2";
+            groupBox2.Text = "Ward";
             // 
             // cboColor2
             // 
@@ -173,7 +173,7 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new System.Drawing.Size(191, 23);
             textBox2.TabIndex = 8;
-            textBox2.Text = "Player 2";
+            textBox2.Text = "Ward";
             textBox2.TextChanged += textBox2_TextChanged;
             // 
             // groupBox3
@@ -186,7 +186,7 @@
             groupBox3.Size = new System.Drawing.Size(461, 57);
             groupBox3.TabIndex = 5;
             groupBox3.TabStop = false;
-            groupBox3.Text = "Player 3";
+            groupBox3.Text = "Robert";
             // 
             // cboColor3
             // 
@@ -215,7 +215,7 @@
             textBox3.Name = "textBox3";
             textBox3.Size = new System.Drawing.Size(191, 23);
             textBox3.TabIndex = 11;
-            textBox3.Text = "Player 3";
+            textBox3.Text = "Robert";
             textBox3.TextChanged += textBox3_TextChanged;
             // 
             // groupBox4
@@ -228,7 +228,7 @@
             groupBox4.Size = new System.Drawing.Size(461, 57);
             groupBox4.TabIndex = 6;
             groupBox4.TabStop = false;
-            groupBox4.Text = "Player 4";
+            groupBox4.Text = "Patrick";
             // 
             // cboColor4
             // 
@@ -257,7 +257,7 @@
             textBox4.Name = "textBox4";
             textBox4.Size = new System.Drawing.Size(191, 23);
             textBox4.TabIndex = 14;
-            textBox4.Text = "Player 4";
+            textBox4.Text = "Patrick";
             textBox4.TextChanged += textBox4_TextChanged;
             // 
             // label1
