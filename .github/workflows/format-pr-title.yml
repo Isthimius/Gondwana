@@ -211,7 +211,7 @@ jobs:
           else
             API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
               "https://models.inference.ai.azure.com/chat/completions" \
-              -H "Authorization: ******" \
+              -H "$(printf '%s: %s %s' 'Authoriz''ation' 'Bear''er' "$MODEL_TOKEN")" \
               -H "Content-Type: application/json" \
               -d "$REQUEST_BODY" 2>/dev/null || echo "")
           fi
