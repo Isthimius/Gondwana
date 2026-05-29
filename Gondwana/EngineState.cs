@@ -252,7 +252,6 @@ public sealed class EngineState
         [JsonProperty] public List<Scene>? Scenes { get; set; }
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
         [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
-        [JsonProperty] public TypedValueBag? ValueBag { get; set; }
     }
 
     private static EngineStateParts NormalizeParts(EngineStateParts parts)
