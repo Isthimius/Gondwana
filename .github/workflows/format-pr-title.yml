@@ -18,6 +18,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      models: read
 
     steps:
       - name: Checkout PR branch (shallow + merge base for diff)
@@ -54,10 +55,13 @@ jobs:
       - name: Generate PR title via GitHub Models
         id: generate
         env:
-          GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          COPILOT_GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           DIFF_STAT: ${{ steps.context.outputs.diff_stat }}
           COMMITS: ${{ steps.context.outputs.commits }}
         run: |
+          MODEL_TOKEN="${COPILOT_GH_TOKEN:-$GH_TOKEN}"
+
           PROMPT=$(cat <<EOF
           You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
 
@@ -92,11 +96,16 @@ jobs:
           }))
           " <<< "$PROMPT")
 
-          API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-            "https://models.inference.ai.azure.com/chat/completions" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$REQUEST_BODY" 2>/dev/null || echo "")
+          if [ -z "$MODEL_TOKEN" ]; then
+            echo "::warning::No token available for GitHub Models API. Falling back to deterministic title generation."
+            API_RESPONSE=""
+          else
+            API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              "https://models.inference.ai.azure.com/chat/completions" \
+              -H "Authorization: Bearer $MODEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$REQUEST_BODY" 2>/dev/null || echo "")
+          fi
 
           HTTP_STATUS=$(printf '%s' "$API_RESPONSE" | tail -1)
           RESPONSE_BODY=$(printf '%s' "$API_RESPONSE" | head -n -1)
