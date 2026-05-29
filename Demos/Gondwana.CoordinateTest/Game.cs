@@ -86,15 +86,13 @@ public class Game : IDisposable
     {
         // Implementation for loading tilesheets goes here
         var tilesheet = new Tilesheet("rooster", "assets/rooster.bmp");
-        tilesheet.TileSize = new Size(50, 50);
+        tilesheet.DefaultRegion.TileSize = new Size(50, 50);
         tilesheet.ApplyMask(SKColors.Black, 60);
 
         var tilesheet2 = new Tilesheet("tiles", "assets/original.bmp");
-        tilesheet2.TileSize = new Size(64, 32);
-        tilesheet2.InitialOffsetX = 1;
-        tilesheet2.InitialOffsetY = 1;
-        tilesheet2.XPixelsBetweenTiles = 1;
-        tilesheet2.YPixelsBetweenTiles = 1;
+        tilesheet2.DefaultRegion.TileSize = new Size(64, 32);
+        tilesheet2.DefaultRegion.Area = new Rectangle(2, 2, tilesheet2.SkBitmap.Width - 2, tilesheet2.SkBitmap.Height - 2);
+        tilesheet.DefaultRegion.Spacing = new Size(1, 1);
     }
 
     private void LoadAnimationCycles()

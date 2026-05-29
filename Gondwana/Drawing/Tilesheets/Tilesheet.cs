@@ -20,8 +20,7 @@ public sealed class Tilesheet : IDisposable
 
     #region ctors
 
-    private Tilesheet()
-    { }
+    private Tilesheet() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tilesheet"/> class with the specified name and bitmap.
@@ -29,11 +28,12 @@ public sealed class Tilesheet : IDisposable
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="bitmap">The SkiaSharp bitmap containing the tilesheet image.</param>
     public Tilesheet(string name, SKBitmap bitmap)
-        : this()
     {
         _name = name;
         SkBitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
         TilesheetRegistry.Instance.Register(this);
+
+        AddDefaultRegion();
     }
 
     /// <summary>
@@ -91,6 +91,7 @@ public sealed class Tilesheet : IDisposable
 
         // Register AFTER successful decode so the registry never contains a half-constructed tilesheet
         TilesheetRegistry.Instance.Register(this);
+        AddDefaultRegion();
     }
 
     /// <summary>
@@ -172,6 +173,12 @@ public sealed class Tilesheet : IDisposable
     public List<TilesheetRegion> Regions { get; private set; } = new();
 
     /// <summary>
+    /// Gets the default region from the tilesheet.
+    /// </summary>
+    [JsonIgnore]
+    public TilesheetRegion DefaultRegion => this[TilesheetRegion.DefaultRegionName];
+
+    /// <summary>
     /// Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.
     /// </summary>
     [JsonIgnore]
@@ -212,7 +219,7 @@ public sealed class Tilesheet : IDisposable
     [JsonProperty]
     public bool Premultiplied { get; private set; } = false;
 
-    #region Methods
+    #region public methods
 
     /// <summary>
     /// Adds a region to this tilesheet.
@@ -256,6 +263,7 @@ public sealed class Tilesheet : IDisposable
     /// <param name="name">The name of the region to retrieve.</param>
     /// <returns>
     /// The matching <see cref="TilesheetRegion"/>, or <see langword="null"/> if no matching region exists.
+    /// If multiple regions have the same name, only the first match will be returned.
     /// </returns>
     public TilesheetRegion? GetRegion(string name)
     {
@@ -468,6 +476,33 @@ public sealed class Tilesheet : IDisposable
         return tiles;
     }
 
+    #endregion public methods
+
+    #region indexers
+
+    public TilesheetRegion this[string regionName] => GetRegion(regionName) ?? throw new ArgumentException($"No tilesheet region named '{regionName}' exists.", nameof(regionName));
+
+    /// <summary>
+    /// Returns a <see cref="Frame"/> representing the tile at the given
+    /// region and sheet coordinates.
+    /// </summary>
+    /// <param name="regionName">The name of the tilesheet region.</param>
+    /// <param name="x">Zero-based tile column index within the region.</param>
+    /// <param name="y">Zero-based tile row index within the region.</param>
+    public Frame this[string regionName, int x, int y] => new Frame(this, regionName, x, y);
+
+    /// <summary>
+    /// Returns a <see cref="Frame"/> representing the tile at the default
+    /// region and sheet coordinates.
+    /// </summary>
+    /// <param name="x">Zero-based tile column index within the region.</param>
+    /// <param name="y">Zero-based tile row index within the region.</param>
+    public Frame this[int x, int y] => new Frame(this, TilesheetRegion.DefaultRegionName, x, y);
+
+    #endregion indexers
+
+    #region private methods
+
     private void BuildTileCache()
     {
         foreach (var region in Regions)
@@ -484,26 +519,27 @@ public sealed class Tilesheet : IDisposable
         }
     }
 
-    // Inside Tilesheet
     /// <summary>
-    /// Returns a <see cref="Frame"/> representing the tile at the given
-    /// region and sheet coordinates.
+    /// Adds a default region covering the entire tilesheet image.
     /// </summary>
-    /// <param name="regionName">The name of the tilesheet region.</param>
-    /// <param name="x">Zero-based tile column index within the region.</param>
-    /// <param name="y">Zero-based tile row index within the region.</param>
-    public Frame this[string regionName, int x, int y] => new Frame(this, regionName, x, y);
+    /// <param name="tileSize">The size of each individual tile in the default region.</param>
+    /// <param name="spacing">The horizontal and vertical spacing between tiles in the default region.</param>
+    /// <param name="overhangPixels">The overhang dimensions for tiles in the default region.</param>
+    /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
+    private TilesheetRegion AddDefaultRegion(
+        Size? tileSize = null,
+        Size? spacing = null,
+        Overhang? overhangPixels = null)
+    {
+        return AddRegion(
+            TilesheetRegion.DefaultRegionName,
+            new Rectangle(0, 0, SkBitmap.Width, SkBitmap.Height),
+            spacing ?? Size.Empty,
+            tileSize ?? Size.Empty,
+            overhangPixels);
+    }
 
-    // Inside Tilesheet
-    /// <summary>
-    /// Returns a <see cref="Frame"/> representing the tile at the default
-    /// region and sheet coordinates.
-    /// </summary>
-    /// <param name="x">Zero-based tile column index within the region.</param>
-    /// <param name="y">Zero-based tile row index within the region.</param>
-    public Frame this[int x, int y] => new Frame(this, TilesheetRegion.DefaultRegionName, x, y);
-
-    #endregion Methods
+    #endregion private methods
 
     // --- IDisposable pattern ---
     private bool _disposed;
