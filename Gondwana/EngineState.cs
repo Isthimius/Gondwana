@@ -421,19 +421,29 @@ public sealed class EngineState
             return null;
         }
 
-        // 2) Restore metadata (these trigger cache rebuild as needed)
+        // 2) Restore metadata.
         rebuilt.Name = saved.Name;
-        rebuilt.TileSize = saved.TileSize;
-        rebuilt.InitialOffsetX = saved.InitialOffsetX;
-        rebuilt.InitialOffsetY = saved.InitialOffsetY;
-        rebuilt.XPixelsBetweenTiles = saved.XPixelsBetweenTiles;
-        rebuilt.YPixelsBetweenTiles = saved.YPixelsBetweenTiles;
-        rebuilt.OverhangPixels = saved.OverhangPixels;
 
-        // 3) Restore extensible tilesheet metadata
+        // 3) Restore regions.
+        //
+        // IMPORTANT: Deserialized TilesheetRegion instances are saved-state specs.
+        // They do not own a live Tilesheet reference after JSON deserialization.
+        // Recreate live regions on the rebuilt tilesheet so each region is attached
+        // to the rebuilt source bitmap and can build its own cache.
+        foreach (var savedRegion in saved.Regions)
+        {
+            rebuilt.AddRegion(
+                savedRegion.Name,
+                savedRegion.Area,
+                savedRegion.Spacing,
+                savedRegion.TileSize,
+                savedRegion.OverhangPixels);
+        }
+
+        // 4) Restore extensible tilesheet metadata
         rebuilt.ValueBag = saved.ValueBag.Clone();
 
-        // 4) Reapply bitmap transforms recorded in the save.
+        // 5) Reapply bitmap transforms recorded in the save.
         //
         // IMPORTANT: SkBitmap is not serialized, so these operations must be replayed here.
         // ApplyMask() also premultiplies alpha internally in the implementation.

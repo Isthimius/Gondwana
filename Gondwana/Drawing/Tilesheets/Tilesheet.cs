@@ -323,11 +323,11 @@ public sealed class Tilesheet : IDisposable
         if (SkBitmap == null || SkBitmap.IsEmpty)
             throw new ArgumentException("Invalid bitmap.");
 
-        MaskColor = maskColor;
+        var targetColor = maskColor ?? SKColors.White;
+
+        MaskColor = targetColor;
         MaskTolerance = tolerance;
         Premultiplied = true;
-
-        var targetColor = maskColor ?? SKColors.White;
 
         ClearTileCache();
 
