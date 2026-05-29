@@ -167,13 +167,105 @@ jobs:
       - name: Generate PR description body
         id: generate_description
         env:
+          COPILOT_GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           COMMITS: ${{ steps.context.outputs.commits }}
           DIFF_STAT: ${{ steps.context.outputs.diff_stat }}
         run: |
+          MODEL_TOKEN="${COPILOT_GH_TOKEN:-$GH_TOKEN}"
+
+          PROMPT=$(cat <<EOF
+          You are writing the "Summary" section for a GitHub pull request in the Gondwana game engine repository.
+
+          Using only the commit list and changed-files stat below, infer the most likely PR intent and produce concise summary bullets.
+
+          Rules:
+          - Return 2 to 4 markdown bullet points.
+          - Each bullet must start with "- ".
+          - No heading text.
+          - Keep each bullet under 120 characters.
+          - Focus on user-visible behavior and key technical changes.
+
+          Commits on this branch:
+          $COMMITS
+
+          Changed files:
+          $DIFF_STAT
+          EOF
+          )
+
+          REQUEST_BODY=$(python3 -c "
+          import sys, json
+          prompt = sys.stdin.read()
+          print(json.dumps({
+            'model': 'gpt-4o-mini',
+            'messages': [{'role': 'user', 'content': prompt}],
+            'max_tokens': 350,
+            'temperature': 0.2
+          }))
+          " <<< "$PROMPT")
+
+          if [ -z "$MODEL_TOKEN" ]; then
+            echo "::warning::No token available for GitHub Models API. Falling back to commit-based summary."
+            API_RESPONSE=""
+          else
+            API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              "https://models.inference.ai.azure.com/chat/completions" \
+              -H "Authorization: ******" \
+              -H "Content-Type: application/json" \
+              -d "$REQUEST_BODY" 2>/dev/null || echo "")
+          fi
+
+          HTTP_STATUS=$(printf '%s' "$API_RESPONSE" | tail -1)
+          RESPONSE_BODY=$(printf '%s' "$API_RESPONSE" | head -n -1)
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::warning::GitHub Models API returned HTTP $HTTP_STATUS for PR summary generation."
+            RAW_SUMMARY=""
+          else
+            RAW_SUMMARY=$(printf '%s' "$RESPONSE_BODY" \
+              | python3 -c 'import sys, json; d=json.load(sys.stdin); print(d.get("choices", [{}])[0].get("message", {}).get("content", ""))' \
+              2>/dev/null || echo "")
+          fi
+
+          SUMMARY_BULLETS=$(printf '%s' "$RAW_SUMMARY" | python3 -c "$(cat <<'PY'
+          import re, sys
+          lines = []
+          for raw in sys.stdin.read().splitlines():
+              line = raw.strip()
+              if not line or line.startswith('```'):
+                  continue
+              if line.lower().startswith('summary'):
+                  continue
+              if line.startswith(('-', '*')):
+                  line = line[1:].strip()
+              elif re.match(r'^\d+[.)]\s+', line):
+                  line = re.sub(r'^\d+[.)]\s+', '', line)
+              else:
+                  continue
+              if line:
+                  lines.append(f"- {line}")
+              if len(lines) == 4:
+                  break
+          print('\n'.join(lines))
+          PY
+          )")
+
+          if [ -z "$(printf '%s' "$SUMMARY_BULLETS" | tr -d '[:space:]')" ]; then
+            SUMMARY_BULLETS=$(printf '%s\n' "$COMMITS" \
+              | sed -E 's/^[0-9a-f]{7,}[[:space:]]+//' \
+              | grep -vE '^Merge branch ' \
+              | head -3 \
+              | sed -E 's/^/- /')
+          fi
+
+          if [ -z "$(printf '%s' "$SUMMARY_BULLETS" | tr -d '[:space:]')" ]; then
+            SUMMARY_BULLETS="- Automated summary was unavailable; please review this PR before merge."
+          fi
+
           DESC=$(cat <<EOF
           ## Summary
-          - Placeholder summary from workflow context.
-          - Replace with a clear human-written summary before merge.
+          $SUMMARY_BULLETS
 
           ## Commits
           \`\`\`text
