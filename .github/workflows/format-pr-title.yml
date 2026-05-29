@@ -227,7 +227,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           NEW_BODY: ${{ steps.generate_description.outputs.body }}
         run: |
-          CURRENT_BODY="${{ github.event.pull_request.body }}"
+          CURRENT_BODY=$(python3 -c 'import json, os; ev=json.load(open(os.environ["GITHUB_EVENT_PATH"])); print(ev.get("pull_request", {}).get("body") or "")')
 
           if [ -n "$(printf '%s' "$CURRENT_BODY" | tr -d '[:space:]')" ]; then
             echo "PR description is not blank. Skipping update."
