@@ -2,7 +2,7 @@ name: Format PR Title
 
 on:
   pull_request_target:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, edited]
 
 jobs:
   format-title:
@@ -18,6 +18,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      models: read
 
     steps:
       - name: Checkout PR branch (shallow + merge base for diff)
@@ -54,10 +55,12 @@ jobs:
       - name: Generate PR title via GitHub Models
         id: generate
         env:
-          GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          COPILOT_GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          DIFF_STAT: ${{ steps.context.outputs.diff_stat }}
+          COMMITS: ${{ steps.context.outputs.commits }}
         run: |
-          DIFF_STAT="${{ steps.context.outputs.diff_stat }}"
-          COMMITS="${{ steps.context.outputs.commits }}"
+          MODEL_TOKEN="${COPILOT_GH_TOKEN:-$GH_TOKEN}"
 
           PROMPT=$(cat <<EOF
           You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
@@ -93,17 +96,22 @@ jobs:
           }))
           " <<< "$PROMPT")
 
-          API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-            "https://models.inference.ai.azure.com/chat/completions" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$REQUEST_BODY" 2>/dev/null || echo "")
+          if [ -z "$MODEL_TOKEN" ]; then
+            echo "::warning::No token available for GitHub Models API. Falling back to deterministic title generation."
+            API_RESPONSE=""
+          else
+            API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              "https://models.inference.ai.azure.com/chat/completions" \
+              -H "Authorization: Bearer $MODEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$REQUEST_BODY" 2>/dev/null || echo "")
+          fi
 
           HTTP_STATUS=$(printf '%s' "$API_RESPONSE" | tail -1)
           RESPONSE_BODY=$(printf '%s' "$API_RESPONSE" | head -n -1)
 
           if [ "$HTTP_STATUS" != "200" ]; then
-            echo "::warning::GitHub Models API returned HTTP $HTTP_STATUS. Skipping PR title update."
+            echo "::warning::GitHub Models API returned HTTP $HTTP_STATUS. Falling back to deterministic title generation."
             RAW=""
           else
             RAW=$(printf '%s' "$RESPONSE_BODY" \
@@ -112,9 +120,7 @@ jobs:
           fi
 
           if [ -z "$RAW" ]; then
-            echo "::warning::GitHub Models API call failed. Skipping PR title update."
-            echo "title=" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "::warning::GitHub Models API call failed. Falling back to deterministic title generation."
           fi
 
           PARSED=$(printf '%s' "$RAW" | python3 -c "$(cat <<'PY'
@@ -148,9 +154,45 @@ jobs:
             echo "title=$TITLE" >> "$GITHUB_OUTPUT"
             echo "Generated title: $TITLE"
           else
-            echo "::warning::Generated title did not pass validation: '$TITLE'. Skipping update."
-            echo "title=" >> "$GITHUB_OUTPUT"
+            FALLBACK_TITLE=$(printf '%s\n' "$COMMITS" \
+              | sed -E 's/^[0-9a-f]{7,}[[:space:]]+//' \
+              | grep -m1 -E '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}' || true)
+            if [ -z "$FALLBACK_TITLE" ]; then
+              FALLBACK_TITLE="chore(core): update pull request"
+            fi
+            echo "::warning::Generated title did not pass validation: '$TITLE'. Using fallback '$FALLBACK_TITLE'."
+            echo "title=$FALLBACK_TITLE" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Generate PR description body
+        id: generate_description
+        env:
+          COMMITS: ${{ steps.context.outputs.commits }}
+          DIFF_STAT: ${{ steps.context.outputs.diff_stat }}
+        run: |
+          DESC=$(cat <<EOF
+          ## Summary
+          - Placeholder summary from workflow context.
+          - Replace with a clear human-written summary before merge.
+
+          ## Commits
+          \`\`\`text
+          $COMMITS
+          \`\`\`
+
+          ## Changed Files
+          \`\`\`text
+          $DIFF_STAT
+          \`\`\`
+          EOF
+          )
+
+          DELIM=$(uuidgen)
+          {
+            echo "body<<$DELIM"
+            printf '%s\n' "$DESC"
+            echo "$DELIM"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Update PR title
         if: steps.generate.outputs.title != ''
@@ -177,3 +219,25 @@ jobs:
           echo "  To:   $NEW_TITLE"
 
           gh pr edit "$PR_NUMBER" --title "$NEW_TITLE"
+
+      - name: Update PR description when body is blank
+        if: steps.generate_description.outputs.body != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          NEW_BODY: ${{ steps.generate_description.outputs.body }}
+        run: |
+          CURRENT_BODY=$(python3 -c 'import json, os; ev=json.load(open(os.environ["GITHUB_EVENT_PATH"])); print(ev.get("pull_request", {}).get("body") or "")')
+
+          if [ -n "$(printf '%s' "$CURRENT_BODY" | tr -d '[:space:]')" ]; then
+            echo "PR description is not blank. Skipping update."
+            exit 0
+          fi
+
+          if [ -z "$(printf '%s' "$NEW_BODY" | tr -d '[:space:]')" ]; then
+            echo "Generated description is blank. Skipping update."
+            exit 0
+          fi
+
+          echo "Regenerating blank PR description for #$PR_NUMBER"
+          gh pr edit "$PR_NUMBER" --body "$NEW_BODY"
