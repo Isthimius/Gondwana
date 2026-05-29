@@ -7,6 +7,8 @@ namespace Gondwana.Drawing.Tilesheets;
 
 public sealed class TilesheetRegion : IDisposable
 {
+    public static readonly string DefaultRegionName = "default";
+
     private TilesheetRegionSlice?[,]? _tileCache;
     private bool _disposed;
 
@@ -26,7 +28,7 @@ public sealed class TilesheetRegion : IDisposable
         Tilesheet = tilesheet ?? throw new ArgumentNullException(nameof(tilesheet));
 
         Name = string.IsNullOrWhiteSpace(name)
-            ? "default"
+            ? DefaultRegionName
             : name;
 
         // Assign backing fields directly so we do not rebuild the cache
@@ -83,7 +85,7 @@ public sealed class TilesheetRegion : IDisposable
     public Tilesheet Tilesheet { get; private set; } = null!;
 
     [JsonProperty("name")]
-    public string Name { get; private set; } = "default";
+    public string Name { get; private set; } = DefaultRegionName;
 
     [JsonIgnore]
     public Rectangle Area

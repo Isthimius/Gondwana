@@ -53,7 +53,7 @@ namespace Slider
             int adjHeight = tileHeight * rows;
 
             tilesheet.TileSize = new Size(tileWidth, tileHeight);
-
+            
             originalSize = new Size(tilesheet.SkBitmap.Width, tilesheet.SkBitmap.Height);
             numColumns = columns;
             numRows = rows;

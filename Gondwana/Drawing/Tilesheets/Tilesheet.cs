@@ -229,7 +229,7 @@ public sealed class Tilesheet : IDisposable
         Rectangle area,
         Size spacing,
         Size tileSize,
-        Overhang overhangPixels)
+        Overhang? overhangPixels = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Region name must be a non-empty string.", nameof(name));
@@ -243,28 +243,11 @@ public sealed class Tilesheet : IDisposable
             area,
             spacing,
             tileSize,
-            overhangPixels);
+            overhangPixels ?? Overhang.None);
 
         Regions.Add(region);
 
         return region;
-    }
-
-    /// <summary>
-    /// Adds a region to this tilesheet.
-    /// </summary>
-    /// <param name="name">The name to assign to this region.</param>
-    /// <param name="area">The rectangular area of the source image occupied by this region.</param>
-    /// <param name="spacing">The horizontal and vertical spacing between tiles in this region.</param>
-    /// <param name="tileSize">The size of each individual tile in this region.</param>
-    /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
-    public TilesheetRegion AddRegion(
-        string name,
-        Rectangle area,
-        Size spacing,
-        Size tileSize)
-    {
-        return AddRegion(name, area, spacing, tileSize, Overhang.None);
     }
 
     /// <summary>
@@ -510,6 +493,15 @@ public sealed class Tilesheet : IDisposable
     /// <param name="x">Zero-based tile column index within the region.</param>
     /// <param name="y">Zero-based tile row index within the region.</param>
     public Frame this[string regionName, int x, int y] => new Frame(this, regionName, x, y);
+
+    // Inside Tilesheet
+    /// <summary>
+    /// Returns a <see cref="Frame"/> representing the tile at the default
+    /// region and sheet coordinates.
+    /// </summary>
+    /// <param name="x">Zero-based tile column index within the region.</param>
+    /// <param name="y">Zero-based tile row index within the region.</param>
+    public Frame this[int x, int y] => new Frame(this, TilesheetRegion.DefaultRegionName, x, y);
 
     #endregion Methods
 

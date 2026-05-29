@@ -44,6 +44,21 @@ public struct Frame
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
     /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
+    /// <param name="xTile">The horizontal tile coordinate (column index) within the tilesheet.</param>
+    /// <param name="yTile">The vertical tile coordinate (row index) within the tilesheet.</param>
+    public Frame(Tilesheet tilesheet, int xTile, int yTile)
+    {
+        Tilesheet = tilesheet;
+        RegionName = TilesheetRegion.DefaultRegionName;
+        XTile = xTile;
+        YTile = yTile;
+        DurationSeconds = 0;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
+    /// </summary>
+    /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
     /// <param name="regionName">The tilesheet region containing the source bitmap.</param>
     /// <param name="xTile">The horizontal tile coordinate (column index) within the tilesheet.</param>
     /// <param name="yTile">The vertical tile coordinate (row index) within the tilesheet.</param>
