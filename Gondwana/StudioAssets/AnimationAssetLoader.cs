@@ -39,7 +39,7 @@ public static class AnimationAssetLoader
         {
             var x = frame.TileIndex % xTiles;
             var y = frame.TileIndex / xTiles;
-            frames.Add(new Frame(sheet, x, y, Math.Max(1, frame.DurationMs) / 1000d));
+            //frames.Add(new Frame(sheet, x, y, Math.Max(1, frame.DurationMs) / 1000d));
         }
 
         var sequence = new FrameSequence(frames)

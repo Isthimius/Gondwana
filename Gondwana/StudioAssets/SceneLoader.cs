@@ -61,7 +61,7 @@ public static class SceneLoader
                     continue;
                 }
 
-                layerTile.CurrentFrame = new Frame(tilesheet, x, y);
+                //layerTile.CurrentFrame = new Frame(tilesheet, x, y);
             }
         }
 

@@ -145,7 +145,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// This is typically used for tiles with visual elements that exceed their logical boundaries.
     /// </summary>
     [JsonIgnore]
-    public virtual Overhang OverhangPixels => frame.Tilesheet?.OverhangPixels ?? Overhang.None;
+    public virtual Overhang OverhangPixels => frame.OverhangPixels;
 
     /// <summary>
     /// Gets or sets the current frame being displayed for this tile.
