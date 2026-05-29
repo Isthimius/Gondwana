@@ -120,7 +120,7 @@ public class Game : IDisposable
         frameSequence.AddFrame(tilesheet, 2, 0);
         frameSequence.AddFrame(tilesheet, 3, 0);
         frameSequence.SequenceCycleType = CycleType.PingPong;
-        sprite1.TileAnimator.CurrentCycle = new Cycle(frameSequence, 0.05f, "ani");
+        sprite1.TileAnimator.CurrentCycle = new Cycle(frameSequence, 0.5f, "ani");
         sprite1.TileAnimator.StartAnimation();
     }
 

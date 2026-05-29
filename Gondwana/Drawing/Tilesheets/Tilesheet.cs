@@ -303,6 +303,23 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
+    /// Returns a <see cref="Frame"/> representing the tile at the given
+    /// region and sheet coordinates.
+    /// </summary>
+    /// <param name="regionName">The name of the tilesheet region.</param>
+    /// <param name="x">Zero-based tile column index within the region.</param>
+    /// <param name="y">Zero-based tile row index within the region.</param>
+    public Frame GetFrame(string regionName, int x, int y) => new Frame(this, regionName, x, y);
+
+    /// <summary>
+    /// Returns a <see cref="Frame"/> representing the tile at the default
+    /// region and sheet coordinates.
+    /// </summary>
+    /// <param name="x">Zero-based tile column index within the region.</param>
+    /// <param name="y">Zero-based tile row index within the region.</param>
+    public Frame GetFrame(int x, int y) => new Frame(this, TilesheetRegion.DefaultRegionName, x, y);
+
+    /// <summary>
     /// Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent,
     /// and then premultiplies the alpha channel.
     /// </summary>
@@ -489,7 +506,7 @@ public sealed class Tilesheet : IDisposable
     /// <param name="regionName">The name of the tilesheet region.</param>
     /// <param name="x">Zero-based tile column index within the region.</param>
     /// <param name="y">Zero-based tile row index within the region.</param>
-    public Frame this[string regionName, int x, int y] => new Frame(this, regionName, x, y);
+    public Frame this[string regionName, int x, int y] => GetFrame(regionName, x, y);
 
     /// <summary>
     /// Returns a <see cref="Frame"/> representing the tile at the default
@@ -497,7 +514,7 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="x">Zero-based tile column index within the region.</param>
     /// <param name="y">Zero-based tile row index within the region.</param>
-    public Frame this[int x, int y] => new Frame(this, TilesheetRegion.DefaultRegionName, x, y);
+    public Frame this[int x, int y] => GetFrame(x, y);
 
     #endregion indexers
 

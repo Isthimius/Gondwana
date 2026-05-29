@@ -150,6 +150,9 @@ public sealed class TilesheetRegion : IDisposable
 
     public SKImage? GetImage(int x, int y)
     {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(TilesheetRegion));
+
         if (_tileCache == null)
             BuildTileCache();
 
@@ -165,6 +168,9 @@ public sealed class TilesheetRegion : IDisposable
 
     public SKBitmap? GetBitmap(int x, int y)
     {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(TilesheetRegion));
+
         if (_tileCache == null)
             BuildTileCache();
 
@@ -180,6 +186,9 @@ public sealed class TilesheetRegion : IDisposable
 
     public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(TilesheetRegion));
+
         if (_tileCache == null)
             BuildTileCache();
 
@@ -204,6 +213,9 @@ public sealed class TilesheetRegion : IDisposable
 
     public Dictionary<(int x, int y), SKImage> GetAllImages()
     {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(TilesheetRegion));
+
         if (_tileCache == null)
             BuildTileCache();
 
@@ -232,6 +244,9 @@ public sealed class TilesheetRegion : IDisposable
 
     internal void BuildTileCache()
     {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(TilesheetRegion));
+
         ClearTileCache();
 
         if (Tilesheet == null)
@@ -340,6 +355,12 @@ public sealed class TilesheetRegion : IDisposable
         var img = SKImage.FromBitmap(bmp);
 
         return new TilesheetRegionSlice(bmp, img);
+    }
+
+    private void ThrowIfDisposed()
+    {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(TilesheetRegion));
     }
 
     #endregion private methods
