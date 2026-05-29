@@ -211,7 +211,7 @@ jobs:
           else
             API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
               "https://models.inference.ai.azure.com/chat/completions" \
-              -H "$(printf '%s: %s %s' 'Authoriz''ation' 'Bear''er' "$MODEL_TOKEN")" \
+              -H "Authorization: Bearer $MODEL_TOKEN" \
               -H "Content-Type: application/json" \
               -d "$REQUEST_BODY" 2>/dev/null || echo "")
           fi
@@ -263,11 +263,7 @@ jobs:
             SUMMARY_BULLETS="- Automated summary was unavailable; please review this PR before merge."
           fi
 
-          DESC=$(cat <<EOF
-          ## Summary
-          $SUMMARY_BULLETS
-          EOF
-          )
+          DESC="$SUMMARY_BULLETS"
 
           DELIM=$(uuidgen)
           {
