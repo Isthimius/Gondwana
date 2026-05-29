@@ -266,16 +266,6 @@ jobs:
           DESC=$(cat <<EOF
           ## Summary
           $SUMMARY_BULLETS
-
-          ## Commits
-          \`\`\`text
-          $COMMITS
-          \`\`\`
-
-          ## Changed Files
-          \`\`\`text
-          $DIFF_STAT
-          \`\`\`
           EOF
           )
 
