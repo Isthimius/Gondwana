@@ -279,7 +279,24 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           NEW_TITLE: ${{ steps.generate.outputs.title }}
         run: |
-          CURRENT_TITLE="${{ github.event.pull_request.title }}"
+          CURRENT_TITLE=$(python3 - <<'PY'
+          import json
+          import os
+
+          path = os.environ.get("GITHUB_EVENT_PATH")
+          title = ""
+
+          if path and os.path.exists(path):
+              try:
+                  with open(path, encoding="utf-8") as handle:
+                      event = json.load(handle)
+                  title = event.get("pull_request", {}).get("title") or ""
+              except (OSError, json.JSONDecodeError):
+                  title = ""
+
+          print(title)
+          PY
+          )
 
           # Lock title once it is in conventional commit format.
           if echo "$CURRENT_TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
