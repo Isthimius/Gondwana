@@ -119,6 +119,62 @@ internal static class ProjectHelper
             .FirstOrDefault();
     }
 
+    /// <summary>
+    /// Locates the directory that should be the root for <c>dotnet-serve</c> after a
+    /// <c>net8.0-browser</c> publish. Tries several layouts in order:
+    /// <list type="number">
+    ///   <item><description>Classic AppBundle: <c>bin/&lt;cfg&gt;/net8.0-browser/browser-wasm/AppBundle</c> (must contain <c>index.html</c>)</description></item>
+    ///   <item><description>New SDK layout: <c>index.html</c> at the root of <c>bin/&lt;cfg&gt;/net8.0-browser/publish/</c></description></item>
+    ///   <item><description>New SDK layout: <c>index.html</c> one level inside <c>publish/</c> (e.g. <c>publish/wwwroot/</c>)</description></item>
+    ///   <item><description>Fallback: any <c>AppBundle</c> directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
+    ///   <item><description>Fallback: any directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
+    /// </list>
+    /// Returns <see langword="null"/> when nothing is found.
+    /// </summary>
+    public static string? TryLocateWasmServeRoot(string csprojPath, string configuration)
+    {
+        var projectDir = Path.GetDirectoryName(csprojPath)!;
+
+        // 1. Classic AppBundle layout
+        var appBundle = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "browser-wasm", "AppBundle");
+        if (Directory.Exists(appBundle) && File.Exists(Path.Combine(appBundle, "index.html")))
+            return appBundle;
+
+        // 2 + 3. New SDK publish layout: look inside publish/ for index.html
+        var publishDir = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "publish");
+        if (Directory.Exists(publishDir))
+        {
+            // 2. index.html at publish root
+            if (File.Exists(Path.Combine(publishDir, "index.html")))
+                return publishDir;
+
+            // 3. index.html one level deeper (e.g. publish/wwwroot/)
+            var nested = Directory.GetDirectories(publishDir)
+                .FirstOrDefault(d => File.Exists(Path.Combine(d, "index.html")));
+            if (nested is not null)
+                return nested;
+        }
+
+        // 4. Broadest fallback: any AppBundle dir under bin/
+        var binDir = Path.Combine(projectDir, "bin");
+        if (!Directory.Exists(binDir))
+            return null;
+
+        var anyAppBundle = Directory.GetDirectories(binDir, "AppBundle", SearchOption.AllDirectories)
+            .Where(d => File.Exists(Path.Combine(d, "index.html")))
+            .OrderByDescending(d => File.GetLastWriteTimeUtc(Path.Combine(d, "index.html")))
+            .FirstOrDefault();
+        if (anyAppBundle is not null)
+            return anyAppBundle;
+
+        // 5. Any directory under bin/ that contains index.html (most recently written first)
+        return Directory.GetFiles(binDir, "index.html", SearchOption.AllDirectories)
+            .OrderByDescending(File.GetLastWriteTimeUtc)
+            .Select(Path.GetDirectoryName)
+            .OfType<string>()
+            .FirstOrDefault();
+    }
+
     public static string? TryLocatePublishDirectory(string csprojPath, string configuration, string framework, string? runtime)
     {
         var projectDir = Path.GetDirectoryName(csprojPath)!;
