@@ -57,7 +57,7 @@ public abstract class WinFormsGameHostBase : GameHostBase
     }
 
     /// <summary>
-    /// Configures the XInput gamepad manager for Xbox controller support.
+    /// Configures gamepad support. Override to provide platform-specific gamepad integration.
     /// </summary>
     protected override void ConfigureGamepads()
     {
