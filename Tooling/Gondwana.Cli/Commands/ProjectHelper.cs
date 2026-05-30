@@ -126,6 +126,7 @@ internal static class ProjectHelper
     ///   <item><description>Classic AppBundle: <c>bin/&lt;cfg&gt;/net8.0-browser/browser-wasm/AppBundle</c> (must contain <c>index.html</c>)</description></item>
     ///   <item><description>New SDK layout: <c>index.html</c> at the root of <c>bin/&lt;cfg&gt;/net8.0-browser/publish/</c></description></item>
     ///   <item><description>New SDK layout: <c>index.html</c> one level inside <c>publish/</c> (e.g. <c>publish/wwwroot/</c>)</description></item>
+    ///   <item><description>AppBundle with nested web root: <c>bin/&lt;cfg&gt;/net8.0-browser/browser-wasm/AppBundle/wwwroot</c> (must contain <c>index.html</c>)</description></item>
     ///   <item><description>Fallback: any <c>AppBundle</c> directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
     ///   <item><description>Fallback: any directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
     /// </list>
@@ -139,6 +140,11 @@ internal static class ProjectHelper
         var appBundle = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "browser-wasm", "AppBundle");
         if (Directory.Exists(appBundle) && File.Exists(Path.Combine(appBundle, "index.html")))
             return appBundle;
+
+        // 1b. AppBundle with nested web root
+        var appBundleWwwRoot = Path.Combine(appBundle, "wwwroot");
+        if (Directory.Exists(appBundleWwwRoot) && File.Exists(Path.Combine(appBundleWwwRoot, "index.html")))
+            return appBundleWwwRoot;
 
         // 2 + 3. New SDK publish layout: look inside publish/ for index.html
         var publishDir = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "publish");
