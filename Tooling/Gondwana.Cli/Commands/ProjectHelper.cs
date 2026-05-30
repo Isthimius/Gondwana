@@ -121,12 +121,13 @@ internal static class ProjectHelper
 
     /// <summary>
     /// Locates the directory that should be the root for <c>dotnet-serve</c> after a
-    /// <c>net8.0-browser</c> publish.  Tries several layouts in order:
+    /// <c>net8.0-browser</c> publish. Tries several layouts in order:
     /// <list type="number">
-    ///   <item><description>Classic AppBundle: <c>bin/&lt;cfg&gt;/net8.0-browser/browser-wasm/AppBundle</c></description></item>
-    ///   <item><description>New SDK layout – <c>index.html</c> at the root of <c>publish/</c></description></item>
-    ///   <item><description>New SDK layout – <c>index.html</c> one level inside <c>publish/</c> (e.g. <c>publish/wwwroot/</c>)</description></item>
-    ///   <item><description>Broadest fallback – any directory under <c>bin/</c> that contains <c>index.html</c></description></item>
+    ///   <item><description>Classic AppBundle: <c>bin/&lt;cfg&gt;/net8.0-browser/browser-wasm/AppBundle</c> (must contain <c>index.html</c>)</description></item>
+    ///   <item><description>New SDK layout: <c>index.html</c> at the root of <c>bin/&lt;cfg&gt;/net8.0-browser/publish/</c></description></item>
+    ///   <item><description>New SDK layout: <c>index.html</c> one level inside <c>publish/</c> (e.g. <c>publish/wwwroot/</c>)</description></item>
+    ///   <item><description>Fallback: any <c>AppBundle</c> directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
+    ///   <item><description>Fallback: any directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
     /// </list>
     /// Returns <see langword="null"/> when nothing is found.
     /// </summary>
