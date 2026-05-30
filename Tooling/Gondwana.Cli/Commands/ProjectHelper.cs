@@ -162,16 +162,16 @@ internal static class ProjectHelper
 
         var anyAppBundle = Directory.GetDirectories(binDir, "AppBundle", SearchOption.AllDirectories)
             .Where(d => File.Exists(Path.Combine(d, "index.html")))
-            .OrderByDescending(d => Directory.GetLastWriteTimeUtc(d))
+            .OrderByDescending(d => File.GetLastWriteTimeUtc(Path.Combine(d, "index.html")))
             .FirstOrDefault();
         if (anyAppBundle is not null)
             return anyAppBundle;
 
         // 5. Any directory under bin/ that contains index.html (most recently written first)
         return Directory.GetFiles(binDir, "index.html", SearchOption.AllDirectories)
+            .OrderByDescending(File.GetLastWriteTimeUtc)
             .Select(Path.GetDirectoryName)
             .OfType<string>()
-            .OrderByDescending(d => Directory.GetLastWriteTimeUtc(d))
             .FirstOrDefault();
     }
 
