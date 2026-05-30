@@ -1,5 +1,3 @@
-﻿using Gondwana.Hosting;
-using Gondwana.Rendering;
 using Gondwana.WinForms.Rendering;
 
 namespace Gondwana.WinForms.Hosting;
@@ -8,7 +6,7 @@ namespace Gondwana.WinForms.Hosting;
 /// Provides a base class for hosting Gondwana games in Windows Forms applications using
 /// GPU-accelerated (OpenGL) rendering via <see cref="WinFormGpuRenderSurfaceControl"/>.
 /// </summary>
-public abstract class WinFormsGpuGameHost : GameHostBase
+public abstract class WinFormsGpuGameHost : WinFormsGameHostBase
 {
     /// <summary>
     /// Gets the GPU render surface control used for displaying game content.
@@ -21,88 +19,23 @@ public abstract class WinFormsGpuGameHost : GameHostBase
     /// <param name="renderSurface">The GPU render surface control to use for rendering.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurface"/> is null.</exception>
     protected WinFormsGpuGameHost(WinFormGpuRenderSurfaceControl renderSurface)
+        : this(new SurfaceInitialization(renderSurface))
     {
-        RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
     }
 
-    /// <summary>
-    /// Configures Windows Forms-specific platform features, including audio format support.
-    /// </summary>
-    protected override void ConfigurePlatform()
+    private WinFormsGpuGameHost(SurfaceInitialization initialization)
+        : base(initialization.RenderSurface, initialization.RenderSurface.Host, initialization.RenderSurface.Host.Bind)
     {
-        Engine.Instance.InitializeWinFormsAudioFormats();
-        OnConfigurePlatform();
+        RenderSurface = initialization.RenderSurface;
     }
 
-    /// <summary>
-    /// Configures the keyboard adapter for the Windows Forms render surface.
-    /// </summary>
-    protected override void ConfigureKeyboard()
+    private sealed class SurfaceInitialization
     {
-        Engine.Instance.InitializeWinFormsKeyboardAdapter(RenderSurface);
-        OnKeyboardAdapterInitialized();
+        public WinFormGpuRenderSurfaceControl RenderSurface { get; }
+
+        public SurfaceInitialization(WinFormGpuRenderSurfaceControl renderSurface)
+        {
+            RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
+        }
     }
-
-    /// <summary>
-    /// Configures the mouse adapter for the Windows Forms render surface.
-    /// </summary>
-    protected override void ConfigureMouse()
-    {
-        Engine.Instance.InitializeWinFormsMouseAdapter(RenderSurface);
-        OnMouseAdapterInitialized();
-    }
-
-    /// <summary>
-    /// Configures the XInput gamepad manager for Xbox controller support.
-    /// </summary>
-    protected override void ConfigureGamepads()
-    {
-        //Engine.Instance.InitializeXInputGamepadManager();
-        OnGamepadManagerInitialized();
-    }
-
-    /// <summary>
-    /// Configures touch input. Override to provide a platform-specific touch adapter.
-    /// </summary>
-    protected override void ConfigureTouch()
-    {
-        OnTouchAdapterInitialized();
-    }
-
-    /// <summary>
-    /// Binds the current scene to the GPU render surface host.
-    /// </summary>
-    protected override void BindScene()
-    {
-        RenderSurface.Host.Bind(Scene!, false);
-    }
-
-    /// <inheritdoc/>
-    protected override RenderSurfaceHostBase GetPrimaryRenderSurfaceHost() => RenderSurface.Host;
-
-    /// <summary>
-    /// Provides a hook for configuring platform-specific settings during initialization.
-    /// </summary>
-    protected virtual void OnConfigurePlatform() { }
-
-    /// <summary>
-    /// Called after the keyboard adapter has been initialized. Override to perform additional keyboard setup.
-    /// </summary>
-    protected virtual void OnKeyboardAdapterInitialized() { }
-
-    /// <summary>
-    /// Called after the mouse adapter has been initialized. Override to perform additional mouse setup.
-    /// </summary>
-    protected virtual void OnMouseAdapterInitialized() { }
-
-    /// <summary>
-    /// Called after the gamepad manager has been initialized. Override to perform additional gamepad setup.
-    /// </summary>
-    protected virtual void OnGamepadManagerInitialized() { }
-
-    /// <summary>
-    /// Called after the touch adapter has been initialized. Override to perform additional touch setup,
-    /// such as attaching gesture recognizers.
-    /// </summary>
-    protected virtual void OnTouchAdapterInitialized() { }
 }
