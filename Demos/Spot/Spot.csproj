@@ -20,6 +20,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="assets\spot_sheet.png" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
@@ -88,6 +92,9 @@
         </Content>
         <Content Include="assets\gondwana-logo-text.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="assets\spot_sheet.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
     <ItemGroup>
