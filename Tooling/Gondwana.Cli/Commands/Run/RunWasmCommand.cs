@@ -92,16 +92,16 @@ internal sealed class RunWasmCommand : Command<RunWasmCommand.Settings>
             return publishExit;
         }
 
-        // 3. Locate publish output directory (legacy AppBundle or current publish layout)
-        var outputDirectory = ProjectHelper.TryLocateAppBundle(csprojPath, settings.Configuration)
-            ?? ProjectHelper.TryLocatePublishDirectory(csprojPath, settings.Configuration, "net8.0-browser", runtime: null);
+        // 3. Locate the directory to serve (must contain index.html)
+        var outputDirectory = ProjectHelper.TryLocateWasmServeRoot(csprojPath, settings.Configuration);
 
         if (outputDirectory is null)
         {
-            AnsiConsole.MarkupLine("[red]WASM publish output not found after publish.[/]");
-            AnsiConsole.MarkupLine("[dim]Expected one of:[/]");
-            AnsiConsole.MarkupLine("[dim]- bin/<configuration>/net8.0-browser/browser-wasm/AppBundle[/]");
-            AnsiConsole.MarkupLine("[dim]- bin/<configuration>/net8.0-browser/publish[/]");
+            AnsiConsole.MarkupLine("[red]WASM serve root not found after publish.[/]");
+            AnsiConsole.MarkupLine("[dim]Expected index.html in one of:[/]");
+            AnsiConsole.MarkupLine("[dim]- bin/<configuration>/net8.0-browser/browser-wasm/AppBundle/[/]");
+            AnsiConsole.MarkupLine("[dim]- bin/<configuration>/net8.0-browser/publish/[/]");
+            AnsiConsole.MarkupLine("[dim]- bin/<configuration>/net8.0-browser/publish/wwwroot/[/]");
             return 1;
         }
 
