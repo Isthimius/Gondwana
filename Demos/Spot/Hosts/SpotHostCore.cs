@@ -69,18 +69,19 @@ internal sealed class SpotHostCore
     private AudioResource _bump = null!;
     private AudioResource? _knock;
 
-    private Tilesheet _spotSheet = null;
+    private Tilesheet _spotSheetDefault = null!;
+    private Tilesheet _spotSheetSelected = null!;
 
-    private Tilesheet _blueSpot = null!;
-    private Tilesheet _greenSpot = null!;
-    private Tilesheet _pinkSpot = null!;
-    private Tilesheet _redSpot = null!;
-    private Tilesheet _yellowSpot = null!;
-    private Tilesheet _blueSpotHappy = null!;
-    private Tilesheet _greenSpotHappy = null!;
-    private Tilesheet _pinkSpotHappy = null!;
-    private Tilesheet _redSpotHappy = null!;
-    private Tilesheet _yellowSpotHappy = null!;
+    //private Tilesheet _blueSpot = null!;
+    //private Tilesheet _greenSpot = null!;
+    //private Tilesheet _pinkSpot = null!;
+    //private Tilesheet _redSpot = null!;
+    //private Tilesheet _yellowSpot = null!;
+    //private Tilesheet _blueSpotHappy = null!;
+    //private Tilesheet _greenSpotHappy = null!;
+    //private Tilesheet _pinkSpotHappy = null!;
+    //private Tilesheet _redSpotHappy = null!;
+    //private Tilesheet _yellowSpotHappy = null!;
     private Tilesheet _clouds = null!;
 
     private SKTypeface _font = null!;
@@ -140,46 +141,11 @@ internal sealed class SpotHostCore
         var splash = new Tilesheet("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        _spotSheet = new Tilesheet("spots", "assets\\spot_sheet.png");
-        _spotSheet.DefaultRegion.TileSize = new Size(92, 96);
-        _spotSheet.DefaultRegion.Area = new Rectangle(0, 0, 490, 96);
-        _spotSheet.DefaultRegion.Spacing = new Size(0, 0);
-        _spotSheet.AddRegion("selected",
-                             new Rectangle(0, 96, 320, 64),
-                             new Size(0, 0),
-                             new Size(64, 64));
+        _spotSheetDefault = new Tilesheet("spots", "assets\\spot_defaults.png");
+        _spotSheetDefault.DefaultRegion.TileSize = new Size(93, 96);
 
-        //// default sprites
-        //_blueSpot = new Tilesheet("blueSpot", "assets\\bubble-blue.png");
-        //_blueSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        //_greenSpot = new Tilesheet("greenSpot", "assets\\bubble-green.png");
-        //_greenSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        //_pinkSpot = new Tilesheet("pinkSpot", "assets\\bubble-pink.png");
-        //_pinkSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        //_redSpot = new Tilesheet("redSpot", "assets\\bubble-red.png");
-        //_redSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        //_yellowSpot = new Tilesheet("yellowSpot", "assets\\bubble-yellow.png");
-        //_yellowSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        //// selected sprites
-        //_blueSpotHappy = new Tilesheet("blueSpotHappy", "assets\\bubble-blue-happy.png");
-        //_blueSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        //_greenSpotHappy = new Tilesheet("greenSpotHappy", "assets\\bubble-green-happy.png");
-        //_greenSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        //_pinkSpotHappy = new Tilesheet("pinkSpotHappy", "assets\\bubble-pink-happy.png");
-        //_pinkSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        //_redSpotHappy = new Tilesheet("redSpotHappy", "assets\\bubble-red-happy.png");
-        //_redSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        //_yellowSpotHappy = new Tilesheet("yellowSpotHappy", "assets\\bubble-yellow-happy.png");
-        //_yellowSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
+        _spotSheetSelected = new Tilesheet("selected", "assets\\spot_selected.png");
+        _spotSheetSelected.DefaultRegion.TileSize = new Size(64, 64);
 
         _clouds = new Tilesheet("clouds", "assets\\clouds.png");
     }
@@ -416,24 +382,24 @@ internal sealed class SpotHostCore
             switch (player.ColorItem.Name)
             {
                 case "Blue":
-                    player.DefaultFrame = new Frame(_spotSheet, 0, 0);
-                    player.ActiveFrame = new Frame(_spotSheet, "selected", 0, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 0);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 0, 0);
                     break;
                 case "Green":
-                    player.DefaultFrame = new Frame(_spotSheet, 1, 0);
-                    player.ActiveFrame = new Frame(_spotSheet, "selected", 1, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 1);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 1, 0);
                     break;
                 case "Violet":
-                    player.DefaultFrame = new Frame(_spotSheet, 2, 0);
-                    player.ActiveFrame = new Frame(_spotSheet, "selected", 2, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 2);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 2, 0);
                     break;
                 case "Red":
-                    player.DefaultFrame = new Frame(_spotSheet, 3, 0);
-                    player.ActiveFrame = new Frame(_spotSheet, "selected", 3, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 3);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 3, 0);
                     break;
                 case "Yellow":
-                    player.DefaultFrame = new Frame(_spotSheet, 4, 0);
-                    player.ActiveFrame = new Frame(_spotSheet, "selected", 4, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 4);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 4, 0);
                     break;
                 default:
                     break;
@@ -947,7 +913,7 @@ internal sealed class SpotHostCore
             {
                 oldSprite.ResizeComplete -= handler;
                 oldSprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
-                oldSprite.ResizeTo(new(56, 56), 0.2f);
+                oldSprite.ResizeTo(new(64, 64), 0.2f);
             };
 
             oldSprite.ResizeComplete += handler;

@@ -19,9 +19,6 @@
         <PublishSingleFile>true</PublishSingleFile>
     </PropertyGroup>
 
-    <ItemGroup>
-      <None Remove="assets\spot_sheet.png" />
-    </ItemGroup>
 
     <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">
@@ -91,6 +88,12 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="assets\gondwana-logo-text.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="assets\spot_selected.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="assets\spot_defaults.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="assets\spot_sheet.png">
