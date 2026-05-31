@@ -19,39 +19,15 @@
         <PublishSingleFile>true</PublishSingleFile>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Remove="assets\archive\**" />
+      <EmbeddedResource Remove="assets\archive\**" />
+      <None Remove="assets\archive\**" />
+    </ItemGroup>
+
 
     <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-blue-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-blue.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-green-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-green.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-pink-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-pink.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-red-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-red.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-yellow-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="assets\bubble-yellow.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="assets\clouds.png">
