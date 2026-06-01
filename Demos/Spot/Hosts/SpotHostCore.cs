@@ -913,7 +913,7 @@ internal sealed class SpotHostCore
             {
                 oldSprite.ResizeComplete -= handler;
                 oldSprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
-                oldSprite.ResizeTo(new(64, 64), 0.2f);
+                oldSprite.ResizeTo(new(56, 56), 0.2f);
             };
 
             oldSprite.ResizeComplete += handler;
