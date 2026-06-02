@@ -19,36 +19,6 @@
         <Content Include="../Spot/assets/ArchitectsDaughter-Regular.ttf" Link="assets/ArchitectsDaughter-Regular.ttf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="../Spot/assets/bubble-blue-happy.png" Link="assets/bubble-blue-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-blue.png" Link="assets/bubble-blue.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-green-happy.png" Link="assets/bubble-green-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-green.png" Link="assets/bubble-green.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-pink-happy.png" Link="assets/bubble-pink-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-pink.png" Link="assets/bubble-pink.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-red-happy.png" Link="assets/bubble-red-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-red.png" Link="assets/bubble-red.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../Spot/assets/bubble-yellow-happy.png" Link="assets/bubble-yellow-happy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\bubble-yellow.png" Link="assets\bubble-yellow.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Include="..\Spot\assets\clouds.png" Link="assets\clouds.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
