@@ -133,12 +133,25 @@ public struct FrameSequence : IEnumerable<Frame>
     /// Creates and adds a new frame to the sequence using tilesheet coordinates
     /// </summary>
     /// <param name="bmp">The tilesheet containing the frame image</param>
+    /// <param name="regionName">The name of the region within the tilesheet</param>
+    /// <param name="xTile">The x-coordinate of the tile in the tilesheet</param>
+    /// <param name="yTile">The y-coordinate of the tile in the tilesheet</param>
+    /// <returns>The newly created and added <see cref="Frame"/></returns>
+    public Frame AddFrame(Tilesheet bmp, string regionName, int xTile, int yTile)
+    {
+        return AddFrame(new Frame(bmp, regionName, xTile, yTile));
+    }
+
+    /// <summary>
+    /// Creates and adds a new frame to the sequence using tilesheet coordinates
+    /// </summary>
+    /// <param name="bmp">The tilesheet containing the frame image</param>
     /// <param name="xTile">The x-coordinate of the tile in the tilesheet</param>
     /// <param name="yTile">The y-coordinate of the tile in the tilesheet</param>
     /// <returns>The newly created and added <see cref="Frame"/></returns>
     public Frame AddFrame(Tilesheet bmp, int xTile, int yTile)
     {
-        return AddFrame(new Frame(bmp, xTile, yTile));
+        return AddFrame(new Frame(bmp, TilesheetRegion.DefaultRegionName, xTile, yTile));
     }
 
     /// <summary>

@@ -35,7 +35,7 @@ public static class TilesheetMetadataLoader
 
         var sheet = new Tilesheet(name, imagePath)
         {
-            TileSize = new Size(metadata.TileWidth, metadata.TileHeight)
+            //TileSize = new Size(metadata.TileWidth, metadata.TileHeight)
         };
 
         sheet.ValueBag.Set(new ValueKey<TilesheetMetadataAsset>("gondwana.studio.tilesheet"), metadata);

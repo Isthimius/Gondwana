@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
 </Project>

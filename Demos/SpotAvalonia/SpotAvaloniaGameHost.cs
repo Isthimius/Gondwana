@@ -126,35 +126,35 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
         // default sprites
         _blueSpot = new Tilesheet("blueSpot", "assets/bubble-blue.png");
-        _blueSpot.TileSize = new Size(92, 96);
+        _blueSpot.DefaultRegion.TileSize = new Size(92, 96);
 
         _greenSpot = new Tilesheet("greenSpot", "assets/bubble-green.png");
-        _greenSpot.TileSize = new Size(92, 96);
+        _greenSpot.DefaultRegion.TileSize = new Size(92, 96);
 
         _pinkSpot = new Tilesheet("pinkSpot", "assets/bubble-pink.png");
-        _pinkSpot.TileSize = new Size(92, 96);
+        _pinkSpot.DefaultRegion.TileSize = new Size(92, 96);
 
         _redSpot = new Tilesheet("redSpot", "assets/bubble-red.png");
-        _redSpot.TileSize = new Size(92, 96);
+        _redSpot.DefaultRegion.TileSize = new Size(92, 96);
 
         _yellowSpot = new Tilesheet("yellowSpot", "assets/bubble-yellow.png");
-        _yellowSpot.TileSize = new Size(92, 96);
+        _yellowSpot.DefaultRegion.TileSize = new Size(92, 96);
 
         // selected sprites
         _blueSpotHappy = new Tilesheet("blueSpotHappy", "assets/bubble-blue-happy.png");
-        _blueSpotHappy.TileSize = new Size(1024, 1024);
+        _blueSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
 
         _greenSpotHappy = new Tilesheet("greenSpotHappy", "assets/bubble-green-happy.png");
-        _greenSpotHappy.TileSize = new Size(1024, 1024);
+        _greenSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
 
         _pinkSpotHappy = new Tilesheet("pinkSpotHappy", "assets/bubble-pink-happy.png");
-        _pinkSpotHappy.TileSize = new Size(1024, 1024);
+        _pinkSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
 
         _redSpotHappy = new Tilesheet("redSpotHappy", "assets/bubble-red-happy.png");
-        _redSpotHappy.TileSize = new Size(1024, 1024);
+        _redSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
 
         _yellowSpotHappy = new Tilesheet("yellowSpotHappy", "assets/bubble-yellow-happy.png");
-        _yellowSpotHappy.TileSize = new Size(1024, 1024);
+        _yellowSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
 
         _clouds = new Tilesheet("clouds", "assets/clouds.png");
     }

@@ -73,7 +73,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         if (SpriteManager.Instance.SizeNewSpritesToSceneLayer)
             _renderSize = new Size(_sceneLayer.TileWidth, _sceneLayer.TileHeight);
         else
-            _renderSize = CurrentFrame.Tilesheet.TileSize;
+            _renderSize = CurrentFrame.BaseTileSize;
 
         zOrder = 1;
 
