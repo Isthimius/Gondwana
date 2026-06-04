@@ -181,7 +181,7 @@ Generates a C# `public static class` containing one `public const string` per as
 | `--namespace <ns>` | `-n` | *(none)* | C# namespace for the generated class. |
 | `--class <name>` | `-c` | `AssetKeys` | C# class name. |
 | `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
-| `--include-loader` | `-l` | `false` | Also emit a `Load(string? password = null)` static method that instantiates `AssetsFile` for the bundle. |
+| `--include-loader` | `-l` | `false` | Also emit a `Load(string? password = null)` static method that calls `AssetsFile.LoadOrCreate` using the bundle file name (resolved relative to the app's working directory). |
 
 **Examples**
 ```
