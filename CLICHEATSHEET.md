@@ -35,6 +35,7 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana help` | Show a summary of all available commands. |
 | `gondwana doctor` | Validate your local Gondwana development environment. Pass `--fix` to auto-fix issues. |
 | `gondwana info` | Show information about the Gondwana project in the current directory. |
+| `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
 | `gondwana pack <source> <output>` | Pack a directory of files into an asset bundle (shorthand for `gondwana assets pack`). |
 | `gondwana new <subcommand>` | Scaffold a new Gondwana project. |
 | `gondwana templates <subcommand>` | Manage Gondwana `dotnet new` templates. |
@@ -42,7 +43,20 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana run wasm` | Build and run the project in the browser (net8.0-browser dev server). |
 | `gondwana publish <subcommand>` | Publish a Gondwana project for distribution. |
 | `gondwana deploy <subcommand>` | Deploy a Gondwana project to a distribution target. |
-| `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
+
+### Table of contents
+
+- [`gondwana help`](#gondwana-help)
+- [`gondwana doctor`](#gondwana-doctor)
+- [`gondwana info`](#gondwana-info)
+- [`gondwana assets`](#gondwana-assets)
+- [`gondwana pack`](#gondwana-pack)
+- [`gondwana new`](#gondwana-new)
+- [`gondwana templates`](#gondwana-templates)
+- [`gondwana run`](#gondwana-run)
+- [`gondwana run wasm`](#gondwana-run-wasm)
+- [`gondwana publish`](#gondwana-publish)
+- [`gondwana deploy`](#gondwana-deploy)
 
 ---
 
@@ -82,6 +96,100 @@ gondwana doctor --fix
 Reads the `.csproj` in the current directory and prints project metadata (name, target framework, Gondwana version, adapters, and discovered asset bundles). When multiple `.csproj` files are present, the first one alphabetically is used.
 
 *No arguments or options.*
+
+---
+
+## `gondwana assets`
+
+| Subcommand | Description |
+|---|---|
+| `pack` | Pack a directory of files into an asset bundle. |
+| `list` | List all assets in a bundle. |
+| `extract` | Extract all assets from a bundle to a directory. |
+| `generate-keys` | Generate a C# constants class for all asset keys in a bundle. |
+
+---
+
+### `gondwana assets pack <source> <output>`
+
+| Argument / Option | Short | Default | Description |
+|---|---|---|---|
+| `<source>` | | | **Required.** Source directory containing files to pack. |
+| `<output>` | | | **Required.** Output bundle file path (e.g. `game.assets` or `game.gaf`). |
+| `--type <name>` | `-t` | `Misc` | Default asset type for files whose type cannot be inferred from the extension. |
+| `--recurse` | `-r` | `true` | Recurse into subdirectories. |
+| `--append` | `-a` | `false` | Append to an existing bundle instead of overwriting it. By default the output file is deleted first so no stale entries survive a re-run. |
+| `--type-map <file>` | `-m` | *(built-in defaults)* | Path to a JSON file that maps asset types to file extensions. Optional. Resolution order: this flag → `gondwana-asset-types.json` in CWD → `gondwana-asset-types.json` next to the executable → built-in defaults. |
+| `--password <pass>` | `-p` | *(none)* | Password-protect the bundle. Required when `--encrypt` is used. |
+| `--encrypt` | `-e` | `false` | Encrypt the bundle using AES-256. Requires `--password`. |
+
+**Examples**
+```
+gondwana assets pack ./Assets ./game.assets
+gondwana assets pack ./Assets ./game.assets --append
+gondwana assets pack ./Assets ./game.assets -m ./my-types.json
+gondwana assets pack ./Assets ./game.assets --password secret
+gondwana assets pack ./Assets ./game.assets --password secret --encrypt
+```
+
+---
+
+### `gondwana assets list <file>`
+
+| Argument / Option | Short | Description |
+|---|---|---|
+| `<file>` | | **Required.** Path to the asset bundle to inspect. |
+| `--type <name>` | `-t` | Filter output to assets of the specified type (e.g. `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Svg`, `Misc`). |
+| `--password <pass>` | `-p` | Password required to open a password-protected or encrypted bundle. |
+
+**Example**
+```
+gondwana assets list ./game.assets
+gondwana assets list ./game.assets -t Image
+gondwana assets list ./game.assets --password secret
+```
+
+---
+
+### `gondwana assets extract <file> <output>`
+
+| Argument / Option | Short | Default | Description |
+|---|---|---|---|
+| `<file>` | | | **Required.** Path to the asset bundle to extract. |
+| `<output>` | | | **Required.** Directory to extract assets into. Created automatically if it does not exist. |
+| `--type <name>` | `-t` | *(all)* | Extract only assets of the specified type (e.g. `Image`, `Audio`). |
+| `--overwrite` | | `false` | Overwrite existing files in the output directory. |
+| `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
+
+**Example**
+```
+gondwana assets extract ./game.assets ./Extracted
+gondwana assets extract ./game.assets ./Extracted --overwrite -t Audio
+gondwana assets extract ./game.assets ./Extracted --password secret
+```
+
+---
+
+### `gondwana assets generate-keys <file>`
+
+Generates a C# `public static class` containing one `public const string` per asset key, suitable for use at compile time.
+
+| Argument / Option | Short | Default | Description |
+|---|---|---|---|
+| `<file>` | | | **Required.** Path to the asset bundle to read keys from. |
+| `--output <file>` | `-o` | *(stdout)* | Output `.cs` file path. Prints to stdout if omitted. The destination directory is created automatically if it does not exist. |
+| `--namespace <ns>` | `-n` | *(none)* | C# namespace for the generated class. |
+| `--class <name>` | `-c` | `AssetKeys` | C# class name. |
+| `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
+| `--include-loader` | `-l` | `false` | Also emit a `Load(string? password = null)` static method that calls `AssetsFile.LoadOrCreate` using the bundle file name (resolved relative to the app's working directory). |
+
+**Examples**
+```
+gondwana assets generate-keys ./game.assets
+gondwana assets generate-keys ./game.assets -o ./Generated/AssetKeys.cs -n MyGame -c AssetKeys
+gondwana assets generate-keys ./game.assets --password secret
+gondwana assets generate-keys ./game.assets --include-loader -o ./Generated/AssetKeys.cs -n MyGame
+```
 
 ---
 
@@ -410,100 +518,6 @@ Runs `dotnet new update`. This checks installed template packages for updates wi
 ### `gondwana templates list`
 
 Runs `dotnet new list gondwana` and prints matching templates. *No arguments or options.*
-
----
-
-## `gondwana assets`
-
-| Subcommand | Description |
-|---|---|
-| `pack` | Pack a directory of files into an asset bundle. |
-| `list` | List all assets in a bundle. |
-| `extract` | Extract all assets from a bundle to a directory. |
-| `generate-keys` | Generate a C# constants class for all asset keys in a bundle. |
-
----
-
-### `gondwana assets pack <source> <output>`
-
-| Argument / Option | Short | Default | Description |
-|---|---|---|---|
-| `<source>` | | | **Required.** Source directory containing files to pack. |
-| `<output>` | | | **Required.** Output bundle file path (e.g. `game.assets` or `game.gaf`). |
-| `--type <name>` | `-t` | `Misc` | Default asset type for files whose type cannot be inferred from the extension. |
-| `--recurse` | `-r` | `true` | Recurse into subdirectories. |
-| `--append` | `-a` | `false` | Append to an existing bundle instead of overwriting it. By default the output file is deleted first so no stale entries survive a re-run. |
-| `--type-map <file>` | `-m` | *(built-in defaults)* | Path to a JSON file that maps asset types to file extensions. Optional. Resolution order: this flag → `gondwana-asset-types.json` in CWD → `gondwana-asset-types.json` next to the executable → built-in defaults. |
-| `--password <pass>` | `-p` | *(none)* | Password-protect the bundle. Required when `--encrypt` is used. |
-| `--encrypt` | `-e` | `false` | Encrypt the bundle using AES-256. Requires `--password`. |
-
-**Examples**
-```
-gondwana assets pack ./Assets ./game.assets
-gondwana assets pack ./Assets ./game.assets --append
-gondwana assets pack ./Assets ./game.assets -m ./my-types.json
-gondwana assets pack ./Assets ./game.assets --password secret
-gondwana assets pack ./Assets ./game.assets --password secret --encrypt
-```
-
----
-
-### `gondwana assets list <file>`
-
-| Argument / Option | Short | Description |
-|---|---|---|
-| `<file>` | | **Required.** Path to the asset bundle to inspect. |
-| `--type <name>` | `-t` | Filter output to assets of the specified type (e.g. `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Svg`, `Misc`). |
-| `--password <pass>` | `-p` | Password required to open a password-protected or encrypted bundle. |
-
-**Example**
-```
-gondwana assets list ./game.assets
-gondwana assets list ./game.assets -t Image
-gondwana assets list ./game.assets --password secret
-```
-
----
-
-### `gondwana assets extract <file> <output>`
-
-| Argument / Option | Short | Default | Description |
-|---|---|---|---|
-| `<file>` | | | **Required.** Path to the asset bundle to extract. |
-| `<output>` | | | **Required.** Directory to extract assets into. Created automatically if it does not exist. |
-| `--type <name>` | `-t` | *(all)* | Extract only assets of the specified type (e.g. `Image`, `Audio`). |
-| `--overwrite` | | `false` | Overwrite existing files in the output directory. |
-| `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
-
-**Example**
-```
-gondwana assets extract ./game.assets ./Extracted
-gondwana assets extract ./game.assets ./Extracted --overwrite -t Audio
-gondwana assets extract ./game.assets ./Extracted --password secret
-```
-
----
-
-### `gondwana assets generate-keys <file>`
-
-Generates a C# `public static class` containing one `public const string` per asset key, suitable for use at compile time.
-
-| Argument / Option | Short | Default | Description |
-|---|---|---|---|
-| `<file>` | | | **Required.** Path to the asset bundle to read keys from. |
-| `--output <file>` | `-o` | *(stdout)* | Output `.cs` file path. Prints to stdout if omitted. The destination directory is created automatically if it does not exist. |
-| `--namespace <ns>` | `-n` | *(none)* | C# namespace for the generated class. |
-| `--class <name>` | `-c` | `AssetKeys` | C# class name. |
-| `--password <pass>` | `-p` | *(none)* | Password required to open a password-protected or encrypted bundle. |
-| `--include-loader` | `-l` | `false` | Also emit a `Load(string? password = null)` static method that instantiates `AssetsFile` for the bundle. |
-
-**Examples**
-```
-gondwana assets generate-keys ./game.assets
-gondwana assets generate-keys ./game.assets -o ./Generated/AssetKeys.cs -n MyGame -c AssetKeys
-gondwana assets generate-keys ./game.assets --password secret
-gondwana assets generate-keys ./game.assets --include-loader -o ./Generated/AssetKeys.cs -n MyGame
-```
 
 ---
 
