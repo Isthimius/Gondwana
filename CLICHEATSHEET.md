@@ -44,6 +44,20 @@ After installation the `gondwana` command is available in any terminal.
 | `gondwana deploy <subcommand>` | Deploy a Gondwana project to a distribution target. |
 | `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
 
+### Table of contents
+
+- [`gondwana help`](#gondwana-help)
+- [`gondwana doctor`](#gondwana-doctor)
+- [`gondwana info`](#gondwana-info)
+- [`gondwana pack`](#gondwana-pack)
+- [`gondwana new`](#gondwana-new)
+- [`gondwana templates`](#gondwana-templates)
+- [`gondwana run`](#gondwana-run)
+- [`gondwana run wasm`](#gondwana-run-wasm)
+- [`gondwana publish`](#gondwana-publish)
+- [`gondwana deploy`](#gondwana-deploy)
+- [`gondwana assets`](#gondwana-assets)
+
 ---
 
 ## `gondwana help`
