@@ -111,7 +111,7 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
         };
 
         // Apply full overhang (Left/Top/Right/Bottom)
-        return TileBounds.ApplyOverhang(baseRect, tile.OverhangPixels, includeOverhang);
+        return TileBounds.ApplyOverhang(baseRect, tile.Overhang, includeOverhang);
     }
 
     /// <summary>

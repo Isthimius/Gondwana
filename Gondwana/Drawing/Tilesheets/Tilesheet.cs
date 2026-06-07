@@ -1,9 +1,9 @@
 using System.Drawing;
-using Gondwana.Assets;
-using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SkiaSharp;
+using Gondwana.Assets;
+using Gondwana.SkiaSharp;
 
 namespace Gondwana.Drawing.Tilesheets;
 
@@ -121,7 +121,7 @@ public sealed class Tilesheet : IDisposable
                 region.Area,
                 region.Spacing,
                 region.TileSize,
-                region.OverhangPixels);
+                region.Overhang);
         }
 
         TilesheetRegistry.Instance.Register(this);
@@ -236,7 +236,7 @@ public sealed class Tilesheet : IDisposable
         Rectangle area,
         Size spacing,
         Size tileSize,
-        Overhang? overhangPixels = null)
+        Spacing? overhangPixels = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Region name must be a non-empty string.", nameof(name));
@@ -250,7 +250,7 @@ public sealed class Tilesheet : IDisposable
             area,
             spacing,
             tileSize,
-            overhangPixels ?? Overhang.None);
+            overhangPixels ?? Spacing.None);
 
         Regions.Add(region);
 
@@ -546,7 +546,7 @@ public sealed class Tilesheet : IDisposable
     private TilesheetRegion AddDefaultRegion(
         Size? tileSize = null,
         Size? spacing = null,
-        Overhang? overhangPixels = null)
+        Spacing? overhangPixels = null)
     {
         return AddRegion(
             TilesheetRegion.DefaultRegionName,

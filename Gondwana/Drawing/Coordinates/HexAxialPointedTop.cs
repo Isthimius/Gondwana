@@ -113,7 +113,7 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H);
-        return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
+        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
             -originY + (int)Math.Floor(row * (H * 0.75f)));
 
         var rect = new Rectangle(p.X, p.Y, W, H);
-        var ohRect = TileBounds.ApplyOverhang(rect, includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None, includeOverhang);
+        var ohRect = TileBounds.ApplyOverhang(rect, includeOverhang ? new Spacing(0, 0, 0, 0) : Spacing.None, includeOverhang);
         int x = ohRect.X; int y = ohRect.Y;
 
         // Pointed-top vertices from bounding box

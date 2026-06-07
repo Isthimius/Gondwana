@@ -113,10 +113,10 @@ public struct Frame
 
     /// <summary>
     /// Gets the overhang dimensions (in pixels) that extend beyond the base tile boundaries.
-    /// Returns <see cref="Overhang.None"/> if the tilesheet is not available.
+    /// Returns <see cref="Spacing.None"/> if the tilesheet is not available.
     /// </summary>
     [JsonIgnore]
-    public readonly Overhang OverhangPixels => Tilesheet?.GetRegion(RegionName)?.OverhangPixels ?? Overhang.None;
+    public readonly Spacing Overhang => Tilesheet?.GetRegion(RegionName)?.Overhang ?? Spacing.None;
 
     /// <summary>
     /// Gets the total tile size including overhang pixels in all directions.
@@ -124,6 +124,6 @@ public struct Frame
     /// </summary>
     [JsonIgnore]
     public readonly Size TileSizeWithOverhang =>
-        new Size(BaseTileSize.Width + OverhangPixels.Left + OverhangPixels.Right,
-                 BaseTileSize.Height + OverhangPixels.Top + OverhangPixels.Bottom);
+        new Size(BaseTileSize.Width + Overhang.Left + Overhang.Right,
+                 BaseTileSize.Height + Overhang.Top + Overhang.Bottom);
 }
