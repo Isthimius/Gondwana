@@ -6,8 +6,14 @@ using Gondwana.SkiaSharp;
 
 namespace Gondwana.Drawing.Tilesheets;
 
+/// <summary>
+/// Represents a rectangular region within a tilesheet that contains a grid of tiles.
+/// </summary>
 public sealed class TilesheetRegion : IDisposable
 {
+    /// <summary>
+    /// The default name assigned to tilesheet regions when no name is specified.
+    /// </summary>
     public static readonly string DefaultRegionName = "default";
 
     private TilesheetRegionSlice?[,]? _tileCache;
@@ -22,8 +28,9 @@ public sealed class TilesheetRegion : IDisposable
         Tilesheet tilesheet,
         string name,
         Rectangle area,
-        Size spacing,
         Size tileSize,
+        Spacing tilePadding,
+        Spacing regionMargin,
         Spacing overhangPixels)
     {
         Tilesheet = tilesheet ?? throw new ArgumentNullException(nameof(tilesheet));
@@ -35,11 +42,9 @@ public sealed class TilesheetRegion : IDisposable
         // Assign backing fields directly so we do not rebuild the cache
         // repeatedly during construction.
         _area = area;
-
-        _spacingX = spacing.Width;
-        _spacingY = spacing.Height;
-
         _tileSize = tileSize;
+        _tilePadding = tilePadding;
+        _regionMargin = regionMargin;
 
         Overhang = overhangPixels;
 
@@ -56,22 +61,32 @@ public sealed class TilesheetRegion : IDisposable
     [JsonProperty("tileSize")]
     private Size _tileSize;
 
-    [JsonProperty("spacingX")]
-    private int _spacingX;
+    [JsonProperty("tilePadding")]
+    private Spacing _tilePadding = Spacing.None;
 
-    [JsonProperty("spacingY")]
-    private int _spacingY;
+    [JsonProperty("regionMargin")]
+    private Spacing _regionMargin = Spacing.None;
 
     #endregion serialized fields
 
     #region properties
 
+    /// <summary>
+    /// Gets the tilesheet that owns this region.
+    /// </summary>
     [JsonIgnore]
     public Tilesheet Tilesheet { get; private set; } = null!;
 
+    /// <summary>
+    /// Gets the name of this tilesheet region.
+    /// </summary>
     [JsonProperty("name")]
     public string Name { get; private set; } = DefaultRegionName;
 
+    /// <summary>
+    /// Gets or sets the rectangular area that this region occupies within the tilesheet.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
     [JsonIgnore]
     public Rectangle Area
     {
@@ -83,22 +98,11 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
-    [JsonIgnore]
-    public Size Spacing
-    {
-        get => new(_spacingX, _spacingY);
-        set
-        {
-            _spacingX = value.Width;
-            _spacingY = value.Height;
-
-            BuildTileCache();
-        }
-    }
-
     /// <summary>
     /// Gets or sets the size of each individual tile in this region.
     /// Setting this property rebuilds the internal tile cache.
+    /// <para />
+    /// The tile size defines the source pixel dimensions of each tile's primary area, excluding any padding <----- THIS IS INCLUDING PADDING; FIX
     /// </summary>
     [JsonIgnore]
     public Size TileSize
@@ -107,6 +111,36 @@ public sealed class TilesheetRegion : IDisposable
         set
         {
             _tileSize = value;
+            BuildTileCache();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the spacing (padding) around each tile within this region.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
+    [JsonIgnore]
+    public Spacing TilePadding
+    {
+        get => _tilePadding;
+        set
+        {
+            _tilePadding = value;
+            BuildTileCache();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the margin spacing around the entire region.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
+    [JsonIgnore]
+    public Spacing RegionMargin
+    {
+        get => _regionMargin;
+        set
+        {
+            _regionMargin = value;
             BuildTileCache();
         }
     }
@@ -122,16 +156,44 @@ public sealed class TilesheetRegion : IDisposable
     [JsonProperty("overhang")]
     public Spacing Overhang { get; set; } = Drawing.Spacing.None;
 
+    /// <summary>
+    /// Gets the number of columns (horizontal tiles) in this region.
+    /// </summary>
     [JsonIgnore]
     public int Columns => _tileCache?.GetLength(0) ?? 0;
 
+    /// <summary>
+    /// Gets the number of rows (vertical tiles) in this region.
+    /// </summary>
     [JsonIgnore]
     public int Rows => _tileCache?.GetLength(1) ?? 0;
+
+
+
+    // TODO: these are incorrect; should be subtracting the padding, not adding it
+
+    /// <summary>
+    /// Gets the total width of a single tile including its padding.
+    /// </summary>
+    [JsonIgnore]
+    public int TotalTileWidth => _tilePadding.Left + _tileSize.Width + _tilePadding.Right;
+
+    /// <summary>
+    /// Gets the total height of a single tile including its padding.
+    /// </summary>
+    [JsonIgnore]
+    public int TotalTileHeight => _tilePadding.Top + _tileSize.Height + _tilePadding.Bottom;
 
     #endregion properties
 
     #region public methods
 
+    /// <summary>
+    /// Gets the image for the tile at the specified grid coordinates.
+    /// </summary>
+    /// <param name="x">The column index of the tile.</param>
+    /// <param name="y">The row index of the tile.</param>
+    /// <returns>The SKImage for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</returns>
     public SKImage? GetImage(int x, int y)
     {
         ThrowIfDisposed();
@@ -149,6 +211,12 @@ public sealed class TilesheetRegion : IDisposable
         return _tileCache[x, y]?.Image;
     }
 
+    /// <summary>
+    /// Gets the bitmap for the tile at the specified grid coordinates.
+    /// </summary>
+    /// <param name="x">The column index of the tile.</param>
+    /// <param name="y">The row index of the tile.</param>
+    /// <returns>The SKBitmap for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</returns>
     public SKBitmap? GetBitmap(int x, int y)
     {
         ThrowIfDisposed();
@@ -166,6 +234,10 @@ public sealed class TilesheetRegion : IDisposable
         return _tileCache[x, y]?.Bitmap;
     }
 
+    /// <summary>
+    /// Gets all bitmaps in this region as a dictionary keyed by their grid coordinates.
+    /// </summary>
+    /// <returns>A dictionary mapping (x, y) coordinates to their corresponding SKBitmap instances.</returns>
     public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
         ThrowIfDisposed();
@@ -192,6 +264,10 @@ public sealed class TilesheetRegion : IDisposable
         return bitmaps;
     }
 
+    /// <summary>
+    /// Gets all images in this region as a dictionary keyed by their grid coordinates.
+    /// </summary>
+    /// <returns>A dictionary mapping (x, y) coordinates to their corresponding SKImage instances.</returns>
     public Dictionary<(int x, int y), SKImage> GetAllImages()
     {
         ThrowIfDisposed();
@@ -239,17 +315,17 @@ public sealed class TilesheetRegion : IDisposable
         if (_area.Width <= 0 || _area.Height <= 0)
             return;
 
-        if (_spacingX < 0 || _spacingY < 0)
-            throw new InvalidOperationException("Tilesheet region spacing cannot be negative.");
-
-        int strideX = _tileSize.Width + _spacingX;
-        int strideY = _tileSize.Height + _spacingY;
-
-        if (strideX <= 0 || strideY <= 0)
+        if (TotalTileWidth <= 0 || TotalTileHeight <= 0)
             return;
 
-        int xTiles = (_area.Width + _spacingX) / strideX;
-        int yTiles = (_area.Height + _spacingY) / strideY;
+        if (_tilePadding.Left < 0 || _tilePadding.Top < 0 || _tilePadding.Right < 0 || _tilePadding.Bottom < 0)
+            throw new InvalidOperationException("Tilesheet region tile padding cannot be negative.");
+
+        if (_regionMargin.Left < 0 || _regionMargin.Top < 0 || _regionMargin.Right < 0 || _regionMargin.Bottom < 0)
+            throw new InvalidOperationException("Tilesheet region margin cannot be negative.");
+
+        int xTiles = (_area.Width - _regionMargin.Left - _regionMargin.Right) / TotalTileWidth;
+        int yTiles = (_area.Height - _regionMargin.Top - _regionMargin.Bottom) / TotalTileHeight;
 
         if (xTiles <= 0 || yTiles <= 0)
             return;
@@ -305,10 +381,10 @@ public sealed class TilesheetRegion : IDisposable
 
     private Rectangle GetTileBounds(int xTile, int yTile)
     {
-        int x = _area.X + xTile * (_tileSize.Width + _spacingX);
-        int y = _area.Y + yTile * (_tileSize.Height + _spacingY);
+        int x = _area.X + _regionMargin.Left + (xTile * TotalTileWidth);
+        int y = _area.Y + _regionMargin.Top + (yTile * TotalTileHeight);
 
-        return new Rectangle(x, y, _tileSize.Width, _tileSize.Height);
+        return new Rectangle(x + _tilePadding.Left, y + _tilePadding.Top, _tileSize.Width, _tileSize.Height);
     }
 
     private TilesheetRegionSlice? CreateSlice(Rectangle srcRect)
@@ -345,6 +421,9 @@ public sealed class TilesheetRegion : IDisposable
 
     #region IDisposable
 
+    /// <summary>
+    /// Releases all resources used by this TilesheetRegion, including the tile cache.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)
