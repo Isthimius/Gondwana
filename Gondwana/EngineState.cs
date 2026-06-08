@@ -434,8 +434,9 @@ public sealed class EngineState
             rebuilt.AddRegion(
                 savedRegion.Name,
                 savedRegion.Area,
-                savedRegion.Spacing,
                 savedRegion.TileSize,
+                savedRegion.TilePadding,
+                savedRegion.RegionMargin,
                 savedRegion.Overhang);
         }
 

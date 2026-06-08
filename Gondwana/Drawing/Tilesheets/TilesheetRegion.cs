@@ -102,7 +102,7 @@ public sealed class TilesheetRegion : IDisposable
     /// Gets or sets the size of each individual tile in this region.
     /// Setting this property rebuilds the internal tile cache.
     /// <para />
-    /// The tile size defines the source pixel dimensions of each tile's primary area, excluding any padding <----- THIS IS INCLUDING PADDING; FIX
+    /// The tile size defines the source pixel dimensions of each tile's primary area, excluding any padding
     /// </summary>
     [JsonIgnore]
     public Size TileSize
@@ -154,7 +154,7 @@ public sealed class TilesheetRegion : IDisposable
     /// and cached.
     /// </summary>
     [JsonProperty("overhang")]
-    public Spacing Overhang { get; set; } = Drawing.Spacing.None;
+    public Spacing Overhang { get; set; } = Spacing.None;
 
     /// <summary>
     /// Gets the number of columns (horizontal tiles) in this region.
@@ -168,21 +168,17 @@ public sealed class TilesheetRegion : IDisposable
     [JsonIgnore]
     public int Rows => _tileCache?.GetLength(1) ?? 0;
 
-
-
-    // TODO: these are incorrect; should be subtracting the padding, not adding it
-
     /// <summary>
     /// Gets the total width of a single tile including its padding.
     /// </summary>
     [JsonIgnore]
-    public int TotalTileWidth => _tilePadding.Left + _tileSize.Width + _tilePadding.Right;
+    public int TileWidthIncludingPadding => _tilePadding.Left + _tileSize.Width + _tilePadding.Right;
 
     /// <summary>
     /// Gets the total height of a single tile including its padding.
     /// </summary>
     [JsonIgnore]
-    public int TotalTileHeight => _tilePadding.Top + _tileSize.Height + _tilePadding.Bottom;
+    public int TileHeightIncludingPadding => _tilePadding.Top + _tileSize.Height + _tilePadding.Bottom;
 
     #endregion properties
 
@@ -315,7 +311,7 @@ public sealed class TilesheetRegion : IDisposable
         if (_area.Width <= 0 || _area.Height <= 0)
             return;
 
-        if (TotalTileWidth <= 0 || TotalTileHeight <= 0)
+        if (TileWidthIncludingPadding <= 0 || TileHeightIncludingPadding <= 0)
             return;
 
         if (_tilePadding.Left < 0 || _tilePadding.Top < 0 || _tilePadding.Right < 0 || _tilePadding.Bottom < 0)
@@ -324,8 +320,8 @@ public sealed class TilesheetRegion : IDisposable
         if (_regionMargin.Left < 0 || _regionMargin.Top < 0 || _regionMargin.Right < 0 || _regionMargin.Bottom < 0)
             throw new InvalidOperationException("Tilesheet region margin cannot be negative.");
 
-        int xTiles = (_area.Width - _regionMargin.Left - _regionMargin.Right) / TotalTileWidth;
-        int yTiles = (_area.Height - _regionMargin.Top - _regionMargin.Bottom) / TotalTileHeight;
+        int xTiles = (_area.Width - _regionMargin.Left - _regionMargin.Right) / TileWidthIncludingPadding;
+        int yTiles = (_area.Height - _regionMargin.Top - _regionMargin.Bottom) / TileHeightIncludingPadding;
 
         if (xTiles <= 0 || yTiles <= 0)
             return;
@@ -381,8 +377,8 @@ public sealed class TilesheetRegion : IDisposable
 
     private Rectangle GetTileBounds(int xTile, int yTile)
     {
-        int x = _area.X + _regionMargin.Left + (xTile * TotalTileWidth);
-        int y = _area.Y + _regionMargin.Top + (yTile * TotalTileHeight);
+        int x = _area.X + _regionMargin.Left + (xTile * TileWidthIncludingPadding);
+        int y = _area.Y + _regionMargin.Top + (yTile * TileHeightIncludingPadding);
 
         return new Rectangle(x + _tilePadding.Left, y + _tilePadding.Top, _tileSize.Width, _tileSize.Height);
     }

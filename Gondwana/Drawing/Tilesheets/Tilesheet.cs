@@ -119,8 +119,9 @@ public sealed class Tilesheet : IDisposable
             AddRegion(
                 region.Name,
                 region.Area,
-                region.Spacing,
                 region.TileSize,
+                region.TilePadding,
+                region.RegionMargin,
                 region.Overhang);
         }
 
@@ -226,16 +227,18 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this region.</param>
     /// <param name="area">The rectangular area of the source image occupied by this region.</param>
-    /// <param name="spacing">The horizontal and vertical spacing between tiles in this region.</param>
     /// <param name="tileSize">The size of each individual tile in this region.</param>
+    /// <param name="tilePadding">The horizontal and vertical spacing between tiles in this region.</param>
+    /// <param name="regionMargin">The margin around the region.</param>
     /// <param name="overhangPixels">The overhang dimensions for tiles in this region.</param>
     /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
     /// <exception cref="ArgumentException">Thrown when the region name is null, whitespace, or already exists.</exception>
     public TilesheetRegion AddRegion(
         string name,
         Rectangle area,
-        Size spacing,
         Size tileSize,
+        Spacing? tilePadding = null,
+        Spacing? regionMargin = null,
         Spacing? overhangPixels = null)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -248,8 +251,9 @@ public sealed class Tilesheet : IDisposable
             this,
             name,
             area,
-            spacing,
             tileSize,
+            tilePadding ?? Spacing.None,
+            regionMargin ?? Spacing.None,
             overhangPixels ?? Spacing.None);
 
         Regions.Add(region);
@@ -540,21 +544,22 @@ public sealed class Tilesheet : IDisposable
     /// Adds a default region covering the entire tilesheet image.
     /// </summary>
     /// <param name="tileSize">The size of each individual tile in the default region.</param>
-    /// <param name="spacing">The horizontal and vertical spacing between tiles in the default region.</param>
+    /// <param name="tilePadding">The padding between tiles in the default region.</param>
+    /// <param name="regionMargin">The margin around the default region.</param>
     /// <param name="overhangPixels">The overhang dimensions for tiles in the default region.</param>
-    /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
-    private TilesheetRegion AddDefaultRegion(
+    private void AddDefaultRegion(
         Size? tileSize = null,
-        Size? spacing = null,
+        Spacing? tilePadding = null,
+        Spacing? regionMargin = null,
         Spacing? overhangPixels = null)
     {
-        // TODO: this...
-        return AddRegion(
+        AddRegion(
             TilesheetRegion.DefaultRegionName,
             new Rectangle(0, 0, SkBitmap.Width, SkBitmap.Height),
-            spacing ?? Size.Empty,
-            tileSize ?? Size.Empty,
-            overhangPixels);
+            tileSize ?? Size.Empty, 
+            tilePadding ?? Spacing.None,
+            regionMargin ?? Spacing.None,
+            overhangPixels ?? Spacing.None);
     }
 
     #endregion private methods
