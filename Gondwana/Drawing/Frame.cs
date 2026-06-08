@@ -72,23 +72,6 @@ public struct Frame
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet, tile coordinates, and per-frame display duration.
-    /// </summary>
-    /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
-    /// <param name="regionName">The tilesheet region containing the source bitmap.</param>
-    /// <param name="xTile">The horizontal tile coordinate (column index) within the tilesheet.</param>
-    /// <param name="yTile">The vertical tile coordinate (row index) within the tilesheet.</param>
-    /// <param name="durationSeconds">How long in seconds this frame should display. 0 defers to the cycle's throttle time.</param>
-    public Frame(Tilesheet tilesheet, string regionName, int xTile, int yTile, double durationSeconds)
-    {
-        Tilesheet = tilesheet;
-        RegionName = regionName;
-        XTile = xTile;
-        YTile = yTile;
-        DurationSeconds = durationSeconds;
-    }
-
-    /// <summary>
     /// Gets the SkiaSharp bitmap for this frame at the specified tile coordinates.
     /// Returns <see langword="null"/> if the tilesheet is not available.
     /// </summary>
@@ -117,13 +100,4 @@ public struct Frame
     /// </summary>
     [JsonIgnore]
     public readonly Spacing Overhang => Tilesheet?.GetRegion(RegionName)?.Overhang ?? Spacing.None;
-
-    /// <summary>
-    /// Gets the total tile size including overhang pixels in all directions.
-    /// This is calculated as the base tile size plus the left, right, top, and bottom overhang values.
-    /// </summary>
-    [JsonIgnore]
-    public readonly Size TileSizeWithOverhang =>
-        new Size(BaseTileSize.Width + Overhang.Left + Overhang.Right,
-                 BaseTileSize.Height + Overhang.Top + Overhang.Bottom);
 }
