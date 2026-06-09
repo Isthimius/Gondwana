@@ -205,13 +205,7 @@ public class Animator : IDisposable
         }
     }
 
-    private long GetThrottleForCurrentFrame()
-    {
-        var frameDuration = parent.CurrentFrame.DurationSeconds;
-        return frameDuration > 0
-            ? (long)(frameDuration * HighResTimer.TicksPerSecond)
-            : CurrentCycle._throttle;
-    }
+    private long GetThrottleForCurrentFrame() => CurrentCycle._throttle;
 
     #endregion public methods
 

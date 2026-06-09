@@ -35,12 +35,6 @@ public struct Frame
     public readonly int YTile;
 
     /// <summary>
-    /// The duration in seconds this frame should display. A value of 0 means
-    /// the owning <see cref="Gondwana.Drawing.Animation.Cycle"/>'s <c>ThrottleTime</c> is used instead.
-    /// </summary>
-    public readonly double DurationSeconds;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
     /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
@@ -52,7 +46,6 @@ public struct Frame
         RegionName = TilesheetRegion.DefaultRegionName;
         XTile = xTile;
         YTile = yTile;
-        DurationSeconds = 0;
     }
 
     /// <summary>
@@ -68,7 +61,6 @@ public struct Frame
         RegionName = regionName;
         XTile = xTile;
         YTile = yTile;
-        DurationSeconds = 0;
     }
 
     /// <summary>
