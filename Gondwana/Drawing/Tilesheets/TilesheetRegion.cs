@@ -311,14 +311,14 @@ public sealed class TilesheetRegion : IDisposable
         if (_area.Width <= 0 || _area.Height <= 0)
             return;
 
-        if (TileWidthIncludingPadding <= 0 || TileHeightIncludingPadding <= 0)
-            return;
-
         if (_tilePadding.Left < 0 || _tilePadding.Top < 0 || _tilePadding.Right < 0 || _tilePadding.Bottom < 0)
             throw new InvalidOperationException("Tilesheet region tile padding cannot be negative.");
 
         if (_regionMargin.Left < 0 || _regionMargin.Top < 0 || _regionMargin.Right < 0 || _regionMargin.Bottom < 0)
             throw new InvalidOperationException("Tilesheet region margin cannot be negative.");
+
+        if (TileWidthIncludingPadding <= 0 || TileHeightIncludingPadding <= 0)
+            return;
 
         int xTiles = (_area.Width - _regionMargin.Left - _regionMargin.Right) / TileWidthIncludingPadding;
         int yTiles = (_area.Height - _regionMargin.Top - _regionMargin.Bottom) / TileHeightIncludingPadding;
