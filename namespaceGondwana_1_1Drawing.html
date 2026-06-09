@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -135,39 +135,39 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6fce70584993e761e53ab83006f77912" id="r_a6fce70584993e761e53ab83006f77912"><td class="memItemLeft" align="right" valign="top">record struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6fce70584993e761e53ab83006f77912">Overhang</a> (int Left, int Top, int Right, int Bottom)</td></tr>
-<tr class="memdesc:a6fce70584993e761e53ab83006f77912"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the overhang dimensions (in pixels) that extend beyond a tile's primary area. Overhang values define how much a tile's visual representation exceeds its logical boundaries in each direction (left, top, right, and bottom).  <br /></td></tr>
-<tr class="separator:a6fce70584993e761e53ab83006f77912"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b8743455b186d888a346c497e7f1068" id="r_a6b8743455b186d888a346c497e7f1068"><td class="memItemLeft" align="right" valign="top">record struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a> ([property:JsonProperty(&quot;left&quot;)] int Left, [property:JsonProperty(&quot;top&quot;)] int Top, [property:JsonProperty(&quot;right&quot;)] int Right, [property:JsonProperty(&quot;bottom&quot;)] int Bottom)</td></tr>
+<tr class="memdesc:a6b8743455b186d888a346c497e7f1068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents dimensions in pixels when spacing Tilesheets.  <br /></td></tr>
+<tr class="separator:a6b8743455b186d888a346c497e7f1068"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a6fce70584993e761e53ab83006f77912" name="a6fce70584993e761e53ab83006f77912"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6fce70584993e761e53ab83006f77912">&#9670;&#160;</a></span>Overhang()</h2>
+<a id="a6b8743455b186d888a346c497e7f1068" name="a6b8743455b186d888a346c497e7f1068"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b8743455b186d888a346c497e7f1068">&#9670;&#160;</a></span>Spacing()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">record struct Gondwana.Drawing.Overhang </td>
+          <td class="memname">record struct Gondwana.Drawing.Spacing </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">[property: JsonProperty(&quot;left&quot;)] int&#160;</td>
           <td class="paramname"><em>Left</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">[property: JsonProperty(&quot;top&quot;)] int&#160;</td>
           <td class="paramname"><em>Top</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">[property: JsonProperty(&quot;right&quot;)] int&#160;</td>
           <td class="paramname"><em>Right</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">[property: JsonProperty(&quot;bottom&quot;)] int&#160;</td>
           <td class="paramname"><em>Bottom</em>&#160;</td>
         </tr>
         <tr>
@@ -178,20 +178,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Represents the overhang dimensions (in pixels) that extend beyond a tile's primary area. Overhang values define how much a tile's visual representation exceeds its logical boundaries in each direction (left, top, right, and bottom). </p>
+<p>Represents dimensions in pixels when spacing Tilesheets. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Left</td><td>The number of pixels the tile extends beyond its left boundary.</td></tr>
-    <tr><td class="paramname">Top</td><td>The number of pixels the tile extends beyond its top boundary.</td></tr>
-    <tr><td class="paramname">Right</td><td>The number of pixels the tile extends beyond its right boundary.</td></tr>
-    <tr><td class="paramname">Bottom</td><td>The number of pixels the tile extends beyond its bottom boundary.</td></tr>
+    <tr><td class="paramname">Left</td><td>The number of pixels on the left boundary.</td></tr>
+    <tr><td class="paramname">Top</td><td>The number of pixels on the top boundary.</td></tr>
+    <tr><td class="paramname">Right</td><td>The number of pixels on the right boundary.</td></tr>
+    <tr><td class="paramname">Bottom</td><td>The number of pixels on the bottom boundary.</td></tr>
   </table>
   </dd>
 </dl>
-<p>Represents an overhang with no extension in any direction (all values are zero).</p>
-<p>Gets a value indicating whether this overhang has no extension in any direction. Returns <code>true</code> if all overhang values (Left, Top, Right, Bottom) are zero; otherwise, <code>false</code>.</p>
+<p>Represents a spacing with no extension in any direction (all values are zero).</p>
+<p>Gets a value indicating whether this spacing has no extension in any direction. Returns <code>true</code> if all spacing values (Left, Top, Right, Bottom) are zero; otherwise, <code>false</code>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Overhang_8cs_source.html#l00012">12</a> of file <a class="el" href="Overhang_8cs_source.html">Overhang.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Spacing_8cs_source.html#l00012">12</a> of file <a class="el" href="Spacing_8cs_source.html">Spacing.cs</a>.</p>
 
 </div>
 </div>

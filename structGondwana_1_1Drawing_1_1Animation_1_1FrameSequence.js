@@ -4,6 +4,7 @@ var structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence =
     [ "FrameSequence", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#ad05efde23ccc4b4811887bffa18d49bd", null ],
     [ "AddFrame", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#a1b6088a41202b60b59d8324295d5d97b", null ],
     [ "AddFrame", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#a247ae59da584a36f9f1369d2957b7d07", null ],
+    [ "AddFrame", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#ac890c74923630c6a5220e73a900c0faa", null ],
     [ "GetEnumerator", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#aee286573623f4749300d0f0c333ff770", null ],
     [ "GetEnumerator", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#a48f4d52b73982e71bbeee420828988bb", null ],
     [ "RemoveFrame", "structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#a0da89677dc5615ac0ddbcf009598d327", null ],

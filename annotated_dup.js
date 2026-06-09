@@ -95,7 +95,7 @@ var annotated_dup =
         ] ],
         [ "Tilesheets", "namespaceGondwana_1_1Drawing_1_1Tilesheets.html", [
           [ "Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet" ],
-          [ "TilesheetDisposedEventArgs", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetDisposedEventArgs.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetDisposedEventArgs" ],
+          [ "TilesheetRegion", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion" ],
           [ "TilesheetRegistry", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry" ]
         ] ],
         [ "Frame", "structGondwana_1_1Drawing_1_1Frame.html", "structGondwana_1_1Drawing_1_1Frame" ],
@@ -206,11 +206,6 @@ var annotated_dup =
         [ "TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset" ],
         [ "TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset" ]
       ] ],
-      [ "Tests", "namespaceGondwana_1_1Tests.html", [
-        [ "CoreUtilityTests", "classGondwana_1_1Tests_1_1CoreUtilityTests.html", "classGondwana_1_1Tests_1_1CoreUtilityTests" ],
-        [ "TimerTests", "classGondwana_1_1Tests_1_1TimerTests.html", "classGondwana_1_1Tests_1_1TimerTests" ],
-        [ "TypedValueBagTests", "classGondwana_1_1Tests_1_1TypedValueBagTests.html", "classGondwana_1_1Tests_1_1TypedValueBagTests" ]
-      ] ],
       [ "Timers", "namespaceGondwana_1_1Timers.html", [
         [ "Timer", "classGondwana_1_1Timers_1_1Timer.html", "classGondwana_1_1Timers_1_1Timer" ]
       ] ],
@@ -223,6 +218,7 @@ var annotated_dup =
       [ "WinForms", "namespaceGondwana_1_1WinForms.html", [
         [ "Hosting", "namespaceGondwana_1_1WinForms_1_1Hosting.html", [
           [ "WinFormsGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost" ],
+          [ "WinFormsGameHostBase", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase" ],
           [ "WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost" ]
         ] ],
         [ "Input", "namespaceGondwana_1_1WinForms_1_1Input.html", [

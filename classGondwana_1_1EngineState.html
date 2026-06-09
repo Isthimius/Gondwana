@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -202,7 +202,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00193">193</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00195">195</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -263,7 +263,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00231">231</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00233">233</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -309,7 +309,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00154">154</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00156">156</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -518,7 +518,8 @@ Properties</h2></td></tr>
 
 <p>Stores extensible, project-specific state data associated with this engine state. </p>
 <p>The value bag allows games or engine extensions to persist arbitrary structured data (such as NPC state, quest progress, or custom subsystem data) without modifying the core EngineState schema. </p>
-<p>Values are accessed using strongly-typed ValueKey&lt;T&gt; instances to ensure compile-time safety while preserving a flexible serialized representation. </p>
+<p>Values are accessed using strongly-typed ValueKey&lt;T&gt; instances. </p>
+<p>*** NOTE: This property is NOT included in the serialized JSON. *** </p>
 <div class="fragment"><div class="line"><span class="comment">// Define keys once (typically in a static class)</span></div>
 <div class="line"><span class="keyword">static</span> readonly ValueKey&lt;Dictionary&lt;string, int&gt;&gt; NpcHitPoints =</div>
 <div class="line">    <span class="keyword">new</span>(<span class="stringliteral">&quot;npc.hitpoints&quot;</span>);</div>
@@ -533,7 +534,7 @@ Properties</h2></td></tr>
 <div class="line"><span class="comment">// Retrieve values</span></div>
 <div class="line">var hp = engineState.ValueBag.Get(NpcHitPoints, <span class="keyword">new</span> Dictionary&lt;string, int&gt;());</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00116">116</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00118">118</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>

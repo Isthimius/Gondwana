@@ -29,5 +29,5 @@ var namespaceGondwana_1_1Drawing =
     [ "SvgResource", "classGondwana_1_1Drawing_1_1SvgResource.html", "classGondwana_1_1Drawing_1_1SvgResource" ],
     [ "SvgResourceManager", "classGondwana_1_1Drawing_1_1SvgResourceManager.html", "classGondwana_1_1Drawing_1_1SvgResourceManager" ],
     [ "Tile", "classGondwana_1_1Drawing_1_1Tile.html", "classGondwana_1_1Drawing_1_1Tile" ],
-    [ "Overhang", "namespaceGondwana_1_1Drawing.html#a6fce70584993e761e53ab83006f77912", null ]
+    [ "Spacing", "namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068", null ]
 ];

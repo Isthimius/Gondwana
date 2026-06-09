@@ -14,7 +14,6 @@ var hierarchy =
     [ "Control", null, [
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html", null ]
     ] ],
-    [ "Gondwana.Tests.CoreUtilityTests", "classGondwana_1_1Tests_1_1CoreUtilityTests.html", null ],
     [ "Gondwana.Configuration.EngineConfiguration", "classGondwana_1_1Configuration_1_1EngineConfiguration.html", null ],
     [ "Gondwana.EngineInputSystems", "classGondwana_1_1EngineInputSystems.html", null ],
     [ "Gondwana.EngineManagers", "classGondwana_1_1EngineManagers.html", null ],
@@ -23,7 +22,6 @@ var hierarchy =
       [ "Gondwana.CyclesPerSecondCalculatedEventArgs", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html", null ],
       [ "Gondwana.Drawing.Animation.AnimatorEventArgs", "classGondwana_1_1Drawing_1_1Animation_1_1AnimatorEventArgs.html", null ],
       [ "Gondwana.Drawing.Sprites.SpriteMovedEventArgs", "classGondwana_1_1Drawing_1_1Sprites_1_1SpriteMovedEventArgs.html", null ],
-      [ "Gondwana.Drawing.Tilesheets.TilesheetDisposedEventArgs", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetDisposedEventArgs.html", null ],
       [ "Gondwana.Input.Gamepad.GamepadButtonDownEventArgs", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadButtonDownEventArgs.html", null ],
       [ "Gondwana.Input.Keyboard.KeyDownEventArgs", "classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html", null ],
       [ "Gondwana.Input.Mouse.MouseEventArgs", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html", null ],
@@ -92,13 +90,16 @@ var hierarchy =
       [ "Gondwana.Drawing.SvgResourceManager", "classGondwana_1_1Drawing_1_1SvgResourceManager.html", null ],
       [ "Gondwana.Drawing.Tile", "classGondwana_1_1Drawing_1_1Tile.html", null ],
       [ "Gondwana.Drawing.Tilesheets.Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html", null ],
+      [ "Gondwana.Drawing.Tilesheets.TilesheetRegion", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html", null ],
       [ "Gondwana.Drawing.Tilesheets.TilesheetRegistry", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html", null ],
       [ "Gondwana.Engine", "classGondwana_1_1Engine.html", null ],
       [ "Gondwana.Hosting.GameHostBase", "classGondwana_1_1Hosting_1_1GameHostBase.html", [
         [ "Gondwana.Avalonia.Hosting.AvaloniaGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html", null ],
         [ "Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html", null ],
-        [ "Gondwana.WinForms.Hosting.WinFormsGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html", null ],
-        [ "Gondwana.WinForms.Hosting.WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", null ]
+        [ "Gondwana.WinForms.Hosting.WinFormsGameHostBase", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html", [
+          [ "Gondwana.WinForms.Hosting.WinFormsGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html", null ],
+          [ "Gondwana.WinForms.Hosting.WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", null ]
+        ] ]
       ] ],
       [ "Gondwana.Hosting.SplashScreen", "classGondwana_1_1Hosting_1_1SplashScreen.html", null ],
       [ "Gondwana.Input.Touch.Gestures.PinchGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html", null ],
@@ -115,7 +116,6 @@ var hierarchy =
       [ "Gondwana.Rendering.Text.FontManager", "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html", null ],
       [ "Gondwana.Scenes.Scene", "classGondwana_1_1Scenes_1_1Scene.html", null ],
       [ "Gondwana.Scenes.SceneLayer", "classGondwana_1_1Scenes_1_1SceneLayer.html", null ],
-      [ "Gondwana.Tests.TimerTests", "classGondwana_1_1Tests_1_1TimerTests.html", null ],
       [ "Gondwana.Timers.Timer", "classGondwana_1_1Timers_1_1Timer.html", null ],
       [ "Gondwana.Video.IVideoPlayer", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html", [
         [ "Gondwana.Video.VlcVideoPlayer", "classGondwana_1_1Video_1_1VlcVideoPlayer.html", null ]
@@ -217,7 +217,6 @@ var hierarchy =
     [ "Gondwana.Movement.Scripted.ScriptedMovement", "structGondwana_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", null ],
     [ "Gondwana.StudioAssets.TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", null ],
     [ "Gondwana.StudioAssets.TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", null ],
-    [ "Gondwana.Tests.TypedValueBagTests", "classGondwana_1_1Tests_1_1TypedValueBagTests.html", null ],
     [ "UserControl", null, [
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html", null ]

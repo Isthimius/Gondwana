@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.3.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -106,7 +106,7 @@ $(document).ready(function(){initNavTree('TileBounds_8cs_source.html',''); initR
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class </span>TileBounds</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a> ApplyOverhang(Rectangle baseRect, <a class="code hl_function" href="namespaceGondwana_1_1Drawing.html#a6fce70584993e761e53ab83006f77912">Overhang</a> oh, <span class="keywordtype">bool</span> include)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a> ApplyOverhang(Rectangle baseRect, <a class="code hl_function" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a> oh, <span class="keywordtype">bool</span> include)</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    {</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">if</span> (!include || oh.IsEmpty)</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <span class="keywordflow">return</span> baseRect;</div>
@@ -121,7 +121,7 @@ $(document).ready(function(){initNavTree('TileBounds_8cs_source.html',''); initR
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Coordinates_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Coordinates.html">Gondwana.Drawing.Coordinates</a></div><div class="ttdef"><b>Definition</b> <a href="CardinalDirections_8cs_source.html#l00001">CardinalDirections.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Direct_1_1Particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdoc">Particles are spawned uniformly within a rectangular area. This is the default distribution.</div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Drawing_html_a6fce70584993e761e53ab83006f77912"><div class="ttname"><a href="namespaceGondwana_1_1Drawing.html#a6fce70584993e761e53ab83006f77912">Gondwana.Drawing.Overhang</a></div><div class="ttdeci">record struct Overhang(int Left, int Top, int Right, int Bottom)</div><div class="ttdoc">Represents the overhang dimensions (in pixels) that extend beyond a tile's primary area....</div><div class="ttdef"><b>Definition</b> <a href="Overhang_8cs_source.html#l00012">Overhang.cs:12</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Drawing_html_a6b8743455b186d888a346c497e7f1068"><div class="ttname"><a href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Gondwana.Drawing.Spacing</a></div><div class="ttdeci">record struct Spacing([property:JsonProperty(&quot;left&quot;)] int Left, [property:JsonProperty(&quot;top&quot;)] int Top, [property:JsonProperty(&quot;right&quot;)] int Right, [property:JsonProperty(&quot;bottom&quot;)] int Bottom)</div><div class="ttdoc">Represents dimensions in pixels when spacing Tilesheets.</div><div class="ttdef"><b>Definition</b> <a href="Spacing_8cs_source.html#l00012">Spacing.cs:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

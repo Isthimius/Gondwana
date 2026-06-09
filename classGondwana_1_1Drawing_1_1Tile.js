@@ -18,7 +18,7 @@ var classGondwana_1_1Drawing_1_1Tile =
     [ "IsPositionFixed", "classGondwana_1_1Drawing_1_1Tile.html#af2c80d03dc7693f9ea706e9d426e30b0", null ],
     [ "Nickname", "classGondwana_1_1Drawing_1_1Tile.html#a56b469d237bd7f697309ad59a7fe606c", null ],
     [ "OutlinePointsWorld", "classGondwana_1_1Drawing_1_1Tile.html#a56ea85f53ad251db7f223588a341773a", null ],
-    [ "OverhangPixels", "classGondwana_1_1Drawing_1_1Tile.html#a06b3bff9f658e13237a591b2d8ec1a69", null ],
+    [ "Overhang", "classGondwana_1_1Drawing_1_1Tile.html#aa2d4389c77e5845cfb7f9f67c49c4cb3", null ],
     [ "PauseAnimation", "classGondwana_1_1Drawing_1_1Tile.html#a6d1b82d253d8c1f4b21f43ac41487884", null ],
     [ "SceneLayer", "classGondwana_1_1Drawing_1_1Tile.html#a3e4ea033721a0b7d9af2c49c2bddc385", null ],
     [ "SceneLayerCoordinates", "classGondwana_1_1Drawing_1_1Tile.html#afaa33352c2ade338a6ffd65b907c3794", null ],
