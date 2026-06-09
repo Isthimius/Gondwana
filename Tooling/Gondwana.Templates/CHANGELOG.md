@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.0 - June 09, 2026
+
+
+
+## Other Changes
+- Align generated GameHost filename with derived host class name
+
+
+
+
 # v2.3.0 - May 20, 2026
 
 

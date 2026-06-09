@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.0 - June 09, 2026
+
+
+
+## Refactoring
+- Share host logic in base class
+
+
+
+
 # v2.3.0 - May 20, 2026
 
 

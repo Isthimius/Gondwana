@@ -2,6 +2,71 @@
 
 All notable changes to this project will be documented in this file.
 
+# [v2.4.0] - 2026-06-09
+
+## Gondwana
+
+### Refactoring
+- Improve Tilesheet and region handling
+- Enhance TilesheetRegion structure
+
+## Gondwana.Hosting
+
+### Refactoring
+- Improve Tilesheet and region handling
+
+## Gondwana.WinForms.Hosting
+
+### Refactoring
+- Share host logic in base class
+
+## Tooling / Gondwana.Cli
+
+### Fixed
+- Locate correct index.html serve root for gondwana run
+- Handle index under wwwroot in run serve
+
+
+
+### Other Changes
+- Fix `gondwana publish` desktop argument handling (`MSB1001 --project`) and align docs
+- Automate butler installation via itch.io broth CDN
+- Debugging gondwana doctor error
+- Improve `gondwana doctor` dependency reporting for LibVLC and Gondwana Templates
+- Align generated GameHost filename with derived host class name
+
+## Tooling / Gondwana.Templates
+
+### Other Changes
+- Align generated GameHost filename with derived host class name
+
+## Build / Repository
+
+### Fixed
+- Handle index under wwwroot in run serve
+
+
+
+### Refactoring
+- Improve Tilesheet and region handling
+- Enhance TilesheetRegion structure
+
+
+
+### CI
+- Summarize PR comments across the full PR
+- Lock conventional PR titles and append automation summaries
+- Replace stale gh-copilot extension with GitHub Models REST API in format-pr-title
+- Limit format-pr-title workflow to title updates only
+- Generate summary-bullets-only PR body with AI summary
+
+
+
+### Other Changes
+- Ignore package-lock
+- Harden `format-pr-title` GitHub Models auth with token fallback
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.3.0...v2.4.0
 
 # v2.3.0 - May 19, 2026
 
@@ -305,7 +370,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 ### Other Changes
 * fix(release): use REST API to merge release PR, bypassing required-review branch protection by @Copilot in https://github.com/Isthimius/Gondwana/pull/64
 * Add Gondwana.Cli .NET global tool by @Copilot in https://github.com/Isthimius/Gondwana/pull/65
-* docs: update README for v2.1.0–v2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
+* docs: update README for v2.1.0â€“v2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
 * Add gondwana-avalonia dotnet new template and CLI command by @Copilot in https://github.com/Isthimius/Gondwana/pull/67
 * Add `gondwana new avalonia` to CLI docs and fix doctor template check by @Copilot in https://github.com/Isthimius/Gondwana/pull/68
 * docs: Add missing `gondwana new avalonia` command to CLICHEATSHEET by @Copilot in https://github.com/Isthimius/Gondwana/pull/69
@@ -327,7 +392,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 * fix: YAML parse error in release.yml due to unindented bash heredoc by @Copilot in https://github.com/Isthimius/Gondwana/pull/58
 * feat: add Gondwana.Avalonia and Gondwana.Avalonia.Hosting by @Copilot in https://github.com/Isthimius/Gondwana/pull/54
 * feat: add `dotnet new gondwana-winforms` template package by @Copilot in https://github.com/Isthimius/Gondwana/pull/56
-* feat: add Gondwana.Studio — dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
+* feat: add Gondwana.Studio â€” dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
 
 
 **Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.1.2...v2.2.0
@@ -396,7 +461,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
   - Improved save/load behavior
   - Fallback lookup by base name
 - Added **Font asset type** and introduced a centralized **FontManager**
-- Renamed audio API (`LoadFromEngineResourceFile` → `LoadFromEngineAssetsFile`)
+- Renamed audio API (`LoadFromEngineResourceFile` â†’ `LoadFromEngineAssetsFile`)
 
 ## Serialization & Data Handling
 - Adjusted serialization behavior for:

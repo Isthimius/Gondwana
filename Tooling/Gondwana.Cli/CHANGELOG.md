@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.0 - June 09, 2026
+
+
+
+## Fixed
+- Locate correct index.html serve root for gondwana run
+- Handle index under wwwroot in run serve
+
+
+
+## Other Changes
+- Fix `gondwana publish` desktop argument handling (`MSB1001 --project`) and align docs
+- Automate butler installation via itch.io broth CDN
+- Debugging gondwana doctor error
+- Improve `gondwana doctor` dependency reporting for LibVLC and Gondwana Templates
+- Align generated GameHost filename with derived host class name
+
+
+
+
 # v2.3.0 - May 20, 2026
 
 
