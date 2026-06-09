@@ -521,7 +521,21 @@ Invoke-ProjectChangelogGeneration `
 
 # Stage and commit changelog updates.
 Invoke-Git @("add", "--", $ChangelogPath)
-Invoke-Git @("add", "--", "Gondwana*/CHANGELOG.md", "Tooling/*/CHANGELOG.md")
+$projectChangelogPaths = @(
+    Get-ChildItem -Path $repoRoot -Directory -Filter "Gondwana*" -ErrorAction SilentlyContinue | ForEach-Object {
+        $changelogFile = Join-Path $_.FullName "CHANGELOG.md"
+        if (Test-Path -LiteralPath $changelogFile) { $changelogFile }
+    }
+
+    Get-ChildItem -Path (Join-Path $repoRoot "Tooling") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+        $changelogFile = Join-Path $_.FullName "CHANGELOG.md"
+        if (Test-Path -LiteralPath $changelogFile) { $changelogFile }
+    }
+) | Sort-Object -Unique
+
+if ($projectChangelogPaths.Count -gt 0) {
+    Invoke-Git (@("add", "--") + $projectChangelogPaths)
+}
 git diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
     Invoke-Git @("commit", "-m", "docs: update changelog for $tagName")
