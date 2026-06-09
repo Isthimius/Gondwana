@@ -1,12 +1,19 @@
-﻿using Gondwana.SkiaSharp;
+﻿using System.Drawing;
 using Newtonsoft.Json;
 using SkiaSharp;
-using System.Drawing;
+using Gondwana.Drawing;
+using Gondwana.SkiaSharp;
 
 namespace Gondwana.Drawing.Tilesheets;
 
+/// <summary>
+/// Represents a rectangular region within a tilesheet that contains a grid of tiles.
+/// </summary>
 public sealed class TilesheetRegion : IDisposable
 {
+    /// <summary>
+    /// The default name assigned to tilesheet regions when no name is specified.
+    /// </summary>
     public static readonly string DefaultRegionName = "default";
 
     private TilesheetRegionSlice?[,]? _tileCache;
@@ -21,9 +28,10 @@ public sealed class TilesheetRegion : IDisposable
         Tilesheet tilesheet,
         string name,
         Rectangle area,
-        Size spacing,
         Size tileSize,
-        Overhang overhangPixels)
+        Spacing tilePadding,
+        Spacing regionMargin,
+        Spacing overhangPixels)
     {
         Tilesheet = tilesheet ?? throw new ArgumentNullException(nameof(tilesheet));
 
@@ -33,18 +41,12 @@ public sealed class TilesheetRegion : IDisposable
 
         // Assign backing fields directly so we do not rebuild the cache
         // repeatedly during construction.
-        _x = area.X;
-        _y = area.Y;
-        _width = area.Width;
-        _height = area.Height;
+        _area = area;
+        _tileSize = tileSize;
+        _tilePadding = tilePadding;
+        _regionMargin = regionMargin;
 
-        _spacingX = spacing.Width;
-        _spacingY = spacing.Height;
-
-        _tileWidth = tileSize.Width;
-        _tileHeight = tileSize.Height;
-
-        OverhangPixels = overhangPixels;
+        Overhang = overhangPixels;
 
         BuildTileCache();
     }
@@ -53,64 +55,45 @@ public sealed class TilesheetRegion : IDisposable
 
     #region serialized fields
 
-    [JsonProperty("x")]
-    private int _x;
+    [JsonProperty("area")]
+    private Rectangle _area;
 
-    [JsonProperty("y")]
-    private int _y;
+    [JsonProperty("tileSize")]
+    private Size _tileSize;
 
-    [JsonProperty("width")]
-    private int _width;
+    [JsonProperty("tilePadding")]
+    private Spacing _tilePadding = Spacing.None;
 
-    [JsonProperty("height")]
-    private int _height;
-
-    [JsonProperty("spacingX")]
-    private int _spacingX;
-
-    [JsonProperty("spacingY")]
-    private int _spacingY;
-
-    [JsonProperty("tileWidth")]
-    private int _tileWidth;
-
-    [JsonProperty("tileHeight")]
-    private int _tileHeight;
+    [JsonProperty("regionMargin")]
+    private Spacing _regionMargin = Spacing.None;
 
     #endregion serialized fields
 
     #region properties
 
+    /// <summary>
+    /// Gets the tilesheet that owns this region.
+    /// </summary>
     [JsonIgnore]
     public Tilesheet Tilesheet { get; private set; } = null!;
 
+    /// <summary>
+    /// Gets the name of this tilesheet region.
+    /// </summary>
     [JsonProperty("name")]
     public string Name { get; private set; } = DefaultRegionName;
 
+    /// <summary>
+    /// Gets or sets the rectangular area that this region occupies within the tilesheet.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
     [JsonIgnore]
     public Rectangle Area
     {
-        get => new(_x, _y, _width, _height);
+        get => _area;
         set
         {
-            _x = value.X;
-            _y = value.Y;
-            _width = value.Width;
-            _height = value.Height;
-
-            BuildTileCache();
-        }
-    }
-
-    [JsonIgnore]
-    public Size Spacing
-    {
-        get => new(_spacingX, _spacingY);
-        set
-        {
-            _spacingX = value.Width;
-            _spacingY = value.Height;
-
+            _area = value;
             BuildTileCache();
         }
     }
@@ -118,40 +101,98 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Gets or sets the size of each individual tile in this region.
     /// Setting this property rebuilds the internal tile cache.
+    /// <para />
+    /// The tile size defines the source pixel dimensions of each tile's primary area, excluding any padding
     /// </summary>
     [JsonIgnore]
     public Size TileSize
     {
-        get => new(_tileWidth, _tileHeight);
+        get => _tileSize;
         set
         {
-            _tileWidth = value.Width;
-            _tileHeight = value.Height;
-
+            _tileSize = value;
             BuildTileCache();
         }
     }
 
     /// <summary>
-    /// Gets or sets the overhang dimensions, in pixels, that extend beyond each tile's base boundaries.
+    /// Gets or sets the spacing (padding) around each tile within this region.
+    /// Setting this property rebuilds the internal tile cache.
     /// </summary>
-    [JsonProperty("overhangPixels")]
-    public Overhang OverhangPixels { get; set; } = Overhang.None;
+    [JsonIgnore]
+    public Spacing TilePadding
+    {
+        get => _tilePadding;
+        set
+        {
+            _tilePadding = value;
+            BuildTileCache();
+        }
+    }
 
+    /// <summary>
+    /// Gets or sets the margin spacing around the entire region.
+    /// Setting this property rebuilds the internal tile cache.
+    /// </summary>
+    [JsonIgnore]
+    public Spacing RegionMargin
+    {
+        get => _regionMargin;
+        set
+        {
+            _regionMargin = value;
+            BuildTileCache();
+        }
+    }
+
+    /// <summary>
+    /// Represents the overhang dimensions in pixels that extend beyond a tile's primary area.
+    /// Overhang values define how much a tile's visual representation exceeds its logical boundaries
+    /// in each direction (left, top, right, and bottom).
+    /// <para />
+    /// This property only affects how the tile is rendered; it does not affect how the tile is sliced
+    /// and cached.
+    /// </summary>
+    [JsonProperty("overhang")]
+    public Spacing Overhang { get; set; } = Spacing.None;
+
+    /// <summary>
+    /// Gets the number of columns (horizontal tiles) in this region.
+    /// </summary>
     [JsonIgnore]
     public int Columns => _tileCache?.GetLength(0) ?? 0;
 
+    /// <summary>
+    /// Gets the number of rows (vertical tiles) in this region.
+    /// </summary>
     [JsonIgnore]
     public int Rows => _tileCache?.GetLength(1) ?? 0;
+
+    /// <summary>
+    /// Gets the total width of a single tile including its padding.
+    /// </summary>
+    [JsonIgnore]
+    public int TileWidthIncludingPadding => _tilePadding.Left + _tileSize.Width + _tilePadding.Right;
+
+    /// <summary>
+    /// Gets the total height of a single tile including its padding.
+    /// </summary>
+    [JsonIgnore]
+    public int TileHeightIncludingPadding => _tilePadding.Top + _tileSize.Height + _tilePadding.Bottom;
 
     #endregion properties
 
     #region public methods
 
+    /// <summary>
+    /// Gets the image for the tile at the specified grid coordinates.
+    /// </summary>
+    /// <param name="x">The column index of the tile.</param>
+    /// <param name="y">The row index of the tile.</param>
+    /// <returns>The SKImage for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</returns>
     public SKImage? GetImage(int x, int y)
     {
-        if (_disposed)
-            throw new ObjectDisposedException(nameof(TilesheetRegion));
+        ThrowIfDisposed();
 
         if (_tileCache == null)
             BuildTileCache();
@@ -166,10 +207,15 @@ public sealed class TilesheetRegion : IDisposable
         return _tileCache[x, y]?.Image;
     }
 
+    /// <summary>
+    /// Gets the bitmap for the tile at the specified grid coordinates.
+    /// </summary>
+    /// <param name="x">The column index of the tile.</param>
+    /// <param name="y">The row index of the tile.</param>
+    /// <returns>The SKBitmap for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</returns>
     public SKBitmap? GetBitmap(int x, int y)
     {
-        if (_disposed)
-            throw new ObjectDisposedException(nameof(TilesheetRegion));
+        ThrowIfDisposed();
 
         if (_tileCache == null)
             BuildTileCache();
@@ -184,10 +230,13 @@ public sealed class TilesheetRegion : IDisposable
         return _tileCache[x, y]?.Bitmap;
     }
 
+    /// <summary>
+    /// Gets all bitmaps in this region as a dictionary keyed by their grid coordinates.
+    /// </summary>
+    /// <returns>A dictionary mapping (x, y) coordinates to their corresponding SKBitmap instances.</returns>
     public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
-        if (_disposed)
-            throw new ObjectDisposedException(nameof(TilesheetRegion));
+        ThrowIfDisposed();
 
         if (_tileCache == null)
             BuildTileCache();
@@ -211,10 +260,13 @@ public sealed class TilesheetRegion : IDisposable
         return bitmaps;
     }
 
+    /// <summary>
+    /// Gets all images in this region as a dictionary keyed by their grid coordinates.
+    /// </summary>
+    /// <returns>A dictionary mapping (x, y) coordinates to their corresponding SKImage instances.</returns>
     public Dictionary<(int x, int y), SKImage> GetAllImages()
     {
-        if (_disposed)
-            throw new ObjectDisposedException(nameof(TilesheetRegion));
+        ThrowIfDisposed();
 
         if (_tileCache == null)
             BuildTileCache();
@@ -244,9 +296,7 @@ public sealed class TilesheetRegion : IDisposable
 
     internal void BuildTileCache()
     {
-        if (_disposed)
-            throw new ObjectDisposedException(nameof(TilesheetRegion));
-
+        ThrowIfDisposed();
         ClearTileCache();
 
         if (Tilesheet == null)
@@ -255,23 +305,23 @@ public sealed class TilesheetRegion : IDisposable
         if (Tilesheet.SkBitmap == null || Tilesheet.SkBitmap.IsEmpty)
             return;
 
-        if (_tileWidth <= 0 || _tileHeight <= 0)
+        if (_tileSize.Width <= 0 || _tileSize.Height <= 0)
             return;
 
-        if (_width <= 0 || _height <= 0)
+        if (_area.Width <= 0 || _area.Height <= 0)
             return;
 
-        if (_spacingX < 0 || _spacingY < 0)
-            throw new InvalidOperationException("Tilesheet region spacing cannot be negative.");
+        if (_tilePadding.Left < 0 || _tilePadding.Top < 0 || _tilePadding.Right < 0 || _tilePadding.Bottom < 0)
+            throw new InvalidOperationException("Tilesheet region tile padding cannot be negative.");
 
-        int strideX = _tileWidth + _spacingX;
-        int strideY = _tileHeight + _spacingY;
+        if (_regionMargin.Left < 0 || _regionMargin.Top < 0 || _regionMargin.Right < 0 || _regionMargin.Bottom < 0)
+            throw new InvalidOperationException("Tilesheet region margin cannot be negative.");
 
-        if (strideX <= 0 || strideY <= 0)
+        if (TileWidthIncludingPadding <= 0 || TileHeightIncludingPadding <= 0)
             return;
 
-        int xTiles = (_width + _spacingX) / strideX;
-        int yTiles = (_height + _spacingY) / strideY;
+        int xTiles = (_area.Width - _regionMargin.Left - _regionMargin.Right) / TileWidthIncludingPadding;
+        int yTiles = (_area.Height - _regionMargin.Top - _regionMargin.Bottom) / TileHeightIncludingPadding;
 
         if (xTiles <= 0 || yTiles <= 0)
             return;
@@ -327,10 +377,10 @@ public sealed class TilesheetRegion : IDisposable
 
     private Rectangle GetTileBounds(int xTile, int yTile)
     {
-        int x = _x + xTile * (_tileWidth + _spacingX);
-        int y = _y + yTile * (_tileHeight + _spacingY);
+        int x = _area.X + _regionMargin.Left + (xTile * TileWidthIncludingPadding);
+        int y = _area.Y + _regionMargin.Top + (yTile * TileHeightIncludingPadding);
 
-        return new Rectangle(x, y, _tileWidth, _tileHeight);
+        return new Rectangle(x + _tilePadding.Left, y + _tilePadding.Top, _tileSize.Width, _tileSize.Height);
     }
 
     private TilesheetRegionSlice? CreateSlice(Rectangle srcRect)
@@ -367,6 +417,9 @@ public sealed class TilesheetRegion : IDisposable
 
     #region IDisposable
 
+    /// <summary>
+    /// Releases all resources used by this TilesheetRegion, including the tile cache.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)

@@ -147,7 +147,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H); // hex image fits W x H box
-        return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
+        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         var rect = new Rectangle(p.X, p.Y, W, H);
         var ohRect = TileBounds.ApplyOverhang(
             rect,
-            includeOverhang ? new Overhang(0, 0, 0, 0) : Overhang.None,
+            includeOverhang ? new Spacing(0, 0, 0, 0) : Spacing.None,
             includeOverhang); // polygon uses base box; overhang impacts range, not shape
 
         int x = ohRect.X;

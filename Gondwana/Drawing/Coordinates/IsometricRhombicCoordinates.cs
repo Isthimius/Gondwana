@@ -101,7 +101,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
-        return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
+        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     {
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
-        var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
+        var oh = includeOverhang ? tile.Overhang : Spacing.None;
 
         return new[]
         {

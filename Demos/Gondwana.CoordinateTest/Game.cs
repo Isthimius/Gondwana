@@ -92,7 +92,7 @@ public class Game : IDisposable
         var tilesheet2 = new Tilesheet("tiles", "assets/original.bmp");
         tilesheet2.DefaultRegion.TileSize = new Size(64, 32);
         tilesheet2.DefaultRegion.Area = new Rectangle(1, 1, tilesheet2.SkBitmap.Width - 2, tilesheet2.SkBitmap.Height - 2);
-        tilesheet2.DefaultRegion.Spacing = new Size(1, 1);
+        //tilesheet2.DefaultRegion.TilePadding = new Size(1, 1);
     }
 
     private void LoadAnimationCycles()

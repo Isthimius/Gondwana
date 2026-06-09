@@ -1,9 +1,9 @@
 using System.Drawing;
-using Gondwana.Assets;
-using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SkiaSharp;
+using Gondwana.Assets;
+using Gondwana.SkiaSharp;
 
 namespace Gondwana.Drawing.Tilesheets;
 
@@ -119,9 +119,10 @@ public sealed class Tilesheet : IDisposable
             AddRegion(
                 region.Name,
                 region.Area,
-                region.Spacing,
                 region.TileSize,
-                region.OverhangPixels);
+                region.TilePadding,
+                region.RegionMargin,
+                region.Overhang);
         }
 
         TilesheetRegistry.Instance.Register(this);
@@ -226,17 +227,19 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this region.</param>
     /// <param name="area">The rectangular area of the source image occupied by this region.</param>
-    /// <param name="spacing">The horizontal and vertical spacing between tiles in this region.</param>
     /// <param name="tileSize">The size of each individual tile in this region.</param>
+    /// <param name="tilePadding">The horizontal and vertical spacing between tiles in this region.</param>
+    /// <param name="regionMargin">The margin around the region.</param>
     /// <param name="overhangPixels">The overhang dimensions for tiles in this region.</param>
     /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
     /// <exception cref="ArgumentException">Thrown when the region name is null, whitespace, or already exists.</exception>
     public TilesheetRegion AddRegion(
         string name,
         Rectangle area,
-        Size spacing,
         Size tileSize,
-        Overhang? overhangPixels = null)
+        Spacing? tilePadding = null,
+        Spacing? regionMargin = null,
+        Spacing? overhangPixels = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Region name must be a non-empty string.", nameof(name));
@@ -248,9 +251,10 @@ public sealed class Tilesheet : IDisposable
             this,
             name,
             area,
-            spacing,
             tileSize,
-            overhangPixels ?? Overhang.None);
+            tilePadding ?? Spacing.None,
+            regionMargin ?? Spacing.None,
+            overhangPixels ?? Spacing.None);
 
         Regions.Add(region);
 
@@ -540,20 +544,22 @@ public sealed class Tilesheet : IDisposable
     /// Adds a default region covering the entire tilesheet image.
     /// </summary>
     /// <param name="tileSize">The size of each individual tile in the default region.</param>
-    /// <param name="spacing">The horizontal and vertical spacing between tiles in the default region.</param>
+    /// <param name="tilePadding">The padding between tiles in the default region.</param>
+    /// <param name="regionMargin">The margin around the default region.</param>
     /// <param name="overhangPixels">The overhang dimensions for tiles in the default region.</param>
-    /// <returns>The newly created <see cref="TilesheetRegion"/>.</returns>
-    private TilesheetRegion AddDefaultRegion(
+    private void AddDefaultRegion(
         Size? tileSize = null,
-        Size? spacing = null,
-        Overhang? overhangPixels = null)
+        Spacing? tilePadding = null,
+        Spacing? regionMargin = null,
+        Spacing? overhangPixels = null)
     {
-        return AddRegion(
+        AddRegion(
             TilesheetRegion.DefaultRegionName,
             new Rectangle(0, 0, SkBitmap.Width, SkBitmap.Height),
-            spacing ?? Size.Empty,
-            tileSize ?? Size.Empty,
-            overhangPixels);
+            tileSize ?? Size.Empty, 
+            tilePadding ?? Spacing.None,
+            regionMargin ?? Spacing.None,
+            overhangPixels ?? Spacing.None);
     }
 
     #endregion private methods

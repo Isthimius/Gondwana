@@ -434,9 +434,10 @@ public sealed class EngineState
             rebuilt.AddRegion(
                 savedRegion.Name,
                 savedRegion.Area,
-                savedRegion.Spacing,
                 savedRegion.TileSize,
-                savedRegion.OverhangPixels);
+                savedRegion.TilePadding,
+                savedRegion.RegionMargin,
+                savedRegion.Overhang);
         }
 
         // 4) Restore extensible tilesheet metadata

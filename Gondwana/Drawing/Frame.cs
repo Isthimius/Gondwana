@@ -1,7 +1,7 @@
 using System.Drawing;
-using Gondwana.Drawing.Tilesheets;
 using Newtonsoft.Json;
 using SkiaSharp;
+using Gondwana.Drawing.Tilesheets;
 
 namespace Gondwana.Drawing;
 
@@ -35,12 +35,6 @@ public struct Frame
     public readonly int YTile;
 
     /// <summary>
-    /// The duration in seconds this frame should display. A value of 0 means
-    /// the owning <see cref="Gondwana.Drawing.Animation.Cycle"/>'s <c>ThrottleTime</c> is used instead.
-    /// </summary>
-    public readonly double DurationSeconds;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
     /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
@@ -52,7 +46,6 @@ public struct Frame
         RegionName = TilesheetRegion.DefaultRegionName;
         XTile = xTile;
         YTile = yTile;
-        DurationSeconds = 0;
     }
 
     /// <summary>
@@ -68,24 +61,6 @@ public struct Frame
         RegionName = regionName;
         XTile = xTile;
         YTile = yTile;
-        DurationSeconds = 0;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet, tile coordinates, and per-frame display duration.
-    /// </summary>
-    /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
-    /// <param name="regionName">The tilesheet region containing the source bitmap.</param>
-    /// <param name="xTile">The horizontal tile coordinate (column index) within the tilesheet.</param>
-    /// <param name="yTile">The vertical tile coordinate (row index) within the tilesheet.</param>
-    /// <param name="durationSeconds">How long in seconds this frame should display. 0 defers to the cycle's throttle time.</param>
-    public Frame(Tilesheet tilesheet, string regionName, int xTile, int yTile, double durationSeconds)
-    {
-        Tilesheet = tilesheet;
-        RegionName = regionName;
-        XTile = xTile;
-        YTile = yTile;
-        DurationSeconds = durationSeconds;
     }
 
     /// <summary>
@@ -109,21 +84,12 @@ public struct Frame
     /// Returns <see cref="Size.Empty"/> if the tilesheet is not available.
     /// </summary>
     [JsonIgnore]
-    public readonly Size BaseTileSize => Tilesheet?.GetRegion(RegionName)?.TileSize ?? Size.Empty;
+    public readonly Size TileSize => Tilesheet?.GetRegion(RegionName)?.TileSize ?? Size.Empty;
 
     /// <summary>
     /// Gets the overhang dimensions (in pixels) that extend beyond the base tile boundaries.
-    /// Returns <see cref="Overhang.None"/> if the tilesheet is not available.
+    /// Returns <see cref="Spacing.None"/> if the tilesheet is not available.
     /// </summary>
     [JsonIgnore]
-    public readonly Overhang OverhangPixels => Tilesheet?.GetRegion(RegionName)?.OverhangPixels ?? Overhang.None;
-
-    /// <summary>
-    /// Gets the total tile size including overhang pixels in all directions.
-    /// This is calculated as the base tile size plus the left, right, top, and bottom overhang values.
-    /// </summary>
-    [JsonIgnore]
-    public readonly Size TileSizeWithOverhang =>
-        new Size(BaseTileSize.Width + OverhangPixels.Left + OverhangPixels.Right,
-                 BaseTileSize.Height + OverhangPixels.Top + OverhangPixels.Bottom);
+    public readonly Spacing Overhang => Tilesheet?.GetRegion(RegionName)?.Overhang ?? Spacing.None;
 }

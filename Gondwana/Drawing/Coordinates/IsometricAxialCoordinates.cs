@@ -128,7 +128,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
 
         // Diamond fits exactly in W×H box whose top-left is (top.X - W/2, top.Y)
         var rect = new Rectangle(top.X - (int)halfW, top.Y, W, H);
-        return TileBounds.ApplyOverhang(rect, tile.OverhangPixels, includeOverhang);
+        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     {
         WH(tile.SceneLayer, out int W, out int H, out _, out _);
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
-        var oh = includeOverhang ? tile.OverhangPixels : Overhang.None;
+        var oh = includeOverhang ? tile.Overhang : Spacing.None;
 
         // Diamond vertices (top, right, bottom, left)
         return new[]

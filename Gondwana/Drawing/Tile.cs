@@ -145,7 +145,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// This is typically used for tiles with visual elements that exceed their logical boundaries.
     /// </summary>
     [JsonIgnore]
-    public virtual Overhang OverhangPixels => frame.OverhangPixels;
+    public virtual Spacing Overhang => frame.Overhang;
 
     /// <summary>
     /// Gets or sets the current frame being displayed for this tile.
@@ -298,8 +298,8 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     private static float GetTileLocForCompare(Tile tile)
     {
         return tile.IsPositionFixed
-            ? tile.DrawLocationWorld.Top + tile.OverhangPixels.Top
-            : tile.DrawLocationWorld.Bottom - tile.OverhangPixels.Bottom - 1;
+            ? tile.DrawLocationWorld.Top + tile.Overhang.Top
+            : tile.DrawLocationWorld.Bottom - tile.Overhang.Bottom - 1;
     }
     #endregion IComparable<Tile> Members
 

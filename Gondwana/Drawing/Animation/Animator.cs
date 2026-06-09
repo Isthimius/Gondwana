@@ -163,7 +163,7 @@ public class Animator : IDisposable
         if (CurrentCycle is null)
             return;
 
-        var throttle = GetThrottleForCurrentFrame();
+        var throttle = CurrentCycle._throttle;
 
         // if throttle is 0, stop the animation so loop doesn't hang
         if (throttle == 0)
@@ -196,21 +196,13 @@ public class Animator : IDisposable
             }
 
             // recalculate throttle for the new current frame
-            throttle = GetThrottleForCurrentFrame();
+            throttle = CurrentCycle._throttle;
             if (throttle == 0)
             {
                 StopAnimation();
                 return;
             }
         }
-    }
-
-    private long GetThrottleForCurrentFrame()
-    {
-        var frameDuration = parent.CurrentFrame.DurationSeconds;
-        return frameDuration > 0
-            ? (long)(frameDuration * HighResTimer.TicksPerSecond)
-            : CurrentCycle._throttle;
     }
 
     #endregion public methods

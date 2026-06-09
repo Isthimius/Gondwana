@@ -17,7 +17,7 @@ public static class TileBounds
     /// A rectangle expanded by the overhang amounts if <paramref name="include"/> is <c>true</c> and the overhang is not empty;
     /// otherwise, the original <paramref name="baseRect"/>.
     /// </returns>
-    public static Rectangle ApplyOverhang(Rectangle baseRect, Overhang oh, bool include)
+    public static Rectangle ApplyOverhang(Rectangle baseRect, Spacing oh, bool include)
     {
         if (!include || oh.IsEmpty)
             return baseRect;
