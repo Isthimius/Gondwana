@@ -44,7 +44,7 @@ jobs:
           git push origin HEAD:refs/heads/${release_branch} --force
 
       - name: Restore
-        run: dotnet restore --nologo /p:EnableWindowsTargeting=true
+        run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
       - name: Build
         run: dotnet build -c Release --no-restore --nologo /p:EnableWindowsTargeting=true
