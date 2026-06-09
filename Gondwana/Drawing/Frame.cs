@@ -1,7 +1,7 @@
 using System.Drawing;
-using Gondwana.Drawing.Tilesheets;
 using Newtonsoft.Json;
 using SkiaSharp;
+using Gondwana.Drawing.Tilesheets;
 
 namespace Gondwana.Drawing;
 
@@ -92,7 +92,7 @@ public struct Frame
     /// Returns <see cref="Size.Empty"/> if the tilesheet is not available.
     /// </summary>
     [JsonIgnore]
-    public readonly Size BaseTileSize => Tilesheet?.GetRegion(RegionName)?.TileSize ?? Size.Empty;
+    public readonly Size TileSize => Tilesheet?.GetRegion(RegionName)?.TileSize ?? Size.Empty;
 
     /// <summary>
     /// Gets the overhang dimensions (in pixels) that extend beyond the base tile boundaries.
