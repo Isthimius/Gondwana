@@ -138,16 +138,16 @@ internal sealed class SpotHostCore
     internal void LoadTilesheets()
     {
         // splash logo
-        var splash = new Tilesheet("splash", "assets\\spot.png");
+        var splash = TilesheetRegistry.Instance.LoadFromImageFile("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        _spotSheetDefault = new Tilesheet("spots", "assets\\spot_defaults.png");
+        _spotSheetDefault = TilesheetRegistry.Instance.LoadFromImageFile("spots", "assets\\spot_defaults.png");
         _spotSheetDefault.DefaultRegion.TileSize = new Size(93, 96);
 
-        _spotSheetSelected = new Tilesheet("selected", "assets\\spot_selected.png");
+        _spotSheetSelected = TilesheetRegistry.Instance.LoadFromImageFile("selected", "assets\\spot_selected.png");
         _spotSheetSelected.DefaultRegion.TileSize = new Size(64, 64);
 
-        _clouds = new Tilesheet("clouds", "assets\\clouds.png");
+        _clouds = TilesheetRegistry.Instance.LoadFromImageFile("clouds", "assets\\clouds.png");
     }
 
     internal Scene CreateInitialScene()

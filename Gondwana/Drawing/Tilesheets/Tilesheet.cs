@@ -16,7 +16,7 @@ public sealed class Tilesheet : IDisposable
     /// <summary>
     /// Occurs when this tilesheet is disposed.
     /// </summary>
-    public event Action? Disposed;
+    public event Action<Tilesheet>? Disposed;
 
     #region ctors
 
@@ -27,13 +27,13 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="bitmap">The SkiaSharp bitmap containing the tilesheet image.</param>
-    public Tilesheet(string name, SKBitmap bitmap)
+    internal Tilesheet(string name, SKBitmap bitmap, bool addDefaultRegion = true)
     {
         _name = name;
         SkBitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
-        TilesheetRegistry.Instance.Register(this);
 
-        AddDefaultRegion();
+        if (addDefaultRegion)
+            AddDefaultRegion();
     }
 
     /// <summary>
@@ -42,8 +42,8 @@ public sealed class Tilesheet : IDisposable
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="stream">The stream containing the image data.</param>
     /// <exception cref="ArgumentException">Thrown when the stream contains invalid image data.</exception>
-    public Tilesheet(string name, Stream stream)
-        : this(name, SKBitmap.Decode(stream) ?? throw new ArgumentException("Invalid image stream.")) { }
+    internal Tilesheet(string name, Stream stream, bool addDefaultRegion = true)
+        : this(name, SKBitmap.Decode(stream) ?? throw new ArgumentException("Invalid image stream."), addDefaultRegion) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tilesheet"/> class by loading an image from a file.
@@ -51,8 +51,8 @@ public sealed class Tilesheet : IDisposable
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="file">The path to the image file.</param>
     /// <exception cref="ArgumentException">Thrown when the file is not a valid image.</exception>
-    public Tilesheet(string name, string file)
-        : this(name, SKBitmap.Decode(file) ?? throw new ArgumentException($"Invalid image file: {file}"))
+    internal Tilesheet(string name, string file, bool addDefaultRegion = true)
+        : this(name, SKBitmap.Decode(file) ?? throw new ArgumentException($"Invalid image file: {file}"), addDefaultRegion)
     {
         ImageFilePath = file;
     }
@@ -65,7 +65,7 @@ public sealed class Tilesheet : IDisposable
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="resFile"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="entryName"/> is null or whitespace, or when the asset cannot be decoded.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the asset entry does not exist or returns a null data stream.</exception>
-    public Tilesheet(AssetsFile resFile, string entryName)
+    internal Tilesheet(AssetsFile resFile, string entryName, bool addDefaultRegion = true)
     {
         if (resFile is null)
             throw new ArgumentNullException(nameof(resFile));
@@ -89,9 +89,8 @@ public sealed class Tilesheet : IDisposable
 
         _name = entryName;
 
-        // Register AFTER successful decode so the registry never contains a half-constructed tilesheet
-        TilesheetRegistry.Instance.Register(this);
-        AddDefaultRegion();
+        if (addDefaultRegion)
+            AddDefaultRegion();
     }
 
     /// <summary>
@@ -101,7 +100,7 @@ public sealed class Tilesheet : IDisposable
     /// <param name="baseSheet">The tilesheet whose settings should be copied.</param>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="file">The path to the image file.</param>
-    public Tilesheet(Tilesheet baseSheet, string name, string file)
+    internal Tilesheet(Tilesheet baseSheet, string name, string file)
     {
         if (baseSheet is null)
             throw new ArgumentNullException(nameof(baseSheet));
@@ -114,6 +113,7 @@ public sealed class Tilesheet : IDisposable
         ImageFilePath = file;
         ValueBag = new(baseSheet.ValueBag);
 
+        // do not add DefaultRegion since we'll copy the regions from the base sheet
         foreach (var region in baseSheet.Regions)
         {
             AddRegion(
@@ -124,8 +124,6 @@ public sealed class Tilesheet : IDisposable
                 region.RegionMargin,
                 region.Overhang);
         }
-
-        TilesheetRegistry.Instance.Register(this);
     }
 
     #endregion ctors
@@ -152,19 +150,7 @@ public sealed class Tilesheet : IDisposable
     /// Changing the name updates the tilesheet's registration in the <see cref="TilesheetRegistry"/>.
     /// </summary>
     [JsonIgnore]
-    public string Name
-    {
-        get => _name;
-        set
-        {
-            if (_name == value)
-                return;
-
-            var old = _name;
-            _name = value;
-            TilesheetRegistry.Instance.OnTilesheetRenamed(old, _name, this);
-        }
-    }
+    public string Name { get; internal set; }
 
     /// <summary>
     /// Gets the regions that define tile layouts within this tilesheet.
@@ -584,9 +570,6 @@ public sealed class Tilesheet : IDisposable
 
         if (disposing)
         {
-            // unregister from registry
-            TilesheetRegistry.Instance.Remove(_name, this, dispose: false);
-
             // clean up tile cache
             foreach (var region in Regions)
             {
@@ -601,7 +584,7 @@ public sealed class Tilesheet : IDisposable
 
             try
             {
-                Disposed?.Invoke();
+                Disposed?.Invoke(this);
             }
             catch (Exception ex)
             {

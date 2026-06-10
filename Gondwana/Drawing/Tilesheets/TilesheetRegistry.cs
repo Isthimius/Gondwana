@@ -1,5 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿using Gondwana.Assets;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
+using System.Collections.Immutable;
 
 namespace Gondwana.Drawing.Tilesheets;
 
@@ -34,6 +37,7 @@ public sealed class TilesheetRegistry : IDisposable
         }
 
         Tilesheet? replaced = null;
+
         lock (_gate)
         {
             if (_sheets.TryGetValue(sheet.Name, out var existing) && !ReferenceEquals(existing, sheet))
@@ -45,10 +49,19 @@ public sealed class TilesheetRegistry : IDisposable
             {
                 _sheets[sheet.Name] = sheet;
             }
+
+            // Avoid duplicate subscriptions if the same instance is registered again.
+            sheet.Disposed -= OnTilesheetDisposed;
+            sheet.Disposed += OnTilesheetDisposed;
         }
 
-        if (disposeReplaced && replaced is not null)
-            replaced.Dispose();
+        if (replaced is not null)
+        {
+            replaced.Disposed -= OnTilesheetDisposed;
+
+            if (disposeReplaced)
+                replaced.Dispose();
+        }
     }
 
     /// <summary>
@@ -136,6 +149,7 @@ public sealed class TilesheetRegistry : IDisposable
         }
 
         Tilesheet? removed = null;
+
         lock (_gate)
         {
             if (!_sheets.TryGetValue(name, out removed))
@@ -144,8 +158,10 @@ public sealed class TilesheetRegistry : IDisposable
             _sheets.Remove(name);
         }
 
+        removed.Disposed -= OnTilesheetDisposed;
+
         if (dispose)
-            removed?.Dispose();
+            removed.Dispose();
 
         return true;
     }
@@ -158,7 +174,14 @@ public sealed class TilesheetRegistry : IDisposable
             return false;
         }
 
+        if (expected is null)
+        {
+            Engine.Logger.LogWarning("TilesheetRegistry: Attempt to remove a null Tilesheet.");
+            return false;
+        }
+
         Tilesheet? removed = null;
+
         lock (_gate)
         {
             if (_sheets.TryGetValue(name, out var current) && ReferenceEquals(current, expected))
@@ -168,11 +191,15 @@ public sealed class TilesheetRegistry : IDisposable
             }
             else
             {
-                return false; // mapping changed or not present
+                return false;
             }
         }
 
-        if (dispose) removed?.Dispose();
+        removed.Disposed -= OnTilesheetDisposed;
+
+        if (dispose)
+            removed.Dispose();
+
         return true;
     }
 
@@ -186,6 +213,7 @@ public sealed class TilesheetRegistry : IDisposable
     public void Clear()
     {
         List<Tilesheet> copy;
+
         lock (_gate)
         {
             copy = _sheets.Values.ToList();
@@ -193,7 +221,10 @@ public sealed class TilesheetRegistry : IDisposable
         }
 
         foreach (var ts in copy)
+        {
+            ts.Disposed -= OnTilesheetDisposed;
             ts.Dispose();
+        }
     }
 
     /// <summary>
@@ -246,9 +277,14 @@ public sealed class TilesheetRegistry : IDisposable
 
     internal void OnTilesheetRenamed(string oldName, string newName, Tilesheet sheet, bool disposeReplaced = true)
     {
-        if (oldName is null) throw new ArgumentNullException(nameof(oldName));
-        if (newName is null) throw new ArgumentNullException(nameof(newName));
-        if (sheet is null) throw new ArgumentNullException(nameof(sheet));
+        if (oldName is null)
+            throw new ArgumentNullException(nameof(oldName));
+
+        if (newName is null)
+            throw new ArgumentNullException(nameof(newName));
+
+        if (sheet is null)
+            throw new ArgumentNullException(nameof(sheet));
 
         Tilesheet? replaced = null;
 
@@ -270,12 +306,71 @@ public sealed class TilesheetRegistry : IDisposable
             _sheets[newName] = sheet;
         }
 
-        if (disposeReplaced && replaced is not null)
-            replaced.Dispose();
+        if (replaced is not null)
+        {
+            replaced.Disposed -= OnTilesheetDisposed;
+
+            if (disposeReplaced)
+                replaced.Dispose();
+        }
+    }
+
+    private void OnTilesheetDisposed(Tilesheet sheet)
+    {
+        if (sheet is null)
+            return;
+
+        Remove(sheet.Name, sheet, dispose: false);
     }
 
     public void Dispose()
     {
         Clear();
     }
+
+    #region public shims to TilesheetFactory
+
+    public Tilesheet LoadFromBitmap(string name, SKBitmap bitmap)
+    {
+        var tilesheet = TilesheetFactory.FromBitmap(name, bitmap);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    public Tilesheet LoadFromStream(string name, Stream stream)
+    {
+        var tilesheet = TilesheetFactory.FromStream(name, stream);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    public Tilesheet LoadFromImageFile(string name, string imageFilePath)
+    {
+        var tilesheet = TilesheetFactory.FromImageFile(name, imageFilePath);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    public Tilesheet LoadFromAssetsFile(AssetsFile assetsFile, string entryName)
+    {
+        var tilesheet = TilesheetFactory.FromAssetsFile(assetsFile, entryName);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    public Tilesheet LoadFromDefinitionFile(string gtsPath)
+    {
+        var tilesheet = TilesheetFactory.FromDefinitionFile(gtsPath);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    public Tilesheet LoadFromDefinition(TilesheetDefinition definition, string? baseDirectory = null)
+    {
+        var tilesheet = TilesheetFactory.FromDefinition(definition, baseDirectory);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    #endregion public shims to TilesheetFactory
 }

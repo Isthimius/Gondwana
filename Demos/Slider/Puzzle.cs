@@ -44,7 +44,7 @@ namespace Slider
 
         public Puzzle(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, string imgFile, int columns, int rows, Size size)
         {
-            tilesheet = new Tilesheet("picture", imgFile);
+            tilesheet = TilesheetRegistry.Instance.LoadFromImageFile("picture", imgFile);
             tilesheet.ApplyPremultiplyAlpha();
 
             int tileWidth = (int)((float)tilesheet.SkBitmap.Width / (float)columns);
