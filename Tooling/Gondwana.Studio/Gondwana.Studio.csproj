@@ -30,6 +30,7 @@
     <PackageReference Include="Dock.Controls.Recycling" Version="11.3.12.1" />
     <PackageReference Include="Dock.Model" Version="11.3.12.1" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.3.12.1" />
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
   </ItemGroup>
 
   <ItemGroup>
