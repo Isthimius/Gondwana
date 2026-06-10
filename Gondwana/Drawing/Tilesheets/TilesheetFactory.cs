@@ -69,69 +69,6 @@ internal static class TilesheetFactory
         return tilesheet;
     }
 
-    internal static Tilesheet? FromSavedState(string key, Tilesheet saved)
-    {
-        Tilesheet rebuilt;
-
-        // 1) Rehydrate bitmap from AssetsFile entry (preferred) or file path (fallback)
-        if (saved.AssetIdentifier is not null && saved.AssetIdentifier.IsValid)
-        {
-            var id = saved.AssetIdentifier;
-            rebuilt = new Tilesheet(id.AssetsFile, id.AssetName, false);
-        }
-        else if (!string.IsNullOrWhiteSpace(saved.ImageFilePath) && File.Exists(saved.ImageFilePath))
-        {
-            rebuilt = new Tilesheet(saved.Name, saved.ImageFilePath, false);
-        }
-        else
-        {
-            Engine.Logger.LogWarning(
-                "EngineState: Skipping tilesheet '{Key}' because it has no valid AssetIdentifier and no ImageFilePath.",
-                key);
-            return null;
-        }
-
-        // 2) Restore metadata.
-        rebuilt.Name = saved.Name;
-
-        // 3) Restore regions.
-        //
-        // IMPORTANT: Deserialized TilesheetRegion instances are saved-state specs.
-        // They do not own a live Tilesheet reference after JSON deserialization.
-        // Recreate live regions on the rebuilt tilesheet so each region is attached
-        // to the rebuilt source bitmap and can build its own cache.
-        foreach (var savedRegion in saved.Regions)
-        {
-            rebuilt.AddRegion(
-                savedRegion.Name,
-                savedRegion.Area,
-                savedRegion.TileSize,
-                savedRegion.TilePadding,
-                savedRegion.RegionMargin,
-                savedRegion.Overhang);
-        }
-
-        // 4) Restore extensible tilesheet metadata
-        rebuilt.ValueBag = saved.ValueBag.Clone();
-
-        // 5) Reapply bitmap transforms recorded in the save.
-        //
-        // IMPORTANT: SkBitmap is not serialized, so these operations must be replayed here.
-        // ApplyMask() also premultiplies alpha internally in the implementation.
-        if (saved.MaskColor is not null)
-        {
-            rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
-        }
-        else if (saved.Premultiplied)
-        {
-            // ApplyMask also premultiplies alpha internally,
-            // so only call if Premultiplied and no MaskColor
-            rebuilt.ApplyPremultiplyAlpha();
-        }
-
-        return rebuilt;
-    }
-
     #region private methods
 
     private static Tilesheet CreateTilesheet(

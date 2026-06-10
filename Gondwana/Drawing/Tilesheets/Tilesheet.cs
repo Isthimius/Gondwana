@@ -1,6 +1,5 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SkiaSharp;
 using Gondwana.Assets;
 using Gondwana.SkiaSharp;
@@ -10,7 +9,6 @@ namespace Gondwana.Drawing.Tilesheets;
 /// <summary>
 /// Represents a tilesheet image and metadata for rendering tiles.
 /// </summary>
-[JsonObject(IsReference = true)]
 public sealed class Tilesheet : IDisposable
 {
     /// <summary>
@@ -29,7 +27,7 @@ public sealed class Tilesheet : IDisposable
     /// <param name="bitmap">The SkiaSharp bitmap containing the tilesheet image.</param>
     internal Tilesheet(string name, SKBitmap bitmap, bool addDefaultRegion = true)
     {
-        _name = name;
+        Name = name;
         SkBitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
 
         if (addDefaultRegion)
@@ -87,7 +85,7 @@ public sealed class Tilesheet : IDisposable
                 "The asset data is corrupt or not a supported image format."
             );
 
-        _name = entryName;
+        Name = entryName;
 
         if (addDefaultRegion)
             AddDefaultRegion();
@@ -105,7 +103,7 @@ public sealed class Tilesheet : IDisposable
         if (baseSheet is null)
             throw new ArgumentNullException(nameof(baseSheet));
 
-        _name = name;
+        Name = name;
 
         SkBitmap = SKBitmap.Decode(file)
             ?? throw new ArgumentException($"Invalid image file: {file}");
@@ -132,78 +130,64 @@ public sealed class Tilesheet : IDisposable
     /// Gets the SkiaSharp bitmap containing the tilesheet image.
     /// This may be a modified version if alpha masking or premultiplication has been applied.
     /// </summary>
-    [JsonIgnore]
     public SKBitmap SkBitmap { get; private set; } = null!;
 
     /// <summary>
     /// Gets the original SkiaSharp bitmap before any alpha masking or premultiplication was applied.
     /// Returns <see langword="null"/> if no modifications have been made.
     /// </summary>
-    [JsonIgnore]
     public SKBitmap? SkBitmapOriginal { get; private set; } = null;
-
-    [JsonProperty("name")]
-    private string _name = string.Empty;
 
     /// <summary>
     /// Gets or sets the name of this tilesheet.
     /// Changing the name updates the tilesheet's registration in the <see cref="TilesheetRegistry"/>.
     /// </summary>
-    [JsonIgnore]
-    public string Name { get; internal set; }
+    public string Name { get; internal set; } = string.Empty;
 
     /// <summary>
     /// Gets the regions that define tile layouts within this tilesheet.
     /// Each region may define its own area, tile size, spacing, and overhang settings.
     /// </summary>
-    [JsonProperty("regions")]
     public List<TilesheetRegion> Regions { get; private set; } = new();
 
     /// <summary>
     /// Gets the default region from the tilesheet.
     /// </summary>
-    [JsonIgnore]
     public TilesheetRegion DefaultRegion => this[TilesheetRegion.DefaultRegionName];
 
     /// <summary>
     /// Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.
     /// </summary>
-    [JsonIgnore]
     public TypedValueBag ValueBag { get; set; } = new();
 
     /// <summary>
     /// Gets the asset identifier if this tilesheet was loaded from an assets file.
     /// Returns <see langword="null"/> if the tilesheet was loaded from another source.
     /// </summary>
-    [JsonProperty]
     public AssetsFileIdentifier? AssetIdentifier { get; private set; }
 
     /// <summary>
     /// Gets the file path of the image file if this tilesheet was loaded from a file.
     /// Returns an empty string if the tilesheet was loaded from another source.
     /// </summary>
-    [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
     /// <summary>
     /// Gets the color used for alpha masking, if <see cref="ApplyMask"/> has been called.
     /// Returns <see langword="null"/> if no mask has been applied.
     /// </summary>
-    [JsonProperty]
     public SKColor? MaskColor { get; private set; } = null;
 
     /// <summary>
     /// Gets the tolerance value used when applying the alpha mask.
     /// This determines how closely pixels must match the mask color to be made transparent.
     /// </summary>
-    [JsonProperty]
     public byte MaskTolerance { get; private set; } = 5;
 
     /// <summary>
     /// Gets a value indicating whether the bitmap has been premultiplied with its alpha channel.
     /// This is <see langword="true"/> after calling <see cref="ApplyMask"/> or <see cref="ApplyPremultiplyAlpha"/>.
     /// </summary>
-    [JsonProperty]
     public bool Premultiplied { get; private set; } = false;
 
     #region public methods

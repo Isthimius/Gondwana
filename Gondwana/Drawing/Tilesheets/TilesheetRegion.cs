@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
-using Newtonsoft.Json;
 using SkiaSharp;
-using Gondwana.Drawing;
 using Gondwana.SkiaSharp;
 
 namespace Gondwana.Drawing.Tilesheets;
@@ -21,7 +19,6 @@ public sealed class TilesheetRegion : IDisposable
 
     #region ctors
 
-    [JsonConstructor]
     private TilesheetRegion() { }
 
     internal TilesheetRegion(
@@ -55,16 +52,12 @@ public sealed class TilesheetRegion : IDisposable
 
     #region serialized fields
 
-    [JsonProperty("area")]
     private Rectangle _area;
 
-    [JsonProperty("tileSize")]
     private Size _tileSize;
 
-    [JsonProperty("tilePadding")]
     private Spacing _tilePadding = Spacing.None;
 
-    [JsonProperty("regionMargin")]
     private Spacing _regionMargin = Spacing.None;
 
     #endregion serialized fields
@@ -74,20 +67,17 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Gets the tilesheet that owns this region.
     /// </summary>
-    [JsonIgnore]
     public Tilesheet Tilesheet { get; private set; } = null!;
 
     /// <summary>
     /// Gets the name of this tilesheet region.
     /// </summary>
-    [JsonProperty("name")]
     public string Name { get; private set; } = DefaultRegionName;
 
     /// <summary>
     /// Gets or sets the rectangular area that this region occupies within the tilesheet.
     /// Setting this property rebuilds the internal tile cache.
     /// </summary>
-    [JsonIgnore]
     public Rectangle Area
     {
         get => _area;
@@ -104,7 +94,6 @@ public sealed class TilesheetRegion : IDisposable
     /// <para />
     /// The tile size defines the source pixel dimensions of each tile's primary area, excluding any padding
     /// </summary>
-    [JsonIgnore]
     public Size TileSize
     {
         get => _tileSize;
@@ -119,7 +108,6 @@ public sealed class TilesheetRegion : IDisposable
     /// Gets or sets the spacing (padding) around each tile within this region.
     /// Setting this property rebuilds the internal tile cache.
     /// </summary>
-    [JsonIgnore]
     public Spacing TilePadding
     {
         get => _tilePadding;
@@ -134,7 +122,6 @@ public sealed class TilesheetRegion : IDisposable
     /// Gets or sets the margin spacing around the entire region.
     /// Setting this property rebuilds the internal tile cache.
     /// </summary>
-    [JsonIgnore]
     public Spacing RegionMargin
     {
         get => _regionMargin;
@@ -153,31 +140,26 @@ public sealed class TilesheetRegion : IDisposable
     /// This property only affects how the tile is rendered; it does not affect how the tile is sliced
     /// and cached.
     /// </summary>
-    [JsonProperty("overhang")]
     public Spacing Overhang { get; set; } = Spacing.None;
 
     /// <summary>
     /// Gets the number of columns (horizontal tiles) in this region.
     /// </summary>
-    [JsonIgnore]
     public int Columns => _tileCache?.GetLength(0) ?? 0;
 
     /// <summary>
     /// Gets the number of rows (vertical tiles) in this region.
     /// </summary>
-    [JsonIgnore]
     public int Rows => _tileCache?.GetLength(1) ?? 0;
 
     /// <summary>
     /// Gets the total width of a single tile including its padding.
     /// </summary>
-    [JsonIgnore]
     public int TileWidthIncludingPadding => _tilePadding.Left + _tileSize.Width + _tilePadding.Right;
 
     /// <summary>
     /// Gets the total height of a single tile including its padding.
     /// </summary>
-    [JsonIgnore]
     public int TileHeightIncludingPadding => _tilePadding.Top + _tileSize.Height + _tilePadding.Bottom;
 
     #endregion properties
