@@ -46,6 +46,24 @@ public static class TilesheetDefinitionSerializer
     }
 
     /// <summary>
+    /// Loads a <see cref="TilesheetDefinition"/> from a readable stream.
+    /// </summary>
+    /// <param name="stream">The stream containing GTS JSON content.</param>
+    /// <returns>The deserialized tilesheet definition.</returns>
+    public static TilesheetDefinition Load(Stream stream)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
+
+        using var reader = new StreamReader(stream, leaveOpen: true);
+        var json = reader.ReadToEnd();
+
+        return FromJson(json);
+    }
+
+    /// <summary>
     /// Saves a <see cref="TilesheetDefinition"/> to a .gts file.
     /// </summary>
     /// <param name="filePath">The path to save the .gts file to.</param>

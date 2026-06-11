@@ -372,5 +372,13 @@ public sealed class TilesheetRegistry : IDisposable
         return tilesheet;
     }
 
+    public Tilesheet LoadFromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName)
+    {
+        var tilesheet = TilesheetFactory.FromDefinitionAsset(assetsFile, gtsEntryName);
+        Register(tilesheet);
+
+        return tilesheet;
+    }
+
     #endregion public shims to TilesheetFactory
 }

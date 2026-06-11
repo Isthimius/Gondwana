@@ -34,11 +34,16 @@ internal static class TilesheetFactory
 
     internal static Tilesheet FromDefinition(
         TilesheetDefinition definition,
-        string? baseDirectory = null)
+        string? baseDirectory = null,
+        AssetsFile? defaultAssetsFile = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
 
-        var tilesheet = CreateTilesheet(definition, addDefaultRegion: false, baseDirectory);
+        var tilesheet = CreateTilesheet(
+            definition,
+            addDefaultRegion: false,
+            baseDirectory,
+            defaultAssetsFile);
 
         foreach (var region in definition.Regions)
         {
@@ -69,15 +74,46 @@ internal static class TilesheetFactory
         return tilesheet;
     }
 
+    internal static Tilesheet FromDefinitionAsset(
+        AssetsFile assetsFile,
+        string gtsEntryName)
+    {
+        if (assetsFile is null)
+            throw new ArgumentNullException(nameof(assetsFile));
+
+        if (string.IsNullOrWhiteSpace(gtsEntryName))
+            throw new ArgumentException("GTS asset entry name must be a non-empty string.", nameof(gtsEntryName));
+
+        using var stream = assetsFile.Get(
+            AssetTypes.TilesheetDefinition,
+            gtsEntryName);
+
+        if (stream is null)
+        {
+            throw new InvalidOperationException(
+                $"Tilesheet definition asset '{gtsEntryName}' could not be found in AssetsFile '{assetsFile.FilePath}'.");
+        }
+
+        var definition = TilesheetDefinitionSerializer.Load(stream);
+
+        var baseDirectory = string.IsNullOrWhiteSpace(assetsFile.FilePath)
+            ? null
+            : Path.GetDirectoryName(Path.GetFullPath(assetsFile.FilePath));
+
+        return FromDefinition(
+            definition,
+            baseDirectory,
+            defaultAssetsFile: assetsFile);
+    }
+
     #region private methods
 
     private static Tilesheet CreateTilesheet(
         TilesheetDefinition definition,
         bool addDefaultRegion,
-        string? baseDirectory = null)
+        string? baseDirectory = null,
+        AssetsFile? defaultAssetsFile = null)
     {
-        ArgumentNullException.ThrowIfNull(definition);
-
         var image = definition.Image
             ?? throw new InvalidOperationException(
                 "TilesheetDefinition must specify an image source.");
@@ -92,17 +128,24 @@ internal static class TilesheetFactory
                 addDefaultRegion);
         }
 
-        if (!string.IsNullOrWhiteSpace(image.AssetsFilePath) &&
-            !string.IsNullOrWhiteSpace(image.AssetEntryName))
+        if (!string.IsNullOrWhiteSpace(image.AssetEntryName))
         {
-            var assetsPath = ResolvePath(image.AssetsFilePath, baseDirectory);
+            AssetsFile assetsFile;
 
-            if (!File.Exists(assetsPath))
-                throw new FileNotFoundException(
-                    $"Assets file not found: {assetsPath}",
-                    assetsPath);
-
-            var assetsFile = AssetsFile.LoadOrCreate(assetsPath);
+            if (!string.IsNullOrWhiteSpace(image.AssetsFilePath))
+            {
+                var assetsPath = ResolvePath(image.AssetsFilePath, baseDirectory);
+                assetsFile = LoadExistingAssetsFile(assetsPath);
+            }
+            else if (defaultAssetsFile is not null)
+            {
+                assetsFile = defaultAssetsFile;
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    "TilesheetDefinition image specifies an AssetEntryName but does not specify an AssetsFilePath, and no default AssetsFile was provided.");
+            }
 
             return new Tilesheet(
                 assetsFile,
@@ -111,8 +154,24 @@ internal static class TilesheetFactory
         }
 
         throw new InvalidOperationException(
-            "TilesheetDefinition must specify either Image.FilePath or Image.AssetsFilePath + Image.AssetEntryName.");
+            "TilesheetDefinition must specify either Image.FilePath or Image.AssetEntryName.");
     }
+
+    private static AssetsFile LoadExistingAssetsFile(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Assets file path must be a non-empty string.", nameof(path));
+
+        var fullPath = Path.GetFullPath(path);
+
+        if (!File.Exists(fullPath))
+            throw new FileNotFoundException(
+                $"Assets file not found: {fullPath}",
+                fullPath);
+
+        return AssetsFile.LoadOrCreate(fullPath);
+    }
+
     private static string ResolvePath(string path, string? baseDirectory)
     {
         if (Path.IsPathRooted(path))
