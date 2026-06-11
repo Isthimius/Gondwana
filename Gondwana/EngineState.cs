@@ -32,7 +32,11 @@ public sealed class EngineState
         {
             TypeNameHandling = TypeNameHandling.Auto,
             Formatting = Formatting.Indented,
-            PreserveReferencesHandling = PreserveReferencesHandling.All
+            PreserveReferencesHandling = PreserveReferencesHandling.All,
+            Converters =
+            {
+                new FrameJsonConverter()
+            }
         };
 
     /// <summary>

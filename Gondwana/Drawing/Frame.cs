@@ -1,5 +1,4 @@
 using System.Drawing;
-using Newtonsoft.Json;
 using SkiaSharp;
 using Gondwana.Drawing.Tilesheets;
 
@@ -13,25 +12,21 @@ public struct Frame
     /// <summary>
     /// The tilesheet that contains the source bitmap for this frame.
     /// </summary>
-    [JsonProperty]
     public readonly Tilesheet Tilesheet;
 
     /// <summary>
     /// The tilesheet region that contains the source bitmap for this frame.
     /// </summary>
-    [JsonProperty]
     public readonly string RegionName;
 
     /// <summary>
     /// The horizontal tile coordinate (column index) within the tilesheet.
     /// </summary>
-    [JsonProperty]
     public readonly int XTile;
 
     /// <summary>
     /// The vertical tile coordinate (row index) within the tilesheet.
     /// </summary>
-    [JsonProperty]
     public readonly int YTile;
 
     /// <summary>
@@ -68,7 +63,6 @@ public struct Frame
     /// Returns <see langword="null"/> if the tilesheet is not available.
     /// </summary>
     /// <returns>The frame bitmap, or <see langword="null"/>.</returns>
-    [JsonIgnore]
     public readonly SKBitmap? SkBitmap => Tilesheet?.GetBitmap(RegionName, XTile, YTile);
 
     /// <summary>
@@ -76,20 +70,17 @@ public struct Frame
     /// Returns <see langword="null"/> if the tilesheet is not available.
     /// </summary>
     /// <returns>The frame image, or <see langword="null"/>.</returns>
-    [JsonIgnore]
     public readonly SKImage? SkImage => Tilesheet?.GetImage(RegionName, XTile, YTile);
 
     /// <summary>
     /// Gets the base tile size (without overhang) from the tilesheet.
     /// Returns <see cref="Size.Empty"/> if the tilesheet is not available.
     /// </summary>
-    [JsonIgnore]
     public readonly Size TileSize => Tilesheet?.GetRegion(RegionName)?.TileSize ?? Size.Empty;
 
     /// <summary>
     /// Gets the overhang dimensions (in pixels) that extend beyond the base tile boundaries.
     /// Returns <see cref="Spacing.None"/> if the tilesheet is not available.
     /// </summary>
-    [JsonIgnore]
     public readonly Spacing Overhang => Tilesheet?.GetRegion(RegionName)?.Overhang ?? Spacing.None;
 }
