@@ -959,7 +959,7 @@ internal sealed class SpotHostCore
                 _gameLose?.Play();
         }
 
-        Engine.Instance.State.SaveToFile("savegame.json");
+        Engine.Instance.State.SaveToFile("savegame.json", false, true);
     }
 
     #endregion SpotGame event handlers

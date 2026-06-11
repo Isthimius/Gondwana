@@ -21,6 +21,15 @@ namespace Gondwana;
 [JsonObject(IsReference = true)]
 public sealed class EngineState
 {
+    private sealed class TilesheetStateEntry
+    {
+        [JsonProperty]
+        public string? GtsPath { get; set; }
+
+        [JsonProperty]
+        public TilesheetDefinition? Definition { get; set; }
+    }
+
     /// <summary>
     /// Gets or sets the JSON serializer settings used for serializing and deserializing engine state.
     /// These settings are configured to handle type information, preserve object references, and
@@ -153,12 +162,16 @@ public sealed class EngineState
     /// at the cost of additional processing time. If <c>false</c>, the JSON is written as plain text.
     /// Default is <c>false</c>.
     /// </param>
+    /// <param name="separateGtsFiles"></param>
     /// <param name="parts">
     /// Specifies which parts of the engine state should be included in the saved file. Use bitwise
     /// flags from <see cref="EngineStateParts"/> to select specific components, or use
     /// <see cref="EngineStateParts.All"/> to save the complete state. Default is <see cref="EngineStateParts.All"/>.
     /// </param>
-    public void SaveToFile(string path, bool compress = false, EngineStateParts parts = EngineStateParts.All)
+    public void SaveToFile(string path,
+                           bool compress = false,
+                           bool separateGtsFiles = false,
+                           EngineStateParts parts = EngineStateParts.All)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
@@ -166,7 +179,7 @@ public sealed class EngineState
         var fullPath = Path.GetFullPath(path);
         var baseDirectory = Path.GetDirectoryName(fullPath);
 
-        var snapshot = BuildSnapshot(parts, baseDirectory);
+        var snapshot = BuildSnapshot(parts, baseDirectory, fullPath, separateGtsFiles);
 
         var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
@@ -270,7 +283,7 @@ public sealed class EngineState
     private sealed class EngineStateSnapshot
     {
         [JsonProperty] public List<AssetsFile>? AssetsFiles { get; set; }
-        [JsonProperty] public Dictionary<string, TilesheetDefinition>? Tilesheets { get; set; }
+        [JsonProperty] public Dictionary<string, TilesheetStateEntry>? Tilesheets { get; set; }
         [JsonProperty] public Dictionary<string, Cycle>? Cycles { get; set; }
         [JsonProperty] public List<Scene>? Scenes { get; set; }
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
@@ -289,7 +302,10 @@ public sealed class EngineState
         return parts;
     }
 
-    private EngineStateSnapshot BuildSnapshot(EngineStateParts parts, string? baseDirectory)
+    private EngineStateSnapshot BuildSnapshot(EngineStateParts parts,
+                                              string? baseDirectory,
+                                              string engineStatePath,
+                                              bool separateGtsFiles)
     {
         return new EngineStateSnapshot
         {
@@ -298,7 +314,10 @@ public sealed class EngineState
                 : null,
 
             Tilesheets = parts.HasFlag(EngineStateParts.Tilesheets)
-                ? CaptureTilesheetDefinitions(baseDirectory)
+                ? CaptureTilesheetEntries(
+                    baseDirectory,
+                    engineStatePath,
+                    separateGtsFiles)
                 : null,
 
             Cycles = parts.HasFlag(EngineStateParts.Cycles)
@@ -485,8 +504,89 @@ public sealed class EngineState
                     makePathsRelative: !string.IsNullOrWhiteSpace(baseDirectory)));
     }
 
+    private static Dictionary<string, TilesheetStateEntry> CaptureTilesheetEntries(
+        string? baseDirectory,
+        string engineStatePath,
+        bool separateGtsFiles)
+    {
+        var result = new Dictionary<string, TilesheetStateEntry>(StringComparer.Ordinal);
+
+        foreach (var (key, tilesheet) in TilesheetRegistry.Instance.GetAll())
+        {
+            if (separateGtsFiles)
+            {
+                var gtsDirectory = GetTilesheetStateDirectory(engineStatePath);
+                Directory.CreateDirectory(gtsDirectory);
+
+                var gtsFileName = $"{SanitizeFileName(key)}.gts";
+                var gtsFullPath = Path.Combine(gtsDirectory, gtsFileName);
+
+                // Important:
+                // Save the GTS using the GTS serializer, not EngineState.JsonSerializerSettings.
+                // This avoids $id/$values noise in the .gts file.
+                TilesheetDefinitionSerializer.Save(
+                    gtsFullPath,
+                    tilesheet,
+                    makePathsRelative: true);
+
+                var gtsPathForState = MakeRelativePath(
+                    gtsFullPath,
+                    baseDirectory);
+
+                result[key] = new TilesheetStateEntry
+                {
+                    GtsPath = gtsPathForState
+                };
+            }
+            else
+            {
+                result[key] = new TilesheetStateEntry
+                {
+                    Definition = TilesheetDefinitionSerializer.FromTilesheet(
+                        tilesheet,
+                        baseDirectory,
+                        makePathsRelative: !string.IsNullOrWhiteSpace(baseDirectory))
+                };
+            }
+        }
+
+        return result;
+    }
+
+    private static string GetTilesheetStateDirectory(string engineStatePath)
+    {
+        var directory = Path.GetDirectoryName(engineStatePath) ?? string.Empty;
+        var fileName = Path.GetFileNameWithoutExtension(engineStatePath);
+
+        return Path.Combine(directory, $"{fileName}.tilesheets");
+    }
+
+    private static string MakeRelativePath(string path, string? baseDirectory)
+    {
+        if (string.IsNullOrWhiteSpace(baseDirectory))
+            return path;
+
+        return Path.GetRelativePath(
+            Path.GetFullPath(baseDirectory),
+            Path.GetFullPath(path));
+    }
+
+    private static string SanitizeFileName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Guid.NewGuid().ToString("N");
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = new string(
+            value.Select(ch => invalidChars.Contains(ch) ? '_' : ch).ToArray());
+
+        return string.IsNullOrWhiteSpace(sanitized)
+            ? Guid.NewGuid().ToString("N")
+            : sanitized;
+    }
+
     private static void MergeTilesheets(
-        Dictionary<string, TilesheetDefinition>? tilesheets,
+        Dictionary<string, TilesheetStateEntry>? tilesheets,
         bool overwriteExisting,
         string? baseDirectory)
     {
@@ -495,27 +595,54 @@ public sealed class EngineState
 
         var registry = TilesheetRegistry.Instance.GetAll();
 
-        foreach (var (key, definition) in tilesheets)
+        foreach (var (key, entry) in tilesheets)
         {
-            if (definition is null)
+            if (entry is null)
                 continue;
 
-            if (string.IsNullOrWhiteSpace(definition.Name))
-                definition.Name = key;
+            var existingKey = key;
 
-            var effectiveName = definition.Name;
-
-            if (!overwriteExisting && registry.ContainsKey(effectiveName))
+            if (!overwriteExisting && registry.ContainsKey(existingKey))
                 continue;
 
-            var rebuilt = TilesheetFactory.FromDefinition(
-                definition,
-                baseDirectory);
+            Tilesheet rebuilt;
+
+            if (!string.IsNullOrWhiteSpace(entry.GtsPath))
+            {
+                var gtsPath = ResolvePath(entry.GtsPath, baseDirectory);
+
+                rebuilt = TilesheetFactory.FromDefinitionFile(gtsPath);
+            }
+            else if (entry.Definition is not null)
+            {
+                if (string.IsNullOrWhiteSpace(entry.Definition.Name))
+                    entry.Definition.Name = key;
+
+                rebuilt = TilesheetFactory.FromDefinition(
+                    entry.Definition,
+                    baseDirectory);
+            }
+            else
+            {
+                throw new InvalidDataException(
+                    $"Tilesheet state entry '{key}' does not contain a GTS path or inline definition.");
+            }
 
             TilesheetRegistry.Instance.Register(
                 rebuilt,
                 disposeReplaced: overwriteExisting);
         }
+    }
+
+    private static string ResolvePath(string path, string? baseDirectory)
+    {
+        if (Path.IsPathRooted(path))
+            return path;
+
+        if (string.IsNullOrWhiteSpace(baseDirectory))
+            return path;
+
+        return Path.GetFullPath(Path.Combine(baseDirectory, path));
     }
 
     private static void MergeCycles(Dictionary<string, Cycle>? cycles, bool overwriteExisting)
