@@ -21,6 +21,17 @@ public sealed class TilesheetRegion : IDisposable
 
     private TilesheetRegion() { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TilesheetRegion"/> class with the specified parameters.
+    /// </summary>
+    /// <param name="tilesheet">The parent tilesheet that owns this region.</param>
+    /// <param name="name">The name of the region. If null or whitespace, the default name is used.</param>
+    /// <param name="area">The rectangular area that this region occupies within the tilesheet.</param>
+    /// <param name="tileSize">The size of each individual tile in this region.</param>
+    /// <param name="tilePadding">The spacing (padding) around each tile within this region.</param>
+    /// <param name="regionMargin">The margin spacing around the entire region.</param>
+    /// <param name="overhangPixels">The overhang dimensions in pixels that extend beyond a tile's primary area.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="tilesheet"/> is null.</exception>
     internal TilesheetRegion(
         Tilesheet tilesheet,
         string name,
@@ -172,6 +183,7 @@ public sealed class TilesheetRegion : IDisposable
     /// <param name="x">The column index of the tile.</param>
     /// <param name="y">The row index of the tile.</param>
     /// <returns>The SKImage for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown when this instance has been disposed.</exception>
     public SKImage? GetImage(int x, int y)
     {
         ThrowIfDisposed();
@@ -195,6 +207,7 @@ public sealed class TilesheetRegion : IDisposable
     /// <param name="x">The column index of the tile.</param>
     /// <param name="y">The row index of the tile.</param>
     /// <returns>The SKBitmap for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown when this instance has been disposed.</exception>
     public SKBitmap? GetBitmap(int x, int y)
     {
         ThrowIfDisposed();
@@ -216,6 +229,7 @@ public sealed class TilesheetRegion : IDisposable
     /// Gets all bitmaps in this region as a dictionary keyed by their grid coordinates.
     /// </summary>
     /// <returns>A dictionary mapping (x, y) coordinates to their corresponding SKBitmap instances.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown when this instance has been disposed.</exception>
     public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
         ThrowIfDisposed();
@@ -246,6 +260,7 @@ public sealed class TilesheetRegion : IDisposable
     /// Gets all images in this region as a dictionary keyed by their grid coordinates.
     /// </summary>
     /// <returns>A dictionary mapping (x, y) coordinates to their corresponding SKImage instances.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown when this instance has been disposed.</exception>
     public Dictionary<(int x, int y), SKImage> GetAllImages()
     {
         ThrowIfDisposed();
@@ -276,6 +291,11 @@ public sealed class TilesheetRegion : IDisposable
 
     #region internal methods
 
+    /// <summary>
+    /// Builds the internal tile cache by slicing the tilesheet bitmap into individual tiles based on the region's configuration.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">Thrown when this instance has been disposed.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when tile padding or region margin values are negative.</exception>
     internal void BuildTileCache()
     {
         ThrowIfDisposed();
@@ -335,6 +355,9 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
+    /// <summary>
+    /// Clears and disposes all cached tile bitmaps and images, releasing their resources.
+    /// </summary>
     internal void ClearTileCache()
     {
         if (_tileCache == null)

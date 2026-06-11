@@ -25,6 +25,7 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="bitmap">The SkiaSharp bitmap containing the tilesheet image.</param>
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
     internal Tilesheet(string name, SKBitmap bitmap, bool addDefaultRegion = true)
     {
         Name = name;
@@ -39,6 +40,7 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="stream">The stream containing the image data.</param>
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
     /// <exception cref="ArgumentException">Thrown when the stream contains invalid image data.</exception>
     internal Tilesheet(string name, Stream stream, bool addDefaultRegion = true)
         : this(name, SKBitmap.Decode(stream) ?? throw new ArgumentException("Invalid image stream."), addDefaultRegion) { }
@@ -48,6 +50,7 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="file">The path to the image file.</param>
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
     /// <exception cref="ArgumentException">Thrown when the file is not a valid image.</exception>
     internal Tilesheet(string name, string file, bool addDefaultRegion = true)
         : this(name, SKBitmap.Decode(file) ?? throw new ArgumentException($"Invalid image file: {file}"), addDefaultRegion)
@@ -60,6 +63,7 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="resFile">The assets file containing the tilesheet image.</param>
     /// <param name="entryName">The name of the asset entry within the assets file.</param>
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="resFile"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="entryName"/> is null or whitespace, or when the asset cannot be decoded.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the asset entry does not exist or returns a null data stream.</exception>
@@ -471,6 +475,12 @@ public sealed class Tilesheet : IDisposable
 
     #region indexers
 
+    /// <summary>
+    /// Gets the tilesheet region with the specified name.
+    /// </summary>
+    /// <param name="regionName">The name of the region to retrieve.</param>
+    /// <returns>The matching <see cref="TilesheetRegion"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when no region with the specified name exists.</exception>
     public TilesheetRegion this[string regionName] => GetRegion(regionName) ?? throw new ArgumentException($"No tilesheet region named '{regionName}' exists.", nameof(regionName));
 
     /// <summary>
@@ -480,6 +490,7 @@ public sealed class Tilesheet : IDisposable
     /// <param name="regionName">The name of the tilesheet region.</param>
     /// <param name="x">Zero-based tile column index within the region.</param>
     /// <param name="y">Zero-based tile row index within the region.</param>
+    /// <returns>A <see cref="Frame"/> representing the specified tile.</returns>
     public Frame this[string regionName, int x, int y] => GetFrame(regionName, x, y);
 
     /// <summary>
@@ -488,6 +499,7 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="x">Zero-based tile column index within the region.</param>
     /// <param name="y">Zero-based tile row index within the region.</param>
+    /// <returns>A <see cref="Frame"/> representing the specified tile.</returns>
     public Frame this[int x, int y] => GetFrame(x, y);
 
     #endregion indexers
