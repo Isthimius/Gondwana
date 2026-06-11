@@ -331,12 +331,16 @@ public static class TilesheetDefinitionSerializer
             return path;
 
         if (!makeRelative || string.IsNullOrWhiteSpace(baseDirectory))
-            return path;
+            return path.Replace('\\', '/');
+
+        // Preserve already-relative paths as-authored to avoid depending on the current working directory.
+        if (!Path.IsPathRooted(path))
+            return path.Replace('\\', '/');
 
         var fullPath = Path.GetFullPath(path);
         var fullBaseDirectory = Path.GetFullPath(baseDirectory);
 
-        return Path.GetRelativePath(fullBaseDirectory, fullPath);
+        return Path.GetRelativePath(fullBaseDirectory, fullPath).Replace('\\', '/');
     }
 
     #endregion private methods
