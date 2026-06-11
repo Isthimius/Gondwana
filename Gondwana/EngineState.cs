@@ -245,6 +245,9 @@ public sealed class EngineState
     /// </param>
     public static void MergeFromFile(string path, bool compressed = false, bool overwriteExisting = false, EngineStateParts parts = EngineStateParts.All)
     {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
+
         var fullPath = Path.GetFullPath(path);
         var baseDirectory = Path.GetDirectoryName(fullPath);
 
