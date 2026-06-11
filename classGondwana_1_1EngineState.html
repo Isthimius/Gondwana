@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -128,9 +128,9 @@ Properties</h2></td></tr>
 <tr class="memitem:af4e1502b602870a093d8b92b1db7d3bb" id="r_af4e1502b602870a093d8b92b1db7d3bb"><td class="memItemLeft" align="right" valign="top">IEnumerable&lt; <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineState.html#af4e1502b602870a093d8b92b1db7d3bb">AssetsFiles</a><code> [get]</code></td></tr>
 <tr class="memdesc:af4e1502b602870a093d8b92b1db7d3bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of all loaded asset files (resource archives) currently registered with the engine. Asset files contain packed game resources such as images, audio, and data files that have been loaded into memory. This property provides a snapshot of the current asset files for serialization purposes.  <br /></td></tr>
 <tr class="separator:af4e1502b602870a093d8b92b1db7d3bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2da2b076ca30f546dec7c2f90e48b5fc" id="r_a2da2b076ca30f546dec7c2f90e48b5fc"><td class="memItemLeft" align="right" valign="top">IDictionary&lt; string, <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineState.html#a2da2b076ca30f546dec7c2f90e48b5fc">Tilesheets</a><code> [get]</code></td></tr>
-<tr class="memdesc:a2da2b076ca30f546dec7c2f90e48b5fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a dictionary of all registered tilesheets, keyed by their unique identifiers. Tilesheets contain tile graphics and metadata used for rendering tile-based game worlds. This property provides access to the current tilesheet registry for serialization and state management.  <br /></td></tr>
-<tr class="separator:a2da2b076ca30f546dec7c2f90e48b5fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add0c8063b7c5bf23e993301bcf5fc71a" id="r_add0c8063b7c5bf23e993301bcf5fc71a"><td class="memItemLeft" align="right" valign="top">IDictionary&lt; string, <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html">TilesheetDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineState.html#add0c8063b7c5bf23e993301bcf5fc71a">Tilesheets</a><code> [get]</code></td></tr>
+<tr class="memdesc:add0c8063b7c5bf23e993301bcf5fc71a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a dictionary of all registered tilesheets, keyed by their unique identifiers. Tilesheets contain tile graphics and metadata used for rendering tile-based game worlds. This property provides access to the current tilesheet registry for serialization and state management.  <br /></td></tr>
+<tr class="separator:add0c8063b7c5bf23e993301bcf5fc71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23d1c60394e8e62ee482430083cf4f2b" id="r_a23d1c60394e8e62ee482430083cf4f2b"><td class="memItemLeft" align="right" valign="top">Dictionary&lt; string, <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html">Cycle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineState.html#a23d1c60394e8e62ee482430083cf4f2b">Cycles</a><code> [get]</code></td></tr>
 <tr class="memdesc:a23d1c60394e8e62ee482430083cf4f2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the dictionary of all registered animation cycles, keyed by their unique identifiers. Animation cycles define sprite animation sequences including frame data, timing, and playback behavior. This property provides direct access to the cycle registry for serialization purposes.  <br /></td></tr>
 <tr class="separator:a23d1c60394e8e62ee482430083cf4f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,7 +150,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the complete serializable state of the game engine, including assets, scenes, sprites, audio resources, and custom data. This class provides functionality to save and load engine state to/from files with support for selective state management, compression, and merge operations. The state can be persisted as JSON and optionally compressed using GZip compression. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00021">21</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00022">22</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a3b13b5b6ba86200ef09ecfd9e56df659" name="a3b13b5b6ba86200ef09ecfd9e56df659"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3b13b5b6ba86200ef09ecfd9e56df659">&#9670;&#160;</a></span>LoadFromFile()</h2>
@@ -202,7 +202,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00195">195</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00202">202</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -263,7 +263,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00233">233</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00246">246</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -309,7 +309,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00156">156</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00157">157</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -336,7 +336,7 @@ Properties</h2></td></tr>
 
 <p>Gets the collection of all loaded asset files (resource archives) currently registered with the engine. Asset files contain packed game resources such as images, audio, and data files that have been loaded into memory. This property provides a snapshot of the current asset files for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00043">43</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00044">44</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -362,7 +362,7 @@ Properties</h2></td></tr>
 
 <p>Gets the dictionary of all registered animation cycles, keyed by their unique identifiers. Animation cycles define sprite animation sequences including frame data, timing, and playback behavior. This property provides direct access to the cycle registry for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00059">59</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00060">60</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -388,7 +388,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the JSON serializer settings used for serializing and deserializing engine state. These settings are configured to handle type information, preserve object references, and produce indented (human-readable) JSON output. The default configuration uses automatic type name handling and preserves all object references to maintain complex object graphs. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00029">29</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00030">30</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -414,7 +414,7 @@ Properties</h2></td></tr>
 
 <p>Gets the list of all scenes currently registered with the engine. Scenes represent distinct game locations or levels, containing layers, entities, and scene-specific data. This property provides direct access to the scene collection for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00067">67</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00068">68</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -440,7 +440,7 @@ Properties</h2></td></tr>
 
 <p>Gets the dictionary of all registered audio resources, keyed by their unique identifiers. Audio resources include sound effects, music tracks, and their associated playback settings such as volume, pan, and looping behavior. This property provides access to the audio resource registry for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00084">84</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00085">85</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -466,12 +466,12 @@ Properties</h2></td></tr>
 
 <p>Gets the list of all active sprites currently managed by the sprite manager. Sprites are visual game entities that can be positioned, animated, and rendered on screen. This property provides direct access to the sprite collection for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00075">75</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00076">76</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
-<a id="a2da2b076ca30f546dec7c2f90e48b5fc" name="a2da2b076ca30f546dec7c2f90e48b5fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2da2b076ca30f546dec7c2f90e48b5fc">&#9670;&#160;</a></span>Tilesheets</h2>
+<a id="add0c8063b7c5bf23e993301bcf5fc71a" name="add0c8063b7c5bf23e993301bcf5fc71a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0c8063b7c5bf23e993301bcf5fc71a">&#9670;&#160;</a></span>Tilesheets</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -480,7 +480,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">IDictionary&lt;string, <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&gt; Gondwana.EngineState.Tilesheets</td>
+          <td class="memname">IDictionary&lt;string, <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html">TilesheetDefinition</a>&gt; Gondwana.EngineState.Tilesheets</td>
         </tr>
       </table>
   </td>
@@ -492,7 +492,7 @@ Properties</h2></td></tr>
 
 <p>Gets a dictionary of all registered tilesheets, keyed by their unique identifiers. Tilesheets contain tile graphics and metadata used for rendering tile-based game worlds. This property provides access to the current tilesheet registry for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00051">51</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00052">52</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -534,7 +534,7 @@ Properties</h2></td></tr>
 <div class="line"><span class="comment">// Retrieve values</span></div>
 <div class="line">var hp = engineState.ValueBag.Get(NpcHitPoints, <span class="keyword">new</span> Dictionary&lt;string, int&gt;());</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00118">118</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00119">119</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>

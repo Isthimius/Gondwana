@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -173,7 +173,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a rectangular region within a tilesheet that contains a grid of tiles. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00012">12</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00010">10</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="aefb4133ea192c0a298134f2e7cebe729" name="aefb4133ea192c0a298134f2e7cebe729"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aefb4133ea192c0a298134f2e7cebe729">&#9670;&#160;</a></span>Dispose()</h2>
@@ -192,7 +192,7 @@ Properties</h2></td></tr>
 
 <p>Releases all resources used by this TilesheetRegion, including the tile cache. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00423">423</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00428">428</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -213,8 +213,14 @@ Properties</h2></td></tr>
 
 <p>Gets all bitmaps in this region as a dictionary keyed by their grid coordinates. </p>
 <dl class="section return"><dt>Returns</dt><dd>A dictionary mapping (x, y) coordinates to their corresponding SKBitmap instances.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00237">237</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00233">233</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -235,8 +241,14 @@ Properties</h2></td></tr>
 
 <p>Gets all images in this region as a dictionary keyed by their grid coordinates. </p>
 <dl class="section return"><dt>Returns</dt><dd>A dictionary mapping (x, y) coordinates to their corresponding SKImage instances.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00267">267</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00264">264</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -275,8 +287,14 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The SKBitmap for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00216">216</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00211">211</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -315,8 +333,14 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The SKImage for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00193">193</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00187">187</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -343,7 +367,7 @@ Properties</h2></td></tr>
 
 <p>The default name assigned to tilesheet regions when no name is specified. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00017">17</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00015">15</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -370,7 +394,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the rectangular area that this region occupies within the tilesheet. Setting this property rebuilds the internal tile cache. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00091">91</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00092">92</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -396,7 +420,7 @@ Properties</h2></td></tr>
 
 <p>Gets the number of columns (horizontal tiles) in this region. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00163">163</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00159">159</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -422,7 +446,7 @@ Properties</h2></td></tr>
 
 <p>Gets the name of this tilesheet region. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00084">84</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00086">86</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -449,7 +473,7 @@ Properties</h2></td></tr>
 <p>Represents the overhang dimensions in pixels that extend beyond a tile's primary area. Overhang values define how much a tile's visual representation exceeds its logical boundaries in each direction (left, top, right, and bottom). </p>
 <p>This property only affects how the tile is rendered; it does not affect how the tile is sliced and cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00157">157</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00154">154</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -475,7 +499,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the margin spacing around the entire region. Setting this property rebuilds the internal tile cache. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00138">138</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00136">136</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -501,7 +525,7 @@ Properties</h2></td></tr>
 
 <p>Gets the number of rows (vertical tiles) in this region. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00169">169</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00164">164</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -527,7 +551,7 @@ Properties</h2></td></tr>
 
 <p>Gets the total height of a single tile including its padding. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00181">181</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00174">174</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -553,7 +577,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the spacing (padding) around each tile within this region. Setting this property rebuilds the internal tile cache. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00123">123</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00122">122</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -579,7 +603,7 @@ Properties</h2></td></tr>
 
 <p>Gets the tilesheet that owns this region. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00078">78</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00081">81</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -632,7 +656,7 @@ Properties</h2></td></tr>
 
 <p>Gets the total width of a single tile including its padding. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00175">175</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00169">169</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>

@@ -1,10 +1,5 @@
 var classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet =
 [
-    [ "Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a6188d744e6154a7f6855727cadaa45aa", null ],
-    [ "Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a4567ec7adc2e204a02cd5718a0030d93", null ],
-    [ "Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a02e4784d4e3ade7fb28b32f3787292cd", null ],
-    [ "Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a14e24e5df56df375492ec51a5913a72a", null ],
-    [ "Tilesheet", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#acd75c0030e5c721f4ebb053cc3c1c747", null ],
     [ "AddRegion", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a6f2503e21d4a13f17d05d062d80e2972", null ],
     [ "ApplyMask", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a319188d2d81776215ec095aa8ae92f0b", null ],
     [ "ApplyPremultiplyAlpha", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a4d352c40b4c8e243323726fc60396909", null ],
@@ -32,5 +27,5 @@ var classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet =
     [ "this[string regionName, int x, int y]", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#acd3180f77b82dace7652bd1db6a48d57", null ],
     [ "this[string regionName]", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a4cb3063b7aab538de3976c8c1e3acaa6", null ],
     [ "ValueBag", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a0e2ab2692d9d5d9b1381de837440f783", null ],
-    [ "Disposed", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a5fa529eac6858069200f64e409c8333a", null ]
+    [ "Disposed", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a30c37d7f145913bf74416c0d9f2c3844", null ]
 ];

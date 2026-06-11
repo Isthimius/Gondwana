@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -127,7 +127,29 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afbcd5ba6a9d038ce1035553b273d0be5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an immutable snapshot of all registered tilesheets as a dictionary.  <br /></td></tr>
 <tr class="separator:afbcd5ba6a9d038ce1035553b273d0be5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa06b10b5ef0f21527d926c487bcc5ce" id="r_aaa06b10b5ef0f21527d926c487bcc5ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#aaa06b10b5ef0f21527d926c487bcc5ce">Dispose</a> ()</td></tr>
+<tr class="memdesc:aaa06b10b5ef0f21527d926c487bcc5ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the TilesheetRegistry by clearing and disposing all registered tilesheets.  <br /></td></tr>
 <tr class="separator:aaa06b10b5ef0f21527d926c487bcc5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a966d34982cb2b5474b2c5f40d1ee1165" id="r_a966d34982cb2b5474b2c5f40d1ee1165"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a966d34982cb2b5474b2c5f40d1ee1165">LoadFromBitmap</a> (string name, SKBitmap bitmap)</td></tr>
+<tr class="memdesc:a966d34982cb2b5474b2c5f40d1ee1165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from an existing SKBitmap and registers it in the registry.  <br /></td></tr>
+<tr class="separator:a966d34982cb2b5474b2c5f40d1ee1165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdd5424374841b16e6a08baa3e660374" id="r_acdd5424374841b16e6a08baa3e660374"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#acdd5424374841b16e6a08baa3e660374">LoadFromStream</a> (string name, Stream stream)</td></tr>
+<tr class="memdesc:acdd5424374841b16e6a08baa3e660374"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from a stream and registers it in the registry.  <br /></td></tr>
+<tr class="separator:acdd5424374841b16e6a08baa3e660374"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b43ee78c1ff63dfb9bc3f04656f54ca" id="r_a7b43ee78c1ff63dfb9bc3f04656f54ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a7b43ee78c1ff63dfb9bc3f04656f54ca">LoadFromImageFile</a> (string name, string imageFilePath)</td></tr>
+<tr class="memdesc:a7b43ee78c1ff63dfb9bc3f04656f54ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from an image file and registers it in the registry.  <br /></td></tr>
+<tr class="separator:a7b43ee78c1ff63dfb9bc3f04656f54ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93f19ca0c219ca9af20bfc6b7d4e2e49" id="r_a93f19ca0c219ca9af20bfc6b7d4e2e49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a93f19ca0c219ca9af20bfc6b7d4e2e49">LoadFromAssetsFile</a> (<a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> assetsFile, string entryName)</td></tr>
+<tr class="memdesc:a93f19ca0c219ca9af20bfc6b7d4e2e49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from an entry in an assets file and registers it in the registry.  <br /></td></tr>
+<tr class="separator:a93f19ca0c219ca9af20bfc6b7d4e2e49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e86c11f8b05c078f454436a3a875de6" id="r_a1e86c11f8b05c078f454436a3a875de6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a1e86c11f8b05c078f454436a3a875de6">LoadFromDefinitionFile</a> (string gtsPath)</td></tr>
+<tr class="memdesc:a1e86c11f8b05c078f454436a3a875de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from a GTS definition file and registers it in the registry.  <br /></td></tr>
+<tr class="separator:a1e86c11f8b05c078f454436a3a875de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a191ee100b6336cf259c2761c68707510" id="r_a191ee100b6336cf259c2761c68707510"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a191ee100b6336cf259c2761c68707510">LoadFromDefinition</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html">TilesheetDefinition</a> definition, string? baseDirectory=null)</td></tr>
+<tr class="memdesc:a191ee100b6336cf259c2761c68707510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from a tilesheet definition object and registers it in the registry.  <br /></td></tr>
+<tr class="separator:a191ee100b6336cf259c2761c68707510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ba63d5d1418a8cfe17d3c87d3b8bf17" id="r_a9ba63d5d1418a8cfe17d3c87d3b8bf17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a9ba63d5d1418a8cfe17d3c87d3b8bf17">LoadFromDefinitionAsset</a> (<a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> assetsFile, string gtsEntryName)</td></tr>
+<tr class="memdesc:a9ba63d5d1418a8cfe17d3c87d3b8bf17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from a GTS definition stored as an entry in an assets file and registers it in the registry.  <br /></td></tr>
+<tr class="separator:a9ba63d5d1418a8cfe17d3c87d3b8bf17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -147,7 +169,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Thread-safe singleton registry for Tilesheet instances. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00009">9</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00012">12</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a74458f3eebbda6e057f2a42001bc68a6" name="a74458f3eebbda6e057f2a42001bc68a6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a74458f3eebbda6e057f2a42001bc68a6">&#9670;&#160;</a></span>Clear()</h2>
@@ -167,7 +189,7 @@ Properties</h2></td></tr>
 <p>Removes all tilesheets from the registry and disposes them. </p>
 <p>This method is thread-safe. All tilesheets in the registry are disposed after being removed. Use with caution as any external references to the tilesheets will reference disposed objects. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00186">186</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00233">233</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -186,7 +208,9 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00277">277</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p>Releases all resources used by the TilesheetRegistry by clearing and disposing all registered tilesheets. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00360">360</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -209,7 +233,7 @@ Properties</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>An immutable dictionary containing all registered tilesheets, keyed by their names.</dd></dl>
 <p>This method is thread-safe and returns a snapshot of the registry at the time of invocation. The returned dictionary uses the same string comparer as the internal collection. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00223">223</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00274">274</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -239,7 +263,276 @@ Properties</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The tilesheet associated with the specified name, or <code>null</code> if not found.</dd></dl>
 <p>This method is thread-safe and provides a convenient alternative to TryGet when a null return value is acceptable. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00087">87</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00109">109</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a93f19ca0c219ca9af20bfc6b7d4e2e49" name="a93f19ca0c219ca9af20bfc6b7d4e2e49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93f19ca0c219ca9af20bfc6b7d4e2e49">&#9670;&#160;</a></span>LoadFromAssetsFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromAssetsFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a>&#160;</td>
+          <td class="paramname"><em>assetsFile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>entryName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new tilesheet from an entry in an assets file and registers it in the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">assetsFile</td><td>The assets file containing the tilesheet image.</td></tr>
+    <tr><td class="paramname">entryName</td><td>The name of the entry within the assets file.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly created and registered Tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00412">412</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a966d34982cb2b5474b2c5f40d1ee1165" name="a966d34982cb2b5474b2c5f40d1ee1165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a966d34982cb2b5474b2c5f40d1ee1165">&#9670;&#160;</a></span>LoadFromBitmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromBitmap </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SKBitmap&#160;</td>
+          <td class="paramname"><em>bitmap</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new tilesheet from an existing SKBitmap and registers it in the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name to assign to the tilesheet.</td></tr>
+    <tr><td class="paramname">bitmap</td><td>The SKBitmap containing the tilesheet image data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly created and registered Tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00373">373</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a191ee100b6336cf259c2761c68707510" name="a191ee100b6336cf259c2761c68707510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a191ee100b6336cf259c2761c68707510">&#9670;&#160;</a></span>LoadFromDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromDefinition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html">TilesheetDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?&#160;</td>
+          <td class="paramname"><em>baseDirectory</em> = <code>null</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new tilesheet from a tilesheet definition object and registers it in the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">definition</td><td>The tilesheet definition containing configuration and metadata.</td></tr>
+    <tr><td class="paramname">baseDirectory</td><td>The optional base directory for resolving relative paths in the definition. If <code>null</code>, the current directory is used.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly created and registered Tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00437">437</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a9ba63d5d1418a8cfe17d3c87d3b8bf17" name="a9ba63d5d1418a8cfe17d3c87d3b8bf17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba63d5d1418a8cfe17d3c87d3b8bf17">&#9670;&#160;</a></span>LoadFromDefinitionAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromDefinitionAsset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a>&#160;</td>
+          <td class="paramname"><em>assetsFile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>gtsEntryName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new tilesheet from a GTS definition stored as an entry in an assets file and registers it in the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">assetsFile</td><td>The assets file containing the GTS definition entry.</td></tr>
+    <tr><td class="paramname">gtsEntryName</td><td>The name of the GTS definition entry within the assets file.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly created and registered Tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00450">450</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a1e86c11f8b05c078f454436a3a875de6" name="a1e86c11f8b05c078f454436a3a875de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e86c11f8b05c078f454436a3a875de6">&#9670;&#160;</a></span>LoadFromDefinitionFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromDefinitionFile </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>gtsPath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new tilesheet from a GTS definition file and registers it in the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gtsPath</td><td>The file path to the GTS (<a class="el" href="namespaceGondwana.html">Gondwana</a> Tilesheet) definition file.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly created and registered Tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00424">424</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a7b43ee78c1ff63dfb9bc3f04656f54ca" name="a7b43ee78c1ff63dfb9bc3f04656f54ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b43ee78c1ff63dfb9bc3f04656f54ca">&#9670;&#160;</a></span>LoadFromImageFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromImageFile </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>imageFilePath</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new tilesheet from an image file and registers it in the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name to assign to the tilesheet.</td></tr>
+    <tr><td class="paramname">imageFilePath</td><td>The file path to the image file.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly created and registered Tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00399">399</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="acdd5424374841b16e6a08baa3e660374" name="acdd5424374841b16e6a08baa3e660374"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdd5424374841b16e6a08baa3e660374">&#9670;&#160;</a></span>LoadFromStream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromStream </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Stream&#160;</td>
+          <td class="paramname"><em>stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new tilesheet from a stream and registers it in the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name to assign to the tilesheet.</td></tr>
+    <tr><td class="paramname">stream</td><td>The stream containing the tilesheet image data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly created and registered Tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00386">386</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -285,7 +578,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00130">130</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00152">152</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -326,7 +619,7 @@ Properties</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the tilesheet was found in the registry; otherwise, <code>false</code>.</dd></dl>
 <p>This method is thread-safe. If <em>name</em>  is <code>null</code>, a warning is logged and the method returns <code>false</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00065">65</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00087">87</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -355,7 +648,7 @@ Properties</h2></td></tr>
 <p>The total count of registered tilesheets.</p>
 <p>This property is thread-safe. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00238">238</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00289">289</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -382,7 +675,7 @@ Properties</h2></td></tr>
 <p>Gets the singleton instance of the TilesheetRegistry. </p>
 <p>The singleton instance.</p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00022">22</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00025">25</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -410,7 +703,7 @@ Properties</h2></td></tr>
 <p>A read-only list containing the names of all registered tilesheets.</p>
 <p>This property is thread-safe and returns a snapshot of the names at the time of access. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00206">206</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00257">257</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -451,7 +744,7 @@ Properties</h2></td></tr>
 </dl>
 <p>This indexer is thread-safe and provides direct access to tilesheets by name using bracket notation. If you need to check for existence without throwing an exception, use TryGet or GetOrNull instead. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00104">104</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00126">126</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>

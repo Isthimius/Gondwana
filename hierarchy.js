@@ -215,7 +215,11 @@ var hierarchy =
     [ "Gondwana.StudioAssets.SceneLayerAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerAsset.html", null ],
     [ "Gondwana.StudioAssets.SceneLayerTileAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerTileAsset.html", null ],
     [ "Gondwana.Movement.Scripted.ScriptedMovement", "structGondwana_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", null ],
+    [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html", null ],
+    [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetImageDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html", null ],
+    [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetMaskDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetMaskDefinition.html", null ],
     [ "Gondwana.StudioAssets.TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", null ],
+    [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html", null ],
     [ "Gondwana.StudioAssets.TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", null ],
     [ "UserControl", null, [
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html", null ],

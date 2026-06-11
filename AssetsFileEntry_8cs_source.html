@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -111,7 +111,7 @@ $(document).ready(function(){initNavTree('AssetsFileEntry_8cs_source.html',''); 
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classGondwana_1_1Assets_1_1AssetsFileEntry.html#a7d8a5e19a923cac9de839368c7ef6406">   21</a></span>    <span class="keyword">public</span> <span class="keywordtype">string</span> <a class="code hl_property" href="classGondwana_1_1Assets_1_1AssetsFileEntry.html#a7d8a5e19a923cac9de839368c7ef6406">AssetName</a> { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keywordtype">string</span>.Empty;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classGondwana_1_1Assets_1_1AssetsFileEntry.html#a079597cb5018e0fb06cf583d2cfe230f">   28</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keywordtype">string</span> <a class="code hl_function" href="classGondwana_1_1Assets_1_1AssetsFileEntry.html#a079597cb5018e0fb06cf583d2cfe230f">ToString</a>() =&gt; $<span class="stringliteral">&quot;{AssetType}_{AssetName.ToLower()}&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classGondwana_1_1Assets_1_1AssetsFileEntry.html#a079597cb5018e0fb06cf583d2cfe230f">   28</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keywordtype">string</span> <a class="code hl_function" href="classGondwana_1_1Assets_1_1AssetsFileEntry.html#a079597cb5018e0fb06cf583d2cfe230f">ToString</a>() =&gt; $<span class="stringliteral">&quot;{AssetType}_{AssetName.ToLowerInvariant()}&quot;</span>;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <a class="code hl_class" href="classGondwana_1_1Assets_1_1AssetsFileEntry.html">AssetsFileEntry</a>? FromString(<span class="keywordtype">string</span> entry)</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
