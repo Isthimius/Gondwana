@@ -1,5 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿using Gondwana.Assets;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
+using System.Collections.Immutable;
 
 namespace Gondwana.Drawing.Tilesheets;
 
@@ -25,6 +28,15 @@ public sealed class TilesheetRegistry : IDisposable
     private TilesheetRegistry()
     { }
 
+    /// <summary>
+    /// Registers a tilesheet in the registry. If a tilesheet with the same name already exists, it is replaced.
+    /// </summary>
+    /// <param name="sheet">The tilesheet to register. Cannot be <see langword="null"/>.</param>
+    /// <param name="disposeReplaced">If <see langword="true"/>, disposes any replaced tilesheet with the same name; otherwise, <see langword="false"/>.</param>
+    /// <remarks>
+    /// This method is thread-safe. If <paramref name="sheet"/> is <see langword="null"/>, an error is logged and the method returns without registering.
+    /// The method subscribes to the tilesheet's Disposed event to automatically unregister it when disposed.
+    /// </remarks>
     internal void Register(Tilesheet sheet, bool disposeReplaced = true)
     {
         if (sheet is null)
@@ -34,6 +46,7 @@ public sealed class TilesheetRegistry : IDisposable
         }
 
         Tilesheet? replaced = null;
+
         lock (_gate)
         {
             if (_sheets.TryGetValue(sheet.Name, out var existing) && !ReferenceEquals(existing, sheet))
@@ -45,10 +58,19 @@ public sealed class TilesheetRegistry : IDisposable
             {
                 _sheets[sheet.Name] = sheet;
             }
+
+            // Avoid duplicate subscriptions if the same instance is registered again.
+            sheet.Disposed -= OnTilesheetDisposed;
+            sheet.Disposed += OnTilesheetDisposed;
         }
 
-        if (disposeReplaced && replaced is not null)
-            replaced.Dispose();
+        if (replaced is not null)
+        {
+            replaced.Disposed -= OnTilesheetDisposed;
+
+            if (disposeReplaced)
+                replaced.Dispose();
+        }
     }
 
     /// <summary>
@@ -136,6 +158,7 @@ public sealed class TilesheetRegistry : IDisposable
         }
 
         Tilesheet? removed = null;
+
         lock (_gate)
         {
             if (!_sheets.TryGetValue(name, out removed))
@@ -144,12 +167,25 @@ public sealed class TilesheetRegistry : IDisposable
             _sheets.Remove(name);
         }
 
+        removed.Disposed -= OnTilesheetDisposed;
+
         if (dispose)
-            removed?.Dispose();
+            removed.Dispose();
 
         return true;
     }
 
+    /// <summary>
+    /// Removes the tilesheet with the specified name from the registry, but only if it matches the expected instance.
+    /// </summary>
+    /// <param name="name">The name of the tilesheet to remove. Cannot be <see langword="null"/>.</param>
+    /// <param name="expected">The expected tilesheet instance. The removal only occurs if the registry contains this exact instance. Cannot be <see langword="null"/>.</param>
+    /// <param name="dispose">If <see langword="true"/>, disposes the removed tilesheet; otherwise, <see langword="false"/>.</param>
+    /// <returns><see langword="true"/> if the tilesheet was successfully removed; otherwise, <see langword="false"/>.</returns>
+    /// <remarks>
+    /// This method is thread-safe. It uses reference equality to ensure the correct instance is removed.
+    /// If <paramref name="name"/> or <paramref name="expected"/> is <see langword="null"/>, a warning is logged and the method returns <see langword="false"/>.
+    /// </remarks>
     internal bool Remove(string name, Tilesheet expected, bool dispose = false)
     {
         if (name is null)
@@ -158,7 +194,14 @@ public sealed class TilesheetRegistry : IDisposable
             return false;
         }
 
+        if (expected is null)
+        {
+            Engine.Logger.LogWarning("TilesheetRegistry: Attempt to remove a null Tilesheet.");
+            return false;
+        }
+
         Tilesheet? removed = null;
+
         lock (_gate)
         {
             if (_sheets.TryGetValue(name, out var current) && ReferenceEquals(current, expected))
@@ -168,11 +211,15 @@ public sealed class TilesheetRegistry : IDisposable
             }
             else
             {
-                return false; // mapping changed or not present
+                return false;
             }
         }
 
-        if (dispose) removed?.Dispose();
+        removed.Disposed -= OnTilesheetDisposed;
+
+        if (dispose)
+            removed.Dispose();
+
         return true;
     }
 
@@ -186,6 +233,7 @@ public sealed class TilesheetRegistry : IDisposable
     public void Clear()
     {
         List<Tilesheet> copy;
+
         lock (_gate)
         {
             copy = _sheets.Values.ToList();
@@ -193,7 +241,10 @@ public sealed class TilesheetRegistry : IDisposable
         }
 
         foreach (var ts in copy)
+        {
+            ts.Disposed -= OnTilesheetDisposed;
             ts.Dispose();
+        }
     }
 
     /// <summary>
@@ -244,11 +295,27 @@ public sealed class TilesheetRegistry : IDisposable
         }
     }
 
+    /// <summary>
+    /// Handles the renaming of a tilesheet by updating its registry entry from the old name to the new name.
+    /// </summary>
+    /// <param name="oldName">The previous name of the tilesheet. Cannot be <see langword="null"/>.</param>
+    /// <param name="newName">The new name of the tilesheet. Cannot be <see langword="null"/>.</param>
+    /// <param name="sheet">The tilesheet instance being renamed. Cannot be <see langword="null"/>.</param>
+    /// <param name="disposeReplaced">If <see langword="true"/>, disposes any existing tilesheet that is replaced at the new name; otherwise, <see langword="false"/>.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="oldName"/>, <paramref name="newName"/>, or <paramref name="sheet"/> is <see langword="null"/>.</exception>
+    /// <remarks>
+    /// This method is thread-safe. If a different tilesheet already exists at <paramref name="newName"/>, it will be replaced and a warning logged.
+    /// </remarks>
     internal void OnTilesheetRenamed(string oldName, string newName, Tilesheet sheet, bool disposeReplaced = true)
     {
-        if (oldName is null) throw new ArgumentNullException(nameof(oldName));
-        if (newName is null) throw new ArgumentNullException(nameof(newName));
-        if (sheet is null) throw new ArgumentNullException(nameof(sheet));
+        if (oldName is null)
+            throw new ArgumentNullException(nameof(oldName));
+
+        if (newName is null)
+            throw new ArgumentNullException(nameof(newName));
+
+        if (sheet is null)
+            throw new ArgumentNullException(nameof(sheet));
 
         Tilesheet? replaced = null;
 
@@ -270,12 +337,123 @@ public sealed class TilesheetRegistry : IDisposable
             _sheets[newName] = sheet;
         }
 
-        if (disposeReplaced && replaced is not null)
-            replaced.Dispose();
+        if (replaced is not null)
+        {
+            replaced.Disposed -= OnTilesheetDisposed;
+
+            if (disposeReplaced)
+                replaced.Dispose();
+        }
     }
 
+    private void OnTilesheetDisposed(Tilesheet sheet)
+    {
+        if (sheet is null)
+            return;
+
+        Remove(sheet.Name, sheet, dispose: false);
+    }
+
+    /// <summary>
+    /// Releases all resources used by the <see cref="TilesheetRegistry"/> by clearing and disposing all registered tilesheets.
+    /// </summary>
     public void Dispose()
     {
         Clear();
     }
+
+    #region public shims to TilesheetFactory
+
+    /// <summary>
+    /// Creates a new tilesheet from an existing SKBitmap and registers it in the registry.
+    /// </summary>
+    /// <param name="name">The name to assign to the tilesheet.</param>
+    /// <param name="bitmap">The SKBitmap containing the tilesheet image data.</param>
+    /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
+    public Tilesheet LoadFromBitmap(string name, SKBitmap bitmap)
+    {
+        var tilesheet = TilesheetFactory.FromBitmap(name, bitmap);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    /// <summary>
+    /// Creates a new tilesheet from a stream and registers it in the registry.
+    /// </summary>
+    /// <param name="name">The name to assign to the tilesheet.</param>
+    /// <param name="stream">The stream containing the tilesheet image data.</param>
+    /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
+    public Tilesheet LoadFromStream(string name, Stream stream)
+    {
+        var tilesheet = TilesheetFactory.FromStream(name, stream);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    /// <summary>
+    /// Creates a new tilesheet from an image file and registers it in the registry.
+    /// </summary>
+    /// <param name="name">The name to assign to the tilesheet.</param>
+    /// <param name="imageFilePath">The file path to the image file.</param>
+    /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
+    public Tilesheet LoadFromImageFile(string name, string imageFilePath)
+    {
+        var tilesheet = TilesheetFactory.FromImageFile(name, imageFilePath);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    /// <summary>
+    /// Creates a new tilesheet from an entry in an assets file and registers it in the registry.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the tilesheet image.</param>
+    /// <param name="entryName">The name of the entry within the assets file.</param>
+    /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
+    public Tilesheet LoadFromAssetsFile(AssetsFile assetsFile, string entryName)
+    {
+        var tilesheet = TilesheetFactory.FromAssetsFile(assetsFile, entryName);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    /// <summary>
+    /// Creates a new tilesheet from a GTS definition file and registers it in the registry.
+    /// </summary>
+    /// <param name="gtsPath">The file path to the GTS (Gondwana Tilesheet) definition file.</param>
+    /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
+    public Tilesheet LoadFromDefinitionFile(string gtsPath)
+    {
+        var tilesheet = TilesheetFactory.FromDefinitionFile(gtsPath);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    /// <summary>
+    /// Creates a new tilesheet from a tilesheet definition object and registers it in the registry.
+    /// </summary>
+    /// <param name="definition">The tilesheet definition containing configuration and metadata.</param>
+    /// <param name="baseDirectory">The optional base directory for resolving relative paths in the definition. If <see langword="null"/>, the current directory is used.</param>
+    /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
+    public Tilesheet LoadFromDefinition(TilesheetDefinition definition, string? baseDirectory = null)
+    {
+        var tilesheet = TilesheetFactory.FromDefinition(definition, baseDirectory);
+        Register(tilesheet);
+        return tilesheet;
+    }
+
+    /// <summary>
+    /// Creates a new tilesheet from a GTS definition stored as an entry in an assets file and registers it in the registry.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the GTS definition entry.</param>
+    /// <param name="gtsEntryName">The name of the GTS definition entry within the assets file.</param>
+    /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
+    public Tilesheet LoadFromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName)
+    {
+        var tilesheet = TilesheetFactory.FromDefinitionAsset(assetsFile, gtsEntryName);
+        Register(tilesheet);
+
+        return tilesheet;
+    }
+
+    #endregion public shims to TilesheetFactory
 }

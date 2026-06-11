@@ -25,7 +25,7 @@ public sealed class AssetsFileEntry : IEquatable<AssetsFileEntry>
     /// </summary>
     /// <returns>A string in the format "AssetType_assetname", where "AssetType" is the type of the asset and
     /// "assetname" is the lowercase version of the asset name.</returns>
-    public override string ToString() => $"{AssetType}_{AssetName.ToLower()}";
+    public override string ToString() => $"{AssetType}_{AssetName.ToLowerInvariant()}";
 
     /// <summary>
     /// Parses a string representation of an engine asset file entry into an <see cref="AssetsFileEntry"/>

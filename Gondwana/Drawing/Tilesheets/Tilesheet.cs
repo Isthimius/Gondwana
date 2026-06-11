@@ -1,6 +1,5 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SkiaSharp;
 using Gondwana.Assets;
 using Gondwana.SkiaSharp;
@@ -10,13 +9,12 @@ namespace Gondwana.Drawing.Tilesheets;
 /// <summary>
 /// Represents a tilesheet image and metadata for rendering tiles.
 /// </summary>
-[JsonObject(IsReference = true)]
 public sealed class Tilesheet : IDisposable
 {
     /// <summary>
     /// Occurs when this tilesheet is disposed.
     /// </summary>
-    public event Action? Disposed;
+    public event Action<Tilesheet>? Disposed;
 
     #region ctors
 
@@ -27,13 +25,14 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="bitmap">The SkiaSharp bitmap containing the tilesheet image.</param>
-    public Tilesheet(string name, SKBitmap bitmap)
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
+    internal Tilesheet(string name, SKBitmap bitmap, bool addDefaultRegion = true)
     {
-        _name = name;
+        Name = name;
         SkBitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
-        TilesheetRegistry.Instance.Register(this);
 
-        AddDefaultRegion();
+        if (addDefaultRegion)
+            AddDefaultRegion();
     }
 
     /// <summary>
@@ -41,18 +40,20 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="stream">The stream containing the image data.</param>
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
     /// <exception cref="ArgumentException">Thrown when the stream contains invalid image data.</exception>
-    public Tilesheet(string name, Stream stream)
-        : this(name, SKBitmap.Decode(stream) ?? throw new ArgumentException("Invalid image stream.")) { }
+    internal Tilesheet(string name, Stream stream, bool addDefaultRegion = true)
+        : this(name, SKBitmap.Decode(stream) ?? throw new ArgumentException("Invalid image stream."), addDefaultRegion) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tilesheet"/> class by loading an image from a file.
     /// </summary>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="file">The path to the image file.</param>
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
     /// <exception cref="ArgumentException">Thrown when the file is not a valid image.</exception>
-    public Tilesheet(string name, string file)
-        : this(name, SKBitmap.Decode(file) ?? throw new ArgumentException($"Invalid image file: {file}"))
+    internal Tilesheet(string name, string file, bool addDefaultRegion = true)
+        : this(name, SKBitmap.Decode(file) ?? throw new ArgumentException($"Invalid image file: {file}"), addDefaultRegion)
     {
         ImageFilePath = file;
     }
@@ -62,10 +63,11 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="resFile">The assets file containing the tilesheet image.</param>
     /// <param name="entryName">The name of the asset entry within the assets file.</param>
+    /// <param name="addDefaultRegion">If true, adds a default region covering the entire bitmap. Defaults to true.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="resFile"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="entryName"/> is null or whitespace, or when the asset cannot be decoded.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the asset entry does not exist or returns a null data stream.</exception>
-    public Tilesheet(AssetsFile resFile, string entryName)
+    internal Tilesheet(AssetsFile resFile, string entryName, bool addDefaultRegion = true)
     {
         if (resFile is null)
             throw new ArgumentNullException(nameof(resFile));
@@ -87,11 +89,10 @@ public sealed class Tilesheet : IDisposable
                 "The asset data is corrupt or not a supported image format."
             );
 
-        _name = entryName;
+        Name = entryName;
 
-        // Register AFTER successful decode so the registry never contains a half-constructed tilesheet
-        TilesheetRegistry.Instance.Register(this);
-        AddDefaultRegion();
+        if (addDefaultRegion)
+            AddDefaultRegion();
     }
 
     /// <summary>
@@ -101,12 +102,12 @@ public sealed class Tilesheet : IDisposable
     /// <param name="baseSheet">The tilesheet whose settings should be copied.</param>
     /// <param name="name">The name to assign to this tilesheet.</param>
     /// <param name="file">The path to the image file.</param>
-    public Tilesheet(Tilesheet baseSheet, string name, string file)
+    internal Tilesheet(Tilesheet baseSheet, string name, string file)
     {
         if (baseSheet is null)
             throw new ArgumentNullException(nameof(baseSheet));
 
-        _name = name;
+        Name = name;
 
         SkBitmap = SKBitmap.Decode(file)
             ?? throw new ArgumentException($"Invalid image file: {file}");
@@ -114,6 +115,7 @@ public sealed class Tilesheet : IDisposable
         ImageFilePath = file;
         ValueBag = new(baseSheet.ValueBag);
 
+        // do not add DefaultRegion since we'll copy the regions from the base sheet
         foreach (var region in baseSheet.Regions)
         {
             AddRegion(
@@ -124,8 +126,6 @@ public sealed class Tilesheet : IDisposable
                 region.RegionMargin,
                 region.Overhang);
         }
-
-        TilesheetRegistry.Instance.Register(this);
     }
 
     #endregion ctors
@@ -134,90 +134,64 @@ public sealed class Tilesheet : IDisposable
     /// Gets the SkiaSharp bitmap containing the tilesheet image.
     /// This may be a modified version if alpha masking or premultiplication has been applied.
     /// </summary>
-    [JsonIgnore]
     public SKBitmap SkBitmap { get; private set; } = null!;
 
     /// <summary>
     /// Gets the original SkiaSharp bitmap before any alpha masking or premultiplication was applied.
     /// Returns <see langword="null"/> if no modifications have been made.
     /// </summary>
-    [JsonIgnore]
     public SKBitmap? SkBitmapOriginal { get; private set; } = null;
-
-    [JsonProperty("name")]
-    private string _name = string.Empty;
 
     /// <summary>
     /// Gets or sets the name of this tilesheet.
     /// Changing the name updates the tilesheet's registration in the <see cref="TilesheetRegistry"/>.
     /// </summary>
-    [JsonIgnore]
-    public string Name
-    {
-        get => _name;
-        set
-        {
-            if (_name == value)
-                return;
-
-            var old = _name;
-            _name = value;
-            TilesheetRegistry.Instance.OnTilesheetRenamed(old, _name, this);
-        }
-    }
+    public string Name { get; internal set; } = string.Empty;
 
     /// <summary>
     /// Gets the regions that define tile layouts within this tilesheet.
     /// Each region may define its own area, tile size, spacing, and overhang settings.
     /// </summary>
-    [JsonProperty("regions")]
     public List<TilesheetRegion> Regions { get; private set; } = new();
 
     /// <summary>
     /// Gets the default region from the tilesheet.
     /// </summary>
-    [JsonIgnore]
     public TilesheetRegion DefaultRegion => this[TilesheetRegion.DefaultRegionName];
 
     /// <summary>
     /// Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.
     /// </summary>
-    [JsonIgnore]
     public TypedValueBag ValueBag { get; set; } = new();
 
     /// <summary>
     /// Gets the asset identifier if this tilesheet was loaded from an assets file.
     /// Returns <see langword="null"/> if the tilesheet was loaded from another source.
     /// </summary>
-    [JsonProperty]
     public AssetsFileIdentifier? AssetIdentifier { get; private set; }
 
     /// <summary>
     /// Gets the file path of the image file if this tilesheet was loaded from a file.
     /// Returns an empty string if the tilesheet was loaded from another source.
     /// </summary>
-    [JsonProperty]
     public string ImageFilePath { get; private set; } = string.Empty;
 
     /// <summary>
     /// Gets the color used for alpha masking, if <see cref="ApplyMask"/> has been called.
     /// Returns <see langword="null"/> if no mask has been applied.
     /// </summary>
-    [JsonProperty]
     public SKColor? MaskColor { get; private set; } = null;
 
     /// <summary>
     /// Gets the tolerance value used when applying the alpha mask.
     /// This determines how closely pixels must match the mask color to be made transparent.
     /// </summary>
-    [JsonProperty]
     public byte MaskTolerance { get; private set; } = 5;
 
     /// <summary>
     /// Gets a value indicating whether the bitmap has been premultiplied with its alpha channel.
     /// This is <see langword="true"/> after calling <see cref="ApplyMask"/> or <see cref="ApplyPremultiplyAlpha"/>.
     /// </summary>
-    [JsonProperty]
     public bool Premultiplied { get; private set; } = false;
 
     #region public methods
@@ -501,6 +475,12 @@ public sealed class Tilesheet : IDisposable
 
     #region indexers
 
+    /// <summary>
+    /// Gets the tilesheet region with the specified name.
+    /// </summary>
+    /// <param name="regionName">The name of the region to retrieve.</param>
+    /// <returns>The matching <see cref="TilesheetRegion"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when no region with the specified name exists.</exception>
     public TilesheetRegion this[string regionName] => GetRegion(regionName) ?? throw new ArgumentException($"No tilesheet region named '{regionName}' exists.", nameof(regionName));
 
     /// <summary>
@@ -510,6 +490,7 @@ public sealed class Tilesheet : IDisposable
     /// <param name="regionName">The name of the tilesheet region.</param>
     /// <param name="x">Zero-based tile column index within the region.</param>
     /// <param name="y">Zero-based tile row index within the region.</param>
+    /// <returns>A <see cref="Frame"/> representing the specified tile.</returns>
     public Frame this[string regionName, int x, int y] => GetFrame(regionName, x, y);
 
     /// <summary>
@@ -518,6 +499,7 @@ public sealed class Tilesheet : IDisposable
     /// </summary>
     /// <param name="x">Zero-based tile column index within the region.</param>
     /// <param name="y">Zero-based tile row index within the region.</param>
+    /// <returns>A <see cref="Frame"/> representing the specified tile.</returns>
     public Frame this[int x, int y] => GetFrame(x, y);
 
     #endregion indexers
@@ -584,9 +566,6 @@ public sealed class Tilesheet : IDisposable
 
         if (disposing)
         {
-            // unregister from registry
-            TilesheetRegistry.Instance.Remove(_name, this, dispose: false);
-
             // clean up tile cache
             foreach (var region in Regions)
             {
@@ -601,7 +580,7 @@ public sealed class Tilesheet : IDisposable
 
             try
             {
-                Disposed?.Invoke();
+                Disposed?.Invoke(this);
             }
             catch (Exception ex)
             {

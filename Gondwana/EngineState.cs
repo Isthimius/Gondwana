@@ -1,13 +1,14 @@
 ﻿using System.IO.Compression;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Gondwana;
 
@@ -48,7 +49,7 @@ public sealed class EngineState
     /// This property provides access to the current tilesheet registry for serialization and state management.
     /// </summary>
     [JsonProperty]
-    public IDictionary<string, Tilesheet> Tilesheets => TilesheetRegistry.Instance.GetAll().ToDictionary();
+    public IDictionary<string, TilesheetDefinition> Tilesheets => CaptureTilesheetDefinitions(baseDirectory: null);
 
     /// <summary>
     /// Gets the dictionary of all registered animation cycles, keyed by their unique identifiers.
@@ -155,20 +156,26 @@ public sealed class EngineState
     /// </param>
     public void SaveToFile(string path, bool compress = false, EngineStateParts parts = EngineStateParts.All)
     {
-        var snapshot = BuildSnapshot(parts);
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
+
+        var fullPath = Path.GetFullPath(path);
+        var baseDirectory = Path.GetDirectoryName(fullPath);
+
+        var snapshot = BuildSnapshot(parts, baseDirectory);
 
         var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
         if (compress)
         {
-            using var file = File.Create(path);
+            using var file = File.Create(fullPath);
             using var zip = new GZipStream(file, CompressionMode.Compress);
             using var writer = new StreamWriter(zip);
             writer.Write(json);
         }
         else
         {
-            File.WriteAllText(path, json);
+            File.WriteAllText(fullPath, json);
         }
     }
 
@@ -194,7 +201,13 @@ public sealed class EngineState
     /// </param>
     public static void LoadFromFile(string path, bool compressed = false, EngineStateParts parts = EngineStateParts.All)
     {
-        string json = ReadJsonFile(path, compressed);
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
+
+        var fullPath = Path.GetFullPath(path);
+        var baseDirectory = Path.GetDirectoryName(fullPath);
+
+        string json = ReadJsonFile(fullPath, compressed);
 
         // Important: EngineState's collections are mostly getter-only proxies over registries,
         // so deserialize into a snapshot DTO with setters.
@@ -203,7 +216,7 @@ public sealed class EngineState
             ?? new EngineStateSnapshot();
 
         // Merge into the live engine state (registries)
-        ApplySnapshot(snapshot, clearExisting: true, overwriteExisting: true, parts);
+        ApplySnapshot(snapshot, clearExisting: true, overwriteExisting: true, parts, baseDirectory);
     }
 
     /// <summary>
@@ -232,14 +245,20 @@ public sealed class EngineState
     /// </param>
     public static void MergeFromFile(string path, bool compressed = false, bool overwriteExisting = false, EngineStateParts parts = EngineStateParts.All)
     {
-        string json = ReadJsonFile(path, compressed);
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
+
+        var fullPath = Path.GetFullPath(path);
+        var baseDirectory = Path.GetDirectoryName(fullPath);
+
+        string json = ReadJsonFile(fullPath, compressed);
 
         var snapshot =
             JsonConvert.DeserializeObject<EngineStateSnapshot>(json, JsonSerializerSettings)
             ?? new EngineStateSnapshot();
 
         // Merge into the live engine state (registries)
-        ApplySnapshot(snapshot, clearExisting: false, overwriteExisting: overwriteExisting, parts);
+        ApplySnapshot(snapshot, clearExisting: false, overwriteExisting: overwriteExisting, parts, baseDirectory);
     }
 
     #region deserialization helpers
@@ -247,7 +266,7 @@ public sealed class EngineState
     private sealed class EngineStateSnapshot
     {
         [JsonProperty] public List<AssetsFile>? AssetsFiles { get; set; }
-        [JsonProperty] public Dictionary<string, Tilesheet>? Tilesheets { get; set; }
+        [JsonProperty] public Dictionary<string, TilesheetDefinition>? Tilesheets { get; set; }
         [JsonProperty] public Dictionary<string, Cycle>? Cycles { get; set; }
         [JsonProperty] public List<Scene>? Scenes { get; set; }
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
@@ -266,7 +285,7 @@ public sealed class EngineState
         return parts;
     }
 
-    private EngineStateSnapshot BuildSnapshot(EngineStateParts parts)
+    private EngineStateSnapshot BuildSnapshot(EngineStateParts parts, string? baseDirectory)
     {
         return new EngineStateSnapshot
         {
@@ -275,7 +294,7 @@ public sealed class EngineState
                 : null,
 
             Tilesheets = parts.HasFlag(EngineStateParts.Tilesheets)
-                ? Tilesheets.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+                ? CaptureTilesheetDefinitions(baseDirectory)
                 : null,
 
             Cycles = parts.HasFlag(EngineStateParts.Cycles)
@@ -319,7 +338,8 @@ public sealed class EngineState
         EngineStateSnapshot snapshot,
         bool clearExisting,
         bool overwriteExisting,
-        EngineStateParts parts)
+        EngineStateParts parts,
+        string? baseDirectory)
     {
         parts = NormalizeParts(parts);
 
@@ -334,7 +354,7 @@ public sealed class EngineState
             MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
 
         if (parts.HasFlag(EngineStateParts.Tilesheets))
-            MergeTilesheets(snapshot.Tilesheets, overwriteExisting);
+            MergeTilesheets(snapshot.Tilesheets, overwriteExisting, baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Cycles))
             MergeCycles(snapshot.Cycles, overwriteExisting);
@@ -398,69 +418,6 @@ public sealed class EngineState
         }
     }
 
-    private static Tilesheet? RebuildTilesheetFromSaved(string key, Tilesheet saved)
-    {
-        Tilesheet rebuilt;
-
-        // 1) Rehydrate bitmap from AssetsFile entry (preferred) or file path (fallback)
-        if (saved.AssetIdentifier is not null && saved.AssetIdentifier.IsValid)
-        {
-            var id = saved.AssetIdentifier;
-            rebuilt = new Tilesheet(id.AssetsFile, id.AssetName);
-        }
-        else if (!string.IsNullOrWhiteSpace(saved.ImageFilePath) && File.Exists(saved.ImageFilePath))
-        {
-            rebuilt = new Tilesheet(saved.Name, saved.ImageFilePath);
-        }
-        else
-        {
-            Engine.Logger.LogWarning(
-                "EngineState: Skipping tilesheet '{Key}' because it has no valid AssetIdentifier and no ImageFilePath.",
-                key);
-            return null;
-        }
-
-        // 2) Restore metadata.
-        rebuilt.Name = saved.Name;
-
-        // 3) Restore regions.
-        //
-        // IMPORTANT: Deserialized TilesheetRegion instances are saved-state specs.
-        // They do not own a live Tilesheet reference after JSON deserialization.
-        // Recreate live regions on the rebuilt tilesheet so each region is attached
-        // to the rebuilt source bitmap and can build its own cache.
-        foreach (var savedRegion in saved.Regions)
-        {
-            rebuilt.AddRegion(
-                savedRegion.Name,
-                savedRegion.Area,
-                savedRegion.TileSize,
-                savedRegion.TilePadding,
-                savedRegion.RegionMargin,
-                savedRegion.Overhang);
-        }
-
-        // 4) Restore extensible tilesheet metadata
-        rebuilt.ValueBag = saved.ValueBag.Clone();
-
-        // 5) Reapply bitmap transforms recorded in the save.
-        //
-        // IMPORTANT: SkBitmap is not serialized, so these operations must be replayed here.
-        // ApplyMask() also premultiplies alpha internally in the implementation.
-        if (saved.MaskColor is not null)
-        {
-            rebuilt.ApplyMask(saved.MaskColor, saved.MaskTolerance);
-        }
-        else if (saved.Premultiplied)
-        {
-            // ApplyMask also premultiplies alpha internally,
-            // so only call if Premultiplied and no MaskColor
-            rebuilt.ApplyPremultiplyAlpha();
-        }
-
-        return rebuilt;
-    }
-
     private static void MergeAudio(
         List<AssetsFile>? assetsFiles,
         Dictionary<string, AudioResource>? soundSpecs,
@@ -512,21 +469,48 @@ public sealed class EngineState
         }
     }
 
+    private static Dictionary<string, TilesheetDefinition> CaptureTilesheetDefinitions(string? baseDirectory)
+    {
+        return TilesheetRegistry.Instance
+            .GetAll()
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => TilesheetDefinitionSerializer.FromTilesheet(
+                    kvp.Value,
+                    baseDirectory,
+                    makePathsRelative: !string.IsNullOrWhiteSpace(baseDirectory)));
+    }
+
     private static void MergeTilesheets(
-        Dictionary<string, Tilesheet>? tilesheets,
-        bool overwriteExisting)
+        Dictionary<string, TilesheetDefinition>? tilesheets,
+        bool overwriteExisting,
+        string? baseDirectory)
     {
         if (tilesheets is null || tilesheets.Count == 0)
             return;
 
         var registry = TilesheetRegistry.Instance.GetAll();
 
-        foreach (var (key, saved) in tilesheets)
+        foreach (var (key, definition) in tilesheets)
         {
-            if (!overwriteExisting && registry.ContainsKey(key))
+            if (definition is null)
                 continue;
 
-            RebuildTilesheetFromSaved(key, saved);
+            if (string.IsNullOrWhiteSpace(definition.Name))
+                definition.Name = key;
+
+            var effectiveName = definition.Name;
+
+            if (!overwriteExisting && registry.ContainsKey(effectiveName))
+                continue;
+
+            var rebuilt = TilesheetFactory.FromDefinition(
+                definition,
+                baseDirectory);
+
+            TilesheetRegistry.Instance.Register(
+                rebuilt,
+                disposeReplaced: overwriteExisting);
         }
     }
 

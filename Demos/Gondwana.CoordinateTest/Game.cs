@@ -85,11 +85,11 @@ public class Game : IDisposable
     private void LoadTilesheets()
     {
         // Implementation for loading tilesheets goes here
-        var tilesheet = new Tilesheet("rooster", "assets/rooster.bmp");
+        var tilesheet = TilesheetRegistry.Instance.LoadFromImageFile("rooster", "assets/rooster.bmp");
         tilesheet.DefaultRegion.TileSize = new Size(50, 50);
         tilesheet.ApplyMask(SKColors.Black, 60);
 
-        var tilesheet2 = new Tilesheet("tiles", "assets/original.bmp");
+        var tilesheet2 = TilesheetRegistry.Instance.LoadFromImageFile("tiles", "assets/original.bmp");
         tilesheet2.DefaultRegion.TileSize = new Size(64, 32);
         tilesheet2.DefaultRegion.Area = new Rectangle(1, 1, tilesheet2.SkBitmap.Width - 2, tilesheet2.SkBitmap.Height - 2);
         //tilesheet2.DefaultRegion.TilePadding = new Size(1, 1);

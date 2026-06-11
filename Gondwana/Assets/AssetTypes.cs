@@ -39,5 +39,10 @@ public enum AssetTypes
     /// <summary>
     /// Represents a scalable vector graphic (SVG) asset.
     /// </summary>
-    Svg = 6
+    Svg = 6,
+
+    /// <summary>
+    /// Represents a tilesheet definition file (.gts) for <see cref="Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinition"/>.
+    /// </summary>
+    TilesheetDefinition = 7
 }
