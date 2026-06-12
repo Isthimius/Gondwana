@@ -24,6 +24,8 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost, ISpotHostC
     int ISpotHostContext.SurfaceWidth => RenderSurface.Width;
     int ISpotHostContext.SurfaceHeight => RenderSurface.Height;
 
+    public NewGameOptions? LastNewGameOptions => _spot.LastNewGameOptions;
+
     protected override SplashScreen? CreateSplash(RenderSurfaceHostBase host)
         => _spot.CreateSplash(host);
 
@@ -65,6 +67,9 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost, ISpotHostC
 
     public void BeginPostSplashStartup()
         => _spot.BeginPostSplashStartup();
+
+    public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
+        => _spot.OpenNewGameDialog(newGameOptions);
 
     public void SetMusicEnabled(bool enabled)
         => _spot.SetMusicEnabled(enabled);

@@ -9,11 +9,15 @@ internal interface ISpotGameHost : IDisposable
 {
     Engine Engine { get; }
 
+    NewGameOptions? LastNewGameOptions { get; }
+
     void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
     Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
     void BeginPostSplashStartup();
+
+    void OpenNewGameDialog(NewGameOptions? newGameOptions = null);
 
     void SetMusicEnabled(bool enabled);
 

@@ -79,6 +79,7 @@
             cmdCancel.TabIndex = 8;
             cmdCancel.Text = "Cancel";
             cmdCancel.UseVisualStyleBackColor = true;
+            cmdCancel.Click += cmdCancel_Click;
             // 
             // cboPlayerCount
             // 

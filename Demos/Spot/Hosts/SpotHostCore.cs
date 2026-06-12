@@ -39,8 +39,10 @@ internal sealed class SpotHostCore
     private int SurfaceWidth => _ctx.SurfaceWidth;
     private int SurfaceHeight => _ctx.SurfaceHeight;
 
+    private bool _initialGameStarted = false;
     private bool _handleHumanInput = false;
     private bool _showScores = true;
+    private NewGameOptions? _lastNewGameOptions;
 
     private ParticleSurface? _particleSurface;
 
@@ -72,16 +74,6 @@ internal sealed class SpotHostCore
     private Tilesheet _spotSheetDefault = null!;
     private Tilesheet _spotSheetSelected = null!;
 
-    //private Tilesheet _blueSpot = null!;
-    //private Tilesheet _greenSpot = null!;
-    //private Tilesheet _pinkSpot = null!;
-    //private Tilesheet _redSpot = null!;
-    //private Tilesheet _yellowSpot = null!;
-    //private Tilesheet _blueSpotHappy = null!;
-    //private Tilesheet _greenSpotHappy = null!;
-    //private Tilesheet _pinkSpotHappy = null!;
-    //private Tilesheet _redSpotHappy = null!;
-    //private Tilesheet _yellowSpotHappy = null!;
     private Tilesheet _clouds = null!;
 
     private SKTypeface _font = null!;
@@ -91,6 +83,7 @@ internal sealed class SpotHostCore
     private static readonly Random _rng = new();
     private bool _startupPresentationShown = false;
 
+    public NewGameOptions? LastNewGameOptions { get => _lastNewGameOptions; }
     public bool MusicEnabled { get; private set; } = true;
     public bool SoundEffectsEnabled { get; private set; } = true;
     public bool JiggleEnabled { get; private set; } = true;
@@ -250,6 +243,21 @@ internal sealed class SpotHostCore
         }
     }
 
+    public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
+    {
+        using var dialog = new NewGameDialog(newGameOptions);
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            _lastNewGameOptions = dialog.Options;
+            var options = dialog.Options;
+            Engine.EngineDispatcher.Post(() => StartNewGame(options));
+        }
+        else
+        {
+            _lastNewGameOptions = dialog.Options;
+        }
+    }
+
     #endregion public game interface
 
     #region game settings
@@ -346,6 +354,12 @@ internal sealed class SpotHostCore
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
+        if (!_initialGameStarted && args.LeftButtonJustPressed)
+        {
+            OpenNewGameDialog(_lastNewGameOptions);
+            return;
+        }
+
         if (!_handleHumanInput)
             return;
 
@@ -781,6 +795,8 @@ internal sealed class SpotHostCore
     private void OnGameStarted(SpotGame game)
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
+
+        _initialGameStarted = true;
 
         if (MusicEnabled && !_music.IsPlaying)
             _music.Play();
