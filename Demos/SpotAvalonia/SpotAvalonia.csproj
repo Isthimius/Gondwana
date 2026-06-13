@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Sdk="Microsoft.NET.Sdk.WebAssembly" Project="Sdk.props" Condition="'$(TargetFramework)' == 'net8.0-browser'" />
-
     <PropertyGroup>
         <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
         <OutputType>Exe</OutputType>
@@ -159,7 +157,5 @@
         <ProjectReference Include="..\..\Gondwana.Avalonia.Hosting\Gondwana.Avalonia.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
-
-    <Import Sdk="Microsoft.NET.Sdk.WebAssembly" Project="Sdk.targets" Condition="'$(TargetFramework)' == 'net8.0-browser'" />
 
 </Project>
