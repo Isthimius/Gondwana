@@ -28,6 +28,11 @@
       <None Remove="Properties\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="assets\rohhsadotcom-knock-on-wood-02-421991.mp3" />
+      <None Remove="assets\universfield-bubble-pop-293342.mp3" />
+    </ItemGroup>
+
 
     <ItemGroup>
         <Content Include="assets\ArchitectsDaughter-Regular.ttf">
@@ -50,6 +55,9 @@
         </Content>
         <Content Include="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="assets\rohhsadotcom-knock-on-wood-02-421991.mp3">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -76,6 +84,9 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="assets\spot_sheet.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="assets\universfield-bubble-pop-293342.mp3">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

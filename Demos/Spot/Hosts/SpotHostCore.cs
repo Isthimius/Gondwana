@@ -111,14 +111,18 @@ internal sealed class SpotHostCore
         _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
         _music.IsLooping = true;
 
-        //_spotSelected = gotta find it
-        //_spotDeselected = gotta find it
+        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", "assets\\universfield-bubble-pop-293342.mp3");
+        _spotSelected.Volume = 0.4f;
+
+        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", "assets\\universfield-bubble-pop-293342.mp3");
+        _spotDeselected.Volume = 0.15f;
+
         _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", "assets\\freesound_community-velcro_fast-91558.mp3");
         _drop = Engine.Managers.AudioResources.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
         _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
         _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
         _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
-        //_knock = gotta find it
+        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", "assets\\rohhsadotcom-knock-on-wood-02-421991.mp3");
 
         // load standalone video files
 
@@ -853,7 +857,7 @@ internal sealed class SpotHostCore
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy!.Name);
 
-        if (SoundEffectsEnabled)
+        if (SoundEffectsEnabled && SpotGame.CurrentPlayer.Type == PlayerType.Human)
             _spotSelected?.Play();
 
         var sprite = cell.Sprite!;
