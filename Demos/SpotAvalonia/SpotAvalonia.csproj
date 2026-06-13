@@ -113,44 +113,10 @@
     </ItemGroup>
 
     <!--
-        wwwroot/ is bundled into AppBundle/ when publishing for WASM.
-        gondwana-audio.js is supplied by the Gondwana.Audio.Browser project reference.
+        gondwana-audio.js is provided by the Gondwana.Audio.Browser project reference.
+        The Avalonia Browser SDK strips the wwwroot/ prefix when publishing content items,
+        so the file ends up at the publish root and is reachable as ./gondwana-audio.js.
     -->
-    <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-browser'">
-        <Content Include="wwwroot/**" Exclude="wwwroot/gondwana-audio.js">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
-        <Content Update="wwwroot/index.html">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot/main.js">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <Target Name="WriteWasmAssetsManifest"
-            AfterTargets="Publish"
-            Condition="'$(TargetFramework)' == 'net8.0-browser'">
-        <ItemGroup>
-            <_WasmPublishedAssembly Include="@(ResolvedFileToPublish)"
-                                   Condition="'%(ResolvedFileToPublish.Extension)' == '.dll'
-                                   and !$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').Contains('/'))
-                                   and !$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').Contains('\\'))" />
-        </ItemGroup>
-
-        <PropertyGroup>
-            <_WasmAssemblyEntries>@(_WasmPublishedAssembly->'&quot;%(Filename)%(Extension)&quot;:&quot;&quot;', ',')</_WasmAssemblyEntries>
-            <_WasmAssetsManifest>{&quot;mainAssemblyName&quot;:&quot;SpotAvalonia.dll&quot;,&quot;resources&quot;:{&quot;assembly&quot;:{$(_WasmAssemblyEntries)},&quot;jsModuleNative&quot;:{&quot;dotnet.native.js&quot;:&quot;&quot;},&quot;jsModuleRuntime&quot;:{&quot;dotnet.runtime.js&quot;:&quot;&quot;},&quot;wasmNative&quot;:{&quot;dotnet.native.wasm&quot;:&quot;&quot;},&quot;icu&quot;:{&quot;icudt.dat&quot;:&quot;&quot;,&quot;icudt_CJK.dat&quot;:&quot;&quot;,&quot;icudt_EFIGS.dat&quot;:&quot;&quot;,&quot;icudt_hybrid.dat&quot;:&quot;&quot;,&quot;icudt_no_CJK.dat&quot;:&quot;&quot;}}}</_WasmAssetsManifest>
-        </PropertyGroup>
-
-        <WriteLinesToFile File="$(PublishDir)wwwroot/wasm-assets.json"
-                          Lines="$(_WasmAssetsManifest)"
-                          Overwrite="true" />
-    </Target>
-
     <ItemGroup>
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
