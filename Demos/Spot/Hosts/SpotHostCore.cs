@@ -247,20 +247,26 @@ internal sealed class SpotHostCore
         }
     }
 
-    public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
+public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
+{
+    if (Engine.UiDispatcher is not null && !Engine.UiDispatcher.IsOnUIThread)
     {
-        using var dialog = new NewGameDialog(newGameOptions);
-        if (dialog.ShowDialog() == DialogResult.OK)
-        {
-            _lastNewGameOptions = dialog.Options;
-            var options = dialog.Options;
-            Engine.EngineDispatcher.Post(() => StartNewGame(options));
-        }
-        else
-        {
-            _lastNewGameOptions = dialog.Options;
-        }
+        Engine.UiDispatcher.Post(() => OpenNewGameDialog(newGameOptions));
+        return;
     }
+
+    using var dialog = new NewGameDialog(newGameOptions);
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        _lastNewGameOptions = dialog.Options;
+        var options = dialog.Options;
+        Engine.EngineDispatcher.Post(() => StartNewGame(options));
+    }
+    else
+    {
+        _lastNewGameOptions = dialog.Options;
+    }
+}
 
     #endregion public game interface
 
