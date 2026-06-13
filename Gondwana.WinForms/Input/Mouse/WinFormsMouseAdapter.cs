@@ -9,6 +9,7 @@ namespace Gondwana.WinForms.Input.Mouse;
 public sealed class WinFormsMouseAdapter : IMouseAdapter
 {
     private readonly HashSet<MouseButton> _pressed = new();
+    private readonly object _pressedLock = new();
     private Point _currentPosition;
     private KeyboardModifierState _modifiers;
     private int _scrollDelta;
@@ -19,9 +20,25 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter
     public Point CurrentPosition => _currentPosition;
     
     /// <summary>
-    /// Gets the set of currently pressed mouse buttons.
+    /// Gets the set of currently pressed mouse buttons, reconciled against the actual OS button
+    /// state to prevent stale "button down" entries that can occur when a MouseUp
+    /// event is not received (e.g. because the parent form was temporarily disabled while a modal
+    /// dialog was shown). Returns a snapshot copy safe for the caller to iterate.
     /// </summary>
-    public HashSet<MouseButton> PressedButtons => _pressed;
+    public HashSet<MouseButton> PressedButtons
+    {
+        get
+        {
+            var osButtons = Control.MouseButtons;
+            lock (_pressedLock)
+            {
+                if (!osButtons.HasFlag(MouseButtons.Left)) _pressed.Remove(MouseButton.Left);
+                if (!osButtons.HasFlag(MouseButtons.Right)) _pressed.Remove(MouseButton.Right);
+                if (!osButtons.HasFlag(MouseButtons.Middle)) _pressed.Remove(MouseButton.Middle);
+                return new HashSet<MouseButton>(_pressed);
+            }
+        }
+    }
     
     /// <summary>
     /// Gets the current state of keyboard modifiers (Shift, Ctrl, Alt).
@@ -51,13 +68,15 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter
 
     private void OnMouseDown(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
-        _pressed.Add(MapButton(e.Button));
+        lock (_pressedLock)
+            _pressed.Add(MapButton(e.Button));
         UpdatePosition(e);
     }
 
     private void OnMouseUp(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
-        _pressed.Remove(MapButton(e.Button));
+        lock (_pressedLock)
+            _pressed.Remove(MapButton(e.Button));
         UpdatePosition(e);
     }
 

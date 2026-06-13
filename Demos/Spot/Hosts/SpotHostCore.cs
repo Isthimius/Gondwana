@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
@@ -41,6 +42,7 @@ internal sealed class SpotHostCore
 
     private bool _initialGameStarted = false;
     private bool _handleHumanInput = false;
+    private int _dialogOpen = 0; // 0 = not open; 1 = open/pending. Use Interlocked for thread-safe access.
     private bool _showScores = true;
     private NewGameOptions? _lastNewGameOptions;
 
@@ -251,20 +253,31 @@ public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
 {
     if (Engine.UiDispatcher is not null && !Engine.UiDispatcher.IsOnUIThread)
     {
+        // Atomically claim the dialog slot; bail out if one is already open/pending.
+        if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0) return;
         Engine.UiDispatcher.Post(() => OpenNewGameDialog(newGameOptions));
         return;
     }
 
-    using var dialog = new NewGameDialog(newGameOptions);
-    if (dialog.ShowDialog() == DialogResult.OK)
+    // Called directly on the UI thread (e.g. from the menu). Ensure the flag is set.
+    Interlocked.Exchange(ref _dialogOpen, 1);
+    try
     {
-        _lastNewGameOptions = dialog.Options;
-        var options = dialog.Options;
-        Engine.EngineDispatcher.Post(() => StartNewGame(options));
+        using var dialog = new NewGameDialog(newGameOptions);
+        if (dialog.ShowDialog(Form.ActiveForm) == DialogResult.OK)
+        {
+            _lastNewGameOptions = dialog.Options;
+            var options = dialog.Options;
+            Engine.EngineDispatcher.Post(() => StartNewGame(options));
+        }
+        else
+        {
+            _lastNewGameOptions = dialog.Options;
+        }
     }
-    else
+    finally
     {
-        _lastNewGameOptions = dialog.Options;
+        Interlocked.Exchange(ref _dialogOpen, 0);
     }
 }
 
