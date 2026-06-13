@@ -56,9 +56,12 @@ internal sealed class AboutDialog : Window
         var gondwanaLogoPath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
         if (File.Exists(gondwanaLogoPath))
         {
+            var gondwanaBitmap = new Bitmap(gondwanaLogoPath);
+            Closed += (_, _) => gondwanaBitmap.Dispose();
+
             var gondwanaLogo = new Image
             {
-                Source              = new Bitmap(gondwanaLogoPath),
+                Source              = gondwanaBitmap,
                 Width               = 200,
                 Height              = 200,
                 Stretch             = Stretch.Uniform,
