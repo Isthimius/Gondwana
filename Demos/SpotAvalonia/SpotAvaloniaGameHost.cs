@@ -896,7 +896,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
             _pendingComputerSelectTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
             _pendingComputerSelectTimer.Tick += () =>
             {
-                _pendingComputerSelectTimer = null;
+_pendingComputerSelectTimer?.Dispose();
+_pendingComputerSelectTimer = null;
 
                 var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
                 if (moves.Count == 0)
