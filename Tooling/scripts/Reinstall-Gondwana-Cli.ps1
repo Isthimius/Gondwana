@@ -43,7 +43,6 @@ $packageSource = if ([System.IO.Path]::IsPathRooted($PackageOutput)) {
 } else {
     Join-Path $repoRoot $PackageOutput
 }
-$tempNuGetPackages = Join-Path ([System.IO.Path]::GetTempPath()) "gondwana-cli-reinstall-packages-$([Guid]::NewGuid().ToString('N'))"
 
 function Invoke-Cmd {
     param([string] $Executable, [string[]] $Arguments)
@@ -65,48 +64,37 @@ if (-not (Test-Path $cliProject -PathType Leaf)) {
 }
 
 New-Item -ItemType Directory -Path $packageSource -Force | Out-Null
-New-Item -ItemType Directory -Path $tempNuGetPackages -Force | Out-Null
 
 Write-Host "CLI project : $cliProject" -ForegroundColor Cyan
 Write-Host "Package feed: $packageSource" -ForegroundColor Cyan
 
-$previousNuGetPackages = $env:NUGET_PACKAGES
-try {
+Write-Host ""
+Write-Host "Packing Gondwana.Cli..." -ForegroundColor Cyan
+Invoke-Cmd dotnet @('pack', $cliProject, '--configuration', $Configuration, '--output', $packageSource, '--nologo')
+
+if (Test-GlobalToolInstalled 'Gondwana.Cli') {
     Write-Host ""
-    Write-Host "Packing Gondwana.Cli..." -ForegroundColor Cyan
-    Invoke-Cmd dotnet @('pack', $cliProject, '--configuration', $Configuration, '--output', $packageSource, '--nologo')
+    Write-Host "Uninstalling existing global Gondwana.Cli..." -ForegroundColor Cyan
+    Invoke-Cmd dotnet @('tool', 'uninstall', '--global', 'Gondwana.Cli')
+}
 
-    if (Test-GlobalToolInstalled 'Gondwana.Cli') {
-        Write-Host ""
-        Write-Host "Uninstalling existing global Gondwana.Cli..." -ForegroundColor Cyan
-        Invoke-Cmd dotnet @('tool', 'uninstall', '--global', 'Gondwana.Cli')
-    }
+Write-Host ""
+Write-Host "Installing Gondwana.Cli from local package feed..." -ForegroundColor Cyan
+$nugetPackagesDir = if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) { $env:NUGET_PACKAGES } else { Join-Path $HOME '.nuget' 'packages' }
+Remove-Item (Join-Path $nugetPackagesDir 'gondwana.cli') -Recurse -Force -ErrorAction SilentlyContinue
+Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--source', $packageSource, '--prerelease', '--ignore-failed-sources')
+
+$gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
+if ($null -ne $gondwanaCommand) {
+    $versionLine = ((& $gondwanaCommand.Source --version 2>&1) | Select-Object -First 1).ToString().Trim()
 
     Write-Host ""
-    Write-Host "Installing Gondwana.Cli from isolated local package feed..." -ForegroundColor Cyan
-    $env:NUGET_PACKAGES = $tempNuGetPackages
-    Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--source', $packageSource, '--prerelease', '--ignore-failed-sources', '--no-http-cache')
-
-    $gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
-    if ($null -ne $gondwanaCommand) {
-        $versionLine = ((& $gondwanaCommand.Source --version 2>&1) | Select-Object -First 1).ToString().Trim()
-
-        Write-Host ""
-        Write-Host "Reinstall succeeded!" -ForegroundColor Green
-        if (-not [string]::IsNullOrWhiteSpace($versionLine)) {
-            Write-Host "Version   : $versionLine" -ForegroundColor Green
-        }
-    } else {
-        Write-Host ""
-        Write-Host "Reinstall succeeded!" -ForegroundColor Green
-        Write-Warning "The 'gondwana' command is not available in this session yet. Open a new shell and run 'gondwana --version'."
+    Write-Host "Reinstall succeeded!" -ForegroundColor Green
+    if (-not [string]::IsNullOrWhiteSpace($versionLine)) {
+        Write-Host "Version   : $versionLine" -ForegroundColor Green
     }
-} finally {
-    if ([string]::IsNullOrWhiteSpace($previousNuGetPackages)) {
-        Remove-Item Env:NUGET_PACKAGES -ErrorAction SilentlyContinue
-    } else {
-        $env:NUGET_PACKAGES = $previousNuGetPackages
-    }
-
-    Remove-Item $tempNuGetPackages -Recurse -Force -ErrorAction SilentlyContinue
+} else {
+    Write-Host ""
+    Write-Host "Reinstall succeeded!" -ForegroundColor Green
+    Write-Warning "The 'gondwana' command is not available in this session yet. Open a new shell and run 'gondwana --version'."
 }
