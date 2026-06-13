@@ -49,6 +49,49 @@
         <Content Include="..\Spot\assets\spot_ico.png" Link="assets\spot_ico.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="..\Spot\assets\gondwana-logo-text.png" Link="assets\gondwana-logo-text.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\rohhsadotcom-knock-on-wood-02-421991.mp3" Link="assets\rohhsadotcom-knock-on-wood-02-421991.mp3">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\universfield-bubble-pop-293342.mp3" Link="assets\universfield-bubble-pop-293342.mp3">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\OFL.txt" Link="assets\OFL.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <!-- Bubble sprites (archived versions used by SpotAvalonia's individual-color sprite approach) -->
+        <Content Include="..\Spot\assets\archive\bubble-blue.png" Link="assets\bubble-blue.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-green.png" Link="assets\bubble-green.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-pink.png" Link="assets\bubble-pink.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-red.png" Link="assets\bubble-red.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-yellow.png" Link="assets\bubble-yellow.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-blue-happy.png" Link="assets\bubble-blue-happy.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-green-happy.png" Link="assets\bubble-green-happy.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-pink-happy.png" Link="assets\bubble-pink-happy.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-red-happy.png" Link="assets\bubble-red-happy.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\Spot\assets\archive\bubble-yellow-happy.png" Link="assets\bubble-yellow-happy.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <!-- Desktop-only packages -->
@@ -58,7 +101,7 @@
 
     <!-- Browser-only packages -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
-        <PackageReference Include="Avalonia.Browser" Version="11.2.1" />
+        <PackageReference Include="Avalonia.Browser" Version="11.3.13" />
         <ProjectReference Include="..\..\Gondwana.Audio.Browser\Gondwana.Audio.Browser.csproj" />
     </ItemGroup>
     <ItemGroup>

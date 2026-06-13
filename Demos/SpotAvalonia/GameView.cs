@@ -70,6 +70,7 @@ internal sealed class GameView : UserControl
         };
 
         _host.Initialize(logLevel: LogLevel.Warning);
+        _host.BeginPostSplashStartup();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
