@@ -37,9 +37,12 @@ internal sealed class AboutDialog : Window
         var spotLogoPath = Path.Combine(AppContext.BaseDirectory, "assets", "spot.png");
         if (File.Exists(spotLogoPath))
         {
+            var spotBitmap = new Bitmap(spotLogoPath);
+            Closed += (_, _) => spotBitmap.Dispose();
+
             var spotLogo = new Image
             {
-                Source              = new Bitmap(spotLogoPath),
+                Source              = spotBitmap,
                 Width               = 360,
                 Height              = 240,
                 Stretch             = Stretch.Uniform,
