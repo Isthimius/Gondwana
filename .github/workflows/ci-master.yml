@@ -31,6 +31,8 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Restore workloads
+        run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
       - name: Restore
         # /p:Configuration=Release is required so NuGet resolves RID-specific assets
         # (e.g. Spot win-x64 runtime assets) that are only available in the Release
