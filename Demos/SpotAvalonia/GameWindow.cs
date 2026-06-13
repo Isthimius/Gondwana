@@ -252,9 +252,9 @@ internal sealed class GameWindow : Window
         {
             var dialog = new NewGameDialog(_lastNewGameOptions);
             var options = await dialog.ShowDialog<NewGameOptions?>(this);
+            _lastNewGameOptions = dialog.GetCurrentOptions();
             if (options is not null)
             {
-                _lastNewGameOptions = options;
                 _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
             }
         }

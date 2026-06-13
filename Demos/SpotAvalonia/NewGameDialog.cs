@@ -286,7 +286,7 @@ internal sealed class NewGameDialog : Window
         }
     }
 
-    private void StartButton_Click(object? sender, RoutedEventArgs e)
+    internal NewGameOptions GetCurrentOptions()
     {
         int playerCount = int.Parse((string)_cboPlayerCount.SelectedItem!);
         int boardWidth  = int.Parse((string)_cboWidth.SelectedItem!);
@@ -309,7 +309,12 @@ internal sealed class NewGameDialog : Window
             });
         }
 
-        Close(options);
+        return options;
+    }
+
+    private void StartButton_Click(object? sender, RoutedEventArgs e)
+    {
+        Close(GetCurrentOptions());
     }
 }
 #endif
