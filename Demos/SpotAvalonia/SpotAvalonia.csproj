@@ -9,7 +9,6 @@
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <AvaloniaSingleProject>true</AvaloniaSingleProject>
     </PropertyGroup>
 
     <!-- Define BROWSER constant when building for the browser target -->
