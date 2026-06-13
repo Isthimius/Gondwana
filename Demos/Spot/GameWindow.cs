@@ -195,7 +195,7 @@ internal partial class GameWindow : Form
 
         #region Game menu
         var gameMenu = new ToolStripMenuItem("Game");
-        var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => _gameHost.OpenNewGameDialog(_gameHost.LastNewGameOptions));
+var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => _gameHost?.OpenNewGameDialog(_gameHost?.LastNewGameOptions));
         var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => Close());
 
         gameMenu.DropDownItems.Add(newGameMenuItem);
