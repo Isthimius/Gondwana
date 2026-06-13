@@ -32,6 +32,7 @@ namespace Gondwana.Demos.SpotAvalonia;
 /// </summary>
 internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 {
+    private bool _initialGameStarted;
     private bool _handleHumanInput = false;
     private bool _showScores = true;
 
@@ -89,6 +90,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     private Gondwana.Timers.Timer? _pendingComputerMoveTimer;
 
     private static readonly Random _rng = new();
+
+    internal Action? RequestNewGameDialog { get; set; }
 
     internal SpotAvaloniaGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface)
@@ -435,6 +438,12 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
+        if (!_initialGameStarted && args.LeftButtonJustPressed)
+        {
+            RequestNewGameDialog?.Invoke();
+            return;
+        }
+
         if (!_handleHumanInput)
             return;
 
@@ -864,6 +873,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     private void OnGameStarted(SpotGame game)
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
+
+        _initialGameStarted = true;
 
         if (MusicEnabled)
         {

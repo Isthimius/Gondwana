@@ -21,6 +21,9 @@ internal sealed class GameWindow : Window
     private SpotAvaloniaGameHost? _host;
     private NewGameOptions? _lastNewGameOptions;
     private EngineConfigurationFile? _configFile;
+#if !BROWSER
+    private int _newGameDialogOpen;
+#endif
 
     private const string ConfigSection   = "spotavalonia";
     private const string KeyMusic        = "music";
@@ -154,6 +157,7 @@ internal sealed class GameWindow : Window
     {
         base.OnOpened(e);
         _host = new SpotAvaloniaGameHost(_renderSurface);
+        _host.RequestNewGameDialog = () => Dispatcher.UIThread.Post(RequestNewGameDialog);
 
         // Subscribe before InitializeAsync() so the handler fires during initialization.
         _host.Engine.InitializationComplete += () =>
@@ -241,16 +245,44 @@ internal sealed class GameWindow : Window
     private async Task OpenNewGameDialogAsync()
     {
 #if !BROWSER
-        var dialog = new NewGameDialog(_lastNewGameOptions);
-        var options = await dialog.ShowDialog<NewGameOptions?>(this);
-        if (options is not null)
+        if (System.Threading.Interlocked.CompareExchange(ref _newGameDialogOpen, 1, 0) != 0)
+            return;
+
+        try
         {
-            _lastNewGameOptions = options;
-            _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
+            var dialog = new NewGameDialog(_lastNewGameOptions);
+            var options = await dialog.ShowDialog<NewGameOptions?>(this);
+            if (options is not null)
+            {
+                _lastNewGameOptions = options;
+                _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
+            }
+        }
+        finally
+        {
+            System.Threading.Interlocked.Exchange(ref _newGameDialogOpen, 0);
         }
 #else
         await Task.CompletedTask;
 #endif
+    }
+
+    private void RequestNewGameDialog()
+    {
+        _ = OpenNewGameDialogSafeAsync();
+    }
+
+    private async Task OpenNewGameDialogSafeAsync()
+    {
+        try
+        {
+            await OpenNewGameDialogAsync();
+        }
+        catch (Exception ex)
+        {
+            Engine.Logger.LogError(ex, "Failed to open New Game dialog.");
+            await ShowErrorAsync($"Failed to open New Game dialog: {ex.Message}");
+        }
     }
 
     private async Task OpenAboutDialogAsync()
