@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
@@ -39,8 +40,11 @@ internal sealed class SpotHostCore
     private int SurfaceWidth => _ctx.SurfaceWidth;
     private int SurfaceHeight => _ctx.SurfaceHeight;
 
+    private bool _initialGameStarted = false;
     private bool _handleHumanInput = false;
+    private int _dialogOpen = 0; // 0 = not open; 1 = open/pending. Use Interlocked for thread-safe access.
     private bool _showScores = true;
+    private NewGameOptions? _lastNewGameOptions;
 
     private ParticleSurface? _particleSurface;
 
@@ -72,16 +76,6 @@ internal sealed class SpotHostCore
     private Tilesheet _spotSheetDefault = null!;
     private Tilesheet _spotSheetSelected = null!;
 
-    //private Tilesheet _blueSpot = null!;
-    //private Tilesheet _greenSpot = null!;
-    //private Tilesheet _pinkSpot = null!;
-    //private Tilesheet _redSpot = null!;
-    //private Tilesheet _yellowSpot = null!;
-    //private Tilesheet _blueSpotHappy = null!;
-    //private Tilesheet _greenSpotHappy = null!;
-    //private Tilesheet _pinkSpotHappy = null!;
-    //private Tilesheet _redSpotHappy = null!;
-    //private Tilesheet _yellowSpotHappy = null!;
     private Tilesheet _clouds = null!;
 
     private SKTypeface _font = null!;
@@ -91,6 +85,7 @@ internal sealed class SpotHostCore
     private static readonly Random _rng = new();
     private bool _startupPresentationShown = false;
 
+    public NewGameOptions? LastNewGameOptions { get => _lastNewGameOptions; }
     public bool MusicEnabled { get; private set; } = true;
     public bool SoundEffectsEnabled { get; private set; } = true;
     public bool JiggleEnabled { get; private set; } = true;
@@ -118,14 +113,18 @@ internal sealed class SpotHostCore
         _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
         _music.IsLooping = true;
 
-        //_spotSelected = gotta find it
-        //_spotDeselected = gotta find it
+        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", "assets\\universfield-bubble-pop-293342.mp3");
+        _spotSelected.Volume = 0.4f;
+
+        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", "assets\\universfield-bubble-pop-293342.mp3");
+        _spotDeselected.Volume = 0.15f;
+
         _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", "assets\\freesound_community-velcro_fast-91558.mp3");
         _drop = Engine.Managers.AudioResources.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
         _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
         _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
         _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
-        //_knock = gotta find it
+        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", "assets\\rohhsadotcom-knock-on-wood-02-421991.mp3");
 
         // load standalone video files
 
@@ -250,6 +249,38 @@ internal sealed class SpotHostCore
         }
     }
 
+public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
+{
+    if (Engine.UiDispatcher is not null && !Engine.UiDispatcher.IsOnUIThread)
+    {
+        // Atomically claim the dialog slot; bail out if one is already open/pending.
+        if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0) return;
+        Engine.UiDispatcher.Post(() => OpenNewGameDialog(newGameOptions));
+        return;
+    }
+
+    // Called directly on the UI thread (e.g. from the menu). Ensure the flag is set.
+    Interlocked.Exchange(ref _dialogOpen, 1);
+    try
+    {
+        using var dialog = new NewGameDialog(newGameOptions);
+        if (dialog.ShowDialog(Form.ActiveForm) == DialogResult.OK)
+        {
+            _lastNewGameOptions = dialog.Options;
+            var options = dialog.Options;
+            Engine.EngineDispatcher.Post(() => StartNewGame(options));
+        }
+        else
+        {
+            _lastNewGameOptions = dialog.Options;
+        }
+    }
+    finally
+    {
+        Interlocked.Exchange(ref _dialogOpen, 0);
+    }
+}
+
     #endregion public game interface
 
     #region game settings
@@ -346,6 +377,12 @@ internal sealed class SpotHostCore
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
+        if (!_initialGameStarted && args.LeftButtonJustPressed)
+        {
+            OpenNewGameDialog(_lastNewGameOptions);
+            return;
+        }
+
         if (!_handleHumanInput)
             return;
 
@@ -782,6 +819,8 @@ internal sealed class SpotHostCore
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
 
+        _initialGameStarted = true;
+
         if (MusicEnabled && !_music.IsPlaying)
             _music.Play();
 
@@ -837,7 +876,7 @@ internal sealed class SpotHostCore
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy!.Name);
 
-        if (SoundEffectsEnabled)
+        if (SoundEffectsEnabled && SpotGame.CurrentPlayer.Type == PlayerType.Human)
             _spotSelected?.Play();
 
         var sprite = cell.Sprite!;

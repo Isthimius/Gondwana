@@ -36,10 +36,10 @@ internal partial class NewGameDialog : Form
 
         BuildColorComboBox(cboColor2);
         cboColor2.SelectedIndex = 1;
-        
+
         BuildColorComboBox(cboColor3);
         cboColor3.SelectedIndex = 2;
-        
+
         BuildColorComboBox(cboColor4);
         cboColor4.SelectedIndex = 3;
 
@@ -64,9 +64,9 @@ internal partial class NewGameDialog : Form
         if (heightIndex >= 0 && heightIndex < cboHeight.Items.Count)
             cboHeight.SelectedIndex = heightIndex;
 
-        var nameBoxes   = new[] { textBox1,      textBox2,      textBox3,      textBox4      };
+        var nameBoxes = new[] { textBox1, textBox2, textBox3, textBox4 };
         var typeSelects = new[] { cboPlayerType1, cboPlayerType2, cboPlayerType3, cboPlayerType4 };
-        var colorSelects = new[] { cboColor1,     cboColor2,     cboColor3,     cboColor4     };
+        var colorSelects = new[] { cboColor1, cboColor2, cboColor3, cboColor4 };
 
         for (int i = 0; i < options.Players.Count && i < 4; i++)
         {
@@ -233,6 +233,18 @@ internal partial class NewGameDialog : Form
 
     private void cmdStart_Click(object sender, EventArgs e)
     {
+        SetNewGameOptions();
+        DialogResult = DialogResult.OK;
+    }
+
+    private void cmdCancel_Click(object sender, EventArgs e)
+    {
+        SetNewGameOptions();
+        DialogResult = DialogResult.Cancel;
+    }
+
+    private void SetNewGameOptions()
+    {
         Options = new NewGameOptions
         {
             PlayerCount = int.Parse(cboPlayerCount.Text),
@@ -255,7 +267,5 @@ internal partial class NewGameDialog : Form
                 ColorItem = colorItem
             });
         }
-
-        DialogResult = DialogResult.OK;
     }
 }

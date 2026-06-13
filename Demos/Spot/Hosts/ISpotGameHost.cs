@@ -3,17 +3,21 @@ using System.Threading.Tasks;
 using Gondwana.Demos.Spot.Game;
 using Microsoft.Extensions.Logging;
 
-namespace Gondwana.Demos.Spot;
+namespace Gondwana.Demos.Spot.Hosts;
 
 internal interface ISpotGameHost : IDisposable
 {
     Engine Engine { get; }
+
+    NewGameOptions? LastNewGameOptions { get; }
 
     void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
     Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
     void BeginPostSplashStartup();
+
+    void OpenNewGameDialog(NewGameOptions? newGameOptions = null);
 
     void SetMusicEnabled(bool enabled);
 

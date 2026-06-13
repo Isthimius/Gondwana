@@ -21,8 +21,16 @@
 
     <ItemGroup>
       <Compile Remove="assets\archive\**" />
+      <Compile Remove="Properties\**" />
       <EmbeddedResource Remove="assets\archive\**" />
+      <EmbeddedResource Remove="Properties\**" />
       <None Remove="assets\archive\**" />
+      <None Remove="Properties\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="assets\rohhsadotcom-knock-on-wood-02-421991.mp3" />
+      <None Remove="assets\universfield-bubble-pop-293342.mp3" />
     </ItemGroup>
 
 
@@ -47,6 +55,9 @@
         </Content>
         <Content Include="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="assets\rohhsadotcom-knock-on-wood-02-421991.mp3">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -75,6 +86,9 @@
         <Content Include="assets\spot_sheet.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="assets\universfield-bubble-pop-293342.mp3">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -89,17 +103,6 @@
         <Compile Update="GameWindow.cs">
             <SubType>Form</SubType>
         </Compile>
-        <Compile Update="Properties\Resources.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Resources.resx</DependentUpon>
-        </Compile>
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Update="Properties\Resources.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <None Update="assets\OFL.txt">
