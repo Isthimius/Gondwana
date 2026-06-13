@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using Gondwana.Configuration;
 using Gondwana.WinForms.Rendering;
+using Gondwana.Demos.Spot.Hosts;
 
 namespace Gondwana.Demos.Spot;
 

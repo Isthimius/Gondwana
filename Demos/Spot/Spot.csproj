@@ -21,8 +21,11 @@
 
     <ItemGroup>
       <Compile Remove="assets\archive\**" />
+      <Compile Remove="Properties\**" />
       <EmbeddedResource Remove="assets\archive\**" />
+      <EmbeddedResource Remove="Properties\**" />
       <None Remove="assets\archive\**" />
+      <None Remove="Properties\**" />
     </ItemGroup>
 
 
@@ -94,8 +97,5 @@
       <None Update="assets\OFL.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Properties\" />
     </ItemGroup>
 </Project>

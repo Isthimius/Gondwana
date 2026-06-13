@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Gondwana.Demos.Spot.Game;
 using Microsoft.Extensions.Logging;
 
-namespace Gondwana.Demos.Spot;
+namespace Gondwana.Demos.Spot.Hosts;
 
 internal interface ISpotGameHost : IDisposable
 {
