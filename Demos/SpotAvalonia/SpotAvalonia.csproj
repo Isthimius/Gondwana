@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
+        <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' == 'true'">net8.0</TargetFrameworks>
+        <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' != 'true'">net8.0;net8.0-browser</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
         <IsPackable>false</IsPackable>

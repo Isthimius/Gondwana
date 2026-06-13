@@ -6,7 +6,8 @@
             net8.0         — desktop (Windows, macOS, Linux) via Avalonia.Desktop
             net8.0-browser — WASM via Avalonia.Browser + Gondwana.Audio.Browser
         -->
-        <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
+        <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' == 'true'">net8.0</TargetFrameworks>
+        <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' != 'true'">net8.0;net8.0-browser</TargetFrameworks>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
