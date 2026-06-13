@@ -1082,7 +1082,9 @@ _pendingComputerMoveTimer = null;
 #endif
         }
 
+#if !BROWSER
         Engine.Instance.State.SaveToFile("savegame.json", false, true);
+#endif
     }
 
     #endregion SpotGame event handlers
