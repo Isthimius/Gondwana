@@ -911,7 +911,8 @@ _pendingComputerSelectTimer = null;
                 _pendingComputerMoveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
                 _pendingComputerMoveTimer.Tick += () =>
                 {
-                    _pendingComputerMoveTimer = null;
+_pendingComputerMoveTimer?.Dispose();
+_pendingComputerMoveTimer = null;
                     SpotGame.ExecuteMove(bestMove);
                 };
             };
