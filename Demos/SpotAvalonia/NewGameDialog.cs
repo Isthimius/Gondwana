@@ -136,7 +136,8 @@ internal sealed class NewGameDialog : Window
             rowGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(120)));
             rowGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(120)));
 
-            var nameBox = new TextBox { Text = $"Player {i + 1}", Watermark = $"Player {i + 1}" };
+            string defaultName = GameConfig.DefaultPlayerNames[i];
+            var nameBox = new TextBox { Text = defaultName, Watermark = defaultName };
             var typeCombo = new ComboBox
             {
                 ItemsSource   = new[] { "Human", "Computer" },
@@ -303,7 +304,7 @@ internal sealed class NewGameDialog : Window
             var colorItem = (ColorItem)_colorSelects[i].SelectedItem!;
             options.Players.Add(new Player
             {
-                Name      = _nameBoxes[i].Text ?? $"Player {i + 1}",
+                Name      = _nameBoxes[i].Text ?? GameConfig.DefaultPlayerNames[i],
                 Type      = _typeSelects[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
                 ColorItem = colorItem,
             });
