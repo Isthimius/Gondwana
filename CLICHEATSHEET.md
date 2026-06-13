@@ -32,31 +32,17 @@ After installation the `gondwana` command is available in any terminal.
 
 | Command | Description |
 |---|---|
-| `gondwana help` | Show a summary of all available commands. |
-| `gondwana doctor` | Validate your local Gondwana development environment. Pass `--fix` to auto-fix issues. |
-| `gondwana info` | Show information about the Gondwana project in the current directory. |
-| `gondwana assets <subcommand>` | Pack, inspect, and extract Gondwana asset files. |
-| `gondwana pack <source> <output>` | Pack a directory of files into an asset bundle (shorthand for `gondwana assets pack`). |
-| `gondwana new <subcommand>` | Scaffold a new Gondwana project. |
-| `gondwana templates <subcommand>` | Manage Gondwana `dotnet new` templates. |
-| `gondwana run` | Run the desktop build of the project in the current directory. |
-| `gondwana run wasm` | Build and run the project in the browser (net8.0-browser dev server). |
-| `gondwana publish <subcommand>` | Publish a Gondwana project for distribution. |
-| `gondwana deploy <subcommand>` | Deploy a Gondwana project to a distribution target. |
-
-### Table of contents
-
-- [`gondwana help`](#gondwana-help)
-- [`gondwana doctor`](#gondwana-doctor)
-- [`gondwana info`](#gondwana-info)
-- [`gondwana assets`](#gondwana-assets)
-- [`gondwana pack`](#gondwana-pack)
-- [`gondwana new`](#gondwana-new)
-- [`gondwana templates`](#gondwana-templates)
-- [`gondwana run`](#gondwana-run)
-- [`gondwana run wasm`](#gondwana-run-wasm)
-- [`gondwana publish`](#gondwana-publish)
-- [`gondwana deploy`](#gondwana-deploy)
+| [`gondwana help`](#gondwana-help) | Show a summary of all available commands. |
+| [`gondwana doctor`](#gondwana-doctor) | Validate your local Gondwana development environment. Pass `--fix` to auto-fix issues. |
+| [`gondwana info`](#gondwana-info) | Show information about the Gondwana project in the current directory. |
+| [`gondwana assets <subcommand>`](#gondwana-assets) | Pack, inspect, and extract Gondwana asset files. |
+| [`gondwana pack <source> <output>`](#gondwana-pack) | Pack a directory of files into an asset bundle (shorthand for `gondwana assets pack`). |
+| [`gondwana new <subcommand>`](#gondwana-new) | Scaffold a new Gondwana project. |
+| [`gondwana templates <subcommand>`](#gondwana-templates) | Manage Gondwana `dotnet new` templates. |
+| [`gondwana run`](#gondwana-run) | Run the desktop build of the project in the current directory. |
+| [`gondwana run wasm`](#gondwana-run-wasm) | Build and run the project in the browser (net8.0-browser dev server). |
+| [`gondwana publish <subcommand>`](#gondwana-publish) | Publish a Gondwana project for distribution. |
+| [`gondwana deploy <subcommand>`](#gondwana-deploy) | Deploy a Gondwana project to a distribution target. |
 
 ---
 
