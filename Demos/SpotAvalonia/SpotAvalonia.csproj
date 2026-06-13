@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Sdk="Microsoft.NET.Sdk.WebAssembly" Project="Sdk.props" Condition="'$(TargetFramework)' == 'net8.0-browser'" />
+
     <PropertyGroup>
         <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
         <OutputType>Exe</OutputType>
@@ -7,11 +9,15 @@
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <AvaloniaSingleProject>true</AvaloniaSingleProject>
     </PropertyGroup>
 
     <!-- Define BROWSER constant when building for the browser target -->
     <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
         <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
+        <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+        <BrowserProjectFolder>./</BrowserProjectFolder>
+        <UseAppHost>false</UseAppHost>
     </PropertyGroup>
 
     <ItemGroup>
@@ -111,13 +117,42 @@
 
     <!--
         wwwroot/ is bundled into AppBundle/ when publishing for WASM.
-        gondwana-audio.js is the Gondwana browser audio module.
+        gondwana-audio.js is supplied by the Gondwana.Audio.Browser project reference.
     -->
-    <ItemGroup>
-        <Content Include="wwwroot/**">
+    <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-browser'">
+        <Content Include="wwwroot/**" Exclude="wwwroot/gondwana-audio.js">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
+        <Content Update="wwwroot/index.html">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot/main.js">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <Target Name="WriteWasmAssetsManifest"
+            AfterTargets="Publish"
+            Condition="'$(TargetFramework)' == 'net8.0-browser'">
+        <ItemGroup>
+            <_WasmPublishedAssembly Include="@(ResolvedFileToPublish)"
+                                   Condition="'%(ResolvedFileToPublish.Extension)' == '.dll'
+                                   and !$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').Contains('/'))
+                                   and !$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').Contains('\\'))" />
+        </ItemGroup>
+
+        <PropertyGroup>
+            <_WasmAssemblyEntries>@(_WasmPublishedAssembly->'&quot;%(Filename)%(Extension)&quot;:&quot;&quot;', ',')</_WasmAssemblyEntries>
+            <_WasmAssetsManifest>{&quot;mainAssemblyName&quot;:&quot;SpotAvalonia.dll&quot;,&quot;resources&quot;:{&quot;assembly&quot;:{$(_WasmAssemblyEntries)},&quot;jsModuleNative&quot;:{&quot;dotnet.native.js&quot;:&quot;&quot;},&quot;jsModuleRuntime&quot;:{&quot;dotnet.runtime.js&quot;:&quot;&quot;},&quot;wasmNative&quot;:{&quot;dotnet.native.wasm&quot;:&quot;&quot;},&quot;icu&quot;:{&quot;icudt.dat&quot;:&quot;&quot;,&quot;icudt_CJK.dat&quot;:&quot;&quot;,&quot;icudt_EFIGS.dat&quot;:&quot;&quot;,&quot;icudt_hybrid.dat&quot;:&quot;&quot;,&quot;icudt_no_CJK.dat&quot;:&quot;&quot;}}}</_WasmAssetsManifest>
+        </PropertyGroup>
+
+        <WriteLinesToFile File="$(PublishDir)wwwroot/wasm-assets.json"
+                          Lines="$(_WasmAssetsManifest)"
+                          Overwrite="true" />
+    </Target>
 
     <ItemGroup>
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
@@ -125,5 +160,7 @@
         <ProjectReference Include="..\..\Gondwana.Avalonia.Hosting\Gondwana.Avalonia.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
+
+    <Import Sdk="Microsoft.NET.Sdk.WebAssembly" Project="Sdk.targets" Condition="'$(TargetFramework)' == 'net8.0-browser'" />
 
 </Project>

@@ -136,6 +136,24 @@ internal static class ProjectHelper
     {
         var projectDir = Path.GetDirectoryName(csprojPath)!;
 
+        // 0. Browser publish layout: serve the publish root and open /wwwroot/index.html
+        var browserPublishDir = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "browser-wasm", "publish");
+        if (Directory.Exists(browserPublishDir)
+            && File.Exists(Path.Combine(browserPublishDir, "dotnet.js"))
+            && File.Exists(Path.Combine(browserPublishDir, "wwwroot", "index.html")))
+        {
+            return browserPublishDir;
+        }
+
+        // 0b. Browser build layout: serve the build output root and open /wwwroot/index.html
+        var buildDir = Path.Combine(projectDir, "bin", configuration, "net8.0-browser");
+        if (Directory.Exists(buildDir)
+            && File.Exists(Path.Combine(buildDir, "dotnet.js"))
+            && File.Exists(Path.Combine(buildDir, "wwwroot", "index.html")))
+        {
+            return buildDir;
+        }
+
         // 1. Classic AppBundle layout
         var appBundle = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "browser-wasm", "AppBundle");
         if (Directory.Exists(appBundle) && File.Exists(Path.Combine(appBundle, "index.html")))

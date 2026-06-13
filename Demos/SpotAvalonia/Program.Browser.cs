@@ -18,7 +18,7 @@ internal static partial class Program
     private static async Task Main(string[] args)
     {
         // Import the Gondwana audio JS module so BrowserAudioManager can be used.
-        await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+        await JSHost.ImportAsync("gondwana-audio", "./wwwroot/gondwana-audio.js");
         await BuildAvaloniaApp().StartBrowserAppAsync("out");
     }
 }
