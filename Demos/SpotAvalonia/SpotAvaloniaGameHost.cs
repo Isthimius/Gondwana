@@ -157,19 +157,19 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
         // selected sprites
         _blueSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("blueSpotHappy", "assets/bubble-blue-happy.png");
-        _blueSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _blueSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _greenSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("greenSpotHappy", "assets/bubble-green-happy.png");
-        _greenSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _greenSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _pinkSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("pinkSpotHappy", "assets/bubble-pink-happy.png");
-        _pinkSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _pinkSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _redSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("redSpotHappy", "assets/bubble-red-happy.png");
-        _redSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _redSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _yellowSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("yellowSpotHappy", "assets/bubble-yellow-happy.png");
-        _yellowSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _yellowSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _clouds = TilesheetRegistry.Instance.LoadFromImageFile("clouds", "assets/clouds.png");
     }
