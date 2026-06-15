@@ -119,8 +119,16 @@ internal sealed class RunWasmCommand : Command<RunWasmCommand.Settings>
         AnsiConsole.MarkupLine("[green]Starting local server. Press Ctrl+C to stop.[/]");
         var serveArgs = new List<string>
         {
-            "serve", "-d", outputDirectory, "--open-browser",
+            "serve", "-d", outputDirectory,
         };
+
+        var rootIndex = Path.Combine(outputDirectory, "index.html");
+        var nestedIndex = Path.Combine(outputDirectory, "wwwroot", "index.html");
+        serveArgs.Add(File.Exists(rootIndex)
+            ? "--open-browser"
+            : File.Exists(nestedIndex)
+                ? "--open-browser:/wwwroot/index.html"
+                : "--open-browser");
 
         return ProcessHelper.RunLive("dotnet", serveArgs);
     }
