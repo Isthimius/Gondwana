@@ -4,6 +4,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Gondwana.Rendering.Backbuffers;
 
@@ -29,10 +30,20 @@ public sealed class BitmapBackbuffer : BackbufferBase
     /// </summary>
     /// <param name="width">The initial width of the backbuffer in pixels.</param>
     /// <param name="height">The initial height of the backbuffer in pixels.</param>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(BitmapBackbuffer))]
     public BitmapBackbuffer(int width, int height) : base(width, height)
     {
-        CreateSurface(width, height);
+        Console.WriteLine($"BitmapBackbuffer constructor called: {width}x{height}");
+        // TEMPORARILY DISABLED for testing
+        // CreateSurface(width, height);
     }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="BitmapBackbuffer"/> with the specified dimensions.
+    /// This method exists to support reflection-based instantiation in browser/WASM scenarios.
+    /// </summary>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(BitmapBackbuffer))]
+    public static BitmapBackbuffer Create(int width, int height) => new BitmapBackbuffer(width, height);
 
     /// <summary>
     /// Requests a resize of the backbuffer to the specified dimensions.

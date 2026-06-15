@@ -80,9 +80,9 @@ if (Test-GlobalToolInstalled 'Gondwana.Cli') {
 
 Write-Host ""
 Write-Host "Installing Gondwana.Cli from local package feed..." -ForegroundColor Cyan
-$nugetPackagesDir = if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) { $env:NUGET_PACKAGES } else { Join-Path $HOME '.nuget' 'packages' }
+$nugetPackagesDir = if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) { $env:NUGET_PACKAGES } else { Join-Path (Join-Path $HOME '.nuget') 'packages' }
 Remove-Item (Join-Path $nugetPackagesDir 'gondwana.cli') -Recurse -Force -ErrorAction SilentlyContinue
-Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--source', $packageSource, '--prerelease', '--ignore-failed-sources')
+Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--add-source', $packageSource, '--prerelease', '--ignore-failed-sources')
 
 $gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
 if ($null -ne $gondwanaCommand) {

@@ -111,10 +111,33 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (w <= 0 || h <= 0)
             throw new InvalidOperationException("RenderSurfaceAdapter has non-positive dimensions.");
 
-        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
+        _backbuffer = CreateBackbuffer(w, h);
         Backbuffer.BeginFrame();
 
         Backbuffer.SizeChanged += (w, h) => Scene.FullRefreshNeeded = true;
+    }
+
+    private static TBackbuffer CreateBackbuffer(int width, int height)
+    {
+        var typeName = typeof(TBackbuffer).FullName;
+        Console.WriteLine($"CreateBackbuffer called for type: {typeName}, dimensions: {width}x{height}");
+
+        // Use explicit type checking instead of reflection to avoid trimming issues in browser/WASM
+        if (typeof(TBackbuffer) == typeof(Backbuffers.BitmapBackbuffer))
+        {
+            Console.WriteLine("Using explicit BitmapBackbuffer constructor");
+            return (TBackbuffer)(object)new Backbuffers.BitmapBackbuffer(width, height);
+        }
+
+        if (typeof(TBackbuffer) == typeof(Backbuffers.GpuBackbuffer))
+        {
+            Console.WriteLine("Using explicit GpuBackbuffer constructor");
+            return (TBackbuffer)(object)new Backbuffers.GpuBackbuffer(width, height);
+        }
+
+        // Fallback to Activator for any other backbuffer types
+        Console.WriteLine("Falling back to Activator.CreateInstance");
+        return (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), width, height)!;
     }
 
     /// <summary>
