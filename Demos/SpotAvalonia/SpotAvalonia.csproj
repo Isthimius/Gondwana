@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' == 'true'">net8.0</TargetFrameworks>
@@ -10,12 +10,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
-    <!-- Define BROWSER constant when building for the browser target -->
+    <!-- Define BROWSER constant and configure for browser target -->
     <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
         <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
         <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-        <BrowserProjectFolder>./</BrowserProjectFolder>
-        <UseAppHost>false</UseAppHost>
     </PropertyGroup>
 
     <ItemGroup>
@@ -110,21 +108,31 @@
         <PackageReference Include="HarfBuzzSharp.NativeAssets.WebAssembly" Version="8.3.1.1" />
         <ProjectReference Include="..\..\Gondwana.Audio.Browser\Gondwana.Audio.Browser.csproj" />
     </ItemGroup>
+    
     <ItemGroup>
       <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
       <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
     </ItemGroup>
 
-    <!--
-        gondwana-audio.js is provided by the Gondwana.Audio.Browser project reference.
-        The Avalonia Browser SDK strips the wwwroot/ prefix when publishing content items,
-        so the file ends up at the publish root and is reachable as ./gondwana-audio.js.
-    -->
     <ItemGroup>
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
         <ProjectReference Include="..\..\Gondwana.Avalonia.Hosting\Gondwana.Avalonia.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <!-- Browser wwwroot content -->
+    <ItemGroup>
+        <Content Include="wwwroot\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <!-- Browser content - copy index.html to wwwroot without subdirectories -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
+        <Content Include="wwwroot\index.html">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>
