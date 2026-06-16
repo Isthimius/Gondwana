@@ -1,7 +1,7 @@
-﻿using Gondwana.Blazor.Rendering;
+using Gondwana.Blazor;
+using Gondwana.Blazor.Rendering;
 using Gondwana.Hosting;
 using Gondwana.Rendering;
-
 namespace Gondwana.Blazor.Hosting;
 
 /// <summary>
