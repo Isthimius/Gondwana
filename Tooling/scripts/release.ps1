@@ -36,6 +36,14 @@ $ProjectChangelogGroups = @(
         IncludePaths = @("Gondwana.Avalonia.Hosting/**/*")
     },
     [pscustomobject]@{
+        Name         = "Gondwana.Blazor"
+        IncludePaths = @("Gondwana.Blazor/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Gondwana.Blazor.Hosting"
+        IncludePaths = @("Gondwana.Blazor.Hosting/**/*")
+    },
+    [pscustomobject]@{
         Name         = "Gondwana.Hosting"
         IncludePaths = @("Gondwana.Hosting/**/*")
     },

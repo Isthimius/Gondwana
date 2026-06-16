@@ -67,6 +67,8 @@ $DefaultProjects = @(
     "Gondwana.Audio.Midi",
     "Gondwana.Avalonia",
     "Gondwana.Avalonia.Hosting",
+    "Gondwana.Blazor",
+    "Gondwana.Blazor.Hosting",
     "Gondwana.Hosting",
     "Gondwana.Input.SDL2",
     "Gondwana.Video",
