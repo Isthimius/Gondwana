@@ -10,10 +10,23 @@
  */
 export function putImageData(canvas, width, height, data) {
     if (!canvas) return;
-    if (canvas.width !== width) canvas.width = width;
-    if (canvas.height !== height) canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const imageData = new ImageData(new Uint8ClampedArray(data), width, height);
+
+    const state = canvas.__gondwana ??= {};
+
+    if (state.w !== width || state.h !== height) {
+        canvas.width = width;
+        canvas.height = height;
+
+        state.ctx = canvas.getContext('2d');
+        state.imageData = state.ctx ? state.ctx.createImageData(width, height) : null;
+        state.w = width;
+        state.h = height;
+    }
+
+    const ctx = state.ctx;
+    const imageData = state.imageData;
+    if (!ctx || !imageData) return;
+
+    imageData.data.set(data);
     ctx.putImageData(imageData, 0, 0);
 }
