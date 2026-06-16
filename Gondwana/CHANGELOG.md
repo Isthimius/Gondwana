@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.3 - June 16, 2026
+
+
+
+## Fixed
+- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix gondwana run wasm
+
+
+
+## Other Changes
+- Hotfix for Spot serialization runtime error; also working version bump
+- Adding option to EngineState serialization to either include TilesheetDefinitions in save file, or as individual gts files.
+
+
+
+
 # v2.4.2 - June 11, 2026
 
 

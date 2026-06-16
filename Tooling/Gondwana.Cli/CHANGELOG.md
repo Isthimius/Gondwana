@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.3 - June 16, 2026
+
+
+
+## Fixed
+- Fix gondwana run wasm serving directory listing instead of game (Avalonia Browser 11.x)
+- Restore SpotAvalonia desktop splash and about dialog
+
+
+
+
 # v2.4.2 - June 11, 2026
 
 

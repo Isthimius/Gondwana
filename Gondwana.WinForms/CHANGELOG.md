@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.3 - June 16, 2026
+
+
+
+## Added
+- Add missing sounds and improve New Game dialog
+
+
+
+
 # v2.4.2 - June 11, 2026
 
 

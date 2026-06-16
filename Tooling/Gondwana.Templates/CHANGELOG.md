@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.3 - June 16, 2026
+
+
+
+## Fixed
+- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix gondwana run wasm
+- Restore SpotAvalonia desktop splash and about dialog
+
+
+
+
 # v2.4.2 - June 11, 2026
 
 

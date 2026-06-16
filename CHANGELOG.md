@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file.
 
+# [v2.4.3] - 2026-06-16
+
+## Gondwana
+
+### Fixed
+- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix gondwana run wasm
+
+
+
+### Other Changes
+- Hotfix for Spot serialization runtime error; also working version bump
+- Adding option to EngineState serialization to either include TilesheetDefinitions in save file, or as individual gts files.
+
+## Gondwana.Avalonia.Hosting
+
+### Fixed
+- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix gondwana run wasm
+
+## Gondwana.Blazor
+
+### Fixed
+- Restore SpotAvalonia desktop splash and about dialog
+
+## Gondwana.Blazor.Hosting
+
+### Fixed
+- Restore SpotAvalonia desktop splash and about dialog
+
+## Gondwana.WinForms
+
+### Added
+- Add missing sounds and improve New Game dialog
+
+## Tooling / Gondwana.Cli
+
+### Fixed
+- Fix gondwana run wasm serving directory listing instead of game (Avalonia Browser 11.x)
+- Restore SpotAvalonia desktop splash and about dialog
+
+## Tooling / Gondwana.Templates
+
+### Fixed
+- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix gondwana run wasm
+- Restore SpotAvalonia desktop splash and about dialog
+
+## Build / Repository
+
+### Fixed
+- Restore required .NET workloads in CI (master)
+- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix gondwana run wasm
+- Restore SpotAvalonia desktop splash and about dialog
+
+
+
+### Other Changes
+- Hotfix for Spot serialization runtime error; also working version bump
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.4.2...v2.4.3
+
 # [v2.4.2] - 2026-06-11
 
 ## Gondwana
@@ -408,7 +467,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 ### Other Changes
 * fix(release): use REST API to merge release PR, bypassing required-review branch protection by @Copilot in https://github.com/Isthimius/Gondwana/pull/64
 * Add Gondwana.Cli .NET global tool by @Copilot in https://github.com/Isthimius/Gondwana/pull/65
-* docs: update README for v2.1.0ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“v2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
+* docs: update README for v2.1.0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œv2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
 * Add gondwana-avalonia dotnet new template and CLI command by @Copilot in https://github.com/Isthimius/Gondwana/pull/67
 * Add `gondwana new avalonia` to CLI docs and fix doctor template check by @Copilot in https://github.com/Isthimius/Gondwana/pull/68
 * docs: Add missing `gondwana new avalonia` command to CLICHEATSHEET by @Copilot in https://github.com/Isthimius/Gondwana/pull/69
@@ -430,7 +489,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 * fix: YAML parse error in release.yml due to unindented bash heredoc by @Copilot in https://github.com/Isthimius/Gondwana/pull/58
 * feat: add Gondwana.Avalonia and Gondwana.Avalonia.Hosting by @Copilot in https://github.com/Isthimius/Gondwana/pull/54
 * feat: add `dotnet new gondwana-winforms` template package by @Copilot in https://github.com/Isthimius/Gondwana/pull/56
-* feat: add Gondwana.Studio ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
+* feat: add Gondwana.Studio ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
 
 
 **Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.1.2...v2.2.0
@@ -499,7 +558,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
   - Improved save/load behavior
   - Fallback lookup by base name
 - Added **Font asset type** and introduced a centralized **FontManager**
-- Renamed audio API (`LoadFromEngineResourceFile` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ `LoadFromEngineAssetsFile`)
+- Renamed audio API (`LoadFromEngineResourceFile` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ `LoadFromEngineAssetsFile`)
 
 ## Serialization & Data Handling
 - Adjusted serialization behavior for:

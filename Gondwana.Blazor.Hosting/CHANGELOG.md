@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.4.3 - June 16, 2026
+
+
+
+## Fixed
+- Restore SpotAvalonia desktop splash and about dialog
+
+
+
+
 # v2.5.0 - June 16, 2026
 
 
