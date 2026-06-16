@@ -8,6 +8,12 @@ gondwana-avalonia:
       - 'Gondwana.Avalonia/**'
       - 'Gondwana.Avalonia.Hosting/**'
 
+gondwana-blazor:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Gondwana.Blazor/**'
+      - 'Gondwana.Blazor.Hosting/**'
+
 gondwana-winforms:
   - changed-files:
     - any-glob-to-any-file:
