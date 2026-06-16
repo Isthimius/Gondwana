@@ -134,7 +134,7 @@ internal sealed class GameWindow : Window
         return menu;
     }
 
-    protected override void OnOpened(EventArgs e)
+    protected override async void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
         _host = new SpotAvaloniaGameHost(_renderSurface);
@@ -152,7 +152,7 @@ internal sealed class GameWindow : Window
             });
         };
 
-        _host.Initialize(logLevel: LogLevel.Warning);
+        await _host.InitializeAsync(logLevel: LogLevel.Warning);
     }
 
     protected override void OnClosed(EventArgs e)

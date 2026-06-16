@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using Avalonia.Input;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Hosting;
 using Gondwana.Input.Keyboard;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
@@ -72,31 +74,43 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     {
     }
 
+    private static string GetAssetPath(string fileName)
+        => Path.Combine(AppContext.BaseDirectory, "assets", fileName);
+
     #region AvaloniaGameHost overrides
+
+    protected override SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
+    {
+        var splash = SplashScreen.TryCreate(host, GetAssetPath("gondwana-logo-text.png"));
+        if (splash != null)
+            splash.HoldSec = 3f;
+
+        return splash;
+    }
 
     protected override void LoadAssets()
     {
         // load standalone audio files
-        _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
+        _music = Engine.Managers.AudioResources.LoadFromFile("music", GetAssetPath("sounovamusic-puzzle-amp-casual-game-music-460543.mp3"));
         _music.IsLooping = true;
 
-        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", "assets\\universfield-bubble-pop-293342.mp3");
+        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
         _spotSelected.Volume = 0.4f;
 
-        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", "assets\\universfield-bubble-pop-293342.mp3");
+        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
         _spotDeselected.Volume = 0.15f;
 
-        _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", "assets\\freesound_community-velcro_fast-91558.mp3");
-        _drop = Engine.Managers.AudioResources.LoadFromFile("drop", "assets\\freesound_community-water-drip-45622.mp3");
-        _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", "assets\\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
-        _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets\\freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
-        _bump = Engine.Managers.AudioResources.LoadFromFile("bump", "assets\\freesound_community-bump-7-92964.mp3");
-        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", "assets\\rohhsadotcom-knock-on-wood-02-421991.mp3");
+        _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", GetAssetPath("freesound_community-velcro_fast-91558.mp3"));
+        _drop = Engine.Managers.AudioResources.LoadFromFile("drop", GetAssetPath("freesound_community-water-drip-45622.mp3"));
+        _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", GetAssetPath("peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3"));
+        _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", GetAssetPath("freesound_community-080047_lose_funny_retro_video-game-80925.mp3"));
+        _bump = Engine.Managers.AudioResources.LoadFromFile("bump", GetAssetPath("freesound_community-bump-7-92964.mp3"));
+        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", GetAssetPath("rohhsadotcom-knock-on-wood-02-421991.mp3"));
 
         // load standalone video files
 
         // load standalone font files
-        _font = Engine.Managers.Fonts.LoadFromFile("main", "assets\\ArchitectsDaughter-Regular.ttf");
+        _font = Engine.Managers.Fonts.LoadFromFile("main", GetAssetPath("ArchitectsDaughter-Regular.ttf"));
 
         // load standalone cursor files
     }
@@ -104,16 +118,16 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     protected override void LoadTilesheets()
     {
         // splash logo
-        var splash = TilesheetRegistry.Instance.LoadFromImageFile("splash", "assets\\spot.png");
+        var splash = TilesheetRegistry.Instance.LoadFromImageFile("splash", GetAssetPath("spot.png"));
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        _spotSheetDefault = TilesheetRegistry.Instance.LoadFromImageFile("spots", "assets\\spot_defaults.png");
+        _spotSheetDefault = TilesheetRegistry.Instance.LoadFromImageFile("spots", GetAssetPath("spot_defaults.png"));
         _spotSheetDefault.DefaultRegion.TileSize = new Size(93, 96);
 
-        _spotSheetSelected = TilesheetRegistry.Instance.LoadFromImageFile("selected", "assets\\spot_selected.png");
+        _spotSheetSelected = TilesheetRegistry.Instance.LoadFromImageFile("selected", GetAssetPath("spot_selected.png"));
         _spotSheetSelected.DefaultRegion.TileSize = new Size(64, 64);
 
-        _clouds = TilesheetRegistry.Instance.LoadFromImageFile("clouds", "assets\\clouds.png");
+        _clouds = TilesheetRegistry.Instance.LoadFromImageFile("clouds", GetAssetPath("clouds.png"));
     }
 
     protected override Scene CreateInitialScene()

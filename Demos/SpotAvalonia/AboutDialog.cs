@@ -16,6 +16,7 @@ namespace Gondwana.Demos.SpotAvalonia;
 internal sealed class AboutDialog : Window
 {
     private const string REPO_URL = "https://github.com/isthimius/gondwana";
+    private static readonly FontFamily ArchitectsDaughterFontFamily = TryCreateArchitectsDaughterFontFamily();
 
     public AboutDialog()
     {
@@ -63,17 +64,12 @@ internal sealed class AboutDialog : Window
         }
 
         // Description text
-        var fontPath = Path.Combine(AppContext.BaseDirectory, "assets", "ArchitectsDaughter-Regular.ttf");
-        var fontFamily = File.Exists(fontPath)
-            ? new FontFamily($"avares://SpotAvalonia/assets/ArchitectsDaughter-Regular.ttf#Architects Daughter")
-            : FontFamily.Default;
-
         var description = new TextBlock
         {
             Text = "Built with Gondwana Game Engine",
             FontSize = 16,
             FontWeight = FontWeight.Bold,
-            FontFamily = fontFamily,
+            FontFamily = ArchitectsDaughterFontFamily,
             Foreground = Brushes.White,
             TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 10, 0, 15)
@@ -125,5 +121,17 @@ internal sealed class AboutDialog : Window
         mainPanel.Children.Add(okButton);
 
         Content = mainPanel;
+    }
+
+    private static FontFamily TryCreateArchitectsDaughterFontFamily()
+    {
+        try
+        {
+            return new FontFamily("avares://SpotAvalonia/assets/ArchitectsDaughter-Regular.ttf#Architects Daughter");
+        }
+        catch
+        {
+            return FontFamily.Default;
+        }
     }
 }

@@ -40,6 +40,7 @@
       <None Remove="assets\universfield-bubble-pop-293342.mp3" />
     </ItemGroup>
     <ItemGroup>
+      <AvaloniaResource Include="assets\ArchitectsDaughter-Regular.ttf" />
       <Content Include="assets\ArchitectsDaughter-Regular.ttf">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
