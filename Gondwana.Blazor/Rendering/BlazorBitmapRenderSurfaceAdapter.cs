@@ -40,11 +40,19 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
     /// <param name="destRect">The destination rectangle on the render surface.</param>
     public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
-        if (_disposed) return;
+        if (_disposed)
+        {
+            bufferImage.Dispose();
+            return;
+        }
 
         var w = bufferImage.Width;
         var h = bufferImage.Height;
-        if (w <= 0 || h <= 0) return;
+        if (w <= 0 || h <= 0)
+        {
+            bufferImage.Dispose();
+            return;
+        }
 
         var needed = w * h * 4;
         if (_pixelBuffer == null || _pixelBuffer.Length != needed)
