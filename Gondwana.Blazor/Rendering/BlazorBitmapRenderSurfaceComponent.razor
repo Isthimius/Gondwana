@@ -4,7 +4,8 @@
 
 <canvas @ref="_canvasRef"
         tabindex="0"
-        style="width: 100%; height: 100%; display: block; outline: none;"
+        style="@_canvasStyle"
+        @attributes="_canvasAttributes"
         @onkeydown="HandleKeyDown"
         @onkeydown:preventDefault
         @onkeyup="HandleKeyUp"
@@ -19,3 +20,31 @@
         @ontouchend="HandleTouchEnd"
         @ontouchcancel="HandleTouchCancel">
 </canvas>
+
+@code {
+    private const string DefaultCanvasStyle = "width: 100%; height: 100%; display: block; outline: none;";
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object>? _canvasAttributes;
+    private string _canvasStyle = DefaultCanvasStyle;
+
+    protected override void OnParametersSet()
+    {
+        if (AdditionalAttributes is null)
+        {
+            _canvasAttributes = null;
+            _canvasStyle = DefaultCanvasStyle;
+            return;
+        }
+
+        _canvasStyle = DefaultCanvasStyle;
+        if (AdditionalAttributes.TryGetValue("style", out var styleObj) && styleObj is not null)
+            _canvasStyle = $"{DefaultCanvasStyle} {styleObj}";
+
+        var dict = new Dictionary<string, object>(AdditionalAttributes, StringComparer.OrdinalIgnoreCase);
+        dict.Remove("style");
+        _canvasAttributes = dict;
+    }
+}
