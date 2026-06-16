@@ -21,7 +21,7 @@ Git                  OK  git version 2.47.0.windows.2
 .NET SDK             OK  10.0.201
 nbgv                 OK  3.9.50
 Gondwana CLI         OK  1.2.0
-Gondwana Templates   OK  Gondwana.Templates 1.2.0 (gondwana-winforms, gondwana-avalonia, gondwana-wasm)
+Gondwana Templates   OK  Gondwana.Templates 1.2.0 (gondwana-winforms, gondwana-avalonia, gondwana-blazor)
 wasm-tools           OK  10.0.300
 git-cliff            OK  git-cliff 2.10.0
 butler               OK  v17.0.0, built on ...
@@ -37,7 +37,7 @@ Checks performed:
 - .NET SDK installed and version
 - `nbgv` local tool restored
 - Gondwana CLI global tool installed
-- Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) installed
+- Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-blazor`) installed
 - `wasm-tools` .NET workload installed
 - `git-cliff` installed
 - `butler` installed (from `PATH` or the default user install directory used by `gondwana doctor --fix`)
@@ -107,56 +107,56 @@ gondwana new avalonia MyGame -b gpu
 
 ---
 
-### `gondwana new wasm <name>`
+### `gondwana new blazor <name>`
 
-Scaffolds a new Gondwana project that targets **both desktop and browser/WASM** using Avalonia.
+Scaffolds a new Gondwana project that targets **browser/WASM** using Blazor WebAssembly.
 
 ```bash
-gondwana new wasm MyGame
+gondwana new blazor MyGame
 ```
 
-Equivalent to `dotnet new gondwana-wasm -n MyGame`.
+Equivalent to `dotnet new gondwana-blazor -n MyGame`.
 If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `MyGame.sln` and adds the project.
 
 An optional `--output` / `-o` flag can be used to specify the output directory:
 
 ```bash
-gondwana new wasm MyGame -o ./projects/MyGame
+gondwana new blazor MyGame -o ./projects/MyGame
 ```
 
 The scaffolded project contains:
 
-- `MyGame.csproj` — multi-targets `net8.0` (desktop) and `net8.0-browser` (WASM), with `Avalonia.Desktop` / `Avalonia.Browser` and `Gondwana.Audio.Browser` applied conditionally
-- `Program.cs` / `Program.Browser.cs` — split entry points; the browser version imports the audio JS module and starts Avalonia in single-view mode
-- `App.cs` — handles both `IClassicDesktopStyleApplicationLifetime` and `ISingleViewApplicationLifetime`
-- `GameWindow.cs` — desktop `Window` (compiled only for `net8.0`)
-- `GameView.cs` — browser `UserControl` (compiled for both targets, used only in WASM)
-- `GameRenderSurface.cs` — thin subclass of `AvaloniaBitmapRenderSurfaceControl`
-- `MyGameHost.cs` — `AvaloniaGameHost` subclass with `// TODO` stubs that show both desktop and browser audio patterns
+- `MyGame.csproj` — `Microsoft.NET.Sdk.BlazorWebAssembly` targeting `net8.0`, with `Gondwana.Blazor` and `Microsoft.AspNetCore.Components.WebAssembly` package references
+- `Program.cs` — standard Blazor WebAssembly entry point
+- `App.razor` — root Blazor app component
+- `Pages/Index.razor` — the default page hosting the game canvas
+- `GameRenderSurface.razor` — thin Blazor component wrapping `BlazorBitmapRenderSurfaceControl`
+- `MyGameHost.cs` — `BlazorGameHost` subclass with `// TODO` stubs for assets, scene setup, and input
+- `wwwroot/index.html` — the Blazor host page
 - `wwwroot/gondwana-audio.js` — the Gondwana browser audio module
 - `assets/README.txt` — instructions for adding sprites and other assets
 
-After scaffolding, run on desktop:
+After scaffolding, start the Blazor dev server:
 
 ```bash
 cd MyGame
 dotnet run
 ```
 
-Build and publish for WASM:
+Build and publish for deployment:
 
 ```bash
 cd MyGame
 dotnet workload install wasm-tools   # one-time per machine
-dotnet publish -f net8.0-browser -c Release
-# Output: bin/Release/net8.0-browser/browser-wasm/AppBundle/
+dotnet publish -c Release
+# Output: bin/Release/net8.0/publish/wwwroot/
 ```
 
 Or use the CLI shorthand:
 
 ```bash
 cd MyGame
-gondwana publish wasm
+gondwana publish blazor
 ```
 
 ---
@@ -182,14 +182,14 @@ Equivalent to `dotnet run --project <path> -c <configuration>`.
 
 ---
 
-### `gondwana run wasm`
+### `gondwana run blazor`
 
-Publishes the project for WASM and serves it in the browser using `dotnet-serve`.
+Installs the `wasm-tools` workload (unless `--skip-workload`) then starts the Blazor WebAssembly dev server, opening the game in the default browser.
 
 ```bash
-gondwana run wasm
-gondwana run wasm --project ./src/MyGame
-gondwana run wasm --skip-workload
+gondwana run blazor
+gondwana run blazor --project ./src/MyGame
+gondwana run blazor --skip-workload
 ```
 
 | Option | Short | Default | Description |
@@ -198,19 +198,19 @@ gondwana run wasm --skip-workload
 | `--configuration <name>` | `-c` | `Debug` | Build configuration. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
 
-Publishes the project for `net8.0-browser` and serves the resulting `AppBundle` via `dotnet-serve`, opening the game in the default browser. `dotnet-serve` is installed automatically as a global tool if it is not already present.
+Equivalent to `dotnet run --project <path> -c <configuration>` for a `Microsoft.NET.Sdk.BlazorWebAssembly` project. The Blazor dev server starts automatically and opens the game in the browser at the address printed to the console.
 
 ---
 
-### `gondwana publish wasm`
+### `gondwana publish blazor`
 
-Builds and publishes the project in the current directory (or `--project`) for `net8.0-browser`.
+Builds and publishes the Blazor WebAssembly project in the current directory (or `--project`).
 
 ```bash
-gondwana publish wasm
-gondwana publish wasm --project ./src/MyGame
-gondwana publish wasm --skip-workload
-gondwana publish wasm --configuration Debug
+gondwana publish blazor
+gondwana publish blazor --project ./src/MyGame
+gondwana publish blazor --skip-workload
+gondwana publish blazor --configuration Debug
 ```
 
 | Option | Short | Default | Description |
@@ -219,14 +219,14 @@ gondwana publish wasm --configuration Debug
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
 
-The output AppBundle is placed at `bin/<Configuration>/net8.0-browser/browser-wasm/AppBundle/`.
-On success, the command also prints the AppBundle path as a plain line (machine-friendly).
-If publish succeeds but AppBundle cannot be located, a warning is printed.
+The published output is placed at `bin/<Configuration>/net8.0/publish/wwwroot/`.
+On success, the command prints the wwwroot path as a plain line (machine-friendly).
+If publish succeeds but the wwwroot output cannot be located, a warning is printed.
 
 For packaging or deployment, see also:
-- `gondwana publish itch` — create an itch.io-ready zip from the AppBundle
-- `gondwana deploy` / `gondwana deploy wasm` — copy/rsync the AppBundle to a static web host
-- `gondwana deploy itch` — upload the AppBundle to itch.io via `butler`
+- `gondwana publish itch` — create an itch.io-ready zip from the publish output
+- `gondwana deploy` / `gondwana deploy blazor` — copy/rsync the wwwroot to a static web host
+- `gondwana deploy itch` — upload the publish output to itch.io via `butler`
 
 ---
 
@@ -296,10 +296,10 @@ gondwana deploy --skip-build --web-root ./dist/MyGame
 |---|---|---|---|
 | `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
-| `--web-root <path>` | | *(none)* | Local destination directory for the AppBundle contents. |
+| `--web-root <path>` | | *(none)* | Local destination directory for the publish wwwroot contents. |
 | `--remote-host <user@host>` | | *(none)* | SSH remote, used with `--remote-path`. |
 | `--remote-path <path>` | | *(none)* | Remote destination path, used with `--remote-host`. |
-| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing AppBundle. |
+| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing publish output. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
 
 Specify either `--web-root` or `--remote-host` + `--remote-path`, not both.
@@ -317,7 +317,7 @@ On success, the command prints the deploy destination as a plain line (machine-f
 
 ---
 
-### `gondwana deploy wasm`
+### `gondwana deploy blazor`
 
 Alias of `gondwana deploy`; same behavior and options.
 
