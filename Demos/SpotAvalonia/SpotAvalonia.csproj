@@ -122,11 +122,6 @@
     </ItemGroup>
 
     <!-- Browser wwwroot content -->
-    <ItemGroup>
-        <Content Include="wwwroot\**">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 
     <!-- Browser content - copy index.html to wwwroot without subdirectories -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
