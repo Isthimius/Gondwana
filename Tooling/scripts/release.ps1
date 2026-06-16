@@ -221,7 +221,8 @@ if (-not $PreviewOnly -and $currentBranch -ne $RequiredBranch) {
 }
 
 # Refresh remote branch/tag state before checks.
-Invoke-Git @("fetch", "--prune", "--tags", "--force", $Remote)
+$fetchArgs = "fetch", "--prune", "--tags", "--force", $Remote
+Invoke-Git -Args $fetchArgs
 
 # Ensure local branch is not behind remote (skipped in -PreviewOnly mode).
 if (-not $PreviewOnly) {
