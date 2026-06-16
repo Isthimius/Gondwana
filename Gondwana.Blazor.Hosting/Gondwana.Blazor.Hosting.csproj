@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Blazor.Hosting</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.Blazor.Hosting</PackageId>
+        <Title>Gondwana Blazor Hosting</Title>
+        <Description>Blazor hosting implementation for the Gondwana Game Engine, providing a Blazor-specific game host for application startup, lifecycle management, and adapter integration in ASP.NET Blazor WebAssembly applications.</Description>
+        <PackageTags>game-engine gamedev csharp dotnet blazor wasm webassembly hosting bootstrap lifecycle game-loop initialization engine-host</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>gondwana-logo.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
+        <ProjectReference Include="..\Gondwana.Blazor\Gondwana.Blazor.csproj" />
+        <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+    </ItemGroup>
+
+</Project>

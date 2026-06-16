@@ -1,0 +1,16 @@
+@page "/"
+@using Microsoft.Extensions.Logging
+@inject ILogger<Index> Logger
+
+<PageTitle>MyGame</PageTitle>
+
+<div class="game-container">
+    <GameRenderSurface />
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Logger.LogInformation("Game page initialized");
+    }
+}

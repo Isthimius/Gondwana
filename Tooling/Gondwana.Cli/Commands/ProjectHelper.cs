@@ -70,7 +70,7 @@ internal static class ProjectHelper
             if (requestedFramework.Contains("browser", StringComparison.OrdinalIgnoreCase))
             {
                 framework = null;
-                error = "The browser target should be published with 'gondwana publish wasm'.";
+                error = "The browser target should be published with 'gondwana publish blazor'.";
                 return false;
             }
 
@@ -86,7 +86,7 @@ internal static class ProjectHelper
         if (desktopFrameworks.Length == 0)
         {
             framework = null;
-            error = "No desktop target framework found. Use 'gondwana publish wasm' for browser-only projects.";
+            error = "No desktop target framework found. Use 'gondwana publish blazor' for browser-only projects.";
             return false;
         }
 
@@ -274,5 +274,27 @@ internal static class ProjectHelper
             Directory.CreateDirectory(Path.GetDirectoryName(destinationFile)!);
             File.Copy(sourceFile, destinationFile, overwrite: true);
         }
+    }
+
+    internal static string? TryLocateBlazorPublishRoot(string csprojPath, string configuration)
+    {
+        var projectDir = Path.GetDirectoryName(csprojPath)!;
+        var wwwroot = Path.Combine(projectDir, "bin", configuration, "net8.0", "publish", "wwwroot");
+        
+        if (Directory.Exists(wwwroot) && File.Exists(Path.Combine(wwwroot, "index.html")))
+            return wwwroot;
+        
+        // Fallback: search for wwwroot directories
+        var binDir = Path.Combine(projectDir, "bin");
+        if (Directory.Exists(binDir))
+        {
+            var candidates = Directory.GetDirectories(binDir, "wwwroot", SearchOption.AllDirectories)
+                                      .Where(d => File.Exists(Path.Combine(d, "index.html")))
+                                      .ToList();
+            if (candidates.Count > 0)
+                return candidates[0];
+        }
+        
+        return null;
     }
 }

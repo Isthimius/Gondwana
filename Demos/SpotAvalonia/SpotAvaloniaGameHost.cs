@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using Avalonia.Input;
 using Microsoft.Extensions.Logging;
@@ -14,14 +15,12 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Hosting;
 using Gondwana.Input.Keyboard;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.Demos.SpotAvalonia.Game;
-#if BROWSER
-using Gondwana.Audio.Browser;
-#endif
 
 namespace Gondwana.Demos.SpotAvalonia;
 
@@ -32,7 +31,6 @@ namespace Gondwana.Demos.SpotAvalonia;
 /// </summary>
 internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 {
-    private bool _initialGameStarted;
     private bool _handleHumanInput = false;
     private bool _showScores = true;
 
@@ -49,129 +47,87 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     internal TextBlock? _gameMessageText;
     internal DirectRectangle? _gameMessageRectangle;
 
-    // Audio is skipped on browser targets where it is unsupported.
-    internal AudioResource? _music;
-    internal AudioResource? _velcro;
-    internal AudioResource? _drop;
-    internal AudioResource? _gameWin;
-    internal AudioResource? _gameLose;
-    internal AudioResource? _bump;
-    internal AudioResource? _knock;
-    internal AudioResource? _spotSelected;
-    internal AudioResource? _spotDeselected;
+    private AudioResource _music = null!;
 
-#if BROWSER
-    // Browser/WASM audio (HTML5 Audio API via BrowserAudioManager).
-    private BrowserAudioPlayer? _browserMusic;
-    private BrowserAudioPlayer? _browserVelcro;
-    private BrowserAudioPlayer? _browserDrop;
-    private BrowserAudioPlayer? _browserGameWin;
-    private BrowserAudioPlayer? _browserGameLose;
-    private BrowserAudioPlayer? _browserBump;
-#endif
+    private AudioResource? _spotSelected;
+    private AudioResource? _spotDeselected;
+    private AudioResource _velcro = null!;
+    private AudioResource _drop = null!;
+    private AudioResource _gameWin = null!;
+    private AudioResource _gameLose = null!;
+    private AudioResource _bump = null!;
+    private AudioResource? _knock;
 
-    internal Tilesheet _blueSpot = null!;
-    internal Tilesheet _greenSpot = null!;
-    internal Tilesheet _pinkSpot = null!;
-    internal Tilesheet _redSpot = null!;
-    internal Tilesheet _yellowSpot = null!;
-    internal Tilesheet _blueSpotHappy = null!;
-    internal Tilesheet _greenSpotHappy = null!;
-    internal Tilesheet _pinkSpotHappy = null!;
-    internal Tilesheet _redSpotHappy = null!;
-    internal Tilesheet _yellowSpotHappy = null!;
+    private Tilesheet _spotSheetDefault = null!;
+    private Tilesheet _spotSheetSelected = null!;
+
     internal Tilesheet _clouds = null!;
 
     internal SKTypeface _font = null!;
 
     internal SpotGame SpotGame { get; private set; } = null!;
 
-    private Gondwana.Timers.Timer? _pendingComputerSelectTimer;
-    private Gondwana.Timers.Timer? _pendingComputerMoveTimer;
-
     private static readonly Random _rng = new();
-
-    internal Action? RequestNewGameDialog { get; set; }
 
     internal SpotAvaloniaGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface)
     {
     }
 
+    private static string GetAssetPath(string fileName)
+        => Path.Combine(AppContext.BaseDirectory, "assets", fileName);
+
     #region AvaloniaGameHost overrides
+
+    protected override SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
+    {
+        var splash = SplashScreen.TryCreate(host, GetAssetPath("gondwana-logo-text.png"));
+        if (splash != null)
+            splash.HoldSec = 3f;
+
+        return splash;
+    }
 
     protected override void LoadAssets()
     {
-#if BROWSER
-        // Browser/WASM: use BrowserAudioManager (HTML5 Audio API via JS interop).
-        // Audio paths use forward slashes and are relative to AppBundle/index.html.
-        var browserAudio = Engine.GetBrowserAudioManager();
-        _browserMusic    = browserAudio.Load("music",    "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3",             volume: 0.2f, loop: true);
-        _browserVelcro   = browserAudio.Load("velcro",   "assets/freesound_community-velcro_fast-91558.mp3");
-        _browserDrop     = browserAudio.Load("drop",     "assets/freesound_community-water-drip-45622.mp3");
-        _browserGameWin  = browserAudio.Load("gameWin",  "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
-        _browserGameLose = browserAudio.Load("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
-        _browserBump     = browserAudio.Load("bump",     "assets/freesound_community-bump-7-92964.mp3");
-#else
-        // Desktop: use the NAudio-based AudioResourceManager.
-        _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
+        // load standalone audio files
+        _music = Engine.Managers.AudioResources.LoadFromFile("music", GetAssetPath("sounovamusic-puzzle-amp-casual-game-music-460543.mp3"));
         _music.IsLooping = true;
 
-        _velcro   = Engine.Managers.AudioResources.LoadFromFile("velcro",   "assets/freesound_community-velcro_fast-91558.mp3");
-        _drop     = Engine.Managers.AudioResources.LoadFromFile("drop",     "assets/freesound_community-water-drip-45622.mp3");
-        _gameWin  = Engine.Managers.AudioResources.LoadFromFile("gameWin",  "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
-        _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
-        _bump     = Engine.Managers.AudioResources.LoadFromFile("bump",     "assets/freesound_community-bump-7-92964.mp3");
-
-        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", "assets/universfield-bubble-pop-293342.mp3");
+        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
         _spotSelected.Volume = 0.4f;
-        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", "assets/universfield-bubble-pop-293342.mp3");
-        _spotDeselected.Volume = 0.15f;
-        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", "assets/rohhsadotcom-knock-on-wood-02-421991.mp3");
-#endif
 
-        _font = Engine.Managers.Fonts.LoadFromFile("main", "assets/ArchitectsDaughter-Regular.ttf");
+        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
+        _spotDeselected.Volume = 0.15f;
+
+        _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", GetAssetPath("freesound_community-velcro_fast-91558.mp3"));
+        _drop = Engine.Managers.AudioResources.LoadFromFile("drop", GetAssetPath("freesound_community-water-drip-45622.mp3"));
+        _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", GetAssetPath("peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3"));
+        _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", GetAssetPath("freesound_community-080047_lose_funny_retro_video-game-80925.mp3"));
+        _bump = Engine.Managers.AudioResources.LoadFromFile("bump", GetAssetPath("freesound_community-bump-7-92964.mp3"));
+        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", GetAssetPath("rohhsadotcom-knock-on-wood-02-421991.mp3"));
+
+        // load standalone video files
+
+        // load standalone font files
+        _font = Engine.Managers.Fonts.LoadFromFile("main", GetAssetPath("ArchitectsDaughter-Regular.ttf"));
+
+        // load standalone cursor files
     }
 
     protected override void LoadTilesheets()
     {
         // splash logo
-        var splash = TilesheetRegistry.Instance.LoadFromImageFile("splash", "assets/spot.png");
+        var splash = TilesheetRegistry.Instance.LoadFromImageFile("splash", GetAssetPath("spot.png"));
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        // default sprites
-        _blueSpot = TilesheetRegistry.Instance.LoadFromImageFile("blueSpot", "assets/bubble-blue.png");
-        _blueSpot.DefaultRegion.TileSize = new Size(92, 96);
+        _spotSheetDefault = TilesheetRegistry.Instance.LoadFromImageFile("spots", GetAssetPath("spot_defaults.png"));
+        _spotSheetDefault.DefaultRegion.TileSize = new Size(93, 96);
 
-        _greenSpot = TilesheetRegistry.Instance.LoadFromImageFile("greenSpot", "assets/bubble-green.png");
-        _greenSpot.DefaultRegion.TileSize = new Size(92, 96);
+        _spotSheetSelected = TilesheetRegistry.Instance.LoadFromImageFile("selected", GetAssetPath("spot_selected.png"));
+        _spotSheetSelected.DefaultRegion.TileSize = new Size(64, 64);
 
-        _pinkSpot = TilesheetRegistry.Instance.LoadFromImageFile("pinkSpot", "assets/bubble-pink.png");
-        _pinkSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        _redSpot = TilesheetRegistry.Instance.LoadFromImageFile("redSpot", "assets/bubble-red.png");
-        _redSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        _yellowSpot = TilesheetRegistry.Instance.LoadFromImageFile("yellowSpot", "assets/bubble-yellow.png");
-        _yellowSpot.DefaultRegion.TileSize = new Size(92, 96);
-
-        // selected sprites
-        _blueSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("blueSpotHappy", "assets/bubble-blue-happy.png");
-        _blueSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        _greenSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("greenSpotHappy", "assets/bubble-green-happy.png");
-        _greenSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        _pinkSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("pinkSpotHappy", "assets/bubble-pink-happy.png");
-        _pinkSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        _redSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("redSpotHappy", "assets/bubble-red-happy.png");
-        _redSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        _yellowSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("yellowSpotHappy", "assets/bubble-yellow-happy.png");
-        _yellowSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
-
-        _clouds = TilesheetRegistry.Instance.LoadFromImageFile("clouds", "assets/clouds.png");
+        _clouds = TilesheetRegistry.Instance.LoadFromImageFile("clouds", GetAssetPath("clouds.png"));
     }
 
     protected override Scene CreateInitialScene()
@@ -203,33 +159,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     protected override void CreateDirectDrawings()
     {
-        // Startup presentation (splash logo + particle surface) is deferred to
-        // BeginPostSplashStartup(), which is called after InitializeAsync() completes.
-    }
-
-    protected override void OnStartEngine()
-    {
-        // Music and startup visuals begin in BeginPostSplashStartup() after the splash.
-    }
-
-#if !BROWSER
-    protected override Gondwana.Hosting.SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
-    {
-        var imagePath = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
-        var splash = Gondwana.Hosting.SplashScreen.TryCreate(host, imagePath);
-        if (splash != null)
-            splash.HoldSec = 3f;
-        return splash;
-    }
-#endif
-
-    /// <summary>
-    /// Creates the startup presentation (spot particles, splash logo, and music) that is shown
-    /// after the splash screen completes. Called by <see cref="GameWindow"/> on desktop targets
-    /// and by <see cref="GameView"/> on browser/WASM targets immediately after initialization.
-    /// </summary>
-    internal void BeginPostSplashStartup()
-    {
         Tilesheet tilesheet;
 
         if (TilesheetRegistry.Instance.TryGet("splash", out tilesheet))
@@ -252,22 +181,14 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         particleSurface.CullingMarginX = 1300f;
         particleSurface.ZOrder = 50;
         particleSurface.Emitters.Add(GetSpots(769, 769));
+    }
 
-        if (MusicEnabled)
+    protected override void OnStartEngine()
+    {
+        if (_music != null)
         {
-#if BROWSER
-            if (_browserMusic != null)
-            {
-                _browserMusic.Volume = 0.2f;
-                _browserMusic.Play();
-            }
-#else
-            if (_music != null)
-            {
-                _music.Volume = 0.2f;
-                _music.Play();
-            }
-#endif
+            _music.Volume = 0.2f;
+            _music.Play();
         }
     }
 
@@ -312,19 +233,11 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
         if (enabled)
         {
-#if BROWSER
-            _browserMusic?.Play(fromStart: false);
-#else
             _music?.Play();
-#endif
         }
         else
         {
-#if BROWSER
-            _browserMusic?.Stop();
-#else
             _music?.Stop();
-#endif
         }
     }
 
@@ -362,7 +275,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         else
         {
             _particleSurface?.Dispose();
-            _particleSurface = null;
         }
     }
 
@@ -371,12 +283,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     /// </summary>
     internal void StartNewGame(NewGameOptions options)
     {
-        _pendingComputerSelectTimer?.Dispose();
-        _pendingComputerSelectTimer = null;
-        _pendingComputerMoveTimer?.Dispose();
-        _pendingComputerMoveTimer = null;
-
-        _particleSurface = null;    // pre-null before ClearAll() disposes it, to avoid a double-dispose via AddClouds()
         Engine.Managers.DirectDrawings.ClearAll();
         Engine.Managers.Sprites.Clear();
         Scene.RemoveAllLayers();
@@ -388,11 +294,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         Scene.AddLayer(newGameResult.Field);
         Scene.AddLayer(newGameResult.BackgroundField);
 
-#if BROWSER
-        if (_browserMusic != null) _browserMusic.Volume = 0.1f;
-#else
-        if (_music != null) _music.Volume = 0.1f;
-#endif
+        if (_music != null)
+            _music.Volume = 0.1f;
 
         CreateTextBlockFields();
     }
@@ -438,12 +341,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
-        if (!_initialGameStarted && args.LeftButtonJustPressed)
-        {
-            RequestNewGameDialog?.Invoke();
-            return;
-        }
-
         if (!_handleHumanInput)
             return;
 
@@ -480,31 +377,30 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
             switch (player.ColorItem.Name)
             {
                 case "Blue":
-                    player.DefaultFrame = new Frame(_blueSpot, 0, 0);
-                    player.ActiveFrame = new Frame(_blueSpotHappy, 0, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 0);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 0, 0);
                     break;
                 case "Green":
-                    player.DefaultFrame = new Frame(_greenSpot, 0, 0);
-                    player.ActiveFrame = new Frame(_greenSpotHappy, 0, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 1);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 1, 0);
                     break;
                 case "Violet":
-                    player.DefaultFrame = new Frame(_pinkSpot, 0, 0);
-                    player.ActiveFrame = new Frame(_pinkSpotHappy, 0, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 2);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 2, 0);
                     break;
                 case "Red":
-                    player.DefaultFrame = new Frame(_redSpot, 0, 0);
-                    player.ActiveFrame = new Frame(_redSpotHappy, 0, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 3);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 3, 0);
                     break;
                 case "Yellow":
-                    player.DefaultFrame = new Frame(_yellowSpot, 0, 0);
-                    player.ActiveFrame = new Frame(_yellowSpotHappy, 0, 0);
+                    player.DefaultFrame = new Frame(_spotSheetDefault, 0, 4);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 4, 0);
                     break;
                 default:
                     break;
             }
         }
     }
-
     private void StartPlayerJiggle(Player player)
     {
         if (JiggleEnabled)
@@ -573,9 +469,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     private void AddClouds()
     {
-        if (SpotGame.Players.Length == 0)
-            return;
-
         _particleSurface?.Dispose();
         _particleSurface = null;
         _particleSurface = new ParticleSurface(
@@ -874,16 +767,10 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
 
-        _initialGameStarted = true;
-
         if (MusicEnabled)
         {
-#if BROWSER
-            _browserMusic?.Play(fromStart: false);
-#else
             if (_music != null && !_music.IsPlaying)
                 _music.Play();
-#endif
         }
 
         if (CloudsEnabled)
@@ -904,26 +791,21 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
             _handleHumanInput = false;
 
             // start a short timer before the computer moves
-            _pendingComputerSelectTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
-            _pendingComputerSelectTimer.Tick += () =>
+            var timer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+            timer.Tick += () =>
             {
-_pendingComputerSelectTimer?.Dispose();
-_pendingComputerSelectTimer = null;
+                timer.Dispose();
 
                 var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
-                if (moves.Count == 0)
-                    return;
-
                 var bestMove = moves[_rng.Next(moves.Count)];
 
                 SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
 
                 // small delay before executing move to allow for selection animation
-                _pendingComputerMoveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
-                _pendingComputerMoveTimer.Tick += () =>
+                var moveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+                moveTimer.Tick += () =>
                 {
-_pendingComputerMoveTimer?.Dispose();
-_pendingComputerMoveTimer = null;
+                    moveTimer.Dispose();
                     SpotGame.ExecuteMove(bestMove);
                 };
             };
@@ -940,9 +822,6 @@ _pendingComputerMoveTimer = null;
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy!.Name);
 
-        if (SoundEffectsEnabled && SpotGame.CurrentPlayer.Type == PlayerType.Human)
-            _spotSelected?.Play();
-
         var sprite = cell.Sprite!;
         sprite.StopJiggle();
         sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
@@ -952,9 +831,6 @@ _pendingComputerMoveTimer = null;
     private void OnSpotDeselected(SpotGameField.Cell cell)
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) deselected", cell.X, cell.Y);
-
-        if (SoundEffectsEnabled)
-            _spotDeselected?.Play();
 
         var sprite = cell.Sprite!;
         sprite.StartJiggle(loop: true);
@@ -968,31 +844,20 @@ _pendingComputerMoveTimer = null;
 
         if (SoundEffectsEnabled)
         {
-#if BROWSER
-            _browserBump?.Play();
-#else
             _bump?.Play();
-#endif
         }
     }
 
     private void OnInvalidMoveAttempted(SpotGameField.Cell cell)
     {
         Engine.Logger.LogDebug("Invalid move attempted to cell ({0}, {1})", cell.X, cell.Y);
-
-        if (SoundEffectsEnabled)
-            _knock?.Play();
     }
 
     private void OnPlayerMoveStarted(PlayerMovement movement)
     {
         if (movement.MovementType == MovementType.Jump && SoundEffectsEnabled)
         {
-#if BROWSER
-            _browserVelcro?.Play();
-#else
             _velcro?.Play();
-#endif
         }
     }
 
@@ -1006,11 +871,7 @@ _pendingComputerMoveTimer = null;
 
         if (SoundEffectsEnabled)
         {
-#if BROWSER
-            _browserDrop?.Play();
-#else
             _drop?.Play();
-#endif
         }
 
         if (_showScores)
@@ -1071,15 +932,6 @@ _pendingComputerMoveTimer = null;
 
         if (MusicEnabled)
         {
-#if BROWSER
-            if (_browserMusic != null) _browserMusic.Volume = 0.05f;
-
-            var isHumanWinner = winnersWithScores.Any(winner => winner.Type == PlayerType.Human);
-            if (isHumanWinner)
-                _browserGameWin?.Play();
-            else
-                _browserGameLose?.Play();
-#else
             if (_music != null)
             {
                 _music.Volume = 0.05f;
@@ -1090,12 +942,7 @@ _pendingComputerMoveTimer = null;
                 else
                     _gameLose?.Play();
             }
-#endif
         }
-
-#if !BROWSER
-        Engine.Instance.State.SaveToFile("savegame.json", false, true);
-#endif
     }
 
     #endregion SpotGame event handlers

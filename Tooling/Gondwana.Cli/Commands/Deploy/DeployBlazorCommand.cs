@@ -5,7 +5,7 @@ using Spectre.Console.Cli;
 
 namespace Gondwana.Cli.Commands.Deploy;
 
-internal sealed class DeployWasmCommand : Command<DeployWasmCommand.Settings>
+internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings>
 {
     public sealed class Settings : CommandSettings
     {
@@ -19,7 +19,7 @@ internal sealed class DeployWasmCommand : Command<DeployWasmCommand.Settings>
         public string Configuration { get; init; } = "Release";
 
         [CommandOption("--web-root")]
-        [Description("Local destination directory for the AppBundle contents.")]
+        [Description("Local destination directory for the published wwwroot contents.")]
         public string? WebRoot { get; init; }
 
         [CommandOption("--remote-host")]
@@ -31,7 +31,7 @@ internal sealed class DeployWasmCommand : Command<DeployWasmCommand.Settings>
         public string? RemotePath { get; init; }
 
         [CommandOption("--skip-build")]
-        [Description("Skip the dotnet publish step and deploy an existing AppBundle.")]
+        [Description("Skip the dotnet publish step and deploy an existing publish output.")]
         public bool SkipBuild { get; init; }
 
         [CommandOption("--skip-workload")]
@@ -64,11 +64,15 @@ internal sealed class DeployWasmCommand : Command<DeployWasmCommand.Settings>
             return 1;
         }
 
-        if (!ProjectHelper.TargetsFramework(csprojPath!, "net8.0-browser"))
+        // Check if this is a Blazor WebAssembly project
+        var csprojContent = File.ReadAllText(csprojPath!);
+        if (!csprojContent.Contains("Microsoft.NET.Sdk.BlazorWebAssembly", StringComparison.OrdinalIgnoreCase))
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to target [bold]net8.0-browser[/].");
-            AnsiConsole.MarkupLine("[dim]Make sure <TargetFrameworks> includes 'net8.0-browser'. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
+            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\". Continuing anyway...[/]");
         }
+
+        string? publishOutput = null;
 
         if (!settings.SkipBuild)
         {
@@ -83,9 +87,10 @@ internal sealed class DeployWasmCommand : Command<DeployWasmCommand.Settings>
                 }
             }
 
+            AnsiConsole.MarkupLine($"[dim]Publishing Blazor WebAssembly project in {settings.Configuration} configuration...[/]");
             var publishExit = ProcessHelper.RunLive("dotnet", new[]
             {
-                "publish", csprojPath!, "-f", "net8.0-browser", "-c", settings.Configuration
+                "publish", csprojPath!, "-c", settings.Configuration
             });
 
             if (publishExit != 0)
@@ -95,54 +100,52 @@ internal sealed class DeployWasmCommand : Command<DeployWasmCommand.Settings>
             }
         }
 
-        var appBundle = ProjectHelper.TryLocateAppBundle(csprojPath!, settings.Configuration);
-        if (appBundle is null || !Directory.Exists(appBundle))
+        // Locate the wwwroot directory
+        publishOutput = ProjectHelper.TryLocateBlazorPublishRoot(csprojPath!, settings.Configuration);
+        if (publishOutput is null || !Directory.Exists(publishOutput))
         {
-            AnsiConsole.MarkupLine("[red]AppBundle not found.[/]");
-            AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the project for net8.0-browser first.[/]");
+            AnsiConsole.MarkupLine("[red]Blazor publish output not found.[/]");
+            AnsiConsole.MarkupLine("[dim]Expected wwwroot in: bin/<configuration>/net8.0/publish/wwwroot/[/]");
             return 1;
         }
 
+        AnsiConsole.MarkupLine($"[dim]Publish output: {Markup.Escape(publishOutput)}[/]");
+
         if (useLocal)
         {
-            var webRoot = Path.GetFullPath(settings.WebRoot!);
-            AnsiConsole.MarkupLine($"Deploying to local web root [bold]{Markup.Escape(webRoot)}[/]...");
-            ProjectHelper.MirrorDirectory(appBundle, webRoot);
-            AnsiConsole.MarkupLine("[green]Deployed to local web root![/]");
-            Console.WriteLine(webRoot);
+            AnsiConsole.MarkupLine($"[dim]Copying to local web root: {Markup.Escape(settings.WebRoot!)}[/]");
+            Directory.CreateDirectory(settings.WebRoot!);
+
+            foreach (var file in Directory.GetFiles(publishOutput, "*", SearchOption.AllDirectories))
+            {
+                var relativePath = Path.GetRelativePath(publishOutput, file);
+                var destPath = Path.Combine(settings.WebRoot!, relativePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
+                File.Copy(file, destPath, overwrite: true);
+            }
+
+            AnsiConsole.MarkupLine("[green]Deployment complete.[/]");
+            return 0;
         }
-        else
+
+        if (useRemote)
         {
-            var rsyncCheck = ProcessHelper.Run("rsync", "--version", out var rsyncExit);
-            if (rsyncExit != 0)
+            AnsiConsole.MarkupLine($"[dim]Deploying to {Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/]");
+            var scpArgs = $"-r \"{publishOutput}/*\" {settings.RemoteHost}:{settings.RemotePath}";
+            var scpExit = ProcessHelper.RunLive("scp", scpArgs);
+
+            if (scpExit == 0)
             {
-                AnsiConsole.MarkupLine("[red]rsync not found on PATH.[/]");
-                return 1;
+                AnsiConsole.MarkupLine("[green]Deployment complete.[/]");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[red]scp deployment failed.[/]");
             }
 
-            AnsiConsole.MarkupLine($"Deploying to [bold]{Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/] via rsync...");
-            var deployExit = ProcessHelper.RunLive("rsync", new[]
-            {
-                "-avz",
-                "--delete",
-                appBundle + Path.DirectorySeparatorChar,
-                $"{settings.RemoteHost}:{settings.RemotePath!.TrimEnd('/', '\\')}/"
-            });
-
-            if (deployExit != 0)
-            {
-                AnsiConsole.MarkupLine("[red]rsync failed.[/]");
-                return deployExit;
-            }
-
-            AnsiConsole.MarkupLine("[green]Remote deploy succeeded![/]");
-            Console.WriteLine($"{settings.RemoteHost}:{settings.RemotePath!.TrimEnd('/', '\\')}/");
+            return scpExit;
         }
 
-        AnsiConsole.MarkupLine("[yellow]Reminder:[/] your web server must send these headers for .NET WASM threading to work:");
-        AnsiConsole.MarkupLine("[dim]  Cross-Origin-Opener-Policy:   same-origin[/]");
-        AnsiConsole.MarkupLine("[dim]  Cross-Origin-Embedder-Policy: require-corp[/]");
-        AnsiConsole.MarkupLine("[dim]The site must also be served over HTTPS.[/]");
         return 0;
     }
 }

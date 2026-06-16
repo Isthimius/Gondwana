@@ -125,11 +125,12 @@ All runtime packages are available on NuGet. Install only what your project need
 | [`Gondwana.Hosting`](https://www.nuget.org/packages/Gondwana.Hosting) | Cross-platform `GameHostBase` for structured engine startup and lifecycle. |
 | [`Gondwana.WinForms`](https://www.nuget.org/packages/Gondwana.WinForms) | WinForms rendering and input adapters (Windows). |
 | [`Gondwana.WinForms.Hosting`](https://www.nuget.org/packages/Gondwana.WinForms.Hosting) | Ready-to-use `WinFormsGameHost` for WinForms desktop games. |
-| [`Gondwana.Avalonia`](https://www.nuget.org/packages/Gondwana.Avalonia) | Avalonia rendering and input adapters (desktop, WebAssembly, Android, iOS). |
-| [`Gondwana.Avalonia.Hosting`](https://www.nuget.org/packages/Gondwana.Avalonia.Hosting) | Ready-to-use `AvaloniaGameHost` for Avalonia-based games. |
+| [`Gondwana.Avalonia`](https://www.nuget.org/packages/Gondwana.Avalonia) | Avalonia rendering and input adapters (desktop - Windows, macOS, Linux). |
+| [`Gondwana.Avalonia.Hosting`](https://www.nuget.org/packages/Gondwana.Avalonia.Hosting) | Ready-to-use `AvaloniaGameHost` for Avalonia-based desktop games. |
+| [`Gondwana.Blazor`](https://www.nuget.org/packages/Gondwana.Blazor) | Blazor WebAssembly rendering and hosting components for browser-based games. |
 | [`Gondwana.Input.SDL2`](https://www.nuget.org/packages/Gondwana.Input.SDL2) | SDL2 gamepad input (cross-platform; requires native SDL2). |
 | [`Gondwana.Audio.Midi`](https://www.nuget.org/packages/Gondwana.Audio.Midi) | MIDI audio playback and SoundFont support. |
-| [`Gondwana.Audio.Browser`](https://www.nuget.org/packages/Gondwana.Audio.Browser) | Browser/WASM audio playback via HTML5 Audio API and JavaScript interop (`net8.0-browser`). |
+| [`Gondwana.Audio.Browser`](https://www.nuget.org/packages/Gondwana.Audio.Browser) | Browser/WASM audio playback via HTML5 Audio API and JavaScript interop. |
 | [`Gondwana.Video`](https://www.nuget.org/packages/Gondwana.Video) | Experimental video playback via LibVLCSharp. |
 
 ---
@@ -138,7 +139,7 @@ All runtime packages are available on NuGet. Install only what your project need
 
 | Tool | Install | Description |
 | ---- | ------- | ----------- |
-| **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | `dotnet new gondwana-winforms` scaffold — starter WinForms project with host, window, and scene wired up. |
+| **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project scaffolds: `gondwana-winforms` (Windows desktop), `gondwana-avalonia` (cross-platform desktop), `gondwana-blazor` (browser WebAssembly). |
 | **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | `gondwana` CLI — create projects, validate your environment (`gondwana doctor`), pack and inspect asset files, and manage templates. |
 | **Gondwana.Studio** | Build from source (`Tooling/Gondwana.Studio`) | Dark-themed cross-platform Avalonia IDE with dockable windows for working with Gondwana projects. |
 

@@ -41,9 +41,9 @@ app.Configure(config =>
               .WithDescription("Create a new Avalonia Gondwana project (Windows, macOS, Linux).")
               .WithExample("new", "avalonia", "MyGame");
 
-        branch.AddCommand<NewWasmCommand>("wasm")
-              .WithDescription("Create a new Avalonia Gondwana project targeting both desktop and browser/WASM.")
-              .WithExample("new", "wasm", "MyGame");
+        branch.AddCommand<NewBlazorCommand>("blazor")
+              .WithDescription("Create a new Blazor WebAssembly Gondwana project for browser/WASM.")
+              .WithExample("new", "blazor", "MyGame");
     });
 
     config.AddBranch("templates", branch =>
@@ -71,14 +71,14 @@ app.Configure(config =>
         branch.SetDefaultCommand<PublishDesktopCommand>();
 
         branch.AddCommand<PublishItchCommand>("itch")
-              .WithDescription("Package a browser/WASM AppBundle as an itch.io-ready zip.")
+              .WithDescription("Package a browser/WASM build as an itch.io-ready zip.")
               .WithExample("publish", "itch")
               .WithExample("publish", "itch", "--project", "./src/MyGame", "--skip-build");
 
-        branch.AddCommand<PublishWasmCommand>("wasm")
-              .WithDescription("Publish a Gondwana project for browser/WASM (net8.0-browser).")
-              .WithExample("publish", "wasm")
-              .WithExample("publish", "wasm", "--project", "./src/MyGame", "--skip-workload");
+        branch.AddCommand<PublishBlazorCommand>("blazor")
+              .WithDescription("Publish a Gondwana Blazor WebAssembly project for browser deployment.")
+              .WithExample("publish", "blazor")
+              .WithExample("publish", "blazor", "--project", "./src/MyGame", "--skip-workload");
     });
 
     config.AddBranch("run", branch =>
@@ -87,48 +87,26 @@ app.Configure(config =>
 
         branch.SetDefaultCommand<RunDesktopCommand>();
 
-        branch.AddCommand<RunWasmCommand>("wasm")
-              .WithDescription("Build and run the project in the browser (net8.0-browser dev server).")
-              .WithExample("run", "wasm")
-              .WithExample("run", "wasm", "--skip-workload");
+        branch.AddCommand<RunBlazorCommand>("blazor")
+              .WithDescription("Build and run the Blazor WebAssembly project in the browser.")
+              .WithExample("run", "blazor")
+              .WithExample("run", "blazor", "--skip-workload");
     });
 
     config.AddBranch("deploy", branch =>
     {
         branch.SetDescription("Deploy a Gondwana project to a distribution target.");
 
-        branch.SetDefaultCommand<DeployWasmCommand>();
+        branch.SetDefaultCommand<DeployBlazorCommand>();
 
-        branch.AddCommand<DeployWasmCommand>("wasm")
-              .WithDescription("Deploy a browser/WASM AppBundle to a static web host.")
-              .WithExample("deploy", "--web-root", "./dist/MyGame")
-              .WithExample("deploy", "wasm", "--remote-host", "deploy@example.com", "--remote-path", "/var/www/html/mygame");
+        branch.AddCommand<DeployBlazorCommand>("blazor")
+              .WithDescription("Deploy a published Blazor WebAssembly project to a web server or local path.")
+              .WithExample("deploy", "blazor", "--web-root", "./dist")
+              .WithExample("deploy", "blazor", "--remote-host", "user@example.com", "--remote-path", "/var/www/game");
 
         branch.AddCommand<DeployItchCommand>("itch")
               .WithDescription("Deploy a browser/WASM build to itch.io via butler.")
-              .WithExample("deploy", "itch", "--itch-game", "user/mygame")
-              .WithExample("deploy", "itch", "--project", "./src/MyGame", "--itch-game", "user/mygame", "--skip-build");
-    });
-
-    config.AddBranch("assets", branch =>
-    {
-        branch.SetDescription("Pack, inspect, and extract Gondwana asset files.");
-
-        branch.AddCommand<AssetsPackCommand>("pack")
-              .WithDescription("Pack a directory of files into an asset bundle.")
-              .WithExample("assets", "pack", "./Assets", "./game.assets");
-
-        branch.AddCommand<AssetsListCommand>("list")
-              .WithDescription("List all assets in a bundle.")
-              .WithExample("assets", "list", "./game.assets");
-
-        branch.AddCommand<AssetsExtractCommand>("extract")
-              .WithDescription("Extract all assets from a bundle to a directory.")
-              .WithExample("assets", "extract", "./game.assets", "./Extracted");
-
-        branch.AddCommand<AssetsGenerateKeysCommand>("generate-keys")
-              .WithDescription("Generate a C# constants class for all asset keys in a bundle.")
-              .WithExample("assets", "generate-keys", "./game.assets");
+              .WithExample("deploy", "itch", "--user", "myuser", "--game", "mygame");
     });
 });
 

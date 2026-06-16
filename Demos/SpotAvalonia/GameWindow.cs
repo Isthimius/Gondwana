@@ -1,12 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.Media;
 using Avalonia.Threading;
-using Gondwana.Configuration;
 using Gondwana.Avalonia.Rendering;
 using Microsoft.Extensions.Logging;
 
@@ -20,16 +15,6 @@ internal sealed class GameWindow : Window
     private readonly AvaloniaBitmapRenderSurfaceControl _renderSurface = new();
     private SpotAvaloniaGameHost? _host;
     private NewGameOptions? _lastNewGameOptions;
-    private EngineConfigurationFile? _configFile;
-#if !BROWSER
-    private int _newGameDialogOpen;
-#endif
-
-    private const string ConfigSection   = "spotavalonia";
-    private const string KeyMusic        = "music";
-    private const string KeySoundEffects = "soundEffects";
-    private const string KeyJiggle       = "jiggle";
-    private const string KeyClouds       = "clouds";
 
     private MenuItem? _newGameMenuItem;
     private MenuItem? _musicMenuItem;
@@ -39,8 +24,6 @@ internal sealed class GameWindow : Window
 
     internal GameWindow()
     {
-        _configFile = EngineConfigurationFile.Load();
-
         Title     = "Spot (Avalonia)";
         Width     = 769;
         Height    = 800;   // render area (769) + menu bar
@@ -87,12 +70,11 @@ internal sealed class GameWindow : Window
         {
             Header     = "Music",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = ReadBoolSetting(KeyMusic, defaultValue: true),
+            IsChecked  = true,
         };
         _musicMenuItem.Click += (_, _) =>
         {
             var isChecked = _musicMenuItem.IsChecked;
-            PersistSetting(KeyMusic, isChecked ? "true" : "false");
             _host?.Engine.EngineDispatcher.Post(() => _host.SetMusicEnabled(isChecked));
         };
 
@@ -100,12 +82,11 @@ internal sealed class GameWindow : Window
         {
             Header     = "Sound Effects",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = ReadBoolSetting(KeySoundEffects, defaultValue: true),
+            IsChecked  = true,
         };
         _soundEffectsMenuItem.Click += (_, _) =>
         {
             var isChecked = _soundEffectsMenuItem.IsChecked;
-            PersistSetting(KeySoundEffects, isChecked ? "true" : "false");
             _host?.Engine.EngineDispatcher.Post(() => _host.SetSoundEffectsEnabled(isChecked));
         };
 
@@ -113,12 +94,11 @@ internal sealed class GameWindow : Window
         {
             Header     = "Jiggle",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = ReadBoolSetting(KeyJiggle, defaultValue: true),
+            IsChecked  = true,
         };
         _jiggleMenuItem.Click += (_, _) =>
         {
             var isChecked = _jiggleMenuItem.IsChecked;
-            PersistSetting(KeyJiggle, isChecked ? "true" : "false");
             _host?.Engine.EngineDispatcher.Post(() => _host.SetJiggleEnabled(isChecked));
         };
 
@@ -126,12 +106,11 @@ internal sealed class GameWindow : Window
         {
             Header     = "Clouds",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = ReadBoolSetting(KeyClouds, defaultValue: true),
+            IsChecked  = true,
         };
         _cloudsMenuItem.Click += (_, _) =>
         {
             var isChecked = _cloudsMenuItem.IsChecked;
-            PersistSetting(KeyClouds, isChecked ? "true" : "false");
             _host?.Engine.EngineDispatcher.Post(() => _host.SetCloudsEnabled(isChecked));
         };
 
@@ -140,10 +119,12 @@ internal sealed class GameWindow : Window
         optionsMenu.Items.Add(_jiggleMenuItem);
         optionsMenu.Items.Add(_cloudsMenuItem);
 
-        // ── Help menu ────────────────────────────────────────────────────────
-        var helpMenu   = new MenuItem { Header = "_Help" };
+        // ── Help menu ───────────────────────────────────────────────────────
+        var helpMenu = new MenuItem { Header = "_Help" };
+
         var aboutMenuItem = new MenuItem { Header = "_About" };
         aboutMenuItem.Click += async (_, _) => await OpenAboutDialogAsync();
+
         helpMenu.Items.Add(aboutMenuItem);
 
         menu.Items.Add(gameMenu);
@@ -157,9 +138,8 @@ internal sealed class GameWindow : Window
     {
         base.OnOpened(e);
         _host = new SpotAvaloniaGameHost(_renderSurface);
-        _host.RequestNewGameDialog = () => Dispatcher.UIThread.Post(RequestNewGameDialog);
 
-        // Subscribe before InitializeAsync() so the handler fires during initialization.
+        // Subscribe before Initialize() so the handler fires during initialization.
         _host.Engine.InitializationComplete += () =>
         {
             _host.Engine.Configuration.TargetFPS = 0;
@@ -172,23 +152,7 @@ internal sealed class GameWindow : Window
             });
         };
 
-        IsEnabled = false;
-        try
-        {
-            await _host.InitializeAsync(logLevel: LogLevel.Warning);
-            _host.BeginPostSplashStartup();
-            ApplyLoadedSettings();
-        }
-        catch (Exception ex)
-        {
-            await ShowErrorAsync($"Failed to initialize Spot: {ex.Message}");
-            Close();
-        }
-        finally
-        {
-            IsEnabled = true;
-            Activate();
-        }
+        await _host.InitializeAsync(logLevel: LogLevel.Warning);
     }
 
     protected override void OnClosed(EventArgs e)
@@ -198,118 +162,28 @@ internal sealed class GameWindow : Window
         base.OnClosed(e);
     }
 
-    private void ApplyLoadedSettings()
-    {
-        bool music        = ReadBoolSetting(KeyMusic,        defaultValue: true);
-        bool soundEffects = ReadBoolSetting(KeySoundEffects, defaultValue: true);
-        bool jiggle       = ReadBoolSetting(KeyJiggle,       defaultValue: true);
-        bool clouds       = ReadBoolSetting(KeyClouds,       defaultValue: true);
-
-        // Sync menu checkboxes to persisted values.
-        Dispatcher.UIThread.Post(() =>
-        {
-            if (_musicMenuItem        is not null) _musicMenuItem.IsChecked        = music;
-            if (_soundEffectsMenuItem is not null) _soundEffectsMenuItem.IsChecked = soundEffects;
-            if (_jiggleMenuItem       is not null) _jiggleMenuItem.IsChecked       = jiggle;
-            if (_cloudsMenuItem       is not null) _cloudsMenuItem.IsChecked       = clouds;
-        });
-
-        _host!.Engine.EngineDispatcher.Post(() =>
-        {
-            _host.SetMusicEnabled(music);
-            _host.SetSoundEffectsEnabled(soundEffects);
-            _host.SetJiggleEnabled(jiggle);
-            _host.SetCloudsEnabled(clouds);
-        });
-    }
-
-    private bool ReadBoolSetting(string key, bool defaultValue)
-    {
-        if (_configFile == null)
-            return defaultValue;
-        var raw = _configFile.EngineConfig.GetConfigurationValue(ConfigSection, key, defaultValue ? "true" : "false");
-        return string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private void PersistSetting(string key, string value)
-    {
-        if (_configFile == null)
-            return;
-        _configFile.EngineConfig.SetConfigurationValue(ConfigSection, key, value);
-        _configFile.Save();
-
-        if (_host != null && _host.Engine.IsInitialized)
-            _host.Engine.Configuration.SetConfigurationValue(ConfigSection, key, value);
-    }
-
-    private async Task OpenNewGameDialogAsync()
+    private async System.Threading.Tasks.Task OpenNewGameDialogAsync()
     {
 #if !BROWSER
-        if (System.Threading.Interlocked.CompareExchange(ref _newGameDialogOpen, 1, 0) != 0)
-            return;
-
-        try
+        var dialog = new NewGameDialog(_lastNewGameOptions);
+        var options = await dialog.ShowDialog<NewGameOptions?>(this);
+        if (options is not null)
         {
-            var dialog = new NewGameDialog(_lastNewGameOptions);
-            var options = await dialog.ShowDialog<NewGameOptions?>(this);
-            _lastNewGameOptions = dialog.GetCurrentOptions();
-            if (options is not null)
-            {
-                _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
-            }
-        }
-        finally
-        {
-            System.Threading.Interlocked.Exchange(ref _newGameDialogOpen, 0);
+            _lastNewGameOptions = options;
+            _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
         }
 #else
-        await Task.CompletedTask;
+        await System.Threading.Tasks.Task.CompletedTask;
 #endif
     }
 
-    private void RequestNewGameDialog()
+    private async System.Threading.Tasks.Task OpenAboutDialogAsync()
     {
-        _ = OpenNewGameDialogSafeAsync();
-    }
-
-    private async Task OpenNewGameDialogSafeAsync()
-    {
-        try
-        {
-            await OpenNewGameDialogAsync();
-        }
-        catch (Exception ex)
-        {
-            Engine.Logger.LogError(ex, "Failed to open New Game dialog.");
-            await ShowErrorAsync($"Failed to open New Game dialog: {ex.Message}");
-        }
-    }
-
-    private async Task OpenAboutDialogAsync()
-    {
+#if !BROWSER
         var dialog = new AboutDialog();
         await dialog.ShowDialog(this);
-    }
-
-    private async Task ShowErrorAsync(string message)
-    {
-        var dialog = new Window
-        {
-            Title        = "Startup Error",
-            Width        = 400,
-            Height       = 160,
-            CanResize    = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-        };
-
-        var stack = new StackPanel { Margin = new Thickness(16), Spacing = 12 };
-        stack.Children.Add(new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap });
-
-        var okButton = new Button { Content = "OK", HorizontalAlignment = HorizontalAlignment.Center };
-        okButton.Click += (_, _) => dialog.Close();
-        stack.Children.Add(okButton);
-
-        dialog.Content = stack;
-        await dialog.ShowDialog(this);
+#else
+        await System.Threading.Tasks.Task.CompletedTask;
+#endif
     }
 }

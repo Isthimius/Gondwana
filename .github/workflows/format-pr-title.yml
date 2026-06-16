@@ -71,7 +71,7 @@ jobs:
           Rules:
           - The title must follow: type(scope): short description
           - Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert
-          - Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, midi, sdl2, core
+          - Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, blazor, midi, sdl2, core
           - Title description: imperative mood, lowercase, no period, max 60 chars
           - Breaking change: append ! after scope, e.g. feat(rendering)!
           - Return ONLY this format:

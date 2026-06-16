@@ -36,6 +36,11 @@ changelog:
         - gondwana-avalonia
         - Gondwana.Avalonia
 
+    - title: Gondwana.Blazor
+      labels:
+        - gondwana-blazor
+        - Gondwana.Blazor
+
     - title: Gondwana.WinForms
       labels:
         - gondwana-winforms
