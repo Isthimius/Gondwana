@@ -15,6 +15,7 @@ namespace Gondwana.Blazor.Input.Mouse;
 public sealed class BlazorMouseAdapter : IMouseAdapter
 {
     private readonly HashSet<GondwanaMouseButton> _pressed = new();
+    private readonly object _pressedLock = new();
     private Point _currentPosition;
     private KeyboardModifierState _modifiers;
     private int _scrollDelta;
@@ -23,8 +24,14 @@ public sealed class BlazorMouseAdapter : IMouseAdapter
     public Point CurrentPosition => _currentPosition;
 
     /// <inheritdoc/>
-    public HashSet<GondwanaMouseButton> PressedButtons => _pressed;
-
+    public HashSet<GondwanaMouseButton> PressedButtons
+    {
+        get
+        {
+            lock (_pressedLock)
+                return new HashSet<GondwanaMouseButton>(_pressed);
+        }
+    }
     /// <inheritdoc/>
     public KeyboardModifierState CurrentKeyboardModifiers => _modifiers;
 
