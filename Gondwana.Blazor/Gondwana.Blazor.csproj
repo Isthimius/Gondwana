@@ -30,14 +30,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="wwwroot/**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Pack>true</Pack>
-            <PackagePath>staticwebassets/</PackagePath>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="" />
         <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
     </ItemGroup>

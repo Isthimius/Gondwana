@@ -2,8 +2,8 @@
 using System.Drawing;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Input.Touch;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
+using BrowserTouchEventArgs = Microsoft.AspNetCore.Components.Web.TouchEventArgs;
 using BrowserTouchPoint = Microsoft.AspNetCore.Components.Web.TouchPoint;
 using GondwanaTouchPoint = Gondwana.Input.Touch.TouchPoint;
 
@@ -54,7 +54,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
         Engine.Logger.LogInformation("BlazorTouchAdapter initialized.");
     }
 
-    private void OnTouchStart(TouchEventArgs e)
+    private void OnTouchStart(BrowserTouchEventArgs e)
     {
         if (_isDisposed) return;
         foreach (var t in e.ChangedTouches)
@@ -65,7 +65,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
         RebuildSnapshot();
     }
 
-    private void OnTouchMove(TouchEventArgs e)
+    private void OnTouchMove(BrowserTouchEventArgs e)
     {
         if (_isDisposed) return;
         foreach (var t in e.ChangedTouches)
@@ -77,7 +77,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
         RebuildSnapshot();
     }
 
-    private void OnTouchEnd(TouchEventArgs e)
+    private void OnTouchEnd(BrowserTouchEventArgs e)
     {
         if (_isDisposed) return;
         foreach (var t in e.ChangedTouches)
@@ -90,7 +90,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
         RebuildSnapshot();
     }
 
-    private void OnTouchCancel(TouchEventArgs e)
+    private void OnTouchCancel(BrowserTouchEventArgs e)
     {
         if (_isDisposed) return;
         foreach (var t in e.ChangedTouches)

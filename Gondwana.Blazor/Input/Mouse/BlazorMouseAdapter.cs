@@ -2,7 +2,8 @@
 using Gondwana.Blazor.Rendering;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
-using Microsoft.AspNetCore.Components.Web;
+using BrowserMouseEventArgs = Microsoft.AspNetCore.Components.Web.MouseEventArgs;
+using BrowserWheelEventArgs = Microsoft.AspNetCore.Components.Web.WheelEventArgs;
 using GondwanaMouseButton = Gondwana.Input.Mouse.MouseButton;
 
 namespace Gondwana.Blazor.Input.Mouse;
@@ -46,28 +47,28 @@ public sealed class BlazorMouseAdapter : IMouseAdapter
         component.Wheel += OnWheel;
     }
 
-    private void OnMouseDown(MouseEventArgs e)
+    private void OnMouseDown(BrowserMouseEventArgs e)
     {
         _pressed.Add(MapButton(e.Button));
         UpdatePosition(e);
     }
 
-    private void OnMouseUp(MouseEventArgs e)
+    private void OnMouseUp(BrowserMouseEventArgs e)
     {
         _pressed.Remove(MapButton(e.Button));
         UpdatePosition(e);
     }
 
-    private void OnMouseMove(MouseEventArgs e) => UpdatePosition(e);
+    private void OnMouseMove(BrowserMouseEventArgs e) => UpdatePosition(e);
 
-    private void OnWheel(WheelEventArgs e)
+    private void OnWheel(BrowserWheelEventArgs e)
     {
         // Browser DeltaY: positive = scroll down. Negate to match the convention used by other
         // Gondwana adapters (positive = scroll up / scroll away from user).
         Interlocked.Add(ref _scrollDelta, (int)(-e.DeltaY));
     }
 
-    private void UpdatePosition(MouseEventArgs e)
+    private void UpdatePosition(BrowserMouseEventArgs e)
     {
         _currentPosition = new Point((int)e.OffsetX, (int)e.OffsetY);
 
