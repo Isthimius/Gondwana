@@ -19,9 +19,6 @@ using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.Demos.SpotAvalonia.Game;
-#if BROWSER
-using Gondwana.Audio.Browser;
-#endif
 
 namespace Gondwana.Demos.SpotAvalonia;
 
@@ -60,16 +57,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     internal AudioResource? _spotSelected;
     internal AudioResource? _spotDeselected;
 
-#if BROWSER
-    // Browser/WASM audio (HTML5 Audio API via BrowserAudioManager).
-    private BrowserAudioPlayer? _browserMusic;
-    private BrowserAudioPlayer? _browserVelcro;
-    private BrowserAudioPlayer? _browserDrop;
-    private BrowserAudioPlayer? _browserGameWin;
-    private BrowserAudioPlayer? _browserGameLose;
-    private BrowserAudioPlayer? _browserBump;
-#endif
-
     internal Tilesheet _blueSpot = null!;
     internal Tilesheet _greenSpot = null!;
     internal Tilesheet _pinkSpot = null!;
@@ -102,17 +89,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     protected override void LoadAssets()
     {
-#if BROWSER
-        // Browser/WASM: use BrowserAudioManager (HTML5 Audio API via JS interop).
-        // Audio paths use forward slashes and are relative to AppBundle/index.html.
-        var browserAudio = Engine.GetBrowserAudioManager();
-        _browserMusic    = browserAudio.Load("music",    "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3",             volume: 0.2f, loop: true);
-        _browserVelcro   = browserAudio.Load("velcro",   "assets/freesound_community-velcro_fast-91558.mp3");
-        _browserDrop     = browserAudio.Load("drop",     "assets/freesound_community-water-drip-45622.mp3");
-        _browserGameWin  = browserAudio.Load("gameWin",  "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
-        _browserGameLose = browserAudio.Load("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
-        _browserBump     = browserAudio.Load("bump",     "assets/freesound_community-bump-7-92964.mp3");
-#else
         // Desktop: use the NAudio-based AudioResourceManager.
         _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
         _music.IsLooping = true;
@@ -128,7 +104,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", "assets/universfield-bubble-pop-293342.mp3");
         _spotDeselected.Volume = 0.15f;
         _knock = Engine.Managers.AudioResources.LoadFromFile("knock", "assets/rohhsadotcom-knock-on-wood-02-421991.mp3");
-#endif
 
         _font = Engine.Managers.Fonts.LoadFromFile("main", "assets/ArchitectsDaughter-Regular.ttf");
     }
@@ -212,7 +187,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         // Music and startup visuals begin in BeginPostSplashStartup() after the splash.
     }
 
-#if !BROWSER
     protected override Gondwana.Hosting.SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
         var imagePath = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
@@ -221,7 +195,6 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
             splash.HoldSec = 3f;
         return splash;
     }
-#endif
 
     /// <summary>
     /// Creates the startup presentation (spot particles, splash logo, and music) that is shown

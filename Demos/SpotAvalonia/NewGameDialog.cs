@@ -1,4 +1,3 @@
-#if !BROWSER
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
@@ -318,4 +317,3 @@ internal sealed class NewGameDialog : Window
         Close(GetCurrentOptions());
     }
 }
-#endif

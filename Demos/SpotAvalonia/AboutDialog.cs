@@ -98,9 +98,7 @@ internal sealed class AboutDialog : Window
         };
         link.PointerPressed += (_, _) =>
         {
-#if !BROWSER
             Process.Start(new ProcessStartInfo { FileName = RepoUrl, UseShellExecute = true });
-#endif
         };
         root.Children.Add(link);
 

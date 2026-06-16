@@ -21,9 +21,7 @@ internal sealed class GameWindow : Window
     private SpotAvaloniaGameHost? _host;
     private NewGameOptions? _lastNewGameOptions;
     private EngineConfigurationFile? _configFile;
-#if !BROWSER
     private int _newGameDialogOpen;
-#endif
 
     private const string ConfigSection   = "spotavalonia";
     private const string KeyMusic        = "music";
@@ -244,7 +242,6 @@ internal sealed class GameWindow : Window
 
     private async Task OpenNewGameDialogAsync()
     {
-#if !BROWSER
         if (System.Threading.Interlocked.CompareExchange(ref _newGameDialogOpen, 1, 0) != 0)
             return;
 
@@ -262,9 +259,6 @@ internal sealed class GameWindow : Window
         {
             System.Threading.Interlocked.Exchange(ref _newGameDialogOpen, 0);
         }
-#else
-        await Task.CompletedTask;
-#endif
     }
 
     private void RequestNewGameDialog()

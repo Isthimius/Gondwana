@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<linker>
-  <!-- Preserve all constructors on backbuffer types for reflection-based instantiation -->
-  <assembly fullname="Gondwana">
-	<type fullname="Gondwana.Rendering.Backbuffers.BitmapBackbuffer" preserve="all" />
-	<type fullname="Gondwana.Rendering.Backbuffers.BackbufferBase" preserve="all" />
-  </assembly>
-</linker>
