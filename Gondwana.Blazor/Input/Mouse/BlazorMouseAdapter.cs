@@ -56,13 +56,15 @@ public sealed class BlazorMouseAdapter : IMouseAdapter
 
     private void OnMouseDown(BrowserMouseEventArgs e)
     {
-        _pressed.Add(MapButton(e.Button));
+        lock (_pressedLock)
+            _pressed.Add(MapButton(e.Button));
         UpdatePosition(e);
     }
 
     private void OnMouseUp(BrowserMouseEventArgs e)
     {
-        _pressed.Remove(MapButton(e.Button));
+        lock (_pressedLock)
+            _pressed.Remove(MapButton(e.Button));
         UpdatePosition(e);
     }
 
