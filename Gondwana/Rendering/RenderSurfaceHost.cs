@@ -1,11 +1,12 @@
-﻿using Gondwana.Drawing.Direct;
+﻿using System.Drawing;
+using Microsoft.Extensions.Logging;
+using SkiaSharp;
+using Gondwana.Drawing.Direct;
 using Gondwana.Extensibility;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
-using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Rendering;
 
@@ -13,12 +14,16 @@ namespace Gondwana.Rendering;
 /// Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type. Provides coordination
 /// between the scene, views, and the underlying UI adapter for efficient rendering and presentation.
 /// </summary>
-/// <remarks>RenderSurfaceHost<TBackbuffer> is responsible for managing the lifecycle of the backbuffer, handling
+/// <remarks>
+/// RenderSurfaceHost&lt;TBackbuffer&gt; is responsible for managing the lifecycle of the backbuffer, handling
 /// scene binding, and coordinating redraws based on scene and view changes. It supports partial or full redraws
 /// depending on the state of the scene and the RedrawDirtyRectangleOnly property. Thread safety
 /// is not guaranteed; all interactions should occur on the UI thread associated with the render surface
-/// adapter.</remarks>
-/// <typeparam name="TBackbuffer">The type of backbuffer used for rendering. Must inherit from BackbufferBase.</typeparam>
+/// adapter.
+/// </remarks>
+/// <typeparam name="TBackbuffer">
+/// The type of backbuffer used for rendering. Must inherit from <see cref="BackbufferBase"/>.
+/// </typeparam>
 public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     where TBackbuffer : BackbufferBase
 {
@@ -111,10 +116,33 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (w <= 0 || h <= 0)
             throw new InvalidOperationException("RenderSurfaceAdapter has non-positive dimensions.");
 
-        _backbuffer = (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), w, h)!;
+        _backbuffer = CreateBackbuffer(w, h);
         Backbuffer.BeginFrame();
 
         Backbuffer.SizeChanged += (w, h) => Scene.FullRefreshNeeded = true;
+    }
+
+    private static TBackbuffer CreateBackbuffer(int width, int height)
+    {
+        var typeName = typeof(TBackbuffer).FullName;
+        Console.WriteLine($"CreateBackbuffer called for type: {typeName}, dimensions: {width}x{height}");
+
+        // Use explicit type checking instead of reflection to avoid trimming issues in browser/WASM
+        if (typeof(TBackbuffer) == typeof(Backbuffers.BitmapBackbuffer))
+        {
+            Engine.Logger.LogInformation("Using explicit BitmapBackbuffer constructor for type {TypeName}", typeName);
+            return (TBackbuffer)(object)new Backbuffers.BitmapBackbuffer(width, height);
+        }
+
+        if (typeof(TBackbuffer) == typeof(Backbuffers.GpuBackbuffer))
+        {
+            Engine.Logger.LogInformation("Using explicit GpuBackbuffer constructor for type {TypeName}", typeName);
+            return (TBackbuffer)(object)new Backbuffers.GpuBackbuffer(width, height);
+        }
+
+        // Fallback to Activator for any other backbuffer types
+        Engine.Logger.LogInformation("Falling back to Activator.CreateInstance for type {TypeName}", typeName);
+        return (TBackbuffer)Activator.CreateInstance(typeof(TBackbuffer), width, height)!;
     }
 
     /// <summary>

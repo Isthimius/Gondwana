@@ -15,3 +15,9 @@ https://pixabay.com/sound-effects/search/game%20lose/
 
 bump:
 https://pixabay.com/sound-effects/search/bump/
+
+knock:
+https://pixabay.com/sound-effects/film-special-effects-knock-on-wood-02-421991/
+
+spot selected / deselected:
+https://pixabay.com/sound-effects/film-special-effects-bubble-pop-293342/

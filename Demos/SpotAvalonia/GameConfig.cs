@@ -28,4 +28,7 @@ internal static class GameConfig
 
     /// <summary>Default player-count index (4 players).</summary>
     internal const int DefaultPlayerCountIndex = 2;
+
+    /// <summary>Default player names, matching the WinForms Spot reference.</summary>
+    internal static readonly string[] DefaultPlayerNames = ["Eugene", "Ward", "Robert", "Patrick"];
 }

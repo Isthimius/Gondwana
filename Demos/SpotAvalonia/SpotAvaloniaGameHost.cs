@@ -32,6 +32,7 @@ namespace Gondwana.Demos.SpotAvalonia;
 /// </summary>
 internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 {
+    private bool _initialGameStarted;
     private bool _handleHumanInput = false;
     private bool _showScores = true;
 
@@ -55,6 +56,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     internal AudioResource? _gameWin;
     internal AudioResource? _gameLose;
     internal AudioResource? _bump;
+    internal AudioResource? _knock;
+    internal AudioResource? _spotSelected;
+    internal AudioResource? _spotDeselected;
 
 #if BROWSER
     // Browser/WASM audio (HTML5 Audio API via BrowserAudioManager).
@@ -82,7 +86,12 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     internal SpotGame SpotGame { get; private set; } = null!;
 
+    private Gondwana.Timers.Timer? _pendingComputerSelectTimer;
+    private Gondwana.Timers.Timer? _pendingComputerMoveTimer;
+
     private static readonly Random _rng = new();
+
+    internal Action? RequestNewGameDialog { get; set; }
 
     internal SpotAvaloniaGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface)
@@ -113,6 +122,12 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         _gameWin  = Engine.Managers.AudioResources.LoadFromFile("gameWin",  "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3");
         _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3");
         _bump     = Engine.Managers.AudioResources.LoadFromFile("bump",     "assets/freesound_community-bump-7-92964.mp3");
+
+        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", "assets/universfield-bubble-pop-293342.mp3");
+        _spotSelected.Volume = 0.4f;
+        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", "assets/universfield-bubble-pop-293342.mp3");
+        _spotDeselected.Volume = 0.15f;
+        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", "assets/rohhsadotcom-knock-on-wood-02-421991.mp3");
 #endif
 
         _font = Engine.Managers.Fonts.LoadFromFile("main", "assets/ArchitectsDaughter-Regular.ttf");
@@ -142,19 +157,19 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
         // selected sprites
         _blueSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("blueSpotHappy", "assets/bubble-blue-happy.png");
-        _blueSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _blueSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _greenSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("greenSpotHappy", "assets/bubble-green-happy.png");
-        _greenSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _greenSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _pinkSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("pinkSpotHappy", "assets/bubble-pink-happy.png");
-        _pinkSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _pinkSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _redSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("redSpotHappy", "assets/bubble-red-happy.png");
-        _redSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _redSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _yellowSpotHappy = TilesheetRegistry.Instance.LoadFromImageFile("yellowSpotHappy", "assets/bubble-yellow-happy.png");
-        _yellowSpotHappy.DefaultRegion.TileSize = new Size(1024, 1024);
+        _yellowSpotHappy.DefaultRegion.TileSize = new Size(64, 64);
 
         _clouds = TilesheetRegistry.Instance.LoadFromImageFile("clouds", "assets/clouds.png");
     }
@@ -188,6 +203,33 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     protected override void CreateDirectDrawings()
     {
+        // Startup presentation (splash logo + particle surface) is deferred to
+        // BeginPostSplashStartup(), which is called after InitializeAsync() completes.
+    }
+
+    protected override void OnStartEngine()
+    {
+        // Music and startup visuals begin in BeginPostSplashStartup() after the splash.
+    }
+
+#if !BROWSER
+    protected override Gondwana.Hosting.SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
+    {
+        var imagePath = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
+        var splash = Gondwana.Hosting.SplashScreen.TryCreate(host, imagePath);
+        if (splash != null)
+            splash.HoldSec = 3f;
+        return splash;
+    }
+#endif
+
+    /// <summary>
+    /// Creates the startup presentation (spot particles, splash logo, and music) that is shown
+    /// after the splash screen completes. Called by <see cref="GameWindow"/> on desktop targets
+    /// and by <see cref="GameView"/> on browser/WASM targets immediately after initialization.
+    /// </summary>
+    internal void BeginPostSplashStartup()
+    {
         Tilesheet tilesheet;
 
         if (TilesheetRegistry.Instance.TryGet("splash", out tilesheet))
@@ -210,19 +252,23 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         particleSurface.CullingMarginX = 1300f;
         particleSurface.ZOrder = 50;
         particleSurface.Emitters.Add(GetSpots(769, 769));
-    }
 
-    protected override void OnStartEngine()
-    {
-#if BROWSER
-        _browserMusic?.Play();
-#else
-        if (_music != null)
+        if (MusicEnabled)
         {
-            _music.Volume = 0.2f;
-            _music.Play();
-        }
+#if BROWSER
+            if (_browserMusic != null)
+            {
+                _browserMusic.Volume = 0.2f;
+                _browserMusic.Play();
+            }
+#else
+            if (_music != null)
+            {
+                _music.Volume = 0.2f;
+                _music.Play();
+            }
 #endif
+        }
     }
 
     protected override void OnMouseAdapterInitialized()
@@ -316,6 +362,7 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         else
         {
             _particleSurface?.Dispose();
+            _particleSurface = null;
         }
     }
 
@@ -324,6 +371,12 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     /// </summary>
     internal void StartNewGame(NewGameOptions options)
     {
+        _pendingComputerSelectTimer?.Dispose();
+        _pendingComputerSelectTimer = null;
+        _pendingComputerMoveTimer?.Dispose();
+        _pendingComputerMoveTimer = null;
+
+        _particleSurface = null;    // pre-null before ClearAll() disposes it, to avoid a double-dispose via AddClouds()
         Engine.Managers.DirectDrawings.ClearAll();
         Engine.Managers.Sprites.Clear();
         Scene.RemoveAllLayers();
@@ -385,6 +438,12 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
+        if (!_initialGameStarted && args.LeftButtonJustPressed)
+        {
+            RequestNewGameDialog?.Invoke();
+            return;
+        }
+
         if (!_handleHumanInput)
             return;
 
@@ -514,6 +573,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     private void AddClouds()
     {
+        if (SpotGame.Players.Length == 0)
+            return;
+
         _particleSurface?.Dispose();
         _particleSurface = null;
         _particleSurface = new ParticleSurface(
@@ -812,6 +874,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
 
+        _initialGameStarted = true;
+
         if (MusicEnabled)
         {
 #if BROWSER
@@ -840,21 +904,26 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
             _handleHumanInput = false;
 
             // start a short timer before the computer moves
-            var timer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
-            timer.Tick += () =>
+            _pendingComputerSelectTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+            _pendingComputerSelectTimer.Tick += () =>
             {
-                timer.Dispose();
+_pendingComputerSelectTimer?.Dispose();
+_pendingComputerSelectTimer = null;
 
                 var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
+                if (moves.Count == 0)
+                    return;
+
                 var bestMove = moves[_rng.Next(moves.Count)];
 
                 SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
 
                 // small delay before executing move to allow for selection animation
-                var moveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
-                moveTimer.Tick += () =>
+                _pendingComputerMoveTimer = Gondwana.Timers.Timer.Add(TimerType.PostCycle, TimerCycles.Once, 0.6);
+                _pendingComputerMoveTimer.Tick += () =>
                 {
-                    moveTimer.Dispose();
+_pendingComputerMoveTimer?.Dispose();
+_pendingComputerMoveTimer = null;
                     SpotGame.ExecuteMove(bestMove);
                 };
             };
@@ -871,6 +940,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) selected by player {2}", cell.X, cell.Y, cell.OccupiedBy!.Name);
 
+        if (SoundEffectsEnabled && SpotGame.CurrentPlayer.Type == PlayerType.Human)
+            _spotSelected?.Play();
+
         var sprite = cell.Sprite!;
         sprite.StopJiggle();
         sprite.CurrentFrame = cell.OccupiedBy.ActiveFrame;
@@ -880,6 +952,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     private void OnSpotDeselected(SpotGameField.Cell cell)
     {
         Engine.Logger.LogDebug("Cell at ({0}, {1}) deselected", cell.X, cell.Y);
+
+        if (SoundEffectsEnabled)
+            _spotDeselected?.Play();
 
         var sprite = cell.Sprite!;
         sprite.StartJiggle(loop: true);
@@ -904,6 +979,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
     private void OnInvalidMoveAttempted(SpotGameField.Cell cell)
     {
         Engine.Logger.LogDebug("Invalid move attempted to cell ({0}, {1})", cell.X, cell.Y);
+
+        if (SoundEffectsEnabled)
+            _knock?.Play();
     }
 
     private void OnPlayerMoveStarted(PlayerMovement movement)
@@ -1014,6 +1092,10 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
             }
 #endif
         }
+
+#if !BROWSER
+        Engine.Instance.State.SaveToFile("savegame.json", false, true);
+#endif
     }
 
     #endregion SpotGame event handlers

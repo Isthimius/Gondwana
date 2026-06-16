@@ -136,7 +136,8 @@ internal sealed class NewGameDialog : Window
             rowGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(120)));
             rowGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(120)));
 
-            var nameBox = new TextBox { Text = $"Player {i + 1}", Watermark = $"Player {i + 1}" };
+            string defaultName = GameConfig.DefaultPlayerNames[i];
+            var nameBox = new TextBox { Text = defaultName, Watermark = defaultName };
             var typeCombo = new ComboBox
             {
                 ItemsSource   = new[] { "Human", "Computer" },
@@ -286,7 +287,7 @@ internal sealed class NewGameDialog : Window
         }
     }
 
-    private void StartButton_Click(object? sender, RoutedEventArgs e)
+    internal NewGameOptions GetCurrentOptions()
     {
         int playerCount = int.Parse((string)_cboPlayerCount.SelectedItem!);
         int boardWidth  = int.Parse((string)_cboWidth.SelectedItem!);
@@ -303,13 +304,18 @@ internal sealed class NewGameDialog : Window
             var colorItem = (ColorItem)_colorSelects[i].SelectedItem!;
             options.Players.Add(new Player
             {
-                Name      = _nameBoxes[i].Text ?? $"Player {i + 1}",
+                Name      = _nameBoxes[i].Text ?? GameConfig.DefaultPlayerNames[i],
                 Type      = _typeSelects[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
                 ColorItem = colorItem,
             });
         }
 
-        Close(options);
+        return options;
+    }
+
+    private void StartButton_Click(object? sender, RoutedEventArgs e)
+    {
+        Close(GetCurrentOptions());
     }
 }
 #endif

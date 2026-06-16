@@ -35,6 +35,12 @@ public sealed class BitmapBackbuffer : BackbufferBase
     }
 
     /// <summary>
+    /// Creates a new instance of <see cref="BitmapBackbuffer"/> with the specified dimensions.
+    /// This method exists to support reflection-based instantiation in browser/WASM scenarios.
+    /// </summary>
+    public static BitmapBackbuffer Create(int width, int height) => new BitmapBackbuffer(width, height);
+
+    /// <summary>
     /// Requests a resize of the backbuffer to the specified dimensions.
     /// This method is thread-safe and can be called from the UI thread.
     /// The actual resize operation will be performed on the render thread during the next frame.

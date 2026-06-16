@@ -16,6 +16,10 @@
 		<!-- XML docs -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+
+		<!-- Disable Android workload auto-import to avoid SDK version mismatch issues -->
+		<DisableAndroidWorkload>true</DisableAndroidWorkload>
+		<DisableImplicitWorkloadImports>true</DisableImplicitWorkloadImports>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(IsPackable)' == 'true'">
