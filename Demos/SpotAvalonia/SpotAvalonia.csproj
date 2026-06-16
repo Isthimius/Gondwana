@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
@@ -13,43 +13,6 @@
     <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
         <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
     </PropertyGroup>
-
-    <ItemGroup>
-        <!-- Assets linked from the Spot demo to avoid duplication -->
-        <Content Include="../Spot/assets/ArchitectsDaughter-Regular.ttf" Link="assets/ArchitectsDaughter-Regular.ttf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\clouds.png" Link="assets\clouds.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3" Link="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\freesound_community-bump-7-92964.mp3" Link="assets\freesound_community-bump-7-92964.mp3">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\freesound_community-velcro_fast-91558.mp3" Link="assets\freesound_community-velcro_fast-91558.mp3">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\freesound_community-water-drip-45622.mp3" Link="assets\freesound_community-water-drip-45622.mp3">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3" Link="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3" Link="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\sources.txt" Link="assets\sources.txt">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\spot.png" Link="assets\spot.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\Spot\assets\spot_ico.png" Link="assets\spot_ico.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 
     <!-- Desktop-only packages -->
     <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-browser'">
@@ -74,6 +37,94 @@
         <Content Include="wwwroot/**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="assets\ArchitectsDaughter-Regular.ttf" />
+      <None Remove="assets\clouds.png" />
+      <None Remove="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3" />
+      <None Remove="assets\freesound_community-bump-7-92964.mp3" />
+      <None Remove="assets\freesound_community-velcro_fast-91558.mp3" />
+      <None Remove="assets\freesound_community-water-drip-45622.mp3" />
+      <None Remove="assets\gondwana-logo-text.png" />
+      <None Remove="assets\OFL.txt" />
+      <None Remove="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3" />
+      <None Remove="assets\rohhsadotcom-knock-on-wood-02-421991.mp3" />
+      <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3" />
+      <None Remove="assets\sources.txt" />
+      <None Remove="assets\spot.png" />
+      <None Remove="assets\spot_default.tps" />
+      <None Remove="assets\spot_defaults.png" />
+      <None Remove="assets\spot_ico.ico" />
+      <None Remove="assets\spot_ico.png" />
+      <None Remove="assets\spot_selected.png" />
+      <None Remove="assets\spot_selected.tps" />
+      <None Remove="assets\spot_sheet.png" />
+      <None Remove="assets\universfield-bubble-pop-293342.mp3" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="assets\ArchitectsDaughter-Regular.ttf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\clouds.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\freesound_community-bump-7-92964.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\freesound_community-velcro_fast-91558.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\freesound_community-water-drip-45622.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\gondwana-logo-text.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\OFL.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\rohhsadotcom-knock-on-wood-02-421991.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\sources.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot_default.tps">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot_defaults.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot_ico.ico">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot_ico.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot_selected.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot_selected.tps">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\spot_sheet.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="assets\universfield-bubble-pop-293342.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>

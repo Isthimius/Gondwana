@@ -119,8 +119,17 @@ internal sealed class GameWindow : Window
         optionsMenu.Items.Add(_jiggleMenuItem);
         optionsMenu.Items.Add(_cloudsMenuItem);
 
+        // ── Help menu ───────────────────────────────────────────────────────
+        var helpMenu = new MenuItem { Header = "_Help" };
+
+        var aboutMenuItem = new MenuItem { Header = "_About" };
+        aboutMenuItem.Click += async (_, _) => await OpenAboutDialogAsync();
+
+        helpMenu.Items.Add(aboutMenuItem);
+
         menu.Items.Add(gameMenu);
         menu.Items.Add(optionsMenu);
+        menu.Items.Add(helpMenu);
 
         return menu;
     }
@@ -155,7 +164,6 @@ internal sealed class GameWindow : Window
 
     private async System.Threading.Tasks.Task OpenNewGameDialogAsync()
     {
-#if !BROWSER
         var dialog = new NewGameDialog(_lastNewGameOptions);
         var options = await dialog.ShowDialog<NewGameOptions?>(this);
         if (options is not null)
@@ -163,8 +171,11 @@ internal sealed class GameWindow : Window
             _lastNewGameOptions = options;
             _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
         }
-#else
-        await System.Threading.Tasks.Task.CompletedTask;
-#endif
+    }
+
+    private async System.Threading.Tasks.Task OpenAboutDialogAsync()
+    {
+        var dialog = new AboutDialog();
+        await dialog.ShowDialog(this);
     }
 }
