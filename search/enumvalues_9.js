@@ -1,6 +1,29 @@
 var searchData=
 [
-  ['left_0',['left',['../namespaceGondwana_1_1Drawing_1_1Sprites.html#ab3dde0a5b955ae7bce32212444fdf778a945d5e233cf7d6240f6b783b36a374ff',1,'Gondwana.Drawing.Sprites.Left'],['../namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a945d5e233cf7d6240f6b783b36a374ff',1,'Gondwana.Input.Gamepad.Left'],['../namespaceGondwana_1_1Input_1_1Mouse.html#ac242f16981be3646394b24d27ee1565ba945d5e233cf7d6240f6b783b36a374ff',1,'Gondwana.Input.Mouse.Left'],['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a945d5e233cf7d6240f6b783b36a374ff',1,'Gondwana.Input.Touch.Gestures.Left']]],
-  ['lefttoright_1',['LeftToRight',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#adac29c23b9e8e0590930df0a3957d141ad1e80c506f4c89e3c4fb1c1b4867a03c',1,'Gondwana::Drawing::Direct::DirectDrawingBase']]],
-  ['linear_2',['Linear',['../namespaceGondwana_1_1Movement_1_1Easing.html#a74018978c1a1f6aa869a55d97d8dc3d3a32a843da6ea40ab3b17a3421ccdf671b',1,'Gondwana::Movement::Easing']]]
+  ['keya_0',['KeyA',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a65db4d11979771d4f8fde6f799b114b3',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyb_1',['KeyB',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a92191dde37e474b2899c5e8087218150',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyc_2',['KeyC',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864aedef8ee27b59e2955f48e14c33c82764',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyd_3',['KeyD',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af2acfa8b1be12c5402b89e60d67e628f',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keye_4',['KeyE',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a5d6dedfdd214d7b8194d4cd898515cdf',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyf_5',['KeyF',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a7b94d7606ad3707ac55b8aa2762e80c5',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyg_6',['KeyG',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a562b42b6fe9124b00ce4cfda347475cd',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyh_7',['KeyH',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864adf980cf64b10e4b3c5c25bcbb1e58f1c',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyi_8',['KeyI',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a118a10d442fe533375e1c6772e97d03d',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyj_9',['KeyJ',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a5388719ebb71fe83315e3647d252a566',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyk_10',['KeyK',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864aeaf3ac5f7300086b494f6c7de63480c8',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyl_11',['KeyL',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a64e32ab5754ca9f25284a8d8ae206917',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keym_12',['KeyM',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ac397d62acad8ebf0791dac97cc4730b7',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyn_13',['KeyN',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a5fe790f360ba60e1c99e43ef7ac1ba2a',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyo_14',['KeyO',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a7c1d818c6bca1ec93f18da99ffbd943a',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyp_15',['KeyP',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a47c04ca3c0a603c91e15a6b343dac601',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyq_16',['KeyQ',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a991ba1ff3cb72355fb6e7be55ff9eb8f',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyr_17',['KeyR',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afa78892b0c0fd9b6f2d9dc2400956255',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keys_18',['KeyS',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a50d816f0a3c904b740cad28821fbc776',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyt_19',['KeyT',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a99bc9035a671d748dbcda5f8cedbb307',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyu_20',['KeyU',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a1ff65f6706f0d6ee8e7118888af2ac8f',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyv_21',['KeyV',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864adde8e06bc062aa0e8d8ffc790eed143e',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyw_22',['KeyW',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864aa070bbaeb8744f13f0ef12a3f4820c44',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyx_23',['KeyX',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a9acf516ca5615780efbe6e2d1c5695ce',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyy_24',['KeyY',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a0fb751965b0d5cdcb668201cb88b6546',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['keyz_25',['KeyZ',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a93176878258f5b54ce1ca0bfe07eeb94',1,'Gondwana::Blazor::Input::Keyboard']]]
 ];

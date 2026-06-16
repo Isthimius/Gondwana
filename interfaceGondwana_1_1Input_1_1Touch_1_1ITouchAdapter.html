@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -109,6 +109,7 @@ Inheritance diagram for Gondwana.Input.Touch.ITouchAdapter:</div>
   <img src="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.png" usemap="#Gondwana.Input.Touch.ITouchAdapter_map" alt=""/>
   <map id="Gondwana.Input.Touch.ITouchAdapter_map" name="Gondwana.Input.Touch.ITouchAdapter_map">
 <area href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html" title="Provides a passive touch/pointer state adapter for Avalonia applications, implementing ITouchAdapter ..." alt="Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter" shape="rect" coords="0,56,357,80"/>
+<area href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html" title="Provides a passive touch state adapter for Blazor applications, implementing ITouchAdapter by transla..." alt="Gondwana.Blazor.Input.Touch.BlazorTouchAdapter" shape="rect" coords="367,56,724,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -147,7 +148,7 @@ Properties</h2></td></tr>
 <p>Drains and returns all touch contacts that ended (lifted or cancelled) since the last call. Each entry preserves the original TouchPhase (TouchPhase.Ended or TouchPhase.Cancelled) so the poller can distinguish between the two. This method is intended to be called once per engine tick by the TouchEventPoller. </p>
 <dl class="section return"><dt>Returns</dt><dd>A snapshot of all contacts that ended since the previous call to this method. The returned list is cleared from the adapter's internal queue on each call. </dd></dl>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a156ee60353ceb68cdc95d7ce1197f69d">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a156ee60353ceb68cdc95d7ce1197f69d">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>, and <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#af0902124207ce06c101f9e96ee78c8c7">Gondwana.Blazor.Input.Touch.BlazorTouchAdapter</a>.</p>
 
 </div>
 </div>
@@ -174,7 +175,7 @@ Properties</h2></td></tr>
 
 <p>Gets the list of touch contact points that are currently active (in contact with the surface). This list reflects the state at the most recent platform pointer event. An empty list indicates no fingers are currently in contact. </p>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a12353ced690ce028d602f41c829846cd">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a12353ced690ce028d602f41c829846cd">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>, and <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#a4630be0ec39112e57bfe9c44b772d6ea">Gondwana.Blazor.Input.Touch.BlazorTouchAdapter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="ITouchAdapter_8cs_source.html#l00016">16</a> of file <a class="el" href="ITouchAdapter_8cs_source.html">ITouchAdapter.cs</a>.</p>
 

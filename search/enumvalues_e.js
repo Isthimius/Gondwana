@@ -1,10 +1,13 @@
 var searchData=
 [
-  ['rectangle_0',['Rectangle',['../namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e',1,'Gondwana::Drawing::Direct::Particles']]],
-  ['released_1',['Released',['../namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77aea1e34304a5d8ffa7c9b0ed8ede4ef1a',1,'Gondwana::Input::Keyboard']]],
-  ['repeated_2',['Repeated',['../namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77a7f7309d5a83099309ac04dcb795ad0ce',1,'Gondwana::Input::Keyboard']]],
-  ['repeating_3',['repeating',['../namespaceGondwana_1_1Drawing_1_1Animation.html#a4a2eb94d7464720ae3becfd9156ef68baece811c1c51ed3c4d0d8c8d0439d7d1a',1,'Gondwana.Drawing.Animation.Repeating'],['../namespaceGondwana_1_1Timers.html#ae9d007991e00874a718658b6a05bd255aece811c1c51ed3c4d0d8c8d0439d7d1a',1,'Gondwana.Timers.Repeating']]],
-  ['right_4',['right',['../namespaceGondwana_1_1Drawing_1_1Sprites.html#ab3dde0a5b955ae7bce32212444fdf778a92b09c7c48c520c3c55e497875da437c',1,'Gondwana.Drawing.Sprites.Right'],['../namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a92b09c7c48c520c3c55e497875da437c',1,'Gondwana.Input.Gamepad.Right'],['../namespaceGondwana_1_1Input_1_1Mouse.html#ac242f16981be3646394b24d27ee1565ba92b09c7c48c520c3c55e497875da437c',1,'Gondwana.Input.Mouse.Right'],['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a92b09c7c48c520c3c55e497875da437c',1,'Gondwana.Input.Touch.Gestures.Right']]],
-  ['righttoleft_5',['RightToLeft',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#adac29c23b9e8e0590930df0a3957d141ab7b0ea3028791689ea070674776855e2',1,'Gondwana::Drawing::Direct::DirectDrawingBase']]],
-  ['ring_6',['Ring',['../namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ad4db177c94738b72bf9ce61e988ab1f1',1,'Gondwana::Drawing::Direct::Particles']]]
+  ['pagedown_0',['PageDown',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864aee3677bcca83ece9384b01e43952bf33',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['pageup_1',['PageUp',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a9b869c510c75c5827ac82e49d4340927',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['period_2',['Period',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a1901606ea069a83dc7beea17881ef95a',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['pinch_3',['Pinch',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa1e4ddf6f135e4c639929b4633c29d4f2',1,'Gondwana::Input::Touch::Gestures']]],
+  ['pingpong_4',['PingPong',['../namespaceGondwana_1_1Drawing_1_1Animation.html#a4a2eb94d7464720ae3becfd9156ef68ba99e52704462d3580db3528cad7ea9660',1,'Gondwana::Drawing::Animation']]],
+  ['pixel_5',['Pixel',['../namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341da08822b3ae4e2aede0afe08abe600e9c0',1,'Gondwana::Movement']]],
+  ['pixelperfect_6',['PixelPerfect',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3a1ac6cfc61658bee4cbd8851821d9288d',1,'Gondwana::Drawing::Direct::DirectImage']]],
+  ['postcycle_7',['PostCycle',['../namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41a4887566fa7849e178be7d66bd3daef39',1,'Gondwana::Timers']]],
+  ['precycle_8',['PreCycle',['../namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41afb631a54861bbae5da786f090bd0cead',1,'Gondwana::Timers']]],
+  ['pressed_9',['Pressed',['../namespaceGondwana_1_1Input_1_1Keyboard.html#aa747e05d7cceff7dc29e3f1155c77a77ad78a68f6a85421ae121c2cb5b73a1040',1,'Gondwana::Input::Keyboard']]]
 ];

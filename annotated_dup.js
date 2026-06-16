@@ -42,6 +42,26 @@ var annotated_dup =
           [ "AvaloniaGpuRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl" ]
         ] ]
       ] ],
+      [ "Blazor", "namespaceGondwana_1_1Blazor.html", [
+        [ "Hosting", "namespaceGondwana_1_1Blazor_1_1Hosting.html", [
+          [ "BlazorGameHost", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost" ]
+        ] ],
+        [ "Input", "namespaceGondwana_1_1Blazor_1_1Input.html", [
+          [ "Keyboard", "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html", [
+            [ "BlazorKeyboardAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html", "classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter" ]
+          ] ],
+          [ "Mouse", "namespaceGondwana_1_1Blazor_1_1Input_1_1Mouse.html", [
+            [ "BlazorMouseAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html", "classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter" ]
+          ] ],
+          [ "Touch", "namespaceGondwana_1_1Blazor_1_1Input_1_1Touch.html", [
+            [ "BlazorTouchAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter" ]
+          ] ]
+        ] ],
+        [ "Rendering", "namespaceGondwana_1_1Blazor_1_1Rendering.html", [
+          [ "BlazorBitmapRenderSurfaceAdapter", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceAdapter.html", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceAdapter" ],
+          [ "BlazorBitmapRenderSurfaceComponent", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent.html", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent" ]
+        ] ]
+      ] ],
       [ "Collisions", "namespaceGondwana_1_1Collisions.html", [
         [ "Aabb", "structGondwana_1_1Collisions_1_1Aabb.html", "structGondwana_1_1Collisions_1_1Aabb" ],
         [ "ColliderRegistry", "classGondwana_1_1Collisions_1_1ColliderRegistry.html", "classGondwana_1_1Collisions_1_1ColliderRegistry" ],

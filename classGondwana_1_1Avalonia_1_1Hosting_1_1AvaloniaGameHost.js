@@ -7,6 +7,7 @@ var classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost =
     [ "ConfigureMouse", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a8065adf37bd6e4e58e644e432213d5cf", null ],
     [ "ConfigurePlatform", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a0cbd03af49ee11420b896743bc8cf4fc", null ],
     [ "ConfigureTouch", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#ae9f9c8eddfdad98377617957b0ba16cd", null ],
+    [ "GetPrimaryRenderSurfaceHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a66e3034e4b8c128c4080719a33cbb74f", null ],
     [ "OnConfigurePlatform", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#ae78a6cbe354bd5f57198d771b309224b", null ],
     [ "OnGamepadManagerInitialized", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a7b4043aea948965c5969998f9db87bf0", null ],
     [ "OnKeyboardAdapterInitialized", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a65eeb9527f54d6f5da5dd6f2fa221ffd", null ],

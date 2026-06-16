@@ -1,6 +1,18 @@
 var searchData=
 [
-  ['fill_0',['fill',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.DirectImage.Fill'],['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.Fill']]],
-  ['fit_1',['Fit',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3a01e49ee7364d951a3d1bdea7dd3a1b7b',1,'Gondwana::Drawing::Direct::DirectImage']]],
-  ['font_2',['Font',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d',1,'Gondwana::Assets']]]
+  ['f1_0',['F1',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ae1dffc8709f31a4987c8a88334107e89',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f10_1',['F10',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ab213ce22ca6ad4eda8db82966b9b6e5a',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f11_2',['F11',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a643b0662422d1d0dffa3fca2e2bf28a8',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f12_3',['F12',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ae902674982fc99aa343cdd94da7476c3',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f2_4',['F2',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afe5c3684dce76cdd9f7f42430868aa74',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f3_5',['F3',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a4b6bf4b531770872d4328ce69bef5627',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f4_6',['F4',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ae7e0e72401a9f2718ed0f39f2861d702',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f5_7',['F5',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a37f438df6a6d5ba4c17ef8ca58562f00',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f6_8',['F6',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a1faf42f2823f184eb2c9f0dffe5d73f2',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f7_9',['F7',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a47489eb597b7db34caa24b1fc78fc839',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f8_10',['F8',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a4787509ad9f9d747a81a30e9dde3d4a7',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['f9_11',['F9',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a892a245e287c163080b23db737d3c4c9',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['fill_12',['fill',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.DirectImage.Fill'],['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.Fill']]],
+  ['fit_13',['Fit',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3a01e49ee7364d951a3d1bdea7dd3a1b7b',1,'Gondwana::Drawing::Direct::DirectImage']]],
+  ['font_14',['Font',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d',1,'Gondwana::Assets']]]
 ];

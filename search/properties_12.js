@@ -3,7 +3,7 @@ var searchData=
   ['tag_0',['Tag',['../classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstance.html#ae8067b6759fa79e09a62b22b3cd89f42',1,'Gondwana::Drawing::Direct::ImageLayer::ImageInstance']]],
   ['tap_1',['Tap',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a1fc15a62a73021cb4000c47a7cefe58a',1,'Gondwana::Input::Touch::Gestures::GestureEventArgs']]],
   ['taprecognizer_2',['TapRecognizer',['../classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ab9e2646ef78763655b60d696a5a94d2b',1,'Gondwana::Input::Touch::TouchEventPoller']]],
-  ['targetfps_3',['targetfps',['../classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33',1,'Gondwana.Configuration.EngineConfiguration.TargetFPS'],['../classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a68033b8c7cccdc042fa6c352e977fcfc',1,'Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps']]],
+  ['targetfps_3',['targetfps',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a68033b8c7cccdc042fa6c352e977fcfc',1,'Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps'],['../classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33',1,'Gondwana.Configuration.EngineConfiguration.TargetFPS']]],
   ['targetrectpx_4',['TargetRectPx',['../classGondwana_1_1Rendering_1_1Views_1_1Viewport.html#a0d4e101c1fb24cdb66fb7e41d05ab172',1,'Gondwana::Rendering::Views::Viewport']]],
   ['tempfilepath_5',['TempFilePath',['../classGondwana_1_1Audio_1_1AudioResource.html#a49fd7ba5685ad039c9157051cde4221f',1,'Gondwana::Audio::AudioResource']]],
   ['text_6',['Text',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ae187fd0edce91e848615ccd4c6ac8c72',1,'Gondwana::Drawing::Direct::TextBlock']]],

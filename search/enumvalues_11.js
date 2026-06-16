@@ -1,6 +1,26 @@
 var searchData=
 [
-  ['uniform_0',['Uniform',['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d',1,'Gondwana::Drawing::Direct']]],
-  ['uniformtofill_1',['UniformToFill',['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93ab726f36782df417dfda25a259d6493cf',1,'Gondwana::Drawing::Direct']]],
-  ['up_2',['up',['../namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a258f49887ef8d14ac268c92b02503aaa',1,'Gondwana.Input.Gamepad.Up'],['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a258f49887ef8d14ac268c92b02503aaa',1,'Gondwana.Input.Touch.Gestures.Up']]]
+  ['s_0',['s',['../namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34a5dbc98dcc983a70728bd082d1a47546e',1,'Gondwana.Collisions.S'],['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a5dbc98dcc983a70728bd082d1a47546e',1,'Gondwana.Drawing.Coordinates.S']]],
+  ['scenelayer_1',['SceneLayer',['../namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c',1,'Gondwana::Drawing::Direct']]],
+  ['scenes_2',['Scenes',['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575abb34f602e45a9fbcb2cdfee7a48673fc',1,'Gondwana']]],
+  ['scrolllock_3',['ScrollLock',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a7d7902d5e2998e4fb2b8694a2de4ff65',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['se_4',['se',['../namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34af003c44deab679aa2edfaff864c77402',1,'Gondwana.Collisions.SE'],['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5af003c44deab679aa2edfaff864c77402',1,'Gondwana.Drawing.Coordinates.SE']]],
+  ['semicolon_5',['Semicolon',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a9806fa37a3ecd39bf637c203aa011ed0',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['shift_6',['Shift',['../namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c',1,'Gondwana::Input::Keyboard']]],
+  ['shiftleft_7',['ShiftLeft',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ad9382145a142cc7df5f733332c9cb812',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['shiftright_8',['ShiftRight',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af17de5e0ea7a357b755aa9deeaf38f86',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['simple_9',['Simple',['../namespaceGondwana_1_1Drawing_1_1Animation.html#a4a2eb94d7464720ae3becfd9156ef68ba1fbb1e3943c2c6c560247ac8f9289780',1,'Gondwana::Drawing::Animation']]],
+  ['sine_10',['Sine',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873a6ca9e2d793f678aba7c1b19526592a46',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['slash_11',['Slash',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a358cfe58715d680d9ab09f82e4010cbc',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['smootherstep_12',['SmootherStep',['../namespaceGondwana_1_1Movement_1_1Easing.html#a74018978c1a1f6aa869a55d97d8dc3d3a45532e9b1e49b79e591cb796ddccb26a',1,'Gondwana::Movement::Easing']]],
+  ['smoothstep_13',['SmoothStep',['../namespaceGondwana_1_1Movement_1_1Easing.html#a74018978c1a1f6aa869a55d97d8dc3d3ab4cb90d3e50a3e043cabff0b7be07f88',1,'Gondwana::Movement::Easing']]],
+  ['solid_14',['Solid',['../namespaceGondwana_1_1Collisions.html#af0ee70eb3a5b26e4d773bec1e5e128eeae41480b6bbfbf7407974a88d3d34f4fa',1,'Gondwana::Collisions']]],
+  ['space_15',['Space',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ad511f8439ecde36647437fbba67a4394',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['sprites_16',['Sprites',['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf',1,'Gondwana']]],
+  ['stationary_17',['Stationary',['../namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e',1,'Gondwana::Input::Touch']]],
+  ['stretch_18',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560',1,'Gondwana::Drawing::Direct::DirectImage']]],
+  ['svg_19',['Svg',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1a9a612a14f347adfbf122cc7c0e985b',1,'Gondwana::Assets']]],
+  ['sw_20',['sw',['../namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Collisions.SW'],['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Drawing.Coordinates.SW']]],
+  ['swipe_21',['Swipe',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa78076ce792c4640bf99c598c92bd69e7',1,'Gondwana::Input::Touch::Gestures']]],
+  ['synchronous_22',['Synchronous',['../namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249da2fe4167817733fec8e6ba1afddf78f1b',1,'Gondwana::Logging']]]
 ];

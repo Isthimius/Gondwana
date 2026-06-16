@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['w_0',['w',['../namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34a61e9c06ea9a85a5088a499df6458d276',1,'Gondwana.Collisions.W'],['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a61e9c06ea9a85a5088a499df6458d276',1,'Gondwana.Drawing.Coordinates.W']]],
-  ['wordspersecond_1',['WordsPerSecond',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ad4712552d0393589acf2e3246286eb77abba6648b2264114f62331dc9b3c841c3',1,'Gondwana::Drawing::Direct::TextBlock']]]
+  ['uniform_0',['Uniform',['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d',1,'Gondwana::Drawing::Direct']]],
+  ['uniformtofill_1',['UniformToFill',['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93ab726f36782df417dfda25a259d6493cf',1,'Gondwana::Drawing::Direct']]],
+  ['up_2',['up',['../namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a258f49887ef8d14ac268c92b02503aaa',1,'Gondwana.Input.Gamepad.Up'],['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a258f49887ef8d14ac268c92b02503aaa',1,'Gondwana.Input.Touch.Gestures.Up']]]
 ];

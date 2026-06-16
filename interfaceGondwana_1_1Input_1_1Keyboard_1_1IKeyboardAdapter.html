@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -109,7 +109,8 @@ Inheritance diagram for Gondwana.Input.Keyboard.IKeyboardAdapter:</div>
   <img src="interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter.png" usemap="#Gondwana.Input.Keyboard.IKeyboardAdapter_map" alt=""/>
   <map id="Gondwana.Input.Keyboard.IKeyboardAdapter_map" name="Gondwana.Input.Keyboard.IKeyboardAdapter_map">
 <area href="classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html" title="Global Avalonia key state collector that feeds the KeyboardEventPoller. Attaches tunnel-phase handler..." alt="Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter" shape="rect" coords="0,56,382,80"/>
-<area href="classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html" title="Global WinForms key state collector that feeds the KeyboardHandler. Uses IMessageFilter so it sees AL..." alt="Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter" shape="rect" coords="392,56,774,80"/>
+<area href="classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html" title="Keyboard adapter for Blazor applications that feeds the Gondwana KeyboardEventPoller by translating b..." alt="Gondwana.Blazor.Input.Keyboard.BlazorKeyboardAdapter" shape="rect" coords="392,56,774,80"/>
+<area href="classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html" title="Global WinForms key state collector that feeds the KeyboardHandler. Uses IMessageFilter so it sees AL..." alt="Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter" shape="rect" coords="784,56,1166,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -149,7 +150,7 @@ Properties</h2></td></tr>
 
 <p>Returns true if the specified platform-agnostic key code is currently down. Key codes should be stable integers agreed upon by the adapter and the engine. For WinForms, this should be the Windows Virtual-Key code (0..255). </p>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html#ae44520ac82fa4aefca6831962b986600">Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html#a22ff076ad85b9dc1b10ff4fab0ff4d90">Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html#ae44520ac82fa4aefca6831962b986600">Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html#ac7c74dd51441e527f5c93dc7506a992e">Gondwana.Blazor.Input.Keyboard.BlazorKeyboardAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html#a22ff076ad85b9dc1b10ff4fab0ff4d90">Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter</a>.</p>
 
 </div>
 </div>
@@ -176,7 +177,7 @@ Properties</h2></td></tr>
 
 <p>Gets the current state of modifier keys, such as Shift, Ctrl, and Alt. Must be safe to read from the Engine thread at high frequency. </p>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html#adbeb52004d3d3cc1d16945df2096324f">Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html#a3e9b6bc38dcd22f6ba500c95ec2ef56f">Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html#adbeb52004d3d3cc1d16945df2096324f">Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html#a2e8fec5e8bc0059ef9a644ef3df5bf7d">Gondwana.Blazor.Input.Keyboard.BlazorKeyboardAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html#a3e9b6bc38dcd22f6ba500c95ec2ef56f">Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="IKeyboardAdapter_8cs_source.html#l00021">21</a> of file <a class="el" href="IKeyboardAdapter_8cs_source.html">IKeyboardAdapter.cs</a>.</p>
 

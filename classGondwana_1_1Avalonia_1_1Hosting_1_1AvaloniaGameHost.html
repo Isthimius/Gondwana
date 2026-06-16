@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -132,6 +132,9 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:ae9f9c8eddfdad98377617957b0ba16cd" id="r_ae9f9c8eddfdad98377617957b0ba16cd"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#ae9f9c8eddfdad98377617957b0ba16cd">ConfigureTouch</a> ()</td></tr>
 <tr class="memdesc:ae9f9c8eddfdad98377617957b0ba16cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the touch adapter for the Avalonia render surface.  <br /></td></tr>
 <tr class="separator:ae9f9c8eddfdad98377617957b0ba16cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66e3034e4b8c128c4080719a33cbb74f" id="r_a66e3034e4b8c128c4080719a33cbb74f"><td class="memItemLeft" align="right" valign="top">override Gondwana.Rendering.? RenderSurfaceHostBase&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a66e3034e4b8c128c4080719a33cbb74f">GetPrimaryRenderSurfaceHost</a> ()</td></tr>
+<tr class="memdesc:a66e3034e4b8c128c4080719a33cbb74f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the primary render surface host so that <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a62c3ff0e0bad176c90bf9af0d8b2bb96" title="Initializes the game host, then shows a Gondwana-native splash screen (if one is provided by CreateSp...">GameHostBase.InitializeAsync</a> can attach the <a class="el" href="classGondwana_1_1Hosting_1_1SplashScreen.html" title="A platform-agnostic splash screen implemented as a DirectImage overlay on the primary render surface,...">Gondwana.Hosting.SplashScreen</a> overlay.  <br /></td></tr>
+<tr class="separator:a66e3034e4b8c128c4080719a33cbb74f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfc7937992e7ed48ad39ac8fea88c508" id="r_adfc7937992e7ed48ad39ac8fea88c508"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#adfc7937992e7ed48ad39ac8fea88c508">BindScene</a> ()</td></tr>
 <tr class="memdesc:adfc7937992e7ed48ad39ac8fea88c508"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the current scene to the render surface host.  <br /></td></tr>
 <tr class="separator:adfc7937992e7ed48ad39ac8fea88c508"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,9 +163,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a3f2e8a93982566e235dd6a738d190568 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a3f2e8a93982566e235dd6a738d190568"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a3f2e8a93982566e235dd6a738d190568">ConfigureLogging</a> (LogLevel <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">logLevel</a>)</td></tr>
 <tr class="memdesc:a3f2e8a93982566e235dd6a738d190568 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the logging level for the engine.  <br /></td></tr>
 <tr class="separator:a3f2e8a93982566e235dd6a738d190568 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fd92bd0c8f1fe1389ffc59b2fab1461 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a7fd92bd0c8f1fe1389ffc59b2fab1461"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> ? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a7fd92bd0c8f1fe1389ffc59b2fab1461">GetPrimaryRenderSurfaceHost</a> ()</td></tr>
-<tr class="memdesc:a7fd92bd0c8f1fe1389ffc59b2fab1461 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the primary <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a05265ed2d40b4e9a2a40dff3573db2fe" title="Initializes a new instance of the RenderSurfaceHostBase class and registers it with the RenderSurface...">RenderSurfaceHostBase</a> for this host, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> if none is available.  <br /></td></tr>
-<tr class="separator:a7fd92bd0c8f1fe1389ffc59b2fab1461 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad70ce86dcf86a87876ae38559755463d inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_ad70ce86dcf86a87876ae38559755463d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> ? <a class="el" href="classGondwana_1_1Hosting_1_1SplashScreen.html">SplashScreen</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ad70ce86dcf86a87876ae38559755463d">CreateSplash</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">host</a>)</td></tr>
 <tr class="memdesc:ad70ce86dcf86a87876ae38559755463d inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the splash screen to display during InitializeAsync. Override to supply a game-specific image and any splash callbacks; return <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> for no splash.  <br /></td></tr>
 <tr class="separator:ad70ce86dcf86a87876ae38559755463d inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -324,7 +324,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4939bab4a421dd31905b5e526f4c7c1b">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00075">75</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00082">82</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -481,6 +481,35 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a66e3034e4b8c128c4080719a33cbb74f" name="a66e3034e4b8c128c4080719a33cbb74f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66e3034e4b8c128c4080719a33cbb74f">&#9670;&#160;</a></span>GetPrimaryRenderSurfaceHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override Gondwana.Rendering.? RenderSurfaceHostBase Gondwana.Avalonia.Hosting.AvaloniaGameHost.GetPrimaryRenderSurfaceHost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the primary render surface host so that <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a62c3ff0e0bad176c90bf9af0d8b2bb96" title="Initializes the game host, then shows a Gondwana-native splash screen (if one is provided by CreateSp...">GameHostBase.InitializeAsync</a> can attach the <a class="el" href="classGondwana_1_1Hosting_1_1SplashScreen.html" title="A platform-agnostic splash screen implemented as a DirectImage overlay on the primary render surface,...">Gondwana.Hosting.SplashScreen</a> overlay. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a7fd92bd0c8f1fe1389ffc59b2fab1461">Gondwana.Hosting.GameHostBase</a>.</p>
+
+</div>
+</div>
 <a id="ae78a6cbe354bd5f57198d771b309224b" name="ae78a6cbe354bd5f57198d771b309224b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae78a6cbe354bd5f57198d771b309224b">&#9670;&#160;</a></span>OnConfigurePlatform()</h2>
 
@@ -506,7 +535,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Provides a hook for configuring platform-specific settings during initialization. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00083">83</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00090">90</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -535,7 +564,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the gamepad manager has been initialized. Override to perform additional gamepad setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00098">98</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00105">105</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -564,7 +593,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the keyboard adapter has been initialized. Override to perform additional keyboard setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00088">88</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00095">95</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -593,7 +622,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the mouse adapter has been initialized. Override to perform additional mouse setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00093">93</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00100">100</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -622,7 +651,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the touch adapter has been initialized. Override to perform additional touch setup, such as attaching gesture recognizers. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00104">104</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00111">111</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -653,7 +682,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#af9c320486373f706f8e3373c0575507c">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00111">111</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00118">118</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -684,7 +713,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab253d2e0a96e4d967ac028868ce8f900">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00142">142</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGameHost_8cs_source.html#l00149">149</a> of file <a class="el" href="AvaloniaGameHost_8cs_source.html">AvaloniaGameHost.cs</a>.</p>
 
 </div>
 </div>

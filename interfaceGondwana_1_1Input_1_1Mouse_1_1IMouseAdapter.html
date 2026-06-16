@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -108,7 +108,8 @@ Inheritance diagram for Gondwana.Input.Mouse.IMouseAdapter:</div>
   <img src="interfaceGondwana_1_1Input_1_1Mouse_1_1IMouseAdapter.png" usemap="#Gondwana.Input.Mouse.IMouseAdapter_map" alt=""/>
   <map id="Gondwana.Input.Mouse.IMouseAdapter_map" name="Gondwana.Input.Mouse.IMouseAdapter_map">
 <area href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html" title="Provides a mouse/pointer input adapter for Avalonia applications, tracking pointer position,..." alt="Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter" shape="rect" coords="0,56,348,80"/>
-<area href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html" title="Provides a mouse input adapter for WinForms applications, tracking mouse position,..." alt="Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter" shape="rect" coords="358,56,706,80"/>
+<area href="classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html" title="Provides a mouse/pointer input adapter for Blazor applications, tracking pointer position,..." alt="Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter" shape="rect" coords="358,56,706,80"/>
+<area href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html" title="Provides a mouse input adapter for WinForms applications, tracking mouse position,..." alt="Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter" shape="rect" coords="716,56,1064,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -154,7 +155,7 @@ Properties</h2></td></tr>
 
 <p>Gets the current state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of mouse input. This allows mouse event handlers to respond to modified mouse actions, such as Ctrl+Click or Shift+Drag. The state can be a combination of multiple modifiers using bitwise flags. </p>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a50aafd4c1f035ac9f2759cba816c71ce">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ad07e64d4425919574f2acedfd76d881c">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a50aafd4c1f035ac9f2759cba816c71ce">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html#a57ccd4dd449829258d1d545cbf0ff826">Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ad07e64d4425919574f2acedfd76d881c">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="IMouseAdapter_8cs_source.html#l00034">34</a> of file <a class="el" href="IMouseAdapter_8cs_source.html">IMouseAdapter.cs</a>.</p>
 
@@ -182,7 +183,7 @@ Properties</h2></td></tr>
 
 <p>Gets the current position of the mouse cursor in screen or client coordinates, depending on the implementation. This position is typically updated continuously as the user moves the mouse and represents the pixel coordinates where the cursor is currently located. </p>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a193d149dc02da8bba9e1eae70f1be62e">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#afb8294972bb334f2068dd74fe5bd2c4b">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a193d149dc02da8bba9e1eae70f1be62e">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html#ac8d8d2604e6de1e0c1ae9f89cfc9035b">Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#afb8294972bb334f2068dd74fe5bd2c4b">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="IMouseAdapter_8cs_source.html#l00019">19</a> of file <a class="el" href="IMouseAdapter_8cs_source.html">IMouseAdapter.cs</a>.</p>
 
@@ -210,7 +211,7 @@ Properties</h2></td></tr>
 
 <p>Gets the set of mouse buttons that are currently pressed. This collection includes identifiers for all buttons that are in the down state, such as MouseButton.Left, MouseButton.Right, MouseButton.Middle, and additional buttons if supported by the hardware. The collection is empty when no buttons are pressed. </p>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a7b5017b41f937673cd3e06925bb52309">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ac9358f4a6b7de2be6cf9b3c844b6219e">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a7b5017b41f937673cd3e06925bb52309">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html#aad6c1633cef973f4519a89a0bfae9a51">Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ac9358f4a6b7de2be6cf9b3c844b6219e">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="IMouseAdapter_8cs_source.html#l00027">27</a> of file <a class="el" href="IMouseAdapter_8cs_source.html">IMouseAdapter.cs</a>.</p>
 
@@ -238,7 +239,7 @@ Properties</h2></td></tr>
 
 <p>Gets the accumulated scroll wheel delta since the last poll, measured in implementation-defined units. Positive values indicate upward scrolling (scrolling away from the user), while negative values indicate downward scrolling (scrolling toward the user). The magnitude represents the distance or speed of the scroll. This value is typically reset or accumulated between polling intervals. </p>
 
-<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#aa2f8dd86a89fd4e96423af17d18d128e">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#a2e2efa3580144d6dd66b903e64dac423">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#aa2f8dd86a89fd4e96423af17d18d128e">Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html#a94b3ed58c4f2345745cbcbcea4bc330b">Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#a2e2efa3580144d6dd66b903e64dac423">Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="IMouseAdapter_8cs_source.html#l00042">42</a> of file <a class="el" href="IMouseAdapter_8cs_source.html">IMouseAdapter.cs</a>.</p>
 
