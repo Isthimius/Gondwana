@@ -112,4 +112,13 @@
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
 
+    <!-- Browser wwwroot content -->
+
+    <!-- Browser content - copy index.html to wwwroot without subdirectories -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
+        <Content Include="wwwroot\index.html">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>
