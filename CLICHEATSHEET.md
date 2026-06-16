@@ -40,7 +40,7 @@ After installation the `gondwana` command is available in any terminal.
 | [`gondwana new <subcommand>`](#gondwana-new) | Scaffold a new Gondwana project. |
 | [`gondwana templates <subcommand>`](#gondwana-templates) | Manage Gondwana `dotnet new` templates. |
 | [`gondwana run`](#gondwana-run) | Run the desktop build of the project in the current directory. |
-| [`gondwana run wasm`](#gondwana-run-wasm) | Build and run the project in the browser (net8.0-browser dev server). |
+| [`gondwana run blazor`](#gondwana-run-blazor) | Build and run the Blazor WebAssembly project in the browser. |
 | [`gondwana publish <subcommand>`](#gondwana-publish) | Publish a Gondwana project for distribution. |
 | [`gondwana deploy <subcommand>`](#gondwana-deploy) | Deploy a Gondwana project to a distribution target. |
 
@@ -211,7 +211,7 @@ gondwana pack ./Assets ./game.assets --password secret --encrypt
 |---|---|
 | `winforms` | Create a new WinForms Gondwana project. |
 | `avalonia` | Create a new Avalonia Gondwana project (Windows, macOS, Linux). |
-| `wasm` | Create a new Avalonia Gondwana project targeting desktop and browser/WASM. |
+| `blazor` | Create a new Blazor WebAssembly Gondwana project for browser. |
 
 ### `gondwana new winforms <name>`
 
@@ -251,7 +251,7 @@ gondwana new avalonia MyGame --backbuffer gpu
 
 ---
 
-### `gondwana new wasm <name>`
+### `gondwana new blazor <name>`
 
 If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `<name>.sln` and adds the project.
 
@@ -262,14 +262,14 @@ If a `.sln` already exists in the output directory, adds the generated project t
 
 **Example**
 ```
-gondwana new wasm MyGame
-gondwana new wasm MyGame -o ./projects/MyGame
+gondwana new blazor MyGame
+gondwana new blazor MyGame -o ./projects/MyGame
 ```
 
-Scaffolds an Avalonia project that compiles for both `net8.0` (desktop) and `net8.0-browser` (WASM).
-Includes `Program.Browser.cs`, `GameView.cs`, `wwwroot/gondwana-audio.js`, and the `Gondwana.Audio.Browser` package reference.
+Scaffolds a Blazor WebAssembly project targeting `net8.0` for browser deployment.
+Includes `Program.cs`, `App.razor`, `Pages/Index.razor`, `GameRenderSurface.razor`, `wwwroot/index.html`, `wwwroot/gondwana-audio.js`, and the `Gondwana.Blazor` and `Gondwana.Audio.Browser` package references.
 
-After scaffolding, publish for WASM with:
+After scaffolding, run locally:
 ```
 dotnet workload install wasm-tools    # one-time per machine
 dotnet publish -f net8.0-browser -c Release
@@ -303,9 +303,9 @@ Equivalent to `dotnet run --project <path> -c <configuration>`.
 
 ---
 
-### `gondwana run wasm`
+### `gondwana run blazor`
 
-Builds and runs the project in the browser using the `net8.0-browser` dev server.
+Builds and runs the Blazor WebAssembly project in the browser.
 
 | Option | Short | Default | Description |
 |---|---|---|---|
@@ -315,10 +315,10 @@ Builds and runs the project in the browser using the `net8.0-browser` dev server
 
 **Examples**
 ```
-gondwana run wasm
-gondwana run wasm -p ./src/MyGame
-gondwana run wasm --skip-workload
-gondwana run wasm --skip-workload -c Release
+gondwana run blazor
+gondwana run blazor -p ./src/MyGame
+gondwana run blazor --skip-workload
+gondwana run blazor --skip-workload -c Release
 ```
 
 Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`. The Avalonia browser host starts a local dev server and opens the game in the default browser.
