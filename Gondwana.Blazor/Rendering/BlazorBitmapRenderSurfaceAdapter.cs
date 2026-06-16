@@ -72,7 +72,11 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
             gcHandle.Free();
         }
 
-        if (!success) return;
+        if (!success)
+        {
+            bufferImage.Dispose();
+            return;
+        }
 
         SetDestinationSize(w, h);
 
@@ -80,6 +84,8 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
         // before the queued InvokeAsync action consumes it. For Blazor Server the host is
         // expected to configure a separate loop, but the copy is omitted here for performance.
         _component.EnqueueFrame(_pixelBuffer, w, h);
+
+        bufferImage.Dispose();
     }
 
     /// <summary>Releases all resources used by the adapter.</summary>
