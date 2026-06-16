@@ -41,8 +41,4 @@
         <None Include="..\..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="templates\gondwana-wasm\" />
-    </ItemGroup>
-
 </Project>
