@@ -67,8 +67,7 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
         // Request focus so keyboard events are received without requiring a click.
         try
         {
-            await JS.InvokeVoidAsync("eval",
-                "(function(){var c=document.querySelector('canvas[tabindex]');if(c)c.focus();})()");
+            await _canvasRef.FocusAsync();
         }
         catch
         {
