@@ -164,6 +164,7 @@ internal sealed class GameWindow : Window
 
     private async System.Threading.Tasks.Task OpenNewGameDialogAsync()
     {
+#if !BROWSER
         var dialog = new NewGameDialog(_lastNewGameOptions);
         var options = await dialog.ShowDialog<NewGameOptions?>(this);
         if (options is not null)
@@ -171,11 +172,18 @@ internal sealed class GameWindow : Window
             _lastNewGameOptions = options;
             _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
         }
+#else
+        await System.Threading.Tasks.Task.CompletedTask;
+#endif
     }
 
     private async System.Threading.Tasks.Task OpenAboutDialogAsync()
     {
+#if !BROWSER
         var dialog = new AboutDialog();
         await dialog.ShowDialog(this);
+#else
+        await System.Threading.Tasks.Task.CompletedTask;
+#endif
     }
 }

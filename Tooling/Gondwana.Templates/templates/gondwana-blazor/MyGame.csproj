@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<IsPackable>false</IsPackable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!--
+            Core Gondwana packages — track the latest 2.x releases.
+            Run 'dotnet add package Gondwana' to update to a newer major version.
+        -->
+		<PackageReference Include="Gondwana" Version="2.*" />
+		<PackageReference Include="Gondwana.Hosting" Version="2.*" />
+		<PackageReference Include="Gondwana.Blazor" Version="2.*" />
+		<PackageReference Include="Gondwana.Audio.Browser" Version="2.*" ExcludeAssets="contentFiles" />
+
+		<!-- Blazor WebAssembly -->
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.*" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.*" PrivateAssets="all" />
+	</ItemGroup>
+
+	<!--
+        Static web content.
+        gondwana-audio.js is the audio JS module used by Gondwana.Audio.Browser.
+        All wwwroot/ files are served by the Blazor WebAssembly host.
+
+        NOTE: Gondwana.Audio.Browser ships gondwana-audio.js as a NuGet content file
+        so it is automatically placed here. If you are using project references instead
+        of NuGet packages, copy the file manually from
+        Gondwana.Audio.Browser/wwwroot/gondwana-audio.js.
+    -->
+
+	<!--
+        Add your asset files here so they are copied to the output directory.
+        Example:
+        <ItemGroup>
+            <Content Include="assets\my-sprite.png">
+                <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            </Content>
+        </ItemGroup>
+    -->
+
+</Project>

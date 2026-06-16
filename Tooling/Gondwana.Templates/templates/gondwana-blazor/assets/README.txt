@@ -11,11 +11,8 @@ After adding a file, register it in your .csproj so it is copied to the output d
 Then load it in MyGameHost.cs:
 
     Tilesheets:  new Tilesheet("name", @"assets\your-sprite.png")
-    Audio:       Engine.Managers.AudioResources.LoadFromFile("name", @"assets\theme.mp3")   // desktop
-                 Engine.GetBrowserAudioManager().Load("name", "assets/theme.mp3")           // browser
+    Audio:       Engine.GetBrowserAudioManager().Load("name", "assets/theme.mp3")
     Fonts:       Engine.Managers.Fonts.LoadFromFile("name", @"assets\your-font.ttf")
 
-NOTE: On browser/WASM targets audio files must be accessible as URLs relative
-to index.html (use forward slashes: "assets/theme.mp3" not "assets\theme.mp3").
-
-See https://github.com/Isthimius/Gondwana/wiki for full documentation.
+NOTE: Audio files must be accessible as URLs relative to index.html
+(use forward slashes: "assets/theme.mp3" not "assets\theme.mp3").

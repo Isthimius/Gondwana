@@ -1,0 +1,29 @@
+@using Microsoft.Extensions.Logging
+@using Gondwana.Blazor.Rendering
+@implements IDisposable
+@inject ILogger<GameRenderSurface> Logger
+
+<div class="render-surface-container">
+    <BlazorBitmapRenderSurfaceControl @ref="_renderSurface" />
+</div>
+
+@code {
+    private BlazorBitmapRenderSurfaceControl? _renderSurface;
+    private MyGameHost? _host;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _renderSurface is not null)
+        {
+            _host = new MyGameHost(_renderSurface);
+            _host.Initialize(logLevel: LogLevel.Warning);
+            await Task.CompletedTask;
+        }
+    }
+
+    public void Dispose()
+    {
+        _host?.Dispose();
+        _host = null;
+    }
+}

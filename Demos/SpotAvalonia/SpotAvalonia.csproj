@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net8.0-browser</TargetFrameworks>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -9,35 +9,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
-    <!-- Define BROWSER constant when building for the browser target -->
-    <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
-        <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
-    </PropertyGroup>
-
     <!-- Desktop-only packages -->
-    <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-browser'">
+    <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
+		<PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
     </ItemGroup>
 
-    <!-- Browser-only packages -->
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser'">
-        <PackageReference Include="Avalonia.Browser" Version="11.2.1" />
-        <ProjectReference Include="..\..\Gondwana.Audio.Browser\Gondwana.Audio.Browser.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
-      <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
-    </ItemGroup>
-
-    <!--
-        wwwroot/ is bundled into AppBundle/ when publishing for WASM.
-        gondwana-audio.js is the Gondwana browser audio module.
-    -->
-    <ItemGroup>
-        <Content Include="wwwroot/**">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
     <ItemGroup>
       <None Remove="assets\ArchitectsDaughter-Regular.ttf" />
       <None Remove="assets\clouds.png" />
