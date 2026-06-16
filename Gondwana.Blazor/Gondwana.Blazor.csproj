@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Gondwana.Blazor</RootNamespace>
+        <AssemblyName>Gondwana.Blazor</AssemblyName>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Blazor</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.Blazor</PackageId>
+        <Title>Gondwana Blazor Platform Support</Title>
+        <Description>Blazor-based platform support for the Gondwana Game Engine, providing rendering, input, and adapter integration for ASP.NET Blazor WebAssembly applications.</Description>
+        <PackageTags>game-engine gamedev csharp dotnet blazor wasm webassembly rendering input</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>gondwana-logo.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="wwwroot/**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
+            <PackagePath>staticwebassets/</PackagePath>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+    </ItemGroup>
+
+</Project>

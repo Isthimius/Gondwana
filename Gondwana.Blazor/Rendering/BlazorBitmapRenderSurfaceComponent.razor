@@ -1,0 +1,21 @@
+@namespace Gondwana.Blazor.Rendering
+@implements IDisposable
+@inject IJSRuntime JS
+
+<canvas @ref="_canvasRef"
+        tabindex="0"
+        style="width: 100%; height: 100%; display: block; outline: none;"
+        @onkeydown="HandleKeyDown"
+        @onkeydown:preventDefault
+        @onkeyup="HandleKeyUp"
+        @onmousemove="HandleMouseMove"
+        @onmousedown="HandleMouseDown"
+        @onmouseup="HandleMouseUp"
+        @onwheel="HandleWheel"
+        @onwheel:preventDefault
+        @ontouchstart="HandleTouchStart"
+        @ontouchstart:preventDefault
+        @ontouchmove="HandleTouchMove"
+        @ontouchend="HandleTouchEnd"
+        @ontouchcancel="HandleTouchCancel">
+</canvas>
