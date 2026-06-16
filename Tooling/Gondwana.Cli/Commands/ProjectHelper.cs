@@ -70,7 +70,7 @@ internal static class ProjectHelper
             if (requestedFramework.Contains("browser", StringComparison.OrdinalIgnoreCase))
             {
                 framework = null;
-                error = "The browser target should be published with 'gondwana publish wasm'.";
+                error = "The browser target should be published with 'gondwana publish blazor'.";
                 return false;
             }
 
@@ -86,7 +86,7 @@ internal static class ProjectHelper
         if (desktopFrameworks.Length == 0)
         {
             framework = null;
-            error = "No desktop target framework found. Use 'gondwana publish wasm' for browser-only projects.";
+            error = "No desktop target framework found. Use 'gondwana publish blazor' for browser-only projects.";
             return false;
         }
 

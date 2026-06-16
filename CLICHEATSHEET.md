@@ -269,13 +269,18 @@ gondwana new blazor MyGame -o ./projects/MyGame
 Scaffolds a Blazor WebAssembly project targeting `net8.0` for browser deployment.
 Includes `Program.cs`, `App.razor`, `Pages/Index.razor`, `GameRenderSurface.razor`, `wwwroot/index.html`, `wwwroot/gondwana-audio.js`, and the `Gondwana.Blazor` and `Gondwana.Audio.Browser` package references.
 
-After scaffolding, run locally:
+After scaffolding, start the Blazor dev server:
 ```
-dotnet workload install wasm-tools    # one-time per machine
-dotnet publish -f net8.0-browser -c Release
+dotnet run
 ```
 
-Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
+Build and publish for deployment:
+```
+dotnet workload install wasm-tools    # one-time per machine
+dotnet publish -c Release
+```
+
+Output is placed in `bin/Release/net8.0/publish/wwwroot/`.
 
 ---
 
@@ -321,7 +326,7 @@ gondwana run blazor --skip-workload
 gondwana run blazor --skip-workload -c Release
 ```
 
-Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`. The Avalonia browser host starts a local dev server and opens the game in the default browser.
+Equivalent to `dotnet run --project <path> -c <configuration>`. The Blazor dev server starts automatically and opens the game in the browser at the address printed to the console.
 
 ---
 
@@ -330,7 +335,7 @@ Equivalent to `dotnet run --project <path> -f net8.0-browser -c <configuration>`
 | Subcommand | Description |
 |---|---|
 | *(default)* | Publish the desktop build of the current project. |
-| `wasm` | Build and publish the current project for browser/WASM. |
+| `blazor` | Publish the current Blazor WebAssembly project for browser deployment. |
 | `itch` | Package a browser/WASM AppBundle as an itch.io-ready zip. |
 
 ### `gondwana publish` (desktop)
@@ -362,10 +367,10 @@ On success, the command prints the publish output directory as a plain line when
 
 ---
 
-### `gondwana publish wasm`
+### `gondwana publish blazor`
 
 Installs the `wasm-tools` .NET workload (unless `--skip-workload`) then runs
-`dotnet publish -f net8.0-browser -c Release` and reports the AppBundle path.
+`dotnet publish -c Release` and reports the published wwwroot path.
 
 | Option | Short | Default | Description |
 |---|---|---|---|
@@ -375,12 +380,12 @@ Installs the `wasm-tools` .NET workload (unless `--skip-workload`) then runs
 
 **Examples**
 ```
-gondwana publish wasm
-gondwana publish wasm -p ./src/MyGame
-gondwana publish wasm --skip-workload -c Debug
+gondwana publish blazor
+gondwana publish blazor -p ./src/MyGame
+gondwana publish blazor --skip-workload -c Debug
 ```
 
-On success, the command prints the AppBundle path as a plain line. If publish succeeds but the AppBundle cannot be located, a warning is printed.
+On success, the command prints the wwwroot path as a plain line (`bin/<Configuration>/net8.0/publish/wwwroot/`). If publish succeeds but the output cannot be located, a warning is printed.
 
 For packaging or deployment, see also `gondwana publish itch`, `gondwana deploy`, and `gondwana deploy itch`.
 
@@ -414,11 +419,11 @@ On success, the command prints the zip path as a plain line.
 
 | Subcommand | Description |
 |---|---|
-| *(default)* | Deploy a browser/WASM AppBundle to a static web host. |
-| `wasm` | Deploy a browser/WASM AppBundle to a static web host. |
+| *(default)* | Deploy a Blazor WebAssembly publish output to a static web host. |
+| `blazor` | Deploy a Blazor WebAssembly publish output to a static web host. |
 | `itch` | Deploy a browser/WASM build to itch.io via `butler`. |
 
-### `gondwana deploy` / `gondwana deploy wasm`
+### `gondwana deploy` / `gondwana deploy blazor`
 
 Deploys the project for browser/WASM to a static web host.
 
@@ -426,10 +431,10 @@ Deploys the project for browser/WASM to a static web host.
 |---|---|---|---|
 | `--project <path>` | `-p` | *(current directory)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration (`Release`, `Debug`). |
-| `--web-root <path>` | | *(none)* | Local destination directory for the AppBundle contents. |
+| `--web-root <path>` | | *(none)* | Local destination directory for the publish wwwroot contents. |
 | `--remote-host <user@host>` | | *(none)* | SSH remote, used with `--remote-path`. |
 | `--remote-path <path>` | | *(none)* | Remote destination path, used with `--remote-host`. |
-| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing AppBundle. |
+| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing publish output. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
 
 Specify either `--web-root` or `--remote-host` + `--remote-path`, not both.
@@ -438,7 +443,7 @@ Specify either `--web-root` or `--remote-host` + `--remote-path`, not both.
 ```
 gondwana deploy --web-root ./dist/MyGame
 gondwana deploy -p ./src/MyGame --web-root ./dist/MyGame
-gondwana deploy wasm --remote-host deploy@example.com --remote-path /var/www/html/mygame
+gondwana deploy blazor --remote-host deploy@example.com --remote-path /var/www/html/mygame
 gondwana deploy --skip-build --web-root ./dist/MyGame
 ```
 

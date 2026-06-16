@@ -465,12 +465,12 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         bool hasWinForms = output.Contains("gondwana-winforms", StringComparison.OrdinalIgnoreCase);
         bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
-        bool hasWasm     = output.Contains("gondwana-wasm",     StringComparison.OrdinalIgnoreCase);
+        bool hasBlazor   = output.Contains("gondwana-blazor",   StringComparison.OrdinalIgnoreCase);
 
-        const string templateNames = "gondwana-winforms, gondwana-avalonia, gondwana-wasm";
+        const string templateNames = "gondwana-winforms, gondwana-avalonia, gondwana-blazor";
         var installedVersion = TemplatePackageHelper.GetInstalledVersion();
 
-        if (hasWinForms && hasAvalonia && hasWasm)
+        if (hasWinForms && hasAvalonia && hasBlazor)
             return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
                 ? $"{templateNames} found"
                 : $"Gondwana.Templates {installedVersion} ({templateNames})");
@@ -478,7 +478,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var found = new List<string>();
         if (hasWinForms) found.Add("gondwana-winforms");
         if (hasAvalonia) found.Add("gondwana-avalonia");
-        if (hasWasm)     found.Add("gondwana-wasm");
+        if (hasBlazor)   found.Add("gondwana-blazor");
 
         if (found.Count > 0)
             return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
