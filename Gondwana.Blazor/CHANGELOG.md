@@ -5,18 +5,6 @@ All notable changes to this project will be documented in this file.
 
 # v2.4.3 - June 16, 2026
 
-
-
-## Fixed
-- Restore SpotAvalonia desktop splash and about dialog
-
-
-
-
-# v2.5.0 - June 16, 2026
-
-
-
 ## Added
 - Add Gondwana.Blazor project with Blazor WebAssembly rendering and input support
 - Add BlazorBitmapRenderSurfaceAdapter and BlazorBitmapRenderSurfaceComponent (canvas-based)
@@ -26,4 +14,5 @@ All notable changes to this project will be documented in this file.
 - Add EngineExtensions for InitializeBlazorKeyboardAdapter, Mouse, Touch
 - Add gondwana-blazor.js JS module for canvas putImageData rendering
 
-
+## Fixed
+- Restore SpotAvalonia desktop splash and about dialog
