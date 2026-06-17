@@ -18,6 +18,53 @@ export function getCanvasSize(canvas) {
 }
 
 /**
+ * Observes the canvas client size and notifies .NET whenever it changes.
+ * @param {HTMLCanvasElement} canvas - The target canvas element.
+ * @param {object} dotnetHelper - .NET object reference with invokable size-changed method.
+ */
+export function observeCanvasSize(canvas, dotnetHelper) {
+    if (!canvas || !dotnetHelper) return;
+
+    const state = canvas.__gondwana ??= {};
+
+    if (state.resizeObserver) {
+        state.resizeObserver.disconnect();
+    }
+
+    const notifySize = () => {
+        const size = getCanvasSize(canvas);
+        dotnetHelper.invokeMethodAsync('OnCanvasSizeChanged', size.width, size.height);
+    };
+
+    if (typeof ResizeObserver === 'function') {
+        state.resizeObserver = new ResizeObserver(() => notifySize());
+        state.resizeObserver.observe(canvas);
+    } else {
+        state.resizeListener = () => notifySize();
+        window.addEventListener('resize', state.resizeListener);
+    }
+
+    notifySize();
+}
+
+/**
+ * Stops observing canvas client size changes.
+ * @param {HTMLCanvasElement} canvas - The target canvas element.
+ */
+export function unobserveCanvasSize(canvas) {
+    if (!canvas?.__gondwana) return;
+
+    const state = canvas.__gondwana;
+    state.resizeObserver?.disconnect();
+    state.resizeObserver = null;
+
+    if (state.resizeListener) {
+        window.removeEventListener('resize', state.resizeListener);
+        state.resizeListener = null;
+    }
+}
+
+/**
  * Starts the render loop using requestAnimationFrame.
  * @param {object} dotnetHelper - .NET object reference with invokable tick method.
  */

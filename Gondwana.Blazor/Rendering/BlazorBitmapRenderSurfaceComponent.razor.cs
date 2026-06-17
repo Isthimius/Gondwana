@@ -28,6 +28,7 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
 {
     private ElementReference _canvasRef;
     private IJSObjectReference? _module;
+    private DotNetObjectReference<BlazorBitmapRenderSurfaceComponent>? _dotNetRef;
     private bool _moduleLoaded;
 
     // Internal events consumed by input adapters (subscribed via BlazorGameHost / EngineExtensions).
@@ -63,6 +64,9 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
         _module = await JS.InvokeAsync<IJSObjectReference>(
             "import", "./_content/Gondwana.Blazor/gondwana-blazor.js");
         _moduleLoaded = true;
+        _dotNetRef = DotNetObjectReference.Create(this);
+
+        await _module.InvokeVoidAsync("observeCanvasSize", _canvasRef, _dotNetRef);
 
         // Get the actual canvas size and update the adapter
         await UpdateCanvasSizeAsync();
@@ -91,6 +95,20 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
             if (size.Width > 0 && size.Height > 0)
             {
                 Adapter.UpdateSize(size.Width, size.Height);
+            }
+        }
+
+        /// <summary>
+        /// Updates the adapter after JavaScript observes a canvas client-size change.
+        /// </summary>
+        /// <param name="width">Canvas client width in CSS pixels.</param>
+        /// <param name="height">Canvas client height in CSS pixels.</param>
+        [JSInvokable]
+        public void OnCanvasSizeChanged(int width, int height)
+        {
+            if (width > 0 && height > 0)
+            {
+                Adapter.UpdateSize(width, height);
             }
         }
         catch
@@ -147,7 +165,16 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_moduleLoaded && _module is not null)
+        {
+            _ = _module.InvokeVoidAsync("unobserveCanvasSize", _canvasRef);
+        }
+
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
         _ = _module?.DisposeAsync();
+        _module = null;
+        _moduleLoaded = false;
     }
 
     private sealed class CanvasSize
