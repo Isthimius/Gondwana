@@ -27,7 +27,8 @@ namespace Gondwana.Logging;
 /// <para>
 /// Logger instances are cached per type for performance. The underlying <see cref="ILoggerFactory"/> can be 
 /// customized via <see cref="Initialize"/> or <see cref="SetLogLevel"/>. By default, Debug and Console 
-/// providers are configured.
+/// providers are configured on non-browser platforms. On browser/WASM platforms, only Debug logging is used
+/// to avoid threading issues.
 /// </para>
 /// <para>
 /// Thread-safety: All public methods and properties are thread-safe. The <see cref="LoggingError"/> event 
@@ -36,11 +37,8 @@ namespace Gondwana.Logging;
 /// </remarks>
 public static partial class EngineLogger
 {
-    private static ILoggerFactory _loggerFactory = LoggerFactory.Create(static builder =>
-    {
-        builder.AddDebug()
-               .AddConsole(); // only visible in Console apps
-    });
+    private static ILoggerFactory? _loggerFactory;
+    private static readonly object _factoryLock = new();
 
     // Cache wrappers (not raw loggers)
     private static readonly ConcurrentDictionary<Type, ILogger> _loggerCache = new();
@@ -86,6 +84,40 @@ public static partial class EngineLogger
     // Defaults: bounded + drop on full (fire-and-forget)
     private const int DefaultCapacity = 8192;
     private static int _capacity = DefaultCapacity;
+
+    /// <summary>
+    /// Gets the logger factory, creating it lazily if needed.
+    /// On browser/WASM platforms, only Debug logging is used (no Console logger).
+    /// On other platforms, both Debug and Console logging are configured.
+    /// </summary>
+    private static ILoggerFactory GetOrCreateLoggerFactory()
+    {
+        if (_loggerFactory != null)
+            return _loggerFactory;
+
+        lock (_factoryLock)
+        {
+            if (_loggerFactory != null)
+                return _loggerFactory;
+
+            // Check if we're running in a browser/WASM environment
+            bool isBrowser = OperatingSystem.IsBrowser();
+
+            _loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddDebug();
+
+                // Only add Console logger on non-browser platforms
+                // Console logging creates background threads which are not supported in WASM
+                if (!isBrowser)
+                {
+                    builder.AddConsole();
+                }
+            });
+
+            return _loggerFactory;
+        }
+    }
 
     /// <summary>
     /// Optionally call during startup. If not called and Mode==Asynchronous, the worker auto-starts on first log.
@@ -174,8 +206,11 @@ public static partial class EngineLogger
 
     internal static void Initialize(ILoggerFactory loggerFactory)
     {
-        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-        _loggerCache.Clear(); // refresh wrappers
+        lock (_factoryLock)
+        {
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _loggerCache.Clear(); // refresh wrappers
+        }
     }
 
     /// <summary>
@@ -186,7 +221,7 @@ public static partial class EngineLogger
     /// Changes to this factory (via <see cref="Initialize"/> or <see cref="SetLogLevel"/>) 
     /// will affect all subsequently created loggers.
     /// </remarks>
-    public static ILoggerFactory EngineLoggerFactory => _loggerFactory;
+    public static ILoggerFactory EngineLoggerFactory => GetOrCreateLoggerFactory();
 
     /// <summary>
     /// Gets a logger instance for the specified type.
@@ -207,6 +242,7 @@ public static partial class EngineLogger
     /// <summary>
     /// Sets the minimum log level for all loggers created by the engine logger factory.
     /// Recreates the internal logger factory with Debug and Console providers at the specified level.
+    /// On browser/WASM platforms, only Debug logging is configured (no Console logger).
     /// </summary>
     /// <param name="level">The minimum <see cref="LogLevel"/> to log. Messages below this level will be filtered out.</param>
     /// <remarks>
@@ -215,14 +251,25 @@ public static partial class EngineLogger
     /// </remarks>
     public static void SetLogLevel(LogLevel level)
     {
-        _loggerFactory = LoggerFactory.Create(builder =>
+        lock (_factoryLock)
         {
-            builder.AddDebug()
-                   .AddConsole()
-                   .SetMinimumLevel(level);
-        });
+            // Check if we're running in a browser/WASM environment
+            bool isBrowser = OperatingSystem.IsBrowser();
 
-        _loggerCache.Clear(); // refresh wrappers
+            _loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddDebug()
+                       .SetMinimumLevel(level);
+
+                // Only add Console logger on non-browser platforms
+                if (!isBrowser)
+                {
+                    builder.AddConsole();
+                }
+            });
+
+            _loggerCache.Clear(); // refresh wrappers
+        }
     }
 
     private static void EnsureAsyncStarted(bool forceRestart)
@@ -297,14 +344,14 @@ public static partial class EngineLogger
                     try
                     {
                         // Executes formatting + sinks (console) off the engine thread.
-                        var logger = _loggerFactory.CreateLogger(ev.CategoryName);
+                        var logger = GetOrCreateLoggerFactory().CreateLogger(ev.CategoryName);
                         logger.Log(ev.LogLevel, ev.EventId, ev.State, ev.Exception, ev.Formatter);
                     }
                     catch (Exception ex)
                     {
                         // Fallback: write to debug output to aid diagnostics without crashing.
                         Debug.WriteLine($"[EngineLogger] Logging failed: {ex.GetType().Name}: {ex.Message}");
-                        
+
                         // Raise event for applications that want to monitor logging failures.
                         try
                         {
@@ -338,12 +385,12 @@ public sealed class LoggingErrorEventArgs : EventArgs
     /// Gets the exception that occurred during logging.
     /// </summary>
     public Exception Exception { get; }
-    
+
     /// <summary>
     /// Gets the category name of the logger that failed.
     /// </summary>
     public string CategoryName { get; }
-    
+
     /// <summary>
     /// Gets the log level of the message that failed to log.
     /// </summary>

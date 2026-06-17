@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Spot.Blazor": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:50040;http://localhost:50041"
+    }
+  }
+}

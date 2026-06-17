@@ -2,6 +2,7 @@ using Gondwana.Blazor;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Hosting;
 using Gondwana.Rendering;
+using Microsoft.JSInterop;
 namespace Gondwana.Blazor.Hosting;
 
 /// <summary>
@@ -9,10 +10,9 @@ namespace Gondwana.Blazor.Hosting;
 /// </summary>
 /// <remarks>
 /// <para>
-/// On browser/WASM targets the engine runs in timer-driven mode via <see cref="PeriodicTimer"/>,
-/// because Blazor WebAssembly does not support background threads. The timer targets 60 frames
-/// per second by default. On non-browser targets (e.g. Blazor Server) the standard background-
-/// thread engine loop is used.
+/// On browser/WASM targets the engine runs in timer-driven mode via JavaScript's requestAnimationFrame,
+/// because Blazor WebAssembly does not support background threads. On non-browser targets (e.g. Blazor Server)
+/// the standard background-thread engine loop is used.
 /// </para>
 /// <para>
 /// Usage: derive from this class, override <see cref="GameHostBase.CreateInitialScene"/>,
@@ -23,7 +23,9 @@ namespace Gondwana.Blazor.Hosting;
 /// </remarks>
 public abstract class BlazorGameHost : GameHostBase
 {
-    private PeriodicTimer? _engineTimer;
+    private DotNetObjectReference<BlazorGameHost>? _dotNetRef;
+    private IJSObjectReference? _module;
+    private readonly IJSRuntime _jsRuntime;
 
     /// <summary>
     /// Gets the render surface component used for displaying game content.
@@ -34,10 +36,12 @@ public abstract class BlazorGameHost : GameHostBase
     /// Initializes a new instance of the <see cref="BlazorGameHost"/> class.
     /// </summary>
     /// <param name="renderSurface">The render surface component to use for rendering.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurface"/> is null.</exception>
-    protected BlazorGameHost(BlazorBitmapRenderSurfaceComponent renderSurface)
+    /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurface"/> or <paramref name="jsRuntime"/> is null.</exception>
+    protected BlazorGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime)
     {
         RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
+        _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
     }
 
     /// <summary>
@@ -95,49 +99,96 @@ public abstract class BlazorGameHost : GameHostBase
     protected override RenderSurfaceHostBase GetPrimaryRenderSurfaceHost() => RenderSurface.Host;
 
     /// <summary>
-    /// Starts the engine. On browser/WASM targets, uses a timer-driven loop via
-    /// <see cref="PeriodicTimer"/>. On all other targets, the default background-thread
-    /// loop is used.
+    /// Starts the engine. On browser/WASM targets, uses a JavaScript requestAnimationFrame loop.
+    /// On all other targets, the default background-thread loop is used.
     /// </summary>
     protected override void StartEngine()
     {
-        var syncContext = SynchronizationContext.Current
-            ?? throw new InvalidOperationException(
-                $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
+        var syncContext = SynchronizationContext.Current;
 
         if (OperatingSystem.IsBrowser())
         {
+            // For browser/WASM, ensure we have a context (create a default if needed)
+            if (syncContext == null)
+            {
+                syncContext = new SynchronizationContext();
+                SynchronizationContext.SetSynchronizationContext(syncContext);
+            }
+
             Engine.Instance.StartTimerDriven(syncContext);
 
-            _engineTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000.0 / 60.0));
-            _ = RunEngineLoopAsync(_engineTimer);
+            // Start the requestAnimationFrame loop
+            _ = StartBrowserRenderLoopAsync();
         }
         else
         {
+            // Non-browser platforms require a SynchronizationContext
+            if (syncContext == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
+            }
+
             Engine.Instance.Start(syncContext);
         }
 
-        OnStartEngine();
+        base.OnStartEngine();
     }
 
-    private static async Task RunEngineLoopAsync(PeriodicTimer timer)
+    private async Task StartBrowserRenderLoopAsync()
     {
-        while (await timer.WaitForNextTickAsync())
+        // Get the JS module
+        var js = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/Gondwana.Blazor/gondwana-blazor.js");
+        
+        _module = js;
+        _dotNetRef = DotNetObjectReference.Create(this);
+
+        // Start the JavaScript requestAnimationFrame loop
+        await js.InvokeVoidAsync("startRenderLoop", _dotNetRef);
+    }
+
+    /// <summary>
+    /// Called by JavaScript on each animation frame.
+    /// </summary>
+    [JSInvokable]
+    public void OnAnimationFrame()
+    {
+        if (Engine.Instance.IsRunning)
         {
-            if (!Engine.Instance.IsRunning) break;
             Engine.Instance.Tick();
         }
     }
 
     /// <summary>
-    /// Stops the engine and, on browser/WASM targets, stops the timer that was driving the loop.
+    /// Stops the engine and, on browser/WASM targets, stops the render loop.
     /// </summary>
     protected override void StopEngine()
     {
-        _engineTimer?.Dispose();
-        _engineTimer = null;
+        if (_module != null)
+        {
+            _ = _module.InvokeVoidAsync("stopRenderLoop");
+        }
 
         base.StopEngine();
+    }
+
+    /// <summary>
+    /// Disposes resources used by this host.
+    /// </summary>
+    /// <param name="disposing">True if disposing managed resources.</param>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _dotNetRef?.Dispose();
+            _dotNetRef = null;
+            
+            _ = _module?.DisposeAsync();
+            _module = null;
+        }
+
+        base.Dispose(disposing);
     }
 
     /// <summary>

@@ -17,11 +17,6 @@
         <PackageTags>game-engine gamedev csharp dotnet audio browser wasm webassembly html5 avalonia js-interop</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>gondwana-logo.png</PackageIcon>
-        <!--
-            contentFiles: the JS module is copied into the consuming project's wwwroot/ folder
-            so that dotnet publish bundles it into AppBundle/.
-        -->
-        <ContentTargetFolders>content</ContentTargetFolders>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,20 +24,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!--
-            gondwana-audio.js is shipped as a NuGet content file so that consumers
-            automatically get it copied into their wwwroot/ directory.
-        -->
-        <Content Include="wwwroot/gondwana-audio.js">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Pack>true</Pack>
-            <PackagePath>contentFiles/any/any/wwwroot/</PackagePath>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="" />
         <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+        
+        <!-- For NuGet: include JS as content -->
+        <None Include="wwwroot\gondwana-audio.js" Pack="true" PackagePath="contentFiles\any\any\wwwroot\" />
     </ItemGroup>
 
 </Project>

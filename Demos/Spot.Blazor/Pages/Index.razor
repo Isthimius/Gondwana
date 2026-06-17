@@ -1,0 +1,203 @@
+@page "/"
+@using Gondwana.Blazor.Rendering
+@using Gondwana.Demos.SpotBlazor.Game
+@using Microsoft.Extensions.Logging
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject ILogger<Index> Logger
+@implements IDisposable
+
+<PageTitle>Spot!</PageTitle>
+
+<div class="game-wrapper">
+    <BlazorBitmapRenderSurfaceComponent @ref="_renderSurface" style="position: absolute; inset: 0;" />
+
+    @if (_showOverlay)
+    {
+        <div class="game-overlay">
+            <div class="setup-panel">
+                <h2 class="setup-title">Spot!</h2>
+
+                <div class="setup-row">
+                    <label>Players</label>
+                    <select @bind="_playerCount">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                    </select>
+                    <label style="margin-left:12px">Board</label>
+                    <select @bind="_boardWidth">
+                        @foreach (var size in GameConfig.BoardSizes)
+                        {
+                            <option value="@size" selected="@(size == GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex])">@size</option>
+                        }
+                    </select>
+                    <span style="margin: 0 4px">×</span>
+                    <select @bind="_boardHeight">
+                        @foreach (var size in GameConfig.BoardSizes)
+                        {
+                            <option value="@size" selected="@(size == GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex])">@size</option>
+                        }
+                    </select>
+                </div>
+
+                @for (int i = 0; i < 4; i++)
+                {
+                    var idx = i; // capture for lambda
+                    <div class="player-row @(idx >= _playerCount ? "hidden" : "")">
+                        <span class="player-label">Player @(idx + 1)</span>
+                        <input class="player-name" type="text" @bind="_playerNames[idx]" />
+                        <select @bind="_playerTypes[idx]">
+                            <option value="Human">Human</option>
+                            <option value="Computer">Computer</option>
+                        </select>
+                        <select @bind="_playerColorNames[idx]">
+                            @foreach (var color in GameConfig.AvailableColors)
+                            {
+                                <option value="@color.Name">@color.Name</option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                <div class="setup-row" style="justify-content: center; margin-top: 12px;">
+                    <button class="start-btn" @onclick="StartGame" disabled="@(!_engineReady)">
+                        @(_engineReady ? "Start Game" : "Loading…")
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <p class="error-msg">@_errorMessage</p>
+                }
+            </div>
+        </div>
+    }
+
+    @if (_assetsLoading)
+    {
+        <div class="loading-overlay">
+            <p>Loading assets…</p>
+        </div>
+    }
+</div>
+
+@code {
+    private BlazorBitmapRenderSurfaceComponent? _renderSurface;
+    private SpotBlazorGameHost? _host;
+
+    private bool _showOverlay   = true;
+    private bool _engineReady   = false;
+    private bool _assetsLoading = true;
+    private string _errorMessage = string.Empty;
+
+    // Setup form state
+    private int _playerCount = 4;
+    private string _boardWidth  = GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex];
+    private string _boardHeight = GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex];
+
+    private readonly string[] _playerNames = [.. GameConfig.DefaultPlayerNames];
+    private readonly string[] _playerTypes = ["Human", "Computer", "Computer", "Computer"];
+    private readonly string[] _playerColorNames;
+
+    public Index()
+    {
+        _playerColorNames = GameConfig.AvailableColors.Take(4).Select(c => c.Name).ToArray();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _renderSurface is null) return;
+
+        try
+        {
+            // Pre-fetch all assets via HttpClient before calling Initialize()
+            var assetData = await LoadAssetDataAsync();
+
+            _host = new SpotBlazorGameHost(_renderSurface, JS, assetData);
+
+            _host.Engine.InitializationComplete += () =>
+            {
+                _host.Engine.Configuration.TargetFPS = 0;
+                _engineReady = true;
+                InvokeAsync(StateHasChanged);
+            };
+
+            _host.Initialize(logLevel: LogLevel.Warning);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage  = $"Initialization failed: {ex.Message}";
+            Logger.LogError(ex, "Failed to initialize Spot.Blazor");
+        }
+        finally
+        {
+            _assetsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<Dictionary<string, byte[]>> LoadAssetDataAsync()
+    {
+        var assets = new Dictionary<string, byte[]>();
+        var filenames = new[]
+        {
+            "ArchitectsDaughter-Regular.ttf",
+            "spot.png",
+            "spot_defaults.png",
+            "spot_selected.png",
+            "clouds.png",
+        };
+
+        foreach (var filename in filenames)
+        {
+            try
+            {
+                assets[filename] = await Http.GetByteArrayAsync($"assets/{filename}");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Could not load asset: {Filename}", filename);
+            }
+        }
+
+        return assets;
+    }
+
+    private void StartGame()
+    {
+        if (_host is null || !_engineReady) return;
+
+        int w = int.TryParse(_boardWidth, out var bw) ? bw : 8;
+        int h = int.TryParse(_boardHeight, out var bh) ? bh : 8;
+
+        var options = new NewGameOptions
+        {
+            BoardWidth  = w,
+            BoardHeight = h,
+        };
+
+        for (int i = 0; i < _playerCount; i++)
+        {
+            var colorItem = GameConfig.AvailableColors
+                .FirstOrDefault(c => c.Name == _playerColorNames[i])
+                ?? GameConfig.AvailableColors[i % GameConfig.AvailableColors.Length];
+
+            options.Players.Add(new Player
+            {
+                Name      = _playerNames[i],
+                Type      = _playerTypes[i] == "Human" ? PlayerType.Human : PlayerType.Computer,
+                ColorItem = colorItem,
+            });
+        }
+
+        _showOverlay = false;
+        _host.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
+    }
+
+    public void Dispose()
+    {
+        _host?.Dispose();
+        _host = null;
+    }
+}
