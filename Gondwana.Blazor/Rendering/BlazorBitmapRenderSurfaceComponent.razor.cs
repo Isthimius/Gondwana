@@ -97,23 +97,23 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
                 Adapter.UpdateSize(size.Width, size.Height);
             }
         }
-
-        /// <summary>
-        /// Updates the adapter after JavaScript observes a canvas client-size change.
-        /// </summary>
-        /// <param name="width">Canvas client width in CSS pixels.</param>
-        /// <param name="height">Canvas client height in CSS pixels.</param>
-        [JSInvokable]
-        public void OnCanvasSizeChanged(int width, int height)
-        {
-            if (width > 0 && height > 0)
-            {
-                Adapter.UpdateSize(width, height);
-            }
-        }
         catch
         {
             // Size query failed; adapter remains at default 1x1
+        }
+    }
+
+    /// <summary>
+    /// Updates the adapter after JavaScript observes a canvas client-size change.
+    /// </summary>
+    /// <param name="width">Canvas client width in CSS pixels.</param>
+    /// <param name="height">Canvas client height in CSS pixels.</param>
+    [JSInvokable]
+    public void OnCanvasSizeChanged(int width, int height)
+    {
+        if (width > 0 && height > 0)
+        {
+            Adapter.UpdateSize(width, height);
         }
     }
 
@@ -167,7 +167,21 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
     {
         if (_moduleLoaded && _module is not null)
         {
-            _ = _module.InvokeVoidAsync("unobserveCanvasSize", _canvasRef);
+            try
+            {
+                if (_module is IJSInProcessObjectReference inProcessModule)
+                {
+                    inProcessModule.InvokeVoid("unobserveCanvasSize", _canvasRef);
+                }
+                else
+                {
+                    _ = _module.InvokeVoidAsync("unobserveCanvasSize", _canvasRef);
+                }
+            }
+            catch
+            {
+                // Observer cleanup is best-effort during disposal.
+            }
         }
 
         _dotNetRef?.Dispose();

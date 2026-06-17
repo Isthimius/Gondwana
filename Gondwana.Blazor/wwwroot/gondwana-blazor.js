@@ -77,10 +77,10 @@ export function startRenderLoop(dotnetHelper) {
             try {
                 tickCallback.invokeMethod('OnAnimationFrame');
                 return;
-            } catch {
+            } catch (error) {
                 if (!syncInvokeFailed) {
                     syncInvokeFailed = true;
-                    console.warn('Gondwana.Blazor falling back to invokeMethodAsync for render-loop ticks.');
+                    console.warn('Gondwana.Blazor falling back to invokeMethodAsync for render-loop ticks.', error);
                 }
                 // Some runtimes expose invokeMethod but do not support this call path reliably.
             }
