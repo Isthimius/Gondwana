@@ -23,6 +23,7 @@ export function getCanvasSize(canvas) {
  */
 export function startRenderLoop(dotnetHelper) {
     tickCallback = dotnetHelper;
+    let syncInvokeFailed = false;
 
     async function invokeTick() {
         if (typeof tickCallback.invokeMethod === 'function') {
@@ -30,6 +31,10 @@ export function startRenderLoop(dotnetHelper) {
                 tickCallback.invokeMethod('OnAnimationFrame');
                 return;
             } catch {
+                if (!syncInvokeFailed) {
+                    syncInvokeFailed = true;
+                    console.warn('Gondwana.Blazor falling back to invokeMethodAsync for render-loop ticks.');
+                }
                 // Some runtimes expose invokeMethod but do not support this call path reliably.
             }
         }
