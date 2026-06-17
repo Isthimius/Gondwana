@@ -118,7 +118,7 @@
 
             _host.Engine.InitializationComplete += () =>
             {
-                _host.Engine.Configuration.TargetFPS = 0;
+                _host.Engine.Configuration.TargetFPS = 60;
                 _engineReady = true;
                 InvokeAsync(StateHasChanged);
             };

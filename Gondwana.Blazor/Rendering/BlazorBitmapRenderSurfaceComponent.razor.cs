@@ -28,6 +28,7 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
 {
     private ElementReference _canvasRef;
     private IJSObjectReference? _module;
+    private DotNetObjectReference<BlazorBitmapRenderSurfaceComponent>? _dotNetRef;
     private bool _moduleLoaded;
 
     // Internal events consumed by input adapters (subscribed via BlazorGameHost / EngineExtensions).
@@ -63,6 +64,9 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
         _module = await JS.InvokeAsync<IJSObjectReference>(
             "import", "./_content/Gondwana.Blazor/gondwana-blazor.js");
         _moduleLoaded = true;
+        _dotNetRef = DotNetObjectReference.Create(this);
+
+        await _module.InvokeVoidAsync("observeCanvasSize", _canvasRef, _dotNetRef);
 
         // Get the actual canvas size and update the adapter
         await UpdateCanvasSizeAsync();
@@ -100,21 +104,50 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
     }
 
     /// <summary>
-    /// Sends a rendered RGBA frame to the canvas.
-    /// Safe to call from any thread; marshals to the component's synchronization context.
+    /// Updates the adapter after JavaScript observes a canvas client-size change.
+    /// </summary>
+    /// <param name="width">Canvas client width in CSS pixels.</param>
+    /// <param name="height">Canvas client height in CSS pixels.</param>
+    [JSInvokable]
+    public void OnCanvasSizeChanged(int width, int height)
+    {
+        if (width > 0 && height > 0)
+        {
+            Adapter.UpdateSize(width, height);
+        }
+    }
+
+    /// <summary>
+    /// Sends a rendered RGBA frame region to the canvas.
     /// </summary>
     /// <param name="rgbaPixels">RGBA pixel data (width × height × 4 bytes, unpremultiplied).</param>
-    /// <param name="width">Frame width in pixels.</param>
-    /// <param name="height">Frame height in pixels.</param>
-    internal void EnqueueFrame(byte[] rgbaPixels, int width, int height)
+    /// <param name="width">Frame region width in pixels.</param>
+    /// <param name="height">Frame region height in pixels.</param>
+    /// <param name="x">Destination X position in canvas pixel coordinates.</param>
+    /// <param name="y">Destination Y position in canvas pixel coordinates.</param>
+    /// <param name="canvasWidth">Full canvas width in pixels.</param>
+    /// <param name="canvasHeight">Full canvas height in pixels.</param>
+    internal void EnqueueFrame(byte[] rgbaPixels, int width, int height, int x, int y, int canvasWidth, int canvasHeight)
     {
-        // Fire-and-forget: the canvas is updated on the Blazor component's UI context.
-        // In Blazor WASM (single-threaded), this queues a microtask that executes once
-        // the current synchronous call stack yields.
+        if (!_moduleLoaded || _module is null) return;
+
+        if (_module is IJSInProcessObjectReference inProcessModule)
+        {
+            try
+            {
+                inProcessModule.InvokeVoid("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
+                return;
+            }
+            catch
+            {
+                // Fall back to the async path if sync interop is unavailable or fails.
+            }
+        }
+
         _ = InvokeAsync(async () =>
         {
             if (!_moduleLoaded || _module is null) return;
-            await _module.InvokeVoidAsync("putImageData", _canvasRef, width, height, rgbaPixels);
+            await _module.InvokeVoidAsync("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
         });
     }
 
@@ -132,7 +165,30 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_moduleLoaded && _module is not null)
+        {
+            try
+            {
+                if (_module is IJSInProcessObjectReference inProcessModule)
+                {
+                    inProcessModule.InvokeVoid("unobserveCanvasSize", _canvasRef);
+                }
+                else
+                {
+                    _ = _module.InvokeVoidAsync("unobserveCanvasSize", _canvasRef);
+                }
+            }
+            catch
+            {
+                // Observer cleanup is best-effort during disposal.
+            }
+        }
+
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
         _ = _module?.DisposeAsync();
+        _module = null;
+        _moduleLoaded = false;
     }
 
     private sealed class CanvasSize
