@@ -77,7 +77,7 @@ internal sealed class RunBlazorCommand : Command<RunBlazorCommand.Settings>
             }
         }
 
-        // 2. Run the Blazor dev server
+        // 2. Run the Blazor dev server and open the browser once it is ready
         AnsiConsole.MarkupLine("[dim]Starting Blazor WebAssembly dev server...[/]");
         var runArgs = new List<string>
         {
@@ -86,6 +86,6 @@ internal sealed class RunBlazorCommand : Command<RunBlazorCommand.Settings>
             "-c", settings.Configuration,
         };
 
-        return ProcessHelper.RunLive("dotnet", runArgs);
+        return ProcessHelper.RunLiveAndOpenUrl("dotnet", runArgs);
     }
 }
