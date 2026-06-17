@@ -34,7 +34,7 @@ public static partial class EngineLogger
         public ModeLogger()
         {
             // Create once per wrapper instance. EngineLogger clears _loggerCache when factory changes.
-            _logger = _loggerFactory.CreateLogger(CategoryName);
+            _logger = GetOrCreateLoggerFactory().CreateLogger(CategoryName);
         }
 
         /// <summary>

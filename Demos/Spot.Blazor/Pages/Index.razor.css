@@ -1,0 +1,114 @@
+.game-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #222;
+    overflow: hidden;
+}
+
+.game-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+}
+
+.setup-panel {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 400px;
+}
+
+.setup-title {
+    margin: 0 0 16px 0;
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+}
+
+.setup-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.setup-row label {
+    font-weight: 500;
+    color: #555;
+}
+
+.setup-row select,
+.setup-row input {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.player-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.player-row.hidden {
+    display: none;
+}
+
+.player-label {
+    font-weight: 500;
+    min-width: 70px;
+    color: #555;
+}
+
+.player-name {
+    flex: 1;
+}
+
+.start-btn {
+    padding: 8px 24px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.start-btn:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.start-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.error-msg {
+    color: #d9534f;
+    margin-top: 12px;
+    text-align: center;
+}
+
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    font-size: 18px;
+    z-index: 20;
+}

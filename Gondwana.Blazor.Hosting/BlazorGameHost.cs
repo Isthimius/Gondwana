@@ -1,7 +1,9 @@
 using Gondwana.Blazor;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Hosting;
+using Gondwana.Logging;
 using Gondwana.Rendering;
+using Microsoft.Extensions.Logging;
 namespace Gondwana.Blazor.Hosting;
 
 /// <summary>
@@ -39,6 +41,33 @@ public abstract class BlazorGameHost : GameHostBase
     {
         RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
     }
+
+    /// <summary>
+    /// Configures logging for Blazor WebAssembly by forcing synchronous mode.
+    /// </summary>
+    /// <param name="logLevel">The log level to set.</param>
+    /// <remarks>
+    /// Blazor WebAssembly runs in a single-threaded environment and does not support background threads.
+    /// The engine logger must use synchronous mode and cannot use the Console logger provider which
+    /// attempts to create background threads. Instead, we use only the Debug logger provider.
+    /// </remarks>
+    //protected override void ConfigureLogging(LogLevel logLevel)
+    //{
+    //    // Force synchronous logging mode for Blazor WebAssembly.
+    //    // Asynchronous mode tries to create background threads which are not supported in WASM.
+    //    EngineLogger.Mode = EngineLoggingMode.Synchronous;
+
+    //    // Replace the logger factory with one that doesn't use Console logging.
+    //    // Console logging in .NET creates a background thread which is not supported in WASM.
+    //    // Use Debug logging instead, which writes to browser console via interop.
+    //    var factory = LoggerFactory.Create(builder =>
+    //    {
+    //        builder.AddDebug()
+    //               .SetMinimumLevel(logLevel);
+    //    });
+
+    //    EngineLogger.Initialize(factory);
+    //}
 
     /// <summary>
     /// Configures Blazor-specific platform features.
@@ -101,12 +130,19 @@ public abstract class BlazorGameHost : GameHostBase
     /// </summary>
     protected override void StartEngine()
     {
-        var syncContext = SynchronizationContext.Current
-            ?? throw new InvalidOperationException(
-                $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
+        // In Blazor WebAssembly, we should have a SynchronizationContext, but if we don't,
+        // create a default one for the timer-driven mode
+        var syncContext = SynchronizationContext.Current;
 
         if (OperatingSystem.IsBrowser())
         {
+            // For browser/WASM, ensure we have a context (create a default if needed)
+            if (syncContext == null)
+            {
+                syncContext = new SynchronizationContext();
+                SynchronizationContext.SetSynchronizationContext(syncContext);
+            }
+
             Engine.Instance.StartTimerDriven(syncContext);
 
             _engineTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000.0 / 60.0));
@@ -114,6 +150,13 @@ public abstract class BlazorGameHost : GameHostBase
         }
         else
         {
+            // Non-browser platforms require a SynchronizationContext
+            if (syncContext == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
+            }
+
             Engine.Instance.Start(syncContext);
         }
 
