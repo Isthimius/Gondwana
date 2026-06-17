@@ -24,10 +24,19 @@ export function getCanvasSize(canvas) {
 export function startRenderLoop(dotnetHelper) {
     tickCallback = dotnetHelper;
 
-    function loop() {
-        if (tickCallback) {
-            tickCallback.invokeMethodAsync('OnAnimationFrame');
-            animationFrameId = requestAnimationFrame(loop);
+    async function loop() {
+        if (!tickCallback) return;
+
+        try {
+            if (typeof tickCallback.invokeMethod === 'function') {
+                tickCallback.invokeMethod('OnAnimationFrame');
+            } else {
+                await tickCallback.invokeMethodAsync('OnAnimationFrame');
+            }
+        } finally {
+            if (tickCallback) {
+                animationFrameId = requestAnimationFrame(loop);
+            }
         }
     }
 
