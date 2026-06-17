@@ -28,6 +28,7 @@ export function startRenderLoop(dotnetHelper) {
         if (!tickCallback) return;
 
         try {
+            // In WebAssembly, DotNetObjectReference exposes sync invokeMethod; other hosts may only provide async invokeMethodAsync.
             if (typeof tickCallback.invokeMethod === 'function') {
                 tickCallback.invokeMethod('OnAnimationFrame');
             } else {
