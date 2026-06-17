@@ -56,8 +56,9 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
             return;
         }
 
-        var w = bufferImage.Width;
-        var h = bufferImage.Height;
+        var srcRect = SKRectI.Intersect(bufferRect, new SKRectI(0, 0, bufferImage.Width, bufferImage.Height));
+        var w = srcRect.Width;
+        var h = srcRect.Height;
         if (w <= 0 || h <= 0)
         {
             bufferImage.Dispose();
@@ -75,7 +76,7 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
         bool success;
         try
         {
-            success = bufferImage.ReadPixels(info, gcHandle.AddrOfPinnedObject(), w * 4);
+            success = bufferImage.ReadPixels(info, gcHandle.AddrOfPinnedObject(), w * 4, srcRect.Left, srcRect.Top);
         }
         finally
         {
@@ -91,7 +92,7 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
         // In Blazor WASM (single-threaded) no copy is needed: the frame cannot be overwritten
         // before the queued InvokeAsync action consumes it. For Blazor Server the host is
         // expected to configure a separate loop, but the copy is omitted here for performance.
-        _component.EnqueueFrame(_pixelBuffer, w, h);
+        _component.EnqueueFrame(_pixelBuffer, w, h, srcRect.Left, srcRect.Top, bufferImage.Width, bufferImage.Height);
 
         bufferImage.Dispose();
     }

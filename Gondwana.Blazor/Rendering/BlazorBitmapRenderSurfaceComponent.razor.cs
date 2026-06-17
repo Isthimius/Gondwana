@@ -100,21 +100,29 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
     }
 
     /// <summary>
-    /// Sends a rendered RGBA frame to the canvas.
-    /// Safe to call from any thread; marshals to the component's synchronization context.
+    /// Sends a rendered RGBA frame region to the canvas.
     /// </summary>
     /// <param name="rgbaPixels">RGBA pixel data (width × height × 4 bytes, unpremultiplied).</param>
-    /// <param name="width">Frame width in pixels.</param>
-    /// <param name="height">Frame height in pixels.</param>
-    internal void EnqueueFrame(byte[] rgbaPixels, int width, int height)
+    /// <param name="width">Frame region width in pixels.</param>
+    /// <param name="height">Frame region height in pixels.</param>
+    /// <param name="x">Destination X position in canvas pixel coordinates.</param>
+    /// <param name="y">Destination Y position in canvas pixel coordinates.</param>
+    /// <param name="canvasWidth">Full canvas width in pixels.</param>
+    /// <param name="canvasHeight">Full canvas height in pixels.</param>
+    internal void EnqueueFrame(byte[] rgbaPixels, int width, int height, int x, int y, int canvasWidth, int canvasHeight)
     {
-        // Fire-and-forget: the canvas is updated on the Blazor component's UI context.
-        // In Blazor WASM (single-threaded), this queues a microtask that executes once
-        // the current synchronous call stack yields.
+        if (!_moduleLoaded || _module is null) return;
+
+        if (_module is IJSInProcessObjectReference inProcessModule)
+        {
+            inProcessModule.InvokeVoid("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
+            return;
+        }
+
         _ = InvokeAsync(async () =>
         {
             if (!_moduleLoaded || _module is null) return;
-            await _module.InvokeVoidAsync("putImageData", _canvasRef, width, height, rgbaPixels);
+            await _module.InvokeVoidAsync("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
         });
     }
 

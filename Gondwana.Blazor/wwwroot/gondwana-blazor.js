@@ -58,29 +58,32 @@ export function stopRenderLoop() {
 /**
  * Renders an RGBA pixel buffer onto a canvas element via the Canvas 2D API.
  * @param {HTMLCanvasElement} canvas - The target canvas element.
- * @param {number} width - Frame width in pixels.
- * @param {number} height - Frame height in pixels.
+ * @param {number} canvasWidth - Canvas width in pixels.
+ * @param {number} canvasHeight - Canvas height in pixels.
+ * @param {number} width - Frame region width in pixels.
+ * @param {number} height - Frame region height in pixels.
+ * @param {number} x - Destination X position in canvas pixel coordinates.
+ * @param {number} y - Destination Y position in canvas pixel coordinates.
  * @param {Uint8Array} data - RGBA byte array (width * height * 4 bytes, unpremultiplied).
  */
-export function putImageData(canvas, width, height, data) {
+export function putImageData(canvas, canvasWidth, canvasHeight, width, height, x, y, data) {
     if (!canvas) return;
 
     const state = canvas.__gondwana ??= {};
 
-    if (state.w !== width || state.h !== height) {
-        canvas.width = width;
-        canvas.height = height;
+    if (state.w !== canvasWidth || state.h !== canvasHeight) {
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
 
         state.ctx = canvas.getContext('2d', { alpha: false });
-        state.imageData = state.ctx ? state.ctx.createImageData(width, height) : null;
-        state.w = width;
-        state.h = height;
+        state.w = canvasWidth;
+        state.h = canvasHeight;
     }
 
     const ctx = state.ctx;
-    const imageData = state.imageData;
-    if (!ctx || !imageData) return;
+    if (!ctx) return;
 
-    imageData.data.set(data);
-    ctx.putImageData(imageData, 0, 0);
+    const rgba = new Uint8ClampedArray(data.buffer, data.byteOffset, data.byteLength);
+    const imageData = new ImageData(rgba, width, height);
+    ctx.putImageData(imageData, x, y);
 }
