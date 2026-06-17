@@ -24,16 +24,24 @@ export function getCanvasSize(canvas) {
 export function startRenderLoop(dotnetHelper) {
     tickCallback = dotnetHelper;
 
+    async function invokeTick() {
+        if (typeof tickCallback.invokeMethod === 'function') {
+            try {
+                tickCallback.invokeMethod('OnAnimationFrame');
+                return;
+            } catch {
+                // Some runtimes expose invokeMethod but do not support this call path reliably.
+            }
+        }
+
+        await tickCallback.invokeMethodAsync('OnAnimationFrame');
+    }
+
     async function loop() {
         if (!tickCallback) return;
 
         try {
-            // In WebAssembly, DotNetObjectReference exposes sync invokeMethod; other hosts may only provide async invokeMethodAsync.
-            if (typeof tickCallback.invokeMethod === 'function') {
-                tickCallback.invokeMethod('OnAnimationFrame');
-            } else {
-                await tickCallback.invokeMethodAsync('OnAnimationFrame');
-            }
+            await invokeTick();
             if (tickCallback) {
                 animationFrameId = requestAnimationFrame(loop);
             }
