@@ -64,6 +64,9 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
             "import", "./_content/Gondwana.Blazor/gondwana-blazor.js");
         _moduleLoaded = true;
 
+        // Get the actual canvas size and update the adapter
+        await UpdateCanvasSizeAsync();
+
         // Request focus so keyboard events are received without requiring a click.
         try
         {
@@ -72,6 +75,27 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
         catch
         {
             // Focus request is best-effort; ignore failures (e.g. server-side pre-render).
+        }
+    }
+
+    /// <summary>
+    /// Updates the adapter with the current canvas client size.
+    /// </summary>
+    internal async Task UpdateCanvasSizeAsync()
+    {
+        if (!_moduleLoaded || _module is null) return;
+
+        try
+        {
+            var size = await _module.InvokeAsync<CanvasSize>("getCanvasSize", _canvasRef);
+            if (size.Width > 0 && size.Height > 0)
+            {
+                Adapter.UpdateSize(size.Width, size.Height);
+            }
+        }
+        catch
+        {
+            // Size query failed; adapter remains at default 1x1
         }
     }
 
@@ -109,5 +133,11 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
     public void Dispose()
     {
         _ = _module?.DisposeAsync();
+    }
+
+    private sealed class CanvasSize
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 }

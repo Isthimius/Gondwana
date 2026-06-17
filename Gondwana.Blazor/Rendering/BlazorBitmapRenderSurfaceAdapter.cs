@@ -32,6 +32,16 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
     }
 
     /// <summary>
+    /// Updates the reported surface size. Called by the component after querying canvas client dimensions.
+    /// </summary>
+    /// <param name="width">New width in pixels.</param>
+    /// <param name="height">New height in pixels.</param>
+    internal void UpdateSize(int width, int height)
+    {
+        SetDestinationSize(width, height);
+    }
+
+    /// <summary>
     /// Presents the specified buffer image to the render surface by reading pixels into an RGBA
     /// byte array and scheduling a canvas update on the Blazor component's UI context.
     /// </summary>
@@ -77,8 +87,6 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
             bufferImage.Dispose();
             return;
         }
-
-        SetDestinationSize(w, h);
 
         // In Blazor WASM (single-threaded) no copy is needed: the frame cannot be overwritten
         // before the queued InvokeAsync action consumes it. For Blazor Server the host is

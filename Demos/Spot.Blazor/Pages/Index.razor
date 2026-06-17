@@ -3,6 +3,7 @@
 @using Gondwana.Demos.SpotBlazor.Game
 @using Microsoft.Extensions.Logging
 @inject HttpClient Http
+@inject IJSRuntime JS
 @inject ILogger<Index> Logger
 @implements IDisposable
 
@@ -113,7 +114,7 @@
             // Pre-fetch all assets via HttpClient before calling Initialize()
             var assetData = await LoadAssetDataAsync();
 
-            _host = new SpotBlazorGameHost(_renderSurface, assetData);
+            _host = new SpotBlazorGameHost(_renderSurface, JS, assetData);
 
             _host.Engine.InitializationComplete += () =>
             {

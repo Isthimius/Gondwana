@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using SkiaSharp;
 using Gondwana;
 using Gondwana.Blazor.Hosting;
@@ -63,9 +64,10 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
     /// Initializes a new instance of <see cref="SpotBlazorGameHost"/>.
     /// </summary>
     /// <param name="renderSurface">The Blazor bitmap render surface component.</param>
+    /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
     /// <param name="assetData">Pre-loaded asset byte arrays keyed by filename (e.g. "spot_defaults.png").</param>
-    internal SpotBlazorGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, Dictionary<string, byte[]> assetData)
-        : base(renderSurface)
+    internal SpotBlazorGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime, Dictionary<string, byte[]> assetData)
+        : base(renderSurface, jsRuntime)
     {
         _assetData = assetData;
     }
