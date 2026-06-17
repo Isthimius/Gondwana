@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net8.0-browser</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
@@ -20,6 +20,14 @@
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Blazor\Gondwana.Blazor.csproj" />
         <ProjectReference Include="..\..\Gondwana.Blazor.Hosting\Gondwana.Blazor.Hosting.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Audio.Browser\Gondwana.Audio.Browser.csproj" />
     </ItemGroup>
+
+    <!-- Copy gondwana-audio.js from Gondwana.Audio.Browser to our wwwroot -->
+    <Target Name="CopyAudioJS" BeforeTargets="Build">
+        <Copy SourceFiles="..\..\Gondwana.Audio.Browser\wwwroot\gondwana-audio.js" 
+              DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\" 
+              SkipUnchangedFiles="true" />
+    </Target>
 
 </Project>

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using SkiaSharp;
 using Gondwana;
+using Gondwana.Audio.Browser;
 using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Drawing;
@@ -85,6 +86,28 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
         else
         {
             _font = SKTypeface.Default;
+        }
+
+        // Audio - use BrowserAudioManager for browser/WASM targets
+        var audioManager = Engine.Instance.GetBrowserAudioManager();
+
+        // Music
+        audioManager.Load("music", "assets/sounovamusic-puzzle-amp-casual-game-music-460543.mp3", loop: true, volume: 1.0f);
+
+        // Sound effects
+        audioManager.Load("spotSelected", "assets/universfield-bubble-pop-293342.mp3", loop: false, volume: 0.4f);
+        audioManager.Load("spotDeselected", "assets/universfield-bubble-pop-293342.mp3", loop: false, volume: 0.15f);
+        audioManager.Load("velcro", "assets/freesound_community-velcro_fast-91558.mp3", loop: false, volume: 1.0f);
+        audioManager.Load("drop", "assets/freesound_community-water-drip-45622.mp3", loop: false, volume: 1.0f);
+        audioManager.Load("gameWin", "assets/peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3", loop: false, volume: 1.0f);
+        audioManager.Load("gameLose", "assets/freesound_community-080047_lose_funny_retro_video-game-80925.mp3", loop: false, volume: 1.0f);
+        audioManager.Load("bump", "assets/freesound_community-bump-7-92964.mp3", loop: false, volume: 1.0f);
+        audioManager.Load("knock", "assets/rohhsadotcom-knock-on-wood-02-421991.mp3", loop: false, volume: 1.0f);
+
+        // Start background music if enabled
+        if (MusicEnabled)
+        {
+            audioManager.Get("music").Play(fromStart: true);
         }
     }
 
@@ -191,6 +214,16 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
     internal void SetMusicEnabled(bool enabled)
     {
         MusicEnabled = enabled;
+        
+        var audioManager = Engine.Instance.GetBrowserAudioManager();
+        if (audioManager.Contains("music"))
+        {
+            var music = audioManager.Get("music");
+            if (enabled)
+                music.Play(fromStart: false);
+            else
+                music.Pause();
+        }
     }
 
     internal void SetSoundEffectsEnabled(bool enabled)
@@ -325,6 +358,17 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
     {
         foreach (var player in SpotGame.Players)
             StartPlayerJiggle(player);
+    }
+
+    private void PlaySound(string key)
+    {
+        if (!SoundEffectsEnabled) return;
+        
+        var audioManager = Engine.Instance.GetBrowserAudioManager();
+        if (audioManager.Contains(key))
+        {
+            audioManager.Get(key).Play(fromStart: true);
+        }
     }
 
     #endregion private helpers
@@ -647,6 +691,8 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
         sprite.StopJiggle();
         sprite.CurrentFrame = cell.OccupiedBy!.ActiveFrame;
         sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
+        
+        PlaySound("spotSelected");
     }
 
     private void OnSpotDeselected(SpotGameField.Cell cell)
@@ -655,18 +701,31 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
         sprite.StartJiggle(loop: true);
         sprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
         sprite.StopPulse(true, 0.2f);
+        
+        PlaySound("spotDeselected");
     }
 
-    private void OnInvalidSelectionAttempted(SpotGameField.Cell cell) { }
+    private void OnInvalidSelectionAttempted(SpotGameField.Cell cell)
+    {
+        PlaySound("bump");
+    }
 
-    private void OnInvalidMoveAttempted(SpotGameField.Cell cell) { }
+    private void OnInvalidMoveAttempted(SpotGameField.Cell cell)
+    {
+        PlaySound("bump");
+    }
 
-    private void OnPlayerMoveStarted(PlayerMovement movement) { }
+    private void OnPlayerMoveStarted(PlayerMovement movement)
+    {
+        PlaySound("velcro");
+    }
 
     private void OnPlayerMoveStopped(PlayerMovement movement)
     {
         if (_showScores) SetPlayerScores();
         SpotGame.NextPlayer();
+        
+        PlaySound("drop");
     }
 
     private void OnCellsCaptured(List<SpotGameField.Cell> cellsCaptured)
@@ -685,6 +744,11 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
             };
             oldSprite.ResizeComplete += handler;
             oldSprite.ResizeTo(new(1, 1), 0.2f);
+        }
+        
+        if (cellsCaptured.Count > 0)
+        {
+            PlaySound("knock");
         }
     }
 
@@ -706,6 +770,10 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
         var winners      = allScores.Where(kvp => kvp.Value == maxScore).Select(kvp => kvp.Key).ToList();
 
         CreateGameOverText(winners);
+        
+        // Play win or lose sound
+        bool currentPlayerWon = winners.Contains(SpotGame.CurrentPlayer);
+        PlaySound(currentPlayerWon ? "gameWin" : "gameLose");
     }
 
     #endregion SpotGame event handlers
