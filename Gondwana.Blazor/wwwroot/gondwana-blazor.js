@@ -34,10 +34,12 @@ export function startRenderLoop(dotnetHelper) {
             } else {
                 await tickCallback.invokeMethodAsync('OnAnimationFrame');
             }
-        } finally {
             if (tickCallback) {
                 animationFrameId = requestAnimationFrame(loop);
             }
+        } catch (error) {
+            console.error('Gondwana.Blazor render loop stopped after OnAnimationFrame failed.', error);
+            stopRenderLoop();
         }
     }
 

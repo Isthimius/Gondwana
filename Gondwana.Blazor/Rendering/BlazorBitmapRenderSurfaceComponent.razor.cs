@@ -115,8 +115,15 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
 
         if (_module is IJSInProcessObjectReference inProcessModule)
         {
-            inProcessModule.InvokeVoid("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
-            return;
+            try
+            {
+                inProcessModule.InvokeVoid("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
+                return;
+            }
+            catch
+            {
+                // Fall back to the async path if sync interop is unavailable or fails.
+            }
         }
 
         _ = InvokeAsync(async () =>
