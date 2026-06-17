@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <RootNamespace>Gondwana.Demos.SpotBlazor</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.*" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.*" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Blazor\Gondwana.Blazor.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Blazor.Hosting\Gondwana.Blazor.Hosting.csproj" />
+    </ItemGroup>
+
+    <!--
+        Assets are served as static web content from wwwroot/assets/.
+        They are linked from SpotAvalonia to avoid duplication.
+    -->
+    <ItemGroup>
+        <Content Include="..\SpotAvalonia\assets\ArchitectsDaughter-Regular.ttf"
+                 Link="wwwroot\assets\ArchitectsDaughter-Regular.ttf"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\clouds.png"
+                 Link="wwwroot\assets\clouds.png"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\gondwana-logo-text.png"
+                 Link="wwwroot\assets\gondwana-logo-text.png"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\spot.png"
+                 Link="wwwroot\assets\spot.png"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\spot_defaults.png"
+                 Link="wwwroot\assets\spot_defaults.png"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\spot_selected.png"
+                 Link="wwwroot\assets\spot_selected.png"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\spot_ico.png"
+                 Link="wwwroot\assets\spot_ico.png"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\OFL.txt"
+                 Link="wwwroot\assets\OFL.txt"
+                 CopyToOutputDirectory="Always" />
+        <Content Include="..\SpotAvalonia\assets\sources.txt"
+                 Link="wwwroot\assets\sources.txt"
+                 CopyToOutputDirectory="Always" />
+    </ItemGroup>
+
+</Project>

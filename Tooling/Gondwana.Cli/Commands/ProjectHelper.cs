@@ -63,6 +63,20 @@ internal static class ProjectHelper
     public static bool TargetsFramework(string csprojPath, string targetFramework)
         => GetTargetFrameworks(csprojPath).Contains(targetFramework, StringComparer.OrdinalIgnoreCase);
 
+    public static bool IsBlazorWebAssemblyProject(string csprojPath)
+    {
+        try
+        {
+            var document = XDocument.Load(csprojPath);
+            var sdk = document.Root?.Attribute("Sdk")?.Value ?? string.Empty;
+            return sdk.Contains("BlazorWebAssembly", StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public static bool TryResolveDesktopFramework(string csprojPath, string? requestedFramework, out string? framework, out string? error)
     {
         if (!string.IsNullOrWhiteSpace(requestedFramework))

@@ -57,10 +57,12 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
             return 1;
         }
 
-        if (!ProjectHelper.TargetsFramework(csprojPath!, "net8.0-browser"))
+        bool isBlazorWasm = ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!);
+
+        if (!isBlazorWasm && !ProjectHelper.TargetsFramework(csprojPath!, "net8.0-browser"))
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to target [bold]net8.0-browser[/].");
-            AnsiConsole.MarkupLine("[dim]Make sure <TargetFrameworks> includes 'net8.0-browser'. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to target [bold]net8.0-browser[/] or use the BlazorWebAssembly SDK.");
+            AnsiConsole.MarkupLine("[dim]Make sure <TargetFrameworks> includes 'net8.0-browser', or use Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\". Continuing anyway...[/]");
         }
 
         var butlerCheck = ProcessHelper.Run("butler", "--version", out var butlerExit);
@@ -84,10 +86,11 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
                 }
             }
 
-            var publishExit = ProcessHelper.RunLive("dotnet", new[]
-            {
-                "publish", csprojPath!, "-f", "net8.0-browser", "-c", settings.Configuration
-            });
+            var publishArgs = isBlazorWasm
+                ? new[] { "publish", csprojPath!, "-c", settings.Configuration }
+                : new[] { "publish", csprojPath!, "-f", "net8.0-browser", "-c", settings.Configuration };
+
+            var publishExit = ProcessHelper.RunLive("dotnet", publishArgs);
 
             if (publishExit != 0)
             {
@@ -96,19 +99,33 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
             }
         }
 
-        var appBundle = ProjectHelper.TryLocateAppBundle(csprojPath!, settings.Configuration);
-        if (appBundle is null || !Directory.Exists(appBundle))
+        string? deployDir;
+        if (isBlazorWasm)
         {
-            AnsiConsole.MarkupLine("[red]AppBundle not found.[/]");
-            AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the project for net8.0-browser first.[/]");
-            return 1;
+            deployDir = ProjectHelper.TryLocateBlazorPublishRoot(csprojPath!, settings.Configuration);
+            if (deployDir is null || !Directory.Exists(deployDir))
+            {
+                AnsiConsole.MarkupLine("[red]Blazor publish wwwroot not found.[/]");
+                AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the Blazor project first.[/]");
+                return 1;
+            }
+        }
+        else
+        {
+            deployDir = ProjectHelper.TryLocateAppBundle(csprojPath!, settings.Configuration);
+            if (deployDir is null || !Directory.Exists(deployDir))
+            {
+                AnsiConsole.MarkupLine("[red]AppBundle not found.[/]");
+                AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the project for net8.0-browser first.[/]");
+                return 1;
+            }
         }
 
         var zipPath = Path.Combine(Path.GetTempPath(), $"gondwana-wasm-{Path.GetRandomFileName()}.zip");
 
         try
         {
-            ProjectHelper.CreateZipFromDirectoryContents(appBundle, zipPath);
+            ProjectHelper.CreateZipFromDirectoryContents(deployDir, zipPath);
             AnsiConsole.MarkupLine($"Uploading [bold]{Markup.Escape(settings.ItchGame!)}[/] to channel [bold]{Markup.Escape(settings.ItchChannel)}[/]...");
 
             var pushExit = ProcessHelper.RunLive("butler", new[]
