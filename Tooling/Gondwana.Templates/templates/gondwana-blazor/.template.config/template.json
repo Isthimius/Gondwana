@@ -1,11 +1,12 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Michael Adkins",
-  "classifications": [ "Games", "Avalonia", "WASM", "Browser", "Cross-Platform", "Gondwana" ],
-  "identity": "Gondwana.Templates.Wasm.CSharp",
-  "name": "Gondwana Avalonia WASM Game",
+  "classifications": [ "Games", "Blazor", "WebAssembly", "WASM", "Browser", "Gondwana" ],
+  "identity": "Gondwana.Templates.Blazor.Wasm.CSharp",
+  "groupIdentity": "Gondwana.Templates.Blazor",
+  "name": "Gondwana Blazor WebAssembly Game",
   "shortName": "gondwana-blazor",
-  "description": "A starter project for building a cross-platform 2D game with the Gondwana Game Engine and Avalonia, targeting both desktop (Windows, macOS, Linux) and browser (WASM via net8.0-browser).",
+  "description": "A starter Blazor WebAssembly project for building a browser-based 2D game with the Gondwana Game Engine, targeting WebAssembly via net8.0-browser.",
   "tags": {
     "language": "C#",
     "type": "project"

@@ -18,7 +18,7 @@ namespace MyGame;
 /// </remarks>
 internal sealed class MyGameHost : BlazorGameHost
 {
-    internal MyGameHost(BlazorBitmapRenderSurfaceControl renderSurface)
+    internal MyGameHost(BlazorBitmapRenderSurfaceComponent renderSurface)
         : base(renderSurface)
     {
     }

@@ -4,11 +4,11 @@
 @inject ILogger<GameRenderSurface> Logger
 
 <div class="render-surface-container">
-    <BlazorBitmapRenderSurfaceControl @ref="_renderSurface" />
+    <BlazorBitmapRenderSurfaceComponent @ref="_renderSurface" />
 </div>
 
 @code {
-    private BlazorBitmapRenderSurfaceControl? _renderSurface;
+    private BlazorBitmapRenderSurfaceComponent? _renderSurface;
     private MyGameHost? _host;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
