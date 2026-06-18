@@ -301,8 +301,7 @@ gondwana deploy --skip-build --web-root ./dist/MyGame
 | `--remote-path <path>` | | *(none)* | Remote destination path, used with `--remote-host`. |
 | `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing publish output. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
-| `--no-mirror` | | `false` | Copy new/changed files only; do not remove stale files from the destination. By default the destination is mirrored (stale files are deleted). |
-
+| `--no-mirror` | | `false` | Do not remove stale files from the destination (no mirroring). By default the destination is mirrored (stale files are deleted). |
 Specify either `--web-root` or `--remote-host` + `--remote-path`, not both.
 
 Remote deployment uses `rsync -avz --delete` (requires `rsync` on `PATH`). Pass `--no-mirror` to omit `--delete`.
