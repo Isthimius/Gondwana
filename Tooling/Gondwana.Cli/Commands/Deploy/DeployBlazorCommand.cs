@@ -37,6 +37,10 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         [CommandOption("--skip-workload")]
         [Description("Skip 'dotnet workload install wasm-tools' during the publish step.")]
         public bool SkipWorkload { get; init; }
+
+        [CommandOption("--no-mirror")]
+        [Description("Do not remove stale files from the destination (no mirroring). By default the destination is mirrored (stale files are deleted).")]
+        public bool NoMirror { get; init; }
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -113,39 +117,69 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
 
         if (useLocal)
         {
-            AnsiConsole.MarkupLine($"[dim]Copying to local web root: {Markup.Escape(settings.WebRoot!)}[/]");
-            Directory.CreateDirectory(settings.WebRoot!);
-
-            foreach (var file in Directory.GetFiles(publishOutput, "*", SearchOption.AllDirectories))
+            if (settings.NoMirror)
             {
-                var relativePath = Path.GetRelativePath(publishOutput, file);
-                var destPath = Path.Combine(settings.WebRoot!, relativePath);
-                Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
-                File.Copy(file, destPath, overwrite: true);
+                AnsiConsole.MarkupLine($"[dim]Copying to local web root: {Markup.Escape(settings.WebRoot!)}[/]");
+                Directory.CreateDirectory(settings.WebRoot!);
+
+                foreach (var file in Directory.GetFiles(publishOutput, "*", SearchOption.AllDirectories))
+                {
+                    var relativePath = Path.GetRelativePath(publishOutput, file);
+                    var destPath = Path.Combine(settings.WebRoot!, relativePath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
+                    File.Copy(file, destPath, overwrite: true);
+                }
+            }
+            else
+            {
+                AnsiConsole.MarkupLine($"[dim]Mirroring to local web root: {Markup.Escape(settings.WebRoot!)}[/]");
+                ProjectHelper.MirrorDirectory(publishOutput, settings.WebRoot!);
             }
 
             AnsiConsole.MarkupLine("[green]Deployment complete.[/]");
+            PrintServerReminder();
             return 0;
         }
 
         if (useRemote)
         {
-            AnsiConsole.MarkupLine($"[dim]Deploying to {Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/]");
-            var scpArgs = $"-r \"{publishOutput}/*\" {settings.RemoteHost}:{settings.RemotePath}";
-            var scpExit = ProcessHelper.RunLive("scp", scpArgs);
+            ProcessHelper.Run("rsync", "--version", out var rsyncCheckExit);
+            if (rsyncCheckExit != 0)
+            {
+                AnsiConsole.MarkupLine("[red]rsync not found on PATH.[/]");
+                AnsiConsole.MarkupLine("[dim]Install rsync (available on Linux/macOS natively, or via WSL / Git Bash on Windows).[/]");
+                return 1;
+            }
 
-            if (scpExit == 0)
+            AnsiConsole.MarkupLine($"[dim]Deploying to {Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/]");
+
+            var rsyncArgs = settings.NoMirror
+                ? new[] { "-avz", $"{publishOutput}/", $"{settings.RemoteHost}:{settings.RemotePath}/" }
+                : new[] { "-avz", "--delete", $"{publishOutput}/", $"{settings.RemoteHost}:{settings.RemotePath}/" };
+
+            var rsyncExit = ProcessHelper.RunLive("rsync", rsyncArgs);
+
+            if (rsyncExit == 0)
             {
                 AnsiConsole.MarkupLine("[green]Deployment complete.[/]");
+                PrintServerReminder();
             }
             else
             {
-                AnsiConsole.MarkupLine("[red]scp deployment failed.[/]");
+                AnsiConsole.MarkupLine("[red]rsync deployment failed.[/]");
             }
 
-            return scpExit;
+            return rsyncExit;
         }
 
         return 0;
+    }
+
+    private static void PrintServerReminder()
+    {
+        AnsiConsole.MarkupLine("[yellow]Reminder:[/] your web server must send these headers on every request for .NET WASM threading to work:");
+        AnsiConsole.MarkupLine("  [dim]Cross-Origin-Opener-Policy:   same-origin[/]");
+        AnsiConsole.MarkupLine("  [dim]Cross-Origin-Embedder-Policy: require-corp[/]");
+        AnsiConsole.MarkupLine("[yellow]The site must also be served over HTTPS.[/]");
     }
 }
