@@ -86,7 +86,7 @@ gondwana new avalonia MyGame
 Equivalent to `dotnet new gondwana-avalonia -n MyGame` but with cleaner output.
 If a `.sln` already exists in the output directory, adds the generated project to it; otherwise creates `MyGame.sln` and adds the project.
 
-An optional `--output` / `-o` flag can be used to specify the output directory for either `new` command:
+An optional `--output` / `-o` flag can be used to specify the output directory:
 
 ```bash
 gondwana new avalonia MyGame -o ./projects/MyGame
@@ -126,11 +126,11 @@ gondwana new blazor MyGame -o ./projects/MyGame
 
 The scaffolded project contains:
 
-- `MyGame.csproj` — `Microsoft.NET.Sdk.BlazorWebAssembly` targeting `net8.0`, with `Gondwana.Blazor` and `Microsoft.AspNetCore.Components.WebAssembly` package references
+- `MyGame.csproj` — `Microsoft.NET.Sdk.BlazorWebAssembly` targeting `net8.0-browser`, with `Gondwana.Blazor` and `Microsoft.AspNetCore.Components.WebAssembly` package references
 - `Program.cs` — standard Blazor WebAssembly entry point
 - `App.razor` — root Blazor app component
 - `Pages/Index.razor` — the default page hosting the game canvas
-- `GameRenderSurface.razor` — thin Blazor component wrapping `BlazorBitmapRenderSurfaceControl`
+- `GameRenderSurface.razor` — thin Blazor component wrapping `BlazorBitmapRenderSurfaceComponent`
 - `MyGameHost.cs` — `BlazorGameHost` subclass with `// TODO` stubs for assets, scene setup, and input
 - `wwwroot/index.html` — the Blazor host page
 - `wwwroot/gondwana-audio.js` — the Gondwana browser audio module
