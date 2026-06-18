@@ -39,7 +39,7 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         public bool SkipWorkload { get; init; }
 
         [CommandOption("--no-mirror")]
-        [Description("Copy new/changed files only; do not remove stale files from the destination. By default the destination is mirrored (stale files are deleted).")]
+        [Description("Do not remove stale files from the destination (no mirroring). By default the destination is mirrored (stale files are deleted).")]
         public bool NoMirror { get; init; }
     }
 
