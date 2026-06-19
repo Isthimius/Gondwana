@@ -82,7 +82,11 @@ Each engine cycle proceeds through the following stages:
    Any state changes enqueue world-space dirty regions into the owning `SceneLayer`’s `RefreshQueue`. This allows the engine to track *what* changed and *where*, without relying on full-frame redraws.
 
 2. **View-based rendering**  
-   During rendering, the `ViewRenderer` iterates active `View` instances in deterministic Z-order. Each view applies its camera and viewport transforms, then asks visible scene layers to redraw only the affected regions into a backbuffer.
+   During rendering, the `ViewRenderer` iterates active `View` instances in deterministic Z-order. 
+   For CPU bitmap backbuffers, each view applies its camera and viewport transforms, then asks 
+   visible scene layers to redraw only the affected dirty regions into the backbuffer. GPU-backed 
+   surfaces use a separate full-viewport render path, favoring predictable GPU synchronization over 
+   dirty-region optimization.
 
 3. **Composition and presentation**  
    Sprites and tiles are drawn from cached tilesheets, animations advance frame-by-frame, and the composed backbuffer is finally presented by the platform host (WinForms, Web, etc.).
@@ -146,7 +150,7 @@ All runtime packages are available on NuGet. Install only what your project need
 ---
 
 ## 🧭 Key Design Principles
-- **Dirty-region rendering (`RefreshQueue`)**: The engine tracks what changed and redraws only those world-space regions, instead of repainting the whole screen every frame.
+- **Dirty-region rendering (`RefreshQueue`)**: On CPU bitmap backbuffers, the engine tracks what changed and redraws only those world-space regions instead of repainting the whole screen every frame.
 - **World-space first**: The engine reasons in world pixels; views/cameras/viewport transforms convert world → screen at render time. This keeps logic consistent and avoids “screen math” leaking into gameplay code.
 - **Layered scenes**: A Scene is composed of SceneLayers, with adjustable parallax. Each layer maintains its own refresh tracking and draw path.
 - **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports or multiplayer split views are natural, not bolted on.

@@ -24,6 +24,8 @@
         <PackageTags>game-engine gamedev csharp dotnet template winforms gondwana scaffold</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>gondwana-logo.png</PackageIcon>
+		<RepositoryUrl>https://github.com/Isthimius/Gondwana</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,7 +35,13 @@
 
     <ItemGroup>
         <!-- Pack all template files into content/ in the nupkg -->
-        <Content Include="templates/**" Exclude="templates/**/obj/**;templates/**/bin/**" />
+		<Content Include="templates/**"
+         Exclude="
+            templates/**/obj/**;
+            templates/**/bin/**;
+            templates/**/.vs/**;
+            templates/**/*.user;
+            templates/**/*.suo" />
     </ItemGroup>
 
     <ItemGroup>

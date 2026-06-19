@@ -266,8 +266,8 @@ gondwana new blazor MyGame
 gondwana new blazor MyGame -o ./projects/MyGame
 ```
 
-Scaffolds a Blazor WebAssembly project targeting `net8.0` for browser deployment.
-Includes `Program.cs`, `App.razor`, `Pages/Index.razor`, `GameRenderSurface.razor`, `wwwroot/index.html`, `wwwroot/gondwana-audio.js`, and the `Gondwana.Blazor` and `Gondwana.Audio.Browser` package references.
+Scaffolds a Blazor WebAssembly project targeting `net8.0-browser` for browser deployment.
+Includes `Program.cs`, `App.razor`, `Pages/Index.razor`, `GameRenderSurface.razor` (wrapping `BlazorBitmapRenderSurfaceComponent`), `MyGameHost.cs`, `wwwroot/index.html`, and the `Gondwana.Blazor`, `Gondwana.Blazor.Hosting`, and `Gondwana.Audio.Browser` package references. The `gondwana-audio.js` file is automatically included via the `Gondwana.Audio.Browser` NuGet package.
 
 After scaffolding, start the Blazor dev server:
 ```
@@ -280,7 +280,7 @@ dotnet workload install wasm-tools    # one-time per machine
 dotnet publish -c Release
 ```
 
-Output is placed in `bin/Release/net8.0/publish/wwwroot/`.
+Output is placed in `bin/Release/net8.0-browser/browser-wasm/AppBundle/`.
 
 ---
 
@@ -385,7 +385,7 @@ gondwana publish blazor -p ./src/MyGame
 gondwana publish blazor --skip-workload -c Debug
 ```
 
-On success, the command prints the wwwroot path as a plain line (`bin/<Configuration>/net8.0/publish/wwwroot/`). If publish succeeds but the output cannot be located, a warning is printed.
+On success, the command prints the AppBundle path as a plain line (`bin/<Configuration>/net8.0-browser/browser-wasm/AppBundle/`). If publish succeeds but the output cannot be located, a warning is printed.
 
 For packaging or deployment, see also `gondwana publish itch`, `gondwana deploy`, and `gondwana deploy itch`.
 

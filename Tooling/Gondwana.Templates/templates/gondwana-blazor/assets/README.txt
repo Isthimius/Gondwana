@@ -16,3 +16,5 @@ Then load it in MyGameHost.cs:
 
 NOTE: Audio files must be accessible as URLs relative to index.html
 (use forward slashes: "assets/theme.mp3" not "assets\theme.mp3").
+
+See https://github.com/Isthimius/Gondwana/wiki for full documentation.

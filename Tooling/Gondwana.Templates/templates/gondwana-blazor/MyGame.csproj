@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net8.0-browser</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<IsPackable>false</IsPackable>
@@ -16,7 +16,8 @@
 		<PackageReference Include="Gondwana" Version="2.*" />
 		<PackageReference Include="Gondwana.Hosting" Version="2.*" />
 		<PackageReference Include="Gondwana.Blazor" Version="2.*" />
-		<PackageReference Include="Gondwana.Audio.Browser" Version="2.*" ExcludeAssets="contentFiles" />
+		<PackageReference Include="Gondwana.Blazor.Hosting" Version="2.*" />
+		<PackageReference Include="Gondwana.Audio.Browser" Version="2.*" />
 
 		<!-- Blazor WebAssembly -->
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.*" />

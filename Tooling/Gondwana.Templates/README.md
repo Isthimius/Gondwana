@@ -96,14 +96,16 @@ dotnet publish -f net8.0-browser -c Release
 
 This scaffolds a Blazor WebAssembly project containing:
 
-- `MyGame.csproj` — targets `net8.0` with Blazor WebAssembly and `Gondwana.Blazor` packages
-- `Program.cs` — Blazor WebAssembly entry point
-- `App.razor` — Root Blazor component
-- `Pages/Index.razor` — Main page containing the game render surface
-- `GameRenderSurface.razor` — Blazor component wrapping `BlazorBitmapRenderSurfaceControl`
+- `MyGame.csproj` — targets `net8.0-browser` with Blazor WebAssembly and Gondwana packages
+- `Program.cs` — Blazor WebAssembly entry point with audio module import
+- `App.razor` — Root Blazor Router component
+- `Pages/Index.razor` — Main page (routed to "/") containing the game
+- `GameRenderSurface.razor` — Blazor component wrapping `BlazorBitmapRenderSurfaceComponent`
 - `MyGameHost.cs` — `BlazorGameHost` subclass with `// TODO` stubs for loading assets and building the scene
-- `wwwroot/gondwana-audio.js` — The Gondwana browser audio JS module for HTML5 Audio API
+- `wwwroot/index.html` — HTML host page with loading indicator
 - `assets/README.txt` — instructions for adding sprites and other assets
+
+**Note:** The `gondwana-audio.js` file is automatically included via the `Gondwana.Audio.Browser` NuGet package.
 
 ## Further reading
 
