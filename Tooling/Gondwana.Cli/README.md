@@ -126,14 +126,13 @@ gondwana new blazor MyGame -o ./projects/MyGame
 
 The scaffolded project contains:
 
-- `MyGame.csproj` — `Microsoft.NET.Sdk.BlazorWebAssembly` targeting `net8.0-browser`, with `Gondwana.Blazor` and `Microsoft.AspNetCore.Components.WebAssembly` package references
-- `Program.cs` — standard Blazor WebAssembly entry point
+- `MyGame.csproj` — `Microsoft.NET.Sdk.BlazorWebAssembly` targeting `net8.0-browser`, with `Gondwana.Blazor`, `Gondwana.Blazor.Hosting`, `Gondwana.Audio.Browser`, and `Microsoft.AspNetCore.Components.WebAssembly` package references
+- `Program.cs` — Blazor WebAssembly entry point that imports the Gondwana browser audio module (`/gondwana-audio.js`)
 - `App.razor` — root Blazor app component
 - `Pages/Index.razor` — the default page hosting the game canvas
 - `GameRenderSurface.razor` — thin Blazor component wrapping `BlazorBitmapRenderSurfaceComponent`
 - `MyGameHost.cs` — `BlazorGameHost` subclass with `// TODO` stubs for assets, scene setup, and input
 - `wwwroot/index.html` — the Blazor host page
-- `wwwroot/gondwana-audio.js` — the Gondwana browser audio module
 - `assets/README.txt` — instructions for adding sprites and other assets
 
 After scaffolding, start the Blazor dev server:
