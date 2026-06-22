@@ -12,11 +12,6 @@ All notable changes to this project will be documented in this file.
 
 
 
-
-# v2.5.0 - June 16, 2026
-
-
-
 ## Added
 - Add Gondwana.Blazor.Hosting project with BlazorGameHost base class
 - BlazorGameHost wires keyboard, mouse, and touch adapters for the Blazor render surface
