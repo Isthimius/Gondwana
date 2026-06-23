@@ -95,6 +95,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />

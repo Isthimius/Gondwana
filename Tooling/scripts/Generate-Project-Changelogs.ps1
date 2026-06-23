@@ -72,6 +72,7 @@ $DefaultProjects = @(
     "Gondwana.Hosting",
     "Gondwana.Input.SDL2",
     "Gondwana.Video",
+    "Gondwana.Widgets",
     "Gondwana.WinForms",
     "Gondwana.WinForms.Hosting",
     "Tooling/Gondwana.Cli",

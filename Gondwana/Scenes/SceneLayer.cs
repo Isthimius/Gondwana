@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Drawing;
 using System.Runtime.Serialization;
-using Gondwana.Collisions;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
 

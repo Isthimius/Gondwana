@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using Gondwana.Collisions;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Physics.Collisions;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;

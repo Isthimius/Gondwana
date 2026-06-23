@@ -5,8 +5,8 @@ using Gondwana.Drawing.Coordinates;
 using SkiaSharp;
 using System.Text;
 using static Gondwana.Drawing.Direct.TextBlock;
-using Gondwana.Movement.Easing;
 using System.Numerics;
+using Gondwana.Physics.Movement.Easing;
 
 namespace Gondwana.Demos.ParticleTest;
 

@@ -1,4 +1,4 @@
-﻿using Gondwana.Collisions;
+﻿using Gondwana.Physics.Collisions;
 
 namespace Gondwana.Drawing.Collisions;
 

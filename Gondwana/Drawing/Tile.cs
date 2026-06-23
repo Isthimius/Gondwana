@@ -1,7 +1,7 @@
 using System.Drawing;
-using Gondwana.Collisions;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
+using Gondwana.Physics.Collisions;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;

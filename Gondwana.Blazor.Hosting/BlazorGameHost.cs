@@ -95,9 +95,6 @@ public abstract class BlazorGameHost : GameHostBase
         RenderSurface.Host.Bind(Scene!, false);
     }
 
-    /// <inheritdoc/>
-    protected override RenderSurfaceHostBase GetPrimaryRenderSurfaceHost() => RenderSurface.Host;
-
     /// <summary>
     /// Starts the engine. On browser/WASM targets, uses a JavaScript requestAnimationFrame loop.
     /// On all other targets, the default background-thread loop is used.

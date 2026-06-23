@@ -174,7 +174,7 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 
 ### `release.ps1`
 
-Creates a new versioned release of Gondwana: updates the changelog, commits it, creates a Git tag, and pushes everything to trigger the GitHub Actions release workflow.
+Creates a new versioned release of Gondwana: updates the changelog, commits it, creates a Git tag, and pushes everything to trigger the GitHub Actions release workflow, which then publishes all packages to NuGet.
 
 **What it does:**
 1. Validates that the working tree is clean, on the correct branch, and in sync with the remote.

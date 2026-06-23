@@ -152,7 +152,7 @@ internal sealed class GameWindow : Window
             });
         };
 
-        await _host.InitializeAsync(logLevel: LogLevel.Warning);
+        _host.Initialize();
     }
 
     protected override void OnClosed(EventArgs e)
