@@ -57,6 +57,7 @@ jobs:
           mkdir -p publish/Gondwana.Hosting
           mkdir -p publish/Gondwana.Input.SDL2
           mkdir -p publish/Gondwana.Video
+          mkdir -p publish/Gondwana.Widgets
           mkdir -p publish/Gondwana.WinForms
           mkdir -p publish/Gondwana.WinForms.Hosting
           mkdir -p publish/Tooling/Gondwana.Assets.WinForms
@@ -70,6 +71,7 @@ jobs:
           dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o publish/Gondwana.Hosting --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o publish/Gondwana.Input.SDL2 --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o publish/Gondwana.Video --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Widgets/Gondwana.Widgets.csproj -c Release -o publish/Gondwana.Widgets --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Assets.WinForms/Gondwana.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
@@ -89,6 +91,7 @@ jobs:
           cp publish/Gondwana.Hosting/Gondwana.Hosting.dll artifacts/
           cp publish/Gondwana.Input.SDL2/Gondwana.Input.SDL2.dll artifacts/
           cp publish/Gondwana.Video/Gondwana.Video.dll artifacts/
+          cp publish/Gondwana.Widgets/Gondwana.Widgets.dll artifacts/
           cp publish/Gondwana.WinForms/Gondwana.WinForms.dll artifacts/
           cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll artifacts/
 

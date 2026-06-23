@@ -1,6 +1,10 @@
 gondwana-core:
   - changed-files:
     - any-glob-to-any-file: 'Gondwana/**'
+  
+gondwana-widgets:
+  - changed-files:
+    - any-glob-to-any-file: 'Gondwana.Widgets/**'
 
 gondwana-avalonia:
   - changed-files:

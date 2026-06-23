@@ -56,6 +56,10 @@ $ProjectChangelogGroups = @(
         IncludePaths = @("Gondwana.Video/**/*")
     },
     [pscustomobject]@{
+        Name         = "Gondwana.Widgets"
+        IncludePaths = @("Gondwana.Widgets/**/*")
+    },
+    [pscustomobject]@{
         Name         = "Gondwana.WinForms"
         IncludePaths = @("Gondwana.WinForms/**/*")
     },
