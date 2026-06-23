@@ -2,7 +2,7 @@
 using Gondwana.Physics.Movement.Easing;
 using System.Numerics;
 
-namespace Gondwana.Movement;
+namespace Gondwana.Physics.Movement;
 
 public sealed partial class MovementController
 {

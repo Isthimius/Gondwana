@@ -1,10 +1,9 @@
 ﻿using System.Numerics;
 using Gondwana.Drawing.Coordinates;
-using Gondwana.Physics.Movement;
 using Gondwana.Physics.Movement.Scripted;
 using Gondwana.Scenes;
 
-namespace Gondwana.Movement;
+namespace Gondwana.Physics.Movement;
 
 /// <summary>
 /// Central controller responsible for managing all movement modes for a single <see cref="IMovable"/> object.
