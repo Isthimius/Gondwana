@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Movement.Easing;
+﻿namespace Gondwana.Physics.Movement.Easing;
 
 /// <summary>
 /// Common easing functions for scripted/tweened movement.
@@ -68,7 +68,7 @@ public static class EasingFunctions
     public static float EaseOutQuart(float t)
     {
         t -= 1f;
-        return 1f - (t * t * t * t);
+        return 1f - t * t * t * t;
     }
 
     /// <summary>Heavy easing at both ends; cinematic feel (quartic).</summary>

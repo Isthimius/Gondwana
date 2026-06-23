@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Collisions;
+﻿namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Provides predefined collision mask constants for common collision filtering scenarios.

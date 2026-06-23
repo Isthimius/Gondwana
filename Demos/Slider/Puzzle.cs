@@ -4,7 +4,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Movement.Scripted;
+using Gondwana.Physics.Movement.Scripted;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;

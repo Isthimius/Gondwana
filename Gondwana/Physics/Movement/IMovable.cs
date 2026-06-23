@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Gondwana.Movement;
+namespace Gondwana.Physics.Movement;
 
 /// <summary>
 /// Defines an object that can be moved within a specific coordinate space.

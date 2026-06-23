@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Gondwana.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Pixel adjustments applied to a Tile's DrawLocation to produce its collision box.

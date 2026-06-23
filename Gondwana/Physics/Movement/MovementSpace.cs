@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Movement;
+﻿namespace Gondwana.Physics.Movement;
 
 /// <summary>
 /// Specifies the coordinate system used for movement calculations and updates.

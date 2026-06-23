@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Gondwana.Widgets</RootNamespace>
+		<AssemblyName>Gondwana.Widgets</AssemblyName>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- URLs / repository -->
+		<PackageProjectUrl>https://github.com/Isthimius/Gondwana</PackageProjectUrl>
+
+		<!-- NuGet packaging -->
+		<IsPackable>true</IsPackable>
+		<PackageId>Gondwana.Widgets</PackageId>
+		<Title>Gondwana Widgets</Title>
+		<Description>Reusable UI and gameplay widgets for the Gondwana game engine, including menus, dialogs, labels, buttons, overlays, HUD elements, and DirectDrawing-friendly 2D/2.5D game controls.</Description>
+		<PackageTags>gondwana widgets ui game-ui gamedev csharp dotnet 2d 2.5d directdrawing hud menus dialogs buttons overlays skia skiasharp</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>gondwana-logo.png</PackageIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\gondwana-logo.png" Link="gondwana-logo.png">
+			<PackagePath></PackagePath>
+			<Pack>true</Pack>
+		</None>
+	</ItemGroup>
+
+</Project>

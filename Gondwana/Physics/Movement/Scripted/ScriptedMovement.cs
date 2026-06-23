@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Gondwana.Movement.Scripted;
+namespace Gondwana.Physics.Movement.Scripted;
 
 /// <summary>
 /// Represents the state and parameters of a scripted movement operation applied to an object.

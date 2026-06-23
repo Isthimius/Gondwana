@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Gondwana.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Represents an entity that participates in the collision system and has a defined collision area.

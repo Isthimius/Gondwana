@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Gondwana.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Simple collision resolution for dynamic colliders against colliders in the registry.
@@ -93,12 +93,12 @@ internal sealed class CollisionResolver
 
             if (overlap.Width < overlap.Height)
             {
-                dx = (centerX < otherCenterX) ? -overlap.Width : overlap.Width;
+                dx = centerX < otherCenterX ? -overlap.Width : overlap.Width;
                 hitX = true;
             }
             else
             {
-                dy = (centerY < otherCenterY) ? -overlap.Height : overlap.Height;
+                dy = centerY < otherCenterY ? -overlap.Height : overlap.Height;
                 hitY = true;
             }
 

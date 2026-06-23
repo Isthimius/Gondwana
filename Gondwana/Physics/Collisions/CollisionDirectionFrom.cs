@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Collisions;
+﻿namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// planned for future use

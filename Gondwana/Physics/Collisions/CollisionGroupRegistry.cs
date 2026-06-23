@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Gondwana.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Manages collision group definitions and provides bitwise mask values for collision filtering.

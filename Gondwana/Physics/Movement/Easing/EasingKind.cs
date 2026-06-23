@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Movement.Easing;
+﻿namespace Gondwana.Physics.Movement.Easing;
 
 /// <summary>
 /// Enumeration of all supported easing functions for animation and movement interpolation.

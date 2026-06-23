@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Gondwana.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Defines how a collider responds to collisions with other colliders.

@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Gondwana.Drawing.Coordinates;
-using Gondwana.Movement.Scripted;
+using Gondwana.Physics.Movement;
+using Gondwana.Physics.Movement.Scripted;
 using Gondwana.Scenes;
 
 namespace Gondwana.Movement;
@@ -90,7 +91,7 @@ public sealed partial class MovementController : IDisposable
     /// <summary>
     /// Indicates whether a scripted movement (tween or MoveToward) is currently active.
     /// </summary>
-    public bool IsScripted => _state.Script.Type != Scripted.MovementScriptType.None;
+    public bool IsScripted => _state.Script.Type != MovementScriptType.None;
 
     /// <summary>
     /// Indicates whether physics-style integration is currently active.

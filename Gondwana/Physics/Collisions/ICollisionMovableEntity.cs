@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Collisions;
+﻿namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Represents a collision entity that can be moved or repositioned in response to collision resolution.

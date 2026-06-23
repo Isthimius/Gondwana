@@ -1,7 +1,8 @@
 ﻿using System.Numerics;
-using Gondwana.Movement.Scripted;
+using Gondwana.Movement;
+using Gondwana.Physics.Movement.Scripted;
 
-namespace Gondwana.Movement;
+namespace Gondwana.Physics.Movement;
 
 /// <summary>
 /// Represents the current motion state of an <see cref="IMovable"/> object, including velocity, acceleration,

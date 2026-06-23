@@ -1,10 +1,10 @@
 ﻿using System.Drawing;
 
-namespace Gondwana.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Represents an axis-aligned bounding box (AABB) defined by its minimum and maximum coordinates along the X and Y
-/// axes. This is the collision area of a <see cref="Gondwana.Drawing.Tile"/>."
+/// axes. This is the collision area of a <see cref="Drawing.Tile"/>."
 /// </summary>
 public readonly struct Aabb
 {

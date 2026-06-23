@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Movement.Scripted;
+﻿namespace Gondwana.Physics.Movement.Scripted;
 
 /// <summary>
 /// Defines the type of scripted movement behavior applied to an object.

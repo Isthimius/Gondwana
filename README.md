@@ -97,23 +97,25 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 
 ### Core Namespaces (high level)
 
-| Namespace                          | Responsibility                                                                                 |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Gondwana**                       | Core engine loop, lifecycle management, configuration, and global services.                    |
-| **Gondwana.Assets**                | Asset type definitions, asset file loading, and asset identifiers.                             |
-| **Gondwana.Audio**                 | Platform-agnostic audio resource loading and playback management.                              |
-| **Gondwana.Collisions**            | Bounding-volume collision detection and kinematic physics integration.                         |
-| **Gondwana.Configuration**         | Engine configuration model and configuration file loading.                                     |
-| **Gondwana.Drawing**               | Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables. |
-| **Gondwana.Input**                 | Unified input polling for keyboard, mouse, and gamepad devices.                                |
-| **Gondwana.Logging**               | Engine-internal logging, log events, and logging mode configuration.                           |
-| **Gondwana.Movement**              | Sprite movement controllers, easing functions, and scripted motion paths.                      |
-| **Gondwana.Rendering**             | Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.             |
-| **Gondwana.Scenes**                | Hierarchical scene graph — Scenes, SceneLayers, and grid-based spatial organization.           |
-| **Gondwana.Timers**                | High-resolution timing, scheduled callbacks, and engine-cycle events.                          |
-| **Gondwana.Audio / Video**         | Audio playback, mixing, MIDI support, and experimental video integration.                      |
-| **Gondwana.Hosting**               | Cross-platform host lifecycle base class (`GameHostBase`) for engine init and teardown.        |
-| **Gondwana.WinForms / Avalonia**   | Platform adapters responsible for hosting render surfaces and wiring input.                    |
+| Namespace                          | Responsibility                                                                                         |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Gondwana**                       | Core engine loop, lifecycle management, configuration, and global services.                            |
+| **Gondwana.Assets**                | Asset type definitions, asset file loading, and asset identifiers.                                     |
+| **Gondwana.Audio**                 | Platform-agnostic audio resource loading and playback management.                                      |
+| **Gondwana.Collisions**            | Bounding-volume collision detection and kinematic physics integration.                                 |
+| **Gondwana.Configuration**         | Engine configuration model and configuration file loading.                                             |
+| **Gondwana.Drawing**               | Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables.         |
+| **Gondwana.Input**                 | Unified input polling for keyboard, mouse, and gamepad devices.                                        |
+| **Gondwana.Logging**               | Engine-internal logging, log events, and logging mode configuration.                                   |
+| **Gondwana.Movement**              | Sprite movement controllers, easing functions, and scripted motion paths.                              |
+| **Gondwana.Rendering**             | Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.                     |
+| **Gondwana.Scenes**                | Hierarchical scene graph — Scenes, SceneLayers, and grid-based spatial organization.                   |
+| **Gondwana.Timers**                | High-resolution timing, scheduled callbacks, and engine-cycle events.                                  |
+| **Gondwana.Audio / Video**         | Audio playback, mixing, MIDI support, and experimental video integration.                              |
+| **Gondwana.Hosting**               | Cross-platform host lifecycle base class (`GameHostBase`) for engine init and teardown.                |
+| **Gondwana.WinForms**              | Windows-specific platform adapters responsible for hosting render surfaces and wiring input.           |
+| **Gondwana.Avalonia**              | Cross-platform adapters responsible for hosting render surfaces and wiring input for Win / Mac / Linux.|
+| **Gondwana.Widgets**               | Pre-built Gondwana-native UI components and widgets.                                                   |
 
 
 ---

@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Collisions;
+﻿namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Manages registration and querying of colliders, separating them into static and dynamic collections

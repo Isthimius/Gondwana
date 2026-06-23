@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Collisions;
+﻿namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// World-space axis-aligned collider used by the collision system.

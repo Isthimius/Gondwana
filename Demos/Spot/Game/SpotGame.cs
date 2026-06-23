@@ -1,4 +1,5 @@
-﻿using Gondwana.Movement.Scripted;
+﻿using Gondwana.Physics.Movement.Easing;
+using Gondwana.Physics.Movement.Scripted;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -200,7 +201,7 @@ internal class SpotGame : IDisposable
                 sprite.Movement.ScriptedMovementStopped += stopHandler;
                 sprite.Movement.MoveTo(new(playerMovement.DestX, playerMovement.DestY),
                                            0.4f,
-                                           Gondwana.Movement.Easing.EasingKind.SmootherStep,
+                                           EasingKind.SmootherStep,
                                            0.1f);
 
                 toCell.OccupiedBy = playerMovement.Player;
@@ -215,7 +216,7 @@ internal class SpotGame : IDisposable
                 sprite.Movement.ScriptedMovementStopped += stopHandler;
                 sprite.Movement.MoveTo(new(playerMovement.DestX, playerMovement.DestY),
                                        0.4f,
-                                       Gondwana.Movement.Easing.EasingKind.EaseInCubic,
+                                       EasingKind.EaseInCubic,
                                        0.1f);
 
                 fromCell.OccupiedBy = null;
