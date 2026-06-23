@@ -21,6 +21,7 @@ using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.Demos.SpotAvalonia.Game;
+using Gondwana.Widgets;
 
 namespace Gondwana.Demos.SpotAvalonia;
 
@@ -79,7 +80,7 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     #region AvaloniaGameHost overrides
 
-    protected override SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
+    protected SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
         var splash = SplashScreen.TryCreate(host, GetAssetPath("gondwana-logo-text.png"));
         if (splash != null)

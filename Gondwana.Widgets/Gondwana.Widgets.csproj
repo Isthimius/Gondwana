@@ -28,4 +28,8 @@
 		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+	</ItemGroup>
+
 </Project>

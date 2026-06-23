@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 
-namespace Gondwana.Hosting;
+namespace Gondwana.Widgets;
 
 /// <summary>
 /// A platform-agnostic splash screen implemented as a <see cref="DirectImage"/> overlay on

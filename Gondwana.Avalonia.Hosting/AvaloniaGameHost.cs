@@ -70,13 +70,6 @@ public abstract class AvaloniaGameHost : GameHostBase
     }
 
     /// <summary>
-    /// Returns the primary render surface host so that <see cref="GameHostBase.InitializeAsync"/>
-    /// can attach the <see cref="Gondwana.Hosting.SplashScreen"/> overlay.
-    /// </summary>
-    protected override Gondwana.Rendering.RenderSurfaceHostBase? GetPrimaryRenderSurfaceHost()
-        => RenderSurface.Host;
-
-    /// <summary>
     /// Binds the current scene to the render surface host.
     /// </summary>
     protected override void BindScene()

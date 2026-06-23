@@ -81,9 +81,6 @@ public abstract class WinFormsGameHostBase : GameHostBase
         _bindScene(Scene!, false);
     }
 
-    /// <inheritdoc/>
-    protected override RenderSurfaceHostBase GetPrimaryRenderSurfaceHost() => _renderSurfaceHost;
-
     /// <summary>
     /// Provides a hook for configuring platform-specific settings during initialization.
     /// </summary>
