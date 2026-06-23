@@ -102,7 +102,7 @@ This dirty-region, view-centric design allows Gondwana to efficiently render com
 | **Gondwana**                       | Core engine loop, lifecycle management, configuration, and global services.                            |
 | **Gondwana.Assets**                | Asset type definitions, asset file loading, and asset identifiers.                                     |
 | **Gondwana.Audio**                 | Platform-agnostic audio resource loading and playback management.                                      |
-| **Gondwana.Collisions**            | Bounding-volume collision detection and kinematic physics integration.                                 |
+| **Gondwana.Physics.Collisions**    | Bounding-volume collision detection and kinematic physics integration.                                 |
 | **Gondwana.Configuration**         | Engine configuration model and configuration file loading.                                             |
 | **Gondwana.Drawing**               | Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables.         |
 | **Gondwana.Input**                 | Unified input polling for keyboard, mouse, and gamepad devices.                                        |
