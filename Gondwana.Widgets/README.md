@@ -1,30 +1,64 @@
-# Gondwana Game Engine
+# Gondwana.Widgets
 
-**Gondwana** is a 2D and 2.5D game engine for C# / .NET 8 focused on
-tile-based worlds, layered rendering, and practical engine architecture.
+**Gondwana.Widgets** provides reusable UI and gameplay widgets for the Gondwana game engine,
+including menus, dialogs, labels, buttons, overlays, HUD elements, and other
+DirectDrawing-friendly 2D/2.5D game controls.
 
-It provides fine-grained control over rendering, timing, and scene
-composition while remaining lightweight and straightforward to integrate
-into .NET applications.
+It builds on the core `Gondwana` rendering model and is intended for in-game interface elements
+rather than platform-native UI. Widgets are designed to render inside Gondwana scenes, views,
+and backbuffers using the same engine-driven drawing pipeline as the rest of the game.
 
 ## Features
 
--   Tile and sprite rendering
--   Layered scenes with z-ordering
--   Parallax support
--   Camera / view system
--   Collision detection
--   Particle effects
--   SkiaSharp-based rendering
--   SVG asset support (`SvgResource` + `DirectSvg`) for scalable UI/icon rendering
--   NAudio-based audio playback
--   Cross-platform architecture
+- Reusable in-game UI widgets for Gondwana projects
+- DirectDrawing-friendly controls and overlays
+- Game-oriented components such as HUD elements, status bars, labels, dialogs, and menus
+- Code-first widget composition with no external editor or scene GUI required
+- Designed for 2D and 2.5D games using Gondwana's scene, view, and rendering systems
+- Cross-platform-friendly architecture through the core Gondwana rendering pipeline
 
 ## Installation
 
-``` bash
-dotnet add package Gondwana
+```bash
+dotnet add package Gondwana.Widgets
 ```
+
+## Usage
+
+Add the package to your game project, then create and register widgets as part of your normal
+Gondwana scene or DirectDrawing setup.
+
+Example:
+
+```csharp
+using Gondwana.Widgets;
+```
+
+A typical widget can be used for in-game interface elements such as:
+
+- HUD overlays
+- Dialog boxes
+- Labels and text panels
+- Menu screens
+- Buttons and selectable options
+- Health bars and status indicators
+- NPC conversation boxes
+
+Exact usage depends on the specific widget type being used.
+
+## Widget Scope
+
+`Gondwana.Widgets` is intended for **game UI**, not operating-system UI.
+
+Use it for interface elements that should appear inside the game world or game viewport, such as
+dialog boxes, overlays, HUDs, menus, and sprite-adjacent indicators.
+
+For platform-specific hosting and application surfaces, use one of the hosting or adapter packages
+instead, such as:
+
+- `Gondwana.WinForms`
+- `Gondwana.Avalonia`
+- `Gondwana.Blazor`
 
 ## Documentation
 
@@ -39,12 +73,11 @@ dotnet add package Gondwana
 
 ## Related Packages
 
--   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
--   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
--   `Gondwana.Input.SDL2` --- SDL2-based input handling
--   `Gondwana.Video` --- Video playback support
--   `Gondwana.WinForms` --- WinForms rendering and input adapters
--   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle
+- `Gondwana` – Core engine
+- `Gondwana.WinForms` – WinForms adapter
+- `Gondwana.Avalonia` – Avalonia adapter
+- `Gondwana.Blazor` – Blazor WebAssembly adapter
+- `Gondwana.Hosting` – Shared hosting abstractions
 
 ## License
 
