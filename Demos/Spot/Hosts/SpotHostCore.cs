@@ -111,12 +111,14 @@ internal sealed class SpotHostCore
 
     internal async Task RunSplashAsync()
     {
-        using var splash = CreateSplash(SurfaceHost);
-        if (splash == null)
+        var splash = CreateSplash(SurfaceHost);
+        if (splash is null)
             return;
-
-        await splash.ShowAsync();
-        await splash.HideAsync();
+        using (splash)
+        {
+            await splash.ShowAsync();
+            await splash.HideAsync();
+        }
     }
 
     internal void LoadAssets()
