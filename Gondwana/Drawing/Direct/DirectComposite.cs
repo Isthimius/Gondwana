@@ -505,7 +505,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <summary>
     /// Releases all resources used by the composite and disposes all child drawables.
     /// </summary>
-    public void Dispose()
+    public virtual void Dispose()
     {
         Disposing?.Invoke(this, this);
 

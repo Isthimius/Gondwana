@@ -21,7 +21,7 @@ using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.Demos.SpotAvalonia.Game;
-using Gondwana.Widgets;
+using Gondwana.Widgets.Overlays;
 
 namespace Gondwana.Demos.SpotAvalonia;
 

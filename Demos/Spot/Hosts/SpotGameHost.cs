@@ -3,7 +3,7 @@ using Gondwana.Hosting;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
-using Gondwana.Widgets;
+using Gondwana.Widgets.Overlays;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using SkiaSharp;

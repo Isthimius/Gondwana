@@ -33,4 +33,10 @@
 	  <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Dialogs\" />
+	  <Folder Include="Hud\" />
+	  <Folder Include="Menus\" />
+	</ItemGroup>
+
 </Project>

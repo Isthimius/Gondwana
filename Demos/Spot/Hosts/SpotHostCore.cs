@@ -21,7 +21,7 @@ using Gondwana.Timers;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Rendering;
-using Gondwana.Widgets;
+using Gondwana.Widgets.Overlays;
 
 namespace Gondwana.Demos.Spot;
 

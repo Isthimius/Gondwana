@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
 
-namespace Gondwana.Widgets;
+namespace Gondwana.Widgets.Overlays;
 
 /// <summary>
-/// A platform-agnostic splash screen implemented as a <see cref="DirectImage"/> overlay on
+/// A platform-agnostic splash screen widget implemented as a <see cref="DirectImage"/> overlay on
 /// the primary render surface, animated with the engine's built-in
 /// <see cref="DirectDrawingBase.FadeIn"/> and <see cref="DirectDrawingBase.FadeOut"/> transitions.
 /// </summary>
@@ -16,29 +16,38 @@ namespace Gondwana.Widgets;
 /// <para>
 /// Create an instance via <see cref="TryCreate"/> after calling
 /// <see cref="GameHostBase.InitializeAsync"/>—the engine must already be running so the
-/// animation loop can drive the fade.  Call <see cref="ShowAsync"/> to fade the splash in
-/// (and hold it), then <see cref="HideAsync"/> to fade it out.  Dispose the instance when
-/// done to release the underlying image resources.
+/// animation loop can drive the fade. Call <see cref="ShowAsync"/> to fade the splash in
+/// and hold it, then <see cref="HideAsync"/> to fade it out.
 /// </para>
 /// <para>
-/// The overlay is rendered in view-space with <see cref="int.MaxValue"/> Z-order so it always
+/// The overlay is rendered in screen-space with <see cref="int.MaxValue"/> Z-order so it always
 /// appears on top of other direct drawings.
 /// </para>
 /// </remarks>
-public sealed class SplashScreen : IDisposable
+public sealed class SplashScreen : WidgetBase
 {
     /// <summary>
     /// The nickname used for the DirectImage overlay that displays the splash.
     /// </summary>
     public static readonly string SplashImageNickname = "__gondwana_splash__";
 
-    /// <summary>Gets or sets the duration of the fade-in animation in seconds.</summary>
+    private readonly DirectImage _image;
+    private readonly SKImage _sourceImage;
+    private bool _disposed;
+
+    /// <summary>
+    /// Gets or sets the duration of the fade-in animation in seconds.
+    /// </summary>
     public float FadeInSec { get; set; } = 0.45f;
 
-    /// <summary>Gets or sets how long the splash is held at full opacity, in seconds.</summary>
+    /// <summary>
+    /// Gets or sets how long the splash is held at full opacity, in seconds.
+    /// </summary>
     public float HoldSec { get; set; } = 0.55f;
 
-    /// <summary>Gets or sets the duration of the fade-out animation in seconds.</summary>
+    /// <summary>
+    /// Gets or sets the duration of the fade-out animation in seconds.
+    /// </summary>
     public float FadeOutSec { get; set; } = 0.45f;
 
     /// <summary>
@@ -46,24 +55,38 @@ public sealed class SplashScreen : IDisposable
     /// splash is being held on screen.
     /// </summary>
     /// <remarks>
-    /// <para>
     /// Fade-out will not begin until both <see cref="HoldSec"/> has elapsed and this callback
     /// has completed.
-    /// </para>
-    /// <para>
-    /// Synchronous work can be wrapped by returning <see cref="Task.CompletedTask"/>.
-    /// </para>
     /// </remarks>
     public Func<SplashScreen, Task>? AfterFadeInAsync { get; set; }
 
-    private readonly DirectImage _image;
-    private readonly SKImage _sourceImage;
-    private bool _disposed;
+    /// <summary>
+    /// Raised after the fade-in animation completes.
+    /// </summary>
+    public event Action<SplashScreen>? FadeInCompleted;
 
-    private SplashScreen(DirectImage image, SKImage sourceImage)
+    /// <summary>
+    /// Raised after the fade-out animation completes.
+    /// </summary>
+    public event Action<SplashScreen>? FadeOutCompleted;
+
+    private SplashScreen(
+        RenderSurfaceHostBase host,
+        DirectImage image,
+        SKImage sourceImage)
+        : base(
+            host,
+            DirectDrawingMode.View,
+            PointF.Empty,
+            SplashImageNickname)
     {
         _image = image;
         _sourceImage = sourceImage;
+
+        Add(_image);
+
+        // Start hidden. ShowAsync() will make it visible and fade it in.
+        _image.Visible = false;
     }
 
     /// <summary>
@@ -71,7 +94,7 @@ public sealed class SplashScreen : IDisposable
     /// first view of the specified host.
     /// </summary>
     /// <param name="host">The render surface host that will display the splash.</param>
-    /// <param name="imagePath">Full path to the image file (PNG, JPG, etc.).</param>
+    /// <param name="imagePath">Full path to the image file.</param>
     /// <returns>
     /// A configured <see cref="SplashScreen"/>, or <see langword="null"/> if the host has no
     /// views or the image file cannot be decoded.
@@ -85,15 +108,18 @@ public sealed class SplashScreen : IDisposable
         {
             EngineLogger.GetLogger<SplashScreen>().LogWarning(
                 "SplashScreen image not found at '{Path}'; splash will be skipped.", imagePath);
+
             return null;
         }
 
         using var bitmap = SKBitmap.Decode(imagePath);
         var sourceImage = bitmap == null ? null : SKImage.FromBitmap(bitmap);
+
         if (sourceImage == null)
         {
             EngineLogger.GetLogger<SplashScreen>().LogWarning(
                 "SplashScreen image could not be decoded from '{Path}'; splash will be skipped.", imagePath);
+
             return null;
         }
 
@@ -107,7 +133,7 @@ public sealed class SplashScreen : IDisposable
         image.ZOrder = int.MaxValue;
         image.Opacity = 0f;
 
-        return new SplashScreen(image, sourceImage);
+        return new SplashScreen(host, image, sourceImage);
     }
 
     /// <summary>
@@ -116,7 +142,14 @@ public sealed class SplashScreen : IDisposable
     /// </summary>
     public async Task ShowAsync()
     {
+        ThrowIfDisposed();
+
+        Show();
+
+        _image.Opacity = 0f;
         await FadeAndWaitAsync(_image, 1f, FadeInSec);
+
+        FadeInCompleted?.Invoke(this);
 
         var holdTask = HoldSec > 0f
             ? Task.Delay(TimeSpan.FromSeconds(HoldSec))
@@ -131,15 +164,29 @@ public sealed class SplashScreen : IDisposable
     /// Fades the splash out to fully transparent.
     /// Returns when the fade-out animation completes.
     /// </summary>
-    public Task HideAsync() => FadeAndWaitAsync(_image, 0f, FadeOutSec);
+    public async Task HideAsync()
+    {
+        ThrowIfDisposed();
 
-    /// <summary>Releases the DirectImage overlay and the loaded image.</summary>
-    public void Dispose()
+        await FadeAndWaitAsync(_image, 0f, FadeOutSec);
+
+        FadeOutCompleted?.Invoke(this);
+
+        Hide();
+    }
+
+    /// <summary>
+    /// Releases the DirectImage overlay and the loaded image.
+    /// </summary>
+    public override void Dispose()
     {
         if (_disposed)
             return;
+
         _disposed = true;
-        _image.Dispose();
+
+        base.Dispose();
+
         _sourceImage.Dispose();
     }
 
@@ -150,8 +197,6 @@ public sealed class SplashScreen : IDisposable
 
         try
         {
-            // Normalize synchronous callback invocation failures into a faulted Task so ShowAsync
-            // still waits for the configured hold period before surfacing the error to the caller.
             return AfterFadeInAsync(this) ?? Task.CompletedTask;
         }
         catch (Exception ex)
@@ -160,10 +205,16 @@ public sealed class SplashScreen : IDisposable
         }
     }
 
-    // Subscribes to terminal events before starting the fade so no completion/disposal event is
-    // missed, then returns a Task that resolves when the transition finishes or is canceled by
-    // disposal.
-    private static Task FadeAndWaitAsync(DirectDrawingBase drawing, float targetOpacity, float durationSec)
+    private void ThrowIfDisposed()
+    {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(SplashScreen));
+    }
+
+    private static Task FadeAndWaitAsync(
+        DirectDrawingBase drawing,
+        float targetOpacity,
+        float durationSec)
     {
         var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
