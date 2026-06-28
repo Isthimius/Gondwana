@@ -7,10 +7,10 @@ public enum WidgetPointerButton
 {
     None = 0,
     Left = 1,
-    Middle = 2,
-    Right = 3,
-    XButton1 = 4,
-    XButton2 = 5,
-    Touch = 6,
-    Stylus = 7
+    Right = 2,
+    Middle = 4,
+    XButton1 = 8,
+    XButton2 = 16,
+    Touch = 32,
+    Stylus = 64
 }
