@@ -6,7 +6,9 @@ using Gondwana.Scenes;
 using Gondwana.Widgets;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
+using System.Threading.Tasks;
 
 namespace Gondwana.Demos.Spot;
 
@@ -69,6 +71,12 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost, ISpotHostC
 
     public void BeginPostSplashStartup()
         => _spot.BeginPostSplashStartup();
+
+    public async Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning)
+    {
+        Initialize(configPath, autoSaveConfig, logLevel);
+        await _spot.RunSplashAsync();
+    }
 
     public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
         => _spot.OpenNewGameDialog(newGameOptions);
