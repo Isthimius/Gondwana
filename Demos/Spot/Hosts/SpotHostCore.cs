@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
@@ -106,6 +107,16 @@ internal sealed class SpotHostCore
         if (splash != null)
             splash.HoldSec = 3f;
         return splash;
+    }
+
+    internal async Task RunSplashAsync()
+    {
+        using var splash = CreateSplash(SurfaceHost);
+        if (splash == null)
+            return;
+
+        await splash.ShowAsync();
+        await splash.HideAsync();
     }
 
     internal void LoadAssets()

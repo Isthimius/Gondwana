@@ -126,10 +126,11 @@ internal partial class GameWindow : Form
         Enabled = false;
         try
         {
-            _gameHost.Initialize();
-            _gameHost.BeginPostSplashStartup();
+            // Initializes the engine, displays the Gondwana splash screen, and waits for it to fade out.
+            await _gameHost.InitializeAsync();
 
-            // Apply saved settings now that assets are loaded and engine is running.
+            // Splash has faded out; create game visuals, start music, and apply saved settings.
+            _gameHost.BeginPostSplashStartup();
             ApplyLoadedSettings();
         }
         finally
