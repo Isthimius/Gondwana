@@ -42,77 +42,112 @@ public abstract class WidgetBase : DirectComposite
     public WidgetBase Show()
     {
         SetIsVisible(true);
+
         OnShown();
+        Shown?.Invoke();
+
         return this;
     }
 
     public WidgetBase Hide()
     {
         SetIsVisible(false);
+
         OnHidden();
+        Hidden?.Invoke();
+
         return this;
     }
 
     public WidgetBase Activate()
     {
         OnActivated();
+        Activated?.Invoke();
+
         return this;
     }
 
     public WidgetBase Cancel()
     {
         OnCancelled();
+        Cancelled?.Invoke();
+
         return this;
     }
 
     #endregion Visibility / Activation
 
-    #region Protected Event Raisers
+    #region Pointer Dispatch
+
+    protected void RaisePointerEnter(WidgetPointerEventArgs args)
+    {
+        OnPointerEnter(args);
+        PointerEnter?.Invoke(args);
+    }
+
+    protected void RaisePointerLeave(WidgetPointerEventArgs args)
+    {
+        OnPointerLeave(args);
+        PointerLeave?.Invoke(args);
+    }
+
+    protected void RaisePointerDown(WidgetPointerEventArgs args)
+    {
+        OnPointerDown(args);
+        PointerDown?.Invoke(args);
+    }
+
+    protected void RaisePointerUp(WidgetPointerEventArgs args)
+    {
+        OnPointerUp(args);
+        PointerUp?.Invoke(args);
+    }
+
+    protected void RaisePointerClick(WidgetPointerEventArgs args)
+    {
+        OnPointerClick(args);
+        PointerClick?.Invoke(args);
+    }
+
+    #endregion Pointer Dispatch
+
+    #region Protected Lifecycle Hooks
 
     protected virtual void OnShown()
     {
-        Shown?.Invoke();
     }
 
     protected virtual void OnHidden()
     {
-        Hidden?.Invoke();
     }
 
     protected virtual void OnActivated()
     {
-        Activated?.Invoke();
     }
 
     protected virtual void OnCancelled()
     {
-        Cancelled?.Invoke();
     }
 
     protected virtual void OnPointerEnter(WidgetPointerEventArgs args)
     {
-        PointerEnter?.Invoke(args);
     }
 
     protected virtual void OnPointerLeave(WidgetPointerEventArgs args)
     {
-        PointerLeave?.Invoke(args);
     }
 
     protected virtual void OnPointerDown(WidgetPointerEventArgs args)
     {
-        PointerDown?.Invoke(args);
     }
 
     protected virtual void OnPointerUp(WidgetPointerEventArgs args)
     {
-        PointerUp?.Invoke(args);
     }
 
     protected virtual void OnPointerClick(WidgetPointerEventArgs args)
     {
-        PointerClick?.Invoke(args);
     }
 
-    #endregion Protected Event Raisers
+    #endregion Protected Lifecycle Hooks
 }

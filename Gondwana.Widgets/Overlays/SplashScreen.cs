@@ -7,23 +7,6 @@ using System.Drawing;
 
 namespace Gondwana.Widgets.Overlays;
 
-/// <summary>
-/// A platform-agnostic splash screen widget implemented as a <see cref="DirectImage"/> overlay on
-/// the primary render surface, animated with the engine's built-in
-/// <see cref="DirectDrawingBase.FadeIn"/> and <see cref="DirectDrawingBase.FadeOut"/> transitions.
-/// </summary>
-/// <remarks>
-/// <para>
-/// Create an instance via <see cref="TryCreate"/> after calling
-/// <see cref="GameHostBase.InitializeAsync"/>—the engine must already be running so the
-/// animation loop can drive the fade. Call <see cref="ShowAsync"/> to fade the splash in
-/// and hold it, then <see cref="HideAsync"/> to fade it out.
-/// </para>
-/// <para>
-/// The overlay is rendered in screen-space with <see cref="int.MaxValue"/> Z-order so it always
-/// appears on top of other direct drawings.
-/// </para>
-/// </remarks>
 public sealed class SplashScreen : WidgetBase
 {
     /// <summary>

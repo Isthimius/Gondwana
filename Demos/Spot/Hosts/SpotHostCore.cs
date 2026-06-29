@@ -116,8 +116,8 @@ internal sealed class SpotHostCore
             return;
         using (splash)
         {
-            await splash.ShowAsync();
-            await splash.HideAsync();
+            //await splash.ShowAsync();
+            //await splash.HideAsync();
         }
     }
 
