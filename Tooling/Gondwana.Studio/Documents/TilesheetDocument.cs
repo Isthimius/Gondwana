@@ -1,0 +1,40 @@
+using Gondwana.Drawing.Tilesheets;
+using Gondwana.Drawing.Tilesheets.GTS;
+
+namespace Gondwana.Studio.Documents;
+
+/// <summary>
+/// Represents an editor session for a tilesheet, including editable definition data and source provenance.
+/// </summary>
+public sealed class TilesheetDocument
+{
+    /// <summary>
+    /// Gets or sets the runtime tilesheet currently loaded for preview and authoring.
+    /// </summary>
+    public Tilesheet? Tilesheet { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editable tilesheet definition.
+    /// </summary>
+    public TilesheetDefinition Definition { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets where the tilesheet definition was loaded from.
+    /// </summary>
+    public TilesheetDefinitionSource Source { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the document has unsaved changes.
+    /// </summary>
+    public bool IsDirty { get; set; }
+
+    /// <summary>
+    /// Gets or sets the preferred save target for updating the current definition source.
+    /// </summary>
+    public string? SaveTargetPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets the preferred export target for writing a new definition file.
+    /// </summary>
+    public string? ExportTargetPath { get; set; }
+}
