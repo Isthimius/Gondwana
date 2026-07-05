@@ -5,6 +5,8 @@
 /// </summary>
 public sealed class TilesheetDefinition
 {
+    private TilesheetDefinitionSource _source = TilesheetDefinitionSource.None();
+
     /// <summary>
     /// Gets or sets the name of the tilesheet.
     /// </summary>
@@ -29,4 +31,13 @@ public sealed class TilesheetDefinition
     /// Gets or sets a value indicating whether alpha should be premultiplied when loading the tilesheet image.
     /// </summary>
     public bool PremultiplyAlpha { get; set; }
+
+    /// <summary>
+    /// Gets or sets the provenance metadata for where this definition came from.
+    /// </summary>
+    public TilesheetDefinitionSource Source
+    {
+        get => _source;
+        set => _source = value ?? throw new ArgumentNullException(nameof(value));
+    }
 }
