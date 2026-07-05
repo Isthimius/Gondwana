@@ -19,7 +19,7 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     }
 
     // -----------------------------------------------------------------------
-    // Load(Stream) — source is always None
+    // Load(Stream) — preserves Source from JSON (defaults to None when not set)
     // -----------------------------------------------------------------------
 
     [Fact]
