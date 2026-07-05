@@ -103,9 +103,10 @@ internal sealed class SpotHostCore
     internal SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
         var imagePath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
-        var splash = SplashScreen.TryCreate(host, imagePath);
-        if (splash != null)
-            splash.HoldSec = 3f;
+        using var imageStream = File.OpenRead(imagePath);
+        var view = host.ViewManager.Views[0];
+
+        var splash = SplashScreen.TryCreate(imageStream, host, view);
         return splash;
     }
 

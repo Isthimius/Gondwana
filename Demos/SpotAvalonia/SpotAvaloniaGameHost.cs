@@ -82,11 +82,13 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     protected SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
-        var splash = SplashScreen.TryCreate(host, GetAssetPath("gondwana-logo-text.png"));
-        if (splash != null)
-            splash.HoldSec = 3f;
+        return null;
 
-        return splash;
+        //var splash = SplashScreen.TryCreate(host, GetAssetPath("gondwana-logo-text.png"));
+        //if (splash != null)
+        //    splash.HoldSec = 3f;
+
+        //return splash;
     }
 
     protected override void LoadAssets()

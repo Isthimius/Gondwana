@@ -35,17 +35,17 @@ public sealed class SplashScreen : WidgetBase
     /// <summary>
     /// Gets or sets the duration of the fade-in animation in seconds.
     /// </summary>
-    public float FadeInSec { get; private set; } = 0.45f;
+    public float FadeInSec { get; private set; }
 
     /// <summary>
     /// Gets or sets how long the splash is held at full opacity, in seconds.
     /// </summary>
-    public float HoldSec { get; private set; } = 0.55f;
+    public float HoldSec { get; private set; }
 
     /// <summary>
     /// Gets or sets the duration of the fade-out animation in seconds.
     /// </summary>
-    public float FadeOutSec { get; private set; } = 0.45f;
+    public float FadeOutSec { get; private set; }
 
     /// <summary>
     /// Raised after the fade-in animation completes.
@@ -79,9 +79,9 @@ public sealed class SplashScreen : WidgetBase
     public static SplashScreen? TryCreate(Stream imageStream, 
                                           RenderSurfaceHostBase host,
                                           View view,
-                                          float fadeInSec,
-                                          float holdSec,
-                                          float fadeOutSec)
+                                          float fadeInSec = 0.45f,
+                                          float holdSec = 3f,
+                                          float fadeOutSec = 0.45f)
     {
         if (host.ViewManager.Views.Count == 0)
             return null;
