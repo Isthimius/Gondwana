@@ -1,7 +1,7 @@
-namespace Gondwana.Studio.Documents;
+namespace Gondwana.Drawing.Tilesheets.GTS;
 
 /// <summary>
-/// Captures provenance details for a tilesheet definition loaded in the editor.
+/// Captures provenance details for a tilesheet definition.
 /// </summary>
 public sealed class TilesheetDefinitionSource
 {

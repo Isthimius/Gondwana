@@ -1,4 +1,4 @@
-﻿using Gondwana.Assets;
+using Gondwana.Assets;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Tilesheets.GTS;
@@ -37,7 +37,12 @@ public static class TilesheetDefinitionSerializer
         try
         {
             var json = File.ReadAllText(fullPath);
-            return FromJson(json, fullPath);
+            var definition = FromJson(json, fullPath);
+
+            if (definition.Source.Kind == TilesheetDefinitionSourceKind.None)
+                definition.Source = TilesheetDefinitionSource.LooseDefinitionFile(fullPath);
+
+            return definition;
         }
         catch (JsonException ex)
         {
@@ -82,6 +87,9 @@ public static class TilesheetDefinitionSerializer
 
         if (!string.IsNullOrWhiteSpace(directory))
             Directory.CreateDirectory(directory);
+
+        if (definition.Source.Kind == TilesheetDefinitionSourceKind.None)
+            definition.Source = TilesheetDefinitionSource.LooseDefinitionFile(fullPath);
 
         var json = ToJson(definition);
 
@@ -153,7 +161,9 @@ public static class TilesheetDefinitionSerializer
 
             // ApplyMask already premultiplies, so only set this when premultiply
             // was applied independently of a mask.
-            PremultiplyAlpha = tilesheet.Premultiplied && tilesheet.MaskColor is null
+            PremultiplyAlpha = tilesheet.Premultiplied && tilesheet.MaskColor is null,
+
+            Source = TilesheetDefinitionSource.Generated()
         };
     }
 
