@@ -8,20 +8,32 @@ namespace Gondwana.Studio.Documents;
 /// </summary>
 public sealed class TilesheetDocument
 {
+    private TilesheetDefinition _definition = new();
+    private TilesheetDefinitionSource _source = TilesheetDefinitionSource.None();
+
     /// <summary>
     /// Gets or sets the runtime tilesheet currently loaded for preview and authoring.
+    /// This may be <see langword="null"/> before the definition has been materialized into runtime data.
     /// </summary>
     public Tilesheet? Tilesheet { get; set; }
 
     /// <summary>
     /// Gets or sets the editable tilesheet definition.
     /// </summary>
-    public TilesheetDefinition Definition { get; set; } = new();
+    public TilesheetDefinition Definition
+    {
+        get => _definition;
+        set => _definition = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     /// <summary>
     /// Gets or sets where the tilesheet definition was loaded from.
     /// </summary>
-    public TilesheetDefinitionSource Source { get; set; } = new();
+    public TilesheetDefinitionSource Source
+    {
+        get => _source;
+        set => _source = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the document has unsaved changes.
