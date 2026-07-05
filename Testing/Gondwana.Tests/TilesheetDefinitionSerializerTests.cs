@@ -25,26 +25,31 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     [Fact]
     public void LoadStream_SetsSourceToNone()
     {
-        var json = """{"Name":"Sheet","Image":{},"Regions":[],"PremultiplyAlpha":false}""";
-        using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+        var definition = new TilesheetDefinition { Name = "Sheet" };
+        using var stream = ToStream(definition);
 
-        var definition = TilesheetDefinitionSerializer.Load(stream);
+        var loaded = TilesheetDefinitionSerializer.Load(stream);
 
-        Assert.Equal(TilesheetDefinitionSourceKind.None, definition.Source.Kind);
+        Assert.Equal(TilesheetDefinitionSourceKind.None, loaded.Source.Kind);
     }
 
     [Fact]
     public void LoadStream_PreservesDefinitionContent()
     {
-        var json = """{"Name":"HeroSheet","Image":{"FilePath":"hero.png"},"Regions":[],"PremultiplyAlpha":true}""";
-        using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+        var definition = new TilesheetDefinition
+        {
+            Name = "HeroSheet",
+            Image = new TilesheetImageDefinition { FilePath = "hero.png" },
+            PremultiplyAlpha = true
+        };
+        using var stream = ToStream(definition);
 
-        var definition = TilesheetDefinitionSerializer.Load(stream);
+        var loaded = TilesheetDefinitionSerializer.Load(stream);
 
-        Assert.Equal("HeroSheet", definition.Name);
-        Assert.Equal("hero.png", definition.Image.FilePath);
-        Assert.True(definition.PremultiplyAlpha);
-        Assert.Equal(TilesheetDefinitionSourceKind.None, definition.Source.Kind);
+        Assert.Equal("HeroSheet", loaded.Name);
+        Assert.Equal("hero.png", loaded.Image.FilePath);
+        Assert.True(loaded.PremultiplyAlpha);
+        Assert.Equal(TilesheetDefinitionSourceKind.None, loaded.Source.Kind);
     }
 
     // -----------------------------------------------------------------------
@@ -204,6 +209,12 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     // -----------------------------------------------------------------------
 
     private string GtsPath(string fileName) => Path.Combine(_tempDir, fileName);
+
+    private static MemoryStream ToStream(TilesheetDefinition definition)
+    {
+        var json = TilesheetDefinitionSerializer.ToJson(definition);
+        return new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+    }
 
     private string WriteGtsFile(string fileName, TilesheetDefinition definition)
     {
