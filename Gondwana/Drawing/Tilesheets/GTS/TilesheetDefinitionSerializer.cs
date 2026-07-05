@@ -38,9 +38,9 @@ public static class TilesheetDefinitionSerializer
         {
             var json = File.ReadAllText(fullPath);
             var definition = FromJson(json, fullPath);
-
-            if (definition.Source.Kind == TilesheetDefinitionSourceKind.None)
-                definition.Source = TilesheetDefinitionSource.LooseDefinitionFile(fullPath);
+            ApplyDefaultSource(
+                definition,
+                TilesheetDefinitionSource.LooseDefinitionFile(fullPath));
 
             return definition;
         }
@@ -88,10 +88,9 @@ public static class TilesheetDefinitionSerializer
         if (!string.IsNullOrWhiteSpace(directory))
             Directory.CreateDirectory(directory);
 
-        if (definition.Source.Kind == TilesheetDefinitionSourceKind.None)
-            definition.Source = TilesheetDefinitionSource.LooseDefinitionFile(fullPath);
+        var definitionToSave = CreateDefinitionForSaving(definition, fullPath);
 
-        var json = ToJson(definition);
+        var json = ToJson(definitionToSave);
 
         File.WriteAllText(fullPath, json);
     }
@@ -330,6 +329,26 @@ public static class TilesheetDefinitionSerializer
             Alpha = color.Alpha,
             Tolerance = tilesheet.MaskTolerance
         };
+    }
+
+    private static void ApplyDefaultSource(
+        TilesheetDefinition definition,
+        TilesheetDefinitionSource source)
+    {
+        if (definition.Source.Kind == TilesheetDefinitionSourceKind.None)
+            definition.Source = source;
+    }
+
+    private static TilesheetDefinition CreateDefinitionForSaving(
+        TilesheetDefinition definition,
+        string fullPath)
+    {
+        if (definition.Source.Kind != TilesheetDefinitionSourceKind.None)
+            return definition;
+
+        var clone = FromJson(ToJson(definition));
+        clone.Source = TilesheetDefinitionSource.LooseDefinitionFile(fullPath);
+        return clone;
     }
 
     private static string NormalizePath(
