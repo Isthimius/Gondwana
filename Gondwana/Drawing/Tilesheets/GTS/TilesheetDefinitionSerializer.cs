@@ -1,4 +1,4 @@
-﻿using Gondwana.Assets;
+using Gondwana.Assets;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Tilesheets.GTS;
@@ -37,7 +37,12 @@ public static class TilesheetDefinitionSerializer
         try
         {
             var json = File.ReadAllText(fullPath);
-            return FromJson(json, fullPath);
+            var definition = FromJson(json, fullPath);
+            ApplyDefaultSource(
+                definition,
+                TilesheetDefinitionSource.LooseDefinitionFile(fullPath));
+
+            return definition;
         }
         catch (JsonException ex)
         {
@@ -83,7 +88,9 @@ public static class TilesheetDefinitionSerializer
         if (!string.IsNullOrWhiteSpace(directory))
             Directory.CreateDirectory(directory);
 
-        var json = ToJson(definition);
+        var definitionToSave = CreateDefinitionForSaving(definition, fullPath);
+
+        var json = ToJson(definitionToSave);
 
         File.WriteAllText(fullPath, json);
     }
@@ -153,7 +160,9 @@ public static class TilesheetDefinitionSerializer
 
             // ApplyMask already premultiplies, so only set this when premultiply
             // was applied independently of a mask.
-            PremultiplyAlpha = tilesheet.Premultiplied && tilesheet.MaskColor is null
+            PremultiplyAlpha = tilesheet.Premultiplied && tilesheet.MaskColor is null,
+
+            Source = TilesheetDefinitionSource.Generated()
         };
     }
 
@@ -320,6 +329,26 @@ public static class TilesheetDefinitionSerializer
             Alpha = color.Alpha,
             Tolerance = tilesheet.MaskTolerance
         };
+    }
+
+    private static void ApplyDefaultSource(
+        TilesheetDefinition definition,
+        TilesheetDefinitionSource source)
+    {
+        if (definition.Source.Kind == TilesheetDefinitionSourceKind.None)
+            definition.Source = source;
+    }
+
+    private static TilesheetDefinition CreateDefinitionForSaving(
+        TilesheetDefinition definition,
+        string fullPath)
+    {
+        if (definition.Source.Kind != TilesheetDefinitionSourceKind.None)
+            return definition;
+
+        var clone = FromJson(ToJson(definition));
+        clone.Source = TilesheetDefinitionSource.LooseDefinitionFile(fullPath);
+        return clone;
     }
 
     private static string NormalizePath(

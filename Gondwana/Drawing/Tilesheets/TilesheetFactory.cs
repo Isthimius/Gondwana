@@ -146,6 +146,12 @@ internal static class TilesheetFactory
 
         var definition = TilesheetDefinitionSerializer.Load(stream);
 
+        if (!string.IsNullOrWhiteSpace(assetsFile.FilePath))
+        {
+            definition.Source = TilesheetDefinitionSource.PackedDefinitionFile(
+                assetsFile.FilePath,
+                gtsEntryName);
+        }
         var baseDirectory = string.IsNullOrWhiteSpace(assetsFile.FilePath)
             ? null
             : Path.GetDirectoryName(Path.GetFullPath(assetsFile.FilePath));
