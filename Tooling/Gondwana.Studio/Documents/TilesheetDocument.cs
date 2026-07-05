@@ -9,7 +9,6 @@ namespace Gondwana.Studio.Documents;
 public sealed class TilesheetDocument
 {
     private TilesheetDefinition _definition = new();
-    private TilesheetDefinitionSource _source = TilesheetDefinitionSource.None();
 
     /// <summary>
     /// Gets or sets the runtime tilesheet currently loaded for preview and authoring.
@@ -24,15 +23,6 @@ public sealed class TilesheetDocument
     {
         get => _definition;
         set => _definition = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    /// <summary>
-    /// Gets or sets where the tilesheet definition was loaded from.
-    /// </summary>
-    public TilesheetDefinitionSource Source
-    {
-        get => _source;
-        set => _source = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>

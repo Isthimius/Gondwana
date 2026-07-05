@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Gondwana.Drawing.Tilesheets.GTS;
 
 /// <summary>
@@ -5,26 +7,31 @@ namespace Gondwana.Drawing.Tilesheets.GTS;
 /// </summary>
 public sealed class TilesheetDefinitionSource
 {
+    [JsonConstructor]
     private TilesheetDefinitionSource() { }
 
     /// <summary>
     /// Gets the high-level source kind.
     /// </summary>
+    [JsonProperty]
     public TilesheetDefinitionSourceKind Kind { get; private init; }
 
     /// <summary>
     /// Gets the .gts path when loaded from a loose definition file.
     /// </summary>
+    [JsonProperty]
     public string? GtsFilePath { get; private init; }
 
     /// <summary>
     /// Gets the .gaf path when loaded from a packed definition file.
     /// </summary>
+    [JsonProperty]
     public string? AssetsFilePath { get; private init; }
 
     /// <summary>
     /// Gets the packed entry name when loaded from a packed definition file.
     /// </summary>
+    [JsonProperty]
     public string? AssetEntryName { get; private init; }
 
     /// <summary>
