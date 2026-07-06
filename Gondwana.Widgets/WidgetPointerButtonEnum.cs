@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a pointer button used by a widget interaction.
 /// </summary>
-public enum WidgetPointerButton
+public enum WidgetPointerButtonEnum
 {
     None = 0,
     Left = 1,

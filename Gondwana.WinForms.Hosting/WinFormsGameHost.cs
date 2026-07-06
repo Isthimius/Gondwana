@@ -23,7 +23,7 @@ public abstract class WinFormsGameHost : WinFormsGameHostBase
     }
 
     private WinFormsGameHost(SurfaceInitialization initialization)
-        : base(initialization.RenderSurface, initialization.RenderSurface.Host, initialization.RenderSurface.Host.Bind)
+        : base(initialization.RenderSurface, initialization.RenderSurface.Host.Bind)
     {
         RenderSurface = initialization.RenderSurface;
     }

@@ -1,31 +1,30 @@
 using Gondwana.Blazor;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Hosting;
-using Gondwana.Rendering;
 using Microsoft.JSInterop;
+
 namespace Gondwana.Blazor.Hosting;
 
 /// <summary>
-/// Provides a base class for hosting Gondwana games in Blazor WebAssembly applications.
+/// Provides a base class for hosting Gondwana games in Blazor applications.
 /// </summary>
 /// <remarks>
 /// <para>
-/// On browser/WASM targets the engine runs in timer-driven mode via JavaScript's requestAnimationFrame,
-/// because Blazor WebAssembly does not support background threads. On non-browser targets (e.g. Blazor Server)
-/// the standard background-thread engine loop is used.
+/// On browser/WASM targets, the engine runs in timer-driven mode via JavaScript's
+/// requestAnimationFrame because Blazor WebAssembly does not support the standard
+/// background-thread engine loop.
 /// </para>
 /// <para>
-/// Usage: derive from this class, override <see cref="GameHostBase.CreateInitialScene"/>,
-/// <see cref="GameHostBase.CreateSprites"/>, etc., then construct your subclass with the
-/// <see cref="BlazorBitmapRenderSurfaceComponent"/> instance from your Blazor page and call
-/// <see cref="GameHostBase.Initialize"/>.
+/// On non-browser targets, such as Blazor Server, the standard background-thread
+/// engine loop is used.
 /// </para>
 /// </remarks>
 public abstract class BlazorGameHost : GameHostBase
 {
+    private readonly IJSRuntime _jsRuntime;
+
     private DotNetObjectReference<BlazorGameHost>? _dotNetRef;
     private IJSObjectReference? _module;
-    private readonly IJSRuntime _jsRuntime;
 
     /// <summary>
     /// Gets the render surface component used for displaying game content.
@@ -38,7 +37,9 @@ public abstract class BlazorGameHost : GameHostBase
     /// <param name="renderSurface">The render surface component to use for rendering.</param>
     /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurface"/> or <paramref name="jsRuntime"/> is null.</exception>
-    protected BlazorGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime)
+    protected BlazorGameHost(
+        BlazorBitmapRenderSurfaceComponent renderSurface,
+        IJSRuntime jsRuntime)
     {
         RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
         _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
@@ -47,7 +48,7 @@ public abstract class BlazorGameHost : GameHostBase
     /// <summary>
     /// Configures Blazor-specific platform features.
     /// </summary>
-    protected override void ConfigurePlatform()
+    protected sealed override void ConfigurePlatform()
     {
         OnConfigurePlatform();
     }
@@ -55,94 +56,97 @@ public abstract class BlazorGameHost : GameHostBase
     /// <summary>
     /// Configures the keyboard adapter for the Blazor render surface.
     /// </summary>
-    protected override void ConfigureKeyboard()
+    protected sealed override void ConfigureKeyboard()
     {
-        Engine.Instance.InitializeBlazorKeyboardAdapter(RenderSurface);
+        Engine.InitializeBlazorKeyboardAdapter(RenderSurface);
         OnKeyboardAdapterInitialized();
     }
 
     /// <summary>
     /// Configures the mouse adapter for the Blazor render surface.
     /// </summary>
-    protected override void ConfigureMouse()
+    protected sealed override void ConfigureMouse()
     {
-        Engine.Instance.InitializeBlazorMouseAdapter(RenderSurface);
+        Engine.InitializeBlazorMouseAdapter(RenderSurface);
         OnMouseAdapterInitialized();
     }
 
     /// <summary>
-    /// Configures gamepad support. Override to provide platform-specific gamepad integration.
+    /// Configures gamepad support.
     /// </summary>
-    protected override void ConfigureGamepads()
+    protected sealed override void ConfigureGamepads()
     {
-        OnGamepadManagerInitialized();
+        OnConfigureGamepads();
     }
 
     /// <summary>
     /// Configures the touch adapter for the Blazor render surface.
     /// </summary>
-    protected override void ConfigureTouch()
+    protected sealed override void ConfigureTouch()
     {
-        Engine.Instance.InitializeBlazorTouchAdapter(RenderSurface);
+        Engine.InitializeBlazorTouchAdapter(RenderSurface);
         OnTouchAdapterInitialized();
     }
 
     /// <summary>
-    /// Binds the current scene to the render surface host.
+    /// Binds the current scene to the Blazor render surface host.
     /// </summary>
-    protected override void BindScene()
+    /// <exception cref="InvalidOperationException">Thrown when no scene has been created.</exception>
+    protected sealed override void BindScene()
     {
-        RenderSurface.Host.Bind(Scene!, false);
+        var scene = Scene
+            ?? throw new InvalidOperationException(
+                $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
+
+        RenderSurface.Host.Bind(scene, false);
     }
 
     /// <summary>
-    /// Starts the engine. On browser/WASM targets, uses a JavaScript requestAnimationFrame loop.
-    /// On all other targets, the default background-thread loop is used.
+    /// Gets the synchronization context used to start the engine.
     /// </summary>
-    protected override void StartEngine()
+    /// <returns>The synchronization context used by the engine.</returns>
+    protected sealed override SynchronizationContext? GetSynchronizationContext()
     {
-        var syncContext = SynchronizationContext.Current;
+        var syncContext = base.GetSynchronizationContext();
 
+        if (syncContext is not null)
+            return syncContext;
+
+        if (!OperatingSystem.IsBrowser())
+            return null;
+
+        syncContext = new SynchronizationContext();
+        SynchronizationContext.SetSynchronizationContext(syncContext);
+
+        return syncContext;
+    }
+
+    /// <summary>
+    /// Starts the engine using the platform-appropriate Blazor execution model.
+    /// </summary>
+    /// <param name="syncContext">The synchronization context used by the engine.</param>
+    protected sealed override void StartEngineCore(SynchronizationContext syncContext)
+    {
         if (OperatingSystem.IsBrowser())
         {
-            // For browser/WASM, ensure we have a context (create a default if needed)
-            if (syncContext == null)
-            {
-                syncContext = new SynchronizationContext();
-                SynchronizationContext.SetSynchronizationContext(syncContext);
-            }
-
-            Engine.Instance.StartTimerDriven(syncContext);
-
-            // Start the requestAnimationFrame loop
+            Engine.StartTimerDriven(syncContext);
             _ = StartBrowserRenderLoopAsync();
-        }
-        else
-        {
-            // Non-browser platforms require a SynchronizationContext
-            if (syncContext == null)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(Initialize)} must be called on a thread with a current {nameof(SynchronizationContext)}.");
-            }
-
-            Engine.Instance.Start(syncContext);
+            return;
         }
 
-        base.OnStartEngine();
+        base.StartEngineCore(syncContext);
     }
 
     private async Task StartBrowserRenderLoopAsync()
     {
-        // Get the JS module
-        var js = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Gondwana.Blazor/gondwana-blazor.js");
-        
-        _module = js;
+        var module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+            "import",
+            "./_content/Gondwana.Blazor/gondwana-blazor.js");
+
+        _module = module;
         _dotNetRef = DotNetObjectReference.Create(this);
 
-        // Start the JavaScript requestAnimationFrame loop
-        await js.InvokeVoidAsync("startRenderLoop", _dotNetRef);
+        await module.InvokeVoidAsync("startRenderLoop", _dotNetRef);
     }
 
     /// <summary>
@@ -151,65 +155,81 @@ public abstract class BlazorGameHost : GameHostBase
     [JSInvokable]
     public void OnAnimationFrame()
     {
-        if (Engine.Instance.IsRunning)
+        if (Engine.IsRunning)
         {
-            Engine.Instance.Tick();
+            Engine.Tick();
         }
     }
 
     /// <summary>
-    /// Stops the engine and, on browser/WASM targets, stops the render loop.
+    /// Stops the engine and, on browser/WASM targets, stops the JavaScript render loop.
     /// </summary>
-    protected override void StopEngine()
+    protected sealed override void StopEngineCore()
     {
-        if (_module != null)
+        if (_module is not null)
         {
             _ = _module.InvokeVoidAsync("stopRenderLoop");
         }
 
-        base.StopEngine();
+        base.StopEngineCore();
     }
 
     /// <summary>
-    /// Disposes resources used by this host.
+    /// Releases Blazor interop resources after the host has been disposed.
     /// </summary>
-    /// <param name="disposing">True if disposing managed resources.</param>
-    protected override void Dispose(bool disposing)
+    protected sealed override void OnDisposed()
     {
-        if (disposing)
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+
+        if (_module is not null)
         {
-            _dotNetRef?.Dispose();
-            _dotNetRef = null;
-            
-            _ = _module?.DisposeAsync();
+            _ = _module.DisposeAsync();
             _module = null;
         }
 
-        base.Dispose(disposing);
+        OnBlazorDisposed();
     }
 
     /// <summary>
-    /// Provides a hook for configuring platform-specific settings during initialization.
+    /// Provides a hook for configuring additional Blazor-specific platform settings during initialization.
     /// </summary>
-    protected virtual void OnConfigurePlatform() { }
+    protected virtual void OnConfigurePlatform()
+    {
+    }
 
     /// <summary>
-    /// Called after the keyboard adapter has been initialized. Override to perform additional keyboard setup.
+    /// Called after the keyboard adapter has been initialized.
     /// </summary>
-    protected virtual void OnKeyboardAdapterInitialized() { }
+    protected virtual void OnKeyboardAdapterInitialized()
+    {
+    }
 
     /// <summary>
-    /// Called after the mouse adapter has been initialized. Override to perform additional mouse setup.
+    /// Called after the mouse adapter has been initialized.
     /// </summary>
-    protected virtual void OnMouseAdapterInitialized() { }
+    protected virtual void OnMouseAdapterInitialized()
+    {
+    }
 
     /// <summary>
-    /// Called after the gamepad manager has been initialized. Override to perform additional gamepad setup.
+    /// Provides a hook for configuring gamepad support.
     /// </summary>
-    protected virtual void OnGamepadManagerInitialized() { }
+    protected virtual void OnConfigureGamepads()
+    {
+    }
 
     /// <summary>
-    /// Called after the touch adapter has been initialized. Override to perform additional touch setup.
+    /// Called after the touch adapter has been initialized.
     /// </summary>
-    protected virtual void OnTouchAdapterInitialized() { }
+    protected virtual void OnTouchAdapterInitialized()
+    {
+    }
+
+    /// <summary>
+    /// Runs after Blazor-specific disposal has completed.
+    /// </summary>
+    protected virtual void OnBlazorDisposed()
+    {
+    }
 }

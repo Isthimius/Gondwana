@@ -12,7 +12,7 @@ public sealed class WidgetDragEventArgs : WidgetEventArgs
         WidgetBase widget,
         PointF startScreenPositionPx,
         PointF currentScreenPositionPx,
-        WidgetPointerButton button = WidgetPointerButton.Left,
+        WidgetPointerButtonEnum button = WidgetPointerButtonEnum.Left,
         long tick = 0)
         : base(widget, tick)
     {
@@ -34,7 +34,7 @@ public sealed class WidgetDragEventArgs : WidgetEventArgs
     /// <summary>
     /// Gets the pointer button used for dragging.
     /// </summary>
-    public WidgetPointerButton Button { get; }
+    public WidgetPointerButtonEnum Button { get; }
 
     /// <summary>
     /// Gets the total drag offset from the drag start position.

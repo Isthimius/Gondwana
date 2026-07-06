@@ -79,31 +79,31 @@ public abstract class WidgetBase : DirectComposite
 
     #region Pointer Dispatch
 
-    protected void RaisePointerEnter(WidgetPointerEventArgs args)
+    protected void DispatchPointerEnter(WidgetPointerEventArgs args)
     {
         OnPointerEnter(args);
         PointerEnter?.Invoke(args);
     }
 
-    protected void RaisePointerLeave(WidgetPointerEventArgs args)
+    protected void DispatchPointerLeave(WidgetPointerEventArgs args)
     {
         OnPointerLeave(args);
         PointerLeave?.Invoke(args);
     }
 
-    protected void RaisePointerDown(WidgetPointerEventArgs args)
+    protected void DispatchPointerDown(WidgetPointerEventArgs args)
     {
         OnPointerDown(args);
         PointerDown?.Invoke(args);
     }
 
-    protected void RaisePointerUp(WidgetPointerEventArgs args)
+    protected void DispatchPointerUp(WidgetPointerEventArgs args)
     {
         OnPointerUp(args);
         PointerUp?.Invoke(args);
     }
 
-    protected void RaisePointerClick(WidgetPointerEventArgs args)
+    protected void DispatchPointerClick(WidgetPointerEventArgs args)
     {
         OnPointerClick(args);
         PointerClick?.Invoke(args);

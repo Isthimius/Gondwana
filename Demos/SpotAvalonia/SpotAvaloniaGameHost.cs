@@ -27,8 +27,7 @@ namespace Gondwana.Demos.SpotAvalonia;
 
 /// <summary>
 /// Game host for SpotAvalonia. Uses <see cref="AvaloniaGameHost"/> with the
-/// <see cref="AvaloniaBitmapRenderSurfaceControl"/> renderer so the game runs on all
-/// Avalonia targets — including browser/WASM via the timer-driven engine loop.
+/// <see cref="AvaloniaBitmapRenderSurfaceControl"/> renderer for Avalonia desktop targets.
 /// </summary>
 internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 {
@@ -151,11 +150,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         return scene;
     }
 
-    protected override void CreateSceneGraph()
+    protected override void OnSceneBound()
     {
-        base.CreateSceneGraph();
         RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
-
         SpotGame = new SpotGame();
         HookSpotGameEvents();
     }
@@ -186,7 +183,7 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         particleSurface.Emitters.Add(GetSpots(769, 769));
     }
 
-    protected override void OnStartEngine()
+    protected override void OnEngineStarted()
     {
         if (_music != null)
         {

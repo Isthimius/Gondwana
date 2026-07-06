@@ -19,33 +19,51 @@ public abstract class DraggableWidgetBase : WidgetBase
 
     #region Constructor
 
-    protected DraggableWidgetBase(
-        RenderSurfaceHostBase renderSurfaceHost,
-        DirectDrawingMode mode,
-        PointF anchor = default,
-        string? nickname = null)
+    protected DraggableWidgetBase(RenderSurfaceHostBase renderSurfaceHost,
+                                  DirectDrawingMode mode,
+                                  PointF anchor = default,
+                                  string? nickname = null)
         : base(renderSurfaceHost, mode, anchor, nickname)
     {
     }
 
     #endregion Constructor
 
-    #region Protected Event Raisers
+    #region Drag Dispatch
+
+    protected void DispatchDragStarted(WidgetDragEventArgs args)
+    {
+        OnDragStarted(args);
+        DragStarted?.Invoke(args);
+    }
+
+    protected void DispatchDragged(WidgetDragEventArgs args)
+    {
+        OnDragged(args);
+        Dragged?.Invoke(args);
+    }
+
+    protected void DispatchDragEnded(WidgetDragEventArgs args)
+    {
+        OnDragEnded(args);
+        DragEnded?.Invoke(args);
+    }
+
+    #endregion Drag Dispatch
+
+    #region Protected Drag Hooks
 
     protected virtual void OnDragStarted(WidgetDragEventArgs args)
     {
-        DragStarted?.Invoke(args);
     }
 
     protected virtual void OnDragged(WidgetDragEventArgs args)
     {
-        Dragged?.Invoke(args);
     }
 
     protected virtual void OnDragEnded(WidgetDragEventArgs args)
     {
-        DragEnded?.Invoke(args);
     }
 
-    #endregion Protected Event Raisers
+    #endregion Protected Drag Hooks
 }

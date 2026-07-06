@@ -46,9 +46,8 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpo
     protected override Scene CreateInitialScene()
         => _spot.CreateInitialScene();
 
-    protected override void CreateSceneGraph()
+    protected override void OnSceneGraphCreated()
     {
-        base.CreateSceneGraph();
         _spot.CreateSceneGraph();
     }
 
@@ -58,7 +57,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpo
         // so it does not appear beneath the Gondwana splash.
     }
 
-    protected override void OnStartEngine()
+    protected override void OnEngineStarted()
     {
         // Deliberately empty: startup music begins in BeginPostSplashStartup()
         // after the Gondwana splash has fully faded out.

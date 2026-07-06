@@ -11,7 +11,7 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
     public WidgetPointerEventArgs(
         WidgetBase widget,
         PointF screenPositionPx,
-        WidgetPointerButton button = WidgetPointerButton.None,
+        WidgetPointerButtonEnum button = WidgetPointerButtonEnum.None,
         int clickCount = 0,
         Vector2 deltaPx = default,
         long tick = 0)
@@ -31,7 +31,7 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
     /// <summary>
     /// Gets the pointer button involved in the interaction.
     /// </summary>
-    public WidgetPointerButton Button { get; }
+    public WidgetPointerButtonEnum Button { get; }
 
     /// <summary>
     /// Gets the number of clicks associated with this pointer action.
@@ -46,5 +46,5 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
     /// <summary>
     /// Gets whether the pointer event represents a primary-button interaction.
     /// </summary>
-    public bool IsPrimaryButton => Button is WidgetPointerButton.Left or WidgetPointerButton.Touch;
+    public bool IsPrimaryButton => Button is WidgetPointerButtonEnum.Left or WidgetPointerButtonEnum.Touch;
 }
