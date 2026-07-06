@@ -37,7 +37,7 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost, ISpotHostC
     public async Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning)
     {
         Initialize(configPath, autoSaveConfig, logLevel);
-        await _spot.RunSplashAsync();
+        //await _spot.RunSplashAsync();
     }
 
     protected override void LoadAssets()
