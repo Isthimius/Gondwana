@@ -101,11 +101,13 @@ public sealed class SplashScreen : WidgetBase
         var image = new DirectImage(sourceImage, host, view, screenBounds, SplashImageNickname)
             .SetScaleMode(DirectImage.ScaleMode.Fit);
 
+        // DirectImage does not own SKImage lifetime; dispose the decoded image when the drawable is disposed.
+        image.Disposing += (_, _) => sourceImage.Dispose();
+
         image.ZOrder = int.MaxValue;
         image.Opacity = 0f;
 
         var splashScreen = new SplashScreen(image, fadeInSec, holdSec, fadeOutSec);
-        return splashScreen;
     }
 
     /// <summary>
