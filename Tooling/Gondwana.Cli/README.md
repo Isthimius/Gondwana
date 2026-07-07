@@ -272,7 +272,7 @@ gondwana publish itch --output ./artifacts/MyGame-itch.zip
 |---|---|---|---|
 | `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
-| `--output <path>` | `-o` | `bin/<Configuration>/net8.0/publish/<ProjectName>-itch.zip` | Output zip path. |
+| `--output <path>` | `-o` | `bin/<Configuration>/net8.0-browser/publish/<ProjectName>-itch.zip` | Output zip path. |
 | `--skip-build` | | `false` | Skip the dotnet publish step and package an existing Blazor publish output. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
 
