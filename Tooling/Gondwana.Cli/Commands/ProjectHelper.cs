@@ -195,11 +195,15 @@ internal static class ProjectHelper
     internal static string? TryLocateBlazorPublishRoot(string csprojPath, string configuration)
     {
         var projectDir = Path.GetDirectoryName(csprojPath)!;
-        var wwwroot = Path.Combine(projectDir, "bin", configuration, "net8.0", "publish", "wwwroot");
-        
-        if (Directory.Exists(wwwroot) && File.Exists(Path.Combine(wwwroot, "index.html")))
-            return wwwroot;
-        
+
+        // Probe net8.0-browser first (gondwana-blazor template default), then net8.0
+        foreach (var framework in new[] { "net8.0-browser", "net8.0" })
+        {
+            var wwwroot = Path.Combine(projectDir, "bin", configuration, framework, "publish", "wwwroot");
+            if (Directory.Exists(wwwroot) && File.Exists(Path.Combine(wwwroot, "index.html")))
+                return wwwroot;
+        }
+
         // Fallback: search for wwwroot directories
         var binDir = Path.Combine(projectDir, "bin");
         if (Directory.Exists(binDir))
