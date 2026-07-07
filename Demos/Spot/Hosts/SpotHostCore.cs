@@ -166,6 +166,12 @@ internal sealed class SpotHostCore
 
     internal Scene CreateInitialScene()
     {
+        Logging.EngineLogger.SetLogLevel(LogLevel.Information);
+        Gondwana.Engine.Instance.CPSCalculated += (args) =>
+        {
+            Engine.Logger.LogInformation(args.ToString());
+        };
+
         var scene = new Scene();
 
         var sceneLayer1 = scene.AddLayer(
