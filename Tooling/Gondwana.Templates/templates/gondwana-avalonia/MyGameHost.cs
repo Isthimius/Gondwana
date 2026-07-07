@@ -31,7 +31,8 @@ internal sealed class MyGameHost : AvaloniaGameHost
 
     #region GameHostBase overrides
 
-    // TODO: Run code before the host initialization pipeline begins.
+    // TODO: Run pre-initialization setup here, such as choosing config paths,
+    // toggling feature flags, or preparing services before assets begin loading.
     protected override void OnInitializing()
     {
     }
@@ -77,12 +78,14 @@ internal sealed class MyGameHost : AvaloniaGameHost
     {
     }
 
+//#if !(UseGpuBackbuffer)
     // TODO: Run after the current scene has been bound to the render surface.
-    // GPU note: AvaloniaGpuGameHost does not call this hook automatically; use BindScene()
-    // below when you need post-bind work in the GPU-backed template.
+    // This shell is generated only for non-GPU template builds.
+    // GPU-backed projects use the GPU-only BindScene() override instead.
     protected override void OnSceneBound()
     {
     }
+//#endif
 
     // TODO: Place sprites into the scene.
     // Scene is already created and bound when this runs.
@@ -155,6 +158,10 @@ internal sealed class MyGameHost : AvaloniaGameHost
     #region Avalonia host overrides
 
 //#if (UseGpuBackbuffer)
+    // GPU-backed builds expose additional low-level overrides below.
+    // Prefer the OnX hook methods later in this file for most games; override these
+    // only when you need to replace the default adapter or binding pipeline itself.
+
     // TODO: Override to customize platform setup while preserving the default GPU setup.
     protected override void ConfigurePlatform()
     {

@@ -26,7 +26,8 @@ internal sealed class MyGameHost : BlazorGameHost
 
     #region GameHostBase overrides
 
-    // TODO: Run code before the host initialization pipeline begins.
+    // TODO: Run pre-initialization setup here, such as choosing config paths,
+    // toggling feature flags, or preparing services before assets begin loading.
     protected override void OnInitializing()
     {
     }
@@ -77,11 +78,9 @@ internal sealed class MyGameHost : BlazorGameHost
     {
     }
 
-    // TODO: Run after the current scene has been bound to the render surface.
-    // Note: BlazorGameHost binds the scene internally without calling this hook.
-    protected override void OnSceneBound()
-    {
-    }
+    // Note: by design, BlazorGameHost binds the scene internally without invoking the
+    // inherited OnSceneBound() hook, so this template omits that shell and uses
+    // CreateSprites() for post-bind setup.
 
     // TODO: Called after assets are loaded. Build your scene layers and add sprites here.
     protected override void CreateSprites()

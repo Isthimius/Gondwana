@@ -32,7 +32,8 @@ internal sealed class MyGameHost : WinFormsGameHost
 
     #region GameHostBase overrides
 
-    // TODO: Run code before the host initialization pipeline begins.
+    // TODO: Run pre-initialization setup here, such as choosing config paths,
+    // toggling feature flags, or preparing services before assets begin loading.
     protected override void OnInitializing()
     {
     }
