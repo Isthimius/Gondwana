@@ -17,6 +17,7 @@
         <PackageReference Include="Gondwana.Hosting" Version="2.*" />
         <PackageReference Include="Gondwana.Avalonia" Version="2.*" />
         <PackageReference Include="Gondwana.Avalonia.Hosting" Version="2.*" />
+        <PackageReference Include="Gondwana.Widgets" Version="2.*" />
         <!--
             Avalonia.Desktop provides the AppBuilder.UsePlatformDetect() bootstrapper
             for Windows, macOS, and Linux desktop targets.
