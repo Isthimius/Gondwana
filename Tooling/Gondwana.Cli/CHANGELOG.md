@@ -118,7 +118,7 @@ All notable changes to this project will be documented in this file.
 - Fix whitespace alignment in HelpCommand for pack entry
 - Document gondwana pack shorthand in README and CLICHEATSHEET
 - Make type-map optional: embed built-in defaults + fix NuGet pack path for gondwana-asset-types.json
-- Fix gondwana run blazor: publish then serve via dotnet run
+- Fix gondwana run blazor: run via dotnet run (Blazor dev server) instead of dotnet-serve
 - Add first-class SVG asset support (`AssetTypes.Svg`) with `SvgResource` and `DirectSvg`
 - Make publish blazor emit the publish output path and warn when missing
 - Remove duplicate publish output path line in publish blazor output
