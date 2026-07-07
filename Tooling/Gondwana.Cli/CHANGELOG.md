@@ -122,7 +122,7 @@ All notable changes to this project will be documented in this file.
 - Add first-class SVG asset support (`AssetTypes.Svg`) with `SvgResource` and `DirectSvg`
 - Make publish blazor emit the publish output path and warn when missing
 - Remove duplicate publish output path line in publish blazor output
-- Emit AppBundle path before publish guidance output
+- Emit publish output path before publish guidance output
 - Add git-cliff and butler setup + doctor checks/docs
 - Refactor doctor winget fix logic for git-cliff and butler
 - Fix doctor --fix early return when no issues off Windows
@@ -131,5 +131,4 @@ All notable changes to this project will be documented in this file.
 - Detect Gondwana project references in `gondwana info`
 - Improve `gondwana new` output with explicit project and solution locations
 - Correct git-cliff winget ID and make butler check-only in setup/doctor flows
-
 
