@@ -60,9 +60,6 @@ internal static class ProjectHelper
         }
     }
 
-    public static bool TargetsFramework(string csprojPath, string targetFramework)
-        => GetTargetFrameworks(csprojPath).Contains(targetFramework, StringComparer.OrdinalIgnoreCase);
-
     public static bool IsBlazorWebAssemblyProject(string csprojPath)
     {
         try
@@ -114,101 +111,6 @@ internal static class ProjectHelper
         framework = desktopFrameworks[0];
         error = null;
         return true;
-    }
-
-    public static string? TryLocateAppBundle(string csprojPath, string configuration)
-    {
-        var projectDir = Path.GetDirectoryName(csprojPath)!;
-        var appBundle = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "browser-wasm", "AppBundle");
-
-        if (Directory.Exists(appBundle))
-            return appBundle;
-
-        var binDir = Path.Combine(projectDir, "bin");
-        if (!Directory.Exists(binDir))
-            return null;
-
-        return Directory.GetDirectories(binDir, "AppBundle", SearchOption.AllDirectories)
-            .OrderByDescending(path => Directory.GetLastWriteTimeUtc(path))
-            .FirstOrDefault();
-    }
-
-    /// <summary>
-    /// Locates the directory that should be the root for <c>dotnet-serve</c> after a
-    /// <c>net8.0-browser</c> publish. Tries several layouts in order:
-    /// <list type="number">
-    ///   <item><description>Avalonia Browser 11.x publish: <c>index.html</c> at root of <c>bin/&lt;cfg&gt;/net8.0-browser/browser-wasm/publish/</c></description></item>
-    ///   <item><description>Avalonia Browser 11.x publish (wwwroot sub-layout): <c>index.html</c> inside <c>browser-wasm/publish/wwwroot/</c> — serve root is still <c>publish/</c></description></item>
-    ///   <item><description>Classic AppBundle: <c>bin/&lt;cfg&gt;/net8.0-browser/browser-wasm/AppBundle</c> (must contain <c>index.html</c>)</description></item>
-    ///   <item><description>AppBundle with nested web root: <c>AppBundle/wwwroot</c> (must contain <c>index.html</c>)</description></item>
-    ///   <item><description>SDK publish at <c>net8.0-browser/publish/</c>: <c>index.html</c> at root or one level inside</description></item>
-    ///   <item><description>Fallback: any <c>AppBundle</c> directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
-    ///   <item><description>Fallback: any directory under <c>bin/</c> that contains <c>index.html</c> (most recently written first)</description></item>
-    /// </list>
-    /// Returns <see langword="null"/> when nothing is found.
-    /// </summary>
-    public static string? TryLocateWasmServeRoot(string csprojPath, string configuration)
-    {
-        var projectDir = Path.GetDirectoryName(csprojPath)!;
-
-        // 0. Avalonia Browser 11.x: dotnet.js lives in _framework/, not at the publish root.
-        //    index.html is generated at the root of browser-wasm/publish/.
-        var browserPublishDir = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "browser-wasm", "publish");
-        if (Directory.Exists(browserPublishDir))
-        {
-            // (a) index.html at the publish root (Avalonia Browser 11.x default)
-            if (File.Exists(Path.Combine(browserPublishDir, "index.html")))
-                return browserPublishDir;
-
-            // (b) index.html inside publish/wwwroot/ (custom/legacy layout); serve the
-            //     publish root so that _framework/ and other siblings are reachable.
-            if (File.Exists(Path.Combine(browserPublishDir, "wwwroot", "index.html")))
-                return browserPublishDir;
-        }
-
-        // 1. Classic AppBundle layout
-        var appBundle = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "browser-wasm", "AppBundle");
-        if (Directory.Exists(appBundle) && File.Exists(Path.Combine(appBundle, "index.html")))
-            return appBundle;
-
-        // 1b. AppBundle with nested web root
-        var appBundleWwwRoot = Path.Combine(appBundle, "wwwroot");
-        if (Directory.Exists(appBundleWwwRoot) && File.Exists(Path.Combine(appBundleWwwRoot, "index.html")))
-            return appBundleWwwRoot;
-
-        // 2 + 3. Alternate SDK publish layout without browser-wasm/ intermediate dir
-        var publishDir = Path.Combine(projectDir, "bin", configuration, "net8.0-browser", "publish");
-        if (Directory.Exists(publishDir))
-        {
-            // 2. index.html at publish root
-            if (File.Exists(Path.Combine(publishDir, "index.html")))
-                return publishDir;
-
-            // 3. index.html one level deeper (e.g. publish/wwwroot/)
-            var nested = Directory.GetDirectories(publishDir)
-                .FirstOrDefault(d => File.Exists(Path.Combine(d, "index.html")));
-            if (nested is not null)
-                return nested;
-        }
-
-        // 4. Broadest fallback: any AppBundle dir under bin/
-        var binDir = Path.Combine(projectDir, "bin");
-        if (!Directory.Exists(binDir))
-            return null;
-
-        var anyAppBundle = Directory.GetDirectories(binDir, "AppBundle", SearchOption.AllDirectories)
-            .Where(d => File.Exists(Path.Combine(d, "index.html")))
-            .OrderByDescending(d => File.GetLastWriteTimeUtc(Path.Combine(d, "index.html")))
-            .FirstOrDefault();
-        if (anyAppBundle is not null)
-            return anyAppBundle;
-
-        // 5. Any directory under bin/ that contains index.html (most recently written first)
-        return Directory.GetFiles(binDir, "index.html", SearchOption.AllDirectories)
-            .OrderByDescending(File.GetLastWriteTimeUtc)
-            .Select(Path.GetDirectoryName)
-            .OfType<string>()
-            .FirstOrDefault();
     }
 
     public static string? TryLocatePublishDirectory(string csprojPath, string configuration, string framework, string? runtime)
