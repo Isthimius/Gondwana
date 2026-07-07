@@ -78,9 +78,8 @@ internal sealed class MyGameHost : BlazorGameHost
     {
     }
 
-    // Note: by design, BlazorGameHost binds the scene internally without invoking the
-    // inherited OnSceneBound() hook, so this template omits that shell and uses
-    // CreateSprites() for post-bind setup.
+    // Note: OnSceneBound() is invoked by GameHostBase after BindScene() completes.
+    // Override OnSceneBound() if you need post-bind setup before sprites/direct drawings are created.
 
     // TODO: Called after assets are loaded. Build your scene layers and add sprites here.
     protected override void CreateSprites()
