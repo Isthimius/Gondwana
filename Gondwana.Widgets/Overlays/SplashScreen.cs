@@ -108,6 +108,7 @@ public sealed class SplashScreen : WidgetBase
         image.Opacity = 0f;
 
         var splashScreen = new SplashScreen(image, fadeInSec, holdSec, fadeOutSec);
+        return splashScreen;
     }
 
     /// <summary>
