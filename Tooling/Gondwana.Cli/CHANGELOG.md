@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Fixed
-- Fix gondwana run wasm serving directory listing instead of game (Avalonia Browser 11.x)
+- Fix browser run serving directory listing instead of game
 - Restore SpotAvalonia desktop splash and about dialog
 
 
@@ -54,12 +54,12 @@ All notable changes to this project will be documented in this file.
 - Add --backbuffer option to gondwana new winforms/avalonia commands
 - Add --password and --encrypt switches to asset/pack commands
 - Add --include-loader flag to generate-keys command
-- Add gondwana-wasm template, gondwana new wasm CLI command, docs (PR 2)
-- Add WASM publish/deploy scripts and gondwana publish wasm command (PR 3)
-- Add gondwana run and gondwana run wasm commands
+- Add gondwana-blazor template, gondwana new blazor CLI command, docs (PR 2)
+- Add browser publish/deploy scripts and gondwana publish blazor command (PR 3)
+- Add gondwana run and gondwana run blazor commands
 - Add --fix flag to gondwana doctor
 - Add Git, nbgv, Gondwana CLI, and wasm-tools checks
-- Add missing new wasm, run, run wasm, and publish wasm rows to HelpCommand
+- Add missing new blazor, run, run blazor, and publish blazor rows to HelpCommand
 - Add publish and deploy CLI commands
 - Add --publish-single-file option to gondwana publish (desktop)
 - Create holding sln in gondwana new commands
@@ -92,7 +92,7 @@ All notable changes to this project will be documented in this file.
 - Add gondwana new avalonia to README and check both templates in doctor
 - Update gondwana doctor docs in README and CLICHEATSHEET
 - Update CLI publish and deploy guides
-- Add output-location notes to publish wasm, deploy, and deploy itch sections
+- Add output-location notes to publish blazor, deploy, and deploy itch sections
 
 
 
@@ -118,11 +118,11 @@ All notable changes to this project will be documented in this file.
 - Fix whitespace alignment in HelpCommand for pack entry
 - Document gondwana pack shorthand in README and CLICHEATSHEET
 - Make type-map optional: embed built-in defaults + fix NuGet pack path for gondwana-asset-types.json
-- Fix gondwana run wasm: publish then serve via dotnet-serve instead of dotnet run
+- Fix gondwana run blazor: run via dotnet run (Blazor dev server) instead of dotnet-serve
 - Add first-class SVG asset support (`AssetTypes.Svg`) with `SvgResource` and `DirectSvg`
-- Make publish wasm emit AppBundle path and warn when missing
-- Remove duplicate AppBundle path line in publish wasm output
-- Emit AppBundle path before publish guidance output
+- Make publish blazor emit the publish output path and warn when missing
+- Remove duplicate publish output path line in publish blazor output
+- Emit publish output path before publish guidance output
 - Add git-cliff and butler setup + doctor checks/docs
 - Refactor doctor winget fix logic for git-cliff and butler
 - Fix doctor --fix early return when no issues off Windows
@@ -131,6 +131,4 @@ All notable changes to this project will be documented in this file.
 - Detect Gondwana project references in `gondwana info`
 - Improve `gondwana new` output with explicit project and solution locations
 - Correct git-cliff winget ID and make butler check-only in setup/doctor flows
-
-
 

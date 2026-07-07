@@ -259,7 +259,7 @@ On success, the command prints the publish output directory as a plain line (mac
 
 ### `gondwana publish itch`
 
-Publishes the project for `net8.0-browser` (unless `--skip-build`) and packages the AppBundle contents as an itch.io-ready zip with `index.html` at the zip root.
+Publishes the Blazor WebAssembly project (unless `--skip-build`) and packages the published `wwwroot` contents as an itch.io-ready zip with `index.html` at the zip root.
 
 ```bash
 gondwana publish itch
@@ -272,8 +272,8 @@ gondwana publish itch --output ./artifacts/MyGame-itch.zip
 |---|---|---|---|
 | `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
-| `--output <path>` | `-o` | `bin/<Configuration>/net8.0-browser/browser-wasm/<ProjectName>-itch.zip` | Output zip path. |
-| `--skip-build` | | `false` | Skip the dotnet publish step and package an existing AppBundle. |
+| `--output <path>` | `-o` | `bin/<Configuration>/net8.0-browser/publish/<ProjectName>-itch.zip` | Output zip path. |
+| `--skip-build` | | `false` | Skip the dotnet publish step and package an existing Blazor publish output. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
 
 On success, the command prints the zip path as a plain line (machine-friendly).
@@ -326,7 +326,7 @@ Alias of `gondwana deploy`; same behavior and options.
 
 ### `gondwana deploy itch`
 
-Publishes the project for `net8.0-browser` (unless `--skip-build`), packages the AppBundle, and uploads it to itch.io using `butler`.
+Publishes the Blazor WebAssembly project (unless `--skip-build`), packages the published `wwwroot`, and uploads it to itch.io using `butler`.
 
 ```bash
 gondwana deploy itch --itch-game user/mygame
@@ -341,7 +341,7 @@ gondwana deploy itch --skip-build --itch-game user/mygame
 | `--itch-game <user/game>` | | *(required)* | The itch.io game slug. |
 | `--itch-channel <name>` | | `html5` | The itch.io release channel name. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
-| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing AppBundle. |
+| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing Blazor publish output. |
 | `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
 
 Prerequisites:
