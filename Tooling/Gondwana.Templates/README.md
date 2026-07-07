@@ -91,7 +91,7 @@ Build and publish for browser:
 ```bash
 dotnet workload install wasm-tools            # one-time per machine
 dotnet publish -f net8.0-browser -c Release
-# Output: bin/Release/net8.0-browser/browser-wasm/AppBundle/
+# Output: bin/Release/net8.0-browser/publish/wwwroot/
 ```
 
 This scaffolds a Blazor WebAssembly project containing:

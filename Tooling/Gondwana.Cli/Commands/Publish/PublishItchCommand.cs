@@ -19,11 +19,11 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
         public string Configuration { get; init; } = "Release";
 
         [CommandOption("-o|--output")]
-        [Description("Output zip path. Defaults to bin/<Configuration>/net8.0-browser/browser-wasm/<ProjectName>-itch.zip.")]
+        [Description("Output zip path. Defaults to bin/<Configuration>/<TargetFramework>/publish/<ProjectName>-itch.zip.")]
         public string? Output { get; init; }
 
         [CommandOption("--skip-build")]
-        [Description("Skip the dotnet publish step and package an existing AppBundle.")]
+        [Description("Skip the dotnet publish step and package an existing Blazor publish output.")]
         public bool SkipBuild { get; init; }
 
         [CommandOption("--skip-workload")]
@@ -41,10 +41,10 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
             return 1;
         }
 
-        if (!ProjectHelper.TargetsFramework(csprojPath!, "net8.0-browser"))
+        if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
-            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to target [bold]net8.0-browser[/].");
-            AnsiConsole.MarkupLine("[dim]Make sure <TargetFrameworks> includes 'net8.0-browser'. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
+            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\". Continuing anyway...[/]");
         }
 
         var projectName = Path.GetFileNameWithoutExtension(csprojPath);
@@ -65,7 +65,7 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
 
             var publishExit = ProcessHelper.RunLive("dotnet", new[]
             {
-                "publish", csprojPath!, "-f", "net8.0-browser", "-c", settings.Configuration
+                "publish", csprojPath!, "-c", settings.Configuration
             });
 
             if (publishExit != 0)
@@ -75,16 +75,16 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
             }
         }
 
-        var appBundle = ProjectHelper.TryLocateAppBundle(csprojPath!, settings.Configuration);
-        if (appBundle is null || !Directory.Exists(appBundle))
+        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(csprojPath!, settings.Configuration);
+        if (wwwroot is null || !Directory.Exists(wwwroot))
         {
-            AnsiConsole.MarkupLine("[red]AppBundle not found.[/]");
-            AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the project for net8.0-browser first.[/]");
+            AnsiConsole.MarkupLine("[red]Blazor publish wwwroot not found.[/]");
+            AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the Blazor project first.[/]");
             return 1;
         }
 
-        var defaultZipPath = Path.Combine(Path.GetDirectoryName(appBundle)!, $"{projectName}-itch.zip");
-        var zipPath = ProjectHelper.CreateZipFromDirectoryContents(appBundle, settings.Output ?? defaultZipPath);
+        var defaultZipPath = Path.Combine(Path.GetDirectoryName(wwwroot)!, $"{projectName}-itch.zip");
+        var zipPath = ProjectHelper.CreateZipFromDirectoryContents(wwwroot, settings.Output ?? defaultZipPath);
 
         AnsiConsole.MarkupLine("[green]Itch package created![/]");
         Console.WriteLine(zipPath);

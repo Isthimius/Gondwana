@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Fixed
-- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix gondwana run wasm
+- Remove Blazor WebAssembly SDK imports, stabilize global.json SDK pin, and fix browser run docs
 - Restore SpotAvalonia desktop splash and about dialog
 
 
@@ -42,7 +42,7 @@ All notable changes to this project will be documented in this file.
 - Add Gondwana.Templates dotnet new template package
 - Add gondwana-avalonia template and CLI command
 - Add --backbuffer option to gondwana new winforms/avalonia commands
-- Add gondwana-wasm template, gondwana new wasm CLI command, docs (PR 2)
+- Add gondwana-blazor template, gondwana new blazor CLI command, docs (PR 2)
 - Wire touch adapter into GameHost lifecycle same as keyboard and mouse
 
 
@@ -62,6 +62,5 @@ All notable changes to this project will be documented in this file.
 
 ## Maintenance
 - Add dev install scripts for Gondwana.Cli and Gondwana.Templates
-
 
 
