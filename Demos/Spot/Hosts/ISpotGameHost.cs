@@ -13,7 +13,7 @@ internal interface ISpotGameHost : IDisposable
 
     void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
-    //Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
+    Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
     void BeginPostSplashStartup();
 

@@ -157,9 +157,8 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
         return scene;
     }
 
-    protected override void CreateSceneGraph()
+    protected override void OnSceneGraphCreated()
     {
-        base.CreateSceneGraph();
         RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
 
         SpotGame = new SpotGame();

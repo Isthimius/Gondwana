@@ -21,14 +21,13 @@ using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.Demos.SpotAvalonia.Game;
-using Gondwana.Widgets;
+using Gondwana.Widgets.Overlays;
 
 namespace Gondwana.Demos.SpotAvalonia;
 
 /// <summary>
 /// Game host for SpotAvalonia. Uses <see cref="AvaloniaGameHost"/> with the
-/// <see cref="AvaloniaBitmapRenderSurfaceControl"/> renderer so the game runs on all
-/// Avalonia targets — including browser/WASM via the timer-driven engine loop.
+/// <see cref="AvaloniaBitmapRenderSurfaceControl"/> renderer for Avalonia desktop targets.
 /// </summary>
 internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 {
@@ -82,11 +81,13 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
 
     protected SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
-        var splash = SplashScreen.TryCreate(host, GetAssetPath("gondwana-logo-text.png"));
-        if (splash != null)
-            splash.HoldSec = 3f;
+        return null;
 
-        return splash;
+        //var splash = SplashScreen.TryCreate(host, GetAssetPath("gondwana-logo-text.png"));
+        //if (splash != null)
+        //    splash.HoldSec = 3f;
+
+        //return splash;
     }
 
     protected override void LoadAssets()
@@ -149,11 +150,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         return scene;
     }
 
-    protected override void CreateSceneGraph()
+    protected override void OnSceneBound()
     {
-        base.CreateSceneGraph();
         RenderSurface.Host.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
-
         SpotGame = new SpotGame();
         HookSpotGameEvents();
     }
@@ -184,7 +183,7 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
         particleSurface.Emitters.Add(GetSpots(769, 769));
     }
 
-    protected override void OnStartEngine()
+    protected override void OnEngineStarted()
     {
         if (_music != null)
         {

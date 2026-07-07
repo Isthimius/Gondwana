@@ -391,7 +391,9 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <returns>This composite instance for method chaining.</returns>
     public DirectComposite SetLocalOffset(DirectDrawingMovableBase child, Vector2 newLocalOffsetPx)
     {
-        if (!_children.Contains(child)) return this;
+        if (!_children.Contains(child))
+            return this;
+
         _localOffsetPx[child] = newLocalOffsetPx;
         child.SetPosition(new Vector2(_anchor.X, _anchor.Y) + newLocalOffsetPx);
         return this;
@@ -505,7 +507,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <summary>
     /// Releases all resources used by the composite and disposes all child drawables.
     /// </summary>
-    public void Dispose()
+    public virtual void Dispose()
     {
         Disposing?.Invoke(this, this);
 

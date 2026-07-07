@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
@@ -21,7 +22,7 @@ using Gondwana.Timers;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Rendering;
-using Gondwana.Widgets;
+using Gondwana.Widgets.Overlays;
 
 namespace Gondwana.Demos.Spot;
 
@@ -102,10 +103,23 @@ internal sealed class SpotHostCore
     internal SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
     {
         var imagePath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
-        var splash = SplashScreen.TryCreate(host, imagePath);
-        if (splash != null)
-            splash.HoldSec = 3f;
+        using var imageStream = File.OpenRead(imagePath);
+        var view = host.ViewManager.Views[0];
+
+        var splash = SplashScreen.TryCreate(imageStream, host, view);
         return splash;
+    }
+
+    internal async Task RunSplashAsync()
+    {
+        var splash = CreateSplash(SurfaceHost);
+        if (splash is null)
+            return;
+        using (splash)
+        {
+            //await splash.ShowAsync();
+            //await splash.HideAsync();
+        }
     }
 
     internal void LoadAssets()
