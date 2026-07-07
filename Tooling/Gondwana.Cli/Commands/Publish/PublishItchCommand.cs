@@ -19,7 +19,7 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
         public string Configuration { get; init; } = "Release";
 
         [CommandOption("-o|--output")]
-        [Description("Output zip path. Defaults to bin/<Configuration>/net8.0/publish/<ProjectName>-itch.zip.")]
+        [Description("Output zip path. Defaults to bin/<Configuration>/<TargetFramework>/publish/<ProjectName>-itch.zip.")]
         public string? Output { get; init; }
 
         [CommandOption("--skip-build")]
