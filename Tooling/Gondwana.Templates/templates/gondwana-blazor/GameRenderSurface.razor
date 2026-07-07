@@ -1,7 +1,9 @@
 @using Microsoft.Extensions.Logging
+@using Microsoft.JSInterop
 @using Gondwana.Blazor.Rendering
 @implements IDisposable
 @inject ILogger<GameRenderSurface> Logger
+@inject IJSRuntime JsRuntime
 
 <div class="render-surface-container">
     <BlazorBitmapRenderSurfaceComponent @ref="_renderSurface" />
@@ -15,7 +17,7 @@
     {
         if (firstRender && _renderSurface is not null)
         {
-            _host = new MyGameHost(_renderSurface);
+            _host = new MyGameHost(_renderSurface, JsRuntime);
             _host.Initialize(logLevel: LogLevel.Warning);
             await Task.CompletedTask;
         }

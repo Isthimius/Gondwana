@@ -3,6 +3,7 @@ using Gondwana.Blazor.Rendering;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
+using Microsoft.JSInterop;
 
 namespace MyGame;
 
@@ -18,8 +19,8 @@ namespace MyGame;
 /// </remarks>
 internal sealed class MyGameHost : BlazorGameHost
 {
-    internal MyGameHost(BlazorBitmapRenderSurfaceComponent renderSurface)
-        : base(renderSurface)
+    internal MyGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime)
+        : base(renderSurface, jsRuntime)
     {
     }
 
@@ -50,7 +51,7 @@ internal sealed class MyGameHost : BlazorGameHost
     /// <summary>
     /// Called after assets are loaded. Build your scene layers and add sprites here.
     /// </summary>
-    protected override void CreateSceneLayers()
+    protected override void CreateSprites()
     {
         // TODO: Create one or more SceneLayers.
         // Example:
@@ -85,7 +86,7 @@ internal sealed class MyGameHost : BlazorGameHost
     /// <summary>
     /// Called when the engine starts. Begin gameplay, start timers, play music, etc.
     /// </summary>
-    protected override void OnStartEngine()
+    protected override void OnEngineStarted()
     {
         // TODO: Start your game loop, begin animations, play background music.
     }

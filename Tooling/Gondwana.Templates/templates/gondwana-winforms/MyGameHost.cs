@@ -51,16 +51,14 @@ internal sealed class MyGameHost : WinFormsGameHost
     }
 
     // TODO: Place sprites into the scene.
-    // Call base.CreateSceneGraph() first so this.Scene is populated.
+    // Scene is already created and bound when this runs.
     // Example:
-    //   base.CreateSceneGraph();
     //   var frame = new Frame(mySheet, 0, 0);
     //   var sprite = SpriteManager.Instance.CreateSprite(Scene![0], frame);
     //   sprite.SetPosition(new(0, 0));
     //   sprite.Visible = true;
-    protected override void CreateSceneGraph()
+    protected override void CreateSprites()
     {
-        base.CreateSceneGraph();
     }
 
     // TODO: Subscribe to keyboard events here after the adapter is initialized.
