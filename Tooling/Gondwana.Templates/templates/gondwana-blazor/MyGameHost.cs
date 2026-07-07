@@ -3,6 +3,7 @@ using Gondwana.Blazor.Rendering;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
+using Microsoft.JSInterop;
 
 namespace MyGame;
 
@@ -18,16 +19,20 @@ namespace MyGame;
 /// </remarks>
 internal sealed class MyGameHost : BlazorGameHost
 {
-    internal MyGameHost(BlazorBitmapRenderSurfaceComponent renderSurface)
-        : base(renderSurface)
+    internal MyGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime)
+        : base(renderSurface, jsRuntime)
     {
     }
 
-    #region BlazorGameHost overrides
+    #region GameHostBase overrides
 
-    /// <summary>
-    /// Called once on engine initialization. Load your sprites, audio, and fonts here.
-    /// </summary>
+    // TODO: Run pre-initialization setup here, such as choosing config paths,
+    // toggling feature flags, or preparing services before assets begin loading.
+    protected override void OnInitializing()
+    {
+    }
+
+    // TODO: Load non-tilesheet assets such as audio, fonts, and data files.
     protected override void LoadAssets()
     {
         // TODO: Load your tilesheets/sprites here.
@@ -47,10 +52,37 @@ internal sealed class MyGameHost : BlazorGameHost
         //   var font = Engine.Managers.Fonts.LoadFromFile("main", @"assets\font.ttf");
     }
 
-    /// <summary>
-    /// Called after assets are loaded. Build your scene layers and add sprites here.
-    /// </summary>
-    protected override void CreateSceneLayers()
+    // TODO: Load tilesheet definitions after other assets are available.
+    protected override void LoadTilesheets()
+    {
+    }
+
+    // TODO: Load animation cycle definitions after tilesheets are available.
+    protected override void LoadAnimationCycles()
+    {
+    }
+
+    // TODO: Run after the initial scene and views are created, but before the scene is bound.
+    protected override void OnSceneGraphCreated()
+    {
+    }
+
+    // TODO: Build and return the initial Scene.
+    protected override Scene CreateInitialScene()
+    {
+        return Scene.Empty;
+    }
+
+    // TODO: Create initial camera/view objects after the Scene has been created.
+    protected override void CreateInitialViews()
+    {
+    }
+
+    // Note: OnSceneBound() is invoked by GameHostBase after BindScene() completes.
+    // Override OnSceneBound() if you need post-bind setup before sprites/direct drawings are created.
+
+    // TODO: Called after assets are loaded. Build your scene layers and add sprites here.
+    protected override void CreateSprites()
     {
         // TODO: Create one or more SceneLayers.
         // Example:
@@ -68,9 +100,7 @@ internal sealed class MyGameHost : BlazorGameHost
         //   Engine.Managers.Sprites.Add(sprite, layer);
     }
 
-    /// <summary>
-    /// Called after scene layers are created. Add direct drawings (UI overlays, particles, etc.) here.
-    /// </summary>
+    // TODO: Add direct drawings (UI overlays, particles, etc.) after sprites are created.
     protected override void CreateDirectDrawings()
     {
         // TODO: Add direct drawings (non-grid-aligned graphics).
@@ -82,17 +112,44 @@ internal sealed class MyGameHost : BlazorGameHost
         //       "Hello, Gondwana!");
     }
 
-    /// <summary>
-    /// Called when the engine starts. Begin gameplay, start timers, play music, etc.
-    /// </summary>
-    protected override void OnStartEngine()
+    // TODO: Run after Engine.Initialize() completes but before the engine starts.
+    protected override void OnEngineInitialized()
     {
-        // TODO: Start your game loop, begin animations, play background music.
     }
 
-    /// <summary>
-    /// Called after keyboard input is initialized. Wire up key event handlers here.
-    /// </summary>
+    // TODO: Called when the engine starts. Begin gameplay, start timers, or play music here.
+    protected override void OnEngineStarted()
+    {
+    }
+
+    // TODO: Run after the full host initialization sequence has completed.
+    protected override void OnInitialized()
+    {
+    }
+
+    // TODO: Unsubscribe from any events you hooked during initialization.
+    protected override void UnhookEvents()
+    {
+        // TODO: Unsubscribe from any events you hooked in OnKeyboardAdapterInitialized.
+        // Example:
+        //   Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+    }
+
+    // TODO: Run just before the host begins disposing managed resources.
+    protected override void OnDisposing()
+    {
+    }
+
+    #endregion
+
+    #region BlazorGameHost overrides
+
+    // TODO: Configure Blazor-specific platform services after the default setup runs.
+    protected override void OnConfigurePlatform()
+    {
+    }
+
+    // TODO: Called after keyboard input is initialized. Wire up key event handlers here.
     protected override void OnKeyboardAdapterInitialized()
     {
         // TODO: Subscribe to keyboard events.
@@ -100,14 +157,24 @@ internal sealed class MyGameHost : BlazorGameHost
         //   Engine.Input.KeyboardEventPoller.KeyDown += OnKeyDown;
     }
 
-    /// <summary>
-    /// Called when the host is being disposed. Clean up custom resources here.
-    /// </summary>
-    protected override void UnhookEvents()
+    // TODO: Subscribe to mouse events here after the adapter is initialized.
+    protected override void OnMouseAdapterInitialized()
     {
-        // TODO: Unsubscribe from any events you hooked in OnKeyboardAdapterInitialized.
-        // Example:
-        //   Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+    }
+
+    // TODO: Configure gamepad behavior after the default setup runs.
+    protected override void OnConfigureGamepads()
+    {
+    }
+
+    // TODO: Subscribe to touch or gesture events here after the adapter is initialized.
+    protected override void OnTouchAdapterInitialized()
+    {
+    }
+
+    // TODO: Run after Blazor-specific interop resources have been released.
+    protected override void OnBlazorDisposed()
+    {
     }
 
     #endregion
