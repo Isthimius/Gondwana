@@ -73,6 +73,9 @@ public sealed class SplashScreen : WidgetBase
             SplashImageNickname + Guid.NewGuid().ToString())
     {
         _image = image;
+        FadeInSec = fadeInSec;
+        HoldSec = holdSec;
+        FadeOutSec = fadeOutSec;
         Add(_image);
     }
 
