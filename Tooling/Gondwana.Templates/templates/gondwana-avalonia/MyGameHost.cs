@@ -1,4 +1,3 @@
-using System.Threading;
 using Gondwana.Avalonia.Hosting;
 using Gondwana.Avalonia.Rendering;
 using Gondwana.Drawing.Coordinates;
@@ -81,7 +80,6 @@ internal sealed class MyGameHost : AvaloniaGameHost
 //#if !(UseGpuBackbuffer)
     // TODO: Run after the current scene has been bound to the render surface.
     // This shell is generated only for non-GPU template builds.
-    // GPU-backed projects use the GPU-only BindScene() override instead.
     protected override void OnSceneBound()
     {
     }
@@ -108,19 +106,6 @@ internal sealed class MyGameHost : AvaloniaGameHost
     {
     }
 
-    // TODO: Override to customize how the engine starts.
-    // Call base.StartEngineCore(syncContext) unless you are replacing the default behavior.
-    protected override void StartEngineCore(SynchronizationContext syncContext)
-    {
-        base.StartEngineCore(syncContext);
-    }
-
-    // TODO: Override to provide a custom synchronization context for the engine.
-    protected override SynchronizationContext? GetSynchronizationContext()
-    {
-        return base.GetSynchronizationContext();
-    }
-
     // TODO: Run after the engine has started. Start gameplay, timers, or music here.
     protected override void OnEngineStarted()
     {
@@ -136,13 +121,6 @@ internal sealed class MyGameHost : AvaloniaGameHost
     {
     }
 
-    // TODO: Override to customize how the engine stops.
-    // Call base.StopEngineCore() unless you are replacing the default behavior.
-    protected override void StopEngineCore()
-    {
-        base.StopEngineCore();
-    }
-
     // TODO: Run just before the host begins disposing managed resources.
     protected override void OnDisposing()
     {
@@ -156,48 +134,6 @@ internal sealed class MyGameHost : AvaloniaGameHost
     #endregion
 
     #region Avalonia host overrides
-
-//#if (UseGpuBackbuffer)
-    // GPU-backed builds expose additional low-level overrides below.
-    // Prefer the OnX hook methods later in this file for most games; override these
-    // only when you need to replace the default adapter or binding pipeline itself.
-
-    // TODO: Override to customize platform setup while preserving the default GPU setup.
-    protected override void ConfigurePlatform()
-    {
-        base.ConfigurePlatform();
-    }
-
-    // TODO: Override to customize keyboard setup while preserving the default adapter wiring.
-    protected override void ConfigureKeyboard()
-    {
-        base.ConfigureKeyboard();
-    }
-
-    // TODO: Override to customize mouse setup while preserving the default adapter wiring.
-    protected override void ConfigureMouse()
-    {
-        base.ConfigureMouse();
-    }
-
-    // TODO: Override to customize gamepad setup while preserving the default behavior.
-    protected override void ConfigureGamepads()
-    {
-        base.ConfigureGamepads();
-    }
-
-    // TODO: Override to customize touch setup while preserving the default adapter wiring.
-    protected override void ConfigureTouch()
-    {
-        base.ConfigureTouch();
-    }
-
-    // TODO: Override to customize how the scene is bound to the GPU render surface.
-    protected override void BindScene()
-    {
-        base.BindScene();
-    }
-//#endif
 
     // TODO: Configure Avalonia-specific platform services after the default setup runs.
     protected override void OnConfigurePlatform()

@@ -1,4 +1,3 @@
-using System.Threading;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
@@ -100,19 +99,6 @@ internal sealed class MyGameHost : WinFormsGameHost
     {
     }
 
-    // TODO: Override to customize how the engine starts.
-    // Call base.StartEngineCore(syncContext) unless you are replacing the default behavior.
-    protected override void StartEngineCore(SynchronizationContext syncContext)
-    {
-        base.StartEngineCore(syncContext);
-    }
-
-    // TODO: Override to provide a custom synchronization context for the engine.
-    protected override SynchronizationContext? GetSynchronizationContext()
-    {
-        return base.GetSynchronizationContext();
-    }
-
     // TODO: Run after the engine has started. Start gameplay, timers, or music here.
     protected override void OnEngineStarted()
     {
@@ -126,13 +112,6 @@ internal sealed class MyGameHost : WinFormsGameHost
     // TODO: Unsubscribe any events subscribed during initialization to avoid memory leaks.
     protected override void UnhookEvents()
     {
-    }
-
-    // TODO: Override to customize how the engine stops.
-    // Call base.StopEngineCore() unless you are replacing the default behavior.
-    protected override void StopEngineCore()
-    {
-        base.StopEngineCore();
     }
 
     // TODO: Run just before the host begins disposing managed resources.
