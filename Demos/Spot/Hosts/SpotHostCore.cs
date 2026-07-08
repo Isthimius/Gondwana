@@ -155,7 +155,7 @@ internal sealed class SpotHostCore
         var splash = TilesheetRegistry.Instance.LoadFromImageFile("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        _spotSheetDefault = TilesheetRegistry.Instance.LoadFromImageFile("spots", "assets\\spot_defaults.png");
+        _spotSheetDefault = Engine.Managers.Tilesheets.LoadFromImageFile("spots", "assets\\spot_defaults.png");
         _spotSheetDefault.DefaultRegion.TileSize = new Size(93, 96);
 
         _spotSheetSelected = TilesheetRegistry.Instance.LoadFromImageFile("selected", "assets\\spot_selected.png");
