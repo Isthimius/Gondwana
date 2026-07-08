@@ -13,8 +13,8 @@ namespace MyGame;
 /// <remarks>
 /// Full lifecycle documentation:
 /// <see href="https://github.com/Isthimius/Gondwana/wiki">Gondwana Wiki</see>
-/// and the 15-minute guide at
-/// <see href="https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-15-Minutes">Make Your First Game in 15 Minutes</see>.
+/// and the 1-hour guide at
+/// <see href="https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour">Make Your First Game in 1 Hour</see>.
 /// </remarks>
 //#if (UseGpuBackbuffer)
 internal sealed class MyGameHost : AvaloniaGpuGameHost

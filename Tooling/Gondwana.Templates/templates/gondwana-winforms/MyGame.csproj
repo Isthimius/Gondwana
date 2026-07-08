@@ -18,6 +18,7 @@
         <PackageReference Include="Gondwana.Hosting" Version="2.*" />
         <PackageReference Include="Gondwana.WinForms" Version="2.*" />
         <PackageReference Include="Gondwana.WinForms.Hosting" Version="2.*" />
+        <PackageReference Include="Gondwana.Widgets" Version="2.*" />
     </ItemGroup>
 
     <!--

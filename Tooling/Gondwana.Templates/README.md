@@ -109,7 +109,7 @@ This scaffolds a Blazor WebAssembly project containing:
 
 ## Further reading
 
-- **Getting started (15-minute guide)** — [Make Your First Game in 15 Minutes](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-15-Minutes)
+- **Getting started (1-hour guide)** — [Make Your First Game in 1 Hour](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour)
 - **Wiki** — https://github.com/Isthimius/Gondwana/wiki
 - **API reference** — https://isthimius.github.io/Gondwana/
 - **NuGet packages** — https://www.nuget.org/packages/Gondwana

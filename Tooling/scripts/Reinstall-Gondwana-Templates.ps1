@@ -129,9 +129,9 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Installing Gondwana.Templates $($packedPackage.Version) from isolated local package feed..." -ForegroundColor Cyan
+    Write-Host "Installing Gondwana.Templates $($packedPackage.Version) from local package..." -ForegroundColor Cyan
     $env:NUGET_PACKAGES = $tempNuGetPackages
-    Invoke-Cmd dotnet @('new', 'install', "Gondwana.Templates@$($packedPackage.Version)", '--add-source', $packageSource, '--force')
+    Invoke-Cmd dotnet @('new', 'install', $packedPackage.Path, '--force')
 
     $currentVersion = Get-InstalledTemplatePackageVersion
     $templateList = dotnet new list gondwana 2>&1

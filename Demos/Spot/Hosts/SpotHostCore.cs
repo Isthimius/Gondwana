@@ -155,7 +155,7 @@ internal sealed class SpotHostCore
         var splash = TilesheetRegistry.Instance.LoadFromImageFile("splash", "assets\\spot.png");
         splash.ApplyMask(Color.Black.ToSKColor());
 
-        _spotSheetDefault = TilesheetRegistry.Instance.LoadFromImageFile("spots", "assets\\spot_defaults.png");
+        _spotSheetDefault = Engine.Managers.Tilesheets.LoadFromImageFile("spots", "assets\\spot_defaults.png");
         _spotSheetDefault.DefaultRegion.TileSize = new Size(93, 96);
 
         _spotSheetSelected = TilesheetRegistry.Instance.LoadFromImageFile("selected", "assets\\spot_selected.png");
@@ -166,6 +166,12 @@ internal sealed class SpotHostCore
 
     internal Scene CreateInitialScene()
     {
+        Logging.EngineLogger.SetLogLevel(LogLevel.Information);
+        Gondwana.Engine.Instance.CPSCalculated += (args) =>
+        {
+            Engine.Logger.LogInformation(args.ToString());
+        };
+
         var scene = new Scene();
 
         var sceneLayer1 = scene.AddLayer(

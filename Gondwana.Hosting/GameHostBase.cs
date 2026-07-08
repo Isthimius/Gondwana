@@ -46,10 +46,8 @@ public abstract class GameHostBase : IDisposable
         InitializeGameContent();
 
         InitializeEngine(configPath, autoSaveConfig);
-        OnEngineInitialized();
 
         StartEngine();
-        OnEngineStarted();
 
         _initialized = true;
 
@@ -123,7 +121,6 @@ public abstract class GameHostBase : IDisposable
     {
         LoadContent();
         CreateSceneGraph();
-        OnSceneGraphCreated();
         BindScene();
         OnSceneBound();
         InitializeSceneObjects();
@@ -169,6 +166,7 @@ public abstract class GameHostBase : IDisposable
             ?? throw new InvalidOperationException($"{nameof(CreateInitialScene)} returned null.");
 
         CreateInitialViews();
+        OnSceneGraphCreated();
     }
 
     /// <summary>
@@ -240,6 +238,8 @@ public abstract class GameHostBase : IDisposable
     {
         Engine.Instance.Initialize(configPath, autoSaveConfig);
         _engineInitialized = true;
+
+        OnEngineInitialized();
     }
 
     /// <summary>
@@ -261,6 +261,8 @@ public abstract class GameHostBase : IDisposable
 
         StartEngineCore(syncContext);
         _engineStarted = true;
+
+        OnEngineStarted();
     }
 
     /// <summary>

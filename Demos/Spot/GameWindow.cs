@@ -24,7 +24,7 @@ internal partial class GameWindow : Form
     private const string KeyJiggle = "jiggle";
     private const string KeyClouds = "clouds";
     private const string KeyGpuAcceleration = "gpuAcceleration";
-    private const int GpuTargetFps = 500;
+    private const int GpuTargetFps = 0;
     private const int GpuMsaaSampleCount = 4;
 
     private bool _gpuAcceleration;
