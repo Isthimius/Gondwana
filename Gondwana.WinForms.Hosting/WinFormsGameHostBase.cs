@@ -90,6 +90,7 @@ public abstract class WinFormsGameHostBase : GameHostBase
     protected virtual void OnSceneBound()
     {
     }
+
     /// <summary>
     /// Provides a hook for configuring platform-specific settings during initialization.
     /// </summary>
