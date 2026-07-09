@@ -10,7 +10,7 @@ After adding a file, register it in your .csproj so it is copied to the output d
 
 Then load it in MyGameHost.cs:
 
-    Tilesheets:  new Tilesheet("name", @"assets\your-sprite.png")
+    Tilesheets:  Engine.Managers.Tilesheets.LoadFromImageFile("name", @"assets\your-sprite.png")
     Audio:       Engine.GetBrowserAudioManager().Load("name", "assets/theme.mp3")
     Fonts:       Engine.Managers.Fonts.LoadFromFile("name", @"assets\your-font.ttf")
 
