@@ -1,3 +1,4 @@
+using System.Text;
 using Gondwana.Cli.Commands;
 using Spectre.Console;
 
@@ -5,6 +6,20 @@ namespace Gondwana.Cli.Commands.New;
 
 internal static class NewSolutionHelper
 {
+    // Minimal .sln skeleton compatible with all Visual Studio / dotnet versions.
+    // Written directly so that the holding solution is always in .sln format,
+    // regardless of whether a .NET 9+ SDK is installed (which defaults to .slnx).
+    private const string SlnFileSkeleton =
+        "Microsoft Visual Studio Solution File, Format Version 12.00\r\n" +
+        "# Visual Studio Version 17\r\n" +
+        "VisualStudioVersion = 17.0.31903.59\r\n" +
+        "MinimumVisualStudioVersion = 10.0.40219.1\r\n" +
+        "Global\r\n" +
+        "\tGlobalSection(SolutionProperties) = preSolution\r\n" +
+        "\t\tHideSolution = False\r\n" +
+        "\tEndGlobalSection\r\n" +
+        "EndGlobal\r\n";
+
     public static void CreateHoldingSolution(string projectName, string projectDirectory)
     {
         var fullProjectDirectory = Path.GetFullPath(projectDirectory);
@@ -71,19 +86,14 @@ internal static class NewSolutionHelper
 
         if (!File.Exists(solutionPath))
         {
-            var slnCreateExit = ProcessHelper.RunLive("dotnet", ["new", "sln", "-n", projectName, "-o", fullProjectDirectory]);
-            if (slnCreateExit != 0)
+            try
             {
-                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/].");
-                return;
+                File.WriteAllText(solutionPath, SlnFileSkeleton, Encoding.UTF8);
             }
-
-            // newer SDK versions (e.g. .NET 9+) may create a .slnx file instead of .sln
-            if (!File.Exists(solutionPath))
+            catch (Exception ex)
             {
-                var slnxPath = Path.ChangeExtension(solutionPath, ".slnx");
-                if (File.Exists(slnxPath))
-                    solutionPath = slnxPath;
+                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/]: {Markup.Escape(ex.Message)}");
+                return;
             }
 
             createdNewSolution = true;
