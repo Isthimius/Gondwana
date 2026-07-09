@@ -10,7 +10,6 @@ internal static class NewSolutionHelper
     // Written directly so that the holding solution is always in .sln format,
     // regardless of whether a .NET 9+ SDK is installed (which defaults to .slnx).
     private const string SlnFileSkeleton =
-        "\r\n" +
         "Microsoft Visual Studio Solution File, Format Version 12.00\r\n" +
         "# Visual Studio Version 17\r\n" +
         "VisualStudioVersion = 17.0.31903.59\r\n" +
