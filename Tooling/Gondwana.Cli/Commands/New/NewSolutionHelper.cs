@@ -91,9 +91,9 @@ internal static class NewSolutionHelper
             {
                 File.WriteAllText(solutionPath, SlnFileSkeleton, Encoding.UTF8);
             }
-            catch
+            catch (Exception ex)
             {
-                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/].");
+                AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/]: {Markup.Escape(ex.Message)}");
                 return;
             }
 
