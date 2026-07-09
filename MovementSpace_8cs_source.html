@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Movement/MovementSpace.cs Source File</title>
+<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Physics/Movement/MovementSpace.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -100,26 +100,26 @@ $(document).ready(function(){initNavTree('MovementSpace_8cs_source.html',''); in
   <div class="headertitle"><div class="title">MovementSpace.cs</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Movement.html">Gondwana.Movement</a>;</div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Physics_1_1Movement.html">Gondwana.Physics.Movement</a>;</div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="foldopen" id="foldopen00006" data-start="{" data-end="};">
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341d">    6</a></span><span class="keyword">public</span> <span class="keyword">enum</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341d">MovementSpace</a></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">    6</a></span><span class="keyword">public</span> <span class="keyword">enum</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341da5174d1309f275ba6f275db3af9eb3e18">Grid</a>,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186ca5174d1309f275ba6f275db3af9eb3e18">Grid</a>,</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341da08822b3ae4e2aede0afe08abe600e9c0">Pixel</a></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186ca08822b3ae4e2aede0afe08abe600e9c0">Pixel</a></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
 </div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_html"><div class="ttname"><a href="namespaceGondwana_1_1Movement.html">Gondwana.Movement</a></div><div class="ttdef"><b>Definition</b> <a href="EasingFunctions_8cs_source.html#l00001">EasingFunctions.cs:1</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_html_a49b5fa80f99283d647bd189725d7341d"><div class="ttname"><a href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341d">Gondwana.Movement.MovementSpace</a></div><div class="ttdeci">MovementSpace</div><div class="ttdoc">Specifies the coordinate system used for movement calculations and updates.</div><div class="ttdef"><b>Definition</b> <a href="MovementSpace_8cs_source.html#l00006">MovementSpace.cs:7</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_html_a49b5fa80f99283d647bd189725d7341da08822b3ae4e2aede0afe08abe600e9c0"><div class="ttname"><a href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341da08822b3ae4e2aede0afe08abe600e9c0">Gondwana.Movement.MovementSpace.Pixel</a></div><div class="ttdeci">@ Pixel</div><div class="ttdoc">Movement is in pixel coordinates relative to the rendering layer.</div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_html_a49b5fa80f99283d647bd189725d7341da5174d1309f275ba6f275db3af9eb3e18"><div class="ttname"><a href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341da5174d1309f275ba6f275db3af9eb3e18">Gondwana.Movement.MovementSpace.Grid</a></div><div class="ttdeci">@ Grid</div><div class="ttdoc">Movement is in a scene's grid/tile coordinate system.</div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement.html">Gondwana.Physics.Movement</a></div><div class="ttdef"><b>Definition</b> <a href="EasingFunctions_8cs_source.html#l00001">EasingFunctions.cs:1</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_html_aa42d600d851164fae8a0aae23536186c"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">Gondwana.Physics.Movement.MovementSpace</a></div><div class="ttdeci">MovementSpace</div><div class="ttdoc">Specifies the coordinate system used for movement calculations and updates.</div><div class="ttdef"><b>Definition</b> <a href="MovementSpace_8cs_source.html#l00006">MovementSpace.cs:7</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_html_aa42d600d851164fae8a0aae23536186ca08822b3ae4e2aede0afe08abe600e9c0"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186ca08822b3ae4e2aede0afe08abe600e9c0">Gondwana.Physics.Movement.MovementSpace.Pixel</a></div><div class="ttdeci">@ Pixel</div><div class="ttdoc">Movement is in pixel coordinates relative to the rendering layer.</div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_html_aa42d600d851164fae8a0aae23536186ca5174d1309f275ba6f275db3af9eb3e18"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186ca5174d1309f275ba6f275db3af9eb3e18">Gondwana.Physics.Movement.MovementSpace.Grid</a></div><div class="ttdeci">@ Grid</div><div class="ttdoc">Movement is in a scene's grid/tile coordinate system.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_ea870575ede3c854b7e22ce038f8df85.html">Movement</a></li><li class="navelem"><b>MovementSpace.cs</b></li>
+    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_6cfc059161883a9198bcde9e9fda3eda.html">Physics</a></li><li class="navelem"><a class="el" href="dir_2b5588618a0d6cd4f77cfb9c3e10137d.html">Movement</a></li><li class="navelem"><b>MovementSpace.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

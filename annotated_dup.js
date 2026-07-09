@@ -62,16 +62,6 @@ var annotated_dup =
           [ "BlazorBitmapRenderSurfaceComponent", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent.html", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent" ]
         ] ]
       ] ],
-      [ "Collisions", "namespaceGondwana_1_1Collisions.html", [
-        [ "Aabb", "structGondwana_1_1Collisions_1_1Aabb.html", "structGondwana_1_1Collisions_1_1Aabb" ],
-        [ "ColliderRegistry", "classGondwana_1_1Collisions_1_1ColliderRegistry.html", "classGondwana_1_1Collisions_1_1ColliderRegistry" ],
-        [ "CollisionDetectionAdjustment", "structGondwana_1_1Collisions_1_1CollisionDetectionAdjustment.html", "structGondwana_1_1Collisions_1_1CollisionDetectionAdjustment" ],
-        [ "CollisionGroupRegistry", "classGondwana_1_1Collisions_1_1CollisionGroupRegistry.html", "classGondwana_1_1Collisions_1_1CollisionGroupRegistry" ],
-        [ "CollisionResult", "structGondwana_1_1Collisions_1_1CollisionResult.html", "structGondwana_1_1Collisions_1_1CollisionResult" ],
-        [ "ICollider", "interfaceGondwana_1_1Collisions_1_1ICollider.html", "interfaceGondwana_1_1Collisions_1_1ICollider" ],
-        [ "ICollisionEntity", "interfaceGondwana_1_1Collisions_1_1ICollisionEntity.html", "interfaceGondwana_1_1Collisions_1_1ICollisionEntity" ],
-        [ "ICollisionMovableEntity", "interfaceGondwana_1_1Collisions_1_1ICollisionMovableEntity.html", "interfaceGondwana_1_1Collisions_1_1ICollisionMovableEntity" ]
-      ] ],
       [ "Configuration", "namespaceGondwana_1_1Configuration.html", [
         [ "EngineConfiguration", "classGondwana_1_1Configuration_1_1EngineConfiguration.html", "classGondwana_1_1Configuration_1_1EngineConfiguration" ],
         [ "EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", "classGondwana_1_1Configuration_1_1EngineConfigurationFile" ]
@@ -116,6 +106,7 @@ var annotated_dup =
         [ "Tilesheets", "namespaceGondwana_1_1Drawing_1_1Tilesheets.html", [
           [ "GTS", "namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html", [
             [ "TilesheetDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition" ],
+            [ "TilesheetDefinitionSource", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource" ],
             [ "TilesheetImageDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition" ],
             [ "TilesheetMaskDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetMaskDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetMaskDefinition" ],
             [ "TilesheetRegionDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition" ]
@@ -134,8 +125,7 @@ var annotated_dup =
         [ "IEnginePlugin", "interfaceGondwana_1_1Extensibility_1_1IEnginePlugin.html", "interfaceGondwana_1_1Extensibility_1_1IEnginePlugin" ]
       ] ],
       [ "Hosting", "namespaceGondwana_1_1Hosting.html", [
-        [ "GameHostBase", "classGondwana_1_1Hosting_1_1GameHostBase.html", "classGondwana_1_1Hosting_1_1GameHostBase" ],
-        [ "SplashScreen", "classGondwana_1_1Hosting_1_1SplashScreen.html", "classGondwana_1_1Hosting_1_1SplashScreen" ]
+        [ "GameHostBase", "classGondwana_1_1Hosting_1_1GameHostBase.html", "classGondwana_1_1Hosting_1_1GameHostBase" ]
       ] ],
       [ "Input", "namespaceGondwana_1_1Input.html", [
         [ "Gamepad", "namespaceGondwana_1_1Input_1_1Gamepad.html", [
@@ -184,14 +174,26 @@ var annotated_dup =
       [ "Logging", "namespaceGondwana_1_1Logging.html", [
         [ "LoggingErrorEventArgs", "classGondwana_1_1Logging_1_1LoggingErrorEventArgs.html", "classGondwana_1_1Logging_1_1LoggingErrorEventArgs" ]
       ] ],
-      [ "Movement", "namespaceGondwana_1_1Movement.html", [
-        [ "Scripted", "namespaceGondwana_1_1Movement_1_1Scripted.html", [
-          [ "ScriptedMovement", "structGondwana_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", "structGondwana_1_1Movement_1_1Scripted_1_1ScriptedMovement" ]
+      [ "Physics", "namespaceGondwana_1_1Physics.html", [
+        [ "Collisions", "namespaceGondwana_1_1Physics_1_1Collisions.html", [
+          [ "Aabb", "structGondwana_1_1Physics_1_1Collisions_1_1Aabb.html", "structGondwana_1_1Physics_1_1Collisions_1_1Aabb" ],
+          [ "ColliderRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry" ],
+          [ "CollisionDetectionAdjustment", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment.html", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment" ],
+          [ "CollisionGroupRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry" ],
+          [ "CollisionResult", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionResult.html", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionResult" ],
+          [ "ICollider", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider" ],
+          [ "ICollisionEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity" ],
+          [ "ICollisionMovableEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity" ]
         ] ],
-        [ "IMovable", "interfaceGondwana_1_1Movement_1_1IMovable.html", "interfaceGondwana_1_1Movement_1_1IMovable" ],
-        [ "IMovableOnSceneLayer", "interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer.html", "interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer" ],
-        [ "MovementController", "classGondwana_1_1Movement_1_1MovementController.html", "classGondwana_1_1Movement_1_1MovementController" ],
-        [ "MovementState", "structGondwana_1_1Movement_1_1MovementState.html", "structGondwana_1_1Movement_1_1MovementState" ]
+        [ "Movement", "namespaceGondwana_1_1Physics_1_1Movement.html", [
+          [ "Scripted", "namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html", [
+            [ "ScriptedMovement", "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement" ]
+          ] ],
+          [ "IMovable", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable" ],
+          [ "IMovableOnSceneLayer", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer" ],
+          [ "MovementController", "classGondwana_1_1Physics_1_1Movement_1_1MovementController.html", "classGondwana_1_1Physics_1_1Movement_1_1MovementController" ],
+          [ "MovementState", "structGondwana_1_1Physics_1_1Movement_1_1MovementState.html", "structGondwana_1_1Physics_1_1Movement_1_1MovementState" ]
+        ] ]
       ] ],
       [ "Rendering", "namespaceGondwana_1_1Rendering.html", [
         [ "Backbuffers", "namespaceGondwana_1_1Rendering_1_1Backbuffers.html", [
@@ -221,17 +223,6 @@ var annotated_dup =
         [ "SceneLayer", "classGondwana_1_1Scenes_1_1SceneLayer.html", "classGondwana_1_1Scenes_1_1SceneLayer" ],
         [ "SceneLayerTile", "classGondwana_1_1Scenes_1_1SceneLayerTile.html", "classGondwana_1_1Scenes_1_1SceneLayerTile" ]
       ] ],
-      [ "StudioAssets", "namespaceGondwana_1_1StudioAssets.html", [
-        [ "AnimationAsset", "classGondwana_1_1StudioAssets_1_1AnimationAsset.html", "classGondwana_1_1StudioAssets_1_1AnimationAsset" ],
-        [ "AnimationFrameAsset", "classGondwana_1_1StudioAssets_1_1AnimationFrameAsset.html", "classGondwana_1_1StudioAssets_1_1AnimationFrameAsset" ],
-        [ "SceneAsset", "classGondwana_1_1StudioAssets_1_1SceneAsset.html", "classGondwana_1_1StudioAssets_1_1SceneAsset" ],
-        [ "SceneColliderAsset", "classGondwana_1_1StudioAssets_1_1SceneColliderAsset.html", "classGondwana_1_1StudioAssets_1_1SceneColliderAsset" ],
-        [ "SceneEntityAsset", "classGondwana_1_1StudioAssets_1_1SceneEntityAsset.html", "classGondwana_1_1StudioAssets_1_1SceneEntityAsset" ],
-        [ "SceneLayerAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerAsset.html", "classGondwana_1_1StudioAssets_1_1SceneLayerAsset" ],
-        [ "SceneLayerTileAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerTileAsset.html", "classGondwana_1_1StudioAssets_1_1SceneLayerTileAsset" ],
-        [ "TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset" ],
-        [ "TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset" ]
-      ] ],
       [ "Timers", "namespaceGondwana_1_1Timers.html", [
         [ "Timer", "classGondwana_1_1Timers_1_1Timer.html", "classGondwana_1_1Timers_1_1Timer" ]
       ] ],
@@ -240,6 +231,16 @@ var annotated_dup =
         [ "VideoFrameReadyEventArgs", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs" ],
         [ "VideoStateChangedEventArgs", "classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html", "classGondwana_1_1Video_1_1VideoStateChangedEventArgs" ],
         [ "VlcVideoPlayer", "classGondwana_1_1Video_1_1VlcVideoPlayer.html", "classGondwana_1_1Video_1_1VlcVideoPlayer" ]
+      ] ],
+      [ "Widgets", "namespaceGondwana_1_1Widgets.html", [
+        [ "Overlays", "namespaceGondwana_1_1Widgets_1_1Overlays.html", [
+          [ "SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen" ]
+        ] ],
+        [ "DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", "classGondwana_1_1Widgets_1_1DraggableWidgetBase" ],
+        [ "WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", "classGondwana_1_1Widgets_1_1WidgetBase" ],
+        [ "WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs" ],
+        [ "WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetEventArgs" ],
+        [ "WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs" ]
       ] ],
       [ "WinForms", "namespaceGondwana_1_1WinForms.html", [
         [ "Hosting", "namespaceGondwana_1_1WinForms_1_1Hosting.html", [

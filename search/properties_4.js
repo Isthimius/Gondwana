@@ -8,6 +8,5 @@ var searchData=
   ['engine_5',['Engine',['../classGondwana_1_1Hosting_1_1GameHostBase.html#aea7f4a44e1f5292bc86f8b75c9ba791c',1,'Gondwana::Hosting::GameHostBase']]],
   ['engineconfig_6',['EngineConfig',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a617d6e239ab02a1a645fa237857fb751',1,'Gondwana::Configuration::EngineConfigurationFile']]],
   ['enginedispatcher_7',['EngineDispatcher',['../classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04',1,'Gondwana::Engine']]],
-  ['entities_8',['Entities',['../classGondwana_1_1StudioAssets_1_1SceneAsset.html#a3a83da7d15e2e62d7b31af2503181fbe',1,'Gondwana::StudioAssets::SceneAsset']]],
-  ['exception_9',['Exception',['../classGondwana_1_1Logging_1_1LoggingErrorEventArgs.html#a67ee3791cd338e43da1594fb1fa0dd15',1,'Gondwana::Logging::LoggingErrorEventArgs']]]
+  ['exception_8',['Exception',['../classGondwana_1_1Logging_1_1LoggingErrorEventArgs.html#a67ee3791cd338e43da1594fb1fa0dd15',1,'Gondwana::Logging::LoggingErrorEventArgs']]]
 ];

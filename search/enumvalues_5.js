@@ -12,7 +12,9 @@ var searchData=
   ['f7_9',['F7',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a47489eb597b7db34caa24b1fc78fc839',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['f8_10',['F8',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a4787509ad9f9d747a81a30e9dde3d4a7',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['f9_11',['F9',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a892a245e287c163080b23db737d3c4c9',1,'Gondwana::Blazor::Input::Keyboard']]],
-  ['fill_12',['fill',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.DirectImage.Fill'],['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.Fill']]],
-  ['fit_13',['Fit',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3a01e49ee7364d951a3d1bdea7dd3a1b7b',1,'Gondwana::Drawing::Direct::DirectImage']]],
-  ['font_14',['Font',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d',1,'Gondwana::Assets']]]
+  ['fadingin_12',['FadingIn',['../classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a0fb2f621b5de1a0426c22d5198c19919a6830a6bcb5563d6b8ba7bafda3eda348',1,'Gondwana::Widgets::Overlays::SplashScreen']]],
+  ['fadingout_13',['FadingOut',['../classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a0fb2f621b5de1a0426c22d5198c19919a2ddb22b5f505aaafbe118c502a5a56ac',1,'Gondwana::Widgets::Overlays::SplashScreen']]],
+  ['fill_14',['fill',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.DirectImage.Fill'],['../namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed',1,'Gondwana.Drawing.Direct.Fill']]],
+  ['fit_15',['Fit',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3a01e49ee7364d951a3d1bdea7dd3a1b7b',1,'Gondwana::Drawing::Direct::DirectImage']]],
+  ['font_16',['Font',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a194f5394ae2e9c74dc3c441b92862d1d',1,'Gondwana::Assets']]]
 ];

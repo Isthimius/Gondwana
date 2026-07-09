@@ -1,16 +1,14 @@
 var hierarchy =
 [
-    [ "Gondwana.Collisions.Aabb", "structGondwana_1_1Collisions_1_1Aabb.html", null ],
-    [ "Gondwana.StudioAssets.AnimationAsset", "classGondwana_1_1StudioAssets_1_1AnimationAsset.html", null ],
-    [ "Gondwana.StudioAssets.AnimationFrameAsset", "classGondwana_1_1StudioAssets_1_1AnimationFrameAsset.html", null ],
+    [ "Gondwana.Physics.Collisions.Aabb", "structGondwana_1_1Physics_1_1Collisions_1_1Aabb.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", null ],
     [ "Gondwana.Rendering.Views.Camera", "classGondwana_1_1Rendering_1_1Views_1_1Camera.html", null ],
-    [ "Gondwana.Collisions.ColliderRegistry", "classGondwana_1_1Collisions_1_1ColliderRegistry.html", null ],
-    [ "Gondwana.Collisions.CollisionDetectionAdjustment", "structGondwana_1_1Collisions_1_1CollisionDetectionAdjustment.html", null ],
-    [ "Gondwana.Collisions.CollisionGroupRegistry", "classGondwana_1_1Collisions_1_1CollisionGroupRegistry.html", null ],
-    [ "Gondwana.Collisions.CollisionResult", "structGondwana_1_1Collisions_1_1CollisionResult.html", null ],
+    [ "Gondwana.Physics.Collisions.ColliderRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html", null ],
+    [ "Gondwana.Physics.Collisions.CollisionDetectionAdjustment", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment.html", null ],
+    [ "Gondwana.Physics.Collisions.CollisionGroupRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html", null ],
+    [ "Gondwana.Physics.Collisions.CollisionResult", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionResult.html", null ],
     [ "Control", null, [
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html", null ]
     ] ],
@@ -33,7 +31,11 @@ var hierarchy =
       [ "Gondwana.Logging.LoggingErrorEventArgs", "classGondwana_1_1Logging_1_1LoggingErrorEventArgs.html", null ],
       [ "Gondwana.Rendering.RenderSurfaceHostBindEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html", null ],
       [ "Gondwana.Video.VideoFrameReadyEventArgs", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html", null ],
-      [ "Gondwana.Video.VideoStateChangedEventArgs", "classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html", null ]
+      [ "Gondwana.Video.VideoStateChangedEventArgs", "classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html", null ],
+      [ "Gondwana.Widgets.WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", [
+        [ "Gondwana.Widgets.WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", null ],
+        [ "Gondwana.Widgets.WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", null ]
+      ] ]
     ] ],
     [ "Gondwana.Drawing.Frame", "structGondwana_1_1Drawing_1_1Frame.html", null ],
     [ "Gondwana.Input.Gamepad.GamepadEventPoller", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller.html", null ],
@@ -42,16 +44,16 @@ var hierarchy =
       [ "Gondwana.Drawing.Animation.Cycle", "classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html", null ],
       [ "Gondwana.TypedValueBag", "classGondwana_1_1TypedValueBag.html", null ]
     ] ],
-    [ "Gondwana.Collisions.ICollider", "interfaceGondwana_1_1Collisions_1_1ICollider.html", [
+    [ "Gondwana.Physics.Collisions.ICollider", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html", [
       [ "Gondwana.Drawing.Collisions.TileCollider", "classGondwana_1_1Drawing_1_1Collisions_1_1TileCollider.html", null ]
     ] ],
-    [ "Gondwana.Collisions.ICollisionEntity", "interfaceGondwana_1_1Collisions_1_1ICollisionEntity.html", [
-      [ "Gondwana.Collisions.ICollisionMovableEntity", "interfaceGondwana_1_1Collisions_1_1ICollisionMovableEntity.html", [
-        [ "Gondwana.Drawing.Sprites.Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", null ]
-      ] ],
+    [ "Gondwana.Physics.Collisions.ICollisionEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html", [
       [ "Gondwana.Drawing.Tile", "classGondwana_1_1Drawing_1_1Tile.html", [
         [ "Gondwana.Drawing.Sprites.Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", null ],
         [ "Gondwana.Scenes.SceneLayerTile", "classGondwana_1_1Scenes_1_1SceneLayerTile.html", null ]
+      ] ],
+      [ "Gondwana.Physics.Collisions.ICollisionMovableEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html", [
+        [ "Gondwana.Drawing.Sprites.Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", null ]
       ] ]
     ] ],
     [ "IComparable", null, [
@@ -85,7 +87,12 @@ var hierarchy =
       [ "Gondwana.Drawing.Animation.Cycle", "classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html", null ],
       [ "Gondwana.Drawing.Direct.DirectDrawingManager", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html", null ],
       [ "Gondwana.Drawing.Direct.IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", [
-        [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", null ],
+        [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", [
+          [ "Gondwana.Widgets.WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", [
+            [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
+            [ "Gondwana.Widgets.Overlays.SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", null ]
+          ] ]
+        ] ],
         [ "Gondwana.Drawing.Direct.DirectDrawingBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html", null ]
       ] ],
       [ "Gondwana.Drawing.Sprites.Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", null ],
@@ -106,11 +113,10 @@ var hierarchy =
           [ "Gondwana.WinForms.Hosting.WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", null ]
         ] ]
       ] ],
-      [ "Gondwana.Hosting.SplashScreen", "classGondwana_1_1Hosting_1_1SplashScreen.html", null ],
       [ "Gondwana.Input.Touch.Gestures.PinchGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html", null ],
       [ "Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html", null ],
       [ "Gondwana.Input.Touch.Gestures.TapGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TapGestureRecognizer.html", null ],
-      [ "Gondwana.Movement.MovementController", "classGondwana_1_1Movement_1_1MovementController.html", null ],
+      [ "Gondwana.Physics.Movement.MovementController", "classGondwana_1_1Physics_1_1Movement_1_1MovementController.html", null ],
       [ "Gondwana.Rendering.Backbuffers.BackbufferBase", "classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html", [
         [ "Gondwana.Rendering.Backbuffers.BitmapBackbuffer", "classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html", null ],
         [ "Gondwana.Rendering.Backbuffers.GpuBackbuffer", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html", null ]
@@ -171,10 +177,10 @@ var hierarchy =
       [ "Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html", null ],
       [ "Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html", null ]
     ] ],
-    [ "Gondwana.Movement.IMovable", "interfaceGondwana_1_1Movement_1_1IMovable.html", [
+    [ "Gondwana.Physics.Movement.IMovable", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html", [
       [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", null ],
       [ "Gondwana.Drawing.Direct.DirectDrawingMovableBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html", null ],
-      [ "Gondwana.Movement.IMovableOnSceneLayer", "interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer.html", [
+      [ "Gondwana.Physics.Movement.IMovableOnSceneLayer", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html", [
         [ "Gondwana.Drawing.Sprites.CompositeSprite", "classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html", null ]
       ] ]
     ] ],
@@ -204,7 +210,7 @@ var hierarchy =
     [ "Gondwana.Input.Keyboard.KeyboardEventPoller", "classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html", null ],
     [ "Gondwana.Input.Mouse.MouseButtonState", "structGondwana_1_1Input_1_1Mouse_1_1MouseButtonState.html", null ],
     [ "Gondwana.Input.Mouse.MouseEventPoller", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html", null ],
-    [ "Gondwana.Movement.MovementState", "structGondwana_1_1Movement_1_1MovementState.html", null ],
+    [ "Gondwana.Physics.Movement.MovementState", "structGondwana_1_1Physics_1_1Movement_1_1MovementState.html", null ],
     [ "OpenGlControlBase", null, [
       [ "Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html", null ]
     ] ],
@@ -218,18 +224,12 @@ var hierarchy =
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html", null ]
     ] ],
     [ "Gondwana.Rendering.RenderSurfaceAdapterResizedEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html", null ],
-    [ "Gondwana.StudioAssets.SceneAsset", "classGondwana_1_1StudioAssets_1_1SceneAsset.html", null ],
-    [ "Gondwana.StudioAssets.SceneColliderAsset", "classGondwana_1_1StudioAssets_1_1SceneColliderAsset.html", null ],
-    [ "Gondwana.StudioAssets.SceneEntityAsset", "classGondwana_1_1StudioAssets_1_1SceneEntityAsset.html", null ],
-    [ "Gondwana.StudioAssets.SceneLayerAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerAsset.html", null ],
-    [ "Gondwana.StudioAssets.SceneLayerTileAsset", "classGondwana_1_1StudioAssets_1_1SceneLayerTileAsset.html", null ],
-    [ "Gondwana.Movement.Scripted.ScriptedMovement", "structGondwana_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", null ],
+    [ "Gondwana.Physics.Movement.Scripted.ScriptedMovement", "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html", null ],
+    [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSource", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetImageDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetMaskDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetMaskDefinition.html", null ],
-    [ "Gondwana.StudioAssets.TilesheetMetadataAsset", "classGondwana_1_1StudioAssets_1_1TilesheetMetadataAsset.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html", null ],
-    [ "Gondwana.StudioAssets.TilesheetTileNameAsset", "classGondwana_1_1StudioAssets_1_1TilesheetTileNameAsset.html", null ],
     [ "UserControl", null, [
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html", null ]

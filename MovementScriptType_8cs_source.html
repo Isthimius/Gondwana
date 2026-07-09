@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Movement/Scripted/MovementScriptType.cs Source File</title>
+<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Physics/Movement/Scripted/MovementScriptType.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -101,30 +101,30 @@ $(document).ready(function(){initNavTree('MovementScriptType_8cs_source.html',''
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="foldopen" id="foldopen00001" data-start="{" data-end="}">
-<div class="line"><a id="l00001" name="l00001"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Movement_1_1Scripted.html">    1</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Movement_1_1Scripted.html">Gondwana.Movement.Scripted</a>;</div>
+<div class="line"><a id="l00001" name="l00001"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html">    1</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html">Gondwana.Physics.Movement.Scripted</a>;</div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58ceb">    7</a></span><span class="keyword">public</span> <span class="keyword">enum</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58ceb">MovementScriptType</a></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9">    7</a></span><span class="keyword">public</span> <span class="keyword">enum</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9">MovementScriptType</a></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58ceba6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9a6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b">TweenTo</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9a8ce0528236865666054bae9a73851e0b">TweenTo</a>,</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562">Toward</a></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_enumvalue" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9acb0fb3355876c0965909ba98ea6fe562">Toward</a></div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
 </div>
 </div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_1_1Scripted_html"><div class="ttname"><a href="namespaceGondwana_1_1Movement_1_1Scripted.html">Gondwana.Movement.Scripted</a></div><div class="ttdef"><b>Definition</b> <a href="MovementScriptType_8cs_source.html#l00001">MovementScriptType.cs:1</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_1_1Scripted_html_acceea70f10f67dacd1575f3bc3e58ceb"><div class="ttname"><a href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58ceb">Gondwana.Movement.Scripted.MovementScriptType</a></div><div class="ttdeci">MovementScriptType</div><div class="ttdoc">Defines the type of scripted movement behavior applied to an object. Movement scripts control how an ...</div><div class="ttdef"><b>Definition</b> <a href="MovementScriptType_8cs_source.html#l00007">MovementScriptType.cs:8</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_1_1Scripted_html_acceea70f10f67dacd1575f3bc3e58ceba6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58ceba6adf97f83acf6453d4a6a4b1070f3754">Gondwana.Movement.Scripted.MovementScriptType.None</a></div><div class="ttdeci">@ None</div><div class="ttdoc">No movement script is active. The object is not being controlled by any scripted movement behavior an...</div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_1_1Scripted_html_acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b"><div class="ttname"><a href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58ceba8ce0528236865666054bae9a73851e0b">Gondwana.Movement.Scripted.MovementScriptType.TweenTo</a></div><div class="ttdeci">@ TweenTo</div><div class="ttdoc">Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...</div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_1_1Scripted_html_acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562"><div class="ttname"><a href="namespaceGondwana_1_1Movement_1_1Scripted.html#acceea70f10f67dacd1575f3bc3e58cebacb0fb3355876c0965909ba98ea6fe562">Gondwana.Movement.Scripted.MovementScriptType.Toward</a></div><div class="ttdeci">@ Toward</div><div class="ttdoc">Continuous movement toward a target position or object. The object moves in the direction of the targ...</div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_1_1Scripted_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html">Gondwana.Physics.Movement.Scripted</a></div><div class="ttdef"><b>Definition</b> <a href="MovementScriptType_8cs_source.html#l00001">MovementScriptType.cs:1</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_1_1Scripted_html_abc873a0915213132165401dfcbee98d9"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9">Gondwana.Physics.Movement.Scripted.MovementScriptType</a></div><div class="ttdeci">MovementScriptType</div><div class="ttdoc">Defines the type of scripted movement behavior applied to an object. Movement scripts control how an ...</div><div class="ttdef"><b>Definition</b> <a href="MovementScriptType_8cs_source.html#l00007">MovementScriptType.cs:8</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_1_1Scripted_html_abc873a0915213132165401dfcbee98d9a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9a6adf97f83acf6453d4a6a4b1070f3754">Gondwana.Physics.Movement.Scripted.MovementScriptType.None</a></div><div class="ttdeci">@ None</div><div class="ttdoc">No movement script is active. The object is not being controlled by any scripted movement behavior an...</div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_1_1Scripted_html_abc873a0915213132165401dfcbee98d9a8ce0528236865666054bae9a73851e0b"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9a8ce0528236865666054bae9a73851e0b">Gondwana.Physics.Movement.Scripted.MovementScriptType.TweenTo</a></div><div class="ttdeci">@ TweenTo</div><div class="ttdoc">Tween-based movement to a target position or state over a fixed duration. The object interpolates smo...</div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_1_1Scripted_html_abc873a0915213132165401dfcbee98d9acb0fb3355876c0965909ba98ea6fe562"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9acb0fb3355876c0965909ba98ea6fe562">Gondwana.Physics.Movement.Scripted.MovementScriptType.Toward</a></div><div class="ttdeci">@ Toward</div><div class="ttdoc">Continuous movement toward a target position or object. The object moves in the direction of the targ...</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_ea870575ede3c854b7e22ce038f8df85.html">Movement</a></li><li class="navelem"><a class="el" href="dir_8ec4ac35df97529cf0320b7d558fa73e.html">Scripted</a></li><li class="navelem"><b>MovementScriptType.cs</b></li>
+    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_6cfc059161883a9198bcde9e9fda3eda.html">Physics</a></li><li class="navelem"><a class="el" href="dir_2b5588618a0d6cd4f77cfb9c3e10137d.html">Movement</a></li><li class="navelem"><a class="el" href="dir_bf20dc58686982ba27e2b4b9de267ad9.html">Scripted</a></li><li class="navelem"><b>MovementScriptType.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -109,9 +109,12 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectComposite:</div>
  <div class="center">
   <img src="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.png" usemap="#Gondwana.Drawing.Direct.DirectComposite_map" alt=""/>
   <map id="Gondwana.Drawing.Direct.DirectComposite_map" name="Gondwana.Drawing.Direct.DirectComposite_map">
-<area href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="133,56,390,80"/>
-<area href="interfaceGondwana_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space." alt="Gondwana.Movement.IMovable" shape="rect" coords="400,56,657,80"/>
-<area href="interfaceGondwana_1_1Drawing_1_1IDrawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,257,24"/>
+<area href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="134,56,393,80"/>
+<area href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space." alt="Gondwana.Physics.Movement.IMovable" shape="rect" coords="403,56,662,80"/>
+<area href="interfaceGondwana_1_1Drawing_1_1IDrawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,259,24"/>
+<area href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Base type for reusable Gondwana widgets built on top of DirectComposite." alt="Gondwana.Widgets.WidgetBase" shape="rect" coords="269,168,528,192"/>
+<area href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html" title="Base type for widgets that support dragging." alt="Gondwana.Widgets.DraggableWidgetBase" shape="rect" coords="134,224,393,248"/>
+<area href="classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html" alt="Gondwana.Widgets.Overlays.SplashScreen" shape="rect" coords="403,224,662,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -168,9 +171,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1c378aca67154b33899a54046c7c779c" id="r_a1c378aca67154b33899a54046c7c779c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a1c378aca67154b33899a54046c7c779c">Update</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">long</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">tick</a>)</td></tr>
 <tr class="memdesc:a1c378aca67154b33899a54046c7c779c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the composite's movement controller based on the current tick.  <br /></td></tr>
 <tr class="separator:a1c378aca67154b33899a54046c7c779c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad4bc74ed89448160f8dbe1c16349324" id="r_aad4bc74ed89448160f8dbe1c16349324"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#aad4bc74ed89448160f8dbe1c16349324">Dispose</a> ()</td></tr>
-<tr class="memdesc:aad4bc74ed89448160f8dbe1c16349324"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the composite and disposes all child drawables.  <br /></td></tr>
-<tr class="separator:aad4bc74ed89448160f8dbe1c16349324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4a9dddd84ec27a3a4701275077ef3e7" id="r_ab4a9dddd84ec27a3a4701275077ef3e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Dispose</a> ()</td></tr>
+<tr class="memdesc:ab4a9dddd84ec27a3a4701275077ef3e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the composite and disposes all child drawables.  <br /></td></tr>
+<tr class="separator:ab4a9dddd84ec27a3a4701275077ef3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -183,7 +186,7 @@ Properties</h2></td></tr>
 <tr class="memitem:a12b490664f46833817ba6673cf18faed" id="r_a12b490664f46833817ba6673cf18faed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">ReadOnlyCollection</a>&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a12b490664f46833817ba6673cf18faed">Children</a><code> [get]</code></td></tr>
 <tr class="memdesc:a12b490664f46833817ba6673cf18faed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the read-only collection of child drawable items in this composite.  <br /></td></tr>
 <tr class="separator:a12b490664f46833817ba6673cf18faed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0b5af141d3d7aa6cba95de8158f4863" id="r_ac0b5af141d3d7aa6cba95de8158f4863"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Movement_1_1MovementController.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ac0b5af141d3d7aa6cba95de8158f4863">Movement</a><code> [get]</code></td></tr>
+<tr class="memitem:ac0b5af141d3d7aa6cba95de8158f4863" id="r_ac0b5af141d3d7aa6cba95de8158f4863"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Physics_1_1Movement_1_1MovementController.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ac0b5af141d3d7aa6cba95de8158f4863">Movement</a><code> [get]</code></td></tr>
 <tr class="memdesc:ac0b5af141d3d7aa6cba95de8158f4863"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement controller for animating the composite's position.  <br /></td></tr>
 <tr class="separator:ac0b5af141d3d7aa6cba95de8158f4863"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c0340512fbb1766a41407c56ba1279c" id="r_a8c0340512fbb1766a41407c56ba1279c"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a8c0340512fbb1766a41407c56ba1279c">ScreenBounds</a><code> [get]</code></td></tr>
@@ -192,7 +195,7 @@ Properties</h2></td></tr>
 <tr class="memitem:a814c4952d4e4ede9a874e0b94edf74ff" id="r_a814c4952d4e4ede9a874e0b94edf74ff"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a814c4952d4e4ede9a874e0b94edf74ff">WorldBounds</a><code> [get]</code></td></tr>
 <tr class="memdesc:a814c4952d4e4ede9a874e0b94edf74ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bounding rectangle that encompasses all visible children in world coordinates.  <br /></td></tr>
 <tr class="separator:a814c4952d4e4ede9a874e0b94edf74ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad38e0285605825ffe181f98ba74daef8" id="r_ad38e0285605825ffe181f98ba74daef8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341d">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad38e0285605825ffe181f98ba74daef8">PositionSpace</a><code> [get]</code></td></tr>
+<tr class="memitem:ad38e0285605825ffe181f98ba74daef8" id="r_ad38e0285605825ffe181f98ba74daef8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad38e0285605825ffe181f98ba74daef8">PositionSpace</a><code> [get]</code></td></tr>
 <tr class="memdesc:ad38e0285605825ffe181f98ba74daef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position space used by this composite. Always returns MovementSpace.Pixel.  <br /></td></tr>
 <tr class="separator:ad38e0285605825ffe181f98ba74daef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8856372ce0b37bfa7e3520340641506f" id="r_a8856372ce0b37bfa7e3520340641506f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Guid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a8856372ce0b37bfa7e3520340641506f">Id</a> = Guid.NewGuid()<code> [get]</code></td></tr>
@@ -209,7 +212,7 @@ Properties</h2></td></tr>
 <tr class="separator:a9bc671772e89d1143051d73c3e88078c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header properties_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html">Gondwana.Drawing.Direct.IDirectDrawable</a></td></tr>
 <tr class="inherit_header properties_interfaceGondwana_1_1Drawing_1_1IDrawable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Drawing_1_1IDrawable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html">Gondwana.Drawing.IDrawable</a></td></tr>
-<tr class="inherit_header properties_interfaceGondwana_1_1Movement_1_1IMovable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Movement_1_1IMovable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Movement_1_1IMovable.html">Gondwana.Movement.IMovable</a></td></tr>
+<tr class="inherit_header properties_interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html">Gondwana.Physics.Movement.IMovable</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
@@ -349,24 +352,34 @@ Events</h2></td></tr>
 
 </div>
 </div>
-<a id="aad4bc74ed89448160f8dbe1c16349324" name="aad4bc74ed89448160f8dbe1c16349324"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad4bc74ed89448160f8dbe1c16349324">&#9670;&#160;</a></span>Dispose()</h2>
+<a id="ab4a9dddd84ec27a3a4701275077ef3e7" name="ab4a9dddd84ec27a3a4701275077ef3e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4a9dddd84ec27a3a4701275077ef3e7">&#9670;&#160;</a></span>Dispose()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Drawing.Direct.DirectComposite.Dispose </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Drawing.Direct.DirectComposite.Dispose </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Releases all resources used by the composite and disposes all child drawables. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00508">508</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a6860bfb2146c3930e7325779044c0a3e">Gondwana.Widgets.Overlays.SplashScreen</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00510">510</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -436,7 +449,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00466">466</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00468">468</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -465,7 +478,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00479">479</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00481">481</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -505,7 +518,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00453">453</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00455">455</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -558,7 +571,7 @@ Events</h2></td></tr>
 <p>Gets the current anchor position of the composite in pixels. </p>
 <dl class="section return"><dt>Returns</dt><dd>The anchor position as a Vector2.</dd></dl>
 
-<p>Implements <a class="el" href="interfaceGondwana_1_1Movement_1_1IMovable.html#a277dd28e3a5e5eb48235baba05437a65">Gondwana.Movement.IMovable</a>.</p>
+<p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#a99f6693c0559ff7909c3c16f7940042e">Gondwana.Physics.Movement.IMovable</a>.</p>
 
 </div>
 </div>
@@ -616,7 +629,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00435">435</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00437">437</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -685,7 +698,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00422">422</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00424">424</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -753,7 +766,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="interfaceGondwana_1_1Movement_1_1IMovable.html#a0c95ba0fddb24cf1adc6ca07ae705633">Gondwana.Movement.IMovable</a>.</p>
+<p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#aca8b41148697de4ccbe6f01d3bfda765">Gondwana.Physics.Movement.IMovable</a>.</p>
 
 </div>
 </div>
@@ -782,7 +795,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00409">409</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00411">411</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -812,7 +825,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#a5029de36d13fc531afd74430035a5133">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00495">495</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00497">497</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -909,7 +922,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classGondwana_1_1Movement_1_1MovementController.html">MovementController</a> Gondwana.Drawing.Direct.DirectComposite.Movement</td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Physics_1_1Movement_1_1MovementController.html">MovementController</a> Gondwana.Drawing.Direct.DirectComposite.Movement</td>
         </tr>
       </table>
   </td>
@@ -963,7 +976,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceGondwana_1_1Movement.html#a49b5fa80f99283d647bd189725d7341d">MovementSpace</a> Gondwana.Drawing.Direct.DirectComposite.PositionSpace</td>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a> Gondwana.Drawing.Direct.DirectComposite.PositionSpace</td>
         </tr>
       </table>
   </td>
@@ -975,7 +988,7 @@ Events</h2></td></tr>
 
 <p>Gets the position space used by this composite. Always returns MovementSpace.Pixel. </p>
 
-<p>Implements <a class="el" href="interfaceGondwana_1_1Movement_1_1IMovable.html#a827e9b8e9a80f237c951e6b2fe550dbf">Gondwana.Movement.IMovable</a>.</p>
+<p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#ae0463d4183646dba328acbb1b5f568e6">Gondwana.Physics.Movement.IMovable</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00182">182</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 

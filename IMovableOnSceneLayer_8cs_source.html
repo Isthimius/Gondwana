@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Movement/IMovableOnSceneLayer.cs Source File</title>
+<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Physics/Movement/IMovableOnSceneLayer.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -102,25 +102,25 @@ $(document).ready(function(){initNavTree('IMovableOnSceneLayer_8cs_source.html',
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">using </span><a class="code hl_namespace" href="namespaceGondwana_1_1Scenes.html">Gondwana.Scenes</a>;</div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Movement.html">Gondwana.Movement</a>;</div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Physics_1_1Movement.html">Gondwana.Physics.Movement</a>;</div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="foldopen" id="foldopen00006" data-start="{" data-end="};">
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer.html">    6</a></span><span class="keyword">public</span> <span class="keyword">interface </span><a class="code hl_interface" href="interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> : <a class="code hl_interface" href="interfaceGondwana_1_1Movement_1_1IMovable.html">IMovable</a></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">    6</a></span><span class="keyword">public</span> <span class="keyword">interface </span><a class="code hl_interface" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> : <a class="code hl_interface" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html">IMovable</a></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer.html#acc913da83d6dc6c28eed6b66b1c1f981">   12</a></span>    <a class="code hl_class" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> <a class="code hl_class" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html#abef42a9b1ba7e2d64ba541efe04463d0">   12</a></span>    <a class="code hl_class" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> <a class="code hl_class" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> { <span class="keyword">get</span>; }</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Scenes_1_1SceneLayer_html"><div class="ttname"><a href="classGondwana_1_1Scenes_1_1SceneLayer.html">Gondwana.Scenes.SceneLayer</a></div><div class="ttdoc">Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...</div><div class="ttdef"><b>Definition</b> <a href="SceneLayer_8cs_source.html#l00038">SceneLayer.cs:39</a></div></div>
-<div class="ttc" id="ainterfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer_html"><div class="ttname"><a href="interfaceGondwana_1_1Movement_1_1IMovableOnSceneLayer.html">Gondwana.Movement.IMovableOnSceneLayer</a></div><div class="ttdoc">Implemented by grid-space IMovable objects that belong to a specific Scenes.SceneLayer.</div><div class="ttdef"><b>Definition</b> <a href="IMovableOnSceneLayer_8cs_source.html#l00006">IMovableOnSceneLayer.cs:7</a></div></div>
-<div class="ttc" id="ainterfaceGondwana_1_1Movement_1_1IMovable_html"><div class="ttname"><a href="interfaceGondwana_1_1Movement_1_1IMovable.html">Gondwana.Movement.IMovable</a></div><div class="ttdoc">Defines an object that can be moved within a specific coordinate space.</div><div class="ttdef"><b>Definition</b> <a href="IMovable_8cs_source.html#l00011">IMovable.cs:12</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Movement_html"><div class="ttname"><a href="namespaceGondwana_1_1Movement.html">Gondwana.Movement</a></div><div class="ttdef"><b>Definition</b> <a href="EasingFunctions_8cs_source.html#l00001">EasingFunctions.cs:1</a></div></div>
+<div class="ttc" id="ainterfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer_html"><div class="ttname"><a href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">Gondwana.Physics.Movement.IMovableOnSceneLayer</a></div><div class="ttdoc">Implemented by grid-space IMovable objects that belong to a specific Scenes.SceneLayer.</div><div class="ttdef"><b>Definition</b> <a href="IMovableOnSceneLayer_8cs_source.html#l00006">IMovableOnSceneLayer.cs:7</a></div></div>
+<div class="ttc" id="ainterfaceGondwana_1_1Physics_1_1Movement_1_1IMovable_html"><div class="ttname"><a href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html">Gondwana.Physics.Movement.IMovable</a></div><div class="ttdoc">Defines an object that can be moved within a specific coordinate space.</div><div class="ttdef"><b>Definition</b> <a href="IMovable_8cs_source.html#l00011">IMovable.cs:12</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Movement_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Movement.html">Gondwana.Physics.Movement</a></div><div class="ttdef"><b>Definition</b> <a href="EasingFunctions_8cs_source.html#l00001">EasingFunctions.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Scenes_html"><div class="ttname"><a href="namespaceGondwana_1_1Scenes.html">Gondwana.Scenes</a></div><div class="ttdef"><b>Definition</b> <a href="Scene_8cs_source.html#l00008">Scene.cs:8</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_ea870575ede3c854b7e22ce038f8df85.html">Movement</a></li><li class="navelem"><b>IMovableOnSceneLayer.cs</b></li>
+    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_6cfc059161883a9198bcde9e9fda3eda.html">Physics</a></li><li class="navelem"><a class="el" href="dir_2b5588618a0d6cd4f77cfb9c3e10137d.html">Movement</a></li><li class="navelem"><b>IMovableOnSceneLayer.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

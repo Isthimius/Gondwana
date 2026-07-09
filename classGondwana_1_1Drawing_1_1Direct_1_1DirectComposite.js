@@ -3,7 +3,7 @@ var classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite =
     [ "DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ac1d38db515a995009946ec6c9ad1ff42", null ],
     [ "Add", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a51b1ee1c45972f9b99da4bbcde99e567", null ],
     [ "Clear", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a2cc588bc90fa2cf40c3d15318377660a", null ],
-    [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#aad4bc74ed89448160f8dbe1c16349324", null ],
+    [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7", null ],
     [ "Draw", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad03af0f91fcf18bbf7b4a791ba753518", null ],
     [ "FadeIn", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a42e9c50bacafef622c3ce6482b834b08", null ],
     [ "FadeOut", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a68ca0daeda4cb67d54548842caff84f3", null ],

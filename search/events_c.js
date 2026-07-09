@@ -1,10 +1,14 @@
 var searchData=
 [
-  ['renderbackbufferbegin_0',['RenderBackbufferBegin',['../classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#adbd585d2a9ebe5f4224fd621ad2c72eb',1,'Gondwana::Rendering::RenderSurfaceHost']]],
-  ['renderbackbufferend_1',['RenderBackbufferEnd',['../classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a67f94f0c04700627f1f85fa5b7927eee',1,'Gondwana::Rendering::RenderSurfaceHost']]],
-  ['renderbackbuffernoop_2',['RenderBackbufferNoOp',['../classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#acfa3a199fe952ad768ce944219d40ac2',1,'Gondwana::Rendering::RenderSurfaceHost']]],
-  ['renderbackbufferpostscene_3',['RenderBackbufferPostScene',['../classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a151554f182dd08531fd615f01e0e1272',1,'Gondwana::Rendering::RenderSurfaceHost']]],
-  ['resizecomplete_4',['ResizeComplete',['../classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#af86cda257f1816701516db876fc64453',1,'Gondwana::Drawing::Sprites::Sprite']]],
-  ['resized_5',['Resized',['../classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#aec240b322b995ec0cdf4fca485cfba47',1,'Gondwana::Rendering::RenderSurfaceAdapterBase']]],
-  ['resizerequested_6',['ResizeRequested',['../classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html#a5885f063b10616e588a6aebe938c2ad5',1,'Gondwana::WinForms::Rendering::WinFormGpuRenderSurfaceAdapter']]]
+  ['parallaxchanged_0',['ParallaxChanged',['../classGondwana_1_1Scenes_1_1SceneLayer.html#aa6430a168f54a55f6c8ff0c92cce2ffa',1,'Gondwana::Scenes::SceneLayer']]],
+  ['paused_1',['paused',['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html#aae6530fb0a5d8999473ceaee12379d28',1,'Gondwana.Video.IVideoPlayer.Paused'],['../classGondwana_1_1Video_1_1VlcVideoPlayer.html#ace51acd0e3dc454abb7b3340cf64d3dc',1,'Gondwana.Video.VlcVideoPlayer.Paused']]],
+  ['pinchupdated_2',['PinchUpdated',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#a9db28285041f19812c3118d16f1a9df5',1,'Gondwana::Input::Touch::Gestures::PinchGestureRecognizer']]],
+  ['playbackcompleted_3',['PlaybackCompleted',['../classGondwana_1_1Audio_1_1AudioResource.html#ab3095f4f58ab095465ba6581fd3a787d',1,'Gondwana::Audio::AudioResource']]],
+  ['pointerclick_4',['PointerClick',['../classGondwana_1_1Widgets_1_1WidgetBase.html#a868e0fcbe538f507ee9a487c3f436716',1,'Gondwana::Widgets::WidgetBase']]],
+  ['pointerdown_5',['PointerDown',['../classGondwana_1_1Widgets_1_1WidgetBase.html#ae48d553576775ae52043bcf7ab5818d8',1,'Gondwana::Widgets::WidgetBase']]],
+  ['pointerenter_6',['PointerEnter',['../classGondwana_1_1Widgets_1_1WidgetBase.html#a45c142d53bc5e517229b5211902349cd',1,'Gondwana::Widgets::WidgetBase']]],
+  ['pointerleave_7',['PointerLeave',['../classGondwana_1_1Widgets_1_1WidgetBase.html#adee78f4b82ced82d1034664cdd2aa6d2',1,'Gondwana::Widgets::WidgetBase']]],
+  ['pointerup_8',['PointerUp',['../classGondwana_1_1Widgets_1_1WidgetBase.html#ab4db125565549fa2fee88a3476cafff5',1,'Gondwana::Widgets::WidgetBase']]],
+  ['postinitialization_9',['PostInitialization',['../classGondwana_1_1Engine.html#a4880475a941f9c9cf1a72aaee207c443',1,'Gondwana::Engine']]],
+  ['preinitialization_10',['PreInitialization',['../classGondwana_1_1Engine.html#aae919c657e9096bec3306b8669d0da14',1,'Gondwana::Engine']]]
 ];

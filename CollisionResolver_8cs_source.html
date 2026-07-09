@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Collisions/CollisionResolver.cs Source File</title>
+<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Physics/Collisions/CollisionResolver.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -102,7 +102,7 @@ $(document).ready(function(){initNavTree('CollisionResolver_8cs_source.html','')
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">using </span>System.Drawing;</div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Collisions.html">Gondwana.Collisions</a>;</div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Physics_1_1Collisions.html">Gondwana.Physics.Collisions</a>;</div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">internal</span> <span class="keyword">sealed</span> <span class="keyword">class </span>CollisionResolver</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
@@ -156,7 +156,7 @@ $(document).ready(function(){initNavTree('CollisionResolver_8cs_source.html','')
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="comment">// Trigger collisions: report only, no push-out.</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">if</span> (mover.ResponseType == <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#af0ee70eb3a5b26e4d773bec1e5e128ee">CollisionResponseType</a>.Trigger || otherCollider.ResponseType == <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#af0ee70eb3a5b26e4d773bec1e5e128ee">CollisionResponseType</a>.Trigger)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">if</span> (mover.ResponseType == <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a37c66388b8160dcd6146a1a759e987a5">CollisionResponseType</a>.Trigger || otherCollider.ResponseType == <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a37c66388b8160dcd6146a1a759e987a5">CollisionResponseType</a>.Trigger)</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            {</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                TriggerOverlap?.Invoke(mover, otherCollider, overlap);</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                <span class="keywordflow">continue</span>;</div>
@@ -176,12 +176,12 @@ $(document).ready(function(){initNavTree('CollisionResolver_8cs_source.html','')
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">if</span> (overlap.Width &lt; overlap.Height)</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            {</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                dx = (centerX &lt; otherCenterX) ? -overlap.Width : overlap.Width;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                dx = centerX &lt; otherCenterX ? -overlap.Width : overlap.Width;</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                hitX = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            }</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            {</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                dy = (centerY &lt; otherCenterY) ? -overlap.Height : overlap.Height;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                dy = centerY &lt; otherCenterY ? -overlap.Height : overlap.Height;</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                hitY = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            }</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
@@ -205,15 +205,15 @@ $(document).ready(function(){initNavTree('CollisionResolver_8cs_source.html','')
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        }</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
-<div class="ttc" id="anamespaceGondwana_1_1Collisions_html"><div class="ttname"><a href="namespaceGondwana_1_1Collisions.html">Gondwana.Collisions</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Collisions_html_af0ee70eb3a5b26e4d773bec1e5e128ee"><div class="ttname"><a href="namespaceGondwana_1_1Collisions.html#af0ee70eb3a5b26e4d773bec1e5e128ee">Gondwana.Collisions.CollisionResponseType</a></div><div class="ttdeci">CollisionResponseType</div><div class="ttdoc">Defines how a collider responds to collisions with other colliders.</div><div class="ttdef"><b>Definition</b> <a href="CollisionResponseType_8cs_source.html#l00010">CollisionResponseType.cs:11</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Direct_1_1Particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdoc">Particles are spawned uniformly within a rectangular area. This is the default distribution.</div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Collisions_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Collisions.html">Gondwana.Physics.Collisions</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Collisions_html_a37c66388b8160dcd6146a1a759e987a5"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Collisions.html#a37c66388b8160dcd6146a1a759e987a5">Gondwana.Physics.Collisions.CollisionResponseType</a></div><div class="ttdeci">CollisionResponseType</div><div class="ttdoc">Defines how a collider responds to collisions with other colliders.</div><div class="ttdef"><b>Definition</b> <a href="CollisionResponseType_8cs_source.html#l00010">CollisionResponseType.cs:11</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_b854cae5618f7f7fa15ebfd67baaf825.html">Collisions</a></li><li class="navelem"><b>CollisionResolver.cs</b></li>
+    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_6cfc059161883a9198bcde9e9fda3eda.html">Physics</a></li><li class="navelem"><a class="el" href="dir_cd6852be43855819ec3c40f324e6d19e.html">Collisions</a></li><li class="navelem"><b>CollisionResolver.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

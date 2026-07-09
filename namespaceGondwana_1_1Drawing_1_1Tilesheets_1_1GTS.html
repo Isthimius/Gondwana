@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -93,7 +93,8 @@ $(document).ready(function(){initNavTree('namespaceGondwana_1_1Drawing_1_1Tilesh
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">Gondwana.Drawing.Tilesheets.GTS Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -106,6 +107,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>TilesheetDefinitionSerializer</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides loading and saving helpers for <a class="el" href="namespaceGondwana.html">Gondwana</a> tilesheet definition (.gts) files. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html">TilesheetDefinitionSource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures provenance details for a tilesheet definition.  <a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html">TilesheetImageDefinition</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the image source definition for a tilesheet, specifying where the image data can be loaded from.  <a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,7 +119,42 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html">TilesheetRegionDefinition</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a rectangular region within a tilesheet, including its location, tile dimensions, and spacing parameters.  <a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:af1de729cc67cf81e370c5f82aee35630" id="r_af1de729cc67cf81e370c5f82aee35630"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630">TilesheetDefinitionSourceKind</a> { <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630a1b6a597f499a174695074341ea7a2cf6">LooseDefinitionFile</a> = 1
+, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630a89e42ca2f7d2fa6981f4fcc9df275297">PackedDefinitionFile</a> = 2
+, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630a5c5f06440fcb85cd5c8cfafe32e34b78">Generated</a> = 3
+ }</td></tr>
+<tr class="memdesc:af1de729cc67cf81e370c5f82aee35630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates where a tilesheet definition came from.  <a href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630">More...</a><br /></td></tr>
+<tr class="separator:af1de729cc67cf81e370c5f82aee35630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="af1de729cc67cf81e370c5f82aee35630" name="af1de729cc67cf81e370c5f82aee35630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1de729cc67cf81e370c5f82aee35630">&#9670;&#160;</a></span>TilesheetDefinitionSourceKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630">Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSourceKind</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indicates where a tilesheet definition came from. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af1de729cc67cf81e370c5f82aee35630a6adf97f83acf6453d4a6a4b1070f3754" name="af1de729cc67cf81e370c5f82aee35630a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af1de729cc67cf81e370c5f82aee35630a1b6a597f499a174695074341ea7a2cf6" name="af1de729cc67cf81e370c5f82aee35630a1b6a597f499a174695074341ea7a2cf6"></a>LooseDefinitionFile&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af1de729cc67cf81e370c5f82aee35630a89e42ca2f7d2fa6981f4fcc9df275297" name="af1de729cc67cf81e370c5f82aee35630a89e42ca2f7d2fa6981f4fcc9df275297"></a>PackedDefinitionFile&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af1de729cc67cf81e370c5f82aee35630a5c5f06440fcb85cd5c8cfafe32e34b78" name="af1de729cc67cf81e370c5f82aee35630a5c5f06440fcb85cd5c8cfafe32e34b78"></a>Generated&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetDefinitionSource_8cs_source.html#l00102">102</a> of file <a class="el" href="TilesheetDefinitionSource_8cs_source.html">TilesheetDefinitionSource.cs</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

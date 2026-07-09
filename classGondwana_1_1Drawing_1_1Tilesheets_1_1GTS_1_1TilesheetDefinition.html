@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -119,6 +119,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a550414ee4974718ea4321ae2e4ab4f2d" id="r_a550414ee4974718ea4321ae2e4ab4f2d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html#a550414ee4974718ea4321ae2e4ab4f2d">PremultiplyAlpha</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a550414ee4974718ea4321ae2e4ab4f2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether alpha should be premultiplied when loading the tilesheet image.  <br /></td></tr>
 <tr class="separator:a550414ee4974718ea4321ae2e4ab4f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dec06e6e8ba91b6be1e2c6da1540971" id="r_a8dec06e6e8ba91b6be1e2c6da1540971"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html">TilesheetDefinitionSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html#a8dec06e6e8ba91b6be1e2c6da1540971">Source</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a8dec06e6e8ba91b6be1e2c6da1540971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the provenance metadata for where this definition came from.  <br /></td></tr>
+<tr class="separator:a8dec06e6e8ba91b6be1e2c6da1540971"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the root definition of a tilesheet in the GTS (<a class="el" href="namespaceGondwana.html">Gondwana</a> Tilesheet) file format. </p>
@@ -147,7 +150,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the image definition that specifies the source image for the tilesheet. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00016">16</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00018">18</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -173,7 +176,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the mask definition for color transparency, or <code>null</code> if no mask is applied. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00026">26</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00028">28</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -199,7 +202,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the name of the tilesheet. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00011">11</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00013">13</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -225,7 +228,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets a value indicating whether alpha should be premultiplied when loading the tilesheet image. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00031">31</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00033">33</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -251,7 +254,33 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the list of region definitions that define subdivisions within the tilesheet. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00021">21</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00023">23</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="a8dec06e6e8ba91b6be1e2c6da1540971" name="a8dec06e6e8ba91b6be1e2c6da1540971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dec06e6e8ba91b6be1e2c6da1540971">&#9670;&#160;</a></span>Source</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html">TilesheetDefinitionSource</a> Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinition.Source</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the provenance metadata for where this definition came from. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetDefinition_8cs_source.html#l00038">38</a> of file <a class="el" href="TilesheetDefinition_8cs_source.html">TilesheetDefinition.cs</a>.</p>
 
 </div>
 </div>

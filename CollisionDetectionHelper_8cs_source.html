@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Collisions/CollisionDetectionHelper.cs Source File</title>
+<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana/Physics/Collisions/CollisionDetectionHelper.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -100,11 +100,11 @@ $(document).ready(function(){initNavTree('CollisionDetectionHelper_8cs_source.ht
   <div class="headertitle"><div class="title">CollisionDetectionHelper.cs</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Collisions.html">Gondwana.Collisions</a>;</div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Physics_1_1Collisions.html">Gondwana.Physics.Collisions</a>;</div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class </span>CollisionDirectionHelper</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a> FromCenters(Aabb primary, Aabb other)</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a> FromCenters(Aabb primary, Aabb other)</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    {</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        var pc = primary.Center;</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        var oc = other.Center;</div>
@@ -121,28 +121,28 @@ $(document).ready(function(){initNavTree('CollisionDetectionHelper_8cs_source.ht
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordtype">bool</span> north = dy &lt; -eps;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">if</span> (!east &amp;&amp; !west &amp;&amp; !north &amp;&amp; !south)</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.Center;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.Center;</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">if</span> (north &amp;&amp; !east &amp;&amp; !west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.N;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span> (north &amp;&amp; east) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.NE;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (!north &amp;&amp; !south &amp;&amp; east) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.E;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> (south &amp;&amp; east) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.SE;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (south &amp;&amp; !east &amp;&amp; !west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.S;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">if</span> (south &amp;&amp; west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.SW;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span> (!north &amp;&amp; !south &amp;&amp; west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.W;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">if</span> (north &amp;&amp; west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.NW;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">if</span> (north &amp;&amp; !east &amp;&amp; !west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.N;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span> (north &amp;&amp; east) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.NE;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (!north &amp;&amp; !south &amp;&amp; east) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.E;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> (south &amp;&amp; east) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.SE;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (south &amp;&amp; !east &amp;&amp; !west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.S;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">if</span> (south &amp;&amp; west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.SW;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span> (!north &amp;&amp; !south &amp;&amp; west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.W;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">if</span> (north &amp;&amp; west) <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.NW;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">CollisionDirectionFrom</a>.Center;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">CollisionDirectionFrom</a>.Center;</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
-<div class="ttc" id="anamespaceGondwana_1_1Collisions_html"><div class="ttname"><a href="namespaceGondwana_1_1Collisions.html">Gondwana.Collisions</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Collisions_html_a5a0b3f45dd9c1c22983d001f75845c34"><div class="ttname"><a href="namespaceGondwana_1_1Collisions.html#a5a0b3f45dd9c1c22983d001f75845c34">Gondwana.Collisions.CollisionDirectionFrom</a></div><div class="ttdeci">CollisionDirectionFrom</div><div class="ttdoc">planned for future use</div><div class="ttdef"><b>Definition</b> <a href="CollisionDirectionFrom_8cs_source.html#l00006">CollisionDirectionFrom.cs:7</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Collisions_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Collisions.html">Gondwana.Physics.Collisions</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Collisions_html_a8d7349199cbb40b39bce58a01d74d472"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472">Gondwana.Physics.Collisions.CollisionDirectionFrom</a></div><div class="ttdeci">CollisionDirectionFrom</div><div class="ttdoc">planned for future use</div><div class="ttdef"><b>Definition</b> <a href="CollisionDirectionFrom_8cs_source.html#l00006">CollisionDirectionFrom.cs:7</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_b854cae5618f7f7fa15ebfd67baaf825.html">Collisions</a></li><li class="navelem"><b>CollisionDetectionHelper.cs</b></li>
+    <li class="navelem"><a class="el" href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a class="el" href="dir_6cfc059161883a9198bcde9e9fda3eda.html">Physics</a></li><li class="navelem"><a class="el" href="dir_cd6852be43855819ec3c40f324e6d19e.html">Collisions</a></li><li class="navelem"><b>CollisionDetectionHelper.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

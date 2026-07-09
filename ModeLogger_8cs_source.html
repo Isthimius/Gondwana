@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -116,7 +116,7 @@ $(document).ready(function(){initNavTree('ModeLogger_8cs_source.html',''); initR
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">public</span> ModeLogger()</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        {</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="comment">// Create once per wrapper instance. EngineLogger clears _loggerCache when factory changes.</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            _logger = _loggerFactory.CreateLogger(CategoryName);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            _logger = GetOrCreateLoggerFactory().CreateLogger(CategoryName);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        }</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">public</span> IDisposable BeginScope&lt;TState&gt;(TState state) where TState : notnull</div>

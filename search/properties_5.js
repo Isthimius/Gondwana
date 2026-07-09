@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['fadeinsec_0',['FadeInSec',['../classGondwana_1_1Hosting_1_1SplashScreen.html#aab2d3021037b0465198044617f3f34c3',1,'Gondwana::Hosting::SplashScreen']]],
-  ['fadeoutsec_1',['FadeOutSec',['../classGondwana_1_1Hosting_1_1SplashScreen.html#a6d289d00cfcc0e92b56a7641778e0f5e',1,'Gondwana::Hosting::SplashScreen']]],
+  ['fadeinsec_0',['FadeInSec',['../classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#afd9e875b301a5816f7f9060c4325b10c',1,'Gondwana::Widgets::Overlays::SplashScreen']]],
+  ['fadeoutsec_1',['FadeOutSec',['../classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a07fddd71afd52a14a54789f094e1b9d4',1,'Gondwana::Widgets::Overlays::SplashScreen']]],
   ['filename_2',['FileName',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#aee65b95b5ff820dd22f1054b8e4dce83',1,'Gondwana::Configuration::EngineConfigurationFile']]],
   ['filepath_3',['filepath',['../classGondwana_1_1Assets_1_1AssetsFile.html#a213f251f4ca110270f0433a2ffb209bf',1,'Gondwana.Assets.AssetsFile.FilePath'],['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a061538d848859efc860a6a11ec567d68',1,'Gondwana.Configuration.EngineConfigurationFile.FilePath'],['../classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html#af52cd0f5fff020cf54b563bde608f9a5',1,'Gondwana.Drawing.Tilesheets.GTS.TilesheetImageDefinition.FilePath']]],
   ['filterquality_4',['FilterQuality',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html#a873e1877ec919116b1c80105a43a1182',1,'Gondwana::Rendering::Backbuffers::BitmapBackbuffer']]],
@@ -13,7 +13,6 @@ var searchData=
   ['forecolor_10',['ForeColor',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a5e938a5792ee751a7089db68ea79f7f9',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['framecount_11',['FrameCount',['../structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#aab2d2bced19e77634c7679935b51f517',1,'Gondwana::Drawing::Animation::FrameSequence']]],
   ['framelist_12',['FrameList',['../structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#a8d47cb0a92bf0dabf64f3d56907838b9',1,'Gondwana::Drawing::Animation::FrameSequence']]],
-  ['frames_13',['Frames',['../classGondwana_1_1StudioAssets_1_1AnimationAsset.html#af606519a61d613492ac8f8b6ac633716',1,'Gondwana::StudioAssets::AnimationAsset']]],
-  ['framespersecond_14',['FramesPerSecond',['../classGondwana_1_1Engine.html#a0b52f9a9161095ea518d6b8bc958762c',1,'Gondwana::Engine']]],
-  ['fullrefreshneeded_15',['FullRefreshNeeded',['../classGondwana_1_1Scenes_1_1Scene.html#a4028379dbb7e8c28a6babd9f878044d2',1,'Gondwana::Scenes::Scene']]]
+  ['framespersecond_13',['FramesPerSecond',['../classGondwana_1_1Engine.html#a0b52f9a9161095ea518d6b8bc958762c',1,'Gondwana::Engine']]],
+  ['fullrefreshneeded_14',['FullRefreshNeeded',['../classGondwana_1_1Scenes_1_1Scene.html#a4028379dbb7e8c28a6babd9f878044d2',1,'Gondwana::Scenes::Scene']]]
 ];

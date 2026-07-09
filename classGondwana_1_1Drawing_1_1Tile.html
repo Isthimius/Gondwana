@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.4.3</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -109,10 +109,10 @@ Inheritance diagram for Gondwana.Drawing.Tile:</div>
  <div class="center">
   <img src="classGondwana_1_1Drawing_1_1Tile.png" usemap="#Gondwana.Drawing.Tile_map" alt=""/>
   <map id="Gondwana.Drawing.Tile_map" name="Gondwana.Drawing.Tile_map">
-<area href="interfaceGondwana_1_1Drawing_1_1IDrawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,216,24"/>
-<area href="interfaceGondwana_1_1Collisions_1_1ICollisionEntity.html" title="Represents an entity that participates in the collision system and has a defined collision area." alt="Gondwana.Collisions.ICollisionEntity" shape="rect" coords="226,0,442,24"/>
-<area href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html" title="Represents a movable visual element on a scene layer that can be positioned, animated,..." alt="Gondwana.Drawing.Sprites.Sprite" shape="rect" coords="226,112,442,136"/>
-<area href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer." alt="Gondwana.Scenes.SceneLayerTile" shape="rect" coords="452,112,668,136"/>
+<area href="interfaceGondwana_1_1Drawing_1_1IDrawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,264,24"/>
+<area href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html" title="Represents an entity that participates in the collision system and has a defined collision area." alt="Gondwana.Physics.Collisions.ICollisionEntity" shape="rect" coords="274,0,538,24"/>
+<area href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html" title="Represents a movable visual element on a scene layer that can be positioned, animated,..." alt="Gondwana.Drawing.Sprites.Sprite" shape="rect" coords="274,112,538,136"/>
+<area href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer." alt="Gondwana.Scenes.SceneLayerTile" shape="rect" coords="548,112,812,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -138,7 +138,7 @@ Public Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
 <tr class="separator:a55b7cf5594bcb95ab5893c3c43842673"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
+<tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
 <tr class="separator:abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
@@ -182,7 +182,7 @@ Properties</h2></td></tr>
 <tr class="memitem:a6d1b82d253d8c1f4b21f43ac41487884" id="r_a6d1b82d253d8c1f4b21f43ac41487884"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6d1b82d253d8c1f4b21f43ac41487884">PauseAnimation</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a6d1b82d253d8c1f4b21f43ac41487884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the tile's animation is currently paused.  <br /></td></tr>
 <tr class="separator:a6d1b82d253d8c1f4b21f43ac41487884"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50bde19a832324893f058b03e14cf7f3" id="r_a50bde19a832324893f058b03e14cf7f3"><td class="memItemLeft" align="right" valign="top">virtual ? <a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollider.html">ICollider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a50bde19a832324893f058b03e14cf7f3">Collider</a><code> [get]</code></td></tr>
+<tr class="memitem:a50bde19a832324893f058b03e14cf7f3" id="r_a50bde19a832324893f058b03e14cf7f3"><td class="memItemLeft" align="right" valign="top">virtual ? <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a50bde19a832324893f058b03e14cf7f3">Collider</a><code> [get]</code></td></tr>
 <tr class="memdesc:a50bde19a832324893f058b03e14cf7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collider used for collision detection with this tile. Returns null if the tile has no collision detection.  <br /></td></tr>
 <tr class="separator:a50bde19a832324893f058b03e14cf7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39985eb5adff013e78446f18336963e9" id="r_a39985eb5adff013e78446f18336963e9"><td class="memItemLeft" align="right" valign="top">virtual Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a39985eb5adff013e78446f18336963e9">CollisionArea</a><code> [get]</code></td></tr>
@@ -194,7 +194,7 @@ Properties</h2></td></tr>
 <tr class="memitem:a56ea85f53ad251db7f223588a341773a" id="r_a56ea85f53ad251db7f223588a341773a"><td class="memItemLeft" align="right" valign="top">virtual Point[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a56ea85f53ad251db7f223588a341773a">OutlinePointsWorld</a><code> [get]</code></td></tr>
 <tr class="memdesc:a56ea85f53ad251db7f223588a341773a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to determine polygonal area when drawing grid lines or fog. Override this property in a derived class to define custom areas for these effects.  <br /></td></tr>
 <tr class="separator:a56ea85f53ad251db7f223588a341773a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8f79979d79887bc43b245de84e9a052" id="r_ac8f79979d79887bc43b245de84e9a052"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Collisions_1_1CollisionDetectionAdjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#ac8f79979d79887bc43b245de84e9a052">AdjustCollisionArea</a> = CollisionDetectionAdjustment.None<code> [get, set]</code></td></tr>
+<tr class="memitem:ac8f79979d79887bc43b245de84e9a052" id="r_ac8f79979d79887bc43b245de84e9a052"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment.html">CollisionDetectionAdjustment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#ac8f79979d79887bc43b245de84e9a052">AdjustCollisionArea</a> = CollisionDetectionAdjustment.None<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac8f79979d79887bc43b245de84e9a052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision area adjustment values that modify the tile's collision boundaries. Use this to fine-tune the collision detection area relative to the tile's visual bounds.  <br /></td></tr>
 <tr class="separator:ac8f79979d79887bc43b245de84e9a052"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04aecd48929540170b3fbe43cb5e06f8" id="r_a04aecd48929540170b3fbe43cb5e06f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a04aecd48929540170b3fbe43cb5e06f8">CollisionsEnabled</a><code> [get, set]</code></td></tr>
@@ -204,7 +204,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:a809ee69a8d25e7cf843f042c9b6298b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the value bag for storing arbitrary typed values associated with this tile. Useful for attaching custom game-specific data without subclassing.  <br /></td></tr>
 <tr class="separator:a809ee69a8d25e7cf843f042c9b6298b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header properties_interfaceGondwana_1_1Drawing_1_1IDrawable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Drawing_1_1IDrawable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html">Gondwana.Drawing.IDrawable</a></td></tr>
-<tr class="inherit_header properties_interfaceGondwana_1_1Collisions_1_1ICollisionEntity"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Collisions_1_1ICollisionEntity')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollisionEntity.html">Gondwana.Collisions.ICollisionEntity</a></td></tr>
+<tr class="inherit_header properties_interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html">Gondwana.Physics.Collisions.ICollisionEntity</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an abstract base class for drawable tiles in the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine. Provides core functionality for rendering, animation, collision detection, and scene layer integration. </p>
@@ -405,7 +405,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollider.html">ICollider</a>? Gondwana.Drawing.Tile._collider</td>
+          <td class="memname"><a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a>? Gondwana.Drawing.Tile._collider</td>
         </tr>
       </table>
   </td>
@@ -454,7 +454,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="structGondwana_1_1Collisions_1_1CollisionDetectionAdjustment.html">CollisionDetectionAdjustment</a> Gondwana.Drawing.Tile.AdjustCollisionArea = CollisionDetectionAdjustment.None</td>
+          <td class="memname">virtual <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment.html">CollisionDetectionAdjustment</a> Gondwana.Drawing.Tile.AdjustCollisionArea = CollisionDetectionAdjustment.None</td>
         </tr>
       </table>
   </td>
@@ -480,7 +480,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual ? <a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollider.html">ICollider</a> Gondwana.Drawing.Tile.Collider</td>
+          <td class="memname">virtual ? <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a> Gondwana.Drawing.Tile.Collider</td>
         </tr>
       </table>
   </td>
@@ -518,7 +518,7 @@ Properties</h2></td></tr>
 
 <p>Gets the effective collision area of the tile in world coordinates, incorporating any adjustments specified by AdjustCollisionArea. </p>
 
-<p>Implements <a class="el" href="interfaceGondwana_1_1Collisions_1_1ICollisionEntity.html#a1a63d7f8a676c9e8388c0920d1097124">Gondwana.Collisions.ICollisionEntity</a>.</p>
+<p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html#a8a58a26477c003e9519fe88eb57c24f7">Gondwana.Physics.Collisions.ICollisionEntity</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00191">191</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 

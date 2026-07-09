@@ -3,7 +3,7 @@ var searchData=
   ['load_0',['load',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a3c30de9161e52c8a2ad35746d9117698',1,'Gondwana.Configuration.EngineConfigurationFile.Load()'],['../classGondwana_1_1Drawing_1_1SvgResource.html#adcc9db6094c65581666ef65090f6876b',1,'Gondwana.Drawing.SvgResource.Load()'],['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html#ac1aae70c99fefae628d16b38c9ce3618',1,'Gondwana.Audio.Browser.BrowserAudioManager.Load()']]],
   ['loadanimationcycles_1',['LoadAnimationCycles',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a5a49535618c4d95073d1fb6b63090162',1,'Gondwana::Hosting::GameHostBase']]],
   ['loadassets_2',['LoadAssets',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a0930bbe034b663e96202b5e1c8fca903',1,'Gondwana::Hosting::GameHostBase']]],
-  ['loadcontent_3',['LoadContent',['../classGondwana_1_1Hosting_1_1GameHostBase.html#ae566e90c1bc1cac44eea3d26bb511561',1,'Gondwana::Hosting::GameHostBase']]],
+  ['loadcontent_3',['LoadContent',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a1681f962a355b6e2849e2dbd74e18188',1,'Gondwana::Hosting::GameHostBase']]],
   ['loadfromassetsfile_4',['LoadFromAssetsFile',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a93f19ca0c219ca9af20bfc6b7d4e2e49',1,'Gondwana::Drawing::Tilesheets::TilesheetRegistry']]],
   ['loadfrombitmap_5',['LoadFromBitmap',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a966d34982cb2b5474b2c5f40d1ee1165',1,'Gondwana::Drawing::Tilesheets::TilesheetRegistry']]],
   ['loadfromdefinition_6',['LoadFromDefinition',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#a191ee100b6336cf259c2761c68707510',1,'Gondwana::Drawing::Tilesheets::TilesheetRegistry']]],
@@ -15,5 +15,6 @@ var searchData=
   ['loadfromresource_12',['loadfromresource',['../classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a4e1c1f25cd0f8a41b38facffeeec7061',1,'Gondwana.Rendering.Text.FontManager.LoadFromResource(string key, Assembly assembly, string resourceName)'],['../classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a9e75132b188a650e448d6b98724db93c',1,'Gondwana.Rendering.Text.FontManager.LoadFromResource(string key, string resourceName)']]],
   ['loadfromstream_13',['loadfromstream',['../classGondwana_1_1Audio_1_1AudioResourceManager.html#aa599a5c5dcfe1da9a70194d21eb58302',1,'Gondwana.Audio.AudioResourceManager.LoadFromStream()'],['../classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html#acdd5424374841b16e6a08baa3e660374',1,'Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromStream()']]],
   ['loadorcreate_14',['LoadOrCreate',['../classGondwana_1_1Assets_1_1AssetsFile.html#aadcdc298f95ac3f58ab46793667d3363',1,'Gondwana::Assets::AssetsFile']]],
-  ['loadtilesheets_15',['LoadTilesheets',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a73ce72820113559e703727c9374fa595',1,'Gondwana::Hosting::GameHostBase']]]
+  ['loadtilesheets_15',['LoadTilesheets',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a73ce72820113559e703727c9374fa595',1,'Gondwana::Hosting::GameHostBase']]],
+  ['loosedefinitionfile_16',['LooseDefinitionFile',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#ac18fcb93a35a11ca697fe8d4d687e547',1,'Gondwana::Drawing::Tilesheets::GTS::TilesheetDefinitionSource']]]
 ];
