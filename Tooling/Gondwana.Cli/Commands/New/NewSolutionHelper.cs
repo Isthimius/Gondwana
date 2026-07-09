@@ -41,6 +41,7 @@ internal static class NewSolutionHelper
 
         var existingSolutions = Directory
             .GetFiles(fullProjectDirectory, "*.sln", SearchOption.TopDirectoryOnly)
+            .Concat(Directory.GetFiles(fullProjectDirectory, "*.slnx", SearchOption.TopDirectoryOnly))
             .OrderBy(Path.GetFileName)
             .ToArray();
 
@@ -75,6 +76,14 @@ internal static class NewSolutionHelper
             {
                 AnsiConsole.MarkupLine($"[yellow]Warning:[/] Created project, but could not create solution file [dim]{Markup.Escape(solutionPath)}[/].");
                 return;
+            }
+
+            // newer SDK versions (e.g. .NET 9+) may create a .slnx file instead of .sln
+            if (!File.Exists(solutionPath))
+            {
+                var slnxPath = Path.ChangeExtension(solutionPath, ".slnx");
+                if (File.Exists(slnxPath))
+                    solutionPath = slnxPath;
             }
 
             createdNewSolution = true;
