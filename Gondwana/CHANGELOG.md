@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.5.0 - July 09, 2026
+
+
+
+## Added
+- Add Spot.Blazor WebAssembly demo
+- Move SplashScreen and add Gondwana.Widgets
+- Add tilesheet provenance document models
+- Add base classes for draggable widgets
+
+
+
+
 # v2.4.3 - June 16, 2026
 
 

@@ -2,6 +2,119 @@
 
 All notable changes to this project will be documented in this file.
 
+# [v2.5.0] - 2026-07-09
+
+## Gondwana
+
+### Added
+- Add Spot.Blazor WebAssembly demo
+- Move SplashScreen and add Gondwana.Widgets
+- Add tilesheet provenance document models
+- Add base classes for draggable widgets
+
+## Gondwana.Audio.Browser
+
+### Added
+- Add Spot.Blazor WebAssembly demo
+
+## Gondwana.Avalonia.Hosting
+
+### Added
+- Move SplashScreen and add Gondwana.Widgets
+- Add base classes for draggable widgets
+
+## Gondwana.Blazor
+
+### Added
+- Add Spot.Blazor WebAssembly demo
+- Gondwana run blazor auto-launches the browser when the dev server is ready
+
+## Gondwana.Blazor.Hosting
+
+### Added
+- Add Spot.Blazor WebAssembly demo
+- Move SplashScreen and add Gondwana.Widgets
+- Add base classes for draggable widgets
+
+## Gondwana.Hosting
+
+### Added
+- Move SplashScreen and add Gondwana.Widgets
+- Add base classes for draggable widgets
+- Improve template structure and logging
+
+## Gondwana.Widgets
+
+### Added
+- Move SplashScreen and add Gondwana.Widgets
+- Add base classes for draggable widgets
+
+## Gondwana.WinForms.Hosting
+
+### Added
+- Move SplashScreen and add Gondwana.Widgets
+- Add base classes for draggable widgets
+- Improve template structure and logging
+
+## Tooling / Gondwana.Cli
+
+### Added
+- Add Spot.Blazor WebAssembly demo
+- Gondwana run blazor auto-launches the browser when the dev server is ready
+- Enhance blazor deploy with destination mirrors
+
+
+
+### Fixed
+- Handle .slnx solutions created by .NET 9+ SDK
+- Gondwana new always creates .sln (not .slnx) regardless of SDK version
+
+
+
+### Refactoring
+- Clean up blazor template and README
+
+## Tooling / Gondwana.Studio
+
+### Added
+- Add tilesheet provenance document models
+- Add base classes for draggable widgets
+
+## Tooling / Gondwana.Templates
+
+### Added
+- Improve template structure and logging
+
+
+
+### Fixed
+- Sync MyGameHost templates with updated GameHostBase hook API
+
+
+
+### Refactoring
+- Clean up blazor template and README
+
+## Build / Repository
+
+### Added
+- Add Spot.Blazor WebAssembly demo
+- Enhance blazor deploy with destination mirrors
+- Move SplashScreen and add Gondwana.Widgets
+- Improve template structure and logging
+
+
+
+### Refactoring
+- Clean up blazor template and README
+
+
+
+### Other Changes
+- Version bump
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.4.3...v2.5.0
+
 # [v2.4.3] - 2026-06-16
 
 ## Gondwana
@@ -476,7 +589,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 ### Other Changes
 * fix(release): use REST API to merge release PR, bypassing required-review branch protection by @Copilot in https://github.com/Isthimius/Gondwana/pull/64
 * Add Gondwana.Cli .NET global tool by @Copilot in https://github.com/Isthimius/Gondwana/pull/65
-* docs: update README for v2.1.0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œv2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
+* docs: update README for v2.1.0ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“v2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
 * Add gondwana-avalonia dotnet new template and CLI command by @Copilot in https://github.com/Isthimius/Gondwana/pull/67
 * Add `gondwana new avalonia` to CLI docs and fix doctor template check by @Copilot in https://github.com/Isthimius/Gondwana/pull/68
 * docs: Add missing `gondwana new avalonia` command to CLICHEATSHEET by @Copilot in https://github.com/Isthimius/Gondwana/pull/69
@@ -498,7 +611,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 * fix: YAML parse error in release.yml due to unindented bash heredoc by @Copilot in https://github.com/Isthimius/Gondwana/pull/58
 * feat: add Gondwana.Avalonia and Gondwana.Avalonia.Hosting by @Copilot in https://github.com/Isthimius/Gondwana/pull/54
 * feat: add `dotnet new gondwana-winforms` template package by @Copilot in https://github.com/Isthimius/Gondwana/pull/56
-* feat: add Gondwana.Studio ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
+* feat: add Gondwana.Studio ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
 
 
 **Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.1.2...v2.2.0
@@ -567,7 +680,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
   - Improved save/load behavior
   - Fallback lookup by base name
 - Added **Font asset type** and introduced a centralized **FontManager**
-- Renamed audio API (`LoadFromEngineResourceFile` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ `LoadFromEngineAssetsFile`)
+- Renamed audio API (`LoadFromEngineResourceFile` ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ `LoadFromEngineAssetsFile`)
 
 ## Serialization & Data Handling
 - Adjusted serialization behavior for:
