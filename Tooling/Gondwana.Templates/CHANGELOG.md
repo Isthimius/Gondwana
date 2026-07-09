@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.5.0 - July 09, 2026
+
+
+
+## Added
+- Improve template structure and logging
+
+
+
+## Fixed
+- Sync MyGameHost templates with updated GameHostBase hook API
+
+
+
+## Refactoring
+- Clean up blazor template and README
+
+
+
+
 # v2.4.3 - June 16, 2026
 
 

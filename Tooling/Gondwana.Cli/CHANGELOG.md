@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.5.0 - July 09, 2026
+
+
+
+## Added
+- Add Spot.Blazor WebAssembly demo
+- Gondwana run blazor auto-launches the browser when the dev server is ready
+- Enhance blazor deploy with destination mirrors
+
+
+
+## Fixed
+- Handle .slnx solutions created by .NET 9+ SDK
+- Gondwana new always creates .sln (not .slnx) regardless of SDK version
+
+
+
+## Refactoring
+- Clean up blazor template and README
+
+
+
+
 # v2.4.3 - June 16, 2026
 
 
