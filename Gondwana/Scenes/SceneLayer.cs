@@ -227,6 +227,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 IsometricAxialCoordinates => CoordinateSystemTypes.IsometricAxial,
                 HexAxialFlatTopCoordinates => CoordinateSystemTypes.HexAxialFlatTop,
                 HexAxialPointedTop => CoordinateSystemTypes.HexAxialPointedTop,
+                ObliqueCoordinates => CoordinateSystemTypes.Oblique,
                 _ => throw new InvalidOperationException($"Unknown coordinate system type: {CoordinateSystem.GetType().Name}")
             };
         }
@@ -239,6 +240,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 CoordinateSystemTypes.IsometricAxial => new IsometricAxialCoordinates(),
                 CoordinateSystemTypes.HexAxialFlatTop => new HexAxialFlatTopCoordinates(),
                 CoordinateSystemTypes.HexAxialPointedTop => new HexAxialPointedTop(),
+                CoordinateSystemTypes.Oblique => new ObliqueCoordinates(),
                 _ => throw new ArgumentOutOfRangeException(nameof(value), $"Unknown coordinate system type: {value}")
             };
         }
