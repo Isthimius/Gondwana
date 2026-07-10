@@ -209,6 +209,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <item><description><see cref="CoordinateSystemTypes.IsometricAxial"/> - Axial isometric projection</description></item>
     /// <item><description><see cref="CoordinateSystemTypes.HexAxialFlatTop"/> - Hexagonal grid with flat-top orientation</description></item>
     /// <item><description><see cref="CoordinateSystemTypes.HexAxialPointedTop"/> - Hexagonal grid with pointed-top orientation</description></item>
+    /// <item><description><see cref="CoordinateSystemTypes.Oblique"/> - Oblique projection</description></item>
     /// </list>
     /// <para>
     /// Changing the coordinate system after layer creation is supported but may produce unexpected
