@@ -28,19 +28,15 @@ host.Engine.InitializeMidiAudioFormats();
 
 ## Documentation
 
--   **Source Code**\
-    https://github.com/isthimius/Gondwana
-
--   **Architecture & Guides**\
-    https://github.com/isthimius/Gondwana/wiki
-
--   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Audio.Midi/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` — Core engine
-- `Gondwana.Hosting` — Engine bootstrapping and lifecycle
+-   `Gondwana` --- Core engine
+-   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
 
 ## License
 

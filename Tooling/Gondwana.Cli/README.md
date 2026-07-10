@@ -505,6 +505,30 @@ Assets:
 
 ---
 
+## Documentation
+
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Tooling/Gondwana.Cli/CHANGELOG.md)**
+
+## Related Packages
+
+-   `Gondwana` --- Core engine
+-   `Gondwana.Audio.Browser` --- Browser-based audio playback support
+-   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
+-   `Gondwana.Avalonia` --- Avalonia rendering and input adapters
+-   `Gondwana.Avalonia.Hosting` --- Avalonia-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Blazor` --- Web assembly rendering and input adapters
+-   `Gondwana.Blazor.Hosting` --- Blazor-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
+-   `Gondwana.Input.SDL2` --- SDL2-based input handling
+-   `Gondwana.Video` --- Video playback support
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
+-   `Gondwana.WinForms` --- WinForms rendering and input adapters
+-   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Templates` --- Project templates for quickly starting new Gondwana games
+
 ## License
 
-MIT — see [LICENSE](https://github.com/Isthimius/Gondwana/blob/master/LICENSE)
+MIT

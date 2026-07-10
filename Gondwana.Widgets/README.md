@@ -62,22 +62,14 @@ instead, such as:
 
 ## Documentation
 
--   **Source Code**\
-    https://github.com/isthimius/Gondwana
-
--   **Architecture & Guides**\
-    https://github.com/isthimius/Gondwana/wiki
-
--   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Widgets/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` – Core engine
-- `Gondwana.WinForms` – WinForms adapter
-- `Gondwana.Avalonia` – Avalonia adapter
-- `Gondwana.Blazor` – Blazor WebAssembly adapter
-- `Gondwana.Hosting` – Shared hosting abstractions
+-   `Gondwana` --- Core engine
 
 ## License
 

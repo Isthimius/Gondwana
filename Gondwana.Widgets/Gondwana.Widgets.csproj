@@ -19,10 +19,12 @@
 		<PackageTags>gondwana widgets ui game-ui gamedev csharp dotnet 2d 2.5d directdrawing hud menus dialogs buttons overlays skia skiasharp</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
+		<PackageReleaseNotes>Full changelog: https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="CHANGELOG.md" Pack="true" PackagePath="" />
 		<None Include="..\gondwana-logo.png" Link="gondwana-logo.png">
 			<PackagePath></PackagePath>
 			<Pack>true</Pack>

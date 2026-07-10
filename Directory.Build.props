@@ -4,7 +4,7 @@
 		<EnableWindowsTargeting>true</EnableWindowsTargeting>
 		<Company>Hidden Worlds Games</Company>
 		<Product>Gondwana Game Engine</Product>
-		<Authors>Michael Adkins</Authors>
+		<Authors>Mike Adkins</Authors>
 
 		<!-- License -->
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -12,6 +12,7 @@
 
 		<!-- Symbols / Source Link -->
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
 
 		<!-- XML docs -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -20,24 +21,6 @@
 		<!-- Disable Android workload auto-import to avoid SDK version mismatch issues -->
 		<DisableAndroidWorkload>true</DisableAndroidWorkload>
 		<DisableImplicitWorkloadImports>true</DisableImplicitWorkloadImports>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(IsPackable)' == 'true'">
-		<!-- Symbols / Source Link -->
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-
-		<!-- Release notes -->
-		<PackageReleaseNotes>See GitHub Releases or CHANGELOG.md in the repository at https://github.com/Isthimius/Gondwana/ for full release notes.</PackageReleaseNotes>
-
-		<!-- NuGet packaging and assets -->
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-
-		<!-- URLs / repository -->
-		<RepositoryUrl>https://github.com/Isthimius/Gondwana</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>

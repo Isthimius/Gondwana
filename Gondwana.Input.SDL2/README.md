@@ -30,19 +30,14 @@ host.Engine.InitializeSdlGamepadManager();
 
 ## Documentation
 
--   **Source Code**\
-    https://github.com/isthimius/Gondwana
-
--   **Architecture & Guides**\
-    https://github.com/isthimius/Gondwana/wiki
-
--   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Input.SDL2/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` — Core engine
-- `Gondwana.Hosting` — Engine lifecycle setup
+-   `Gondwana` --- Core engine
 
 ## License
 

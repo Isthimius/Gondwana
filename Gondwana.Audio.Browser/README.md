@@ -99,15 +99,17 @@ protected override void OnStartEngine()
 
 ## Documentation
 
-- **Source Code**: https://github.com/isthimius/Gondwana
-- **Architecture & Guides**: https://github.com/isthimius/Gondwana/wiki
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Audio.Browser/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` — Core engine
-- `Gondwana.Hosting` — Engine bootstrapping and lifecycle
-- `Gondwana.Avalonia` — Avalonia platform support
-- `Gondwana.Avalonia.Hosting` — Avalonia hosting
+-   `Gondwana` --- Core engine
+-   `Gondwana.Blazor` --- Web assembly rendering and input adapters
+-   `Gondwana.Blazor.Hosting` --- Blazor-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
 
 ## License
 

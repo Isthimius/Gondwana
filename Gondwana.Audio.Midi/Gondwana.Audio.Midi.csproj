@@ -16,6 +16,7 @@
         <PackageTags>game-engine gamedev csharp dotnet audio midi adapter playback music sound</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
+		<PackageReleaseNotes>Full changelog: https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,6 +34,7 @@
 
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="CHANGELOG.md" Pack="true" PackagePath="" />
 		<None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
 	</ItemGroup>
 

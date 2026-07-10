@@ -9,17 +9,26 @@
 
 <img alt="gondwana-logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
 
-**Gondwana** is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics, Avalonia for cross-platform UI, Blazor for web, and NAudio for sound.
+**Gondwana** is a cross-platform 2D and 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, particle effects, and layered scene rendering.
 
-Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers can own their game loop and rendering flow end-to-end when needed, while still benefiting from sensible defaults that allow simpler games to come together quickly. This approach modernizes classic Win32/GDI-era rendering patterns into a clean, modular architecture with explicit control over draw order, dirty-region updates, and timing, yielding a predictable, debuggable engine that works out of the box but does not get in the way as projects grow.
+Gondwana targets desktop and web platforms through SkiaSharp-based rendering, with dedicated integrations for WinForms, Avalonia, and Blazor, and NAudio-based sound support.
+
+Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers can own the game loop and rendering flow end to end when needed, while still benefiting from sensible defaults that allow simpler games to come together quickly.
+
+This approach brings classic Win32/GDI-era rendering principles into a modern, modular architecture with explicit control over draw order, dirty-region updates, scene composition, and timing. The result is a predictable, debuggable engine that works out of the box without getting in the way as projects grow.
+
+## Get Started
 
 **[Make Your First Game in 1 Hour with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour)**
 
-- 📘 **Engine Architecture & Guides** — [GitHub Wiki](https://github.com/Isthimius/Gondwana/wiki)
-- 📚 **API Reference (Doxygen)** — [https://isthimius.github.io/Gondwana/](https://isthimius.github.io/Gondwana/)
-- 📦 **NuGet** - [https://www.nuget.org/packages/Gondwana](https://www.nuget.org/packages/Gondwana)
-- 🏷 **All Releases** - https://github.com/Isthimius/Gondwana/releases
-- ⬇️ **Latest CI Build** - https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml
+## Documentation & Resources
+
+- 📘 **[Engine Architecture & Guides](https://github.com/Isthimius/Gondwana/wiki)**
+- 📚 **[API Reference](https://isthimius.github.io/Gondwana/)**
+- 📦 **[NuGet Package](https://www.nuget.org/packages/Gondwana)**
+- 🏷️ **[GitHub Releases](https://github.com/Isthimius/Gondwana/releases)**
+- 📜 **[Release History](https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md)**
+- ⬇️ **[Latest CI Build](https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml)**
 
 ---
 

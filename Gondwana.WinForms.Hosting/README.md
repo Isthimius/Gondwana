@@ -33,20 +33,16 @@ public class MyGameHost : WinFormsGameHost
 
 ## Documentation
 
--   **Source Code**\
-    https://github.com/isthimius/Gondwana
-
--   **Architecture & Guides**\
-    https://github.com/isthimius/Gondwana/wiki
-
--   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` — Core engine
-- `Gondwana.Hosting` — Base hosting framework
-- `Gondwana.WinForms` — Platform adapters
+-   `Gondwana` --- Core engine
+-   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
+-   `Gondwana.WinForms` --- WinForms rendering and input adapters
 
 ## License
 
