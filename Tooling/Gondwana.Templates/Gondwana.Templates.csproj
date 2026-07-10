@@ -11,8 +11,6 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <!-- NU5128: expected for template packages that have no lib output -->
         <NoWarn>$(NoWarn);NU5128</NoWarn>
-        <!-- Template packages have no compiled output; suppress empty symbols package (NU5017) -->
-        <IncludeSymbols>false</IncludeSymbols>
 
         <!-- URLs / repository -->
         <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Templates</PackageProjectUrl>
