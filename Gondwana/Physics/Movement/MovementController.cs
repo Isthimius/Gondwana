@@ -13,7 +13,8 @@ namespace Gondwana.Physics.Movement;
 /// <item><description><b>Scripted</b> – tween or constant-speed motion toward a destination.</description></item>
 /// <item><description><b>Integrated</b> – free physics-style integration (velocity and acceleration).</description></item>
 /// </list>
-/// The controller automatically selects the correct behavior each frame internally through <see cref="AdvanceMovement(float)"/>.
+/// The controller automatically selects the correct behavior each frame internally through
+/// <see cref="AdvanceMovement(float)"/>.
 /// </summary>
 public sealed partial class MovementController : IDisposable
 {
@@ -35,7 +36,10 @@ public sealed partial class MovementController : IDisposable
     public event Action<ScriptedMovement>? ScriptedMovementStopped;
 
     // Bind to one target + initial state. Optional layer when you need Grid↔Pixel & wrapping.
-    internal MovementController(IMovable mover, MovementState initial, SceneLayer? layer = null)
+    internal MovementController(
+        IMovable mover,
+        MovementState initial,
+        SceneLayer? layer = null)
     {
         _mover = mover;
         _state = initial;
@@ -43,7 +47,11 @@ public sealed partial class MovementController : IDisposable
         if (layer is not null)
         {
             _sceneLayer = layer;
-            _coords = layer.CoordinateSystem ?? throw new ArgumentException("SceneLayer must have a CoordinateSystem.", nameof(layer));
+
+            _coords = layer.CoordinateSystem
+                ?? throw new ArgumentException(
+                    "SceneLayer must have a CoordinateSystem.",
+                    nameof(layer));
         }
     }
 
@@ -63,15 +71,15 @@ public sealed partial class MovementController : IDisposable
     /// </returns>
     internal bool AdvanceMovement(float dt)
     {
-        // follow owns the frame if engaged
+        // Follow owns the frame if engaged.
         if (AdvanceFollow())
             return true;
 
-        // scripted tween/toward runs next
+        // Scripted tween/toward runs next.
         if (AdvanceScripted(dt))
             return true;
 
-        // finally physics integration
+        // Finally, physics integration.
         return AdvanceIntegrated(dt);
     }
 
@@ -83,43 +91,55 @@ public sealed partial class MovementController : IDisposable
 
     /// <summary>
     /// Indicates whether the controller is currently engaged in a follow behavior.
-    /// Returns <see langword="true"/> if a pixel or grid target is set, or if hard follow is active.
+    /// Returns <see langword="true"/> if a pixel or grid target is set,
+    /// or if hard follow is active.
     /// </summary>
-    public bool IsFollowing => _followHard || _followPixel is not null || _followGridTarget is not null;
+    public bool IsFollowing =>
+        _followHard ||
+        _followPixel is not null ||
+        _followGridTarget is not null;
 
     /// <summary>
     /// Indicates whether a scripted movement (tween or MoveToward) is currently active.
     /// </summary>
-    public bool IsScripted => _state.Script.Type != MovementScriptType.None;
+    public bool IsScripted =>
+        _state.Script.Type != MovementScriptType.None;
 
     /// <summary>
     /// Indicates whether physics-style integration is currently active.
     /// Returns <see langword="true"/> when the controller is not following or scripted,
     /// and <see cref="MovementState.HasMotion"/> is <see langword="true"/>.
     /// </summary>
-    public bool IsIntegratedActive => !IsFollowing && !IsScripted && _state.HasMotion;
+    public bool IsIntegratedActive =>
+        !IsFollowing &&
+        !IsScripted &&
+        _state.HasMotion;
 
     /// <summary>
     /// Enables or disables horizontal world wrapping.
-    /// When enabled, movement crossing the left/right edges wraps the IMovable to the opposite side.
+    /// When enabled, movement crossing the left/right edges wraps the IMovable
+    /// to the opposite side.
     /// Only meaningful for Grid space; ignored for Pixel space.
     /// </summary>
-    public bool WrapX { get; internal set; } = false;
+    public bool WrapX { get; internal set; }
 
     /// <summary>
     /// Enables or disables vertical world wrapping.
-    /// When enabled, movement crossing the top/bottom edges wraps the IMovable to the opposite side.
+    /// When enabled, movement crossing the top/bottom edges wraps the IMovable
+    /// to the opposite side.
     /// Only meaningful for Grid space; ignored for Pixel space.
     /// </summary>
-    public bool WrapY { get; internal set; } = false;
+    public bool WrapY { get; internal set; }
 
     /// <summary>
     /// Immediately stops all forms of movement — follow, scripted, and integrated.
-    /// Cancels active tweens, clears velocity and acceleration, and halts motion this frame.
+    /// Cancels active scripted movement, clears follow behavior, clears velocity
+    /// and acceleration, and halts motion this frame.
     /// </summary>
     public void StopAllMovement()
     {
-        CancelScript();
+        Unfollow();
+
         _state.Velocity = Vector2.Zero;
         _state.Acceleration = Vector2.Zero;
     }
@@ -129,6 +149,8 @@ public sealed partial class MovementController : IDisposable
     /// </summary>
     public void Dispose()
     {
+        _scriptCompleted = null;
+
         ScriptedMovementStarted = null;
         ScriptedMovementStopped = null;
     }
