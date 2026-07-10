@@ -1,9 +1,8 @@
-﻿using Gondwana.Physics.Movement.Easing;
-using Gondwana.Physics.Movement.Scripted;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Gondwana.Physics.Movement.Easing;
 
 namespace Gondwana.Demos.Spot.Game;
 
