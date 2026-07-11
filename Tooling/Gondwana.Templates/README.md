@@ -35,7 +35,7 @@ This scaffolds a ready-to-run WinForms project containing:
 - `MyGame.csproj` — targets `net8.0-windows` with the four Gondwana packages pre-referenced
 - `Program.cs` — `[STAThread]` WinForms entry point
 - `GameWindow.cs` — `Form` wired to the engine lifecycle (`OnLoad` → host, `OnShown` → `Initialize`, `OnFormClosed` → `Dispose`)
-- `MyGameHost.cs` — `WinFormsGameHost` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
+- `MyGameHost.cs` — `WinFormsGameHostBase` subclass with `// TODO` override stubs for loading tilesheets, building the scene, and handling keyboard input
 - `assets/README.txt` — instructions for adding sprites and other asset files
 
 ### Avalonia (Windows, macOS, Linux)
@@ -76,7 +76,7 @@ Omitting `--Backbuffer` is equivalent to passing `--Backbuffer bitmap`.
 
 When `--Backbuffer gpu` is used:
 - `GameWindow.cs` uses `WinFormGpuRenderSurfaceControl` / `AvaloniaGpuRenderSurfaceControl` instead of the bitmap variant.
-- `MyGameHost.cs` derives from `WinFormsGpuGameHost` / `AvaloniaGpuGameHost` instead of `WinFormsGameHost` / `AvaloniaGameHost`.
+- `MyGameHost.cs` derives from `WinFormsGpuGameHost` / `AvaloniaGpuGameHost` instead of `WinFormsBitmapGameHost` / `AvaloniaGameHost`.
 
 ### Blazor WebAssembly (browser-based)
 

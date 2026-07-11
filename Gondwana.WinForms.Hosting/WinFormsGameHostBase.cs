@@ -1,7 +1,5 @@
 using Gondwana.Hosting;
-using Gondwana.Rendering;
 using Gondwana.Scenes;
-using Gondwana.WinForms;
 using System.Windows.Forms;
 
 namespace Gondwana.WinForms.Hosting;
@@ -54,18 +52,20 @@ public abstract class WinFormsGameHostBase : GameHostBase
     }
 
     /// <summary>
-    /// Configures gamepad support.
+    /// Configures gamepad support. By default, this method initializes the XInput gamepad manager,
+    /// but it can be overridden in derived classes to provide custom gamepad configuration.
     /// </summary>
-    protected sealed override void ConfigureGamepads()
+    protected override void ConfigureGamepads()
     {
-        //Engine.Instance.InitializeXInputGamepadManager();
+        Engine.InitializeXInputGamepadManager();
         OnGamepadManagerInitialized();
     }
 
     /// <summary>
-    /// Configures touch input.
+    /// Configures touch input. By default, this method does not perform any actions,
+    /// but it can be overridden in derived classes to set up touch input handling.
     /// </summary>
-    protected sealed override void ConfigureTouch()
+    protected override void ConfigureTouch()
     {
         OnTouchAdapterInitialized();
     }
@@ -76,19 +76,18 @@ public abstract class WinFormsGameHostBase : GameHostBase
     /// <exception cref="InvalidOperationException">Thrown when no scene has been created.</exception>
     protected sealed override void BindScene()
     {
-        var scene = Scene
-            ?? throw new InvalidOperationException(
-                $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
+        if (Scene is null)
+            throw new InvalidOperationException($"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
 
-        _bindScene(scene, false);
-        OnSceneBound();
+        _bindScene(Scene, false);
     }
 
     /// <summary>
     /// Called after the current scene has been bound to the Windows Forms render surface host.
     /// </summary>
-    protected virtual void OnSceneBound()
+    protected override void OnSceneBound()
     {
+        // Method intentionally left empty.
     }
 
     /// <summary>
