@@ -10,6 +10,7 @@
     "language": "C#",
     "type": "project"
   },
+  "icon": "icon.png",
   "sourceName": "MyGame",
   "preferNameDirectory": true,
   "symbols": {
