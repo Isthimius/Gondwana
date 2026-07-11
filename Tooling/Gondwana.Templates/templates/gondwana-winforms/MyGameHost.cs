@@ -23,13 +23,13 @@ internal sealed class MyGameHost : WinFormsGpuGameHost
     internal MyGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
 //#else
-internal sealed class MyGameHost : WinFormsGameHost
+internal sealed class MyGameHost : WinFormsBitmapGameHost
 {
     internal MyGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
 //#endif
 
-    #region GameHostBase overrides
+    #region Initialize overrides
 
     // TODO: Run pre-initialization setup here, such as choosing config paths,
     // toggling feature flags, or preparing services before assets begin loading.
@@ -37,106 +37,16 @@ internal sealed class MyGameHost : WinFormsGameHost
     {
     }
 
-    // TODO: Load non-tilesheet assets such as audio, fonts, and data files.
-    protected override void LoadAssets()
-    {
-    }
-
-    // TODO: Load tilesheets from the assets\ folder.
-    // A Tilesheet is an image atlas; TileSize tells Gondwana the size of one frame.
-    // Example:
-    //   var sheet = new Tilesheet("mySprite", @"assets\my-sprite.png");
-    //   sheet.TileSize = new System.Drawing.Size(64, 64);
-    protected override void LoadTilesheets()
-    {
-    }
-
-    // TODO: Load animation cycle definitions after tilesheets are available.
-    protected override void LoadAnimationCycles()
-    {
-    }
-
-    // TODO: Run after the initial scene and views are created, but before the scene is bound.
-    protected override void OnSceneGraphCreated()
-    {
-    }
-
-    // TODO: Build and return the initial Scene.
-    // Example:
-    //   var scene = new Scene();
-    //   scene.AddLayer(columnCount: 8, rowCount: 8, width: 64, height: 64,
-    //                  zOrder: 10, parallax: 1f,
-    //                  coordinateSystem: CoordinateSystemTypes.Orthogonal);
-    //   return scene;
-    protected override Scene CreateInitialScene()
-    {
-        return Scene.Empty;
-    }
-
-    // TODO: Create initial camera/view objects after the Scene has been created.
-    protected override void CreateInitialViews()
-    {
-    }
-
-    // TODO: Place sprites into the scene.
-    // Scene is already created and bound when this runs.
-    // Example:
-    //   var frame = new Frame(mySheet, 0, 0);
-    //   var sprite = SpriteManager.Instance.CreateSprite(Scene![0], frame);
-    //   sprite.SetPosition(new(0, 0));
-    //   sprite.Visible = true;
-    protected override void CreateSprites()
-    {
-    }
-
-    // TODO: Create direct-drawing primitives such as UI overlays or debug shapes.
-    protected override void CreateDirectDrawings()
-    {
-    }
-
-    // TODO: Run after Engine.Initialize() completes but before the engine starts.
-    protected override void OnEngineInitialized()
-    {
-    }
-
-    // TODO: Run after the engine has started. Start gameplay, timers, or music here.
-    protected override void OnEngineStarted()
-    {
-    }
-
-    // TODO: Run after the full host initialization sequence has completed.
-    protected override void OnInitialized()
-    {
-    }
-
-    // TODO: Unsubscribe any events subscribed during initialization to avoid memory leaks.
-    protected override void UnhookEvents()
-    {
-    }
-
-    // TODO: Run just before the host begins disposing managed resources.
-    protected override void OnDisposing()
-    {
-    }
-
-    // TODO: Run after disposal is complete.
-    protected override void OnDisposed()
-    {
-    }
-
-    #endregion
-
-    #region WinFormsGameHostBase overrides
+    #region ConfigurePlatform overrides
 
     // TODO: Configure WinForms-specific platform services after the default setup runs.
     protected override void OnConfigurePlatform()
     {
     }
 
-    // TODO: Run after the current scene has been bound to the render surface.
-    protected override void OnSceneBound()
-    {
-    }
+    #endregion ConfigurePlatform overrides
+
+    #region ConfigureInput overrides
 
     // TODO: Subscribe to keyboard events here after the adapter is initialized.
     // Example:
@@ -167,5 +77,123 @@ internal sealed class MyGameHost : WinFormsGameHost
     {
     }
 
-    #endregion
+    #endregion ConfigureInput overrides
+
+    #region LoadContent overrides
+
+    // TODO: Load non-tilesheet assets such as audio, fonts, and data files.
+    protected override void LoadAssets()
+    {
+    }
+
+    // TODO: Load tilesheets from the assets\ folder.
+    // A Tilesheet is an image atlas; TileSize tells Gondwana the size of one frame.
+    // Example:
+    //   var sheet = new Tilesheet("mySprite", @"assets\my-sprite.png");
+    //   sheet.TileSize = new System.Drawing.Size(64, 64);
+    protected override void LoadTilesheets()
+    {
+    }
+
+    // TODO: Load animation cycle definitions after tilesheets are available.
+    protected override void LoadAnimationCycles()
+    {
+    }
+
+    #endregion LoadContent overrides
+
+    #region CreateSceneGraph overrides
+
+    // TODO: Build and return the initial Scene.
+    // Example:
+    //   var scene = new Scene();
+    //   scene.AddLayer(columnCount: 8, rowCount: 8, width: 64, height: 64,
+    //                  zOrder: 10, parallax: 1f,
+    //                  coordinateSystem: CoordinateSystemTypes.Orthogonal);
+    //   return scene;
+    protected override Scene CreateInitialScene()
+    {
+        return Scene.Empty;
+    }
+
+    // TODO: Create initial camera/view objects after the Scene has been created.
+    protected override void CreateInitialViews()
+    {
+    }
+
+    // TODO: Run after the initial scene and views are created, but before the scene is bound.
+    protected override void OnSceneGraphCreated()
+    {
+    }
+
+    #endregion CreateSceneGraph overrides
+
+    #region BindScene overrides
+
+    // TODO: Run after the current scene has been bound to the render surface.
+    protected override void OnSceneBound()
+    {
+    }
+
+    #endregion BindScene overrides
+
+    #region InitializeSceneObjects overrides
+
+    // TODO: Place sprites into the scene.
+    // Scene is already created and bound when this runs.
+    // Example:
+    //   var frame = new Frame(mySheet, 0, 0);
+    //   var sprite = SpriteManager.Instance.CreateSprite(Scene![0], frame);
+    //   sprite.SetPosition(new(0, 0));
+    //   sprite.Visible = true;
+    protected override void CreateSprites()
+    {
+    }
+
+    // TODO: Create direct-drawing primitives such as UI overlays or debug shapes.
+    protected override void CreateDirectDrawings()
+    {
+    }
+
+    #endregion InitializeSceneObjects overrides
+
+    #region InitializeEngine overrides
+
+    // TODO: Run after Engine.Initialize() completes but before the engine starts.
+    protected override void OnEngineInitialized()
+    {
+    }
+
+    #endregion InitializeEngine overrides
+
+    #region StartEngine overrides
+
+    // TODO: Run after the engine has started. Start gameplay, timers, or music here.
+    protected override void OnEngineStarted()
+    {
+    }
+
+    #endregion StartEngine overrides
+
+    // TODO: Run after the full host initialization sequence has completed.
+    protected override void OnInitialized()
+    {
+    }
+
+    // TODO: Unsubscribe any events subscribed during initialization to avoid memory leaks.
+    protected override void UnhookEvents()
+    {
+    }
+
+    // TODO: Run just before the host begins disposing managed resources.
+    protected override void OnDisposing()
+    {
+    }
+
+    // TODO: Run after disposal is complete.
+    protected override void OnDisposed()
+    {
+    }
+
+    #endregion Initialize overrides
 }
