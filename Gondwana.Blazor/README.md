@@ -71,19 +71,16 @@ After initialization, the touch system is accessible via `Engine.Instance.Input.
 
 ## Documentation
 
--   **Source Code**\
-    https://github.com/isthimius/Gondwana
-
--   **Architecture & Guides**\
-    https://github.com/isthimius/Gondwana/wiki
-
--   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Blazor/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` – Core engine
-- `Gondwana.Blazor.Hosting` – Blazor game host
+-   `Gondwana` --- Core engine
+-   `Gondwana.Audio.Browser` --- Browser-based audio playback support
+-   `Gondwana.Blazor.Hosting` --- Blazor-specific game host that integrates rendering and input into the Gondwana lifecycle
 
 ## License
 

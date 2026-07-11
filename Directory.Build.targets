@@ -1,0 +1,15 @@
+<Project>
+	<PropertyGroup Condition="'$(IsPackable)' == 'true'">
+		<!-- Symbols / Source Link — disabled for template packages (no compiled output to symbolize) -->
+		<IncludeSymbols Condition="'$(PackageType)' != 'Template'">true</IncludeSymbols>
+		<SymbolPackageFormat Condition="'$(PackageType)' != 'Template'">snupkg</SymbolPackageFormat>
+
+		<!-- NuGet packaging and assets -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
+		<!-- URLs / repository -->
+		<RepositoryUrl>https://github.com/Isthimius/Gondwana</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	</PropertyGroup>
+</Project>

@@ -38,19 +38,16 @@ _host.Initialize();
 
 ## Documentation
 
--   **Source Code**\
-    https://github.com/isthimius/Gondwana
-
--   **Architecture & Guides**\
-    https://github.com/isthimius/Gondwana/wiki
-
--   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Avalonia.Hosting/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` – Core engine
-- `Gondwana.Avalonia` – Avalonia platform adapters
+-   `Gondwana` --- Core engine
+-   `Gondwana.Avalonia` --- Avalonia rendering and input adapters
+-   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
 
 ## License
 

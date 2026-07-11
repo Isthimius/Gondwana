@@ -47,20 +47,16 @@ Then in your Blazor page's `OnAfterRenderAsync`:
 
 ## Documentation
 
--   **Source Code**\
-    https://github.com/isthimius/Gondwana
-
--   **Architecture & Guides**\
-    https://github.com/isthimius/Gondwana/wiki
-
--   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+-   **[Source Code](https://github.com/isthimius/Gondwana)**
+-   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Blazor.Hosting/CHANGELOG.md)**
 
 ## Related Packages
 
-- `Gondwana` – Core engine
-- `Gondwana.Hosting` – Base hosting framework
-- `Gondwana.Blazor` – Blazor platform adapters
+-   `Gondwana` --- Core engine
+-   `Gondwana.Audio.Browser` --- Browser-based audio playback support
+-   `Gondwana.Blazor` --- Web assembly rendering and input adapters
 
 ## License
 
