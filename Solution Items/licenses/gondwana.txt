@@ -1,7 +1,7 @@
 MIT License
 
 Gondwana Game Engine
-Copyright (c) 2025 Michael Adkins dba Hidden Worlds Games
+Copyright (c) 2026 Michael Adkins a/k/a Isthimius dba Hidden Worlds Games
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
