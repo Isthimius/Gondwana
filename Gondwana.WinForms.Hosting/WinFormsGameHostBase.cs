@@ -81,7 +81,6 @@ public abstract class WinFormsGameHostBase : GameHostBase
                 $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
 
         _bindScene(scene, false);
-        OnSceneBound();
     }
 
     /// <summary>

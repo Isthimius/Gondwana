@@ -77,7 +77,7 @@ public abstract class AvaloniaGameHost : GameHostBase
                 $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
 
         RenderSurface.Host.Bind(scene, false);
-        OnSceneBound();
+        //OnSceneBound();   // called by base class
     }
 
     /// <summary>
