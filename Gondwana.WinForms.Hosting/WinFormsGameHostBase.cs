@@ -86,7 +86,7 @@ public abstract class WinFormsGameHostBase : GameHostBase
     /// <summary>
     /// Called after the current scene has been bound to the Windows Forms render surface host.
     /// </summary>
-    protected virtual void OnSceneBound()
+    protected override void OnSceneBound()
     {
     }
 
