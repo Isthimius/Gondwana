@@ -29,7 +29,7 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost, ISpotHostC
 
     public NewGameOptions? LastNewGameOptions => _spot.LastNewGameOptions;
 
-    protected SplashScreen? CreateSplash(RenderSurfaceHostBase host)
+    public SplashScreen? CreateSplash(RenderSurfaceHostBase host)
         => _spot.CreateSplash(host);
 
     protected override void LoadAssets()

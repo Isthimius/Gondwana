@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using Gondwana.Configuration;
@@ -125,8 +126,23 @@ internal partial class GameWindow : Form
         Enabled = false;
         try
         {
-            // Initializes the engine and displays the Gondwana splash screen.
+            // Initializes the engine.
             _gameHost.Initialize();
+
+            // Create and display the Gondwana splash screen.
+            var host = _bitmapRenderSurface != null
+                ? (Gondwana.Rendering.RenderSurfaceHostBase)_bitmapRenderSurface.Host
+                : _gpuRenderSurface!.Host;
+
+            var splash = _gameHost.CreateSplash(host);
+
+            if (splash != null)
+            {
+                // Wait for the splash screen to complete.
+                using var splashCompletedEvent = new ManualResetEventSlim(false);
+                splash.FadeOutCompleted += _ => splashCompletedEvent.Set();
+                splashCompletedEvent.Wait();
+            }
 
             // Create game visuals, start music, and apply saved settings.
             _gameHost.BeginPostSplashStartup();

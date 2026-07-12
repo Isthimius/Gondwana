@@ -26,7 +26,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpo
 
     public NewGameOptions? LastNewGameOptions => _spot.LastNewGameOptions;
 
-    protected SplashScreen? CreateSplash(RenderSurfaceHostBase host)
+    public SplashScreen? CreateSplash(RenderSurfaceHostBase host)
         => _spot.CreateSplash(host);
 
     protected override void LoadAssets()

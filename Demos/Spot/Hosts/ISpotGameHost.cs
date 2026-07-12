@@ -1,5 +1,7 @@
 using System;
 using Gondwana.Demos.Spot.Game;
+using Gondwana.Rendering;
+using Gondwana.Widgets.Overlays;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.Spot.Hosts;
@@ -11,6 +13,8 @@ internal interface ISpotGameHost : IDisposable
     NewGameOptions? LastNewGameOptions { get; }
 
     void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
+
+    SplashScreen? CreateSplash(RenderSurfaceHostBase host);
 
     void BeginPostSplashStartup();
 
