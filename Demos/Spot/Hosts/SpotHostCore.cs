@@ -110,18 +110,6 @@ internal sealed class SpotHostCore
         return splash;
     }
 
-    internal async Task RunSplashAsync()
-    {
-        var splash = CreateSplash(SurfaceHost);
-        if (splash is null)
-            return;
-        using (splash)
-        {
-            //await splash.ShowAsync();
-            //await splash.HideAsync();
-        }
-    }
-
     internal void LoadAssets()
     {
         // load standalone audio files

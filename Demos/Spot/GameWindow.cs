@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using Gondwana.Configuration;
@@ -104,7 +103,7 @@ internal partial class GameWindow : Form
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
         try
         {
-            await ShowStartupSplashAndInitializeAsync();
+            ShowStartupSplashAndInitialize();
         }
         catch (Exception ex)
         {
@@ -118,7 +117,7 @@ internal partial class GameWindow : Form
         }
     }
 
-    private async Task ShowStartupSplashAndInitializeAsync()
+    private void ShowStartupSplashAndInitialize()
     {
         if (_gameHost == null)
             throw new InvalidOperationException("Game host was not initialized before startup splash initialization.");
@@ -126,10 +125,10 @@ internal partial class GameWindow : Form
         Enabled = false;
         try
         {
-            // Initializes the engine, displays the Gondwana splash screen, and waits for it to fade out.
-            await _gameHost.InitializeAsync();
+            // Initializes the engine and displays the Gondwana splash screen.
+            _gameHost.Initialize();
 
-            // Splash has faded out; create game visuals, start music, and apply saved settings.
+            // Create game visuals, start music, and apply saved settings.
             _gameHost.BeginPostSplashStartup();
             ApplyLoadedSettings();
         }

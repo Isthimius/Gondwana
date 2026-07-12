@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Gondwana.Demos.Spot.Hosts;
 using Gondwana.Hosting;
 using Gondwana.Rendering;
@@ -9,7 +8,6 @@ using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
-using System.Threading.Tasks;
 
 namespace Gondwana.Demos.Spot;
 
@@ -33,12 +31,6 @@ internal sealed class SpotGameHost : WinFormsGameHost, ISpotGameHost, ISpotHostC
 
     protected SplashScreen? CreateSplash(RenderSurfaceHostBase host)
         => _spot.CreateSplash(host);
-
-    public async Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning)
-    {
-        Initialize(configPath, autoSaveConfig, logLevel);
-        //await _spot.RunSplashAsync();
-    }
 
     protected override void LoadAssets()
         => _spot.LoadAssets();
