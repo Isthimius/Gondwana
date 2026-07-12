@@ -133,7 +133,7 @@ public sealed class SplashScreen : WidgetBase
         FadeOutSec = fadeOutSec;
 
         Add(Image);
-        RunSplashSequence(onHoldingSync, onHoldingAsync);
+        StartFadeIn(onHoldingSync, onHoldingAsync);
     }
 
     /// <summary>
@@ -215,8 +215,10 @@ public sealed class SplashScreen : WidgetBase
 
     #region splash control
 
-    private void RunSplashSequence(Action? onHoldingSync, Func<Task>? onHoldingAsync)
+    private void StartFadeIn(Action? onHoldingSync, Func<Task>? onHoldingAsync)
     {
+        Logger.LogDebug("Starting splash screen fade-in");
+
         // Start fade-in
         CurrentState = State.FadingIn;
 
@@ -237,6 +239,8 @@ public sealed class SplashScreen : WidgetBase
 
     private void StartHoldPhase(Action? onHoldingSync, Func<Task>? onHoldingAsync)
     {
+        Logger.LogDebug("Starting splash screen hold phase");
+
         _holdTimerExpired = false;
         _holdDelegatesCompleted = (onHoldingSync == null && onHoldingAsync == null);
 
@@ -293,6 +297,8 @@ public sealed class SplashScreen : WidgetBase
 
     private void StartFadeOut()
     {
+        Logger.LogDebug("Starting splash screen fade-out");
+
         CurrentState = State.FadingOut;
 
         // Subscribe to fade-out completion
