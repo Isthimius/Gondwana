@@ -104,9 +104,6 @@ internal partial class GameWindow : Form
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
 
-        // Defer initialization to allow the window to fully display
-        await Task.Yield();
-
         try
         {
             ShowStartupSplashAndInitialize();
@@ -147,6 +144,7 @@ internal partial class GameWindow : Form
                 bool splashCompleted = false;
                 splash.FadeOutCompleted += _ => splashCompleted = true;
 
+                // TODO: THIS IS THE ISSUE...
                 while (!splashCompleted)
                 {
                     Application.DoEvents();
