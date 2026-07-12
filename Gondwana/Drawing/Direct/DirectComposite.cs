@@ -511,7 +511,9 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
         Disposing?.Invoke(this, this);
 
-        foreach (var c in _children)
+        // Create a copy of the children list to avoid collection modification during enumeration
+        var childrenToDispose = _children.ToList();
+        foreach (var c in childrenToDispose)
             c.Dispose();
 
         _children.Clear();

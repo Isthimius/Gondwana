@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using Gondwana.Configuration;
@@ -102,6 +103,10 @@ internal partial class GameWindow : Form
 
         // resize client area to include the menu strip
         this.ClientSize = new Size(DefaultWindowSize.Width, DefaultWindowSize.Height + _menuStrip.Height);
+
+        // Defer initialization to allow the window to fully display
+        await Task.Yield();
+
         try
         {
             ShowStartupSplashAndInitialize();
@@ -138,10 +143,15 @@ internal partial class GameWindow : Form
 
             if (splash != null)
             {
-                // Wait for the splash screen to complete.
-                using var splashCompletedEvent = new ManualResetEventSlim(false);
-                splash.FadeOutCompleted += _ => splashCompletedEvent.Set();
-                splashCompletedEvent.Wait();
+                // Wait for the splash screen to complete while pumping messages.
+                bool splashCompleted = false;
+                splash.FadeOutCompleted += _ => splashCompleted = true;
+
+                while (!splashCompleted)
+                {
+                    Application.DoEvents();
+                    Thread.Sleep(10); // Small delay to avoid busy-waiting
+                }
             }
 
             // Create game visuals, start music, and apply saved settings.
