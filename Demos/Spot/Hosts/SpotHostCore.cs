@@ -258,37 +258,37 @@ internal sealed class SpotHostCore
         }
     }
 
-public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
-{
-    if (Engine.UiDispatcher is not null && !Engine.UiDispatcher.IsOnUIThread)
+    public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
     {
-        // Atomically claim the dialog slot; bail out if one is already open/pending.
-        if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0) return;
-        Engine.UiDispatcher.Post(() => OpenNewGameDialog(newGameOptions));
-        return;
-    }
+        if (Engine.UiDispatcher is not null && !Engine.UiDispatcher.IsOnUIThread)
+        {
+            // Atomically claim the dialog slot; bail out if one is already open/pending.
+            if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0) return;
+            Engine.UiDispatcher.Post(() => OpenNewGameDialog(newGameOptions));
+            return;
+        }
 
-    // Called directly on the UI thread (e.g. from the menu). Ensure the flag is set.
-    Interlocked.Exchange(ref _dialogOpen, 1);
-    try
-    {
-        using var dialog = new NewGameDialog(newGameOptions);
-        if (dialog.ShowDialog(Form.ActiveForm) == DialogResult.OK)
+        // Called directly on the UI thread (e.g. from the menu). Ensure the flag is set.
+        Interlocked.Exchange(ref _dialogOpen, 1);
+        try
         {
-            _lastNewGameOptions = dialog.Options;
-            var options = dialog.Options;
-            Engine.EngineDispatcher.Post(() => StartNewGame(options));
+            using var dialog = new NewGameDialog(newGameOptions);
+            if (dialog.ShowDialog(Form.ActiveForm) == DialogResult.OK)
+            {
+                _lastNewGameOptions = dialog.Options;
+                var options = dialog.Options;
+                Engine.EngineDispatcher.Post(() => StartNewGame(options));
+            }
+            else
+            {
+                _lastNewGameOptions = dialog.Options;
+            }
         }
-        else
+        finally
         {
-            _lastNewGameOptions = dialog.Options;
+            Interlocked.Exchange(ref _dialogOpen, 0);
         }
     }
-    finally
-    {
-        Interlocked.Exchange(ref _dialogOpen, 0);
-    }
-}
 
     #endregion public game interface
 

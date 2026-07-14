@@ -76,12 +76,54 @@ public sealed class EngineDispatcher : IEngineDispatcher
     /// </remarks>
     public void Post(Action action)
     {
-        if (action is null) return;
+        if (action is null)
+            return;
 
-        // Optional: run inline if already on engine thread.
-        if (IsOnEngineThread) { action(); return; }
+        // run inline if already on engine thread.
+        if (IsOnEngineThread)
+        {
+            action();
+            return;
+        }
 
         _queue.Enqueue(action);
+    }
+
+    /// <summary>
+    /// Posts an asynchronous action to be started on the engine thread and returns
+    /// a task that completes when the action has completed.
+    /// </summary>
+    /// <param name="action">
+    /// The asynchronous action to execute. If <see langword="null"/>, the returned
+    /// task is already complete.
+    /// </param>
+    /// <returns>
+    /// A task representing completion of the dispatched action.
+    /// </returns>
+    public Task PostAsync(Func<Task> action)
+    {
+        if (action is null)
+            return Task.CompletedTask;
+
+        var completionSource = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+
+        Post(() => _ = ExecuteAsync());
+
+        return completionSource.Task;
+
+        async Task ExecuteAsync()
+        {
+            try
+            {
+                await action();
+                completionSource.SetResult();
+            }
+            catch (Exception ex)
+            {
+                completionSource.SetException(ex);
+            }
+        }
     }
 
     /// <summary>
