@@ -1,3 +1,4 @@
+using System;
 using Gondwana.Demos.Spot.Hosts;
 using Gondwana.Hosting;
 using Gondwana.Rendering;
@@ -26,8 +27,8 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpo
 
     public NewGameOptions? LastNewGameOptions => _spot.LastNewGameOptions;
 
-    public SplashScreen? CreateSplash(RenderSurfaceHostBase host)
-        => _spot.CreateSplash(host);
+    public SplashScreen? CreateSplash(RenderSurfaceHostBase host, Action onSplashCompleted)
+        => _spot.CreateSplash(host, onSplashCompleted);
 
     protected override void LoadAssets()
         => _spot.LoadAssets();

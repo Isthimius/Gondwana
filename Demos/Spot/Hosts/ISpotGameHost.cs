@@ -14,7 +14,7 @@ internal interface ISpotGameHost : IDisposable
 
     void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
-    SplashScreen? CreateSplash(RenderSurfaceHostBase host);
+    SplashScreen? CreateSplash(RenderSurfaceHostBase host, Action onSplashCompleted);
 
     void BeginPostSplashStartup();
 

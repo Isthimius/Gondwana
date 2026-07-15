@@ -136,25 +136,12 @@ internal partial class GameWindow : Form
                 ? (Gondwana.Rendering.RenderSurfaceHostBase)_bitmapRenderSurface.Host
                 : _gpuRenderSurface!.Host;
 
-            var splash = _gameHost.CreateSplash(host);
-
-            if (splash != null)
-            {
-                // Wait for the splash screen to complete while pumping messages.
-                bool splashCompleted = false;
-                splash.FadeOutCompleted += _ => splashCompleted = true;
-
-                // TODO: THIS IS THE ISSUE...
-                while (!splashCompleted)
+            var splash = _gameHost.CreateSplash(host, () =>
                 {
-                    Application.DoEvents();
-                    Thread.Sleep(10); // Small delay to avoid busy-waiting
-                }
-            }
-
-            // Create game visuals, start music, and apply saved settings.
-            _gameHost.BeginPostSplashStartup();
-            ApplyLoadedSettings();
+                    // Create game visuals, start music, and apply saved settings.
+                    _gameHost.BeginPostSplashStartup();
+                    ApplyLoadedSettings();
+                });
         }
         finally
         {

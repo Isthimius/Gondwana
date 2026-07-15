@@ -100,13 +100,16 @@ internal sealed class SpotHostCore
 
     #region WinFormsGameHost lifecycle hooks
 
-    internal SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host)
+    internal SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host, Action onSplashCompleted)
     {
         var imagePath = Path.Combine(AppContext.BaseDirectory, "assets", "gondwana-logo-text.png");
         using var imageStream = File.OpenRead(imagePath);
         var view = host.ViewManager.Views[0];
 
-        var splash = SplashScreen.TryCreate(imageStream, host, view);
+        var splash = SplashScreen.TryCreate(imageStream: imageStream,
+                                            host: host,
+                                            view: view,
+                                            onSplashCompleted: onSplashCompleted);
         return splash;
     }
 
