@@ -30,6 +30,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     private PointF _dragStartScreenPositionPx;
     private Vector2 _dragStartWidgetPositionPx;
     private WidgetPointerButtonEnum _dragButton = WidgetPointerButtonEnum.None;
+    private int _dragPointerId;
 
     #endregion Fields
 
@@ -110,21 +111,21 @@ public abstract class DraggableWidgetBase : WidgetBase
     #region Framework Processing
 
     /// <inheritdoc/>
-    private protected sealed override void ProcessHidden()
+    protected sealed override void ProcessHidden()
     {
         base.ProcessHidden();
         ResetPointerState(clearClickSuppression: true);
     }
 
     /// <inheritdoc/>
-    private protected sealed override void ProcessCancelled()
+    protected sealed override void ProcessCancelled()
     {
         base.ProcessCancelled();
         ResetPointerState(clearClickSuppression: true);
     }
 
     /// <inheritdoc/>
-    private protected sealed override void ProcessPointerDown(WidgetPointerEventArgs args)
+    protected sealed override void ProcessPointerDown(WidgetPointerEventArgs args)
     {
         base.ProcessPointerDown(args);
 
@@ -138,14 +139,15 @@ public abstract class DraggableWidgetBase : WidgetBase
         _dragStartScreenPositionPx = args.ScreenPositionPx;
         _dragStartWidgetPositionPx = GetPosition();
         _dragButton = args.Button;
+        _dragPointerId = args.PointerId;
     }
 
     /// <inheritdoc/>
-    private protected sealed override void ProcessPointerMove(WidgetPointerEventArgs args)
+    protected sealed override void ProcessPointerMove(WidgetPointerEventArgs args)
     {
         base.ProcessPointerMove(args);
 
-        if (!_isPointerDown)
+        if (!_isPointerDown || args.PointerId != _dragPointerId)
             return;
 
         Vector2 totalScreenDeltaPx = GetTotalScreenDelta(args.ScreenPositionPx);
@@ -171,11 +173,11 @@ public abstract class DraggableWidgetBase : WidgetBase
     }
 
     /// <inheritdoc/>
-    private protected sealed override void ProcessPointerUp(WidgetPointerEventArgs args)
+    protected sealed override void ProcessPointerUp(WidgetPointerEventArgs args)
     {
         base.ProcessPointerUp(args);
 
-        if (!_isPointerDown || !IsMatchingRelease(args.Button))
+        if (!_isPointerDown || !IsMatchingRelease(args))
             return;
 
         WidgetDragEventArgs? dragArgs = null;
@@ -198,7 +200,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     }
 
     /// <inheritdoc/>
-    private protected sealed override bool ShouldDispatchPointerClick(WidgetPointerEventArgs args)
+    protected sealed override bool ShouldDispatchPointerClick(WidgetPointerEventArgs args)
     {
         if (!base.ShouldDispatchPointerClick(args))
             return false;
@@ -302,9 +304,10 @@ public abstract class DraggableWidgetBase : WidgetBase
         SetPosition(constrainedPositionPx);
     }
 
-    private bool IsMatchingRelease(WidgetPointerButtonEnum releasedButton)
+    private bool IsMatchingRelease(WidgetPointerEventArgs args)
     {
-        return releasedButton == WidgetPointerButtonEnum.None || releasedButton == _dragButton;
+        return args.PointerId == _dragPointerId &&
+               (args.Button == WidgetPointerButtonEnum.None || args.Button == _dragButton);
     }
 
     private WidgetDragEventArgs CreateDragEventArgs(WidgetPointerEventArgs pointerArgs)
@@ -314,7 +317,8 @@ public abstract class DraggableWidgetBase : WidgetBase
             _dragStartScreenPositionPx,
             pointerArgs.ScreenPositionPx,
             _dragButton,
-            pointerArgs.Tick);
+            pointerArgs.Tick,
+            pointerArgs.PointerId);
     }
 
     private void DispatchDragStarted(WidgetDragEventArgs args)
@@ -342,6 +346,7 @@ public abstract class DraggableWidgetBase : WidgetBase
         _dragStartScreenPositionPx = default;
         _dragStartWidgetPositionPx = default;
         _dragButton = WidgetPointerButtonEnum.None;
+        _dragPointerId = default;
 
         if (clearClickSuppression)
             _suppressNextPointerClick = false;

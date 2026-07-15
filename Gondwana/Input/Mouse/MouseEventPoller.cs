@@ -180,7 +180,8 @@ public sealed class MouseEventPoller
                 ButtonStates,
                 _lastPosition,
                 currentPos,
-                scrollDelta));
+                scrollDelta,
+                tick));
 
             _lastPosition = currentPos;
             _lastScrollDelta = scrollDelta;

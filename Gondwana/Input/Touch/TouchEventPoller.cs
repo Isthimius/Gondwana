@@ -169,7 +169,7 @@ public sealed class TouchEventPoller : ITouchInput
         {
             if (_activeTouches.Remove(endedPoint.Id))
             {
-                TouchEnded?.Invoke(this, new TouchEventArgs(endedPoint));
+                TouchEnded?.Invoke(this, new TouchEventArgs(endedPoint, tick));
                 eventEmitted = true;
             }
         }
@@ -184,7 +184,7 @@ public sealed class TouchEventPoller : ITouchInput
                 {
                     // New contact
                     _activeTouches[point.Id] = point;
-                    TouchBegan?.Invoke(this, new TouchEventArgs(point));
+                    TouchBegan?.Invoke(this, new TouchEventArgs(point, tick));
                     eventEmitted = true;
                 }
                 else if (known.Position != point.Position)
@@ -193,7 +193,7 @@ public sealed class TouchEventPoller : ITouchInput
                     // so TouchPhase.Moved is always correct here regardless of the adapter's stored phase.
                     var movedPoint = new TouchPoint(point.Id, point.Position, TouchPhase.Moved);
                     _activeTouches[point.Id] = movedPoint;
-                    TouchMoved?.Invoke(this, new TouchEventArgs(movedPoint));
+                    TouchMoved?.Invoke(this, new TouchEventArgs(movedPoint, tick));
                     eventEmitted = true;
                 }
             }

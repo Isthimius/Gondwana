@@ -82,6 +82,8 @@ public sealed class MouseEventArgs : EventArgs
     /// </summary>
     public bool IsAlt => CurrentKeyboardModifiers.HasFlag(KeyboardModifierState.Alt);
 
+    public long Tick { get; init; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseEventArgs"/> class with comprehensive mouse state information
     /// including configuration, button states, cursor positions, scroll data, and keyboard modifiers.
@@ -109,12 +111,16 @@ public sealed class MouseEventArgs : EventArgs
     /// The accumulated scroll wheel delta since the last poll. Positive values indicate upward scrolling,
     /// negative values indicate downward scrolling, and 0 indicates no scrolling occurred.
     /// </param>
+    /// <param name="tick">
+    /// The timestamp or tick count at the time this mouse event was generated.
+    /// </param>
     public MouseEventArgs(MouseEventConfiguration mouseEventConfiguration,
                           KeyboardModifierState currentKeyboardModifiers,
                           IReadOnlyDictionary<MouseButton, MouseButtonState> buttonStates,
                           Point previousPosition,
                           Point currentPosition,
-                          int scrollDelta)
+                          int scrollDelta,
+                          long tick)
     {
         MouseEventConfiguration = mouseEventConfiguration;
         CurrentKeyboardModifiers = currentKeyboardModifiers;
@@ -122,6 +128,7 @@ public sealed class MouseEventArgs : EventArgs
         PreviousPosition = previousPosition;
         CurrentPosition = currentPosition;
         ScrollDelta = scrollDelta;
+        Tick = tick;
     }
 
     /// <summary>

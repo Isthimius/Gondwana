@@ -72,16 +72,34 @@ public abstract class WidgetBase : DirectComposite
     /// <param name="mode">The drawing mode (world or screen space).</param>
     /// <param name="anchor">The anchor point for the widget in pixels. Default is (0, 0).</param>
     /// <param name="nickname">Optional friendly name for the widget.</param>
-    protected WidgetBase(
-        RenderSurfaceHostBase renderSurfaceHost,
-        DirectDrawingMode mode,
-        PointF anchor = default,
-        string? nickname = null)
+    protected WidgetBase(RenderSurfaceHostBase renderSurfaceHost,
+                         DirectDrawingMode mode,
+                         PointF anchor = default,
+                         string? nickname = null)
         : base(renderSurfaceHost, mode, anchor, nickname)
     {
     }
 
     #endregion Constructor
+
+    #region Input Handling
+
+    /// <summary>
+    /// Gets or sets whether this widget participates in pointer input.
+    /// </summary>
+    public bool IsPointerInputEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Determines whether the supplied screen position intersects this widget.
+    /// </summary>
+    public virtual bool HitTest(Point screenPositionPx)
+    {
+        return IsPointerInputEnabled &&
+               Visible &&
+               ScreenBounds.Contains(screenPositionPx);
+    }
+
+    #endregion
 
     #region Visibility / Activation
 
@@ -236,28 +254,28 @@ public abstract class WidgetBase : DirectComposite
     /// <summary>
     /// Runs required framework behavior before <see cref="OnShown"/> and <see cref="Shown"/>.
     /// </summary>
-    private protected virtual void ProcessShown()
+    protected virtual void ProcessShown()
     {
     }
 
     /// <summary>
     /// Runs required framework behavior before <see cref="OnHidden"/> and <see cref="Hidden"/>.
     /// </summary>
-    private protected virtual void ProcessHidden()
+    protected virtual void ProcessHidden()
     {
     }
 
     /// <summary>
     /// Runs required framework behavior before <see cref="OnActivated"/> and <see cref="Activated"/>.
     /// </summary>
-    private protected virtual void ProcessActivated()
+    protected virtual void ProcessActivated()
     {
     }
 
     /// <summary>
     /// Runs required framework behavior before <see cref="OnCancelled"/> and <see cref="Cancelled"/>.
     /// </summary>
-    private protected virtual void ProcessCancelled()
+    protected virtual void ProcessCancelled()
     {
     }
 
@@ -265,7 +283,7 @@ public abstract class WidgetBase : DirectComposite
     /// Runs required framework behavior before pointer-enter customization and notification.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    private protected virtual void ProcessPointerEnter(WidgetPointerEventArgs args)
+    protected virtual void ProcessPointerEnter(WidgetPointerEventArgs args)
     {
     }
 
@@ -273,7 +291,7 @@ public abstract class WidgetBase : DirectComposite
     /// Runs required framework behavior before pointer-leave customization and notification.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    private protected virtual void ProcessPointerLeave(WidgetPointerEventArgs args)
+    protected virtual void ProcessPointerLeave(WidgetPointerEventArgs args)
     {
     }
 
@@ -281,7 +299,7 @@ public abstract class WidgetBase : DirectComposite
     /// Runs required framework behavior before pointer-down customization and notification.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    private protected virtual void ProcessPointerDown(WidgetPointerEventArgs args)
+    protected virtual void ProcessPointerDown(WidgetPointerEventArgs args)
     {
     }
 
@@ -289,7 +307,7 @@ public abstract class WidgetBase : DirectComposite
     /// Runs required framework behavior before pointer-move customization and notification.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    private protected virtual void ProcessPointerMove(WidgetPointerEventArgs args)
+    protected virtual void ProcessPointerMove(WidgetPointerEventArgs args)
     {
     }
 
@@ -297,7 +315,7 @@ public abstract class WidgetBase : DirectComposite
     /// Runs required framework behavior before pointer-up customization and notification.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    private protected virtual void ProcessPointerUp(WidgetPointerEventArgs args)
+    protected virtual void ProcessPointerUp(WidgetPointerEventArgs args)
     {
     }
 
@@ -306,7 +324,7 @@ public abstract class WidgetBase : DirectComposite
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
     /// <returns><see langword="true"/> to dispatch the click; otherwise, <see langword="false"/>.</returns>
-    private protected virtual bool ShouldDispatchPointerClick(WidgetPointerEventArgs args)
+    protected virtual bool ShouldDispatchPointerClick(WidgetPointerEventArgs args)
     {
         return true;
     }

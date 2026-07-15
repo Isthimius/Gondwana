@@ -14,19 +14,22 @@ public sealed class WidgetDragEventArgs : WidgetEventArgs
     /// <param name="widget">The widget that raised the event.</param>
     /// <param name="startScreenPositionPx">The screen position where the drag began.</param>
     /// <param name="currentScreenPositionPx">The current pointer position in screen pixels.</param>
-    /// <param name="button">The pointer button used for dragging. Default is <see cref="WidgetPointerButtonEnum.Left"/>.</param>
-    /// <param name="tick">The engine or timer tick associated with the event. Default is 0.</param>
+    /// <param name="button">The pointer button used for dragging.</param>
+    /// <param name="tick">The engine tick associated with the event.</param>
+    /// <param name="pointerId">The identifier of the pointer performing the drag.</param>
     public WidgetDragEventArgs(
         WidgetBase widget,
         PointF startScreenPositionPx,
         PointF currentScreenPositionPx,
         WidgetPointerButtonEnum button = WidgetPointerButtonEnum.Left,
-        long tick = 0)
+        long tick = 0,
+        int pointerId = 0)
         : base(widget, tick)
     {
         StartScreenPositionPx = startScreenPositionPx;
         CurrentScreenPositionPx = currentScreenPositionPx;
         Button = button;
+        PointerId = pointerId;
     }
 
     /// <summary>
@@ -43,6 +46,11 @@ public sealed class WidgetDragEventArgs : WidgetEventArgs
     /// Gets the pointer button used for dragging.
     /// </summary>
     public WidgetPointerButtonEnum Button { get; }
+
+    /// <summary>
+    /// Gets the identifier of the pointer performing the drag.
+    /// </summary>
+    public int PointerId { get; }
 
     /// <summary>
     /// Gets the total drag offset from the drag start position.
