@@ -43,6 +43,18 @@ public interface IEngineDispatcher
     void Post(Action action);
 
     /// <summary>
+    /// Posts an asynchronous action to be executed on the engine thread and returns
+    /// a task that completes when the action has completed.
+    /// </summary>
+    /// <param name="action">
+    /// The asynchronous action to execute on the engine thread.
+    /// </param>
+    /// <returns>
+    /// A task representing completion of the dispatched action.
+    /// </returns>
+    Task PostAsync(Func<Task> action);
+
+    /// <summary>
     /// Executes all queued actions that have been posted to this dispatcher since the last call to
     /// <see cref="Drain"/>. This method should be called regularly by the engine's main update loop
     /// to process pending work items.

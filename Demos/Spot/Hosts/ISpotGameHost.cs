@@ -1,6 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using Gondwana.Demos.Spot.Game;
+using Gondwana.Rendering;
+using Gondwana.Widgets.Overlays;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.Spot.Hosts;
@@ -13,7 +14,7 @@ internal interface ISpotGameHost : IDisposable
 
     void Initialize(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
 
-    Task InitializeAsync(string? configPath = null, bool? autoSaveConfig = null, LogLevel logLevel = LogLevel.Warning);
+    SplashScreen? CreateSplash(RenderSurfaceHostBase host, Action onSplashCompleted);
 
     void BeginPostSplashStartup();
 

@@ -5,6 +5,12 @@
 /// </summary>
 public abstract class WidgetEventArgs : EventArgs
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WidgetEventArgs"/> class.
+    /// </summary>
+    /// <param name="widget">The widget that raised the event.</param>
+    /// <param name="tick">The engine or timer tick associated with the event.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="widget"/> is <see langword="null"/>.</exception>
     protected WidgetEventArgs(WidgetBase widget, long tick)
     {
         Widget = widget ?? throw new ArgumentNullException(nameof(widget));

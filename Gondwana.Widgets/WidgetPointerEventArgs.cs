@@ -8,6 +8,15 @@ namespace Gondwana.Widgets;
 /// </summary>
 public sealed class WidgetPointerEventArgs : WidgetEventArgs
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WidgetPointerEventArgs"/> class.
+    /// </summary>
+    /// <param name="widget">The widget that raised the event.</param>
+    /// <param name="screenPositionPx">The pointer position in screen pixels.</param>
+    /// <param name="button">The pointer button involved in the interaction. Default is <see cref="WidgetPointerButtonEnum.None"/>.</param>
+    /// <param name="clickCount">The number of clicks associated with this pointer action. Default is 0.</param>
+    /// <param name="deltaPx">The movement delta in pixels since the previous pointer update. Default is zero vector.</param>
+    /// <param name="tick">The engine or timer tick associated with the event. Default is 0.</param>
     public WidgetPointerEventArgs(
         WidgetBase widget,
         PointF screenPositionPx,
