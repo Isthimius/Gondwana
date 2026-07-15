@@ -5,7 +5,7 @@ using System.Drawing;
 namespace Gondwana.Widgets;
 
 /// <summary>
-/// Base type for reusable Gondwana widgets built on top of DirectComposite.
+/// Base type for reusable Gondwana widgets built on top of <see cref="DirectComposite"/>.
 /// </summary>
 public abstract class WidgetBase : DirectComposite
 {
@@ -47,7 +47,12 @@ public abstract class WidgetBase : DirectComposite
     public event Action<WidgetPointerEventArgs>? PointerDown;
 
     /// <summary>
-    /// Raised when a pointer button is released within the widget.
+    /// Raised when the pointer moves over the widget or while the widget owns pointer capture.
+    /// </summary>
+    public event Action<WidgetPointerEventArgs>? PointerMove;
+
+    /// <summary>
+    /// Raised when a pointer button is released within the widget or while the widget owns pointer capture.
     /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerUp;
 
@@ -88,6 +93,7 @@ public abstract class WidgetBase : DirectComposite
     {
         SetIsVisible(true);
 
+        ProcessShown();
         OnShown();
         Shown?.Invoke();
 
@@ -102,6 +108,7 @@ public abstract class WidgetBase : DirectComposite
     {
         SetIsVisible(false);
 
+        ProcessHidden();
         OnHidden();
         Hidden?.Invoke();
 
@@ -114,6 +121,7 @@ public abstract class WidgetBase : DirectComposite
     /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Activate()
     {
+        ProcessActivated();
         OnActivated();
         Activated?.Invoke();
 
@@ -126,6 +134,7 @@ public abstract class WidgetBase : DirectComposite
     /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Cancel()
     {
+        ProcessCancelled();
         OnCancelled();
         Cancelled?.Invoke();
 
@@ -137,56 +146,172 @@ public abstract class WidgetBase : DirectComposite
     #region Pointer Dispatch
 
     /// <summary>
-    /// Dispatches a pointer enter event, calling the virtual hook and raising the public event.
+    /// Dispatches a pointer-enter event, calling the virtual hook and raising the public event.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    protected void DispatchPointerEnter(WidgetPointerEventArgs args)
+    protected internal void DispatchPointerEnter(WidgetPointerEventArgs args)
     {
+        ArgumentNullException.ThrowIfNull(args);
+
+        ProcessPointerEnter(args);
         OnPointerEnter(args);
         PointerEnter?.Invoke(args);
     }
 
     /// <summary>
-    /// Dispatches a pointer leave event, calling the virtual hook and raising the public event.
+    /// Dispatches a pointer-leave event, calling the virtual hook and raising the public event.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    protected void DispatchPointerLeave(WidgetPointerEventArgs args)
+    protected internal void DispatchPointerLeave(WidgetPointerEventArgs args)
     {
+        ArgumentNullException.ThrowIfNull(args);
+
+        ProcessPointerLeave(args);
         OnPointerLeave(args);
         PointerLeave?.Invoke(args);
     }
 
     /// <summary>
-    /// Dispatches a pointer down event, calling the virtual hook and raising the public event.
+    /// Dispatches a pointer-down event, first running required framework behavior,
+    /// then calling the virtual hook and raising the public event.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    protected void DispatchPointerDown(WidgetPointerEventArgs args)
+    protected internal void DispatchPointerDown(WidgetPointerEventArgs args)
     {
+        ArgumentNullException.ThrowIfNull(args);
+
+        ProcessPointerDown(args);
         OnPointerDown(args);
         PointerDown?.Invoke(args);
     }
 
     /// <summary>
-    /// Dispatches a pointer up event, calling the virtual hook and raising the public event.
+    /// Dispatches a pointer-move event, first running required framework behavior,
+    /// then calling the virtual hook and raising the public event.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    protected void DispatchPointerUp(WidgetPointerEventArgs args)
+    protected internal void DispatchPointerMove(WidgetPointerEventArgs args)
     {
+        ArgumentNullException.ThrowIfNull(args);
+
+        ProcessPointerMove(args);
+        OnPointerMove(args);
+        PointerMove?.Invoke(args);
+    }
+
+    /// <summary>
+    /// Dispatches a pointer-up event, first running required framework behavior,
+    /// then calling the virtual hook and raising the public event.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    protected internal void DispatchPointerUp(WidgetPointerEventArgs args)
+    {
+        ArgumentNullException.ThrowIfNull(args);
+
+        ProcessPointerUp(args);
         OnPointerUp(args);
         PointerUp?.Invoke(args);
     }
 
     /// <summary>
-    /// Dispatches a pointer click event, calling the virtual hook and raising the public event.
+    /// Dispatches a pointer-click event, calling the virtual hook and raising the public event
+    /// unless required framework behavior suppresses the click.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
-    protected void DispatchPointerClick(WidgetPointerEventArgs args)
+    protected internal void DispatchPointerClick(WidgetPointerEventArgs args)
     {
+        ArgumentNullException.ThrowIfNull(args);
+
+        if (!ShouldDispatchPointerClick(args))
+            return;
+
         OnPointerClick(args);
         PointerClick?.Invoke(args);
     }
 
     #endregion Pointer Dispatch
+
+    #region Framework Processing
+
+    /// <summary>
+    /// Runs required framework behavior before <see cref="OnShown"/> and <see cref="Shown"/>.
+    /// </summary>
+    private protected virtual void ProcessShown()
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before <see cref="OnHidden"/> and <see cref="Hidden"/>.
+    /// </summary>
+    private protected virtual void ProcessHidden()
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before <see cref="OnActivated"/> and <see cref="Activated"/>.
+    /// </summary>
+    private protected virtual void ProcessActivated()
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before <see cref="OnCancelled"/> and <see cref="Cancelled"/>.
+    /// </summary>
+    private protected virtual void ProcessCancelled()
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before pointer-enter customization and notification.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    private protected virtual void ProcessPointerEnter(WidgetPointerEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before pointer-leave customization and notification.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    private protected virtual void ProcessPointerLeave(WidgetPointerEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before pointer-down customization and notification.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    private protected virtual void ProcessPointerDown(WidgetPointerEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before pointer-move customization and notification.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    private protected virtual void ProcessPointerMove(WidgetPointerEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Runs required framework behavior before pointer-up customization and notification.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    private protected virtual void ProcessPointerUp(WidgetPointerEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Determines whether a pointer click should reach the protected hook and public event.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    /// <returns><see langword="true"/> to dispatch the click; otherwise, <see langword="false"/>.</returns>
+    private protected virtual bool ShouldDispatchPointerClick(WidgetPointerEventArgs args)
+    {
+        return true;
+    }
+
+    #endregion Framework Processing
 
     #region Protected Lifecycle Hooks
 
@@ -243,7 +368,17 @@ public abstract class WidgetBase : DirectComposite
     }
 
     /// <summary>
-    /// Called when a pointer button is released within the widget. Override to customize behavior.
+    /// Called when the pointer moves over the widget or while the widget owns pointer capture.
+    /// Override to customize behavior.
+    /// </summary>
+    /// <param name="args">The pointer event arguments.</param>
+    protected virtual void OnPointerMove(WidgetPointerEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Called when a pointer button is released within the widget or while the widget owns pointer capture.
+    /// Override to customize behavior.
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
     protected virtual void OnPointerUp(WidgetPointerEventArgs args)
