@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Gondwana.Logging;
+﻿using Gondwana.Logging;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
+using Gondwana.Widgets;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Hosting;
 
@@ -14,6 +16,8 @@ public abstract class GameHostBase : IDisposable
     private bool _engineInitialized;
     private bool _engineStarted;
 
+    private WidgetInputRouter? _widgetInputRouter;
+
     /// <summary>
     /// Gets the singleton instance of the engine.
     /// </summary>
@@ -23,6 +27,11 @@ public abstract class GameHostBase : IDisposable
     /// Gets the current active scene.
     /// </summary>
     public Scene? Scene { get; protected set; }
+
+    /// <summary>
+    /// Gets the widget input router, if widget input has been initialized.
+    /// </summary>
+    protected WidgetInputRouter? WidgetInputRouter => _widgetInputRouter;
 
     /// <summary>
     /// Initializes the game host by setting up logging, platform, input, game content, and then the engine.
@@ -55,6 +64,30 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
+    /// Initializes widget input for the supplied render surface host.
+    /// Call this after both the render surface and input pollers are available.
+    /// </summary>
+    protected void InitializeWidgetInput(RenderSurfaceHostBase renderSurfaceHost)
+    {
+        ArgumentNullException.ThrowIfNull(renderSurfaceHost);
+
+        _widgetInputRouter?.Dispose();
+
+        var mousePoller = Engine.Input.MouseEventPoller;
+        var touchPoller = Engine.Input.TouchEventPoller;
+
+        mousePoller?.StartMonitoringMouse(
+            trackMouseMovement: true);
+
+        _widgetInputRouter = new WidgetInputRouter(
+            renderSurfaceHost,
+            mousePoller,
+            touchPoller);
+
+        _widgetInputRouter.Start();
+    }
+
+    /// <summary>
     /// Runs before the host initialization sequence begins.
     /// </summary>
     protected virtual void OnInitializing()
@@ -84,6 +117,8 @@ public abstract class GameHostBase : IDisposable
         ConfigureMouse();
         ConfigureGamepads();
         ConfigureTouch();
+
+        OnInputConfigured();
     }
 
     /// <summary>
@@ -111,6 +146,13 @@ public abstract class GameHostBase : IDisposable
     /// Configures the touch input adapter. Override to set up touch-specific configuration.
     /// </summary>
     protected virtual void ConfigureTouch()
+    {
+    }
+
+    /// <summary>
+    /// Runs after all input devices have been configured.
+    /// </summary>
+    protected virtual void OnInputConfigured()
     {
     }
 
@@ -373,6 +415,9 @@ public abstract class GameHostBase : IDisposable
             return;
 
         OnDisposing();
+
+        _widgetInputRouter?.Dispose();
+        _widgetInputRouter = null;
 
         UnhookEvents();
 

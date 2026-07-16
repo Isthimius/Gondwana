@@ -70,10 +70,9 @@ public sealed class WidgetInputRouter : IDisposable
     /// </param>
     /// <param name="mouseEventPoller">The optional Gondwana mouse poller.</param>
     /// <param name="touchEventPoller">The optional Gondwana touch poller.</param>
-    public WidgetInputRouter(
-        RenderSurfaceHostBase renderSurfaceHost,
-        MouseEventPoller? mouseEventPoller,
-        TouchEventPoller? touchEventPoller)
+    public WidgetInputRouter(RenderSurfaceHostBase renderSurfaceHost,
+                             MouseEventPoller? mouseEventPoller,
+                             TouchEventPoller? touchEventPoller)
     {
         _renderSurfaceHost =
             renderSurfaceHost ??

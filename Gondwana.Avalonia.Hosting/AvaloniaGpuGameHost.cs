@@ -10,7 +10,7 @@ namespace Gondwana.Avalonia.Hosting;
 /// <remarks>
 /// GPU rendering requires a desktop Avalonia target that supports OpenGL
 /// (Windows, macOS, or Linux).  It is not suitable for WebAssembly (WASM) targets;
-/// use <see cref="AvaloniaGameHost"/> with
+/// use <see cref="AvaloniaBitmapGameHost"/> with
 /// <see cref="AvaloniaBitmapRenderSurfaceControl"/> for cross-platform / WASM scenarios.
 /// </remarks>
 public abstract class AvaloniaGpuGameHost : GameHostBase
@@ -106,4 +106,11 @@ public abstract class AvaloniaGpuGameHost : GameHostBase
     /// such as attaching gesture recognizers.
     /// </summary>
     protected virtual void OnTouchAdapterInitialized() { }
+
+    protected sealed override void OnInputConfigured()
+    {
+        base.OnInputConfigured();
+
+        InitializeWidgetInput(RenderSurface.Host);
+    }
 }

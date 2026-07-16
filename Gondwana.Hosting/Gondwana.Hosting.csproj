@@ -20,6 +20,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
 

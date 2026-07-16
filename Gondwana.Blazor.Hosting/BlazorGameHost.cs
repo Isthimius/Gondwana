@@ -37,9 +37,8 @@ public abstract class BlazorGameHost : GameHostBase
     /// <param name="renderSurface">The render surface component to use for rendering.</param>
     /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurface"/> or <paramref name="jsRuntime"/> is null.</exception>
-    protected BlazorGameHost(
-        BlazorBitmapRenderSurfaceComponent renderSurface,
-        IJSRuntime jsRuntime)
+    protected BlazorGameHost(BlazorBitmapRenderSurfaceComponent renderSurface,
+                             IJSRuntime jsRuntime)
     {
         RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
         _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
@@ -231,5 +230,12 @@ public abstract class BlazorGameHost : GameHostBase
     /// </summary>
     protected virtual void OnBlazorDisposed()
     {
+    }
+
+    protected sealed override void OnInputConfigured()
+    {
+        base.OnInputConfigured();
+
+        InitializeWidgetInput(RenderSurface.Host);
     }
 }

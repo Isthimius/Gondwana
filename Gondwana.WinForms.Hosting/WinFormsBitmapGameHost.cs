@@ -25,7 +25,6 @@ public abstract class WinFormsGameHost : WinFormsGameHostBase
     private WinFormsGameHost(SurfaceInitialization initialization)
         : base(initialization.RenderSurface, initialization.RenderSurface.Host.Bind)
     {
-        RenderSurface = initialization.RenderSurface;
     }
 
     private sealed class SurfaceInitialization
@@ -36,5 +35,12 @@ public abstract class WinFormsGameHost : WinFormsGameHostBase
         {
             RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
         }
+    }
+
+    protected sealed override void OnInputConfigured()
+    {
+        base.OnInputConfigured();
+
+        InitializeWidgetInput(RenderSurface.Host);
     }
 }
