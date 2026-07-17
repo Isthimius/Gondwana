@@ -61,6 +61,12 @@ public abstract class WidgetBase : DirectComposite
     /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerClick;
 
+    public event Action? FocusGained;
+
+    public event Action? FocusLost;
+
+    public event Action<WidgetKeyboardEventArgs>? KeyboardInput;
+
     #endregion Events
 
     #region Constructor
@@ -85,16 +91,37 @@ public abstract class WidgetBase : DirectComposite
     #region Input Handling
 
     /// <summary>
+    /// Gets or sets whether this widget participates in any input handling.
+    /// </summary>
+    public bool IsInputEnabled { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets whether this widget participates in pointer input.
     /// </summary>
     public bool IsPointerInputEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether this widget may receive keyboard input.
+    /// </summary>
+    public bool IsKeyboardInputEnabled { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether this widget may receive keyboard focus.
+    /// </summary>
+    public bool CanReceiveFocus { get; set; } = false;
+
+    /// <summary>
+    /// Gets whether this widget currently owns keyboard focus.
+    /// </summary>
+    public bool IsFocused { get; internal set; } = false;
 
     /// <summary>
     /// Determines whether the supplied screen position intersects this widget.
     /// </summary>
     public virtual bool HitTest(Point screenPositionPx)
     {
-        return IsPointerInputEnabled &&
+        return IsInputEnabled &&
+               IsPointerInputEnabled &&
                Visible &&
                ScreenBounds.Contains(screenPositionPx);
     }
@@ -109,6 +136,8 @@ public abstract class WidgetBase : DirectComposite
     /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Show()
     {
+        WidgetInputRouterRegistry.TryRegister(this);
+
         SetIsVisible(true);
 
         ProcessShown();
@@ -139,6 +168,8 @@ public abstract class WidgetBase : DirectComposite
     /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Activate()
     {
+        WidgetInputRouterRegistry.TryBringToFront(this);
+
         ProcessActivated();
         OnActivated();
         Activated?.Invoke();
@@ -247,6 +278,33 @@ public abstract class WidgetBase : DirectComposite
         PointerClick?.Invoke(args);
     }
 
+    protected internal void DispatchFocusGained()
+    {
+        IsFocused = true;
+
+        ProcessFocusGained();
+        OnFocusGained();
+        FocusGained?.Invoke();
+    }
+
+    protected internal void DispatchFocusLost()
+    {
+        IsFocused = false;
+
+        ProcessFocusLost();
+        OnFocusLost();
+        FocusLost?.Invoke();
+    }
+
+    protected internal void DispatchKeyboardInput(WidgetKeyboardEventArgs args)
+    {
+        ArgumentNullException.ThrowIfNull(args);
+
+        ProcessKeyboardInput(args);
+        OnKeyboardInput(args);
+        KeyboardInput?.Invoke(args);
+    }
+
     #endregion Pointer Dispatch
 
     #region Framework Processing
@@ -316,6 +374,18 @@ public abstract class WidgetBase : DirectComposite
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
     protected virtual void ProcessPointerUp(WidgetPointerEventArgs args)
+    {
+    }
+
+    protected virtual void ProcessFocusGained()
+    {
+    }
+
+    protected virtual void ProcessFocusLost()
+    {
+    }
+
+    protected virtual void ProcessKeyboardInput(WidgetKeyboardEventArgs args)
     {
     }
 
@@ -408,6 +478,18 @@ public abstract class WidgetBase : DirectComposite
     /// </summary>
     /// <param name="args">The pointer event arguments.</param>
     protected virtual void OnPointerClick(WidgetPointerEventArgs args)
+    {
+    }
+
+    protected virtual void OnFocusGained()
+    {
+    }
+
+    protected virtual void OnFocusLost()
+    {
+    }
+
+    protected virtual void OnKeyboardInput(WidgetKeyboardEventArgs args)
     {
     }
 

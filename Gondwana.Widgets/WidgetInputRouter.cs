@@ -54,11 +54,61 @@ public sealed class WidgetInputRouter : IDisposable
 
     private PointerCapture? _mouseCapture;
     private WidgetBase? _hoveredWidget;
+    private WidgetBase? _focusedWidget;
 
     private bool _isStarted;
     private bool _disposed;
 
     #endregion Fields
+
+    public WidgetBase? FocusedWidget => _focusedWidget;
+
+    public void Focus(WidgetBase? widget)
+    {
+        if (ReferenceEquals(_focusedWidget, widget))
+            return;
+
+        if (widget is not null &&
+            (!widget.IsInputEnabled ||
+             !widget.IsKeyboardInputEnabled ||
+             !widget.CanReceiveFocus))
+        {
+            return;
+        }
+
+        WidgetBase? previous = _focusedWidget;
+        _focusedWidget = widget;
+
+        previous?.DispatchFocusLost();
+        widget?.DispatchFocusGained();
+    }
+
+    public void ClearFocus()
+    {
+        Focus(null);
+    }
+
+    internal void NotifyWidgetHidden(WidgetBase widget)
+    {
+        ArgumentNullException.ThrowIfNull(widget);
+
+        if (ReferenceEquals(_focusedWidget, widget))
+            Focus(null);
+
+        if (ReferenceEquals(_mouseCapture, widget))
+            _mouseCapture = null;
+
+        if (ReferenceEquals(_hoveredWidget, widget))
+            _hoveredWidget = null;
+
+        foreach (int pointerId in _touchCaptures
+                     .Where(x => ReferenceEquals(x.Value, widget))
+                     .Select(x => x.Key)
+                     .ToArray())
+        {
+            _touchCaptures.Remove(pointerId);
+        }
+    }
 
     #region Constructor
 
@@ -166,9 +216,10 @@ public sealed class WidgetInputRouter : IDisposable
             _touchEventPoller.TouchEnded += OnTouchEnded;
         }
 
+        WidgetInputRouterRegistry.Attach(_renderSurfaceHost, this);
+
         _isStarted = true;
     }
-
     /// <summary>
     /// Unsubscribes the router from its input pollers.
     /// </summary>
@@ -176,6 +227,8 @@ public sealed class WidgetInputRouter : IDisposable
     {
         if (!_isStarted)
             return;
+
+        WidgetInputRouterRegistry.Detach(_renderSurfaceHost, this);
 
         if (_mouseEventPoller is not null)
             _mouseEventPoller.MouseEvent -= OnMouseEvent;
@@ -628,8 +681,12 @@ public sealed class WidgetInputRouter : IDisposable
 
             _touchCaptures.Remove(touchId);
         }
-    }
 
+        // Do this last in case a pointer-up handler attempts
+        // to change focus while the widget is being removed.
+        if (ReferenceEquals(_focusedWidget, widget))
+            Focus(null);
+    }
     private sealed class PointerCapture
     {
         public PointerCapture(
