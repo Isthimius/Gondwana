@@ -129,11 +129,12 @@ public abstract class DraggableWidgetBase : WidgetBase
     {
         base.ProcessPointerDown(args);
 
+        _suppressNextPointerClick = false;
+
         if (_isPointerDown || !CanStartDrag(args))
             return;
 
         _isPointerDown = true;
-        _suppressNextPointerClick = false;
         IsDragging = false;
 
         _dragStartScreenPositionPx = args.ScreenPositionPx;
