@@ -1,5 +1,6 @@
 ﻿using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Views;
 using System.Drawing;
 using System.Numerics;
 
@@ -31,6 +32,8 @@ public abstract class DraggableWidgetBase : WidgetBase
     private Vector2 _dragStartWidgetPositionPx;
     private WidgetPointerButtonEnum _dragButton = WidgetPointerButtonEnum.None;
     private int _dragPointerId;
+    private View? _dragView;
+    private Vector2 _dragStartPointerPositionPx;
 
     #endregion Fields
 
@@ -129,18 +132,22 @@ public abstract class DraggableWidgetBase : WidgetBase
     {
         base.ProcessPointerDown(args);
 
-        _suppressNextPointerClick = false;
-
         if (_isPointerDown || !CanStartDrag(args))
             return;
 
         _isPointerDown = true;
+        _suppressNextPointerClick = false;
         IsDragging = false;
 
         _dragStartScreenPositionPx = args.ScreenPositionPx;
         _dragStartWidgetPositionPx = GetPosition();
         _dragButton = args.Button;
         _dragPointerId = args.PointerId;
+        _dragView = args.View;
+        _dragStartPointerPositionPx =
+            GetPointerPositionInWidgetSpace(
+                args.ScreenPositionPx,
+                args.View);
     }
 
     /// <inheritdoc/>
@@ -169,7 +176,10 @@ public abstract class DraggableWidgetBase : WidgetBase
                 return;
         }
 
-        ApplyDragPosition(totalScreenDeltaPx);
+        ApplyDragPosition(
+            totalScreenDeltaPx,
+            _dragView ?? args.View);
+
         DispatchDragged(CreateDragEventArgs(args));
     }
 
@@ -186,7 +196,10 @@ public abstract class DraggableWidgetBase : WidgetBase
         if (IsDragging)
         {
             Vector2 totalScreenDeltaPx = GetTotalScreenDelta(args.ScreenPositionPx);
-            ApplyDragPosition(totalScreenDeltaPx);
+            ApplyDragPosition(
+                totalScreenDeltaPx,
+                _dragView ?? args.View);
+
             dragArgs = CreateDragEventArgs(args);
         }
 
@@ -232,17 +245,43 @@ public abstract class DraggableWidgetBase : WidgetBase
     }
 
     /// <summary>
-    /// Converts total screen-space pointer movement into the pixel-position space used by this widget.
+    /// Converts total screen-space pointer movement into the coordinate space used by this widget.
     /// </summary>
-    /// <param name="totalScreenDeltaPx">Total pointer movement from the drag-start position.</param>
-    /// <returns>The equivalent movement to apply to the widget's anchor position.</returns>
+    /// <param name="totalScreenDeltaPx">
+    /// Total pointer movement, in screen pixels, from the drag-start position.
+    /// </param>
+    /// <param name="view">
+    /// The view through which the drag began and remains captured.
+    /// </param>
+    /// <returns>
+    /// The movement to apply to the widget anchor. View widgets return a screen-space
+    /// delta; scene-layer widgets return a world-space delta.
+    /// </returns>
     /// <remarks>
-    /// The default implementation returns the screen-space delta unchanged. Override this for
-    /// world-space widgets affected by view zoom or another coordinate transformation.
+    /// The default implementation uses the view's authoritative screen-to-world transform
+    /// for scene-layer widgets, including camera position, zoom, viewport offset, and parallax.
+    /// Override this method only when a widget requires a different coordinate conversion.
     /// </remarks>
-    protected virtual Vector2 ConvertScreenDeltaToPositionDelta(Vector2 totalScreenDeltaPx)
+    protected virtual Vector2 ConvertScreenDeltaToPositionDelta(
+        Vector2 totalScreenDeltaPx,
+        View view)
     {
-        return totalScreenDeltaPx;
+        ArgumentNullException.ThrowIfNull(view);
+
+        if (Mode == DirectDrawingMode.View)
+            return totalScreenDeltaPx;
+
+        var currentScreenPositionPx = new PointF(
+            _dragStartScreenPositionPx.X + totalScreenDeltaPx.X,
+            _dragStartScreenPositionPx.Y + totalScreenDeltaPx.Y);
+
+        Vector2 currentPointerPositionPx =
+            GetPointerPositionInWidgetSpace(
+                currentScreenPositionPx,
+                view);
+
+        return currentPointerPositionPx -
+               _dragStartPointerPositionPx;
     }
 
     /// <summary>
@@ -289,6 +328,31 @@ public abstract class DraggableWidgetBase : WidgetBase
 
     #region Private Methods
 
+    private Vector2 GetPointerPositionInWidgetSpace(
+        PointF screenPositionPx,
+        View view)
+    {
+        if (Mode == DirectDrawingMode.View)
+        {
+            return new Vector2(
+                screenPositionPx.X,
+                screenPositionPx.Y);
+        }
+
+        var sceneLayer = SceneLayer
+            ?? throw new InvalidOperationException(
+                "A scene-layer draggable widget must contain children attached to a SceneLayer.");
+
+        PointF worldPositionPx =
+            view.ScreenPxToWorldPx(
+                sceneLayer,
+                screenPositionPx);
+
+        return new Vector2(
+            worldPositionPx.X,
+            worldPositionPx.Y);
+    }
+
     private Vector2 GetTotalScreenDelta(PointF currentScreenPositionPx)
     {
         return new Vector2(
@@ -296,9 +360,15 @@ public abstract class DraggableWidgetBase : WidgetBase
             currentScreenPositionPx.Y - _dragStartScreenPositionPx.Y);
     }
 
-    private void ApplyDragPosition(Vector2 totalScreenDeltaPx)
+    private void ApplyDragPosition(
+        Vector2 totalScreenDeltaPx,
+        View view)
     {
-        Vector2 positionDeltaPx = ConvertScreenDeltaToPositionDelta(totalScreenDeltaPx);
+        Vector2 positionDeltaPx =
+            ConvertScreenDeltaToPositionDelta(
+                totalScreenDeltaPx,
+                view);
+
         Vector2 proposedPositionPx = _dragStartWidgetPositionPx + positionDeltaPx;
         Vector2 constrainedPositionPx = ConstrainDragPosition(proposedPositionPx);
 
@@ -348,6 +418,8 @@ public abstract class DraggableWidgetBase : WidgetBase
         _dragStartWidgetPositionPx = default;
         _dragButton = WidgetPointerButtonEnum.None;
         _dragPointerId = default;
+        _dragView = null;
+        _dragStartPointerPositionPx = default;
 
         if (clearClickSuppression)
             _suppressNextPointerClick = false;

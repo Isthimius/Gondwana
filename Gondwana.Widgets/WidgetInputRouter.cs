@@ -3,6 +3,7 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Input.Touch;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Views;
 using System.Drawing;
 using System.Numerics;
 
@@ -29,7 +30,7 @@ public sealed class WidgetInputRouter : IDisposable
     private readonly TouchEventPoller? _touchEventPoller;
 
     private PointerCapture? _mouseCapture;
-    private WidgetBase? _hoveredWidget;
+    private WidgetHit? _hoveredHit;
     private WidgetBase? _focusedWidget;
 
     private bool _isStarted;
@@ -134,7 +135,10 @@ public sealed class WidgetInputRouter : IDisposable
             _touchEventPoller.TouchEnded += OnTouchEnded;
         }
 
-        WidgetInputRouterRegistry.Attach(_renderSurfaceHost, this);
+        WidgetInputRouterRegistry.Attach(
+            _renderSurfaceHost,
+            this);
+
         _isStarted = true;
     }
 
@@ -143,7 +147,9 @@ public sealed class WidgetInputRouter : IDisposable
         if (!_isStarted)
             return;
 
-        WidgetInputRouterRegistry.Detach(_renderSurfaceHost, this);
+        WidgetInputRouterRegistry.Detach(
+            _renderSurfaceHost,
+            this);
 
         if (_keyboardEventPoller is not null)
             _keyboardEventPoller.KeyDown -= OnKeyDown;
@@ -162,7 +168,7 @@ public sealed class WidgetInputRouter : IDisposable
 
         _mouseCapture = null;
         _touchCaptures.Clear();
-        _hoveredWidget = null;
+        _hoveredHit = null;
         _isStarted = false;
     }
 
@@ -245,51 +251,76 @@ public sealed class WidgetInputRouter : IDisposable
             return;
 
         Point currentPosition = args.CurrentPosition;
-        WidgetBase? initialHit = HitTest(currentPosition);
+        WidgetHit? initialHit = HitTest(currentPosition);
 
-        UpdateMouseHover(initialHit, currentPosition, args.Tick);
+        UpdateMouseHover(
+            initialHit,
+            currentPosition,
+            args.Tick);
 
         foreach (MouseButton mouseButton in _mouseButtons)
         {
             if (args.IsButtonJustPressed(mouseButton))
-                ProcessMouseDown(initialHit, currentPosition, mouseButton, args.Tick);
+            {
+                ProcessMouseDown(
+                    initialHit,
+                    currentPosition,
+                    mouseButton,
+                    args.Tick);
+            }
         }
 
         if (args.PreviousPosition != currentPosition)
-            ProcessMouseMove(args.PreviousPosition, currentPosition, args.Tick);
+        {
+            ProcessMouseMove(
+                args.PreviousPosition,
+                currentPosition,
+                args.Tick);
+        }
 
         foreach (MouseButton mouseButton in _mouseButtons)
         {
             if (args.IsButtonJustReleased(mouseButton))
-                ProcessMouseUp(currentPosition, mouseButton, args.Tick);
+            {
+                ProcessMouseUp(
+                    currentPosition,
+                    mouseButton,
+                    args.Tick);
+            }
         }
 
-        UpdateMouseHover(HitTest(currentPosition), currentPosition, args.Tick);
+        UpdateMouseHover(
+            HitTest(currentPosition),
+            currentPosition,
+            args.Tick);
     }
 
     private void ProcessMouseDown(
-        WidgetBase? hitWidget,
+        WidgetHit? hit,
         Point position,
         MouseButton mouseButton,
         long tick)
     {
-        if (_mouseCapture is not null || hitWidget is null)
+        if (_mouseCapture is not null || hit is null)
             return;
 
-        FocusFromPointer(hitWidget);
+        FocusFromPointer(hit.Widget);
 
-        WidgetPointerButtonEnum widgetButton = MapMouseButton(mouseButton);
+        WidgetPointerButtonEnum widgetButton =
+            MapMouseButton(mouseButton);
 
-        hitWidget.DispatchPointerDown(
+        hit.Widget.DispatchPointerDown(
             CreatePointerArgs(
-                hitWidget,
+                hit.Widget,
+                hit.View,
                 position,
                 widgetButton,
                 tick,
                 MousePointerId));
 
         _mouseCapture = new PointerCapture(
-            hitWidget,
+            hit.Widget,
+            hit.View,
             widgetButton,
             position);
     }
@@ -299,10 +330,21 @@ public sealed class WidgetInputRouter : IDisposable
         Point currentPosition,
         long tick)
     {
-        PointerCapture? capture = GetValidMouseCapture(tick);
-        WidgetBase? recipient = capture?.Widget ?? HitTest(currentPosition);
+        PointerCapture? capture =
+            GetValidMouseCapture(tick);
 
-        if (recipient is null)
+        WidgetHit? hit =
+            capture is null
+                ? HitTest(currentPosition)
+                : null;
+
+        WidgetBase? recipient =
+            capture?.Widget ?? hit?.Widget;
+
+        View? view =
+            capture?.View ?? hit?.View;
+
+        if (recipient is null || view is null)
             return;
 
         var delta = new Vector2(
@@ -310,11 +352,13 @@ public sealed class WidgetInputRouter : IDisposable
             currentPosition.Y - previousPosition.Y);
 
         WidgetPointerButtonEnum button =
-            capture?.Button ?? WidgetPointerButtonEnum.None;
+            capture?.Button ??
+            WidgetPointerButtonEnum.None;
 
         recipient.DispatchPointerMove(
             CreatePointerArgs(
                 recipient,
+                view,
                 currentPosition,
                 button,
                 tick,
@@ -330,27 +374,40 @@ public sealed class WidgetInputRouter : IDisposable
         MouseButton mouseButton,
         long tick)
     {
-        WidgetPointerButtonEnum releasedButton = MapMouseButton(mouseButton);
-        PointerCapture? capture = GetValidMouseCapture(tick);
+        WidgetPointerButtonEnum releasedButton =
+            MapMouseButton(mouseButton);
 
-        if (capture is null || capture.Button != releasedButton)
+        PointerCapture? capture =
+            GetValidMouseCapture(tick);
+
+        if (capture is null ||
+            capture.Button != releasedButton)
+        {
             return;
+        }
 
         WidgetBase recipient = capture.Widget;
 
         recipient.DispatchPointerUp(
             CreatePointerArgs(
                 recipient,
+                capture.View,
                 position,
                 releasedButton,
                 tick,
                 MousePointerId));
 
-        if (ReferenceEquals(HitTest(position), recipient))
+        WidgetHit? releaseHit = HitTest(position);
+
+        if (IsSameHit(
+            releaseHit,
+            recipient,
+            capture.View))
         {
             recipient.DispatchPointerClick(
                 CreatePointerArgs(
                     recipient,
+                    capture.View,
                     position,
                     releasedButton,
                     tick,
@@ -362,32 +419,38 @@ public sealed class WidgetInputRouter : IDisposable
     }
 
     private void UpdateMouseHover(
-        WidgetBase? hitWidget,
+        WidgetHit? hit,
         Point position,
         long tick)
     {
-        if (ReferenceEquals(_hoveredWidget, hitWidget))
+        if (IsSameHit(
+            _hoveredHit,
+            hit))
+        {
             return;
+        }
 
-        WidgetBase? previous = _hoveredWidget;
-        _hoveredWidget = hitWidget;
+        WidgetHit? previous = _hoveredHit;
+        _hoveredHit = hit;
 
         if (previous is not null)
         {
-            previous.DispatchPointerLeave(
+            previous.Widget.DispatchPointerLeave(
                 CreatePointerArgs(
-                    previous,
+                    previous.Widget,
+                    previous.View,
                     position,
                     WidgetPointerButtonEnum.None,
                     tick,
                     MousePointerId));
         }
 
-        if (hitWidget is not null)
+        if (hit is not null)
         {
-            hitWidget.DispatchPointerEnter(
+            hit.Widget.DispatchPointerEnter(
                 CreatePointerArgs(
-                    hitWidget,
+                    hit.Widget,
+                    hit.View,
                     position,
                     WidgetPointerButtonEnum.None,
                     tick,
@@ -395,17 +458,23 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
-    private PointerCapture? GetValidMouseCapture(long tick)
+    private PointerCapture? GetValidMouseCapture(
+        long tick)
     {
         if (_mouseCapture is null)
             return null;
 
-        if (IsPointerRoutable(_mouseCapture.Widget))
+        if (IsPointerRoutable(
+            _mouseCapture.Widget,
+            _mouseCapture.View))
+        {
             return _mouseCapture;
+        }
 
         _mouseCapture.Widget.DispatchPointerUp(
             CreatePointerArgs(
                 _mouseCapture.Widget,
+                _mouseCapture.View,
                 _mouseCapture.LastPosition,
                 _mouseCapture.Button,
                 tick,
@@ -415,7 +484,9 @@ public sealed class WidgetInputRouter : IDisposable
         return null;
     }
 
-    private void OnTouchBegan(object? sender, TouchEventArgs args)
+    private void OnTouchBegan(
+        object? sender,
+        TouchEventArgs args)
     {
         if (!_isStarted || _disposed)
             return;
@@ -425,42 +496,55 @@ public sealed class WidgetInputRouter : IDisposable
         if (_touchCaptures.ContainsKey(touch.Id))
             return;
 
-        WidgetBase? target = HitTest(touch.Position);
+        WidgetHit? hit =
+            HitTest(touch.Position);
 
-        if (target is null)
+        if (hit is null)
             return;
 
-        FocusFromPointer(target);
+        FocusFromPointer(hit.Widget);
 
-        target.DispatchPointerDown(
+        hit.Widget.DispatchPointerDown(
             CreatePointerArgs(
-                target,
+                hit.Widget,
+                hit.View,
                 touch.Position,
                 WidgetPointerButtonEnum.Touch,
                 args.Tick,
                 touch.Id));
 
-        _touchCaptures[touch.Id] = new PointerCapture(
-            target,
-            WidgetPointerButtonEnum.Touch,
-            touch.Position);
+        _touchCaptures[touch.Id] =
+            new PointerCapture(
+                hit.Widget,
+                hit.View,
+                WidgetPointerButtonEnum.Touch,
+                touch.Position);
     }
 
-    private void OnTouchMoved(object? sender, TouchEventArgs args)
+    private void OnTouchMoved(
+        object? sender,
+        TouchEventArgs args)
     {
         if (!_isStarted || _disposed)
             return;
 
         TouchPoint touch = args.Touch;
 
-        if (!_touchCaptures.TryGetValue(touch.Id, out PointerCapture? capture))
+        if (!_touchCaptures.TryGetValue(
+            touch.Id,
+            out PointerCapture? capture))
+        {
             return;
+        }
 
-        if (!IsPointerRoutable(capture.Widget))
+        if (!IsPointerRoutable(
+            capture.Widget,
+            capture.View))
         {
             capture.Widget.DispatchPointerUp(
                 CreatePointerArgs(
                     capture.Widget,
+                    capture.View,
                     capture.LastPosition,
                     WidgetPointerButtonEnum.Touch,
                     args.Tick,
@@ -477,6 +561,7 @@ public sealed class WidgetInputRouter : IDisposable
         capture.Widget.DispatchPointerMove(
             CreatePointerArgs(
                 capture.Widget,
+                capture.View,
                 touch.Position,
                 WidgetPointerButtonEnum.Touch,
                 args.Tick,
@@ -486,32 +571,46 @@ public sealed class WidgetInputRouter : IDisposable
         capture.LastPosition = touch.Position;
     }
 
-    private void OnTouchEnded(object? sender, TouchEventArgs args)
+    private void OnTouchEnded(
+        object? sender,
+        TouchEventArgs args)
     {
         if (!_isStarted || _disposed)
             return;
 
         TouchPoint touch = args.Touch;
 
-        if (!_touchCaptures.Remove(touch.Id, out PointerCapture? capture))
+        if (!_touchCaptures.Remove(
+            touch.Id,
+            out PointerCapture? capture))
+        {
             return;
+        }
 
         WidgetBase recipient = capture.Widget;
 
         recipient.DispatchPointerUp(
             CreatePointerArgs(
                 recipient,
+                capture.View,
                 touch.Position,
                 WidgetPointerButtonEnum.Touch,
                 args.Tick,
                 touch.Id));
 
+        WidgetHit? releaseHit =
+            HitTest(touch.Position);
+
         if (touch.Phase != TouchPhase.Cancelled &&
-            ReferenceEquals(HitTest(touch.Position), recipient))
+            IsSameHit(
+                releaseHit,
+                recipient,
+                capture.View))
         {
             recipient.DispatchPointerClick(
                 CreatePointerArgs(
                     recipient,
+                    capture.View,
                     touch.Position,
                     WidgetPointerButtonEnum.Touch,
                     args.Tick,
@@ -520,50 +619,129 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
-    private WidgetBase? HitTest(Point screenPositionPx)
+    private WidgetHit? HitTest(
+        Point screenPositionPx)
     {
+        View? view =
+            GetTopmostViewAt(screenPositionPx);
+
+        if (view is null)
+            return null;
+
         WidgetBase[] snapshot;
 
         lock (_syncRoot)
             snapshot = [.. _widgets];
 
-        for (int index = snapshot.Length - 1; index >= 0; index--)
+        for (int index = snapshot.Length - 1;
+             index >= 0;
+             index--)
         {
             WidgetBase widget = snapshot[index];
 
-            if (widget.HitTest(screenPositionPx))
-                return widget;
+            if (widget.HitTest(
+                view,
+                screenPositionPx))
+            {
+                return new WidgetHit(
+                    widget,
+                    view);
+            }
         }
 
         return null;
     }
 
-    private bool IsRegistered(WidgetBase widget)
+    private View? GetTopmostViewAt(
+        Point screenPositionPx)
+    {
+        var views =
+            _renderSurfaceHost.ViewManager.Views;
+
+        for (int index = views.Count - 1;
+             index >= 0;
+             index--)
+        {
+            View view = views[index];
+
+            if (view.Viewport.TargetRectPx.Contains(
+                screenPositionPx))
+            {
+                return view;
+            }
+        }
+
+        return null;
+    }
+
+    private bool IsRegistered(
+        WidgetBase widget)
     {
         lock (_syncRoot)
             return _widgets.Contains(widget);
     }
 
-    private bool IsPointerRoutable(WidgetBase widget)
+    private bool IsManagedView(
+        View view)
+    {
+        return _renderSurfaceHost
+            .ViewManager
+            .Views
+            .Contains(view);
+    }
+
+    private bool HasValidTarget(
+        WidgetBase widget,
+        View? routedView = null)
+    {
+        if (widget.Mode == DirectDrawingMode.SceneLayer)
+            return widget.SceneLayer is not null;
+
+        if (widget.View is null ||
+            !IsManagedView(widget.View))
+        {
+            return false;
+        }
+
+        return routedView is null ||
+               ReferenceEquals(
+                   widget.View,
+                   routedView);
+    }
+
+    private bool IsPointerRoutable(
+        WidgetBase widget,
+        View view)
     {
         return IsRegistered(widget) &&
-               ReferenceEquals(widget.RenderSurfaceHost, _renderSurfaceHost) &&
+               IsManagedView(view) &&
+               ReferenceEquals(
+                   widget.RenderSurfaceHost,
+                   _renderSurfaceHost) &&
+               HasValidTarget(
+                   widget,
+                   view) &&
                widget.IsInputEnabled &&
                widget.IsPointerInputEnabled &&
                widget.Visible;
     }
 
-    private bool CanReceiveKeyboardInput(WidgetBase widget)
+    private bool CanReceiveKeyboardInput(
+        WidgetBase widget)
     {
         return IsRegistered(widget) &&
-               ReferenceEquals(widget.RenderSurfaceHost, _renderSurfaceHost) &&
+               ReferenceEquals(
+                   widget.RenderSurfaceHost,
+                   _renderSurfaceHost) &&
+               HasValidTarget(widget) &&
                widget.Visible &&
                widget.IsInputEnabled &&
                widget.IsKeyboardInputEnabled &&
                widget.CanReceiveFocus;
     }
 
-    private void FocusFromPointer(WidgetBase widget)
+    private void FocusFromPointer(
+        WidgetBase widget)
     {
         if (widget.IsInputEnabled &&
             widget.IsKeyboardInputEnabled &&
@@ -577,7 +755,10 @@ public sealed class WidgetInputRouter : IDisposable
         WidgetBase widget,
         bool dispatchPointerUp)
     {
-        ReleasePointerState(widget, dispatchPointerUp);
+        ReleasePointerState(
+            widget,
+            dispatchPointerUp);
+
         ReleaseKeyboardFocus(widget);
     }
 
@@ -585,18 +766,26 @@ public sealed class WidgetInputRouter : IDisposable
         WidgetBase widget,
         bool dispatchPointerUp)
     {
-        if (ReferenceEquals(_hoveredWidget, widget))
-            _hoveredWidget = null;
-
-        if (ReferenceEquals(_mouseCapture?.Widget, widget))
+        if (ReferenceEquals(
+            _hoveredHit?.Widget,
+            widget))
         {
-            PointerCapture capture = _mouseCapture;
+            _hoveredHit = null;
+        }
+
+        if (ReferenceEquals(
+            _mouseCapture?.Widget,
+            widget))
+        {
+            PointerCapture capture =
+                _mouseCapture;
 
             if (dispatchPointerUp)
             {
                 widget.DispatchPointerUp(
                     CreatePointerArgs(
                         widget,
+                        capture.View,
                         capture.LastPosition,
                         capture.Button,
                         tick: 0,
@@ -607,19 +796,24 @@ public sealed class WidgetInputRouter : IDisposable
         }
 
         int[] touchIds = _touchCaptures
-            .Where(x => ReferenceEquals(x.Value.Widget, widget))
+            .Where(x =>
+                ReferenceEquals(
+                    x.Value.Widget,
+                    widget))
             .Select(x => x.Key)
             .ToArray();
 
         foreach (int touchId in touchIds)
         {
-            PointerCapture capture = _touchCaptures[touchId];
+            PointerCapture capture =
+                _touchCaptures[touchId];
 
             if (dispatchPointerUp)
             {
                 widget.DispatchPointerUp(
                     CreatePointerArgs(
                         widget,
+                        capture.View,
                         capture.LastPosition,
                         WidgetPointerButtonEnum.Touch,
                         tick: 0,
@@ -630,14 +824,49 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
-    private void ReleaseKeyboardFocus(WidgetBase widget)
+    private void ReleaseKeyboardFocus(
+        WidgetBase widget)
     {
-        if (ReferenceEquals(_focusedWidget, widget))
+        if (ReferenceEquals(
+            _focusedWidget,
+            widget))
+        {
             Focus(null);
+        }
+    }
+
+    private static bool IsSameHit(
+        WidgetHit? left,
+        WidgetHit? right)
+    {
+        if (left is null || right is null)
+            return left is null && right is null;
+
+        return ReferenceEquals(
+                   left.Widget,
+                   right.Widget) &&
+               ReferenceEquals(
+                   left.View,
+                   right.View);
+    }
+
+    private static bool IsSameHit(
+        WidgetHit? hit,
+        WidgetBase widget,
+        View view)
+    {
+        return hit is not null &&
+               ReferenceEquals(
+                   hit.Widget,
+                   widget) &&
+               ReferenceEquals(
+                   hit.View,
+                   view);
     }
 
     private static WidgetPointerEventArgs CreatePointerArgs(
         WidgetBase widget,
+        View view,
         Point position,
         WidgetPointerButtonEnum button,
         long tick,
@@ -647,7 +876,10 @@ public sealed class WidgetInputRouter : IDisposable
     {
         return new WidgetPointerEventArgs(
             widget,
-            new PointF(position.X, position.Y),
+            view,
+            new PointF(
+                position.X,
+                position.Y),
             button,
             clickCount,
             deltaPx,
@@ -655,14 +887,22 @@ public sealed class WidgetInputRouter : IDisposable
             pointerId);
     }
 
-    private static WidgetPointerButtonEnum MapMouseButton(MouseButton button)
+    private static WidgetPointerButtonEnum MapMouseButton(
+        MouseButton button)
     {
         return button switch
         {
-            MouseButton.Left => WidgetPointerButtonEnum.Left,
-            MouseButton.Right => WidgetPointerButtonEnum.Right,
-            MouseButton.Middle => WidgetPointerButtonEnum.Middle,
-            _ => WidgetPointerButtonEnum.None
+            MouseButton.Left =>
+                WidgetPointerButtonEnum.Left,
+
+            MouseButton.Right =>
+                WidgetPointerButtonEnum.Right,
+
+            MouseButton.Middle =>
+                WidgetPointerButtonEnum.Middle,
+
+            _ =>
+                WidgetPointerButtonEnum.None
         };
     }
 
@@ -671,7 +911,11 @@ public sealed class WidgetInputRouter : IDisposable
         IDirectDrawable drawing)
     {
         if (drawing is WidgetBase widget)
-            Unregister(widget, dispatchPointerUp: false);
+        {
+            Unregister(
+                widget,
+                dispatchPointerUp: false);
+        }
     }
 
     private void Unregister(
@@ -688,23 +932,46 @@ public sealed class WidgetInputRouter : IDisposable
 
         widget.Disposing -= OnWidgetDisposing;
 
-        ReleaseInputState(widget, dispatchPointerUp);
+        ReleaseInputState(
+            widget,
+            dispatchPointerUp);
+    }
+
+    private sealed class WidgetHit
+    {
+        public WidgetHit(
+            WidgetBase widget,
+            View view)
+        {
+            Widget = widget;
+            View = view;
+        }
+
+        public WidgetBase Widget { get; }
+
+        public View View { get; }
     }
 
     private sealed class PointerCapture
     {
         public PointerCapture(
             WidgetBase widget,
+            View view,
             WidgetPointerButtonEnum button,
             Point lastPosition)
         {
             Widget = widget;
+            View = view;
             Button = button;
             LastPosition = lastPosition;
         }
 
         public WidgetBase Widget { get; }
+
+        public View View { get; }
+
         public WidgetPointerButtonEnum Button { get; }
+
         public Point LastPosition { get; set; }
     }
 }

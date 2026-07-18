@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using Gondwana.Rendering.Views;
 
 namespace Gondwana.Widgets;
 
@@ -12,6 +13,7 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
     /// Initializes a new instance of the <see cref="WidgetPointerEventArgs"/> class.
     /// </summary>
     /// <param name="widget">The widget that raised the event.</param>
+    /// <param name="view">The view through which the pointer interaction was routed.</param>
     /// <param name="screenPositionPx">The pointer position in screen pixels.</param>
     /// <param name="button">The pointer button involved in the interaction.</param>
     /// <param name="clickCount">The number of clicks associated with this pointer action.</param>
@@ -23,6 +25,7 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
     /// </param>
     public WidgetPointerEventArgs(
         WidgetBase widget,
+        View view,
         PointF screenPositionPx,
         WidgetPointerButtonEnum button = WidgetPointerButtonEnum.None,
         int clickCount = 0,
@@ -31,12 +34,18 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
         int pointerId = 0)
         : base(widget, tick)
     {
+        View = view ?? throw new ArgumentNullException(nameof(view));
         ScreenPositionPx = screenPositionPx;
         Button = button;
         ClickCount = clickCount;
         DeltaPx = deltaPx;
         PointerId = pointerId;
     }
+
+    /// <summary>
+    /// Gets the view through which the pointer interaction was routed.
+    /// </summary>
+    public View View { get; }
 
     /// <summary>
     /// Gets the pointer position in screen pixels.

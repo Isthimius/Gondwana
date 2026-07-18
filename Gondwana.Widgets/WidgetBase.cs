@@ -1,5 +1,6 @@
 ﻿using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Views;
 using System.Drawing;
 
 namespace Gondwana.Widgets;
@@ -98,12 +99,56 @@ public abstract class WidgetBase : DirectComposite
 
     public bool IsFocused { get; internal set; }
 
-    public virtual bool HitTest(Point screenPositionPx)
+    public virtual bool HitTest(
+        View view,
+        Point screenPositionPx)
     {
-        return IsInputEnabled &&
-               IsPointerInputEnabled &&
-               Visible &&
-               ScreenBounds.Contains(screenPositionPx);
+        ArgumentNullException.ThrowIfNull(view);
+
+        if (!IsInputEnabled ||
+            !IsPointerInputEnabled ||
+            !Visible)
+        {
+            return false;
+        }
+
+        if (Mode == DirectDrawingMode.View &&
+            !ReferenceEquals(View, view))
+        {
+            return false;
+        }
+
+        RectangleF screenBounds = GetDrawLocationScreen(view);
+
+        return !screenBounds.IsEmpty &&
+               screenBounds.Contains(
+                   screenPositionPx.X,
+                   screenPositionPx.Y);
+    }
+
+    public virtual bool HitTest(
+        Point screenPositionPx)
+    {
+        var views = RenderSurfaceHost.ViewManager.Views;
+
+        for (int index = views.Count - 1;
+             index >= 0;
+             index--)
+        {
+            View view = views[index];
+
+            if (!view.Viewport.TargetRectPx.Contains(
+                screenPositionPx))
+            {
+                continue;
+            }
+
+            return HitTest(
+                view,
+                screenPositionPx);
+        }
+
+        return false;
     }
 
     public WidgetBase Show()
