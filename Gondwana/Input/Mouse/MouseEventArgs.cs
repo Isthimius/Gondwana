@@ -85,7 +85,7 @@ public sealed class MouseEventArgs : EventArgs
     /// <summary>
     /// Gets the engine tick at the time this mouse event was generated.
     /// </summary>
-    public long Tick { get; init; }
+public long Tick { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseEventArgs"/> class with comprehensive mouse state information
