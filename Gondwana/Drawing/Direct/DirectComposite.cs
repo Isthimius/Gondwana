@@ -639,6 +639,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         if (drawing is not DirectDrawingMovableBase child)
             return;
 
+        child.Disposing -= OnChildDisposing;
         _children.Remove(child);
         _localOffsetPx.Remove(child);
         ResetTargetWhenEmpty();
