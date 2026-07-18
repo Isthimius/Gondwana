@@ -241,7 +241,7 @@ public sealed class WidgetInputRouter : IDisposable
                 target,
                 key,
                 args.KeyAction,
-                KeyboardModifierState.None,
+                args.Modifiers,
                 tick: 0));
     }
 
