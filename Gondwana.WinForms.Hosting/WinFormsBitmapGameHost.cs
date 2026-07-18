@@ -25,6 +25,7 @@ public abstract class WinFormsGameHost : WinFormsGameHostBase
     private WinFormsGameHost(SurfaceInitialization initialization)
         : base(initialization.RenderSurface, initialization.RenderSurface.Host.Bind)
     {
+        RenderSurface = initialization.RenderSurface;
     }
 
     private sealed class SurfaceInitialization
