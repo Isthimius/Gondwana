@@ -62,7 +62,7 @@ It is intended to serve as a flexible foundation for custom 2D and 2.5D games.
 
 - **Cross-platform rendering** via SkiaSharp (`SKSurface`, `SKBitmap` backbuffers)  
 - **Backbuffer abstraction** (`BitmapBackbuffer`, `GpuBackbuffer`) for multiple platforms, with GPU FPS tracking  
-- **Platform adapters for WinForms and Avalonia** — Avalonia targets desktop, WebAssembly, Android, and iOS  
+- **Platform adapters for WinForms, Avalonia, and Blazor** — WinForms targets Windows; Avalonia targets Windows, macOS, and Linux; and Blazor targets WebAssembly.
 - **Hosting abstractions** (`GameHostBase`, `WinFormsGameHost`, `AvaloniaGameHost`) for clean engine lifecycle management  
 - **DirectDrawing system** for sprites, shapes, text, and effects:
   - `DirectRectangle`, `DirectImage`, `TextBlock`, `DirectParticles` (particle system with emitters and per-particle blend modes)
@@ -70,11 +70,11 @@ It is intended to serve as a flexible foundation for custom 2D and 2.5D games.
 - **Sprite effects** — jiggle (visual-only offsets), pulse/loop resize behaviors with completion events  
 - **High-resolution timing** (`HighResTimer`) for smooth frame updates  
 - **Thread-safe rendering manager** (`DirectDrawingManager`) with Z-order sorting
-- **Native, first-class sprite and camera movement** tweening, follow, and smooth lerp
+- **Native, first-class sprite and camera movement** with easing-based tweening, target following, and smooth interpolation.
 - **Font asset type and `FontManager`** for centralized font loading and management  
 - **Extensible resource pipeline** for tilesheets, sprites, fonts, and audio  
 - **SDL2 gamepad input** via the dedicated `Gondwana.Input.SDL2` package  
-- **Experimental video & audio integration** (`LibVLCSharp`, `NAudio`, MIDI via `Gondwana.Audio.Midi`)
+- **Video & audio integration** (`LibVLCSharp`, `NAudio`, MIDI via `Gondwana.Audio.Midi`)
 
 ---
 
@@ -87,7 +87,7 @@ At runtime, Gondwana is driven by a central `Engine` loop responsible for advanc
 Each engine cycle proceeds through the following stages:
 
 1. **World-space change tracking**  
-   Any state changes enqueue world-space dirty regions into the owning `SceneLayer`’s `RefreshQueue`. This allows the engine to track *what* changed and *where*, without relying on full-frame redraws.
+   For CPU-bound rendering, any state changes enqueue world-space dirty regions into the owning `SceneLayer`’s `RefreshQueue`. This allows the engine to track *what* changed and *where*, without relying on full-frame redraws.
 
 2. **View-based rendering**  
    During rendering, the `ViewRenderer` iterates active `View` instances in deterministic Z-order. 

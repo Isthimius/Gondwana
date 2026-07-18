@@ -48,6 +48,7 @@ _host.Initialize();
 -   `Gondwana` --- Core engine
 -   `Gondwana.Avalonia` --- Avalonia rendering and input adapters
 -   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 

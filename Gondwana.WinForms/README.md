@@ -39,6 +39,7 @@ Engine.Instance.InitializeWinFormsMouseAdapter(winFormBitmapRenderSurfaceControl
 
 -   `Gondwana` --- Core engine
 -   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 

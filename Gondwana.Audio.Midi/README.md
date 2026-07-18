@@ -37,6 +37,7 @@ host.Engine.InitializeMidiAudioFormats();
 
 -   `Gondwana` --- Core engine
 -   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 

@@ -73,6 +73,7 @@ var video = new DirectVideo(
 -   `Gondwana` --- Core engine
 -   `Gondwana.WinForms` --- WinForms rendering and input adapters
 -   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 
