@@ -86,8 +86,7 @@ public abstract class GameHostBase : IDisposable
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="renderSurfaceHost"/> is <see langword="null"/>.
     /// </exception>
-    protected void InitializeWidgetInput(
-        RenderSurfaceHostBase renderSurfaceHost)
+    protected void InitializeWidgetInput(RenderSurfaceHostBase renderSurfaceHost)
     {
         ArgumentNullException.ThrowIfNull(renderSurfaceHost);
 

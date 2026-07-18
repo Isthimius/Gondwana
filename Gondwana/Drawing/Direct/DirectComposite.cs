@@ -299,36 +299,61 @@ public class DirectComposite : IDirectDrawable, IMovable
     #region Collection Management
 
     /// <summary>
-    /// Adds a child and stores its local pixel offset from the composite anchor.
-    /// If <paramref name="keepCurrentOffset"/> is true (default), the offset is computed from the child's current Bounds.
-    /// Otherwise, pass an explicit local pixel offset.
+    /// Adds a child drawing and stores its local pixel offset from the composite anchor.
     /// </summary>
-    /// <param name="child">The child drawable to add to the composite.</param>
-    /// <param name="keepCurrentOffset">If true, computes the offset from the child's current position relative to the anchor. If false, uses the explicit offset.</param>
-    /// <param name="explicitLocalOffsetPx">Optional explicit pixel offset to use when keepCurrentOffset is false.</param>
-    /// <returns>This composite instance for method chaining.</returns>
-    public DirectComposite Add(DirectDrawingMovableBase child, bool keepCurrentOffset = true, Vector2? explicitLocalOffsetPx = null)
+    /// <param name="child">The child drawing to add.</param>
+    /// <param name="keepCurrentOffset">
+    /// <see langword="true"/> to preserve the child's current position relative to the
+    /// composite anchor; otherwise, use <paramref name="explicitLocalOffsetPx"/>.
+    /// </param>
+    /// <param name="explicitLocalOffsetPx">
+    /// The local offset to use when <paramref name="keepCurrentOffset"/> is
+    /// <see langword="false"/>.
+    /// </param>
+    /// <returns>This composite for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="child"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the child belongs to a different render surface host or uses a
+    /// different drawing mode.
+    /// </exception>
+    public DirectComposite Add(
+        DirectDrawingMovableBase child,
+        bool keepCurrentOffset = true,
+        Vector2? explicitLocalOffsetPx = null)
     {
-        if (child is null)
-            throw new ArgumentNullException(nameof(child));
+        ArgumentNullException.ThrowIfNull(child);
 
-        if (child.RenderSurfaceHost != RenderSurfaceHost)
-            throw new ArgumentException("Child's RenderSurfaceHost must match the Composite's RenderSurfaceHost.", nameof(child));
+        if (!ReferenceEquals(child.RenderSurfaceHost, RenderSurfaceHost))
+        {
+            throw new ArgumentException(
+                "The child must belong to the same RenderSurfaceHost as the composite.",
+                nameof(child));
+        }
+
+        if (child.Mode != Mode)
+        {
+            throw new ArgumentException(
+                $"The child drawing mode '{child.Mode}' does not match " +
+                $"the composite drawing mode '{Mode}'.",
+                nameof(child));
+        }
 
         if (_children.Contains(child))
             return this;
 
+        Vector2 offset = keepCurrentOffset
+            ? child.GetPosition() - new Vector2(_anchor.X, _anchor.Y)
+            : explicitLocalOffsetPx ?? Vector2.Zero;
+
         _children.Add(child);
+        _localOffsetPx[child] = offset;
         child.Disposing += OnChildDisposing;
 
-        Vector2 offset = keepCurrentOffset
-            ? new Vector2(child.ScreenBounds.X - _anchor.X, child.ScreenBounds.Y - _anchor.Y)
-            : (explicitLocalOffsetPx ?? Vector2.Zero);
+        child.SetPosition(
+            new Vector2(_anchor.X, _anchor.Y) + offset);
 
-        _localOffsetPx[child] = offset;
-
-        // Normalize immediately
-        child.SetPosition(new Vector2(_anchor.X, _anchor.Y) + offset);
         return this;
     }
 
