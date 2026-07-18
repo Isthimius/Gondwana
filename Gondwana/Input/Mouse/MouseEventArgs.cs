@@ -82,6 +82,9 @@ public sealed class MouseEventArgs : EventArgs
     /// </summary>
     public bool IsAlt => CurrentKeyboardModifiers.HasFlag(KeyboardModifierState.Alt);
 
+    /// <summary>
+    /// Gets the engine tick at the time this mouse event was generated.
+    /// </summary>
     public long Tick { get; init; }
 
     /// <summary>
