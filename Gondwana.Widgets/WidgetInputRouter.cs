@@ -1,4 +1,5 @@
 ﻿using Gondwana.Drawing.Direct;
+using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Input.Touch;
 using Gondwana.Rendering;
@@ -7,35 +8,9 @@ using System.Numerics;
 
 namespace Gondwana.Widgets;
 
-/// <summary>
-/// Routes Gondwana mouse and touch input to registered widgets.
-/// </summary>
-/// <remarks>
-/// <para>
-/// Widgets are hit-tested in registration order, with the most recently registered widget
-/// treated as the topmost widget. Call <see cref="BringToFront"/> when a widget is promoted.
-/// </para>
-/// <para>
-/// The router performs logical pointer capture. After pointer-down, movement and pointer-up
-/// continue to be sent to the captured widget even when the pointer leaves its bounds.
-/// </para>
-/// <para>
-/// The router subscribes to raw mouse and touch lifecycle events. It does not consume the
-/// higher-level tap, swipe, or pinch gesture event.
-/// </para>
-/// </remarks>
 public sealed class WidgetInputRouter : IDisposable
 {
-    #region Constants
-
-    /// <summary>
-    /// Pointer ID reserved for the mouse. Touch contacts retain their platform-provided IDs.
-    /// </summary>
     public const int MousePointerId = -1;
-
-    #endregion Constants
-
-    #region Fields
 
     private static readonly MouseButton[] _mouseButtons =
     [
@@ -49,6 +24,7 @@ public sealed class WidgetInputRouter : IDisposable
     private readonly Dictionary<int, PointerCapture> _touchCaptures = [];
 
     private readonly RenderSurfaceHostBase _renderSurfaceHost;
+    private readonly KeyboardEventPoller? _keyboardEventPoller;
     private readonly MouseEventPoller? _mouseEventPoller;
     private readonly TouchEventPoller? _touchEventPoller;
 
@@ -59,87 +35,23 @@ public sealed class WidgetInputRouter : IDisposable
     private bool _isStarted;
     private bool _disposed;
 
-    #endregion Fields
-
-    public WidgetBase? FocusedWidget => _focusedWidget;
-
-    public void Focus(WidgetBase? widget)
-    {
-        if (ReferenceEquals(_focusedWidget, widget))
-            return;
-
-        if (widget is not null &&
-            (!widget.IsInputEnabled ||
-             !widget.IsKeyboardInputEnabled ||
-             !widget.CanReceiveFocus))
-        {
-            return;
-        }
-
-        WidgetBase? previous = _focusedWidget;
-        _focusedWidget = widget;
-
-        previous?.DispatchFocusLost();
-        widget?.DispatchFocusGained();
-    }
-
-    public void ClearFocus()
-    {
-        Focus(null);
-    }
-
-    internal void NotifyWidgetHidden(WidgetBase widget)
-    {
-        ArgumentNullException.ThrowIfNull(widget);
-
-        if (ReferenceEquals(_focusedWidget, widget))
-            Focus(null);
-
-        if (ReferenceEquals(_mouseCapture, widget))
-            _mouseCapture = null;
-
-        if (ReferenceEquals(_hoveredWidget, widget))
-            _hoveredWidget = null;
-
-        foreach (int pointerId in _touchCaptures
-                     .Where(x => ReferenceEquals(x.Value, widget))
-                     .Select(x => x.Key)
-                     .ToArray())
-        {
-            _touchCaptures.Remove(pointerId);
-        }
-    }
-
-    #region Constructor
-
-    /// <summary>
-    /// Initializes a new widget input router.
-    /// </summary>
-    /// <param name="renderSurfaceHost">
-    /// The render surface whose widgets are routed by this instance.
-    /// </param>
-    /// <param name="mouseEventPoller">The optional Gondwana mouse poller.</param>
-    /// <param name="touchEventPoller">The optional Gondwana touch poller.</param>
-    public WidgetInputRouter(RenderSurfaceHostBase renderSurfaceHost,
-                             MouseEventPoller? mouseEventPoller,
-                             TouchEventPoller? touchEventPoller)
+    public WidgetInputRouter(
+        RenderSurfaceHostBase renderSurfaceHost,
+        KeyboardEventPoller? keyboardEventPoller,
+        MouseEventPoller? mouseEventPoller,
+        TouchEventPoller? touchEventPoller)
     {
         _renderSurfaceHost =
             renderSurfaceHost ??
             throw new ArgumentNullException(nameof(renderSurfaceHost));
 
+        _keyboardEventPoller = keyboardEventPoller;
         _mouseEventPoller = mouseEventPoller;
         _touchEventPoller = touchEventPoller;
     }
 
-    #endregion Constructor
+    public WidgetBase? FocusedWidget => _focusedWidget;
 
-    #region Registration
-
-    /// <summary>
-    /// Registers a widget for hit testing and pointer routing.
-    /// The most recently registered widget is treated as topmost.
-    /// </summary>
     public void Register(WidgetBase widget)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -162,18 +74,12 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
-    /// <summary>
-    /// Removes a widget from pointer routing.
-    /// </summary>
     public void Unregister(WidgetBase widget)
     {
         ArgumentNullException.ThrowIfNull(widget);
         Unregister(widget, dispatchPointerUp: true);
     }
 
-    /// <summary>
-    /// Moves an already registered widget to the top of the hit-test order.
-    /// </summary>
     public void BringToFront(WidgetBase widget)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -188,23 +94,35 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
-    #endregion Registration
+    public void Focus(WidgetBase? widget)
+    {
+        if (ReferenceEquals(_focusedWidget, widget))
+            return;
 
-    #region Lifecycle
+        if (widget is not null && !CanReceiveKeyboardInput(widget))
+            return;
 
-    /// <summary>
-    /// Subscribes the router to the configured mouse and touch pollers.
-    /// </summary>
-    /// <remarks>
-    /// This method does not reconfigure the pollers. Mouse monitoring must have
-    /// movement tracking enabled for dragging to work.
-    /// </remarks>
+        WidgetBase? previous = _focusedWidget;
+        _focusedWidget = widget;
+
+        previous?.DispatchFocusLost();
+        widget?.DispatchFocusGained();
+    }
+
+    public void ClearFocus()
+    {
+        Focus(null);
+    }
+
     public void Start()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
         if (_isStarted)
             return;
+
+        if (_keyboardEventPoller is not null)
+            _keyboardEventPoller.KeyDown += OnKeyDown;
 
         if (_mouseEventPoller is not null)
             _mouseEventPoller.MouseEvent += OnMouseEvent;
@@ -217,18 +135,18 @@ public sealed class WidgetInputRouter : IDisposable
         }
 
         WidgetInputRouterRegistry.Attach(_renderSurfaceHost, this);
-
         _isStarted = true;
     }
-    /// <summary>
-    /// Unsubscribes the router from its input pollers.
-    /// </summary>
+
     public void Stop()
     {
         if (!_isStarted)
             return;
 
         WidgetInputRouterRegistry.Detach(_renderSurfaceHost, this);
+
+        if (_keyboardEventPoller is not null)
+            _keyboardEventPoller.KeyDown -= OnKeyDown;
 
         if (_mouseEventPoller is not null)
             _mouseEventPoller.MouseEvent -= OnMouseEvent;
@@ -240,13 +158,14 @@ public sealed class WidgetInputRouter : IDisposable
             _touchEventPoller.TouchEnded -= OnTouchEnded;
         }
 
+        ClearFocus();
+
         _mouseCapture = null;
         _touchCaptures.Clear();
         _hoveredWidget = null;
         _isStarted = false;
     }
 
-    /// <inheritdoc/>
     public void Dispose()
     {
         if (_disposed)
@@ -268,9 +187,57 @@ public sealed class WidgetInputRouter : IDisposable
         _disposed = true;
     }
 
-    #endregion Lifecycle
+    internal void NotifyWidgetHidden(WidgetBase widget)
+    {
+        ArgumentNullException.ThrowIfNull(widget);
+        ReleaseInputState(widget, dispatchPointerUp: true);
+    }
 
-    #region Mouse Routing
+    internal void NotifyWidgetInputDisabled(WidgetBase widget)
+    {
+        ArgumentNullException.ThrowIfNull(widget);
+        ReleaseInputState(widget, dispatchPointerUp: true);
+    }
+
+    internal void NotifyWidgetPointerInputDisabled(WidgetBase widget)
+    {
+        ArgumentNullException.ThrowIfNull(widget);
+        ReleasePointerState(widget, dispatchPointerUp: true);
+    }
+
+    internal void NotifyWidgetKeyboardFocusDisabled(WidgetBase widget)
+    {
+        ArgumentNullException.ThrowIfNull(widget);
+        ReleaseKeyboardFocus(widget);
+    }
+
+    private void OnKeyDown(KeyDownEventArgs args)
+    {
+        if (!_isStarted || _disposed)
+            return;
+
+        WidgetBase? target = _focusedWidget;
+
+        if (target is null)
+            return;
+
+        if (!CanReceiveKeyboardInput(target))
+        {
+            ClearFocus();
+            return;
+        }
+
+        if (!int.TryParse(args.KeyConfig.Key, out int key))
+            return;
+
+        target.DispatchKeyboardInput(
+            new WidgetKeyboardEventArgs(
+                target,
+                key,
+                args.KeyAction,
+                KeyboardModifierState.None,
+                tick: 0));
+    }
 
     private void OnMouseEvent(MouseEventArgs args)
     {
@@ -297,7 +264,6 @@ public sealed class WidgetInputRouter : IDisposable
                 ProcessMouseUp(currentPosition, mouseButton, args.Tick);
         }
 
-        // A drag may have moved a widget under or away from the pointer.
         UpdateMouseHover(HitTest(currentPosition), currentPosition, args.Tick);
     }
 
@@ -310,16 +276,17 @@ public sealed class WidgetInputRouter : IDisposable
         if (_mouseCapture is not null || hitWidget is null)
             return;
 
+        FocusFromPointer(hitWidget);
+
         WidgetPointerButtonEnum widgetButton = MapMouseButton(mouseButton);
 
-        var pointerArgs = CreatePointerArgs(
-            hitWidget,
-            position,
-            widgetButton,
-            tick,
-            MousePointerId);
-
-        hitWidget.DispatchPointerDown(pointerArgs);
+        hitWidget.DispatchPointerDown(
+            CreatePointerArgs(
+                hitWidget,
+                position,
+                widgetButton,
+                tick,
+                MousePointerId));
 
         _mouseCapture = new PointerCapture(
             hitWidget,
@@ -433,7 +400,7 @@ public sealed class WidgetInputRouter : IDisposable
         if (_mouseCapture is null)
             return null;
 
-        if (IsRoutable(_mouseCapture.Widget))
+        if (IsPointerRoutable(_mouseCapture.Widget))
             return _mouseCapture;
 
         _mouseCapture.Widget.DispatchPointerUp(
@@ -447,10 +414,6 @@ public sealed class WidgetInputRouter : IDisposable
         _mouseCapture = null;
         return null;
     }
-
-    #endregion Mouse Routing
-
-    #region Touch Routing
 
     private void OnTouchBegan(object? sender, TouchEventArgs args)
     {
@@ -466,6 +429,8 @@ public sealed class WidgetInputRouter : IDisposable
 
         if (target is null)
             return;
+
+        FocusFromPointer(target);
 
         target.DispatchPointerDown(
             CreatePointerArgs(
@@ -491,7 +456,7 @@ public sealed class WidgetInputRouter : IDisposable
         if (!_touchCaptures.TryGetValue(touch.Id, out PointerCapture? capture))
             return;
 
-        if (!IsRoutable(capture.Widget))
+        if (!IsPointerRoutable(capture.Widget))
         {
             capture.Widget.DispatchPointerUp(
                 CreatePointerArgs(
@@ -555,10 +520,6 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
-    #endregion Touch Routing
-
-    #region Hit Testing
-
     private WidgetBase? HitTest(Point screenPositionPx)
     {
         WidgetBase[] snapshot;
@@ -577,16 +538,103 @@ public sealed class WidgetInputRouter : IDisposable
         return null;
     }
 
-    private bool IsRoutable(WidgetBase widget)
+    private bool IsRegistered(WidgetBase widget)
     {
-        return ReferenceEquals(widget.RenderSurfaceHost, _renderSurfaceHost) &&
+        lock (_syncRoot)
+            return _widgets.Contains(widget);
+    }
+
+    private bool IsPointerRoutable(WidgetBase widget)
+    {
+        return IsRegistered(widget) &&
+               ReferenceEquals(widget.RenderSurfaceHost, _renderSurfaceHost) &&
+               widget.IsInputEnabled &&
                widget.IsPointerInputEnabled &&
                widget.Visible;
     }
 
-    #endregion Hit Testing
+    private bool CanReceiveKeyboardInput(WidgetBase widget)
+    {
+        return IsRegistered(widget) &&
+               ReferenceEquals(widget.RenderSurfaceHost, _renderSurfaceHost) &&
+               widget.Visible &&
+               widget.IsInputEnabled &&
+               widget.IsKeyboardInputEnabled &&
+               widget.CanReceiveFocus;
+    }
 
-    #region Helpers
+    private void FocusFromPointer(WidgetBase widget)
+    {
+        if (widget.IsInputEnabled &&
+            widget.IsKeyboardInputEnabled &&
+            widget.CanReceiveFocus)
+        {
+            Focus(widget);
+        }
+    }
+
+    private void ReleaseInputState(
+        WidgetBase widget,
+        bool dispatchPointerUp)
+    {
+        ReleasePointerState(widget, dispatchPointerUp);
+        ReleaseKeyboardFocus(widget);
+    }
+
+    private void ReleasePointerState(
+        WidgetBase widget,
+        bool dispatchPointerUp)
+    {
+        if (ReferenceEquals(_hoveredWidget, widget))
+            _hoveredWidget = null;
+
+        if (ReferenceEquals(_mouseCapture?.Widget, widget))
+        {
+            PointerCapture capture = _mouseCapture;
+
+            if (dispatchPointerUp)
+            {
+                widget.DispatchPointerUp(
+                    CreatePointerArgs(
+                        widget,
+                        capture.LastPosition,
+                        capture.Button,
+                        tick: 0,
+                        pointerId: MousePointerId));
+            }
+
+            _mouseCapture = null;
+        }
+
+        int[] touchIds = _touchCaptures
+            .Where(x => ReferenceEquals(x.Value.Widget, widget))
+            .Select(x => x.Key)
+            .ToArray();
+
+        foreach (int touchId in touchIds)
+        {
+            PointerCapture capture = _touchCaptures[touchId];
+
+            if (dispatchPointerUp)
+            {
+                widget.DispatchPointerUp(
+                    CreatePointerArgs(
+                        widget,
+                        capture.LastPosition,
+                        WidgetPointerButtonEnum.Touch,
+                        tick: 0,
+                        pointerId: touchId));
+            }
+
+            _touchCaptures.Remove(touchId);
+        }
+    }
+
+    private void ReleaseKeyboardFocus(WidgetBase widget)
+    {
+        if (ReferenceEquals(_focusedWidget, widget))
+            Focus(null);
+    }
 
     private static WidgetPointerEventArgs CreatePointerArgs(
         WidgetBase widget,
@@ -640,53 +688,9 @@ public sealed class WidgetInputRouter : IDisposable
 
         widget.Disposing -= OnWidgetDisposing;
 
-        if (ReferenceEquals(_hoveredWidget, widget))
-            _hoveredWidget = null;
-
-        if (ReferenceEquals(_mouseCapture?.Widget, widget))
-        {
-            if (dispatchPointerUp)
-            {
-                widget.DispatchPointerUp(
-                    CreatePointerArgs(
-                        widget,
-                        _mouseCapture!.LastPosition,
-                        _mouseCapture.Button,
-                        tick: 0,
-                        pointerId: MousePointerId));
-            }
-
-            _mouseCapture = null;
-        }
-
-        int[] touchIds = _touchCaptures
-            .Where(x => ReferenceEquals(x.Value.Widget, widget))
-            .Select(x => x.Key)
-            .ToArray();
-
-        foreach (int touchId in touchIds)
-        {
-            PointerCapture capture = _touchCaptures[touchId];
-
-            if (dispatchPointerUp)
-            {
-                widget.DispatchPointerUp(
-                    CreatePointerArgs(
-                        widget,
-                        capture.LastPosition,
-                        WidgetPointerButtonEnum.Touch,
-                        tick: 0,
-                        pointerId: touchId));
-            }
-
-            _touchCaptures.Remove(touchId);
-        }
-
-        // Do this last in case a pointer-up handler attempts
-        // to change focus while the widget is being removed.
-        if (ReferenceEquals(_focusedWidget, widget))
-            Focus(null);
+        ReleaseInputState(widget, dispatchPointerUp);
     }
+
     private sealed class PointerCapture
     {
         public PointerCapture(
@@ -700,11 +704,7 @@ public sealed class WidgetInputRouter : IDisposable
         }
 
         public WidgetBase Widget { get; }
-
         public WidgetPointerButtonEnum Button { get; }
-
         public Point LastPosition { get; set; }
     }
-
-    #endregion Helpers
 }

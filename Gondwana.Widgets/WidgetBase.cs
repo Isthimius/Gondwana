@@ -4,120 +4,100 @@ using System.Drawing;
 
 namespace Gondwana.Widgets;
 
-/// <summary>
-/// Base type for reusable Gondwana widgets built on top of <see cref="DirectComposite"/>.
-/// </summary>
 public abstract class WidgetBase : DirectComposite
 {
-    #region Events
+    private bool _isInputEnabled = true;
+    private bool _isPointerInputEnabled = true;
+    private bool _isKeyboardInputEnabled;
+    private bool _canReceiveFocus;
 
-    /// <summary>
-    /// Raised when the widget becomes visible.
-    /// </summary>
     public event Action? Shown;
-
-    /// <summary>
-    /// Raised when the widget becomes hidden.
-    /// </summary>
     public event Action? Hidden;
-
-    /// <summary>
-    /// Raised when the widget is activated.
-    /// </summary>
     public event Action? Activated;
-
-    /// <summary>
-    /// Raised when the widget is cancelled.
-    /// </summary>
     public event Action? Cancelled;
 
-    /// <summary>
-    /// Raised when a pointer enters the widget's bounds.
-    /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerEnter;
-
-    /// <summary>
-    /// Raised when a pointer leaves the widget's bounds.
-    /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerLeave;
-
-    /// <summary>
-    /// Raised when a pointer button is pressed down within the widget.
-    /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerDown;
-
-    /// <summary>
-    /// Raised when the pointer moves over the widget or while the widget owns pointer capture.
-    /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerMove;
-
-    /// <summary>
-    /// Raised when a pointer button is released within the widget or while the widget owns pointer capture.
-    /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerUp;
-
-    /// <summary>
-    /// Raised when a pointer click is completed within the widget.
-    /// </summary>
     public event Action<WidgetPointerEventArgs>? PointerClick;
 
     public event Action? FocusGained;
-
     public event Action? FocusLost;
-
     public event Action<WidgetKeyboardEventArgs>? KeyboardInput;
 
-    #endregion Events
-
-    #region Constructor
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WidgetBase"/> class.
-    /// </summary>
-    /// <param name="renderSurfaceHost">The render surface host for drawing operations.</param>
-    /// <param name="mode">The drawing mode (world or screen space).</param>
-    /// <param name="anchor">The anchor point for the widget in pixels. Default is (0, 0).</param>
-    /// <param name="nickname">Optional friendly name for the widget.</param>
-    protected WidgetBase(RenderSurfaceHostBase renderSurfaceHost,
-                         DirectDrawingMode mode,
-                         PointF anchor = default,
-                         string? nickname = null)
+    protected WidgetBase(
+        RenderSurfaceHostBase renderSurfaceHost,
+        DirectDrawingMode mode,
+        PointF anchor = default,
+        string? nickname = null)
         : base(renderSurfaceHost, mode, anchor, nickname)
     {
     }
 
-    #endregion Constructor
+    public bool IsInputEnabled
+    {
+        get => _isInputEnabled;
+        set
+        {
+            if (_isInputEnabled == value)
+                return;
 
-    #region Input Handling
+            _isInputEnabled = value;
 
-    /// <summary>
-    /// Gets or sets whether this widget participates in any input handling.
-    /// </summary>
-    public bool IsInputEnabled { get; set; } = true;
+            if (!value)
+                WidgetInputRouterRegistry.NotifyInputDisabled(this);
+        }
+    }
 
-    /// <summary>
-    /// Gets or sets whether this widget participates in pointer input.
-    /// </summary>
-    public bool IsPointerInputEnabled { get; set; } = true;
+    public bool IsPointerInputEnabled
+    {
+        get => _isPointerInputEnabled;
+        set
+        {
+            if (_isPointerInputEnabled == value)
+                return;
 
-    /// <summary>
-    /// Gets or sets whether this widget may receive keyboard input.
-    /// </summary>
-    public bool IsKeyboardInputEnabled { get; set; } = false;
+            _isPointerInputEnabled = value;
 
-    /// <summary>
-    /// Gets or sets whether this widget may receive keyboard focus.
-    /// </summary>
-    public bool CanReceiveFocus { get; set; } = false;
+            if (!value)
+                WidgetInputRouterRegistry.NotifyPointerInputDisabled(this);
+        }
+    }
 
-    /// <summary>
-    /// Gets whether this widget currently owns keyboard focus.
-    /// </summary>
-    public bool IsFocused { get; internal set; } = false;
+    public bool IsKeyboardInputEnabled
+    {
+        get => _isKeyboardInputEnabled;
+        set
+        {
+            if (_isKeyboardInputEnabled == value)
+                return;
 
-    /// <summary>
-    /// Determines whether the supplied screen position intersects this widget.
-    /// </summary>
+            _isKeyboardInputEnabled = value;
+
+            if (!value)
+                WidgetInputRouterRegistry.NotifyKeyboardFocusDisabled(this);
+        }
+    }
+
+    public bool CanReceiveFocus
+    {
+        get => _canReceiveFocus;
+        set
+        {
+            if (_canReceiveFocus == value)
+                return;
+
+            _canReceiveFocus = value;
+
+            if (!value)
+                WidgetInputRouterRegistry.NotifyKeyboardFocusDisabled(this);
+        }
+    }
+
+    public bool IsFocused { get; internal set; }
+
     public virtual bool HitTest(Point screenPositionPx)
     {
         return IsInputEnabled &&
@@ -126,14 +106,6 @@ public abstract class WidgetBase : DirectComposite
                ScreenBounds.Contains(screenPositionPx);
     }
 
-    #endregion
-
-    #region Visibility / Activation
-
-    /// <summary>
-    /// Makes the widget visible and raises the <see cref="Shown"/> event.
-    /// </summary>
-    /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Show()
     {
         WidgetInputRouterRegistry.TryRegister(this);
@@ -147,12 +119,10 @@ public abstract class WidgetBase : DirectComposite
         return this;
     }
 
-    /// <summary>
-    /// Hides the widget and raises the <see cref="Hidden"/> event.
-    /// </summary>
-    /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Hide()
     {
+        WidgetInputRouterRegistry.NotifyHidden(this);
+
         SetIsVisible(false);
 
         ProcessHidden();
@@ -162,10 +132,6 @@ public abstract class WidgetBase : DirectComposite
         return this;
     }
 
-    /// <summary>
-    /// Activates the widget and raises the <see cref="Activated"/> event.
-    /// </summary>
-    /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Activate()
     {
         WidgetInputRouterRegistry.TryBringToFront(this);
@@ -177,10 +143,6 @@ public abstract class WidgetBase : DirectComposite
         return this;
     }
 
-    /// <summary>
-    /// Cancels the widget and raises the <see cref="Cancelled"/> event.
-    /// </summary>
-    /// <returns>This <see cref="WidgetBase"/> instance for method chaining.</returns>
     public WidgetBase Cancel()
     {
         ProcessCancelled();
@@ -190,14 +152,6 @@ public abstract class WidgetBase : DirectComposite
         return this;
     }
 
-    #endregion Visibility / Activation
-
-    #region Pointer Dispatch
-
-    /// <summary>
-    /// Dispatches a pointer-enter event, calling the virtual hook and raising the public event.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
     protected internal void DispatchPointerEnter(WidgetPointerEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -207,10 +161,6 @@ public abstract class WidgetBase : DirectComposite
         PointerEnter?.Invoke(args);
     }
 
-    /// <summary>
-    /// Dispatches a pointer-leave event, calling the virtual hook and raising the public event.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
     protected internal void DispatchPointerLeave(WidgetPointerEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -220,11 +170,6 @@ public abstract class WidgetBase : DirectComposite
         PointerLeave?.Invoke(args);
     }
 
-    /// <summary>
-    /// Dispatches a pointer-down event, first running required framework behavior,
-    /// then calling the virtual hook and raising the public event.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
     protected internal void DispatchPointerDown(WidgetPointerEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -234,11 +179,6 @@ public abstract class WidgetBase : DirectComposite
         PointerDown?.Invoke(args);
     }
 
-    /// <summary>
-    /// Dispatches a pointer-move event, first running required framework behavior,
-    /// then calling the virtual hook and raising the public event.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
     protected internal void DispatchPointerMove(WidgetPointerEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -248,11 +188,6 @@ public abstract class WidgetBase : DirectComposite
         PointerMove?.Invoke(args);
     }
 
-    /// <summary>
-    /// Dispatches a pointer-up event, first running required framework behavior,
-    /// then calling the virtual hook and raising the public event.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
     protected internal void DispatchPointerUp(WidgetPointerEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -262,11 +197,6 @@ public abstract class WidgetBase : DirectComposite
         PointerUp?.Invoke(args);
     }
 
-    /// <summary>
-    /// Dispatches a pointer-click event, calling the virtual hook and raising the public event
-    /// unless required framework behavior suppresses the click.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
     protected internal void DispatchPointerClick(WidgetPointerEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -305,193 +235,39 @@ public abstract class WidgetBase : DirectComposite
         KeyboardInput?.Invoke(args);
     }
 
-    #endregion Pointer Dispatch
+    protected virtual void ProcessShown() { }
+    protected virtual void ProcessHidden() { }
+    protected virtual void ProcessActivated() { }
+    protected virtual void ProcessCancelled() { }
 
-    #region Framework Processing
+    protected virtual void ProcessPointerEnter(WidgetPointerEventArgs args) { }
+    protected virtual void ProcessPointerLeave(WidgetPointerEventArgs args) { }
+    protected virtual void ProcessPointerDown(WidgetPointerEventArgs args) { }
+    protected virtual void ProcessPointerMove(WidgetPointerEventArgs args) { }
+    protected virtual void ProcessPointerUp(WidgetPointerEventArgs args) { }
 
-    /// <summary>
-    /// Runs required framework behavior before <see cref="OnShown"/> and <see cref="Shown"/>.
-    /// </summary>
-    protected virtual void ProcessShown()
-    {
-    }
+    protected virtual void ProcessFocusGained() { }
+    protected virtual void ProcessFocusLost() { }
+    protected virtual void ProcessKeyboardInput(WidgetKeyboardEventArgs args) { }
 
-    /// <summary>
-    /// Runs required framework behavior before <see cref="OnHidden"/> and <see cref="Hidden"/>.
-    /// </summary>
-    protected virtual void ProcessHidden()
-    {
-    }
-
-    /// <summary>
-    /// Runs required framework behavior before <see cref="OnActivated"/> and <see cref="Activated"/>.
-    /// </summary>
-    protected virtual void ProcessActivated()
-    {
-    }
-
-    /// <summary>
-    /// Runs required framework behavior before <see cref="OnCancelled"/> and <see cref="Cancelled"/>.
-    /// </summary>
-    protected virtual void ProcessCancelled()
-    {
-    }
-
-    /// <summary>
-    /// Runs required framework behavior before pointer-enter customization and notification.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void ProcessPointerEnter(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Runs required framework behavior before pointer-leave customization and notification.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void ProcessPointerLeave(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Runs required framework behavior before pointer-down customization and notification.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void ProcessPointerDown(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Runs required framework behavior before pointer-move customization and notification.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void ProcessPointerMove(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Runs required framework behavior before pointer-up customization and notification.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void ProcessPointerUp(WidgetPointerEventArgs args)
-    {
-    }
-
-    protected virtual void ProcessFocusGained()
-    {
-    }
-
-    protected virtual void ProcessFocusLost()
-    {
-    }
-
-    protected virtual void ProcessKeyboardInput(WidgetKeyboardEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Determines whether a pointer click should reach the protected hook and public event.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    /// <returns><see langword="true"/> to dispatch the click; otherwise, <see langword="false"/>.</returns>
     protected virtual bool ShouldDispatchPointerClick(WidgetPointerEventArgs args)
     {
         return true;
     }
 
-    #endregion Framework Processing
+    protected virtual void OnShown() { }
+    protected virtual void OnHidden() { }
+    protected virtual void OnActivated() { }
+    protected virtual void OnCancelled() { }
 
-    #region Protected Lifecycle Hooks
+    protected virtual void OnPointerEnter(WidgetPointerEventArgs args) { }
+    protected virtual void OnPointerLeave(WidgetPointerEventArgs args) { }
+    protected virtual void OnPointerDown(WidgetPointerEventArgs args) { }
+    protected virtual void OnPointerMove(WidgetPointerEventArgs args) { }
+    protected virtual void OnPointerUp(WidgetPointerEventArgs args) { }
+    protected virtual void OnPointerClick(WidgetPointerEventArgs args) { }
 
-    /// <summary>
-    /// Called when the widget is shown. Override to customize behavior.
-    /// </summary>
-    protected virtual void OnShown()
-    {
-    }
-
-    /// <summary>
-    /// Called when the widget is hidden. Override to customize behavior.
-    /// </summary>
-    protected virtual void OnHidden()
-    {
-    }
-
-    /// <summary>
-    /// Called when the widget is activated. Override to customize behavior.
-    /// </summary>
-    protected virtual void OnActivated()
-    {
-    }
-
-    /// <summary>
-    /// Called when the widget is cancelled. Override to customize behavior.
-    /// </summary>
-    protected virtual void OnCancelled()
-    {
-    }
-
-    /// <summary>
-    /// Called when a pointer enters the widget's bounds. Override to customize behavior.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void OnPointerEnter(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Called when a pointer leaves the widget's bounds. Override to customize behavior.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void OnPointerLeave(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Called when a pointer button is pressed down within the widget. Override to customize behavior.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void OnPointerDown(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Called when the pointer moves over the widget or while the widget owns pointer capture.
-    /// Override to customize behavior.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void OnPointerMove(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Called when a pointer button is released within the widget or while the widget owns pointer capture.
-    /// Override to customize behavior.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void OnPointerUp(WidgetPointerEventArgs args)
-    {
-    }
-
-    /// <summary>
-    /// Called when a pointer click is completed within the widget. Override to customize behavior.
-    /// </summary>
-    /// <param name="args">The pointer event arguments.</param>
-    protected virtual void OnPointerClick(WidgetPointerEventArgs args)
-    {
-    }
-
-    protected virtual void OnFocusGained()
-    {
-    }
-
-    protected virtual void OnFocusLost()
-    {
-    }
-
-    protected virtual void OnKeyboardInput(WidgetKeyboardEventArgs args)
-    {
-    }
-
-    #endregion Protected Lifecycle Hooks
+    protected virtual void OnFocusGained() { }
+    protected virtual void OnFocusLost() { }
+    protected virtual void OnKeyboardInput(WidgetKeyboardEventArgs args) { }
 }

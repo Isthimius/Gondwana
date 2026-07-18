@@ -19,7 +19,7 @@ public abstract class GameHostBase : IDisposable
     private WidgetInputRouter? _widgetInputRouter;
 
     /// <summary>
-    /// Gets the singleton instance of the engine.
+    /// Gets the singleton instance of the Gondwana engine.
     /// </summary>
     public Engine Engine => Engine.Instance;
 
@@ -34,11 +34,22 @@ public abstract class GameHostBase : IDisposable
     protected WidgetInputRouter? WidgetInputRouter => _widgetInputRouter;
 
     /// <summary>
-    /// Initializes the game host by setting up logging, platform, input, game content, and then the engine.
+    /// Initializes the game host by configuring logging, platform services, input,
+    /// game content, and the Gondwana engine.
     /// </summary>
-    /// <param name="configPath">Optional path to the configuration file.</param>
-    /// <param name="autoSaveConfig">Optional flag indicating whether to automatically save configuration changes.</param>
-    /// <param name="logLevel">The log level to use for engine logging. Default is <see cref="LogLevel.Warning"/>.</param>
+    /// <param name="configPath">Optional path to the engine configuration file.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional value indicating whether configuration changes should be saved automatically.
+    /// </param>
+    /// <param name="logLevel">
+    /// The minimum log level used by Gondwana. The default is <see cref="LogLevel.Warning"/>.
+    /// </param>
+    /// <exception cref="ObjectDisposedException">
+    /// Thrown when the host has already been disposed.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the host has already been initialized or no synchronization context is available.
+    /// </exception>
     public void Initialize(
         string? configPath = null,
         bool? autoSaveConfig = null,
@@ -55,7 +66,6 @@ public abstract class GameHostBase : IDisposable
         InitializeGameContent();
 
         InitializeEngine(configPath, autoSaveConfig);
-
         StartEngine();
 
         _initialized = true;
@@ -64,15 +74,26 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Initializes widget input for the supplied render surface host.
-    /// Call this after both the render surface and input pollers are available.
+    /// Initializes widget input routing for the supplied render surface host.
     /// </summary>
-    protected void InitializeWidgetInput(RenderSurfaceHostBase renderSurfaceHost)
+    /// <param name="renderSurfaceHost">
+    /// The render surface host whose widgets should receive keyboard, mouse, and touch input.
+    /// </param>
+    /// <remarks>
+    /// Call this only after the render surface host and the desired input pollers have been created.
+    /// Reinitializing widget input disposes the previously configured router.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="renderSurfaceHost"/> is <see langword="null"/>.
+    /// </exception>
+    protected void InitializeWidgetInput(
+        RenderSurfaceHostBase renderSurfaceHost)
     {
         ArgumentNullException.ThrowIfNull(renderSurfaceHost);
 
         _widgetInputRouter?.Dispose();
 
+        var keyboardPoller = Engine.Input.KeyboardEventPoller;
         var mousePoller = Engine.Input.MouseEventPoller;
         var touchPoller = Engine.Input.TouchEventPoller;
 
@@ -81,6 +102,7 @@ public abstract class GameHostBase : IDisposable
 
         _widgetInputRouter = new WidgetInputRouter(
             renderSurfaceHost,
+            keyboardPoller,
             mousePoller,
             touchPoller);
 
@@ -95,21 +117,22 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Configures the logging level for the engine.
+    /// Configures the logging level used by Gondwana.
     /// </summary>
-    /// <param name="logLevel">The log level to set.</param>
-    protected void ConfigureLogging(LogLevel logLevel)
+    /// <param name="logLevel">The minimum log level to use.</param>
+    protected void ConfigureLogging(
+        LogLevel logLevel)
     {
         EngineLogger.SetLogLevel(logLevel);
     }
 
     /// <summary>
-    /// Configures platform-specific features and adapters for the game host.
+    /// Configures platform-specific services, adapters, and render infrastructure.
     /// </summary>
     protected abstract void ConfigurePlatform();
 
     /// <summary>
-    /// Configures all input devices including keyboard, mouse, gamepads, and touch.
+    /// Configures keyboard, mouse, gamepad, and touch input.
     /// </summary>
     protected void ConfigureInput()
     {
@@ -122,28 +145,28 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Configures the keyboard input adapter. Override to set up keyboard-specific configuration.
+    /// Configures the keyboard input adapter.
     /// </summary>
     protected virtual void ConfigureKeyboard()
     {
     }
 
     /// <summary>
-    /// Configures the mouse input adapter. Override to set up mouse-specific configuration.
+    /// Configures the mouse input adapter.
     /// </summary>
     protected virtual void ConfigureMouse()
     {
     }
 
     /// <summary>
-    /// Configures the gamepad manager. Override to set up gamepad-specific configuration.
+    /// Configures the gamepad manager.
     /// </summary>
     protected virtual void ConfigureGamepads()
     {
     }
 
     /// <summary>
-    /// Configures the touch input adapter. Override to set up touch-specific configuration.
+    /// Configures the touch input adapter.
     /// </summary>
     protected virtual void ConfigureTouch()
     {
@@ -152,12 +175,16 @@ public abstract class GameHostBase : IDisposable
     /// <summary>
     /// Runs after all input devices have been configured.
     /// </summary>
+    /// <remarks>
+    /// Platform hosts may override this hook to call
+    /// <see cref="InitializeWidgetInput(RenderSurfaceHostBase)"/> once their render surface host is available.
+    /// </remarks>
     protected virtual void OnInputConfigured()
     {
     }
 
     /// <summary>
-    /// Initializes game-specific content including assets, scenes, and game objects.
+    /// Initializes game-specific content, the scene graph, and scene objects.
     /// </summary>
     protected void InitializeGameContent()
     {
@@ -169,7 +196,7 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Loads all game content including assets, tilesheets, and animation cycles.
+    /// Loads assets, tilesheets, and animation cycles.
     /// </summary>
     protected void LoadContent()
     {
@@ -179,63 +206,67 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Loads game assets. Override to load textures, sounds, and other resources.
+    /// Loads textures, sounds, and other game assets.
     /// </summary>
     protected virtual void LoadAssets()
     {
     }
 
     /// <summary>
-    /// Loads tilesheet definitions. Override to load tileset data for tile-based rendering.
+    /// Loads tilesheet definitions.
     /// </summary>
     protected virtual void LoadTilesheets()
     {
     }
 
     /// <summary>
-    /// Loads animation cycle definitions. Override to load sprite animation data.
+    /// Loads animation cycle definitions.
     /// </summary>
     protected virtual void LoadAnimationCycles()
     {
     }
 
     /// <summary>
-    /// Creates the scene graph including the initial scene and views.
+    /// Creates the initial scene and its views.
     /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <see cref="CreateInitialScene"/> returns <see langword="null"/>.
+    /// </exception>
     protected void CreateSceneGraph()
     {
         Scene = CreateInitialScene()
-            ?? throw new InvalidOperationException($"{nameof(CreateInitialScene)} returned null.");
+            ?? throw new InvalidOperationException(
+                $"{nameof(CreateInitialScene)} returned null.");
 
         CreateInitialViews();
         OnSceneGraphCreated();
     }
 
     /// <summary>
-    /// Runs after the scene graph has been created but before the current scene is bound to the render surface host.
+    /// Runs after the scene graph has been created but before the scene is bound.
     /// </summary>
     protected virtual void OnSceneGraphCreated()
     {
     }
 
     /// <summary>
-    /// Creates the initial scene for the game. Override to provide a custom starting scene.
+    /// Creates the initial scene for the game.
     /// </summary>
-    /// <returns>The initial scene to display.</returns>
+    /// <returns>The initial scene.</returns>
     protected virtual Scene CreateInitialScene()
     {
         return Scene.Empty;
     }
 
     /// <summary>
-    /// Creates initial views for rendering the scene. Override to set up camera views and viewports.
+    /// Creates the initial views and viewports used to render the scene.
     /// </summary>
     protected virtual void CreateInitialViews()
     {
     }
 
     /// <summary>
-    /// Binds the current scene to the render surface. Override to customize scene binding behavior.
+    /// Binds the current scene to the platform render surface.
     /// </summary>
     protected virtual void BindScene()
     {
@@ -249,7 +280,7 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Initializes scene objects including sprites and direct drawings.
+    /// Creates sprites and direct drawings for the current scene.
     /// </summary>
     protected void InitializeSceneObjects()
     {
@@ -258,25 +289,29 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Creates sprite objects in the scene. Override to populate the scene with sprites.
+    /// Creates sprite objects for the current scene.
     /// </summary>
     protected virtual void CreateSprites()
     {
     }
 
     /// <summary>
-    /// Creates direct drawing objects in the scene. Override to add custom rendering primitives.
+    /// Creates direct drawings and widgets for the current scene.
     /// </summary>
     protected virtual void CreateDirectDrawings()
     {
     }
 
     /// <summary>
-    /// Initializes the engine with the specified configuration settings.
+    /// Initializes the Gondwana engine.
     /// </summary>
-    /// <param name="configPath">Optional path to the configuration file.</param>
-    /// <param name="autoSaveConfig">Optional flag indicating whether to automatically save configuration changes.</param>
-    protected void InitializeEngine(string? configPath, bool? autoSaveConfig)
+    /// <param name="configPath">Optional path to the engine configuration file.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional value indicating whether configuration changes should be saved automatically.
+    /// </param>
+    protected void InitializeEngine(
+        string? configPath,
+        bool? autoSaveConfig)
     {
         Engine.Instance.Initialize(configPath, autoSaveConfig);
         _engineInitialized = true;
@@ -292,9 +327,12 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Starts the engine with the configured synchronization context.
+    /// Starts the engine using the synchronization context returned by
+    /// <see cref="GetSynchronizationContext"/>.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when no synchronization context is available.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when no synchronization context is available.
+    /// </exception>
     protected void StartEngine()
     {
         var syncContext = GetSynchronizationContext()
@@ -309,10 +347,10 @@ public abstract class GameHostBase : IDisposable
 
     /// <summary>
     /// Starts the engine using the supplied synchronization context.
-    /// Override to customize the platform-specific engine start mechanism.
     /// </summary>
     /// <param name="syncContext">The synchronization context used by the engine.</param>
-    protected virtual void StartEngineCore(SynchronizationContext syncContext)
+    protected virtual void StartEngineCore(
+        SynchronizationContext syncContext)
     {
         Engine.Instance.Start(syncContext);
     }
@@ -320,7 +358,7 @@ public abstract class GameHostBase : IDisposable
     /// <summary>
     /// Gets the synchronization context used to start the engine.
     /// </summary>
-    /// <returns>The synchronization context used by the engine.</returns>
+    /// <returns>The synchronization context, or <see langword="null"/> when unavailable.</returns>
     protected virtual SynchronizationContext? GetSynchronizationContext()
     {
         return SynchronizationContext.Current;
@@ -341,14 +379,14 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Unhooks event handlers during disposal. Override to clean up custom event subscriptions.
+    /// Unhooks custom event handlers during disposal.
     /// </summary>
     protected virtual void UnhookEvents()
     {
     }
 
     /// <summary>
-    /// Stops the engine during disposal.
+    /// Stops the engine during host disposal.
     /// </summary>
     protected void StopEngine()
     {
@@ -357,7 +395,7 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Stops the engine. Override to perform platform-specific engine stop work.
+    /// Performs platform-specific engine shutdown work.
     /// </summary>
     protected virtual void StopEngineCore()
     {
@@ -365,7 +403,7 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Disposes the engine instance during disposal.
+    /// Disposes the engine instance.
     /// </summary>
     protected void DisposeEngine()
     {
@@ -388,26 +426,33 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Ensures the object has not been initialized.
+    /// Ensures that the host has not already been initialized.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the object has already been initialized.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the host has already been initialized.
+    /// </exception>
     protected void EnsureNotInitialized()
     {
         if (_initialized)
-            throw new InvalidOperationException($"{GetType().Name} has already been initialized.");
+        {
+            throw new InvalidOperationException(
+                $"{GetType().Name} has already been initialized.");
+        }
     }
 
     /// <summary>
-    /// Ensures the object has not been disposed.
+    /// Ensures that the host has not been disposed.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">Thrown when the object has been disposed.</exception>
+    /// <exception cref="ObjectDisposedException">
+    /// Thrown when the host has already been disposed.
+    /// </exception>
     protected void EnsureNotDisposed()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
     }
 
     /// <summary>
-    /// Releases all resources used by the <see cref="GameHostBase"/>.
+    /// Releases resources owned by the game host.
     /// </summary>
     public void Dispose()
     {

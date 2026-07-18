@@ -63,8 +63,7 @@ public sealed class SplashScreen : WidgetBase
     /// <summary>
     /// The nickname used for the DirectImage overlay that displays the splash.
     /// </summary>
-    public static readonly string SplashImageNickname =
-        "__gondwana_splash__";
+    public static readonly string SplashImageNickname = "__gondwana_splash__";
 
     private Timer? _holdTimer;
     private TaskCompletionSource? _holdDurationCompletionSource;
@@ -102,19 +101,17 @@ public sealed class SplashScreen : WidgetBase
 
     #region factory / constructor
 
-    private SplashScreen(
-        DirectImage image,
-        float fadeInSec,
-        float holdSec,
-        float fadeOutSec,
-        Action? onHoldingSync,
-        Func<Task>? onHoldingAsync,
-        Action? onSplashCompleted)
-        : base(
-            image.RenderSurfaceHost,
-            DirectDrawingMode.View,
-            PointF.Empty,
-            SplashImageNickname + Guid.NewGuid())
+    private SplashScreen(DirectImage image,
+                         float fadeInSec,
+                         float holdSec,
+                         float fadeOutSec,
+                         Action? onHoldingSync,
+                         Func<Task>? onHoldingAsync,
+                         Action? onSplashCompleted)
+        : base(image.RenderSurfaceHost,
+               DirectDrawingMode.View,
+               PointF.Empty,
+               SplashImageNickname + Guid.NewGuid())
     {
         Image = image;
         CurrentState = State.Hidden;
@@ -316,9 +313,9 @@ public sealed class SplashScreen : WidgetBase
         }
         catch (OperationCanceledException)
             when (_disposed)
-        {
-            return;
-        }
+            {
+                return;
+            }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Unexpected error during SplashScreen hold phase");
