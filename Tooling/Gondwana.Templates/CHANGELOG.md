@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.5.1 - July 19, 2026
+
+
+
+## Added
+- Add oblique coordinate system support
+
+
+
+## Fixed
+- Add transparent icon to VS New Project tiles
+
+
+
+## Refactoring
+- Clean up winforms template structure
+
+
+
+
 # v2.5.0 - July 09, 2026
 
 

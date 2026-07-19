@@ -2,6 +2,149 @@
 
 All notable changes to this project will be documented in this file.
 
+# [v2.5.1] - 2026-07-18
+
+## Gondwana
+
+### Added
+- Add oblique coordinate system support
+- Implement and refine SplashScreen widget
+- Implement widget input handling and routing
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+## Gondwana.Audio.Browser
+
+### Added
+- Implement widget input handling and routing
+
+## Gondwana.Audio.Midi
+
+### Added
+- Implement widget input handling and routing
+
+## Gondwana.Avalonia
+
+### Added
+- Implement widget input handling and routing
+
+## Gondwana.Avalonia.Hosting
+
+### Added
+- Implement widget input handling and routing
+
+
+
+### Refactoring
+- Clean up winforms template structure
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+## Gondwana.Blazor
+
+### Added
+- Implement widget input handling and routing
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+## Gondwana.Blazor.Hosting
+
+### Added
+- Implement widget input handling and routing
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+## Gondwana.Hosting
+
+### Added
+- Implement widget input handling and routing
+
+## Gondwana.Video
+
+### Added
+- Implement widget input handling and routing
+
+## Gondwana.Widgets
+
+### Added
+- Implement and refine SplashScreen widget
+- Implement widget input handling and routing
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+## Gondwana.WinForms
+
+### Added
+- Implement widget input handling and routing
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+## Gondwana.WinForms.Hosting
+
+### Added
+- Implement widget input handling and routing
+
+
+
+### Refactoring
+- Clean up winforms template structure
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+## Tooling / Gondwana.Templates
+
+### Added
+- Add oblique coordinate system support
+
+
+
+### Fixed
+- Add transparent icon to VS New Project tiles
+
+
+
+### Refactoring
+- Clean up winforms template structure
+
+## Build / Repository
+
+### Added
+- Implement and refine SplashScreen widget
+- Implement widget input handling and routing
+
+
+
+### Documentation
+- Add XML documentation to all undocumented public and protected members
+
+
+
+### Other Changes
+- Version bump to 2.5.1
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.5.0...v2.5.1
+
 # [v2.5.0] - 2026-07-09
 
 ## Gondwana
@@ -589,7 +732,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 ### Other Changes
 * fix(release): use REST API to merge release PR, bypassing required-review branch protection by @Copilot in https://github.com/Isthimius/Gondwana/pull/64
 * Add Gondwana.Cli .NET global tool by @Copilot in https://github.com/Isthimius/Gondwana/pull/65
-* docs: update README for v2.1.0ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“v2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
+* docs: update README for v2.1.0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œv2.2.0 by @Copilot in https://github.com/Isthimius/Gondwana/pull/66
 * Add gondwana-avalonia dotnet new template and CLI command by @Copilot in https://github.com/Isthimius/Gondwana/pull/67
 * Add `gondwana new avalonia` to CLI docs and fix doctor template check by @Copilot in https://github.com/Isthimius/Gondwana/pull/68
 * docs: Add missing `gondwana new avalonia` command to CLICHEATSHEET by @Copilot in https://github.com/Isthimius/Gondwana/pull/69
@@ -611,7 +754,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
 * fix: YAML parse error in release.yml due to unindented bash heredoc by @Copilot in https://github.com/Isthimius/Gondwana/pull/58
 * feat: add Gondwana.Avalonia and Gondwana.Avalonia.Hosting by @Copilot in https://github.com/Isthimius/Gondwana/pull/54
 * feat: add `dotnet new gondwana-winforms` template package by @Copilot in https://github.com/Isthimius/Gondwana/pull/56
-* feat: add Gondwana.Studio ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
+* feat: add Gondwana.Studio ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â dark-themed cross-platform Avalonia IDE with dockable windows by @Copilot in https://github.com/Isthimius/Gondwana/pull/55
 
 
 **Full Changelog**: https://github.com/Isthimius/Gondwana/compare/v2.1.2...v2.2.0
@@ -680,7 +823,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.2.3...v2.2.4
   - Improved save/load behavior
   - Fallback lookup by base name
 - Added **Font asset type** and introduced a centralized **FontManager**
-- Renamed audio API (`LoadFromEngineResourceFile` ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ `LoadFromEngineAssetsFile`)
+- Renamed audio API (`LoadFromEngineResourceFile` ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ `LoadFromEngineAssetsFile`)
 
 ## Serialization & Data Handling
 - Adjusted serialization behavior for:
