@@ -5,6 +5,8 @@ var namespaceGondwana_1_1Widgets =
     [ "WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", "classGondwana_1_1Widgets_1_1WidgetBase" ],
     [ "WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs" ],
     [ "WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetEventArgs" ],
+    [ "WidgetInputRouter", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html", "classGondwana_1_1Widgets_1_1WidgetInputRouter" ],
+    [ "WidgetKeyboardEventArgs", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs" ],
     [ "WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs" ],
     [ "WidgetPointerButtonEnum", "namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe", [
       [ "None", "namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fea6adf97f83acf6453d4a6a4b1070f3754", null ],

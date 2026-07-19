@@ -13,6 +13,7 @@ var classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost =
     [ "OnConfigureGamepads", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a6af3aaa889390f9870c4580eff695706", null ],
     [ "OnConfigurePlatform", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a5ec575f34d1137fba94657f4a2e3c3cc", null ],
     [ "OnDisposed", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#aa61b61b99817a638566629c57eb5d075", null ],
+    [ "OnInputConfigured", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#aae072f0911a1c92375bcde491aad7560", null ],
     [ "OnKeyboardAdapterInitialized", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a97284654ef529bba4e0e80fadee679be", null ],
     [ "OnMouseAdapterInitialized", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#aa41940074af3b0c164758367c78f3430", null ],
     [ "OnTouchAdapterInitialized", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a390cadb07e1264b43050172016aefb7d", null ],

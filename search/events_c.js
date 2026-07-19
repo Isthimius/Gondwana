@@ -8,7 +8,8 @@ var searchData=
   ['pointerdown_5',['PointerDown',['../classGondwana_1_1Widgets_1_1WidgetBase.html#ae48d553576775ae52043bcf7ab5818d8',1,'Gondwana::Widgets::WidgetBase']]],
   ['pointerenter_6',['PointerEnter',['../classGondwana_1_1Widgets_1_1WidgetBase.html#a45c142d53bc5e517229b5211902349cd',1,'Gondwana::Widgets::WidgetBase']]],
   ['pointerleave_7',['PointerLeave',['../classGondwana_1_1Widgets_1_1WidgetBase.html#adee78f4b82ced82d1034664cdd2aa6d2',1,'Gondwana::Widgets::WidgetBase']]],
-  ['pointerup_8',['PointerUp',['../classGondwana_1_1Widgets_1_1WidgetBase.html#ab4db125565549fa2fee88a3476cafff5',1,'Gondwana::Widgets::WidgetBase']]],
-  ['postinitialization_9',['PostInitialization',['../classGondwana_1_1Engine.html#a4880475a941f9c9cf1a72aaee207c443',1,'Gondwana::Engine']]],
-  ['preinitialization_10',['PreInitialization',['../classGondwana_1_1Engine.html#aae919c657e9096bec3306b8669d0da14',1,'Gondwana::Engine']]]
+  ['pointermove_8',['PointerMove',['../classGondwana_1_1Widgets_1_1WidgetBase.html#a3f4ebefc84d26eb72b00af2f0df43d15',1,'Gondwana::Widgets::WidgetBase']]],
+  ['pointerup_9',['PointerUp',['../classGondwana_1_1Widgets_1_1WidgetBase.html#ab4db125565549fa2fee88a3476cafff5',1,'Gondwana::Widgets::WidgetBase']]],
+  ['postinitialization_10',['PostInitialization',['../classGondwana_1_1Engine.html#a4880475a941f9c9cf1a72aaee207c443',1,'Gondwana::Engine']]],
+  ['preinitialization_11',['PreInitialization',['../classGondwana_1_1Engine.html#aae919c657e9096bec3306b8669d0da14',1,'Gondwana::Engine']]]
 ];

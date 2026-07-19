@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -112,9 +112,9 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectComposite:</div>
 <area href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="134,56,393,80"/>
 <area href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space." alt="Gondwana.Physics.Movement.IMovable" shape="rect" coords="403,56,662,80"/>
 <area href="interfaceGondwana_1_1Drawing_1_1IDrawable.html" title="Represents an object that can be drawn on a visual surface, with properties for visibility and stacki..." alt="Gondwana.Drawing.IDrawable" shape="rect" coords="0,0,259,24"/>
-<area href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Base type for reusable Gondwana widgets built on top of DirectComposite." alt="Gondwana.Widgets.WidgetBase" shape="rect" coords="269,168,528,192"/>
-<area href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html" title="Base type for widgets that support dragging." alt="Gondwana.Widgets.DraggableWidgetBase" shape="rect" coords="134,224,393,248"/>
-<area href="classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html" alt="Gondwana.Widgets.Overlays.SplashScreen" shape="rect" coords="403,224,662,248"/>
+<area href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Provides the base implementation for widgets that can be drawn and receive pointer,..." alt="Gondwana.Widgets.WidgetBase" shape="rect" coords="269,168,528,192"/>
+<area href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html" title="Base type for widgets that can be repositioned through pointer dragging." alt="Gondwana.Widgets.DraggableWidgetBase" shape="rect" coords="134,224,393,248"/>
+<area href="classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html" title="Represents a full-screen splash screen widget that fades in, holds for a duration,..." alt="Gondwana.Widgets.Overlays.SplashScreen" shape="rect" coords="403,224,662,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -136,7 +136,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad03af0f91fcf18bbf7b4a791ba753518"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the composite. This is intentionally a no-op as children are responsible for their own rendering.  <br /></td></tr>
 <tr class="separator:ad03af0f91fcf18bbf7b4a791ba753518"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51b1ee1c45972f9b99da4bbcde99e567" id="r_a51b1ee1c45972f9b99da4bbcde99e567"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">DirectComposite</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a51b1ee1c45972f9b99da4bbcde99e567">Add</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">child</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">keepCurrentOffset</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">true</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">explicitLocalOffsetPx</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
-<tr class="memdesc:a51b1ee1c45972f9b99da4bbcde99e567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a child and stores its local pixel offset from the composite anchor. If <em>keepCurrentOffset</em>  is true (default), the offset is computed from the child's current Bounds. Otherwise, pass an explicit local pixel offset.  <br /></td></tr>
+<tr class="memdesc:a51b1ee1c45972f9b99da4bbcde99e567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a child drawing and stores its local pixel offset from the composite anchor.  <br /></td></tr>
 <tr class="separator:a51b1ee1c45972f9b99da4bbcde99e567"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af37ed33a5b1bf4d6f8c8440898130fc4" id="r_af37ed33a5b1bf4d6f8c8440898130fc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">DirectComposite</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#af37ed33a5b1bf4d6f8c8440898130fc4">Remove</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">child</a>)</td></tr>
 <tr class="memdesc:af37ed33a5b1bf4d6f8c8440898130fc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a child from the composite.  <br /></td></tr>
@@ -183,6 +183,12 @@ Properties</h2></td></tr>
 <tr class="memitem:ae45a347e56bb222d70b2d218d4576020" id="r_ae45a347e56bb222d70b2d218d4576020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ae45a347e56bb222d70b2d218d4576020">Mode</a><code> [get]</code></td></tr>
 <tr class="memdesc:ae45a347e56bb222d70b2d218d4576020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the drawing mode for this composite (world or screen space).  <br /></td></tr>
 <tr class="separator:ae45a347e56bb222d70b2d218d4576020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4740d68b01c3567186b71166628cb572" id="r_a4740d68b01c3567186b71166628cb572"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a4740d68b01c3567186b71166628cb572">SceneLayer</a><code> [get]</code></td></tr>
+<tr class="memdesc:a4740d68b01c3567186b71166628cb572"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer shared by all children when Mode is DirectDrawingMode.SceneLayer, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> when the composite has no children or uses view mode.  <br /></td></tr>
+<tr class="separator:a4740d68b01c3567186b71166628cb572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab445d44de082cefe1e378b05fcb83f52" id="r_ab445d44de082cefe1e378b05fcb83f52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab445d44de082cefe1e378b05fcb83f52">View</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab445d44de082cefe1e378b05fcb83f52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the view shared by all children when Mode is DirectDrawingMode.View, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> when the composite has no children or uses scene-layer mode.  <br /></td></tr>
+<tr class="separator:ab445d44de082cefe1e378b05fcb83f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12b490664f46833817ba6673cf18faed" id="r_a12b490664f46833817ba6673cf18faed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">ReadOnlyCollection</a>&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a12b490664f46833817ba6673cf18faed">Children</a><code> [get]</code></td></tr>
 <tr class="memdesc:a12b490664f46833817ba6673cf18faed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the read-only collection of child drawable items in this composite.  <br /></td></tr>
 <tr class="separator:a12b490664f46833817ba6673cf18faed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -227,7 +233,7 @@ Events</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a composite container that groups multiple direct drawable items together, managing their positions relative to a common anchor point and providing batch operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00016">16</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00017">17</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac1d38db515a995009946ec6c9ad1ff42" name="ac1d38db515a995009946ec6c9ad1ff42"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac1d38db515a995009946ec6c9ad1ff42">&#9670;&#160;</a></span>DirectComposite()</h2>
@@ -278,7 +284,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00045">45</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00046">46</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -315,18 +321,25 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Adds a child and stores its local pixel offset from the composite anchor. If <em>keepCurrentOffset</em>  is true (default), the offset is computed from the child's current Bounds. Otherwise, pass an explicit local pixel offset. </p>
+<p>Adds a child drawing and stores its local pixel offset from the composite anchor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">child</td><td>The child drawable to add to the composite.</td></tr>
-    <tr><td class="paramname">keepCurrentOffset</td><td>If true, computes the offset from the child's current position relative to the anchor. If false, uses the explicit offset.</td></tr>
-    <tr><td class="paramname">explicitLocalOffsetPx</td><td>Optional explicit pixel offset to use when keepCurrentOffset is false.</td></tr>
+    <tr><td class="paramname">child</td><td>The child drawing to add.</td></tr>
+    <tr><td class="paramname">keepCurrentOffset</td><td><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> to preserve the child's current position relative to the composite anchor; otherwise, use <em>explicitLocalOffsetPx</em> . </td></tr>
+    <tr><td class="paramname">explicitLocalOffsetPx</td><td>The local offset to use when <em>keepCurrentOffset</em>  is <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This composite for method chaining.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>child</em>  is <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code>. </td></tr>
+    <tr><td class="paramname">ArgumentException</td><td>Thrown when the child belongs to a different render surface host or uses a different drawing mode. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00310">310</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00344">344</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -348,7 +361,7 @@ Events</h2></td></tr>
 <p>Removes all children from the composite. </p>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00352">352</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00408">408</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -379,7 +392,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a6860bfb2146c3930e7325779044c0a3e">Gondwana.Widgets.Overlays.SplashScreen</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00510">510</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00567">567</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -420,7 +433,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a40510f10e51009f80d0d3c9957337973">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00291">291</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00314">314</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -449,7 +462,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00468">468</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00525">525</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -478,7 +491,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00481">481</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00538">538</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -518,7 +531,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00455">455</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00512">512</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -549,7 +562,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a8da83689234405828f7f6ed1f2062ec3">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00245">245</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00260">260</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -600,7 +613,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00340">340</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00390">390</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -629,7 +642,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00437">437</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00494">494</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -669,7 +682,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00392">392</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00449">449</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -698,7 +711,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00424">424</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00481">481</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -738,7 +751,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00372">372</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00429">429</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -795,7 +808,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This composite instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00411">411</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00468">468</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -825,7 +838,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#a5029de36d13fc531afd74430035a5133">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00497">497</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00554">554</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -852,7 +865,7 @@ Events</h2></td></tr>
 
 <p>Gets the read-only collection of child drawable items in this composite. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00074">74</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00089">89</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -880,7 +893,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#ae2a09ae0aeb04bce1333130f416584fb">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00203">203</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00218">218</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -908,7 +921,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#a3053a83e9a1aa6841bf39e90238d6fec">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00069">69</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00070">70</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -934,7 +947,7 @@ Events</h2></td></tr>
 
 <p>Gets the movement controller for animating the composite's position. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00079">79</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00094">94</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -962,7 +975,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00208">208</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00223">223</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -990,7 +1003,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#ae0463d4183646dba328acbb1b5f568e6">Gondwana.Physics.Movement.IMovable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00182">182</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00197">197</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -1018,7 +1031,33 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#a4deea683f9c17340cea7c22e000faaab">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00064">64</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00065">65</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+
+</div>
+</div>
+<a id="a4740d68b01c3567186b71166628cb572" name="a4740d68b01c3567186b71166628cb572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4740d68b01c3567186b71166628cb572">&#9670;&#160;</a></span>SceneLayer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a>? Gondwana.Drawing.Direct.DirectComposite.SceneLayer</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the scene layer shared by all children when Mode is DirectDrawingMode.SceneLayer, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> when the composite has no children or uses view mode. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00077">77</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -1045,6 +1084,32 @@ Events</h2></td></tr>
 <p>Gets the bounding rectangle that encompasses all visible children in screen coordinates. </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#a227e62e198129037c15f7b2f5f30cf73">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00099">99</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+
+</div>
+</div>
+<a id="ab445d44de082cefe1e378b05fcb83f52" name="ab445d44de082cefe1e378b05fcb83f52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab445d44de082cefe1e378b05fcb83f52">&#9670;&#160;</a></span>View</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>? Gondwana.Drawing.Direct.DirectComposite.View</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the view shared by all children when Mode is DirectDrawingMode.View, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> when the composite has no children or uses scene-layer mode. </p>
 
 <p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00084">84</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
@@ -1074,7 +1139,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00214">214</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00229">229</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -1102,7 +1167,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#ab802bd3152d036e9bf183858e8330d6f">Gondwana.Drawing.Direct.IDirectDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00131">131</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00146">146</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -1130,7 +1195,7 @@ Events</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00238">238</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00253">253</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>
@@ -1149,7 +1214,7 @@ Events</h2></td></tr>
 
 <p>Event raised when this composite is being disposed. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00032">32</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectComposite_8cs_source.html#l00033">33</a> of file <a class="el" href="DirectComposite_8cs_source.html">DirectComposite.cs</a>.</p>
 
 </div>
 </div>

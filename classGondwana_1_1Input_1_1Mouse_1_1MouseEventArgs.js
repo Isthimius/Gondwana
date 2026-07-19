@@ -1,6 +1,6 @@
 var classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs =
 [
-    [ "MouseEventArgs", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#ade73947aa6097281ed1a65d90d3ddffd", null ],
+    [ "MouseEventArgs", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a596b56c186f597fedd4941a227cc067c", null ],
     [ "IsButtonDown", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a19f14214db61f9e1341903ebc6eac807", null ],
     [ "IsButtonJustPressed", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#ae85741e89979984f55843ee5e10cc914", null ],
     [ "IsButtonJustReleased", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a6fd11dc855f82e505fc37f03d0c4062e", null ],
@@ -21,5 +21,6 @@ var classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs =
     [ "RightButtonDown", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#ab18dcf8e9ace6495f53d9e5f9e4a836d", null ],
     [ "RightButtonJustPressed", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a97a6cd93ec46869b5e5659f43b6f4b51", null ],
     [ "RightButtonJustReleased", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a8e3813c7e67c795843ffa2f0e3508ba0", null ],
-    [ "ScrollDelta", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a898666b7766a495694d4a927a53e477b", null ]
+    [ "ScrollDelta", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a898666b7766a495694d4a927a53e477b", null ],
+    [ "Tick", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a4568f143bdd6f62767c305570b09c577", null ]
 ];

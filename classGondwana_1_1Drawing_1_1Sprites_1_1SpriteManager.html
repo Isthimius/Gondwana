@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -100,6 +100,9 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Drawing_1_1Sprites_1_
   <div class="headertitle"><div class="title">Gondwana.Drawing.Sprites.SpriteManager Class Reference<span class="mlabels"><span class="mlabel">sealed</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Manages the lifecycle, lookup, and per-frame updates of all active Sprite instances.  
+ <a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Sprites.SpriteManager:</div>
 <div class="dyncontent">
@@ -143,11 +146,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afa0c0803b3a608eadd8124a18c2f9338"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all sprites at the specified view pixel coordinate.  <br /></td></tr>
 <tr class="separator:afa0c0803b3a608eadd8124a18c2f9338"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a9bb942a76a0ba21eedc9f582226cb2" id="r_a6a9bb942a76a0ba21eedc9f582226cb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6a9bb942a76a0ba21eedc9f582226cb2">Dispose</a> ()</td></tr>
+<tr class="memdesc:a6a9bb942a76a0ba21eedc9f582226cb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all sprites currently managed by this instance.  <br /></td></tr>
 <tr class="separator:a6a9bb942a76a0ba21eedc9f582226cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ad879ebe2aadae1d04ba6107cb9b0fb2d" id="r_ad879ebe2aadae1d04ba6107cb9b0fb2d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html">SpriteManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#ad879ebe2aadae1d04ba6107cb9b0fb2d">Instance</a><code> [get]</code></td></tr>
+<tr class="memdesc:ad879ebe2aadae1d04ba6107cb9b0fb2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the sprite manager.  <br /></td></tr>
 <tr class="separator:ad879ebe2aadae1d04ba6107cb9b0fb2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1820fb3e65202852fc86825beec65583" id="r_a1820fb3e65202852fc86825beec65583"><td class="memItemLeft" align="right" valign="top">ReadOnlyCollection&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html">Sprite</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a1820fb3e65202852fc86825beec65583">AllSprites</a><code> [get]</code></td></tr>
 <tr class="memdesc:a1820fb3e65202852fc86825beec65583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only collection of all sprites currently managed by the sprite manager.  <br /></td></tr>
@@ -163,8 +168,9 @@ Events</h2></td></tr>
 <tr class="separator:a99c0abe0349483b6a76dad08155b771f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00010">10</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<div class="textblock"><p>Manages the lifecycle, lookup, and per-frame updates of all active Sprite instances. </p>
+
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00013">13</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a6256d6cf76f2c5237b6cb57f82048447" name="a6256d6cf76f2c5237b6cb57f82048447"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6256d6cf76f2c5237b6cb57f82048447">&#9670;&#160;</a></span>Clear()</h2>
@@ -183,7 +189,7 @@ Events</h2></td></tr>
 
 <p>Removes and disposes all sprites currently managed by the sprite manager. </p>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00128">128</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00135">135</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -250,7 +256,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cloned sprite.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00075">75</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00082">82</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -290,7 +296,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cloned sprite, or null if no sprite with the specified ID exists.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00095">95</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00102">102</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -337,7 +343,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The newly created sprite.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00054">54</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00061">61</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -356,7 +362,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00327">327</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p>Releases all sprites currently managed by this instance. </p>
+
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00337">337</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -385,7 +393,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The sprite with the specified ID, or null if not found.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00142">142</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00149">149</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -432,7 +440,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A list of sprites at the specified pixel location.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00246">246</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00253">253</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -486,7 +494,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A list of sprites within the specified view range.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00205">205</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00212">212</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -533,7 +541,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A list of sprites within the specified range.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00165">165</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00172">172</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -561,7 +569,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00109">109</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00116">116</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -589,7 +597,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00118">118</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00125">125</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -616,7 +624,7 @@ Events</h2></td></tr>
 
 <p>Gets a read-only collection of all sprites currently managed by the sprite manager. </p>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00031">31</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00038">38</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -640,7 +648,10 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00014">14</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p>Gets the singleton instance of the sprite manager. </p>
+<p>The shared SpriteManager instance.</p>
+
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00021">21</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -666,7 +677,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets a value indicating whether new sprites should be automatically sized to their scene layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00043">43</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00050">50</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>
@@ -685,7 +696,7 @@ Events</h2></td></tr>
 
 <p>Event raised when a new sprite is created. </p>
 
-<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00024">24</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SpriteManager_8cs_source.html#l00031">31</a> of file <a class="el" href="SpriteManager_8cs_source.html">SpriteManager.cs</a>.</p>
 
 </div>
 </div>

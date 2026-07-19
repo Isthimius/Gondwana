@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -114,11 +114,15 @@ Inheritance diagram for Gondwana.Widgets.WidgetPointerEventArgs:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7b7b25f23c361de3cb4dd60d33f372bb" id="r_a7b7b25f23c361de3cb4dd60d33f372bb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a7b7b25f23c361de3cb4dd60d33f372bb">WidgetPointerEventArgs</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a> widget, PointF screenPositionPx, <a class="el" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe">WidgetPointerButtonEnum</a> button=<a class="el" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fea6adf97f83acf6453d4a6a4b1070f3754">WidgetPointerButtonEnum.None</a>, int clickCount=0, Vector2 deltaPx=default, long tick=0)</td></tr>
-<tr class="separator:a7b7b25f23c361de3cb4dd60d33f372bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a261ab462d3082f58a1f762b78e11620f" id="r_a261ab462d3082f58a1f762b78e11620f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a261ab462d3082f58a1f762b78e11620f">WidgetPointerEventArgs</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a> widget, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, PointF screenPositionPx, <a class="el" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe">WidgetPointerButtonEnum</a> button=<a class="el" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fea6adf97f83acf6453d4a6a4b1070f3754">WidgetPointerButtonEnum.None</a>, int clickCount=0, Vector2 deltaPx=default, long tick=0, int pointerId=0)</td></tr>
+<tr class="memdesc:a261ab462d3082f58a1f762b78e11620f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the WidgetPointerEventArgs class.  <br /></td></tr>
+<tr class="separator:a261ab462d3082f58a1f762b78e11620f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a44cf0bb69c88e7fae01fcd97cd8a9f8d" id="r_a44cf0bb69c88e7fae01fcd97cd8a9f8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a44cf0bb69c88e7fae01fcd97cd8a9f8d">View</a><code> [get]</code></td></tr>
+<tr class="memdesc:a44cf0bb69c88e7fae01fcd97cd8a9f8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the view through which the pointer interaction was routed.  <br /></td></tr>
+<tr class="separator:a44cf0bb69c88e7fae01fcd97cd8a9f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f2147774640c5c71533a16f9fc65e69" id="r_a9f2147774640c5c71533a16f9fc65e69"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a9f2147774640c5c71533a16f9fc65e69">ScreenPositionPx</a><code> [get]</code></td></tr>
 <tr class="memdesc:a9f2147774640c5c71533a16f9fc65e69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the pointer position in screen pixels.  <br /></td></tr>
 <tr class="separator:a9f2147774640c5c71533a16f9fc65e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,6 +135,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a24fbfa7d888cde830d5850683e3143b9" id="r_a24fbfa7d888cde830d5850683e3143b9"><td class="memItemLeft" align="right" valign="top">Vector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a24fbfa7d888cde830d5850683e3143b9">DeltaPx</a><code> [get]</code></td></tr>
 <tr class="memdesc:a24fbfa7d888cde830d5850683e3143b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement delta in pixels since the previous pointer update.  <br /></td></tr>
 <tr class="separator:a24fbfa7d888cde830d5850683e3143b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d00cd0fd6491b1ac8fdb17f7a163340" id="r_a9d00cd0fd6491b1ac8fdb17f7a163340"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a9d00cd0fd6491b1ac8fdb17f7a163340">PointerId</a><code> [get]</code></td></tr>
+<tr class="memdesc:a9d00cd0fd6491b1ac8fdb17f7a163340"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the identifier of the pointer that produced the event.  <br /></td></tr>
+<tr class="separator:a9d00cd0fd6491b1ac8fdb17f7a163340"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bdd9e2840f20189710f8d3b7ece174a" id="r_a3bdd9e2840f20189710f8d3b7ece174a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a3bdd9e2840f20189710f8d3b7ece174a">IsPrimaryButton</a><code> [get]</code></td></tr>
 <tr class="memdesc:a3bdd9e2840f20189710f8d3b7ece174a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the pointer event represents a primary-button interaction.  <br /></td></tr>
 <tr class="separator:a3bdd9e2840f20189710f8d3b7ece174a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,15 +156,16 @@ Properties</h2></td></tr>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Widgets_1_1WidgetEventArgs"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGondwana_1_1Widgets_1_1WidgetEventArgs')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetEventArgs.html">Gondwana.Widgets.WidgetEventArgs</a></td></tr>
 <tr class="memitem:a73199df2fa47d179fd78413cd3e872e6 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetEventArgs" id="r_a73199df2fa47d179fd78413cd3e872e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetEventArgs.html#a73199df2fa47d179fd78413cd3e872e6">WidgetEventArgs</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a> widget, long tick)</td></tr>
+<tr class="memdesc:a73199df2fa47d179fd78413cd3e872e6 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetEventArgs"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the WidgetEventArgs class.  <br /></td></tr>
 <tr class="separator:a73199df2fa47d179fd78413cd3e872e6 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetEventArgs"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Event arguments for pointer-based widget callbacks. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00009">9</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00010">10</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7b7b25f23c361de3cb4dd60d33f372bb" name="a7b7b25f23c361de3cb4dd60d33f372bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b7b25f23c361de3cb4dd60d33f372bb">&#9670;&#160;</a></span>WidgetPointerEventArgs()</h2>
+<a id="a261ab462d3082f58a1f762b78e11620f" name="a261ab462d3082f58a1f762b78e11620f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a261ab462d3082f58a1f762b78e11620f">&#9670;&#160;</a></span>WidgetPointerEventArgs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -167,6 +175,12 @@ Additional Inherited Members</h2></td></tr>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a>&#160;</td>
           <td class="paramname"><em>widget</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>&#160;</td>
+          <td class="paramname"><em>view</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -196,7 +210,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>tick</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>tick</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pointerId</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -206,7 +226,22 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00011">11</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p>Initializes a new instance of the WidgetPointerEventArgs class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">widget</td><td>The widget that raised the event.</td></tr>
+    <tr><td class="paramname">view</td><td>The view through which the pointer interaction was routed.</td></tr>
+    <tr><td class="paramname">screenPositionPx</td><td>The pointer position in screen pixels.</td></tr>
+    <tr><td class="paramname">button</td><td>The pointer button involved in the interaction.</td></tr>
+    <tr><td class="paramname">clickCount</td><td>The number of clicks associated with this pointer action.</td></tr>
+    <tr><td class="paramname">deltaPx</td><td>The movement delta in pixels since the previous pointer update.</td></tr>
+    <tr><td class="paramname">tick</td><td>The engine tick associated with the event.</td></tr>
+    <tr><td class="paramname">pointerId</td><td>The identifier of the pointer that produced the event. Mouse input uses WidgetInputRouter.MousePointerId; touch input uses its contact ID. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00026">26</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -233,7 +268,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the pointer button involved in the interaction. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00034">34</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00058">58</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -259,7 +294,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the number of clicks associated with this pointer action. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00039">39</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00063">63</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -285,7 +320,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the movement delta in pixels since the previous pointer update. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00044">44</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00068">68</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -311,7 +346,33 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets whether the pointer event represents a primary-button interaction. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00049">49</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00078">78</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a9d00cd0fd6491b1ac8fdb17f7a163340" name="a9d00cd0fd6491b1ac8fdb17f7a163340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d00cd0fd6491b1ac8fdb17f7a163340">&#9670;&#160;</a></span>PointerId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Gondwana.Widgets.WidgetPointerEventArgs.PointerId</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the identifier of the pointer that produced the event. </p>
+
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00073">73</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -337,7 +398,33 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the pointer position in screen pixels. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00029">29</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00053">53</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a44cf0bb69c88e7fae01fcd97cd8a9f8d" name="a44cf0bb69c88e7fae01fcd97cd8a9f8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44cf0bb69c88e7fae01fcd97cd8a9f8d">&#9670;&#160;</a></span>View</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> Gondwana.Widgets.WidgetPointerEventArgs.View</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the view through which the pointer interaction was routed. </p>
+
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00048">48</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>

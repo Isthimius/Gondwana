@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana.WinForms.Hosting/WinFormsGameHost.cs Source File</title>
+<title>Gondwana Game Engine: /home/runner/work/Gondwana/Gondwana/Gondwana.WinForms.Hosting/WinFormsBitmapGameHost.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -71,7 +71,7 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('WinFormsGameHost_8cs_source.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('WinFormsBitmapGameHost_8cs_source.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -97,7 +97,7 @@ $(document).ready(function(){initNavTree('WinFormsGameHost_8cs_source.html','');
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">WinFormsGameHost.cs</div></div>
+  <div class="headertitle"><div class="title">WinFormsBitmapGameHost.cs</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">using </span><a class="code hl_namespace" href="namespaceGondwana_1_1WinForms_1_1Rendering.html">Gondwana.WinForms.Rendering</a>;</div>
@@ -125,29 +125,41 @@ $(document).ready(function(){initNavTree('WinFormsGameHost_8cs_source.html','');
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">private</span> <span class="keyword">sealed</span> <span class="keyword">class </span>SurfaceInitialization</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">public</span> <a class="code hl_class" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html">WinFormBitmapRenderSurfaceControl</a> RenderSurface { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keyword">public</span> SurfaceInitialization(<a class="code hl_class" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html">WinFormBitmapRenderSurfaceControl</a> renderSurface)</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            RenderSurface = renderSurface ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentNullException(nameof(renderSurface));</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        }</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">public</span> <a class="code hl_class" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html">WinFormBitmapRenderSurfaceControl</a> RenderSurface { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keyword">public</span> SurfaceInitialization(<a class="code hl_class" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html">WinFormBitmapRenderSurfaceControl</a> renderSurface)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            RenderSurface = renderSurface ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentNullException(nameof(renderSurface));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#acbe6258fe5c225f2ae39c8e2d046540d">   51</a></span>    <span class="keyword">protected</span> <span class="keyword">sealed</span> <span class="keyword">override</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#acbe6258fe5c225f2ae39c8e2d046540d">OnInputConfigured</a>()</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        base.OnInputConfigured();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_function" href="classGondwana_1_1Hosting_1_1GameHostBase.html#aea192809b482771df73c1275ef6e806b">InitializeWidgetInput</a>(<a class="code hl_property" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a65c614efbd58a756d879455033fa9c8e">RenderSurface</a>.<a class="code hl_property" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html#a3248b336b58d8d9203687ea77e5a3bf1">Host</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
 </div>
 </div>
-<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase_html"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a></div><div class="ttdoc">Provides shared Windows Forms host behavior for Gondwana game hosts.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsGameHostBase_8cs_source.html#l00012">WinFormsGameHostBase.cs:13</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost_html"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html">Gondwana.WinForms.Hosting.WinFormsGameHost</a></div><div class="ttdoc">Provides a base class for hosting Gondwana games in Windows Forms applications.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsGameHost_8cs_source.html#l00008">WinFormsGameHost.cs:9</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost_html_a3a9a8aaa102c6211feec077610b65b42"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a3a9a8aaa102c6211feec077610b65b42">Gondwana.WinForms.Hosting.WinFormsGameHost.WinFormsGameHost</a></div><div class="ttdeci">WinFormsGameHost(WinFormBitmapRenderSurfaceControl renderSurface)</div><div class="ttdoc">Initializes a new instance of the WinFormsGameHost class.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsGameHost_8cs_source.html#l00020">WinFormsGameHost.cs:20</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost_html_a65c614efbd58a756d879455033fa9c8e"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a65c614efbd58a756d879455033fa9c8e">Gondwana.WinForms.Hosting.WinFormsGameHost.RenderSurface</a></div><div class="ttdeci">WinFormBitmapRenderSurfaceControl RenderSurface</div><div class="ttdoc">Gets the render surface control used for displaying game content.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsGameHost_8cs_source.html#l00013">WinFormsGameHost.cs:13</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl_html"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html">Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl</a></div><div class="ttdef"><b>Definition</b> <a href="WinFormBitmapRenderSurfaceControl_8cs_source.html#l00007">WinFormBitmapRenderSurfaceControl.cs:8</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1WinForms_1_1Hosting_html"><div class="ttname"><a href="namespaceGondwana_1_1WinForms_1_1Hosting.html">Gondwana.WinForms.Hosting</a></div><div class="ttdef"><b>Definition</b> <a href="WinFormsGameHost_8cs_source.html#l00003">WinFormsGameHost.cs:3</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Hosting_1_1GameHostBase_html_aea192809b482771df73c1275ef6e806b"><div class="ttname"><a href="classGondwana_1_1Hosting_1_1GameHostBase.html#aea192809b482771df73c1275ef6e806b">Gondwana.Hosting.GameHostBase.InitializeWidgetInput</a></div><div class="ttdeci">void InitializeWidgetInput(RenderSurfaceHostBase renderSurfaceHost)</div><div class="ttdoc">Initializes widget input routing for the supplied render surface host.</div><div class="ttdef"><b>Definition</b> <a href="GameHostBase_8cs_source.html#l00089">GameHostBase.cs:89</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase_html"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a></div><div class="ttdoc">Provides shared Windows Forms host behavior for Gondwana game hosts.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsGameHostBase_8cs_source.html#l00010">WinFormsGameHostBase.cs:11</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost_html"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html">Gondwana.WinForms.Hosting.WinFormsGameHost</a></div><div class="ttdoc">Provides a base class for hosting Gondwana games in Windows Forms applications.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsBitmapGameHost_8cs_source.html#l00008">WinFormsBitmapGameHost.cs:9</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost_html_a3a9a8aaa102c6211feec077610b65b42"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a3a9a8aaa102c6211feec077610b65b42">Gondwana.WinForms.Hosting.WinFormsGameHost.WinFormsGameHost</a></div><div class="ttdeci">WinFormsGameHost(WinFormBitmapRenderSurfaceControl renderSurface)</div><div class="ttdoc">Initializes a new instance of the WinFormsGameHost class.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsBitmapGameHost_8cs_source.html#l00020">WinFormsBitmapGameHost.cs:20</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost_html_a65c614efbd58a756d879455033fa9c8e"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#a65c614efbd58a756d879455033fa9c8e">Gondwana.WinForms.Hosting.WinFormsGameHost.RenderSurface</a></div><div class="ttdeci">WinFormBitmapRenderSurfaceControl RenderSurface</div><div class="ttdoc">Gets the render surface control used for displaying game content.</div><div class="ttdef"><b>Definition</b> <a href="WinFormsBitmapGameHost_8cs_source.html#l00013">WinFormsBitmapGameHost.cs:13</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost_html_acbe6258fe5c225f2ae39c8e2d046540d"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#acbe6258fe5c225f2ae39c8e2d046540d">Gondwana.WinForms.Hosting.WinFormsGameHost.OnInputConfigured</a></div><div class="ttdeci">override void OnInputConfigured()</div><div class="ttdoc">Called after input is configured during engine startup to initialize widget input for the render surf...</div><div class="ttdef"><b>Definition</b> <a href="WinFormsBitmapGameHost_8cs_source.html#l00051">WinFormsBitmapGameHost.cs:51</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl_html"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html">Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl</a></div><div class="ttdoc">Provides a Windows Forms control that hosts bitmap-based Gondwana rendering.</div><div class="ttdef"><b>Definition</b> <a href="WinFormBitmapRenderSurfaceControl_8cs_source.html#l00010">WinFormBitmapRenderSurfaceControl.cs:11</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl_html_a3248b336b58d8d9203687ea77e5a3bf1"><div class="ttname"><a href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html#a3248b336b58d8d9203687ea77e5a3bf1">Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl.Host</a></div><div class="ttdeci">RenderSurfaceHost&lt; BitmapBackbuffer &gt; Host</div><div class="ttdoc">Gets the render surface host used for displaying game content.</div><div class="ttdef"><b>Definition</b> <a href="WinFormBitmapRenderSurfaceControl_8cs_source.html#l00022">WinFormBitmapRenderSurfaceControl.cs:22</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1WinForms_1_1Hosting_html"><div class="ttname"><a href="namespaceGondwana_1_1WinForms_1_1Hosting.html">Gondwana.WinForms.Hosting</a></div><div class="ttdef"><b>Definition</b> <a href="WinFormsBitmapGameHost_8cs_source.html#l00003">WinFormsBitmapGameHost.cs:3</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1WinForms_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1WinForms_1_1Rendering.html">Gondwana.WinForms.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="WinFormBitmapRenderSurfaceAdapter_8cs_source.html#l00005">WinFormBitmapRenderSurfaceAdapter.cs:5</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_25d0e44371dd73c27815aefcb8d76acc.html">Gondwana.WinForms.Hosting</a></li><li class="navelem"><b>WinFormsGameHost.cs</b></li>
+    <li class="navelem"><a class="el" href="dir_25d0e44371dd73c27815aefcb8d76acc.html">Gondwana.WinForms.Hosting</a></li><li class="navelem"><b>WinFormsBitmapGameHost.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

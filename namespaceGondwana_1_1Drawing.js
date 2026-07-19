@@ -18,7 +18,8 @@ var namespaceGondwana_1_1Drawing =
         [ "IsometricRhombic", "namespaceGondwana_1_1Drawing_1_1Coordinates.html#ab877f6c99482c3923c816533c12f9ab3ae35c27bfb999cff29c164d656c28dae7", null ],
         [ "IsometricAxial", "namespaceGondwana_1_1Drawing_1_1Coordinates.html#ab877f6c99482c3923c816533c12f9ab3ac880794af4036d579740d2e5667cc239", null ],
         [ "HexAxialFlatTop", "namespaceGondwana_1_1Drawing_1_1Coordinates.html#ab877f6c99482c3923c816533c12f9ab3a83000019f51fd13f39b48faaa0319124", null ],
-        [ "HexAxialPointedTop", "namespaceGondwana_1_1Drawing_1_1Coordinates.html#ab877f6c99482c3923c816533c12f9ab3aafcf21d2b376f26d04f8ec7022d86e8e", null ]
+        [ "HexAxialPointedTop", "namespaceGondwana_1_1Drawing_1_1Coordinates.html#ab877f6c99482c3923c816533c12f9ab3aafcf21d2b376f26d04f8ec7022d86e8e", null ],
+        [ "Oblique", "namespaceGondwana_1_1Drawing_1_1Coordinates.html#ab877f6c99482c3923c816533c12f9ab3a12a8e47062ed3272e04dc0b991e38466", null ]
       ] ]
     ] ],
     [ "Direct", "namespaceGondwana_1_1Drawing_1_1Direct.html", "namespaceGondwana_1_1Drawing_1_1Direct" ],

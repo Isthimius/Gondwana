@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -109,7 +109,7 @@ Inheritance diagram for Gondwana.Hosting.GameHostBase:</div>
  <div class="center">
   <img src="classGondwana_1_1Hosting_1_1GameHostBase.png" usemap="#Gondwana.Hosting.GameHostBase_map" alt=""/>
   <map id="Gondwana.Hosting.GameHostBase_map" name="Gondwana.Hosting.GameHostBase_map">
-<area href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html" title="Provides a base class for hosting Gondwana games in Avalonia desktop applications." alt="Gondwana.Avalonia.Hosting.AvaloniaGameHost" shape="rect" coords="0,112,323,136"/>
+<area href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html" title="Provides a base class for hosting Gondwana games in Avalonia desktop applications." alt="Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost" shape="rect" coords="0,112,323,136"/>
 <area href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html" title="Provides a base class for hosting Gondwana games in Avalonia applications using GPU-accelerated (Open..." alt="Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost" shape="rect" coords="333,112,656,136"/>
 <area href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html" title="Provides a base class for hosting Gondwana games in Blazor applications." alt="Gondwana.Blazor.Hosting.BlazorGameHost" shape="rect" coords="666,112,989,136"/>
 <area href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html" title="Provides shared Windows Forms host behavior for Gondwana game hosts." alt="Gondwana.WinForms.Hosting.WinFormsGameHostBase" shape="rect" coords="999,112,1322,136"/>
@@ -120,140 +120,149 @@ Inheritance diagram for Gondwana.Hosting.GameHostBase:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab63602dc2516ef99709438934a64b874" id="r_ab63602dc2516ef99709438934a64b874"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab63602dc2516ef99709438934a64b874">Initialize</a> (string? configPath=null, bool? autoSaveConfig=null, LogLevel logLevel=LogLevel.Warning)</td></tr>
-<tr class="memdesc:ab63602dc2516ef99709438934a64b874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the game host by setting up logging, platform, input, game content, and then the engine.  <br /></td></tr>
+<tr class="memitem:ab63602dc2516ef99709438934a64b874" id="r_ab63602dc2516ef99709438934a64b874"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab63602dc2516ef99709438934a64b874">Initialize</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">configPath</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">autoSaveConfig</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>, LogLevel <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">logLevel</a>=LogLevel.Warning)</td></tr>
+<tr class="memdesc:ab63602dc2516ef99709438934a64b874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the game host by configuring logging, platform services, input, game content, and the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine.  <br /></td></tr>
 <tr class="separator:ab63602dc2516ef99709438934a64b874"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aacd2496fde7b57ec76f9d1804195afa1" id="r_aacd2496fde7b57ec76f9d1804195afa1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#aacd2496fde7b57ec76f9d1804195afa1">Dispose</a> ()</td></tr>
-<tr class="memdesc:aacd2496fde7b57ec76f9d1804195afa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the GameHostBase.  <br /></td></tr>
+<tr class="memitem:aacd2496fde7b57ec76f9d1804195afa1" id="r_aacd2496fde7b57ec76f9d1804195afa1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#aacd2496fde7b57ec76f9d1804195afa1">Dispose</a> ()</td></tr>
+<tr class="memdesc:aacd2496fde7b57ec76f9d1804195afa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases resources owned by the game host.  <br /></td></tr>
 <tr class="separator:aacd2496fde7b57ec76f9d1804195afa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a404a0c741326bf3eb36c919b94e55efc" id="r_a404a0c741326bf3eb36c919b94e55efc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a404a0c741326bf3eb36c919b94e55efc">OnInitializing</a> ()</td></tr>
+<tr class="memitem:aea192809b482771df73c1275ef6e806b" id="r_aea192809b482771df73c1275ef6e806b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#aea192809b482771df73c1275ef6e806b">InitializeWidgetInput</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderSurfaceHost</a>)</td></tr>
+<tr class="memdesc:aea192809b482771df73c1275ef6e806b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes widget input routing for the supplied render surface host.  <br /></td></tr>
+<tr class="separator:aea192809b482771df73c1275ef6e806b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a404a0c741326bf3eb36c919b94e55efc" id="r_a404a0c741326bf3eb36c919b94e55efc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a404a0c741326bf3eb36c919b94e55efc">OnInitializing</a> ()</td></tr>
 <tr class="memdesc:a404a0c741326bf3eb36c919b94e55efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs before the host initialization sequence begins.  <br /></td></tr>
 <tr class="separator:a404a0c741326bf3eb36c919b94e55efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad75672dd8509f0344927d8db4c31008b" id="r_ad75672dd8509f0344927d8db4c31008b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ad75672dd8509f0344927d8db4c31008b">ConfigureLogging</a> (LogLevel logLevel)</td></tr>
-<tr class="memdesc:ad75672dd8509f0344927d8db4c31008b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the logging level for the engine.  <br /></td></tr>
+<tr class="memitem:ad75672dd8509f0344927d8db4c31008b" id="r_ad75672dd8509f0344927d8db4c31008b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ad75672dd8509f0344927d8db4c31008b">ConfigureLogging</a> (LogLevel <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">logLevel</a>)</td></tr>
+<tr class="memdesc:ad75672dd8509f0344927d8db4c31008b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the logging level used by <a class="el" href="namespaceGondwana.html">Gondwana</a>.  <br /></td></tr>
 <tr class="separator:ad75672dd8509f0344927d8db4c31008b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a102491cbe2c293deae54885bf6d39304" id="r_a102491cbe2c293deae54885bf6d39304"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a102491cbe2c293deae54885bf6d39304">ConfigurePlatform</a> ()</td></tr>
-<tr class="memdesc:a102491cbe2c293deae54885bf6d39304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures platform-specific features and adapters for the game host.  <br /></td></tr>
+<tr class="memitem:a102491cbe2c293deae54885bf6d39304" id="r_a102491cbe2c293deae54885bf6d39304"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a102491cbe2c293deae54885bf6d39304">ConfigurePlatform</a> ()</td></tr>
+<tr class="memdesc:a102491cbe2c293deae54885bf6d39304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures platform-specific services, adapters, and render infrastructure.  <br /></td></tr>
 <tr class="separator:a102491cbe2c293deae54885bf6d39304"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab68a30496e9fcfce945e5a0f9c4d59c9" id="r_ab68a30496e9fcfce945e5a0f9c4d59c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab68a30496e9fcfce945e5a0f9c4d59c9">ConfigureInput</a> ()</td></tr>
-<tr class="memdesc:ab68a30496e9fcfce945e5a0f9c4d59c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures all input devices including keyboard, mouse, gamepads, and touch.  <br /></td></tr>
+<tr class="memitem:ab68a30496e9fcfce945e5a0f9c4d59c9" id="r_ab68a30496e9fcfce945e5a0f9c4d59c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab68a30496e9fcfce945e5a0f9c4d59c9">ConfigureInput</a> ()</td></tr>
+<tr class="memdesc:ab68a30496e9fcfce945e5a0f9c4d59c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures keyboard, mouse, gamepad, and touch input.  <br /></td></tr>
 <tr class="separator:ab68a30496e9fcfce945e5a0f9c4d59c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a160493972b5095bc4d3b573b8379b45a" id="r_a160493972b5095bc4d3b573b8379b45a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a160493972b5095bc4d3b573b8379b45a">ConfigureKeyboard</a> ()</td></tr>
-<tr class="memdesc:a160493972b5095bc4d3b573b8379b45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the keyboard input adapter. Override to set up keyboard-specific configuration.  <br /></td></tr>
+<tr class="memitem:a160493972b5095bc4d3b573b8379b45a" id="r_a160493972b5095bc4d3b573b8379b45a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a160493972b5095bc4d3b573b8379b45a">ConfigureKeyboard</a> ()</td></tr>
+<tr class="memdesc:a160493972b5095bc4d3b573b8379b45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the keyboard input adapter.  <br /></td></tr>
 <tr class="separator:a160493972b5095bc4d3b573b8379b45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab89e68f670b31dbc7968ad85a2191442" id="r_ab89e68f670b31dbc7968ad85a2191442"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab89e68f670b31dbc7968ad85a2191442">ConfigureMouse</a> ()</td></tr>
-<tr class="memdesc:ab89e68f670b31dbc7968ad85a2191442"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the mouse input adapter. Override to set up mouse-specific configuration.  <br /></td></tr>
+<tr class="memitem:ab89e68f670b31dbc7968ad85a2191442" id="r_ab89e68f670b31dbc7968ad85a2191442"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab89e68f670b31dbc7968ad85a2191442">ConfigureMouse</a> ()</td></tr>
+<tr class="memdesc:ab89e68f670b31dbc7968ad85a2191442"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the mouse input adapter.  <br /></td></tr>
 <tr class="separator:ab89e68f670b31dbc7968ad85a2191442"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d2c359977e59989638bd7d801a4a95a" id="r_a7d2c359977e59989638bd7d801a4a95a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a7d2c359977e59989638bd7d801a4a95a">ConfigureGamepads</a> ()</td></tr>
-<tr class="memdesc:a7d2c359977e59989638bd7d801a4a95a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the gamepad manager. Override to set up gamepad-specific configuration.  <br /></td></tr>
+<tr class="memitem:a7d2c359977e59989638bd7d801a4a95a" id="r_a7d2c359977e59989638bd7d801a4a95a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a7d2c359977e59989638bd7d801a4a95a">ConfigureGamepads</a> ()</td></tr>
+<tr class="memdesc:a7d2c359977e59989638bd7d801a4a95a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the gamepad manager.  <br /></td></tr>
 <tr class="separator:a7d2c359977e59989638bd7d801a4a95a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afabc3777509a50b9ab4a3628561fbcdd" id="r_afabc3777509a50b9ab4a3628561fbcdd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#afabc3777509a50b9ab4a3628561fbcdd">ConfigureTouch</a> ()</td></tr>
-<tr class="memdesc:afabc3777509a50b9ab4a3628561fbcdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the touch input adapter. Override to set up touch-specific configuration.  <br /></td></tr>
+<tr class="memitem:afabc3777509a50b9ab4a3628561fbcdd" id="r_afabc3777509a50b9ab4a3628561fbcdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#afabc3777509a50b9ab4a3628561fbcdd">ConfigureTouch</a> ()</td></tr>
+<tr class="memdesc:afabc3777509a50b9ab4a3628561fbcdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the touch input adapter.  <br /></td></tr>
 <tr class="separator:afabc3777509a50b9ab4a3628561fbcdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a142b480f1f7bf2f0cf22ea0100163626" id="r_a142b480f1f7bf2f0cf22ea0100163626"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a142b480f1f7bf2f0cf22ea0100163626">InitializeGameContent</a> ()</td></tr>
-<tr class="memdesc:a142b480f1f7bf2f0cf22ea0100163626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes game-specific content including assets, scenes, and game objects.  <br /></td></tr>
+<tr class="memitem:a1414fa93f4ce9d54abea8ce7f5ea1522" id="r_a1414fa93f4ce9d54abea8ce7f5ea1522"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a1414fa93f4ce9d54abea8ce7f5ea1522">OnInputConfigured</a> ()</td></tr>
+<tr class="memdesc:a1414fa93f4ce9d54abea8ce7f5ea1522"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after all input devices have been configured.  <br /></td></tr>
+<tr class="separator:a1414fa93f4ce9d54abea8ce7f5ea1522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a142b480f1f7bf2f0cf22ea0100163626" id="r_a142b480f1f7bf2f0cf22ea0100163626"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a142b480f1f7bf2f0cf22ea0100163626">InitializeGameContent</a> ()</td></tr>
+<tr class="memdesc:a142b480f1f7bf2f0cf22ea0100163626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes game-specific content, the scene graph, and scene objects.  <br /></td></tr>
 <tr class="separator:a142b480f1f7bf2f0cf22ea0100163626"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1681f962a355b6e2849e2dbd74e18188" id="r_a1681f962a355b6e2849e2dbd74e18188"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a1681f962a355b6e2849e2dbd74e18188">LoadContent</a> ()</td></tr>
-<tr class="memdesc:a1681f962a355b6e2849e2dbd74e18188"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads all game content including assets, tilesheets, and animation cycles.  <br /></td></tr>
+<tr class="memitem:a1681f962a355b6e2849e2dbd74e18188" id="r_a1681f962a355b6e2849e2dbd74e18188"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a1681f962a355b6e2849e2dbd74e18188">LoadContent</a> ()</td></tr>
+<tr class="memdesc:a1681f962a355b6e2849e2dbd74e18188"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads assets, tilesheets, and animation cycles.  <br /></td></tr>
 <tr class="separator:a1681f962a355b6e2849e2dbd74e18188"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0930bbe034b663e96202b5e1c8fca903" id="r_a0930bbe034b663e96202b5e1c8fca903"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a0930bbe034b663e96202b5e1c8fca903">LoadAssets</a> ()</td></tr>
-<tr class="memdesc:a0930bbe034b663e96202b5e1c8fca903"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads game assets. Override to load textures, sounds, and other resources.  <br /></td></tr>
+<tr class="memitem:a0930bbe034b663e96202b5e1c8fca903" id="r_a0930bbe034b663e96202b5e1c8fca903"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a0930bbe034b663e96202b5e1c8fca903">LoadAssets</a> ()</td></tr>
+<tr class="memdesc:a0930bbe034b663e96202b5e1c8fca903"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads textures, sounds, and other game assets.  <br /></td></tr>
 <tr class="separator:a0930bbe034b663e96202b5e1c8fca903"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73ce72820113559e703727c9374fa595" id="r_a73ce72820113559e703727c9374fa595"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a73ce72820113559e703727c9374fa595">LoadTilesheets</a> ()</td></tr>
-<tr class="memdesc:a73ce72820113559e703727c9374fa595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads tilesheet definitions. Override to load tileset data for tile-based rendering.  <br /></td></tr>
+<tr class="memitem:a73ce72820113559e703727c9374fa595" id="r_a73ce72820113559e703727c9374fa595"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a73ce72820113559e703727c9374fa595">LoadTilesheets</a> ()</td></tr>
+<tr class="memdesc:a73ce72820113559e703727c9374fa595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads tilesheet definitions.  <br /></td></tr>
 <tr class="separator:a73ce72820113559e703727c9374fa595"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a49535618c4d95073d1fb6b63090162" id="r_a5a49535618c4d95073d1fb6b63090162"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5a49535618c4d95073d1fb6b63090162">LoadAnimationCycles</a> ()</td></tr>
-<tr class="memdesc:a5a49535618c4d95073d1fb6b63090162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads animation cycle definitions. Override to load sprite animation data.  <br /></td></tr>
+<tr class="memitem:a5a49535618c4d95073d1fb6b63090162" id="r_a5a49535618c4d95073d1fb6b63090162"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5a49535618c4d95073d1fb6b63090162">LoadAnimationCycles</a> ()</td></tr>
+<tr class="memdesc:a5a49535618c4d95073d1fb6b63090162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads animation cycle definitions.  <br /></td></tr>
 <tr class="separator:a5a49535618c4d95073d1fb6b63090162"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab10ef2942f5ff8d0b02f62ebbd6e17cc" id="r_ab10ef2942f5ff8d0b02f62ebbd6e17cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab10ef2942f5ff8d0b02f62ebbd6e17cc">CreateSceneGraph</a> ()</td></tr>
-<tr class="memdesc:ab10ef2942f5ff8d0b02f62ebbd6e17cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the scene graph including the initial scene and views.  <br /></td></tr>
+<tr class="memitem:ab10ef2942f5ff8d0b02f62ebbd6e17cc" id="r_ab10ef2942f5ff8d0b02f62ebbd6e17cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab10ef2942f5ff8d0b02f62ebbd6e17cc">CreateSceneGraph</a> ()</td></tr>
+<tr class="memdesc:ab10ef2942f5ff8d0b02f62ebbd6e17cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the initial scene and its views.  <br /></td></tr>
 <tr class="separator:ab10ef2942f5ff8d0b02f62ebbd6e17cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbb7c5d75b0d28416a9f7f9834fc1ed0" id="r_acbb7c5d75b0d28416a9f7f9834fc1ed0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#acbb7c5d75b0d28416a9f7f9834fc1ed0">OnSceneGraphCreated</a> ()</td></tr>
-<tr class="memdesc:acbb7c5d75b0d28416a9f7f9834fc1ed0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after the scene graph has been created but before the current scene is bound to the render surface host.  <br /></td></tr>
+<tr class="memitem:acbb7c5d75b0d28416a9f7f9834fc1ed0" id="r_acbb7c5d75b0d28416a9f7f9834fc1ed0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#acbb7c5d75b0d28416a9f7f9834fc1ed0">OnSceneGraphCreated</a> ()</td></tr>
+<tr class="memdesc:acbb7c5d75b0d28416a9f7f9834fc1ed0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after the scene graph has been created but before the scene is bound.  <br /></td></tr>
 <tr class="separator:acbb7c5d75b0d28416a9f7f9834fc1ed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4fd1229c0ea23e4bc5f288444f92c04" id="r_ab4fd1229c0ea23e4bc5f288444f92c04"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab4fd1229c0ea23e4bc5f288444f92c04">CreateInitialScene</a> ()</td></tr>
-<tr class="memdesc:ab4fd1229c0ea23e4bc5f288444f92c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the initial scene for the game. Override to provide a custom starting scene.  <br /></td></tr>
+<tr class="memitem:ab4fd1229c0ea23e4bc5f288444f92c04" id="r_ab4fd1229c0ea23e4bc5f288444f92c04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab4fd1229c0ea23e4bc5f288444f92c04">CreateInitialScene</a> ()</td></tr>
+<tr class="memdesc:ab4fd1229c0ea23e4bc5f288444f92c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the initial scene for the game.  <br /></td></tr>
 <tr class="separator:ab4fd1229c0ea23e4bc5f288444f92c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f97aa37a688df58dba272b5a222a6d8" id="r_a1f97aa37a688df58dba272b5a222a6d8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a1f97aa37a688df58dba272b5a222a6d8">CreateInitialViews</a> ()</td></tr>
-<tr class="memdesc:a1f97aa37a688df58dba272b5a222a6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates initial views for rendering the scene. Override to set up camera views and viewports.  <br /></td></tr>
+<tr class="memitem:a1f97aa37a688df58dba272b5a222a6d8" id="r_a1f97aa37a688df58dba272b5a222a6d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a1f97aa37a688df58dba272b5a222a6d8">CreateInitialViews</a> ()</td></tr>
+<tr class="memdesc:a1f97aa37a688df58dba272b5a222a6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the initial views and viewports used to render the scene.  <br /></td></tr>
 <tr class="separator:a1f97aa37a688df58dba272b5a222a6d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4939bab4a421dd31905b5e526f4c7c1b" id="r_a4939bab4a421dd31905b5e526f4c7c1b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4939bab4a421dd31905b5e526f4c7c1b">BindScene</a> ()</td></tr>
-<tr class="memdesc:a4939bab4a421dd31905b5e526f4c7c1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the current scene to the render surface. Override to customize scene binding behavior.  <br /></td></tr>
+<tr class="memitem:a4939bab4a421dd31905b5e526f4c7c1b" id="r_a4939bab4a421dd31905b5e526f4c7c1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4939bab4a421dd31905b5e526f4c7c1b">BindScene</a> ()</td></tr>
+<tr class="memdesc:a4939bab4a421dd31905b5e526f4c7c1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the current scene to the platform render surface.  <br /></td></tr>
 <tr class="separator:a4939bab4a421dd31905b5e526f4c7c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a776fb1af814a3321194861b47ff9f691" id="r_a776fb1af814a3321194861b47ff9f691"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a776fb1af814a3321194861b47ff9f691">OnSceneBound</a> ()</td></tr>
+<tr class="memitem:a776fb1af814a3321194861b47ff9f691" id="r_a776fb1af814a3321194861b47ff9f691"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a776fb1af814a3321194861b47ff9f691">OnSceneBound</a> ()</td></tr>
 <tr class="memdesc:a776fb1af814a3321194861b47ff9f691"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after the current scene has been bound to the render surface host.  <br /></td></tr>
 <tr class="separator:a776fb1af814a3321194861b47ff9f691"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15d6a4e0d90853c464bb71673a551bca" id="r_a15d6a4e0d90853c464bb71673a551bca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a15d6a4e0d90853c464bb71673a551bca">InitializeSceneObjects</a> ()</td></tr>
-<tr class="memdesc:a15d6a4e0d90853c464bb71673a551bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes scene objects including sprites and direct drawings.  <br /></td></tr>
+<tr class="memitem:a15d6a4e0d90853c464bb71673a551bca" id="r_a15d6a4e0d90853c464bb71673a551bca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a15d6a4e0d90853c464bb71673a551bca">InitializeSceneObjects</a> ()</td></tr>
+<tr class="memdesc:a15d6a4e0d90853c464bb71673a551bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates sprites and direct drawings for the current scene.  <br /></td></tr>
 <tr class="separator:a15d6a4e0d90853c464bb71673a551bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84e8edeb29fcd47ffa61f57e9de357ba" id="r_a84e8edeb29fcd47ffa61f57e9de357ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a84e8edeb29fcd47ffa61f57e9de357ba">CreateSprites</a> ()</td></tr>
-<tr class="memdesc:a84e8edeb29fcd47ffa61f57e9de357ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates sprite objects in the scene. Override to populate the scene with sprites.  <br /></td></tr>
+<tr class="memitem:a84e8edeb29fcd47ffa61f57e9de357ba" id="r_a84e8edeb29fcd47ffa61f57e9de357ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a84e8edeb29fcd47ffa61f57e9de357ba">CreateSprites</a> ()</td></tr>
+<tr class="memdesc:a84e8edeb29fcd47ffa61f57e9de357ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates sprite objects for the current scene.  <br /></td></tr>
 <tr class="separator:a84e8edeb29fcd47ffa61f57e9de357ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfeaa79cfc57010d3b3cfba8fcc7af1d" id="r_acfeaa79cfc57010d3b3cfba8fcc7af1d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#acfeaa79cfc57010d3b3cfba8fcc7af1d">CreateDirectDrawings</a> ()</td></tr>
-<tr class="memdesc:acfeaa79cfc57010d3b3cfba8fcc7af1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates direct drawing objects in the scene. Override to add custom rendering primitives.  <br /></td></tr>
+<tr class="memitem:acfeaa79cfc57010d3b3cfba8fcc7af1d" id="r_acfeaa79cfc57010d3b3cfba8fcc7af1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#acfeaa79cfc57010d3b3cfba8fcc7af1d">CreateDirectDrawings</a> ()</td></tr>
+<tr class="memdesc:acfeaa79cfc57010d3b3cfba8fcc7af1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates direct drawings and widgets for the current scene.  <br /></td></tr>
 <tr class="separator:acfeaa79cfc57010d3b3cfba8fcc7af1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08a33a3b5f0c4124cb94441cfb65951b" id="r_a08a33a3b5f0c4124cb94441cfb65951b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a08a33a3b5f0c4124cb94441cfb65951b">InitializeEngine</a> (string? configPath, bool? autoSaveConfig)</td></tr>
-<tr class="memdesc:a08a33a3b5f0c4124cb94441cfb65951b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the engine with the specified configuration settings.  <br /></td></tr>
+<tr class="memitem:a08a33a3b5f0c4124cb94441cfb65951b" id="r_a08a33a3b5f0c4124cb94441cfb65951b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a08a33a3b5f0c4124cb94441cfb65951b">InitializeEngine</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">configPath</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">autoSaveConfig</a>)</td></tr>
+<tr class="memdesc:a08a33a3b5f0c4124cb94441cfb65951b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine.  <br /></td></tr>
 <tr class="separator:a08a33a3b5f0c4124cb94441cfb65951b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49581bcfa4b082e44a3057c792aca8e4" id="r_a49581bcfa4b082e44a3057c792aca8e4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a49581bcfa4b082e44a3057c792aca8e4">OnEngineInitialized</a> ()</td></tr>
+<tr class="memitem:a49581bcfa4b082e44a3057c792aca8e4" id="r_a49581bcfa4b082e44a3057c792aca8e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a49581bcfa4b082e44a3057c792aca8e4">OnEngineInitialized</a> ()</td></tr>
 <tr class="memdesc:a49581bcfa4b082e44a3057c792aca8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after the engine has been initialized but before it has been started.  <br /></td></tr>
 <tr class="separator:a49581bcfa4b082e44a3057c792aca8e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba6f98d10c2c304b8f38de8d88eebee5" id="r_aba6f98d10c2c304b8f38de8d88eebee5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#aba6f98d10c2c304b8f38de8d88eebee5">StartEngine</a> ()</td></tr>
-<tr class="memdesc:aba6f98d10c2c304b8f38de8d88eebee5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the engine with the configured synchronization context.  <br /></td></tr>
+<tr class="memitem:aba6f98d10c2c304b8f38de8d88eebee5" id="r_aba6f98d10c2c304b8f38de8d88eebee5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#aba6f98d10c2c304b8f38de8d88eebee5">StartEngine</a> ()</td></tr>
+<tr class="memdesc:aba6f98d10c2c304b8f38de8d88eebee5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the engine using the synchronization context returned by GetSynchronizationContext.  <br /></td></tr>
 <tr class="separator:aba6f98d10c2c304b8f38de8d88eebee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33aefd7ff2427402e075af995563d111" id="r_a33aefd7ff2427402e075af995563d111"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a33aefd7ff2427402e075af995563d111">StartEngineCore</a> (SynchronizationContext syncContext)</td></tr>
-<tr class="memdesc:a33aefd7ff2427402e075af995563d111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the engine using the supplied synchronization context. Override to customize the platform-specific engine start mechanism.  <br /></td></tr>
+<tr class="memitem:a33aefd7ff2427402e075af995563d111" id="r_a33aefd7ff2427402e075af995563d111"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a33aefd7ff2427402e075af995563d111">StartEngineCore</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SynchronizationContext</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">syncContext</a>)</td></tr>
+<tr class="memdesc:a33aefd7ff2427402e075af995563d111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the engine using the supplied synchronization context.  <br /></td></tr>
 <tr class="separator:a33aefd7ff2427402e075af995563d111"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a119fef1a169827b3fde332cb8d43807c" id="r_a119fef1a169827b3fde332cb8d43807c"><td class="memItemLeft" align="right" valign="top">virtual ? SynchronizationContext&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a119fef1a169827b3fde332cb8d43807c">GetSynchronizationContext</a> ()</td></tr>
+<tr class="memitem:a119fef1a169827b3fde332cb8d43807c" id="r_a119fef1a169827b3fde332cb8d43807c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> ? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SynchronizationContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a119fef1a169827b3fde332cb8d43807c">GetSynchronizationContext</a> ()</td></tr>
 <tr class="memdesc:a119fef1a169827b3fde332cb8d43807c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the synchronization context used to start the engine.  <br /></td></tr>
 <tr class="separator:a119fef1a169827b3fde332cb8d43807c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ca29468f89fa61e788db4726bf32b77" id="r_a4ca29468f89fa61e788db4726bf32b77"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4ca29468f89fa61e788db4726bf32b77">OnEngineStarted</a> ()</td></tr>
+<tr class="memitem:a4ca29468f89fa61e788db4726bf32b77" id="r_a4ca29468f89fa61e788db4726bf32b77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4ca29468f89fa61e788db4726bf32b77">OnEngineStarted</a> ()</td></tr>
 <tr class="memdesc:a4ca29468f89fa61e788db4726bf32b77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after the engine has been started.  <br /></td></tr>
 <tr class="separator:a4ca29468f89fa61e788db4726bf32b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a332c71dfd84ee52dc7bdb2aabc9f3905" id="r_a332c71dfd84ee52dc7bdb2aabc9f3905"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a332c71dfd84ee52dc7bdb2aabc9f3905">OnInitialized</a> ()</td></tr>
+<tr class="memitem:a332c71dfd84ee52dc7bdb2aabc9f3905" id="r_a332c71dfd84ee52dc7bdb2aabc9f3905"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a332c71dfd84ee52dc7bdb2aabc9f3905">OnInitialized</a> ()</td></tr>
 <tr class="memdesc:a332c71dfd84ee52dc7bdb2aabc9f3905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after the full host initialization sequence has completed.  <br /></td></tr>
 <tr class="separator:a332c71dfd84ee52dc7bdb2aabc9f3905"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e7bb18f465965d552d64c49c9006e1e" id="r_a5e7bb18f465965d552d64c49c9006e1e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5e7bb18f465965d552d64c49c9006e1e">UnhookEvents</a> ()</td></tr>
-<tr class="memdesc:a5e7bb18f465965d552d64c49c9006e1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unhooks event handlers during disposal. Override to clean up custom event subscriptions.  <br /></td></tr>
+<tr class="memitem:a5e7bb18f465965d552d64c49c9006e1e" id="r_a5e7bb18f465965d552d64c49c9006e1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5e7bb18f465965d552d64c49c9006e1e">UnhookEvents</a> ()</td></tr>
+<tr class="memdesc:a5e7bb18f465965d552d64c49c9006e1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unhooks custom event handlers during disposal.  <br /></td></tr>
 <tr class="separator:a5e7bb18f465965d552d64c49c9006e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f5872d281b4465ffa418cbd48b56a15" id="r_a4f5872d281b4465ffa418cbd48b56a15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4f5872d281b4465ffa418cbd48b56a15">StopEngine</a> ()</td></tr>
-<tr class="memdesc:a4f5872d281b4465ffa418cbd48b56a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the engine during disposal.  <br /></td></tr>
+<tr class="memitem:a4f5872d281b4465ffa418cbd48b56a15" id="r_a4f5872d281b4465ffa418cbd48b56a15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4f5872d281b4465ffa418cbd48b56a15">StopEngine</a> ()</td></tr>
+<tr class="memdesc:a4f5872d281b4465ffa418cbd48b56a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the engine during host disposal.  <br /></td></tr>
 <tr class="separator:a4f5872d281b4465ffa418cbd48b56a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01d0076d5fdd803e7169d35890eb362a" id="r_a01d0076d5fdd803e7169d35890eb362a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a01d0076d5fdd803e7169d35890eb362a">StopEngineCore</a> ()</td></tr>
-<tr class="memdesc:a01d0076d5fdd803e7169d35890eb362a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the engine. Override to perform platform-specific engine stop work.  <br /></td></tr>
+<tr class="memitem:a01d0076d5fdd803e7169d35890eb362a" id="r_a01d0076d5fdd803e7169d35890eb362a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a01d0076d5fdd803e7169d35890eb362a">StopEngineCore</a> ()</td></tr>
+<tr class="memdesc:a01d0076d5fdd803e7169d35890eb362a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs platform-specific engine shutdown work.  <br /></td></tr>
 <tr class="separator:a01d0076d5fdd803e7169d35890eb362a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38c70b8d3afe90cb0c3837957448a88c" id="r_a38c70b8d3afe90cb0c3837957448a88c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c">DisposeEngine</a> ()</td></tr>
-<tr class="memdesc:a38c70b8d3afe90cb0c3837957448a88c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes the engine instance during disposal.  <br /></td></tr>
+<tr class="memitem:a38c70b8d3afe90cb0c3837957448a88c" id="r_a38c70b8d3afe90cb0c3837957448a88c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c">DisposeEngine</a> ()</td></tr>
+<tr class="memdesc:a38c70b8d3afe90cb0c3837957448a88c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes the engine instance.  <br /></td></tr>
 <tr class="separator:a38c70b8d3afe90cb0c3837957448a88c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f34005c50744e316edad63029186c3c" id="r_a3f34005c50744e316edad63029186c3c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a3f34005c50744e316edad63029186c3c">OnDisposing</a> ()</td></tr>
+<tr class="memitem:a3f34005c50744e316edad63029186c3c" id="r_a3f34005c50744e316edad63029186c3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a3f34005c50744e316edad63029186c3c">OnDisposing</a> ()</td></tr>
 <tr class="memdesc:a3f34005c50744e316edad63029186c3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs before managed resources are disposed.  <br /></td></tr>
 <tr class="separator:a3f34005c50744e316edad63029186c3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5455d7dbc4323016f0139d406436b0c6" id="r_a5455d7dbc4323016f0139d406436b0c6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5455d7dbc4323016f0139d406436b0c6">OnDisposed</a> ()</td></tr>
+<tr class="memitem:a5455d7dbc4323016f0139d406436b0c6" id="r_a5455d7dbc4323016f0139d406436b0c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5455d7dbc4323016f0139d406436b0c6">OnDisposed</a> ()</td></tr>
 <tr class="memdesc:a5455d7dbc4323016f0139d406436b0c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after managed resources have been disposed.  <br /></td></tr>
 <tr class="separator:a5455d7dbc4323016f0139d406436b0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4190e4b3760094a46347a24609f32cb3" id="r_a4190e4b3760094a46347a24609f32cb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4190e4b3760094a46347a24609f32cb3">EnsureNotInitialized</a> ()</td></tr>
-<tr class="memdesc:a4190e4b3760094a46347a24609f32cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures the object has not been initialized.  <br /></td></tr>
+<tr class="memitem:a4190e4b3760094a46347a24609f32cb3" id="r_a4190e4b3760094a46347a24609f32cb3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4190e4b3760094a46347a24609f32cb3">EnsureNotInitialized</a> ()</td></tr>
+<tr class="memdesc:a4190e4b3760094a46347a24609f32cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures that the host has not already been initialized.  <br /></td></tr>
 <tr class="separator:a4190e4b3760094a46347a24609f32cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4aac743545c0e74b854d768b69167e5" id="r_af4aac743545c0e74b854d768b69167e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#af4aac743545c0e74b854d768b69167e5">EnsureNotDisposed</a> ()</td></tr>
-<tr class="memdesc:af4aac743545c0e74b854d768b69167e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures the object has not been disposed.  <br /></td></tr>
+<tr class="memitem:af4aac743545c0e74b854d768b69167e5" id="r_af4aac743545c0e74b854d768b69167e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#af4aac743545c0e74b854d768b69167e5">EnsureNotDisposed</a> ()</td></tr>
+<tr class="memdesc:af4aac743545c0e74b854d768b69167e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures that the host has not been disposed.  <br /></td></tr>
 <tr class="separator:af4aac743545c0e74b854d768b69167e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:aea7f4a44e1f5292bc86f8b75c9ba791c" id="r_aea7f4a44e1f5292bc86f8b75c9ba791c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Engine.html">Engine</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#aea7f4a44e1f5292bc86f8b75c9ba791c">Engine</a><code> [get]</code></td></tr>
-<tr class="memdesc:aea7f4a44e1f5292bc86f8b75c9ba791c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the engine.  <br /></td></tr>
+<tr class="memdesc:aea7f4a44e1f5292bc86f8b75c9ba791c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine.  <br /></td></tr>
 <tr class="separator:aea7f4a44e1f5292bc86f8b75c9ba791c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1ca5ddd8b4d2aa962f171245c96c94b" id="r_ab1ca5ddd8b4d2aa962f171245c96c94b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab1ca5ddd8b4d2aa962f171245c96c94b">Scene</a><code> [get, protected set]</code></td></tr>
 <tr class="memdesc:ab1ca5ddd8b4d2aa962f171245c96c94b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current active scene.  <br /></td></tr>
 <tr class="separator:ab1ca5ddd8b4d2aa962f171245c96c94b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8df9c79661ef5e3e6c5fbf7ecae8cf9" id="r_ae8df9c79661ef5e3e6c5fbf7ecae8cf9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetInputRouter.html">WidgetInputRouter</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ae8df9c79661ef5e3e6c5fbf7ecae8cf9">WidgetInputRouter</a><code> [get]</code></td></tr>
+<tr class="memdesc:ae8df9c79661ef5e3e6c5fbf7ecae8cf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the widget input router, if widget input has been initialized.  <br /></td></tr>
+<tr class="separator:ae8df9c79661ef5e3e6c5fbf7ecae8cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides a base class for hosting and managing the lifecycle of a <a class="el" href="namespaceGondwana.html">Gondwana</a> game application. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00010">10</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00012">12</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a4939bab4a421dd31905b5e526f4c7c1b" name="a4939bab4a421dd31905b5e526f4c7c1b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4939bab4a421dd31905b5e526f4c7c1b">&#9670;&#160;</a></span>BindScene()</h2>
@@ -265,7 +274,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.BindScene </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.BindScene </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -278,11 +287,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Binds the current scene to the render surface. Override to customize scene binding behavior. </p>
+<p>Binds the current scene to the platform render surface. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#adfc7937992e7ed48ad39ac8fea88c508">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a27a77b554ffe3fec87b00c692ecf5786">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#af377bd25ddc537e7f3630474e0b585b3">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a836660392d7aff078aee30664f2d5bc7">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html#a49e613d29d4c79db499193f2f4d8816d">Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a27a77b554ffe3fec87b00c692ecf5786">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#af377bd25ddc537e7f3630474e0b585b3">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a836660392d7aff078aee30664f2d5bc7">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00198">198</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00270">270</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -296,7 +305,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.ConfigureGamepads </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.ConfigureGamepads </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -309,11 +318,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures the gamepad manager. Override to set up gamepad-specific configuration. </p>
+<p>Configures the gamepad manager. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#aac689886da61ecde3f301e5443610ae8">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a811dfc0155ff97fb11564aa90f7e35b0">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a17405af81bd6cad563bf641e8aefaa48">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a6c84ea1f99af8edef5b5c18469a1d97e">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html#a12c79da8cc85ffbe44a644ac1f41d74c">Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a811dfc0155ff97fb11564aa90f7e35b0">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a17405af81bd6cad563bf641e8aefaa48">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a6c84ea1f99af8edef5b5c18469a1d97e">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00106">106</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00163">163</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -327,7 +336,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.ConfigureInput </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.ConfigureInput </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -340,9 +349,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures all input devices including keyboard, mouse, gamepads, and touch. </p>
+<p>Configures keyboard, mouse, gamepad, and touch input. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00081">81</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00136">136</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -356,7 +365,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.ConfigureKeyboard </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.ConfigureKeyboard </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -369,11 +378,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures the keyboard input adapter. Override to set up keyboard-specific configuration. </p>
+<p>Configures the keyboard input adapter. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#ab5d14a062914560f6303b8e3e7e2f5f3">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a8a11bad2462f5a0c04ada9417c5f943e">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a2b8f952596eda12fe72006613e0b371d">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a9dd9dc50087c2cebfb9da922c894e172">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html#adfb8ab4c0b421e94d2b15e97b7b824b1">Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a8a11bad2462f5a0c04ada9417c5f943e">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a2b8f952596eda12fe72006613e0b371d">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a9dd9dc50087c2cebfb9da922c894e172">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00092">92</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00149">149</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -387,7 +396,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.ConfigureLogging </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.ConfigureLogging </td>
           <td>(</td>
           <td class="paramtype">LogLevel&#160;</td>
           <td class="paramname"><em>logLevel</em></td><td>)</td>
@@ -401,15 +410,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures the logging level for the engine. </p>
+<p>Configures the logging level used by <a class="el" href="namespaceGondwana.html">Gondwana</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">logLevel</td><td>The log level to set.</td></tr>
+    <tr><td class="paramname">logLevel</td><td>The minimum log level to use.</td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00068">68</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00122">122</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -423,7 +432,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.ConfigureMouse </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.ConfigureMouse </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -436,11 +445,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures the mouse input adapter. Override to set up mouse-specific configuration. </p>
+<p>Configures the mouse input adapter. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#a8065adf37bd6e4e58e644e432213d5cf">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#ac3f4a2711f2af9b1b5bb082af55c4760">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a93872c9d4380db0ff7d6c4738b9145ff">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a75a41f595e26ec05a5a230b3aa0ab191">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html#a41c308358fc39672296d1a4cdd10f267">Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#ac3f4a2711f2af9b1b5bb082af55c4760">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a93872c9d4380db0ff7d6c4738b9145ff">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#a75a41f595e26ec05a5a230b3aa0ab191">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00099">99</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00156">156</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -454,7 +463,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.ConfigurePlatform </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.ConfigurePlatform </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -467,7 +476,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures platform-specific features and adapters for the game host. </p>
+<p>Configures platform-specific services, adapters, and render infrastructure. </p>
 
 </div>
 </div>
@@ -481,7 +490,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.ConfigureTouch </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.ConfigureTouch </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -494,11 +503,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Configures the touch input adapter. Override to set up touch-specific configuration. </p>
+<p>Configures the touch input adapter. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html#ae9f9c8eddfdad98377617957b0ba16cd">Gondwana.Avalonia.Hosting.AvaloniaGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a4988b2d0a57aabc6499f949b30dd47b7">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#aecd6e39100533d94907879ab6168300d">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#ab52bbffe873a02c850fe640cfc5aa7cd">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html#aadfef2f805c16e36e7e61b7ab647cc25">Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#a4988b2d0a57aabc6499f949b30dd47b7">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#aecd6e39100533d94907879ab6168300d">Gondwana.Blazor.Hosting.BlazorGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#ab52bbffe873a02c850fe640cfc5aa7cd">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00113">113</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00170">170</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -512,7 +521,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.CreateDirectDrawings </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.CreateDirectDrawings </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -525,9 +534,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates direct drawing objects in the scene. Override to add custom rendering primitives. </p>
+<p>Creates direct drawings and widgets for the current scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00228">228</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00300">300</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -541,7 +550,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a> Gondwana.Hosting.GameHostBase.CreateInitialScene </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a> Gondwana.Hosting.GameHostBase.CreateInitialScene </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -554,10 +563,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates the initial scene for the game. Override to provide a custom starting scene. </p>
-<dl class="section return"><dt>Returns</dt><dd>The initial scene to display.</dd></dl>
+<p>Creates the initial scene for the game. </p>
+<dl class="section return"><dt>Returns</dt><dd>The initial scene.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00183">183</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00255">255</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -571,7 +580,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.CreateInitialViews </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.CreateInitialViews </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -584,9 +593,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates initial views for rendering the scene. Override to set up camera views and viewports. </p>
+<p>Creates the initial views and viewports used to render the scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00191">191</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00263">263</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -600,7 +609,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.CreateSceneGraph </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.CreateSceneGraph </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -613,9 +622,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates the scene graph including the initial scene and views. </p>
+<p>Creates the initial scene and its views. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">InvalidOperationException</td><td>Thrown when CreateInitialScene returns <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00163">163</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00234">234</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -629,7 +644,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.CreateSprites </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.CreateSprites </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -642,9 +657,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates sprite objects in the scene. Override to populate the scene with sprites. </p>
+<p>Creates sprite objects for the current scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00221">221</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00293">293</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -655,7 +670,7 @@ Properties</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.Dispose </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.Dispose </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -663,9 +678,9 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Releases all resources used by the GameHostBase. </p>
+<p>Releases resources owned by the game host. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00370">370</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00456">456</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -679,7 +694,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.DisposeEngine </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.DisposeEngine </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -692,9 +707,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Disposes the engine instance during disposal. </p>
+<p>Disposes the engine instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00328">328</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00407">407</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -708,7 +723,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.EnsureNotDisposed </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.EnsureNotDisposed </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -721,15 +736,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Ensures the object has not been disposed. </p>
+<p>Ensures that the host has not been disposed. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when the object has been disposed.</td></tr>
+    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when the host has already been disposed. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00362">362</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00448">448</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -743,7 +758,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.EnsureNotInitialized </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.EnsureNotInitialized </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -756,15 +771,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Ensures the object has not been initialized. </p>
+<p>Ensures that the host has not already been initialized. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">InvalidOperationException</td><td>Thrown when the object has already been initialized.</td></tr>
+    <tr><td class="paramname">InvalidOperationException</td><td>Thrown when the host has already been initialized. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00352">352</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00433">433</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -778,7 +793,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual ? SynchronizationContext Gondwana.Hosting.GameHostBase.GetSynchronizationContext </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> ? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SynchronizationContext</a> Gondwana.Hosting.GameHostBase.GetSynchronizationContext </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -792,11 +807,11 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the synchronization context used to start the engine. </p>
-<dl class="section return"><dt>Returns</dt><dd>The synchronization context used by the engine.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The synchronization context, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> when unavailable.</dd></dl>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a20221b424fd9bb225a1817c0c61cb66d">Gondwana.Blazor.Hosting.BlazorGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00282">282</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00361">361</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -807,16 +822,16 @@ Properties</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.Initialize </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.Initialize </td>
           <td>(</td>
-          <td class="paramtype">string?&#160;</td>
-          <td class="paramname"><em>configPath</em> = <code>null</code>, </td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>?&#160;</td>
+          <td class="paramname"><em>configPath</em> = <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool?&#160;</td>
-          <td class="paramname"><em>autoSaveConfig</em> = <code>null</code>, </td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>?&#160;</td>
+          <td class="paramname"><em>autoSaveConfig</em> = <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -832,17 +847,24 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the game host by setting up logging, platform, input, game content, and then the engine. </p>
+<p>Initializes the game host by configuring logging, platform services, input, game content, and the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">configPath</td><td>Optional path to the configuration file.</td></tr>
-    <tr><td class="paramname">autoSaveConfig</td><td>Optional flag indicating whether to automatically save configuration changes.</td></tr>
-    <tr><td class="paramname">logLevel</td><td>The log level to use for engine logging. Default is LogLevel.Warning.</td></tr>
+    <tr><td class="paramname">configPath</td><td>Optional path to the engine configuration file.</td></tr>
+    <tr><td class="paramname">autoSaveConfig</td><td>Optional value indicating whether configuration changes should be saved automatically. </td></tr>
+    <tr><td class="paramname">logLevel</td><td>The minimum log level used by <a class="el" href="namespaceGondwana.html">Gondwana</a>. The default is LogLevel.Warning. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when the host has already been disposed. </td></tr>
+    <tr><td class="paramname">InvalidOperationException</td><td>Thrown when the host has already been initialized or no synchronization context is available. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00033">33</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00053">53</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -856,15 +878,15 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.InitializeEngine </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.InitializeEngine </td>
           <td>(</td>
-          <td class="paramtype">string?&#160;</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>?&#160;</td>
           <td class="paramname"><em>configPath</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool?&#160;</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>?&#160;</td>
           <td class="paramname"><em>autoSaveConfig</em>&#160;</td>
         </tr>
         <tr>
@@ -880,16 +902,16 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Initializes the engine with the specified configuration settings. </p>
+<p>Initializes the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">configPath</td><td>Optional path to the configuration file.</td></tr>
-    <tr><td class="paramname">autoSaveConfig</td><td>Optional flag indicating whether to automatically save configuration changes.</td></tr>
+    <tr><td class="paramname">configPath</td><td>Optional path to the engine configuration file.</td></tr>
+    <tr><td class="paramname">autoSaveConfig</td><td>Optional value indicating whether configuration changes should be saved automatically. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00237">237</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00311">311</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -903,7 +925,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.InitializeGameContent </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.InitializeGameContent </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -916,9 +938,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Initializes game-specific content including assets, scenes, and game objects. </p>
+<p>Initializes game-specific content, the scene graph, and scene objects. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00120">120</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00188">188</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -932,7 +954,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.InitializeSceneObjects </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.InitializeSceneObjects </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -945,9 +967,52 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Initializes scene objects including sprites and direct drawings. </p>
+<p>Creates sprites and direct drawings for the current scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00212">212</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00284">284</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="aea192809b482771df73c1275ef6e806b" name="aea192809b482771df73c1275ef6e806b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea192809b482771df73c1275ef6e806b">&#9670;&#160;</a></span>InitializeWidgetInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.InitializeWidgetInput </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a>&#160;</td>
+          <td class="paramname"><em>renderSurfaceHost</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes widget input routing for the supplied render surface host. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host whose widgets should receive keyboard, mouse, and touch input. </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Call this only after the render surface host and the desired input pollers have been created. Reinitializing widget input disposes the previously configured router. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>renderSurfaceHost</em>  is <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00089">89</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -961,7 +1026,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.LoadAnimationCycles </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.LoadAnimationCycles </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -974,9 +1039,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Loads animation cycle definitions. Override to load sprite animation data. </p>
+<p>Loads animation cycle definitions. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00156">156</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00224">224</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -990,7 +1055,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.LoadAssets </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.LoadAssets </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1003,9 +1068,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Loads game assets. Override to load textures, sounds, and other resources. </p>
+<p>Loads textures, sounds, and other game assets. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00142">142</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00210">210</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1019,7 +1084,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.LoadContent </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.LoadContent </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1032,9 +1097,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Loads all game content including assets, tilesheets, and animation cycles. </p>
+<p>Loads assets, tilesheets, and animation cycles. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00132">132</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00200">200</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1048,7 +1113,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.LoadTilesheets </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.LoadTilesheets </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1061,9 +1126,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Loads tilesheet definitions. Override to load tileset data for tile-based rendering. </p>
+<p>Loads tilesheet definitions. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00149">149</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00217">217</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1077,7 +1142,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnDisposed </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnDisposed </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1094,7 +1159,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#aa61b61b99817a638566629c57eb5d075">Gondwana.Blazor.Hosting.BlazorGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00344">344</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00423">423</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1108,7 +1173,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnDisposing </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnDisposing </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1123,7 +1188,7 @@ Properties</h2></td></tr>
 
 <p>Runs before managed resources are disposed. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00337">337</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00416">416</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1137,7 +1202,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnEngineInitialized </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnEngineInitialized </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1152,7 +1217,7 @@ Properties</h2></td></tr>
 
 <p>Runs after the engine has been initialized but before it has been started. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00248">248</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00324">324</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1166,7 +1231,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnEngineStarted </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnEngineStarted </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1181,7 +1246,7 @@ Properties</h2></td></tr>
 
 <p>Runs after the engine has been started. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00290">290</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00369">369</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1195,7 +1260,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnInitialized </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnInitialized </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1210,7 +1275,7 @@ Properties</h2></td></tr>
 
 <p>Runs after the full host initialization sequence has completed. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00297">297</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00376">376</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1224,7 +1289,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnInitializing </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnInitializing </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1239,7 +1304,39 @@ Properties</h2></td></tr>
 
 <p>Runs before the host initialization sequence begins. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00060">60</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00114">114</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a1414fa93f4ce9d54abea8ce7f5ea1522" name="a1414fa93f4ce9d54abea8ce7f5ea1522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1414fa93f4ce9d54abea8ce7f5ea1522">&#9670;&#160;</a></span>OnInputConfigured()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnInputConfigured </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Runs after all input devices have been configured. </p>
+<p>Platform hosts may override this hook to call InitializeWidgetInput(RenderSurfaceHostBase) once their render surface host is available. </p>
+
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html#a35838dd81fb5b26e2e76768cc8718dc1">Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost</a>, <a class="el" href="classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html#ab942c03b65187c38353020040b339b0f">Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost</a>, <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#aae072f0911a1c92375bcde491aad7560">Gondwana.Blazor.Hosting.BlazorGameHost</a>, <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHost.html#acbe6258fe5c225f2ae39c8e2d046540d">Gondwana.WinForms.Hosting.WinFormsGameHost</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a4fc985c76ece2a9ec3a6e3eb3bdccbe8">Gondwana.WinForms.Hosting.WinFormsGpuGameHost</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00181">181</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1253,7 +1350,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnSceneBound </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnSceneBound </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1268,9 +1365,9 @@ Properties</h2></td></tr>
 
 <p>Runs after the current scene has been bound to the render surface host. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#ac5185468c7fcf953ac4dac0bb88240bd">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html#ab036fc211b0c07a1ab4b42276207566b">Gondwana.WinForms.Hosting.WinFormsGameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00205">205</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00277">277</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1284,7 +1381,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.OnSceneGraphCreated </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.OnSceneGraphCreated </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1297,9 +1394,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Runs after the scene graph has been created but before the current scene is bound to the render surface host. </p>
+<p>Runs after the scene graph has been created but before the scene is bound. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00175">175</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00247">247</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1313,7 +1410,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.StartEngine </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.StartEngine </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1326,15 +1423,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Starts the engine with the configured synchronization context. </p>
+<p>Starts the engine using the synchronization context returned by GetSynchronizationContext. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">InvalidOperationException</td><td>Thrown when no synchronization context is available.</td></tr>
+    <tr><td class="paramname">InvalidOperationException</td><td>Thrown when no synchronization context is available. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00256">256</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00335">335</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1348,9 +1445,9 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.StartEngineCore </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.StartEngineCore </td>
           <td>(</td>
-          <td class="paramtype">SynchronizationContext&#160;</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SynchronizationContext</a>&#160;</td>
           <td class="paramname"><em>syncContext</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1362,7 +1459,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Starts the engine using the supplied synchronization context. Override to customize the platform-specific engine start mechanism. </p>
+<p>Starts the engine using the supplied synchronization context. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">syncContext</td><td>The synchronization context used by the engine.</td></tr>
@@ -1372,7 +1469,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a053c76e279ed5d9321b89f2ad6d705cb">Gondwana.Blazor.Hosting.BlazorGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00273">273</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00351">351</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1386,7 +1483,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Gondwana.Hosting.GameHostBase.StopEngine </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.StopEngine </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1399,9 +1496,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Stops the engine during disposal. </p>
+<p>Stops the engine during host disposal. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00311">311</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00390">390</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1415,7 +1512,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.StopEngineCore </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.StopEngineCore </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1428,11 +1525,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Stops the engine. Override to perform platform-specific engine stop work. </p>
+<p>Performs platform-specific engine shutdown work. </p>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html#a69faa3358b5942b475d3a5050ef235e3">Gondwana.Blazor.Hosting.BlazorGameHost</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00320">320</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00399">399</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1446,7 +1543,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Gondwana.Hosting.GameHostBase.UnhookEvents </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Hosting.GameHostBase.UnhookEvents </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1459,9 +1556,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Unhooks event handlers during disposal. Override to clean up custom event subscriptions. </p>
+<p>Unhooks custom event handlers during disposal. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00304">304</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00383">383</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1486,9 +1583,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the singleton instance of the engine. </p>
+<p>Gets the singleton instance of the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00020">20</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00024">24</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1514,7 +1611,33 @@ Properties</h2></td></tr>
 
 <p>Gets the current active scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00025">25</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00029">29</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="ae8df9c79661ef5e3e6c5fbf7ecae8cf9" name="ae8df9c79661ef5e3e6c5fbf7ecae8cf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8df9c79661ef5e3e6c5fbf7ecae8cf9">&#9670;&#160;</a></span>WidgetInputRouter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetInputRouter.html">WidgetInputRouter</a>? Gondwana.Hosting.GameHostBase.WidgetInputRouter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the widget input router, if widget input has been initialized. </p>
+
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00034">34</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>

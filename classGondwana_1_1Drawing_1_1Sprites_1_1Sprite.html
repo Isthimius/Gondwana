@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -309,12 +309,16 @@ Events</h2></td></tr>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classGondwana_1_1Drawing_1_1Tile')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
+<tr class="memdesc:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores whether animation advancement is currently paused.  <br /></td></tr>
 <tr class="separator:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
+<tr class="memdesc:abdab6a1ccfd3c2f07bc61b98e1cf84a1 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the collider used for collision detection, when present.  <br /></td></tr>
 <tr class="separator:abdab6a1ccfd3c2f07bc61b98e1cf84a1 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a movable visual element on a scene layer that can be positioned, animated, and rendered with collision detection. Sprites support alignment, positioning, animation, and can be managed through the SpriteManager. </p>
+<p>Partial class containing resize and pulse animation members for Sprite.</p>
+<p>Partial class containing jiggle animation members for Sprite. </p>
 
 <p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00018">18</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -335,7 +339,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Cancel any in-progress resize or pulse. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00296">296</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00299">299</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -483,7 +487,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Starts a one-shot impact-style jiggle. Handy for hits, invalid selections, bump feedback, and similar moments. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00261">261</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00264">264</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
 
 </div>
 </div>
@@ -536,7 +540,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00254">254</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00257">257</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -589,7 +593,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00223">223</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00226">226</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -628,7 +632,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00178">178</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00181">181</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -667,7 +671,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00204">204</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00207">207</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -776,7 +780,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00081">81</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00084">84</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
 
 </div>
 </div>
@@ -797,7 +801,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Stops the current jiggle effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00122">122</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00125">125</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
 
 </div>
 </div>
@@ -836,7 +840,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00272">272</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00275">275</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>
@@ -956,7 +960,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets whether the sprite is currently jiggling. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00046">46</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00049">49</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
 
 </div>
 </div>
@@ -1008,7 +1012,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the current visual jiggle offset in screen/world pixels, depending on how the sprite is being drawn. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00052">52</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00055">55</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
 
 </div>
 </div>
@@ -1034,7 +1038,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the current visual jiggle scale multiplier. This is intended to be applied at draw time only. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00058">58</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Jiggle_8cs_source.html#l00061">61</a> of file <a class="el" href="Sprite_8Jiggle_8cs_source.html">Sprite.Jiggle.cs</a>.</p>
 
 </div>
 </div>
@@ -1307,7 +1311,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Event is raised when a resize or pulse animation completes its current leg. For a one-shot resize, this is when the target size is reached. For a pulse, this is raised at the end of each leg (original-&gt;peak and peak-&gt;original). If the pulse is not looping, then the event is raised at the end of the full cycle (back to original). This event is also raised if the resize is cancelled. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00014">14</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8Resize_8cs_source.html#l00017">17</a> of file <a class="el" href="Sprite_8Resize_8cs_source.html">Sprite.Resize.cs</a>.</p>
 
 </div>
 </div>

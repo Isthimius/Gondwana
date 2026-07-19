@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -111,9 +111,9 @@ Inheritance diagram for Gondwana.Input.Mouse.MouseEventArgs:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ade73947aa6097281ed1a65d90d3ddffd" id="r_ade73947aa6097281ed1a65d90d3ddffd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#ade73947aa6097281ed1a65d90d3ddffd">MouseEventArgs</a> (<a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventConfiguration.html">MouseEventConfiguration</a> mouseEventConfiguration, <a class="el" href="namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a> currentKeyboardModifiers, IReadOnlyDictionary&lt; <a class="el" href="namespaceGondwana_1_1Input_1_1Mouse.html#ac242f16981be3646394b24d27ee1565b">MouseButton</a>, <a class="el" href="structGondwana_1_1Input_1_1Mouse_1_1MouseButtonState.html">MouseButtonState</a> &gt; buttonStates, Point previousPosition, Point currentPosition, int scrollDelta)</td></tr>
-<tr class="memdesc:ade73947aa6097281ed1a65d90d3ddffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the MouseEventArgs class with comprehensive mouse state information including configuration, button states, cursor positions, scroll data, and keyboard modifiers.  <br /></td></tr>
-<tr class="separator:ade73947aa6097281ed1a65d90d3ddffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a596b56c186f597fedd4941a227cc067c" id="r_a596b56c186f597fedd4941a227cc067c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a596b56c186f597fedd4941a227cc067c">MouseEventArgs</a> (<a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventConfiguration.html">MouseEventConfiguration</a> mouseEventConfiguration, <a class="el" href="namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a> currentKeyboardModifiers, IReadOnlyDictionary&lt; <a class="el" href="namespaceGondwana_1_1Input_1_1Mouse.html#ac242f16981be3646394b24d27ee1565b">MouseButton</a>, <a class="el" href="structGondwana_1_1Input_1_1Mouse_1_1MouseButtonState.html">MouseButtonState</a> &gt; buttonStates, Point previousPosition, Point currentPosition, int scrollDelta, long tick)</td></tr>
+<tr class="memdesc:a596b56c186f597fedd4941a227cc067c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the MouseEventArgs class with comprehensive mouse state information including configuration, button states, cursor positions, scroll data, and keyboard modifiers.  <br /></td></tr>
+<tr class="separator:a596b56c186f597fedd4941a227cc067c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19f14214db61f9e1341903ebc6eac807" id="r_a19f14214db61f9e1341903ebc6eac807"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a19f14214db61f9e1341903ebc6eac807">IsButtonDown</a> (<a class="el" href="namespaceGondwana_1_1Input_1_1Mouse.html#ac242f16981be3646394b24d27ee1565b">MouseButton</a> button)</td></tr>
 <tr class="memdesc:a19f14214db61f9e1341903ebc6eac807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the specified mouse button is currently in the down (pressed) state.  <br /></td></tr>
 <tr class="separator:a19f14214db61f9e1341903ebc6eac807"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,6 +153,9 @@ Properties</h2></td></tr>
 <tr class="memitem:aae954a3e60cc80d924b99079d65983bd" id="r_aae954a3e60cc80d924b99079d65983bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#aae954a3e60cc80d924b99079d65983bd">IsAlt</a><code> [get]</code></td></tr>
 <tr class="memdesc:aae954a3e60cc80d924b99079d65983bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the Alt modifier key was pressed at the time this mouse event was generated. This is a convenience property that checks if the CurrentKeyboardModifiers flags include KeyboardModifierState.Alt, commonly used for alternate mouse operations or special drag modes.  <br /></td></tr>
 <tr class="separator:aae954a3e60cc80d924b99079d65983bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4568f143bdd6f62767c305570b09c577" id="r_a4568f143bdd6f62767c305570b09c577"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a4568f143bdd6f62767c305570b09c577">Tick</a><code> [get]</code></td></tr>
+<tr class="memdesc:a4568f143bdd6f62767c305570b09c577"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the engine tick at the time this mouse event was generated.  <br /></td></tr>
+<tr class="separator:a4568f143bdd6f62767c305570b09c577"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a981c5b275e1cb314a6954543be6e77a6" id="r_a981c5b275e1cb314a6954543be6e77a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventArgs.html#a981c5b275e1cb314a6954543be6e77a6">LeftButtonDown</a><code> [get]</code></td></tr>
 <tr class="memdesc:a981c5b275e1cb314a6954543be6e77a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the left mouse button is currently pressed.  <br /></td></tr>
 <tr class="separator:a981c5b275e1cb314a6954543be6e77a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,8 +189,8 @@ Properties</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00013">13</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ade73947aa6097281ed1a65d90d3ddffd" name="ade73947aa6097281ed1a65d90d3ddffd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade73947aa6097281ed1a65d90d3ddffd">&#9670;&#160;</a></span>MouseEventArgs()</h2>
+<a id="a596b56c186f597fedd4941a227cc067c" name="a596b56c186f597fedd4941a227cc067c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a596b56c186f597fedd4941a227cc067c">&#9670;&#160;</a></span>MouseEventArgs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -226,7 +229,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>scrollDelta</em>&#160;</td>
+          <td class="paramname"><em>scrollDelta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -245,11 +254,12 @@ Properties</h2></td></tr>
     <tr><td class="paramname">previousPosition</td><td>The previous position of the mouse cursor before this polling interval, used to calculate movement deltas for drag operations and motion tracking. </td></tr>
     <tr><td class="paramname">currentPosition</td><td>The current position of the mouse cursor at the time of this event, representing where the cursor is currently located in screen or client coordinates. </td></tr>
     <tr><td class="paramname">scrollDelta</td><td>The accumulated scroll wheel delta since the last poll. Positive values indicate upward scrolling, negative values indicate downward scrolling, and 0 indicates no scrolling occurred. </td></tr>
+    <tr><td class="paramname">tick</td><td>The timestamp or tick count at the time this mouse event was generated. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00112">112</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00120">120</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -518,7 +528,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the left mouse button is currently pressed. </p>
 <p>This is a convenience wrapper around IsButtonDown(MouseButton) for the commonly used primary mouse button. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00180">180</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00190">190</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -545,7 +555,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the left mouse button was pressed during the current polling interval. </p>
 <p>This is a convenience wrapper around IsButtonJustPressed(MouseButton) and is commonly used for detecting primary click actions. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00189">189</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00199">199</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -572,7 +582,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the left mouse button was released during the current polling interval. </p>
 <p>This is a convenience wrapper around IsButtonJustReleased(MouseButton) and is commonly used for detecting the end of click or drag operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00198">198</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00208">208</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -599,7 +609,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the middle mouse button is currently pressed. </p>
 <p>This is a convenience wrapper around IsButtonDown(MouseButton) for the middle mouse button, often associated with scroll wheel clicks or special actions. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00234">234</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00244">244</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -626,7 +636,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the middle mouse button was pressed during the current polling interval. </p>
 <p>This is a convenience wrapper around IsButtonJustPressed(MouseButton) and can be used for specialized interactions such as panning or alternate controls. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00243">243</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00253">253</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -653,7 +663,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the middle mouse button was released during the current polling interval. </p>
 <p>This is a convenience wrapper around IsButtonJustReleased(MouseButton) and is useful for detecting the completion of middle-button interactions. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00252">252</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00262">262</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -732,7 +742,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the right mouse button is currently pressed. </p>
 <p>This is a convenience wrapper around IsButtonDown(MouseButton) for the secondary mouse button, typically used for context actions. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00207">207</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00217">217</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -759,7 +769,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the right mouse button was pressed during the current polling interval. </p>
 <p>This is a convenience wrapper around IsButtonJustPressed(MouseButton) and is commonly used for context menu or alternate interaction triggers. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00216">216</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00226">226</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -786,7 +796,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the right mouse button was released during the current polling interval. </p>
 <p>This is a convenience wrapper around IsButtonJustReleased(MouseButton) and is commonly used to detect the completion of context interactions. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00225">225</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00235">235</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -813,6 +823,32 @@ Properties</h2></td></tr>
 <p>Gets the accumulated scroll wheel delta since the last poll, measured in implementation-defined units. Positive values indicate upward scrolling (scrolling away from the user), while negative values indicate downward scrolling (scrolling toward the user). The magnitude represents the distance or speed of the scroll. A value of 0 indicates no scrolling occurred. </p>
 
 <p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00060">60</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a4568f143bdd6f62767c305570b09c577" name="a4568f143bdd6f62767c305570b09c577"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4568f143bdd6f62767c305570b09c577">&#9670;&#160;</a></span>Tick</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long Gondwana.Input.Mouse.MouseEventArgs.Tick</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the engine tick at the time this mouse event was generated. </p>
+
+<p class="definition">Definition at line <a class="el" href="MouseEventArgs_8cs_source.html#l00088">88</a> of file <a class="el" href="MouseEventArgs_8cs_source.html">MouseEventArgs.cs</a>.</p>
 
 </div>
 </div>

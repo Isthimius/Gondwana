@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -127,11 +127,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a63ee55de587e376f3450e1be4623169a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all direct drawings associated with a specific view, ordered by Z-order then nickname.  <br /></td></tr>
 <tr class="separator:a63ee55de587e376f3450e1be4623169a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed265d2f7613e911dee97e5d7bbc7ed9" id="r_aed265d2f7613e911dee97e5d7bbc7ed9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html#aed265d2f7613e911dee97e5d7bbc7ed9">Dispose</a> ()</td></tr>
+<tr class="memdesc:aed265d2f7613e911dee97e5d7bbc7ed9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all registered direct drawings managed by this instance.  <br /></td></tr>
 <tr class="separator:aed265d2f7613e911dee97e5d7bbc7ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a3240711887e8dd2c0b7fa87ce3688a40" id="r_a3240711887e8dd2c0b7fa87ce3688a40"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html">DirectDrawingManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html#a3240711887e8dd2c0b7fa87ce3688a40">Instance</a><code> [get]</code></td></tr>
+<tr class="memdesc:a3240711887e8dd2c0b7fa87ce3688a40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of the direct drawing manager.  <br /></td></tr>
 <tr class="separator:a3240711887e8dd2c0b7fa87ce3688a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab60d137d36f15888c56ae46ada79ecd8" id="r_ab60d137d36f15888c56ae46ada79ecd8"><td class="memItemLeft" align="right" valign="top">ReadOnlyCollection&lt; <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html">IDirectDrawable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html#ab60d137d36f15888c56ae46ada79ecd8">DirectDrawings</a><code> [get]</code></td></tr>
 <tr class="memdesc:ab60d137d36f15888c56ae46ada79ecd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only snapshot of all currently registered direct drawings.  <br /></td></tr>
@@ -185,7 +187,7 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>If a drawing with the specified nickname exists, it is disposed, which automatically triggers its removal from the manager. If no matching drawing is found, or if <em>name</em>  is <code>null</code> or empty, this method does nothing. </p>
 <p>This method uses case-sensitive ordinal comparison. If multiple drawings share the same nickname, only one will be removed. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00152">152</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00156">156</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -209,7 +211,7 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>Use this method to perform a full cleanup, such as when changing scenes or shutting down the engine. After calling this method, Count will be zero. </p>
 <p>This operation is safe to call even if drawings are being added from other threads, though newly added drawings after the snapshot is taken will not be affected. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00130">130</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00134">134</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -228,7 +230,9 @@ Safe concurrent access from rendering and game logic threads. </li>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00348">348</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p>Releases all registered direct drawings managed by this instance. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00355">355</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -259,7 +263,7 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>This method performs a case-sensitive ordinal comparison using the drawing's IDirectDrawable.Nickname. If multiple drawings share the same nickname (which should generally be avoided), only one will be returned. </p>
 <p>For reliable lookup, consider using the drawing's IDirectDrawable.Id instead, which is guaranteed to be unique. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00107">107</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00111">111</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -291,7 +295,7 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>The returned list is a snapshot taken at the time of the call and will not reflect subsequent additions or removals. The sorting ensures consistent draw order when rendering the layer. </p>
 <p>Use this method during rendering to retrieve all drawings that should be rendered as part of a specific scene layer, respecting Z-order for correct layering. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00285">285</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00289">289</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -323,7 +327,7 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>The returned list is a snapshot taken at the time of the call and will not reflect subsequent additions or removals. The sorting ensures consistent draw order when rendering view overlays. </p>
 <p>Use this method during rendering to retrieve all drawings that should be rendered on top of a specific view, unaffected by camera movement. Common use cases include UI elements, debug overlays, and screen-space effects. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00330">330</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00334">334</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -352,7 +356,7 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>An integer count of all direct drawings currently managed by this instance. </p>
 <p>This property provides a thread-safe snapshot of the count at the moment of access. The count may change immediately after being read if drawings are added or removed from other threads. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00086">86</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00090">90</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -381,7 +385,7 @@ Safe concurrent access from rendering and game logic threads. </li>
 <p>This property creates a new snapshot each time it is accessed, so avoid calling it repeatedly in performance-critical loops. Cache the result if you need to iterate multiple times. </p>
 <p>The returned collection is unordered. For ordered collections filtered by layer or view, use GetDrawingsForLayer or GetDrawingsForView. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00072">72</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00076">76</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>
@@ -405,7 +409,10 @@ Safe concurrent access from rendering and game logic threads. </li>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00046">46</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
+<p>Gets the singleton instance of the direct drawing manager. </p>
+<p>The shared DirectDrawingManager instance for the current process.</p>
+
+<p class="definition">Definition at line <a class="el" href="DirectDrawingManager_8cs_source.html#l00050">50</a> of file <a class="el" href="DirectDrawingManager_8cs_source.html">DirectDrawingManager.cs</a>.</p>
 
 </div>
 </div>

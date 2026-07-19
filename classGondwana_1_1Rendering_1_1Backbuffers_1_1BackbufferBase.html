@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -136,6 +136,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:aeb71bc24fcba76bcc7f06be7f54041d8" id="r_aeb71bc24fcba76bcc7f06be7f54041d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">readonly</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">SKPaint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aeb71bc24fcba76bcc7f06be7f54041d8">_fillPaint</a></td></tr>
+<tr class="memdesc:aeb71bc24fcba76bcc7f06be7f54041d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Paint used to fill cleared regions of the backbuffer with the current ClearColor.  <br /></td></tr>
 <tr class="separator:aeb71bc24fcba76bcc7f06be7f54041d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
@@ -249,7 +250,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html#ac70c3a4da0791216d9e7e8947c703b8b">Gondwana.Rendering.Backbuffers.BitmapBackbuffer</a>, and <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Gondwana.Rendering.Backbuffers.GpuBackbuffer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00464">464</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00468">468</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -298,7 +299,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A byte array containing the encoded image data.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00432">432</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00436">436</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -379,7 +380,9 @@ Properties</h2></td></tr>
 <div class="line">        FilterQuality = SKFilterQuality.None,</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00266">266</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+<p>Paint used to fill cleared regions of the backbuffer with the current ClearColor. </p>
+
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00270">270</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -435,7 +438,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the color used to clear the drawing surface. </p>
 
-<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00277">277</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00281">281</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>
@@ -583,7 +586,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine's background render thread. </p>
 <p>When <code>true</code>, the engine's <code>DoForegroundTasks</code> loop skips this surface. Rendering and presentation are instead driven by the platform adapter from within <code>SKGLControl.PaintSurface</code> via RenderSurfaceHostBase.GlRenderAndSnapshot. </p>
 
-<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00448">448</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BackbufferBase_8cs_source.html#l00452">452</a> of file <a class="el" href="BackbufferBase_8cs_source.html">BackbufferBase.cs</a>.</p>
 
 </div>
 </div>

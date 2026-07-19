@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -94,13 +94,14 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Widgets_1_1DraggableW
 <div class="header">
   <div class="summary">
 <a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#properties">Properties</a> &#124;
 <a href="#events">Events</a> &#124;
 <a href="classGondwana_1_1Widgets_1_1DraggableWidgetBase-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Gondwana.Widgets.DraggableWidgetBase Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Base type for widgets that support dragging.  
+<p>Base type for widgets that can be repositioned through pointer dragging.  
  <a href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Widgets.DraggableWidgetBase:</div>
@@ -108,7 +109,7 @@ Inheritance diagram for Gondwana.Widgets.DraggableWidgetBase:</div>
  <div class="center">
   <img src="classGondwana_1_1Widgets_1_1DraggableWidgetBase.png" usemap="#Gondwana.Widgets.DraggableWidgetBase_map" alt=""/>
   <map id="Gondwana.Widgets.DraggableWidgetBase_map" name="Gondwana.Widgets.DraggableWidgetBase_map">
-<area href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Base type for reusable Gondwana widgets built on top of DirectComposite." alt="Gondwana.Widgets.WidgetBase" shape="rect" coords="267,168,524,192"/>
+<area href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Provides the base implementation for widgets that can be drawn and receive pointer,..." alt="Gondwana.Widgets.WidgetBase" shape="rect" coords="267,168,524,192"/>
 <area href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html" title="Represents a composite container that groups multiple direct drawable items together,..." alt="Gondwana.Drawing.Direct.DirectComposite" shape="rect" coords="267,112,524,136"/>
 <area href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html" title="Represents any drawable object (movable or static) that can render directly to a RenderSurfaceHost,..." alt="Gondwana.Drawing.Direct.IDirectDrawable" shape="rect" coords="133,56,390,80"/>
 <area href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space." alt="Gondwana.Physics.Movement.IMovable" shape="rect" coords="400,56,657,80"/>
@@ -119,78 +120,256 @@ Inheritance diagram for Gondwana.Widgets.DraggableWidgetBase:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a56c9b2f13dadda4229086668638153e2" id="r_a56c9b2f13dadda4229086668638153e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a56c9b2f13dadda4229086668638153e2">DraggableWidgetBase</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderSurfaceHost</a>, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">mode</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">anchor</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">default</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">nickname</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
+<tr class="memdesc:a56c9b2f13dadda4229086668638153e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the DraggableWidgetBase class.  <br /></td></tr>
 <tr class="separator:a56c9b2f13dadda4229086668638153e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9349a7afa638e5cfa592b3fc1aabf17" id="r_ac9349a7afa638e5cfa592b3fc1aabf17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#ac9349a7afa638e5cfa592b3fc1aabf17">DispatchDragStarted</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:ac9349a7afa638e5cfa592b3fc1aabf17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb7bdd770677ace7d2873bdffe68266f" id="r_afb7bdd770677ace7d2873bdffe68266f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#afb7bdd770677ace7d2873bdffe68266f">DispatchDragged</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:afb7bdd770677ace7d2873bdffe68266f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af85584f6e43c07910be2eb5feb5dce44" id="r_af85584f6e43c07910be2eb5feb5dce44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#af85584f6e43c07910be2eb5feb5dce44">DispatchDragEnded</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:af85584f6e43c07910be2eb5feb5dce44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dbb9664dd8b9ab58cec0bcc34838acc" id="r_a3dbb9664dd8b9ab58cec0bcc34838acc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a3dbb9664dd8b9ab58cec0bcc34838acc">ProcessHidden</a> ()</td></tr>
+<tr class="memdesc:a3dbb9664dd8b9ab58cec0bcc34838acc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is hidden before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:a3dbb9664dd8b9ab58cec0bcc34838acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c24aaa30eb8f60511526fa97b7f4fe9" id="r_a8c24aaa30eb8f60511526fa97b7f4fe9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a8c24aaa30eb8f60511526fa97b7f4fe9">ProcessCancelled</a> ()</td></tr>
+<tr class="memdesc:a8c24aaa30eb8f60511526fa97b7f4fe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is cancelled before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:a8c24aaa30eb8f60511526fa97b7f4fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40a32eba693d2759804c119804ca8bfc" id="r_a40a32eba693d2759804c119804ca8bfc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a40a32eba693d2759804c119804ca8bfc">ProcessPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a40a32eba693d2759804c119804ca8bfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer press begins on the widget before notification callbacks are invoked.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
+<tr class="separator:a40a32eba693d2759804c119804ca8bfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af473775cc832c7cf685ceee1c710ea97" id="r_af473775cc832c7cf685ceee1c710ea97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#af473775cc832c7cf685ceee1c710ea97">ProcessPointerMove</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:af473775cc832c7cf685ceee1c710ea97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when pointer movement is routed to the widget before notification callbacks are invoked.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
+<tr class="separator:af473775cc832c7cf685ceee1c710ea97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa61145a91b6006337ed9a8700bbe9c7b" id="r_aa61145a91b6006337ed9a8700bbe9c7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#aa61145a91b6006337ed9a8700bbe9c7b">ProcessPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:aa61145a91b6006337ed9a8700bbe9c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer press is released for the widget before notification callbacks are invoked.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
+<tr class="separator:aa61145a91b6006337ed9a8700bbe9c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a002526d1d0c5b3c8e3580621b15484d5" id="r_a002526d1d0c5b3c8e3580621b15484d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a002526d1d0c5b3c8e3580621b15484d5">ShouldDispatchPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a002526d1d0c5b3c8e3580621b15484d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether a pointer-click event should be dispatched for the specified pointer event data.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the pointer-click event should be dispatched; otherwise, <code>false</code>. </dd></dl>
+  <br /></td></tr>
+<tr class="separator:a002526d1d0c5b3c8e3580621b15484d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac4f4fa0fa2911914d5652c0819ba669" id="r_aac4f4fa0fa2911914d5652c0819ba669"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#aac4f4fa0fa2911914d5652c0819ba669">CanStartDrag</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:aac4f4fa0fa2911914d5652c0819ba669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the supplied pointer-down event may begin drag tracking.  <br /></td></tr>
+<tr class="separator:aac4f4fa0fa2911914d5652c0819ba669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9febbb0440f5a11efa3c7362e163ec2" id="r_af9febbb0440f5a11efa3c7362e163ec2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#af9febbb0440f5a11efa3c7362e163ec2">ConvertScreenDeltaToPositionDelta</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">totalScreenDeltaPx</a>, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">view</a>)</td></tr>
+<tr class="memdesc:af9febbb0440f5a11efa3c7362e163ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts total screen-space pointer movement into the coordinate space used by this widget.  <br /></td></tr>
+<tr class="separator:af9febbb0440f5a11efa3c7362e163ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc2be3ee6d2cd0ea584eff7e13c5026" id="r_afcc2be3ee6d2cd0ea584eff7e13c5026"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#afcc2be3ee6d2cd0ea584eff7e13c5026">ConstrainDragPosition</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">proposedPositionPx</a>)</td></tr>
+<tr class="memdesc:afcc2be3ee6d2cd0ea584eff7e13c5026"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constrains or adjusts a proposed widget anchor position before it is applied.  <br /></td></tr>
+<tr class="separator:afcc2be3ee6d2cd0ea584eff7e13c5026"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71abccb4b48aaba5fca29e9222613c35" id="r_a71abccb4b48aaba5fca29e9222613c35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a71abccb4b48aaba5fca29e9222613c35">OnDragStarted</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a71abccb4b48aaba5fca29e9222613c35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when pointer movement first crosses DragThresholdPx. Override to customize behavior.  <br /></td></tr>
 <tr class="separator:a71abccb4b48aaba5fca29e9222613c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2695db1210fef3ee69f1a3ece95b8361" id="r_a2695db1210fef3ee69f1a3ece95b8361"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a2695db1210fef3ee69f1a3ece95b8361">OnDragged</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a2695db1210fef3ee69f1a3ece95b8361"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after the widget is repositioned during an active drag operation. Override to customize behavior.  <br /></td></tr>
 <tr class="separator:a2695db1210fef3ee69f1a3ece95b8361"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4d7c52ea326e4db1839b2ba7fdd991a" id="r_ae4d7c52ea326e4db1839b2ba7fdd991a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#ae4d7c52ea326e4db1839b2ba7fdd991a">OnDragEnded</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:ae4d7c52ea326e4db1839b2ba7fdd991a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the pointer button that began an active drag is released. Override to customize behavior.  <br /></td></tr>
 <tr class="separator:ae4d7c52ea326e4db1839b2ba7fdd991a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a32f2b40b9c48a2f855f3332d2c1b1013"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a32f2b40b9c48a2f855f3332d2c1b1013">WidgetBase</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderSurfaceHost</a>, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">mode</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">anchor</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">default</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">nickname</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
+<tr class="memdesc:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the WidgetBase class.  <br /></td></tr>
 <tr class="separator:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a9f8d23cbd552d8b8a31dafbbd65b7d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a8a9f8d23cbd552d8b8a31dafbbd65b7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a8a9f8d23cbd552d8b8a31dafbbd65b7d">DispatchPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:a8a9f8d23cbd552d8b8a31dafbbd65b7d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f1cef1d2bfd2d5bd8936e16d0e70216 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a8f1cef1d2bfd2d5bd8936e16d0e70216"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a8f1cef1d2bfd2d5bd8936e16d0e70216">DispatchPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:a8f1cef1d2bfd2d5bd8936e16d0e70216 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8ade0a894c6beaba6bc2d35335d4bbd inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ac8ade0a894c6beaba6bc2d35335d4bbd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ac8ade0a894c6beaba6bc2d35335d4bbd">DispatchPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:ac8ade0a894c6beaba6bc2d35335d4bbd inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44c374283fc07a828c5dca35743d32ed inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a44c374283fc07a828c5dca35743d32ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a44c374283fc07a828c5dca35743d32ed">DispatchPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:a44c374283fc07a828c5dca35743d32ed inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99a049daa4ef497eaa19812e4fbd6aa4 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a99a049daa4ef497eaa19812e4fbd6aa4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a99a049daa4ef497eaa19812e4fbd6aa4">DispatchPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
-<tr class="separator:a99a049daa4ef497eaa19812e4fbd6aa4 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3233fc47ac2be8fac9af4c35c0810ebd inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a3233fc47ac2be8fac9af4c35c0810ebd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3233fc47ac2be8fac9af4c35c0810ebd">ProcessShown</a> ()</td></tr>
+<tr class="memdesc:a3233fc47ac2be8fac9af4c35c0810ebd inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is shown before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:a3233fc47ac2be8fac9af4c35c0810ebd inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b1fa1340d2eb3c0649804abd89cba31 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a9b1fa1340d2eb3c0649804abd89cba31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a9b1fa1340d2eb3c0649804abd89cba31">ProcessActivated</a> ()</td></tr>
+<tr class="memdesc:a9b1fa1340d2eb3c0649804abd89cba31 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is activated before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:a9b1fa1340d2eb3c0649804abd89cba31 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c5fbb420d44df2cfc342f12ca2abb27 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a7c5fbb420d44df2cfc342f12ca2abb27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7c5fbb420d44df2cfc342f12ca2abb27">ProcessPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a7c5fbb420d44df2cfc342f12ca2abb27 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer enters the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:a7c5fbb420d44df2cfc342f12ca2abb27 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3384ef257f87c68aaf3ce449a008aa1 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ad3384ef257f87c68aaf3ce449a008aa1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ad3384ef257f87c68aaf3ce449a008aa1">ProcessPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:ad3384ef257f87c68aaf3ce449a008aa1 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer leaves the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:ad3384ef257f87c68aaf3ce449a008aa1 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6214433864ee925ba212afa5cdb3d03d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a6214433864ee925ba212afa5cdb3d03d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a6214433864ee925ba212afa5cdb3d03d">ProcessFocusGained</a> ()</td></tr>
+<tr class="memdesc:a6214433864ee925ba212afa5cdb3d03d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget gains focus before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:a6214433864ee925ba212afa5cdb3d03d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec8b9a776133d342179382299ea87a1a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aec8b9a776133d342179382299ea87a1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aec8b9a776133d342179382299ea87a1a">ProcessFocusLost</a> ()</td></tr>
+<tr class="memdesc:aec8b9a776133d342179382299ea87a1a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget loses focus before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:aec8b9a776133d342179382299ea87a1a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a649f2c096ba86866f495627f40cd4842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a649f2c096ba86866f495627f40cd4842"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a649f2c096ba86866f495627f40cd4842">ProcessKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a649f2c096ba86866f495627f40cd4842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when keyboard input is routed to the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="separator:a649f2c096ba86866f495627f40cd4842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af19643f5b3046227fdc6017114ed4239 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af19643f5b3046227fdc6017114ed4239"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af19643f5b3046227fdc6017114ed4239">OnShown</a> ()</td></tr>
+<tr class="memdesc:af19643f5b3046227fdc6017114ed4239 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is shown.  <br /></td></tr>
 <tr class="separator:af19643f5b3046227fdc6017114ed4239 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a0ca4e4537727239bc717dd33f37129 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a9a0ca4e4537727239bc717dd33f37129"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a9a0ca4e4537727239bc717dd33f37129">OnHidden</a> ()</td></tr>
+<tr class="memdesc:a9a0ca4e4537727239bc717dd33f37129 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is hidden.  <br /></td></tr>
 <tr class="separator:a9a0ca4e4537727239bc717dd33f37129 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa62453a1c7e99629483a11be64e2506b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aa62453a1c7e99629483a11be64e2506b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aa62453a1c7e99629483a11be64e2506b">OnActivated</a> ()</td></tr>
+<tr class="memdesc:aa62453a1c7e99629483a11be64e2506b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is activated.  <br /></td></tr>
 <tr class="separator:aa62453a1c7e99629483a11be64e2506b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99ba373c22e1a376afe2ae706aac8d53 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a99ba373c22e1a376afe2ae706aac8d53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a99ba373c22e1a376afe2ae706aac8d53">OnCancelled</a> ()</td></tr>
+<tr class="memdesc:a99ba373c22e1a376afe2ae706aac8d53 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is cancelled.  <br /></td></tr>
 <tr class="separator:a99ba373c22e1a376afe2ae706aac8d53 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c8337f088f6c156050feb1a73852124 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a5c8337f088f6c156050feb1a73852124"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a5c8337f088f6c156050feb1a73852124">OnPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a5c8337f088f6c156050feb1a73852124 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer enters the widget bounds.  <br /></td></tr>
 <tr class="separator:a5c8337f088f6c156050feb1a73852124 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4bd1b14299027724385332dd7ff53eb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ac4bd1b14299027724385332dd7ff53eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ac4bd1b14299027724385332dd7ff53eb">OnPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:ac4bd1b14299027724385332dd7ff53eb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer leaves the widget bounds.  <br /></td></tr>
 <tr class="separator:ac4bd1b14299027724385332dd7ff53eb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e21456ad03a8de98262b46bd1547fd8 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a3e21456ad03a8de98262b46bd1547fd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3e21456ad03a8de98262b46bd1547fd8">OnPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a3e21456ad03a8de98262b46bd1547fd8 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press begins on the widget.  <br /></td></tr>
 <tr class="separator:a3e21456ad03a8de98262b46bd1547fd8 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a725381d7ffb12a61d2d5cfd40b0a7ad4 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a725381d7ffb12a61d2d5cfd40b0a7ad4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4">OnPointerMove</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a725381d7ffb12a61d2d5cfd40b0a7ad4 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when pointer movement is routed to the widget.  <br /></td></tr>
+<tr class="separator:a725381d7ffb12a61d2d5cfd40b0a7ad4 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af68f779ee36ea91d59fe2d375c2c0eeb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af68f779ee36ea91d59fe2d375c2c0eeb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af68f779ee36ea91d59fe2d375c2c0eeb">OnPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:af68f779ee36ea91d59fe2d375c2c0eeb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press is released for the widget.  <br /></td></tr>
 <tr class="separator:af68f779ee36ea91d59fe2d375c2c0eeb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d02dee6a2c67a4c1365aad41a19d4c0 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a7d02dee6a2c67a4c1365aad41a19d4c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0">OnPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:a7d02dee6a2c67a4c1365aad41a19d4c0 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer click is dispatched to the widget.  <br /></td></tr>
 <tr class="separator:a7d02dee6a2c67a4c1365aad41a19d4c0 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af937571ce24b0d2a60522eef876b6218 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af937571ce24b0d2a60522eef876b6218"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af937571ce24b0d2a60522eef876b6218">OnFocusGained</a> ()</td></tr>
+<tr class="memdesc:af937571ce24b0d2a60522eef876b6218 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget gains focus.  <br /></td></tr>
+<tr class="separator:af937571ce24b0d2a60522eef876b6218 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add8b8efa8e9e5511ad9863f7f0f7e578 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_add8b8efa8e9e5511ad9863f7f0f7e578"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#add8b8efa8e9e5511ad9863f7f0f7e578">OnFocusLost</a> ()</td></tr>
+<tr class="memdesc:add8b8efa8e9e5511ad9863f7f0f7e578 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget loses focus.  <br /></td></tr>
+<tr class="separator:add8b8efa8e9e5511ad9863f7f0f7e578 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaec953c2a7d8d8d45daa4886b95f779b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aaec953c2a7d8d8d45daa4886b95f779b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">OnKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">args</a>)</td></tr>
+<tr class="memdesc:aaec953c2a7d8d8d45daa4886b95f779b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when keyboard input is routed to the widget.  <br /></td></tr>
+<tr class="separator:aaec953c2a7d8d8d45daa4886b95f779b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
+Properties</h2></td></tr>
+<tr class="memitem:a3f752644329aefcc10ae692ee93bc592" id="r_a3f752644329aefcc10ae692ee93bc592"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a3f752644329aefcc10ae692ee93bc592">IsDragEnabled</a> = <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">true</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a3f752644329aefcc10ae692ee93bc592"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether new drag operations may begin.  <br /></td></tr>
+<tr class="separator:a3f752644329aefcc10ae692ee93bc592"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a051cc111543b7190b4111ff2969231b4" id="r_a051cc111543b7190b4111ff2969231b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a051cc111543b7190b4111ff2969231b4">IsDragging</a><code> [get]</code></td></tr>
+<tr class="memdesc:a051cc111543b7190b4111ff2969231b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether a drag operation is currently active.  <br /></td></tr>
+<tr class="separator:a051cc111543b7190b4111ff2969231b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bce6741acff354682af77adf5132746" id="r_a6bce6741acff354682af77adf5132746"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a6bce6741acff354682af77adf5132746">DragThresholdPx</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a6bce6741acff354682af77adf5132746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the minimum pointer movement, in screen pixels, required to begin dragging.  <br /></td></tr>
+<tr class="separator:a6bce6741acff354682af77adf5132746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header properties_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:toggleInherit('properties_classGondwana_1_1Widgets_1_1WidgetBase')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
+<tr class="memitem:af43d800723f96fd801f8e41d854d1bee inherit properties_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af43d800723f96fd801f8e41d854d1bee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af43d800723f96fd801f8e41d854d1bee">IsInputEnabled</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:af43d800723f96fd801f8e41d854d1bee inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the widget can participate in input routing.  <br /></td></tr>
+<tr class="separator:af43d800723f96fd801f8e41d854d1bee inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bd4dda8997009297228e443de760ede inherit properties_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a2bd4dda8997009297228e443de760ede"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a2bd4dda8997009297228e443de760ede">IsPointerInputEnabled</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a2bd4dda8997009297228e443de760ede inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the widget can receive pointer input.  <br /></td></tr>
+<tr class="separator:a2bd4dda8997009297228e443de760ede inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae089a35e64de826caabda085037438a5 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ae089a35e64de826caabda085037438a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ae089a35e64de826caabda085037438a5">IsKeyboardInputEnabled</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ae089a35e64de826caabda085037438a5 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the widget can receive keyboard input.  <br /></td></tr>
+<tr class="separator:ae089a35e64de826caabda085037438a5 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1ee0b925e8e8c66513110c306426d2 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a2b1ee0b925e8e8c66513110c306426d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a2b1ee0b925e8e8c66513110c306426d2">CanReceiveFocus</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a2b1ee0b925e8e8c66513110c306426d2 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the widget can receive keyboard focus.  <br /></td></tr>
+<tr class="separator:a2b1ee0b925e8e8c66513110c306426d2 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35f8d05423f9fac2ce0ab821c1948010 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a35f8d05423f9fac2ce0ab821c1948010"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a35f8d05423f9fac2ce0ab821c1948010">IsFocused</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a35f8d05423f9fac2ce0ab821c1948010 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the widget currently has keyboard focus.  <br /></td></tr>
+<tr class="separator:a35f8d05423f9fac2ce0ab821c1948010 inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td colspan="2" onclick="javascript:toggleInherit('properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">Gondwana.Drawing.Direct.DirectComposite</a></td></tr>
+<tr class="memitem:a457d537ccd3317239c91b5980f9f7982 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a457d537ccd3317239c91b5980f9f7982"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a457d537ccd3317239c91b5980f9f7982">RenderSurfaceHost</a><code> [get]</code></td></tr>
+<tr class="memdesc:a457d537ccd3317239c91b5980f9f7982 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the render surface host associated with this composite.  <br /></td></tr>
+<tr class="separator:a457d537ccd3317239c91b5980f9f7982 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae45a347e56bb222d70b2d218d4576020 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ae45a347e56bb222d70b2d218d4576020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ae45a347e56bb222d70b2d218d4576020">Mode</a><code> [get]</code></td></tr>
+<tr class="memdesc:ae45a347e56bb222d70b2d218d4576020 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the drawing mode for this composite (world or screen space).  <br /></td></tr>
+<tr class="separator:ae45a347e56bb222d70b2d218d4576020 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4740d68b01c3567186b71166628cb572 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a4740d68b01c3567186b71166628cb572"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a4740d68b01c3567186b71166628cb572">SceneLayer</a><code> [get]</code></td></tr>
+<tr class="memdesc:a4740d68b01c3567186b71166628cb572 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer shared by all children when Mode is DirectDrawingMode.SceneLayer, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> when the composite has no children or uses view mode.  <br /></td></tr>
+<tr class="separator:a4740d68b01c3567186b71166628cb572 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab445d44de082cefe1e378b05fcb83f52 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ab445d44de082cefe1e378b05fcb83f52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab445d44de082cefe1e378b05fcb83f52">View</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab445d44de082cefe1e378b05fcb83f52 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the view shared by all children when Mode is DirectDrawingMode.View, or <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">null</a></code> when the composite has no children or uses scene-layer mode.  <br /></td></tr>
+<tr class="separator:ab445d44de082cefe1e378b05fcb83f52 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12b490664f46833817ba6673cf18faed inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a12b490664f46833817ba6673cf18faed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">ReadOnlyCollection</a>&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a12b490664f46833817ba6673cf18faed">Children</a><code> [get]</code></td></tr>
+<tr class="memdesc:a12b490664f46833817ba6673cf18faed inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the read-only collection of child drawable items in this composite.  <br /></td></tr>
+<tr class="separator:a12b490664f46833817ba6673cf18faed inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0b5af141d3d7aa6cba95de8158f4863 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ac0b5af141d3d7aa6cba95de8158f4863"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Physics_1_1Movement_1_1MovementController.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ac0b5af141d3d7aa6cba95de8158f4863">Movement</a><code> [get]</code></td></tr>
+<tr class="memdesc:ac0b5af141d3d7aa6cba95de8158f4863 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement controller for animating the composite's position.  <br /></td></tr>
+<tr class="separator:ac0b5af141d3d7aa6cba95de8158f4863 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c0340512fbb1766a41407c56ba1279c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a8c0340512fbb1766a41407c56ba1279c"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a8c0340512fbb1766a41407c56ba1279c">ScreenBounds</a><code> [get]</code></td></tr>
+<tr class="memdesc:a8c0340512fbb1766a41407c56ba1279c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bounding rectangle that encompasses all visible children in screen coordinates.  <br /></td></tr>
+<tr class="separator:a8c0340512fbb1766a41407c56ba1279c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a814c4952d4e4ede9a874e0b94edf74ff inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a814c4952d4e4ede9a874e0b94edf74ff"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a814c4952d4e4ede9a874e0b94edf74ff">WorldBounds</a><code> [get]</code></td></tr>
+<tr class="memdesc:a814c4952d4e4ede9a874e0b94edf74ff inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bounding rectangle that encompasses all visible children in world coordinates.  <br /></td></tr>
+<tr class="separator:a814c4952d4e4ede9a874e0b94edf74ff inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad38e0285605825ffe181f98ba74daef8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ad38e0285605825ffe181f98ba74daef8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad38e0285605825ffe181f98ba74daef8">PositionSpace</a><code> [get]</code></td></tr>
+<tr class="memdesc:ad38e0285605825ffe181f98ba74daef8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position space used by this composite. Always returns MovementSpace.Pixel.  <br /></td></tr>
+<tr class="separator:ad38e0285605825ffe181f98ba74daef8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8856372ce0b37bfa7e3520340641506f inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a8856372ce0b37bfa7e3520340641506f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Guid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a8856372ce0b37bfa7e3520340641506f">Id</a> = Guid.NewGuid()<code> [get]</code></td></tr>
+<tr class="memdesc:a8856372ce0b37bfa7e3520340641506f inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier for this composite.  <br /></td></tr>
+<tr class="separator:a8856372ce0b37bfa7e3520340641506f inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a201fd617284a61d7c52438c3c3d8b9c8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a201fd617284a61d7c52438c3c3d8b9c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a201fd617284a61d7c52438c3c3d8b9c8">Nickname</a><code> [get]</code></td></tr>
+<tr class="memdesc:a201fd617284a61d7c52438c3c3d8b9c8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the optional friendly name for this composite.  <br /></td></tr>
+<tr class="separator:a201fd617284a61d7c52438c3c3d8b9c8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03ac955d51635f90cce6c18395afcec4 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a03ac955d51635f90cce6c18395afcec4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a03ac955d51635f90cce6c18395afcec4">Visible</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a03ac955d51635f90cce6c18395afcec4 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the visibility of the composite. Returns true if any child is visible; setting this sets all children's Visible to the same value.  <br /></td></tr>
+<tr class="separator:a03ac955d51635f90cce6c18395afcec4 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc671772e89d1143051d73c3e88078c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a9bc671772e89d1143051d73c3e88078c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a9bc671772e89d1143051d73c3e88078c">ZOrder</a><code> [get]</code></td></tr>
+<tr class="memdesc:a9bc671772e89d1143051d73c3e88078c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Z-order of the composite. Always returns 0 as individual children manage their own Z-order.  <br /></td></tr>
+<tr class="separator:a9bc671772e89d1143051d73c3e88078c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header properties_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html">Gondwana.Drawing.Direct.IDirectDrawable</a></td></tr>
+<tr class="inherit_header properties_interfaceGondwana_1_1Drawing_1_1IDrawable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Drawing_1_1IDrawable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html">Gondwana.Drawing.IDrawable</a></td></tr>
+<tr class="inherit_header properties_interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html">Gondwana.Physics.Movement.IMovable</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a899596a076eab34d0be2a4c6f51c6a29" id="r_a899596a076eab34d0be2a4c6f51c6a29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a899596a076eab34d0be2a4c6f51c6a29">DragStarted</a></td></tr>
+<tr class="memdesc:a899596a076eab34d0be2a4c6f51c6a29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised when pointer movement first crosses DragThresholdPx.  <br /></td></tr>
 <tr class="separator:a899596a076eab34d0be2a4c6f51c6a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5775b58c4e9f51bce3457ebdcb71e0dc" id="r_a5775b58c4e9f51bce3457ebdcb71e0dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a5775b58c4e9f51bce3457ebdcb71e0dc">Dragged</a></td></tr>
+<tr class="memdesc:a5775b58c4e9f51bce3457ebdcb71e0dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised after the widget is repositioned during an active drag operation.  <br /></td></tr>
 <tr class="separator:a5775b58c4e9f51bce3457ebdcb71e0dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6362138561a0e899510df3085244d82" id="r_ae6362138561a0e899510df3085244d82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#ae6362138561a0e899510df3085244d82">DragEnded</a></td></tr>
+<tr class="memdesc:ae6362138561a0e899510df3085244d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised when the pointer button that began an active drag is released.  <br /></td></tr>
 <tr class="separator:ae6362138561a0e899510df3085244d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header events_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:toggleInherit('events_classGondwana_1_1Widgets_1_1WidgetBase')"><img src="closed.png" alt="-"/>&#160;Events inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:a6b3d12d94261fbae70c2e35c8cd578ec inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a6b3d12d94261fbae70c2e35c8cd578ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a6b3d12d94261fbae70c2e35c8cd578ec">Shown</a></td></tr>
+<tr class="memdesc:a6b3d12d94261fbae70c2e35c8cd578ec inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget is shown.  <br /></td></tr>
 <tr class="separator:a6b3d12d94261fbae70c2e35c8cd578ec inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac4ed5364f721764e484f9aa1eb09d57 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aac4ed5364f721764e484f9aa1eb09d57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aac4ed5364f721764e484f9aa1eb09d57">Hidden</a></td></tr>
+<tr class="memdesc:aac4ed5364f721764e484f9aa1eb09d57 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget is hidden.  <br /></td></tr>
 <tr class="separator:aac4ed5364f721764e484f9aa1eb09d57 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6a438770368ebaa00246ee1ca24bb39 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ae6a438770368ebaa00246ee1ca24bb39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ae6a438770368ebaa00246ee1ca24bb39">Activated</a></td></tr>
+<tr class="memdesc:ae6a438770368ebaa00246ee1ca24bb39 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget is activated.  <br /></td></tr>
 <tr class="separator:ae6a438770368ebaa00246ee1ca24bb39 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a671bb30c17ebfe6771c29231201ef079 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a671bb30c17ebfe6771c29231201ef079"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a671bb30c17ebfe6771c29231201ef079">Cancelled</a></td></tr>
+<tr class="memdesc:a671bb30c17ebfe6771c29231201ef079 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget is cancelled.  <br /></td></tr>
 <tr class="separator:a671bb30c17ebfe6771c29231201ef079 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45c142d53bc5e517229b5211902349cd inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a45c142d53bc5e517229b5211902349cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a45c142d53bc5e517229b5211902349cd">PointerEnter</a></td></tr>
+<tr class="memdesc:a45c142d53bc5e517229b5211902349cd inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a pointer enters the widget bounds.  <br /></td></tr>
 <tr class="separator:a45c142d53bc5e517229b5211902349cd inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adee78f4b82ced82d1034664cdd2aa6d2 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_adee78f4b82ced82d1034664cdd2aa6d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#adee78f4b82ced82d1034664cdd2aa6d2">PointerLeave</a></td></tr>
+<tr class="memdesc:adee78f4b82ced82d1034664cdd2aa6d2 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a pointer leaves the widget bounds.  <br /></td></tr>
 <tr class="separator:adee78f4b82ced82d1034664cdd2aa6d2 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae48d553576775ae52043bcf7ab5818d8 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ae48d553576775ae52043bcf7ab5818d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ae48d553576775ae52043bcf7ab5818d8">PointerDown</a></td></tr>
+<tr class="memdesc:ae48d553576775ae52043bcf7ab5818d8 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a pointer button or touch press begins on the widget.  <br /></td></tr>
 <tr class="separator:ae48d553576775ae52043bcf7ab5818d8 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4ebefc84d26eb72b00af2f0df43d15 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a3f4ebefc84d26eb72b00af2f0df43d15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3f4ebefc84d26eb72b00af2f0df43d15">PointerMove</a></td></tr>
+<tr class="memdesc:a3f4ebefc84d26eb72b00af2f0df43d15 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a pointer moves while routed to the widget.  <br /></td></tr>
+<tr class="separator:a3f4ebefc84d26eb72b00af2f0df43d15 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4db125565549fa2fee88a3476cafff5 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ab4db125565549fa2fee88a3476cafff5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ab4db125565549fa2fee88a3476cafff5">PointerUp</a></td></tr>
+<tr class="memdesc:ab4db125565549fa2fee88a3476cafff5 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a pointer button or touch press is released for the widget.  <br /></td></tr>
 <tr class="separator:ab4db125565549fa2fee88a3476cafff5 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a868e0fcbe538f507ee9a487c3f436716 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a868e0fcbe538f507ee9a487c3f436716"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a868e0fcbe538f507ee9a487c3f436716">PointerClick</a></td></tr>
+<tr class="memdesc:a868e0fcbe538f507ee9a487c3f436716 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a pointer press and release completes as a click on the widget.  <br /></td></tr>
 <tr class="separator:a868e0fcbe538f507ee9a487c3f436716 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab553b458486fa7d6f0bce235610f7802 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ab553b458486fa7d6f0bce235610f7802"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ab553b458486fa7d6f0bce235610f7802">FocusGained</a></td></tr>
+<tr class="memdesc:ab553b458486fa7d6f0bce235610f7802 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget gains keyboard focus.  <br /></td></tr>
+<tr class="separator:ab553b458486fa7d6f0bce235610f7802 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a924e5c184262760f5cc511638fc637 inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a9a924e5c184262760f5cc511638fc637"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a9a924e5c184262760f5cc511638fc637">FocusLost</a></td></tr>
+<tr class="memdesc:a9a924e5c184262760f5cc511638fc637 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget loses keyboard focus.  <br /></td></tr>
+<tr class="separator:a9a924e5c184262760f5cc511638fc637 inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa16a73914e6c61bcda8ee99681bdcd9a inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aa16a73914e6c61bcda8ee99681bdcd9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>&lt; <a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aa16a73914e6c61bcda8ee99681bdcd9a">KeyboardInput</a></td></tr>
+<tr class="memdesc:aa16a73914e6c61bcda8ee99681bdcd9a inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when keyboard input is routed to the widget.  <br /></td></tr>
+<tr class="separator:aa16a73914e6c61bcda8ee99681bdcd9a inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header events_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td colspan="2" onclick="javascript:toggleInherit('events_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite')"><img src="closed.png" alt="-"/>&#160;Events inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">Gondwana.Drawing.Direct.DirectComposite</a></td></tr>
 <tr class="memitem:a846147c8915cf5d5b84a19da4a798425 inherit events_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a846147c8915cf5d5b84a19da4a798425"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">EventHandler</a>&lt; <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html">IDirectDrawable</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a846147c8915cf5d5b84a19da4a798425">Disposing</a></td></tr>
 <tr class="memdesc:a846147c8915cf5d5b84a19da4a798425 inherit events_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event raised when this composite is being disposed.  <br /></td></tr>
@@ -203,13 +382,23 @@ Events</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
+<tr class="memitem:afb806ddaae8d6fa99ba3598c9a3023d5 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_afb806ddaae8d6fa99ba3598c9a3023d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#afb806ddaae8d6fa99ba3598c9a3023d5">HitTest</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">view</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Point</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screenPositionPx</a>)</td></tr>
+<tr class="memdesc:afb806ddaae8d6fa99ba3598c9a3023d5 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the widget can be hit at the specified screen position within the specified view.  <br /></td></tr>
+<tr class="separator:afb806ddaae8d6fa99ba3598c9a3023d5 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe3d3c606b93452d36e8c8ccc268b121 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_abe3d3c606b93452d36e8c8ccc268b121"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#abe3d3c606b93452d36e8c8ccc268b121">HitTest</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Point</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screenPositionPx</a>)</td></tr>
+<tr class="memdesc:abe3d3c606b93452d36e8c8ccc268b121 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the widget can be hit at the specified screen position.  <br /></td></tr>
+<tr class="separator:abe3d3c606b93452d36e8c8ccc268b121 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17f395dd4f85a18ac7bfcd36de1eec8f inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a17f395dd4f85a18ac7bfcd36de1eec8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a17f395dd4f85a18ac7bfcd36de1eec8f">Show</a> ()</td></tr>
+<tr class="memdesc:a17f395dd4f85a18ac7bfcd36de1eec8f inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows the widget and registers it for input routing.  <br /></td></tr>
 <tr class="separator:a17f395dd4f85a18ac7bfcd36de1eec8f inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a7be0905e9744192c6f7f1e427c6128 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a8a7be0905e9744192c6f7f1e427c6128"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a8a7be0905e9744192c6f7f1e427c6128">Hide</a> ()</td></tr>
+<tr class="memdesc:a8a7be0905e9744192c6f7f1e427c6128 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hides the widget and releases any routed input state.  <br /></td></tr>
 <tr class="separator:a8a7be0905e9744192c6f7f1e427c6128 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33625ff263391ca2a29e057496671648 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a33625ff263391ca2a29e057496671648"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a33625ff263391ca2a29e057496671648">Activate</a> ()</td></tr>
+<tr class="memdesc:a33625ff263391ca2a29e057496671648 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activates the widget and brings it to the front of the input order.  <br /></td></tr>
 <tr class="separator:a33625ff263391ca2a29e057496671648 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6f9bb0b4e4c479a6968bac6a4b1744c inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ad6f9bb0b4e4c479a6968bac6a4b1744c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ad6f9bb0b4e4c479a6968bac6a4b1744c">Cancel</a> ()</td></tr>
+<tr class="memdesc:ad6f9bb0b4e4c479a6968bac6a4b1744c inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels the widget.  <br /></td></tr>
 <tr class="separator:ad6f9bb0b4e4c479a6968bac6a4b1744c inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">Gondwana.Drawing.Direct.DirectComposite</a></td></tr>
 <tr class="memitem:ac1d38db515a995009946ec6c9ad1ff42 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ac1d38db515a995009946ec6c9ad1ff42"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ac1d38db515a995009946ec6c9ad1ff42">DirectComposite</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderSurfaceHost</a>, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">mode</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">anchor</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">default</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">nickname</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
@@ -228,7 +417,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memdesc:ad03af0f91fcf18bbf7b4a791ba753518 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the composite. This is intentionally a no-op as children are responsible for their own rendering.  <br /></td></tr>
 <tr class="separator:ad03af0f91fcf18bbf7b4a791ba753518 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51b1ee1c45972f9b99da4bbcde99e567 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a51b1ee1c45972f9b99da4bbcde99e567"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">DirectComposite</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a51b1ee1c45972f9b99da4bbcde99e567">Add</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">child</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">keepCurrentOffset</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">true</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">explicitLocalOffsetPx</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
-<tr class="memdesc:a51b1ee1c45972f9b99da4bbcde99e567 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a child and stores its local pixel offset from the composite anchor. If <em>keepCurrentOffset</em>  is true (default), the offset is computed from the child's current Bounds. Otherwise, pass an explicit local pixel offset.  <br /></td></tr>
+<tr class="memdesc:a51b1ee1c45972f9b99da4bbcde99e567 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a child drawing and stores its local pixel offset from the composite anchor.  <br /></td></tr>
 <tr class="separator:a51b1ee1c45972f9b99da4bbcde99e567 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af37ed33a5b1bf4d6f8c8440898130fc4 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_af37ed33a5b1bf4d6f8c8440898130fc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">DirectComposite</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#af37ed33a5b1bf4d6f8c8440898130fc4">Remove</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">child</a>)</td></tr>
 <tr class="memdesc:af37ed33a5b1bf4d6f8c8440898130fc4 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a child from the composite.  <br /></td></tr>
@@ -266,48 +455,13 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:ab4a9dddd84ec27a3a4701275077ef3e7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ab4a9dddd84ec27a3a4701275077ef3e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Dispose</a> ()</td></tr>
 <tr class="memdesc:ab4a9dddd84ec27a3a4701275077ef3e7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the composite and disposes all child drawables.  <br /></td></tr>
 <tr class="separator:ab4a9dddd84ec27a3a4701275077ef3e7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td colspan="2" onclick="javascript:toggleInherit('properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">Gondwana.Drawing.Direct.DirectComposite</a></td></tr>
-<tr class="memitem:a457d537ccd3317239c91b5980f9f7982 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a457d537ccd3317239c91b5980f9f7982"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a457d537ccd3317239c91b5980f9f7982">RenderSurfaceHost</a><code> [get]</code></td></tr>
-<tr class="memdesc:a457d537ccd3317239c91b5980f9f7982 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the render surface host associated with this composite.  <br /></td></tr>
-<tr class="separator:a457d537ccd3317239c91b5980f9f7982 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae45a347e56bb222d70b2d218d4576020 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ae45a347e56bb222d70b2d218d4576020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ae45a347e56bb222d70b2d218d4576020">Mode</a><code> [get]</code></td></tr>
-<tr class="memdesc:ae45a347e56bb222d70b2d218d4576020 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the drawing mode for this composite (world or screen space).  <br /></td></tr>
-<tr class="separator:ae45a347e56bb222d70b2d218d4576020 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12b490664f46833817ba6673cf18faed inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a12b490664f46833817ba6673cf18faed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">ReadOnlyCollection</a>&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a12b490664f46833817ba6673cf18faed">Children</a><code> [get]</code></td></tr>
-<tr class="memdesc:a12b490664f46833817ba6673cf18faed inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the read-only collection of child drawable items in this composite.  <br /></td></tr>
-<tr class="separator:a12b490664f46833817ba6673cf18faed inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0b5af141d3d7aa6cba95de8158f4863 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ac0b5af141d3d7aa6cba95de8158f4863"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Physics_1_1Movement_1_1MovementController.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ac0b5af141d3d7aa6cba95de8158f4863">Movement</a><code> [get]</code></td></tr>
-<tr class="memdesc:ac0b5af141d3d7aa6cba95de8158f4863 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement controller for animating the composite's position.  <br /></td></tr>
-<tr class="separator:ac0b5af141d3d7aa6cba95de8158f4863 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c0340512fbb1766a41407c56ba1279c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a8c0340512fbb1766a41407c56ba1279c"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a8c0340512fbb1766a41407c56ba1279c">ScreenBounds</a><code> [get]</code></td></tr>
-<tr class="memdesc:a8c0340512fbb1766a41407c56ba1279c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bounding rectangle that encompasses all visible children in screen coordinates.  <br /></td></tr>
-<tr class="separator:a8c0340512fbb1766a41407c56ba1279c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a814c4952d4e4ede9a874e0b94edf74ff inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a814c4952d4e4ede9a874e0b94edf74ff"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a814c4952d4e4ede9a874e0b94edf74ff">WorldBounds</a><code> [get]</code></td></tr>
-<tr class="memdesc:a814c4952d4e4ede9a874e0b94edf74ff inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bounding rectangle that encompasses all visible children in world coordinates.  <br /></td></tr>
-<tr class="separator:a814c4952d4e4ede9a874e0b94edf74ff inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad38e0285605825ffe181f98ba74daef8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ad38e0285605825ffe181f98ba74daef8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad38e0285605825ffe181f98ba74daef8">PositionSpace</a><code> [get]</code></td></tr>
-<tr class="memdesc:ad38e0285605825ffe181f98ba74daef8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position space used by this composite. Always returns MovementSpace.Pixel.  <br /></td></tr>
-<tr class="separator:ad38e0285605825ffe181f98ba74daef8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8856372ce0b37bfa7e3520340641506f inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a8856372ce0b37bfa7e3520340641506f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Guid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a8856372ce0b37bfa7e3520340641506f">Id</a> = Guid.NewGuid()<code> [get]</code></td></tr>
-<tr class="memdesc:a8856372ce0b37bfa7e3520340641506f inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier for this composite.  <br /></td></tr>
-<tr class="separator:a8856372ce0b37bfa7e3520340641506f inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a201fd617284a61d7c52438c3c3d8b9c8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a201fd617284a61d7c52438c3c3d8b9c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a201fd617284a61d7c52438c3c3d8b9c8">Nickname</a><code> [get]</code></td></tr>
-<tr class="memdesc:a201fd617284a61d7c52438c3c3d8b9c8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the optional friendly name for this composite.  <br /></td></tr>
-<tr class="separator:a201fd617284a61d7c52438c3c3d8b9c8 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03ac955d51635f90cce6c18395afcec4 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a03ac955d51635f90cce6c18395afcec4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a03ac955d51635f90cce6c18395afcec4">Visible</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a03ac955d51635f90cce6c18395afcec4 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the visibility of the composite. Returns true if any child is visible; setting this sets all children's Visible to the same value.  <br /></td></tr>
-<tr class="separator:a03ac955d51635f90cce6c18395afcec4 inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9bc671772e89d1143051d73c3e88078c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a9bc671772e89d1143051d73c3e88078c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a9bc671772e89d1143051d73c3e88078c">ZOrder</a><code> [get]</code></td></tr>
-<tr class="memdesc:a9bc671772e89d1143051d73c3e88078c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Z-order of the composite. Always returns 0 as individual children manage their own Z-order.  <br /></td></tr>
-<tr class="separator:a9bc671772e89d1143051d73c3e88078c inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header properties_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html">Gondwana.Drawing.Direct.IDirectDrawable</a></td></tr>
-<tr class="inherit_header properties_interfaceGondwana_1_1Drawing_1_1IDrawable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Drawing_1_1IDrawable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html">Gondwana.Drawing.IDrawable</a></td></tr>
-<tr class="inherit_header properties_interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable"><td colspan="2" onclick="javascript:toggleInherit('properties_interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable')"><img src="closed.png" alt="-"/>&#160;Properties inherited from <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html">Gondwana.Physics.Movement.IMovable</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Base type for widgets that support dragging. </p>
+<div class="textblock"><p>Base type for widgets that can be repositioned through pointer dragging. </p>
+<p>Dragging begins after the primary pointer has moved at least DragThresholdPx pixels from its pointer-down position. The widget is repositioned automatically by changing the anchor inherited from DirectComposite. </p>
+<p>The widget input layer must dispatch pointer-move and pointer-up events to this widget after pointer-down, including while the pointer is outside the widget's current bounds. In other words, the input layer must provide pointer capture. </p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00010">10</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00024">24</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a56c9b2f13dadda4229086668638153e2" name="a56c9b2f13dadda4229086668638153e2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a56c9b2f13dadda4229086668638153e2">&#9670;&#160;</a></span>DraggableWidgetBase()</h2>
@@ -355,13 +509,24 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00022">22</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Initializes a new instance of the DraggableWidgetBase class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host for drawing operations.</td></tr>
+    <tr><td class="paramname">mode</td><td>The drawing mode (world or screen space).</td></tr>
+    <tr><td class="paramname">anchor</td><td>The anchor point for the widget in pixels. Default is (0, 0).</td></tr>
+    <tr><td class="paramname">nickname</td><td>Optional friendly name for the widget.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00103">103</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af85584f6e43c07910be2eb5feb5dce44" name="af85584f6e43c07910be2eb5feb5dce44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af85584f6e43c07910be2eb5feb5dce44">&#9670;&#160;</a></span>DispatchDragEnded()</h2>
+<a id="aac4f4fa0fa2911914d5652c0819ba669" name="aac4f4fa0fa2911914d5652c0819ba669"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac4f4fa0fa2911914d5652c0819ba669">&#9670;&#160;</a></span>CanStartDrag()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -370,26 +535,35 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.DispatchDragEnded </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> Gondwana.Widgets.DraggableWidgetBase.CanStartDrag </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a>&#160;</td>
           <td class="paramname"><em>args</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00046">46</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Determines whether the supplied pointer-down event may begin drag tracking. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer-down event arguments.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> when dragging is enabled and the event represents the primary pointer button; otherwise, <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00242">242</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
-<a id="afb7bdd770677ace7d2873bdffe68266f" name="afb7bdd770677ace7d2873bdffe68266f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afb7bdd770677ace7d2873bdffe68266f">&#9670;&#160;</a></span>DispatchDragged()</h2>
+<a id="afcc2be3ee6d2cd0ea584eff7e13c5026" name="afcc2be3ee6d2cd0ea584eff7e13c5026"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcc2be3ee6d2cd0ea584eff7e13c5026">&#9670;&#160;</a></span>ConstrainDragPosition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -398,26 +572,36 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.DispatchDragged </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a> Gondwana.Widgets.DraggableWidgetBase.ConstrainDragPosition </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a>&#160;</td>
-          <td class="paramname"><em>args</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a>&#160;</td>
+          <td class="paramname"><em>proposedPositionPx</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00040">40</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Constrains or adjusts a proposed widget anchor position before it is applied. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">proposedPositionPx</td><td>The proposed anchor position in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The position that should actually be applied.</dd></dl>
+<p>Override this method to implement clamping, grid snapping, axis locking, or other constraints. </p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00295">295</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
-<a id="ac9349a7afa638e5cfa592b3fc1aabf17" name="ac9349a7afa638e5cfa592b3fc1aabf17"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac9349a7afa638e5cfa592b3fc1aabf17">&#9670;&#160;</a></span>DispatchDragStarted()</h2>
+<a id="af9febbb0440f5a11efa3c7362e163ec2" name="af9febbb0440f5a11efa3c7362e163ec2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9febbb0440f5a11efa3c7362e163ec2">&#9670;&#160;</a></span>ConvertScreenDeltaToPositionDelta()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -426,21 +610,42 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.DispatchDragStarted </td>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">virtual</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a> Gondwana.Widgets.DraggableWidgetBase.ConvertScreenDeltaToPositionDelta </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a>&#160;</td>
-          <td class="paramname"><em>args</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Vector2</a>&#160;</td>
+          <td class="paramname"><em>totalScreenDeltaPx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>&#160;</td>
+          <td class="paramname"><em>view</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00034">34</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Converts total screen-space pointer movement into the coordinate space used by this widget. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">totalScreenDeltaPx</td><td>Total pointer movement, in screen pixels, from the drag-start position. </td></tr>
+    <tr><td class="paramname">view</td><td>The view through which the drag began and remains captured. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The movement to apply to the widget anchor. View widgets return a screen-space delta; scene-layer widgets return a world-space delta. </dd></dl>
+<p>The default implementation uses the view's authoritative screen-to-world transform for scene-layer widgets, including camera position, zoom, viewport offset, and parallax. Override this method only when a widget requires a different coordinate conversion. </p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00265">265</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -468,7 +673,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00064">64</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Called when the pointer button that began an active drag is released. Override to customize behavior. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The drag event arguments.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00323">323</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -496,7 +709,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00060">60</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Called after the widget is repositioned during an active drag operation. Override to customize behavior. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The drag event arguments.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00314">314</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -524,7 +745,316 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00056">56</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Called when pointer movement first crosses DragThresholdPx. Override to customize behavior. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The drag event arguments.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00305">305</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a8c24aaa30eb8f60511526fa97b7f4fe9" name="a8c24aaa30eb8f60511526fa97b7f4fe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c24aaa30eb8f60511526fa97b7f4fe9">&#9670;&#160;</a></span>ProcessCancelled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.ProcessCancelled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">sealed</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when the widget is cancelled before notification callbacks are invoked. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a0e399de16422cd79a00116b964ff5841">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00124">124</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a3dbb9664dd8b9ab58cec0bcc34838acc" name="a3dbb9664dd8b9ab58cec0bcc34838acc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dbb9664dd8b9ab58cec0bcc34838acc">&#9670;&#160;</a></span>ProcessHidden()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.ProcessHidden </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">sealed</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when the widget is hidden before notification callbacks are invoked. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af24739527ab6d68bbd1aa2bfb876b37a">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00117">117</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a40a32eba693d2759804c119804ca8bfc" name="a40a32eba693d2759804c119804ca8bfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40a32eba693d2759804c119804ca8bfc">&#9670;&#160;</a></span>ProcessPointerDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.ProcessPointerDown </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a>&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">sealed</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when a pointer press begins on the widget before notification callbacks are invoked.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a81064cf8dce5b82040dbab4dfb53a638">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00131">131</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="af473775cc832c7cf685ceee1c710ea97" name="af473775cc832c7cf685ceee1c710ea97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af473775cc832c7cf685ceee1c710ea97">&#9670;&#160;</a></span>ProcessPointerMove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.ProcessPointerMove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a>&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">sealed</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when pointer movement is routed to the widget before notification callbacks are invoked.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ae31c954d77c76c40a0798eb26883ae77">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00154">154</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="aa61145a91b6006337ed9a8700bbe9c7b" name="aa61145a91b6006337ed9a8700bbe9c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa61145a91b6006337ed9a8700bbe9c7b">&#9670;&#160;</a></span>ProcessPointerUp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a> Gondwana.Widgets.DraggableWidgetBase.ProcessPointerUp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a>&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">sealed</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when a pointer press is released for the widget before notification callbacks are invoked.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af2ead0de926c468fb4e5b67c63a9bc96">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00187">187</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a002526d1d0c5b3c8e3580621b15484d5" name="a002526d1d0c5b3c8e3580621b15484d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a002526d1d0c5b3c8e3580621b15484d5">&#9670;&#160;</a></span>ShouldDispatchPointerClick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> Gondwana.Widgets.DraggableWidgetBase.ShouldDispatchPointerClick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a>&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">sealed</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Determines whether a pointer-click event should be dispatched for the specified pointer event data.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the pointer-click event should be dispatched; otherwise, <code>false</code>. </dd></dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#adb7aba8fa538a81c3dbb8154fb70246f">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00217">217</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Property Documentation</h2>
+<a id="a6bce6741acff354682af77adf5132746" name="a6bce6741acff354682af77adf5132746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bce6741acff354682af77adf5132746">&#9670;&#160;</a></span>DragThresholdPx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">float</a> Gondwana.Widgets.DraggableWidgetBase.DragThresholdPx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the minimum pointer movement, in screen pixels, required to begin dragging. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentOutOfRangeException</td><td>Thrown when the assigned value is less than zero. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00080">80</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a3f752644329aefcc10ae692ee93bc592" name="a3f752644329aefcc10ae692ee93bc592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f752644329aefcc10ae692ee93bc592">&#9670;&#160;</a></span>IsDragEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> Gondwana.Widgets.DraggableWidgetBase.IsDragEnabled = <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">true</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets whether new drag operations may begin. </p>
+<p>Changing this property to <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code> does not cancel a drag that is already active. </p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00067">67</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a051cc111543b7190b4111ff2969231b4" name="a051cc111543b7190b4111ff2969231b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a051cc111543b7190b4111ff2969231b4">&#9670;&#160;</a></span>IsDragging</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> Gondwana.Widgets.DraggableWidgetBase.IsDragging</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether a drag operation is currently active. </p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00072">72</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -541,7 +1071,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00016">16</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Raised when the pointer button that began an active drag is released. </p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00055">55</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -557,7 +1089,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00015">15</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Raised after the widget is repositioned during an active drag operation. </p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00050">50</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -573,7 +1107,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00014">14</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p>Raised when pointer movement first crosses DragThresholdPx. </p>
+
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00045">45</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>

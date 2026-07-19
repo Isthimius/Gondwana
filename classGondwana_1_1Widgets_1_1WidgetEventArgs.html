@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -108,14 +108,16 @@ Inheritance diagram for Gondwana.Widgets.WidgetEventArgs:</div>
  <div class="center">
   <img src="classGondwana_1_1Widgets_1_1WidgetEventArgs.png" usemap="#Gondwana.Widgets.WidgetEventArgs_map" alt=""/>
   <map id="Gondwana.Widgets.WidgetEventArgs_map" name="Gondwana.Widgets.WidgetEventArgs_map">
-<area href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html" title="Event arguments for widget drag callbacks." alt="Gondwana.Widgets.WidgetDragEventArgs" shape="rect" coords="0,112,261,136"/>
-<area href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html" title="Event arguments for pointer-based widget callbacks." alt="Gondwana.Widgets.WidgetPointerEventArgs" shape="rect" coords="271,112,532,136"/>
+<area href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html" title="Event arguments for widget drag callbacks." alt="Gondwana.Widgets.WidgetDragEventArgs" shape="rect" coords="0,112,276,136"/>
+<area href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html" title="Provides data for widget keyboard input events routed by WidgetInputRouter." alt="Gondwana.Widgets.WidgetKeyboardEventArgs" shape="rect" coords="286,112,562,136"/>
+<area href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html" title="Event arguments for pointer-based widget callbacks." alt="Gondwana.Widgets.WidgetPointerEventArgs" shape="rect" coords="572,112,848,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a73199df2fa47d179fd78413cd3e872e6" id="r_a73199df2fa47d179fd78413cd3e872e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetEventArgs.html#a73199df2fa47d179fd78413cd3e872e6">WidgetEventArgs</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a> widget, long tick)</td></tr>
+<tr class="memdesc:a73199df2fa47d179fd78413cd3e872e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the WidgetEventArgs class.  <br /></td></tr>
 <tr class="separator:a73199df2fa47d179fd78413cd3e872e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
@@ -169,7 +171,22 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00008">8</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
+<p>Initializes a new instance of the WidgetEventArgs class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">widget</td><td>The widget that raised the event.</td></tr>
+    <tr><td class="paramname">tick</td><td>The engine or timer tick associated with the event.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentNullException</td><td>Thrown when <em>widget</em>  is <code>null</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00014">14</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -196,7 +213,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets whether this widget interaction was handled. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00027">27</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00033">33</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -222,7 +239,7 @@ Properties</h2></td></tr>
 
 <p>Gets the engine or timer tick associated with the callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00022">22</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00028">28</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -248,7 +265,7 @@ Properties</h2></td></tr>
 
 <p>Gets the widget that raised the callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00017">17</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetEventArgs_8cs_source.html#l00023">23</a> of file <a class="el" href="WidgetEventArgs_8cs_source.html">WidgetEventArgs.cs</a>.</p>
 
 </div>
 </div>

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -137,8 +137,10 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
+<tr class="memdesc:a55b7cf5594bcb95ab5893c3c43842673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores whether animation advancement is currently paused.  <br /></td></tr>
 <tr class="separator:a55b7cf5594bcb95ab5893c3c43842673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
+<tr class="memdesc:abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the collider used for collision detection, when present.  <br /></td></tr>
 <tr class="separator:abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
@@ -236,7 +238,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A negative value if this tile should be drawn before the other tile, zero if they have the same draw order, or a positive value if this tile should be drawn after the other tile. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00274">274</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00295">295</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -267,7 +269,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa3c760f6aeae24f2a907da2f254cc84a">Gondwana.Drawing.Sprites.Sprite</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00312">312</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00333">333</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -351,7 +353,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The tile's collision area in screen space as a rectangle.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00129">129</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00150">150</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -390,7 +392,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a8da83689234405828f7f6ed1f2062ec3">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00119">119</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00140">140</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -415,7 +417,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00039">39</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Stores the collider used for collision detection, when present. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00060">60</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -439,7 +443,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00037">37</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Stores whether animation advancement is currently paused. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00055">55</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -466,7 +472,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the collision area adjustment values that modify the tile's collision boundaries. Use this to fine-tune the collision detection area relative to the tile's visual bounds. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00231">231</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00252">252</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -492,7 +498,7 @@ Properties</h2></td></tr>
 
 <p>Gets the collider used for collision detection with this tile. Returns null if the tile has no collision detection. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00184">184</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00205">205</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -520,7 +526,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html#a8a58a26477c003e9519fe88eb57c24f7">Gondwana.Physics.Collisions.ICollisionEntity</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00191">191</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00212">212</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -546,7 +552,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets a value indicating whether collision detection is enabled for this tile. When set to true, the tile's collider is registered with the scene layer's collision system. When set to false, the collider is unregistered and collisions will not be detected. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00241">241</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00262">262</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -572,7 +578,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the current frame being displayed for this tile. Setting this property triggers a refresh of both the old and new tile areas to handle size changes. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00155">155</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00176">176</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -598,7 +604,7 @@ Properties</h2></td></tr>
 
 <p>Gets the tile's draw location in world coordinates as a rectangle. This represents the area occupied by the tile in the game world. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00055">55</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00076">76</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -624,7 +630,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets a value indicating whether fog of war rendering is enabled for this tile. Setting this property triggers a refresh of the tile's screen area. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00209">209</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00230">230</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -652,7 +658,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#ae2a09ae0aeb04bce1333130f416584fb">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00075">75</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00096">96</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -678,7 +684,7 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether the tile's position is fixed in screen space (e.g., UI elements) or moves with the world (e.g., game objects). </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00049">49</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00070">70</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -706,7 +712,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00081">81</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00102">102</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -732,7 +738,7 @@ Properties</h2></td></tr>
 
 <p>Used to determine polygonal area when drawing grid lines or fog. Override this property in a derived class to define custom areas for these effects. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00224">224</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00245">245</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -758,7 +764,7 @@ Properties</h2></td></tr>
 
 <p>Gets the overhang dimensions (in pixels) that extend beyond the tile's primary area. This is typically used for tiles with visual elements that exceed their logical boundaries. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00148">148</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00169">169</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -784,7 +790,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets a value indicating whether the tile's animation is currently paused. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00177">177</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00198">198</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -810,7 +816,7 @@ Properties</h2></td></tr>
 
 <p>Gets the scene layer that contains this tile. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00065">65</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00086">86</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -836,7 +842,7 @@ Properties</h2></td></tr>
 
 <p>Gets the tile's position within its scene layer using the layer's coordinate system. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00060">60</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00081">81</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -862,7 +868,7 @@ Properties</h2></td></tr>
 
 <p>Gets the animator responsible for managing frame transitions and animation sequences for this tile. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00171">171</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00192">192</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -914,7 +920,7 @@ Properties</h2></td></tr>
 
 <p>Gets the value bag for storing arbitrary typed values associated with this tile. Useful for attaching custom game-specific data without subclassing. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00260">260</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00281">281</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -942,7 +948,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00088">88</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00109">109</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -970,7 +976,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00104">104</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00125">125</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>

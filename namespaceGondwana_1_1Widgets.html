@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -108,16 +108,24 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html">DraggableWidgetBase</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base type for widgets that support dragging.  <a href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base type for widgets that can be repositioned through pointer dragging.  <a href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">WidgetBase</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base type for reusable <a class="el" href="namespaceGondwana.html">Gondwana</a> widgets built on top of DirectComposite.  <a href="classGondwana_1_1Widgets_1_1WidgetBase.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides the base implementation for widgets that can be drawn and receive pointer, keyboard, and focus input.  <a href="classGondwana_1_1Widgets_1_1WidgetBase.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html">WidgetDragEventArgs</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event arguments for widget drag callbacks.  <a href="classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetEventArgs.html">WidgetEventArgs</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base event argument type for <a class="el" href="namespaceGondwana.html">Gondwana</a> widget callbacks.  <a href="classGondwana_1_1Widgets_1_1WidgetEventArgs.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetInputRouter.html">WidgetInputRouter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Routes mouse, touch, and keyboard input to registered widgets for a render surface host.  <a href="classGondwana_1_1Widgets_1_1WidgetInputRouter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>WidgetInputRouterRegistry</b></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides data for widget keyboard input events routed by WidgetInputRouter.  <a href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event arguments for pointer-based widget callbacks.  <a href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#details">More...</a><br /></td></tr>
@@ -155,14 +163,22 @@ Enumerations</h2></td></tr>
 
 <p>Represents a pointer button used by a widget interaction. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea6adf97f83acf6453d4a6a4b1070f3754" name="a4f23503be12c54428a2e6fb6efd473fea6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea945d5e233cf7d6240f6b783b36a374ff" name="a4f23503be12c54428a2e6fb6efd473fea945d5e233cf7d6240f6b783b36a374ff"></a>Left&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea92b09c7c48c520c3c55e497875da437c" name="a4f23503be12c54428a2e6fb6efd473fea92b09c7c48c520c3c55e497875da437c"></a>Right&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feab1ca34f82e83c52b010f86955f264e05" name="a4f23503be12c54428a2e6fb6efd473feab1ca34f82e83c52b010f86955f264e05"></a>Middle&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feaac8e5aa1a680bd64e6fb9313db5b4428" name="a4f23503be12c54428a2e6fb6efd473feaac8e5aa1a680bd64e6fb9313db5b4428"></a>XButton1&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea7af9d9a16f813c045a3dbe8068a13f4d" name="a4f23503be12c54428a2e6fb6efd473fea7af9d9a16f813c045a3dbe8068a13f4d"></a>XButton2&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feaf0f31c9700c6b10d8a20dc487b2ae6a8" name="a4f23503be12c54428a2e6fb6efd473feaf0f31c9700c6b10d8a20dc487b2ae6a8"></a>Touch&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feaf9eccd07c9abd3e633298d3239fa3b98" name="a4f23503be12c54428a2e6fb6efd473feaf9eccd07c9abd3e633298d3239fa3b98"></a>Stylus&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea6adf97f83acf6453d4a6a4b1070f3754" name="a4f23503be12c54428a2e6fb6efd473fea6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>No button. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea945d5e233cf7d6240f6b783b36a374ff" name="a4f23503be12c54428a2e6fb6efd473fea945d5e233cf7d6240f6b783b36a374ff"></a>Left&#160;</td><td class="fielddoc"><p>Left mouse button. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea92b09c7c48c520c3c55e497875da437c" name="a4f23503be12c54428a2e6fb6efd473fea92b09c7c48c520c3c55e497875da437c"></a>Right&#160;</td><td class="fielddoc"><p>Right mouse button. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feab1ca34f82e83c52b010f86955f264e05" name="a4f23503be12c54428a2e6fb6efd473feab1ca34f82e83c52b010f86955f264e05"></a>Middle&#160;</td><td class="fielddoc"><p>Middle mouse button. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feaac8e5aa1a680bd64e6fb9313db5b4428" name="a4f23503be12c54428a2e6fb6efd473feaac8e5aa1a680bd64e6fb9313db5b4428"></a>XButton1&#160;</td><td class="fielddoc"><p>First extended mouse button (typically "back" button). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473fea7af9d9a16f813c045a3dbe8068a13f4d" name="a4f23503be12c54428a2e6fb6efd473fea7af9d9a16f813c045a3dbe8068a13f4d"></a>XButton2&#160;</td><td class="fielddoc"><p>Second extended mouse button (typically "forward" button). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feaf0f31c9700c6b10d8a20dc487b2ae6a8" name="a4f23503be12c54428a2e6fb6efd473feaf0f31c9700c6b10d8a20dc487b2ae6a8"></a>Touch&#160;</td><td class="fielddoc"><p>Touch input. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4f23503be12c54428a2e6fb6efd473feaf9eccd07c9abd3e633298d3239fa3b98" name="a4f23503be12c54428a2e6fb6efd473feaf9eccd07c9abd3e633298d3239fa3b98"></a>Stylus&#160;</td><td class="fielddoc"><p>Stylus input. </p>
+</td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="WidgetPointerButtonEnum_8cs_source.html#l00006">6</a> of file <a class="el" href="WidgetPointerButtonEnum_8cs_source.html">WidgetPointerButtonEnum.cs</a>.</p>

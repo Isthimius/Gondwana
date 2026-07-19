@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Input_1_1Touch_1_1Tou
 </div><!--header-->
 <div class="contents">
 
-<p>Provides data for touch contact events raised by ITouchInput, including the details of the touch point that triggered the event.  
+<p>Provides data for touch contact events raised by ITouchInput, including the touch point and engine tick associated with the event.  
  <a href="classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Touch.TouchEventArgs:</div>
@@ -111,23 +111,26 @@ Inheritance diagram for Gondwana.Input.Touch.TouchEventArgs:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad77a984004fe8634e0330010a960885c" id="r_ad77a984004fe8634e0330010a960885c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html#ad77a984004fe8634e0330010a960885c">TouchEventArgs</a> (<a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#aa34fb204d0b222197d7adec72b13924b">TouchPoint</a> touch)</td></tr>
-<tr class="memdesc:ad77a984004fe8634e0330010a960885c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the TouchEventArgs class with the specified touch contact point.  <br /></td></tr>
-<tr class="separator:ad77a984004fe8634e0330010a960885c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3bd8c702f2889ff1b3bf3979c15b2b" id="r_a5c3bd8c702f2889ff1b3bf3979c15b2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html#a5c3bd8c702f2889ff1b3bf3979c15b2b">TouchEventArgs</a> (<a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#aa34fb204d0b222197d7adec72b13924b">TouchPoint</a> touch, long tick=0)</td></tr>
+<tr class="memdesc:a5c3bd8c702f2889ff1b3bf3979c15b2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the TouchEventArgs class.  <br /></td></tr>
+<tr class="separator:a5c3bd8c702f2889ff1b3bf3979c15b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a4d627cf080adf4fcc9ea365b7cd2f187" id="r_a4d627cf080adf4fcc9ea365b7cd2f187"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#aa34fb204d0b222197d7adec72b13924b">TouchPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html#a4d627cf080adf4fcc9ea365b7cd2f187">Touch</a><code> [get]</code></td></tr>
-<tr class="memdesc:a4d627cf080adf4fcc9ea365b7cd2f187"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the touch contact point associated with this event, including its identifier, screen position, and current lifecycle phase.  <br /></td></tr>
+<tr class="memdesc:a4d627cf080adf4fcc9ea365b7cd2f187"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the touch contact point associated with this event.  <br /></td></tr>
 <tr class="separator:a4d627cf080adf4fcc9ea365b7cd2f187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93717336aaf28fa1d199eaa754d171d6" id="r_a93717336aaf28fa1d199eaa754d171d6"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html#a93717336aaf28fa1d199eaa754d171d6">Tick</a><code> [get]</code></td></tr>
+<tr class="memdesc:a93717336aaf28fa1d199eaa754d171d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the engine tick at which this touch event was emitted.  <br /></td></tr>
+<tr class="separator:a93717336aaf28fa1d199eaa754d171d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Provides data for touch contact events raised by ITouchInput, including the details of the touch point that triggered the event. </p>
+<div class="textblock"><p>Provides data for touch contact events raised by ITouchInput, including the touch point and engine tick associated with the event. </p>
 
 <p class="definition">Definition at line <a class="el" href="TouchEventArgs_8cs_source.html#l00007">7</a> of file <a class="el" href="TouchEventArgs_8cs_source.html">TouchEventArgs.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ad77a984004fe8634e0330010a960885c" name="ad77a984004fe8634e0330010a960885c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad77a984004fe8634e0330010a960885c">&#9670;&#160;</a></span>TouchEventArgs()</h2>
+<a id="a5c3bd8c702f2889ff1b3bf3979c15b2b" name="a5c3bd8c702f2889ff1b3bf3979c15b2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c3bd8c702f2889ff1b3bf3979c15b2b">&#9670;&#160;</a></span>TouchEventArgs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -136,25 +139,62 @@ Properties</h2></td></tr>
           <td class="memname">Gondwana.Input.Touch.TouchEventArgs.TouchEventArgs </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#aa34fb204d0b222197d7adec72b13924b">TouchPoint</a>&#160;</td>
-          <td class="paramname"><em>touch</em></td><td>)</td>
+          <td class="paramname"><em>touch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>tick</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the TouchEventArgs class with the specified touch contact point. </p>
+<p>Initializes a new instance of the TouchEventArgs class. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">touch</td><td>The touch contact point that caused this event to be raised. </td></tr>
+    <tr><td class="paramname">touch</td><td>The touch contact point that caused the event.</td></tr>
+    <tr><td class="paramname">tick</td><td>The engine tick at which the event was emitted.</td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TouchEventArgs_8cs_source.html#l00022">22</a> of file <a class="el" href="TouchEventArgs_8cs_source.html">TouchEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TouchEventArgs_8cs_source.html#l00024">24</a> of file <a class="el" href="TouchEventArgs_8cs_source.html">TouchEventArgs.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Property Documentation</h2>
+<a id="a93717336aaf28fa1d199eaa754d171d6" name="a93717336aaf28fa1d199eaa754d171d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93717336aaf28fa1d199eaa754d171d6">&#9670;&#160;</a></span>Tick</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long Gondwana.Input.Touch.TouchEventArgs.Tick</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the engine tick at which this touch event was emitted. </p>
+
+<p class="definition">Definition at line <a class="el" href="TouchEventArgs_8cs_source.html#l00017">17</a> of file <a class="el" href="TouchEventArgs_8cs_source.html">TouchEventArgs.cs</a>.</p>
+
+</div>
+</div>
 <a id="a4d627cf080adf4fcc9ea365b7cd2f187" name="a4d627cf080adf4fcc9ea365b7cd2f187"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4d627cf080adf4fcc9ea365b7cd2f187">&#9670;&#160;</a></span>Touch</h2>
 
@@ -175,9 +215,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the touch contact point associated with this event, including its identifier, screen position, and current lifecycle phase. </p>
+<p>Gets the touch contact point associated with this event. </p>
 
-<p class="definition">Definition at line <a class="el" href="TouchEventArgs_8cs_source.html#l00013">13</a> of file <a class="el" href="TouchEventArgs_8cs_source.html">TouchEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TouchEventArgs_8cs_source.html#l00012">12</a> of file <a class="el" href="TouchEventArgs_8cs_source.html">TouchEventArgs.cs</a>.</p>
 
 </div>
 </div>

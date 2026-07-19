@@ -22,6 +22,7 @@ var classGondwana_1_1Hosting_1_1GameHostBase =
     [ "InitializeEngine", "classGondwana_1_1Hosting_1_1GameHostBase.html#a08a33a3b5f0c4124cb94441cfb65951b", null ],
     [ "InitializeGameContent", "classGondwana_1_1Hosting_1_1GameHostBase.html#a142b480f1f7bf2f0cf22ea0100163626", null ],
     [ "InitializeSceneObjects", "classGondwana_1_1Hosting_1_1GameHostBase.html#a15d6a4e0d90853c464bb71673a551bca", null ],
+    [ "InitializeWidgetInput", "classGondwana_1_1Hosting_1_1GameHostBase.html#aea192809b482771df73c1275ef6e806b", null ],
     [ "LoadAnimationCycles", "classGondwana_1_1Hosting_1_1GameHostBase.html#a5a49535618c4d95073d1fb6b63090162", null ],
     [ "LoadAssets", "classGondwana_1_1Hosting_1_1GameHostBase.html#a0930bbe034b663e96202b5e1c8fca903", null ],
     [ "LoadContent", "classGondwana_1_1Hosting_1_1GameHostBase.html#a1681f962a355b6e2849e2dbd74e18188", null ],
@@ -32,6 +33,7 @@ var classGondwana_1_1Hosting_1_1GameHostBase =
     [ "OnEngineStarted", "classGondwana_1_1Hosting_1_1GameHostBase.html#a4ca29468f89fa61e788db4726bf32b77", null ],
     [ "OnInitialized", "classGondwana_1_1Hosting_1_1GameHostBase.html#a332c71dfd84ee52dc7bdb2aabc9f3905", null ],
     [ "OnInitializing", "classGondwana_1_1Hosting_1_1GameHostBase.html#a404a0c741326bf3eb36c919b94e55efc", null ],
+    [ "OnInputConfigured", "classGondwana_1_1Hosting_1_1GameHostBase.html#a1414fa93f4ce9d54abea8ce7f5ea1522", null ],
     [ "OnSceneBound", "classGondwana_1_1Hosting_1_1GameHostBase.html#a776fb1af814a3321194861b47ff9f691", null ],
     [ "OnSceneGraphCreated", "classGondwana_1_1Hosting_1_1GameHostBase.html#acbb7c5d75b0d28416a9f7f9834fc1ed0", null ],
     [ "StartEngine", "classGondwana_1_1Hosting_1_1GameHostBase.html#aba6f98d10c2c304b8f38de8d88eebee5", null ],
@@ -40,5 +42,6 @@ var classGondwana_1_1Hosting_1_1GameHostBase =
     [ "StopEngineCore", "classGondwana_1_1Hosting_1_1GameHostBase.html#a01d0076d5fdd803e7169d35890eb362a", null ],
     [ "UnhookEvents", "classGondwana_1_1Hosting_1_1GameHostBase.html#a5e7bb18f465965d552d64c49c9006e1e", null ],
     [ "Engine", "classGondwana_1_1Hosting_1_1GameHostBase.html#aea7f4a44e1f5292bc86f8b75c9ba791c", null ],
-    [ "Scene", "classGondwana_1_1Hosting_1_1GameHostBase.html#ab1ca5ddd8b4d2aa962f171245c96c94b", null ]
+    [ "Scene", "classGondwana_1_1Hosting_1_1GameHostBase.html#ab1ca5ddd8b4d2aa962f171245c96c94b", null ],
+    [ "WidgetInputRouter", "classGondwana_1_1Hosting_1_1GameHostBase.html#ae8df9c79661ef5e3e6c5fbf7ecae8cf9", null ]
 ];

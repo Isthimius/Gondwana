@@ -11,7 +11,5 @@ var classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen =
     [ "FadeInSec", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#afd9e875b301a5816f7f9060c4325b10c", null ],
     [ "FadeOutSec", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a07fddd71afd52a14a54789f094e1b9d4", null ],
     [ "HoldSec", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a5e162a6ca1d2675df3161bff370c4d63", null ],
-    [ "FadeInCompleted", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a84e46e6c98c2836874d0fd3eb987aef7", null ],
-    [ "FadeOutCompleted", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#afa973fa40b8f41f26db376af6b7d262a", null ],
-    [ "HoldCompleted", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a206af9a2116eec46bf95b71cd7b5fd33", null ]
+    [ "Image", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#aa900f08af0834852055a06aef683cd40", null ]
 ];

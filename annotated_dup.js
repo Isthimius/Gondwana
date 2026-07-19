@@ -21,7 +21,7 @@ var annotated_dup =
       ] ],
       [ "Avalonia", "namespaceGondwana_1_1Avalonia.html", [
         [ "Hosting", "namespaceGondwana_1_1Avalonia_1_1Hosting.html", [
-          [ "AvaloniaGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost" ],
+          [ "AvaloniaBitmapGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost" ],
           [ "AvaloniaGpuGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost" ]
         ] ],
         [ "Input", "namespaceGondwana_1_1Avalonia_1_1Input.html", [
@@ -240,6 +240,8 @@ var annotated_dup =
         [ "WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", "classGondwana_1_1Widgets_1_1WidgetBase" ],
         [ "WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs" ],
         [ "WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetEventArgs" ],
+        [ "WidgetInputRouter", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html", "classGondwana_1_1Widgets_1_1WidgetInputRouter" ],
+        [ "WidgetKeyboardEventArgs", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs" ],
         [ "WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs" ]
       ] ],
       [ "WinForms", "namespaceGondwana_1_1WinForms.html", [

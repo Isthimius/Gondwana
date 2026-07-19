@@ -34,6 +34,7 @@ var hierarchy =
       [ "Gondwana.Video.VideoStateChangedEventArgs", "classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html", null ],
       [ "Gondwana.Widgets.WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", [
         [ "Gondwana.Widgets.WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", null ],
+        [ "Gondwana.Widgets.WidgetKeyboardEventArgs", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html", null ],
         [ "Gondwana.Widgets.WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", null ]
       ] ]
     ] ],
@@ -105,7 +106,7 @@ var hierarchy =
       [ "Gondwana.Drawing.Tilesheets.TilesheetRegistry", "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegistry.html", null ],
       [ "Gondwana.Engine", "classGondwana_1_1Engine.html", null ],
       [ "Gondwana.Hosting.GameHostBase", "classGondwana_1_1Hosting_1_1GameHostBase.html", [
-        [ "Gondwana.Avalonia.Hosting.AvaloniaGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGameHost.html", null ],
+        [ "Gondwana.Avalonia.Hosting.AvaloniaBitmapGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaBitmapGameHost.html", null ],
         [ "Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost", "classGondwana_1_1Avalonia_1_1Hosting_1_1AvaloniaGpuGameHost.html", null ],
         [ "Gondwana.Blazor.Hosting.BlazorGameHost", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html", null ],
         [ "Gondwana.WinForms.Hosting.WinFormsGameHostBase", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGameHostBase.html", [
@@ -131,6 +132,7 @@ var hierarchy =
       [ "Gondwana.Video.IVideoPlayer", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html", [
         [ "Gondwana.Video.VlcVideoPlayer", "classGondwana_1_1Video_1_1VlcVideoPlayer.html", null ]
       ] ],
+      [ "Gondwana.Widgets.WidgetInputRouter", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html", null ],
       [ "Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html", null ]

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -120,6 +120,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9036ca30da3f87de464ec76867757e23" id="r_a9036ca30da3f87de464ec76867757e23"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineDispatcher.html#a9036ca30da3f87de464ec76867757e23">Post</a> (Action action)</td></tr>
 <tr class="memdesc:a9036ca30da3f87de464ec76867757e23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Posts an action to be executed on the engine thread. If the current thread is already the engine thread, the action is executed inline immediately; otherwise, it is queued for execution during the next call to Drain.  <br /></td></tr>
 <tr class="separator:a9036ca30da3f87de464ec76867757e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae32b9b2b67b44e571bc7057c6ee9bf5f" id="r_ae32b9b2b67b44e571bc7057c6ee9bf5f"><td class="memItemLeft" align="right" valign="top">Task&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineDispatcher.html#ae32b9b2b67b44e571bc7057c6ee9bf5f">PostAsync</a> (Func&lt; Task &gt; action)</td></tr>
+<tr class="memdesc:ae32b9b2b67b44e571bc7057c6ee9bf5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Posts an asynchronous action to be started on the engine thread and returns a task that completes when the action has completed.  <br /></td></tr>
+<tr class="separator:ae32b9b2b67b44e571bc7057c6ee9bf5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6806d0966a0f8057ff04d68644a99a23" id="r_a6806d0966a0f8057ff04d68644a99a23"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineDispatcher.html#a6806d0966a0f8057ff04d68644a99a23">Drain</a> ()</td></tr>
 <tr class="memdesc:a6806d0966a0f8057ff04d68644a99a23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes all queued actions that have been posted to this dispatcher since the last call to Drain. This method should be called regularly by the engine's main update loop to process pending work items.  <br /></td></tr>
 <tr class="separator:a6806d0966a0f8057ff04d68644a99a23"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,7 +185,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1IEngineDispatcher.html#adc45f474a1c983bfa6720378365bcebc">Gondwana.IEngineDispatcher</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EngineDispatcher_8cs_source.html#l00107">107</a> of file <a class="el" href="EngineDispatcher_8cs_source.html">EngineDispatcher.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineDispatcher_8cs_source.html#l00149">149</a> of file <a class="el" href="EngineDispatcher_8cs_source.html">EngineDispatcher.cs</a>.</p>
 
 </div>
 </div>
@@ -215,6 +218,37 @@ Properties</h2></td></tr>
 <p>Implements <a class="el" href="interfaceGondwana_1_1IEngineDispatcher.html#a00e06df76ed9b4f7add0f560bce6e134">Gondwana.IEngineDispatcher</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="EngineDispatcher_8cs_source.html#l00077">77</a> of file <a class="el" href="EngineDispatcher_8cs_source.html">EngineDispatcher.cs</a>.</p>
+
+</div>
+</div>
+<a id="ae32b9b2b67b44e571bc7057c6ee9bf5f" name="ae32b9b2b67b44e571bc7057c6ee9bf5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae32b9b2b67b44e571bc7057c6ee9bf5f">&#9670;&#160;</a></span>PostAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Task Gondwana.EngineDispatcher.PostAsync </td>
+          <td>(</td>
+          <td class="paramtype">Func&lt; Task &gt;&#160;</td>
+          <td class="paramname"><em>action</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Posts an asynchronous action to be started on the engine thread and returns a task that completes when the action has completed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>The asynchronous action to execute. If <code>null</code>, the returned task is already complete. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A task representing completion of the dispatched action. </dd></dl>
+
+<p>Implements <a class="el" href="interfaceGondwana_1_1IEngineDispatcher.html#a2c908e5413e037ad28dccdb8c92dfa9b">Gondwana.IEngineDispatcher</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="EngineDispatcher_8cs_source.html#l00103">103</a> of file <a class="el" href="EngineDispatcher_8cs_source.html">EngineDispatcher.cs</a>.</p>
 
 </div>
 </div>

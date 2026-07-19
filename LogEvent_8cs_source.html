@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -104,39 +104,39 @@ $(document).ready(function(){initNavTree('LogEvent_8cs_source.html',''); initRes
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Logging.html">Gondwana.Logging</a>;</div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">partial class </span>EngineLogger</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">private</span> readonly <span class="keyword">struct </span>LogEvent</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">public</span> LogEvent(</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordtype">string</span> categoryName,</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            LogLevel logLevel,</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            EventId eventId,</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordtype">object</span>? state,</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            Exception? exception,</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            Func&lt;object?, Exception?, string&gt; formatter)</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            CategoryName = categoryName;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            LogLevel = logLevel;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            EventId = eventId;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            State = state;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            Exception = exception;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            Formatter = formatter;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">public</span> <span class="keywordtype">string</span> CategoryName { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">public</span> LogLevel LogLevel { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keyword">public</span> EventId EventId { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">public</span> <span class="keywordtype">object</span>? State { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">public</span> Exception? Exception { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">public</span> Func&lt;object?, Exception?, string&gt; Formatter { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">partial class </span>EngineLogger</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">private</span> readonly <span class="keyword">struct </span>LogEvent</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">public</span> LogEvent(</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordtype">string</span> categoryName,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            LogLevel logLevel,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            EventId eventId,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordtype">object</span>? state,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            Exception? exception,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            Func&lt;object?, Exception?, string&gt; formatter)</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            CategoryName = categoryName;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            LogLevel = logLevel;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            EventId = eventId;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            State = state;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            Exception = exception;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            Formatter = formatter;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">public</span> <span class="keywordtype">string</span> CategoryName { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">public</span> LogLevel LogLevel { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">public</span> EventId EventId { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">public</span> <span class="keywordtype">object</span>? State { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">public</span> Exception? Exception { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">public</span> Func&lt;object?, Exception?, string&gt; Formatter { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Logging_html"><div class="ttname"><a href="namespaceGondwana_1_1Logging.html">Gondwana.Logging</a></div><div class="ttdef"><b>Definition</b> <a href="EngineLogger_8cs_source.html#l00006">EngineLogger.cs:6</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.0</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -152,8 +152,10 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a25db5354cead1eaa38fbbcc9c20edb59" id="r_a25db5354cead1eaa38fbbcc9c20edb59"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a25db5354cead1eaa38fbbcc9c20edb59">TextBlock</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderSurfaceHost</a>, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">sceneLayer</a>, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">view</a>, Rectangle <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">worldBounds</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">nickname</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
+<tr class="memdesc:a25db5354cead1eaa38fbbcc9c20edb59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new TextBlock that draws in world space on the specified scene layer.  <br /></td></tr>
 <tr class="separator:a25db5354cead1eaa38fbbcc9c20edb59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59677dd5fb6b8df76d438e878f0ef594" id="r_a59677dd5fb6b8df76d438e878f0ef594"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a59677dd5fb6b8df76d438e878f0ef594">TextBlock</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderSurfaceHost</a>, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">view</a>, Rectangle <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screenBounds</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">nickname</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
+<tr class="memdesc:a59677dd5fb6b8df76d438e878f0ef594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new TextBlock that draws in screen space relative to a view.  <br /></td></tr>
 <tr class="separator:a59677dd5fb6b8df76d438e878f0ef594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada3d0e2f25198e44e23d4d446b8bbd53" id="r_ada3d0e2f25198e44e23d4d446b8bbd53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html">TextBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ada3d0e2f25198e44e23d4d446b8bbd53">SetText</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">text</a>)</td></tr>
 <tr class="memdesc:ada3d0e2f25198e44e23d4d446b8bbd53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current text content and rebuilds layout as needed. If no reveal animation is active, the text is shown fully. If a reveal animation is active, the target length is synced to the new text.  <br /></td></tr>
@@ -263,9 +265,10 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a90eecff7e661b60b3a7ae3a293b19580" id="r_a90eecff7e661b60b3a7ae3a293b19580"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a90eecff7e661b60b3a7ae3a293b19580">OnDraw</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">backbuffer</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">RectangleF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">destRectScreen</a>)</td></tr>
+<tr class="memdesc:a90eecff7e661b60b3a7ae3a293b19580"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the laid-out text block contents into the destination rectangle.  <br /></td></tr>
 <tr class="separator:a90eecff7e661b60b3a7ae3a293b19580"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bc93ce7def0dbbe0cd66287e31a5cd8" id="r_a9bc93ce7def0dbbe0cd66287e31a5cd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Dispose</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">bool</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">disposing</a>)</td></tr>
-<tr class="memdesc:a9bc93ce7def0dbbe0cd66287e31a5cd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases resources used by this DirectDrawingBase instance.  <br /></td></tr>
+<tr class="memdesc:a9bc93ce7def0dbbe0cd66287e31a5cd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases managed resources used by the text block.  <br /></td></tr>
 <tr class="separator:a9bc93ce7def0dbbe0cd66287e31a5cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a></td></tr>
 <tr class="memitem:a4d10b2bba4ecae5961ae1e39dc2f3c0e inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase" id="r_a4d10b2bba4ecae5961ae1e39dc2f3c0e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html#a4d10b2bba4ecae5961ae1e39dc2f3c0e">DirectDrawingMovableBase</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">renderSurfaceHost</a>, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">mode</a>, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">sceneLayer</a>, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">view</a>, Rectangle? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screenBounds</a>, Rectangle? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">worldBounds</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>? <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">name</a>=<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">null</a>)</td></tr>
@@ -333,7 +336,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:a1836eaa0000ed366375054f7bbe14d8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the vertical shadow offset (in pixels).  <br /></td></tr>
 <tr class="separator:a1836eaa0000ed366375054f7bbe14d8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3dd719769303f35c64c3e5df57be456" id="r_aa3dd719769303f35c64c3e5df57be456"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">byte</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aa3dd719769303f35c64c3e5df57be456">ShadowAlpha</a><code> [get]</code></td></tr>
-<tr class="memdesc:aa3dd719769303f35c64c3e5df57be456"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the shadow opacity (0–255).  <br /></td></tr>
+<tr class="memdesc:aa3dd719769303f35c64c3e5df57be456"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the shadow opacity (0-255).  <br /></td></tr>
 <tr class="separator:aa3dd719769303f35c64c3e5df57be456"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30efce775b62d6aeb966d1bbc3473c9d" id="r_a30efce775b62d6aeb966d1bbc3473c9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a30efce775b62d6aeb966d1bbc3473c9d">ShadowBlurSigma</a><code> [get]</code></td></tr>
 <tr class="memdesc:a30efce775b62d6aeb966d1bbc3473c9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the blur radius for the shadow (sigma, in pixels).  <br /></td></tr>
@@ -495,7 +498,7 @@ Additional Inherited Members</h2></td></tr>
 <p><code>TextBlock</code> caches a line layout derived from the current text, font, bounds, and wrapping settings, and only rebuilds when any of those change. Newlines (<code><br  />
 </code>) are respected as hard breaks; long lines wrap to the available width when wrapping is enabled. </p>
 <p>Horizontal alignment (left/center/right) and vertical alignment (top/center/bottom) are applied per frame. Optional background fill, shadow, and outline can be enabled for readability. When a minimum font size is specified, the control will step down from the requested size until the text fits within the height or the minimum is reached. </p>
-<p>// Centered, wrapped headline with shadow and outline var headline = new TextBlock(surface, new Rectangle(0, 0, 640, 140)) .SetText("Gondwana welcomes you\n— render boldly.") .SetFont(SKTypeface.Default, 28f, minSize: 16f) .SetColors(SKColors.White, SKColors.Transparent) .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center) .EnableWrapping(true) .SetMaxLines(3) .UseShadow(true) .UseOutline(true); </p>
+<p>// Centered, wrapped headline with shadow and outline var headline = new TextBlock(surface, new Rectangle(0, 0, 640, 140)) .SetText("Gondwana welcomes you\n- render boldly.") .SetFont(SKTypeface.Default, 28f, minSize: 16f) .SetColors(SKColors.White, SKColors.Transparent) .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center) .EnableWrapping(true) .SetMaxLines(3) .UseShadow(true) .UseOutline(true); </p>
 
 <p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00043">43</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
@@ -519,7 +522,7 @@ Additional Inherited Members</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01071">1071</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01091">1091</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -547,7 +550,7 @@ Additional Inherited Members</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01082">1082</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01102">1102</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -622,7 +625,19 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00145">145</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p>Creates a new TextBlock that draws in world space on the specified scene layer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that owns this direct drawing.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer used for world-space positioning and refresh.</td></tr>
+    <tr><td class="paramname">view</td><td>The optional view associated with the text block.</td></tr>
+    <tr><td class="paramname">worldBounds</td><td>The text block bounds in world coordinates.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional nickname used to identify the text block.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00153">153</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -664,7 +679,18 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00158">158</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p>Creates a new TextBlock that draws in screen space relative to a view. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that owns this direct drawing.</td></tr>
+    <tr><td class="paramname">view</td><td>The view the text block is associated with.</td></tr>
+    <tr><td class="paramname">screenBounds</td><td>The text block bounds in screen coordinates.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional nickname used to identify the text block.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00173">173</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -693,26 +719,17 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Releases resources used by this DirectDrawingBase instance. </p>
+<p>Releases managed resources used by the text block. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">disposing</td><td><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> to release both managed and unmanaged resources; <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code> to release only unmanaged resources (called from finalizer). </td></tr>
+    <tr><td class="paramname">disposing</td><td><code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code> when disposing managed resources; otherwise, <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">false</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
-<p>When <em>disposing</em>  is <code><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">true</a></code>, this method: </p><ul>
-<li>
-Marks affected regions as dirty by calling ForceRefresh. </li>
-<li>
-Raises the Disposing event. </li>
-<li>
-Clears all event handlers to prevent memory leaks. </li>
-</ul>
-<p>Override this method in derived classes to release additional resources. Always call <code>base.Dispose(disposing)</code> to ensure proper cleanup of the base class. </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ad239dc0e99d67621d35385086d91e98f">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01096">1096</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01120">1120</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -741,7 +758,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00337">337</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00352">352</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -779,7 +796,16 @@ Clears all event handlers to prevent memory leaks. </li>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00655">655</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p>Draws the laid-out text block contents into the destination rectangle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The backbuffer that provides the target drawing surface.</td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in screen space.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00675">675</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -840,7 +866,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00366">366</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00381">381</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -869,7 +895,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00481">481</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00496">496</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -891,7 +917,7 @@ Clears all event handlers to prevent memory leaks. </li>
 <p>Stops any active reveal animation and shows the full text immediately. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00494">494</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00509">509</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -931,7 +957,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00267">267</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00282">282</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1009,7 +1035,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00244">244</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00259">259</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1056,7 +1082,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00228">228</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00243">243</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1085,7 +1111,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00350">350</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00365">365</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1132,7 +1158,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00468">468</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00483">483</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1179,15 +1205,15 @@ Clears all event handlers to prevent memory leaks. </li>
   <table class="params">
     <tr><td class="paramname">dx</td><td>Horizontal offset in pixels for the shadow. Positive values move the shadow right, negative left. </td></tr>
     <tr><td class="paramname">dy</td><td>Vertical offset in pixels for the shadow. Positive values move the shadow down, negative up. </td></tr>
-    <tr><td class="paramname">alpha</td><td>Opacity of the shadow (0–255). Higher values make the shadow darker and more opaque. </td></tr>
-    <tr><td class="paramname">blurSigma</td><td>Blur radius in pixels for the shadow’s softness. Set to 0 for a hard shadow. Typical range: 1.0–3.0. </td></tr>
+    <tr><td class="paramname">alpha</td><td>Opacity of the shadow (0-255). Higher values make the shadow darker and more opaque. </td></tr>
+    <tr><td class="paramname">blurSigma</td><td>Blur radius in pixels for the shadow's softness. Set to 0 for a hard shadow. Typical range: 1.0-3.0. </td></tr>
   </table>
   </dd>
 </dl>
 <p>Call this after UseShadow(bool) to fine-tune the offset, opacity, and blur strength of the text shadow. This method sets the internal paint values and marks the text block as dirty so it will be redrawn on the next render pass. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00310">310</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00325">325</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1216,7 +1242,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00192">192</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00207">207</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1277,7 +1303,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00401">401</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00416">416</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1331,7 +1357,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00433">433</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00448">448</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1353,7 +1379,7 @@ Clears all event handlers to prevent memory leaks. </li>
 <p>Stops text color pulsing and restores the base foreground color. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00384">384</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00399">399</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1391,7 +1417,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00524">524</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00539">539</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1420,7 +1446,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00325">325</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00340">340</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1449,7 +1475,7 @@ Clears all event handlers to prevent memory leaks. </li>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current TextBlock for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00280">280</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00295">295</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1476,7 +1502,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the horizontal alignment used when drawing lines. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01028">1028</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01048">1048</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1502,7 +1528,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the vertical alignment used when drawing lines. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01031">1031</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01051">1051</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1528,7 +1554,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the configured background color. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00992">992</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01012">1012</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1554,7 +1580,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the requested font size (before any auto-shrink adjustments). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00995">995</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01015">1015</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1580,7 +1606,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the configured foreground (text) color. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00989">989</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01009">1009</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1606,7 +1632,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets or sets the horizontal padding (in pixels) on both left and right sides of the text. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00178">178</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00193">193</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1632,7 +1658,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the measured line height (in pixels) used for drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00986">986</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01006">1006</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1658,7 +1684,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the laid-out lines (after wrapping and paragraph processing). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00983">983</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01003">1003</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1684,7 +1710,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00173">173</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00188">188</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1710,7 +1736,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the optional maximum number of lines to draw (or null for no limit). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01010">1010</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01030">1030</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1736,7 +1762,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the optional minimum font size used by auto-shrink (or null if disabled). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00998">998</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01018">1018</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1762,7 +1788,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets a value indicating whether an outline stroke is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01004">1004</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01024">1024</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1788,7 +1814,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets a value indicating whether punctuation pauses are enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01055">1055</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01075">1075</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1814,7 +1840,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the starting color for the pulse effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01037">1037</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01057">1057</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1840,7 +1866,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the pulse period in seconds. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01043">1043</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01063">1063</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1866,7 +1892,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets a value indicating whether color pulsing is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01034">1034</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01054">1054</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1892,7 +1918,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the ending color for the pulse effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01040">1040</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01060">1060</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1918,7 +1944,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the pulse waveform currently in use. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01046">1046</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01066">1066</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1944,7 +1970,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the long punctuation pause duration (seconds) used for '.', '!', '?'. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01058">1058</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01078">1078</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1970,7 +1996,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the short punctuation pause duration (seconds) used for ',', ';', ':'. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01061">1061</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01081">1081</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1996,7 +2022,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the currently resolved (effective) foreground color used for drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01064">1064</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01084">1084</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2020,9 +2046,9 @@ Clears all event handlers to prevent memory leaks. </li>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the shadow opacity (0–255). </p>
+<p>Gets the shadow opacity (0-255). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01022">1022</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01042">1042</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2048,7 +2074,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the blur radius for the shadow (sigma, in pixels). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01025">1025</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01045">1045</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2074,7 +2100,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the horizontal shadow offset (in pixels). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01016">1016</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01036">1036</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2100,7 +2126,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the vertical shadow offset (in pixels). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01019">1019</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01039">1039</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2126,7 +2152,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets a value indicating whether a drop shadow is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01013">1013</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01033">1033</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2152,7 +2178,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the current raw text content. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00980">980</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01000">1000</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2178,7 +2204,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the active text reveal mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01049">1049</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01069">1069</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2204,7 +2230,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the configured reveal rate (characters/sec or words/sec depending on mode). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01052">1052</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01072">1072</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2230,7 +2256,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets the configured typeface (or null to use SKTypeface.Default). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01001">1001</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01021">1021</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2256,7 +2282,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets or sets the vertical padding (in pixels) on both top and bottom sides of the text. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00183">183</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00198">198</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2282,7 +2308,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Gets a value indicating whether word wrapping is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01007">1007</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01027">1027</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
