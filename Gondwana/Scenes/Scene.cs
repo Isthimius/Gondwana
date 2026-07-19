@@ -852,7 +852,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         /// </summary>
         public override void Dispose()
         {
-            // Intentionally empty � singleton
+            // Intentionally empty - singleton
         }
     }
 
