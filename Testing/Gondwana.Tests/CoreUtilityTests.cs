@@ -4,8 +4,14 @@ using Gondwana.Timers;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains unit tests for core utility and timer support types.
+/// </summary>
 public sealed class CoreUtilityTests
 {
+    /// <summary>
+    /// Verifies that the constructor correctly stores the provided values.
+    /// </summary>
     [Fact]
     public void CyclesPerSecondCalculatedEventArgs_StoresConstructorValues()
     {
@@ -19,6 +25,9 @@ public sealed class CoreUtilityTests
         Assert.Equal(58.75, args.GpuFps);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="CyclesPerSecondCalculatedEventArgs.ToString"/> includes GPU FPS when it is present.
+    /// </summary>
     [Fact]
     public void CyclesPerSecondCalculatedEventArgs_ToString_FormatsWithGpuFps()
     {
@@ -35,6 +44,9 @@ public sealed class CoreUtilityTests
         Assert.Contains($"GPU FPS: {58.5d.ToString("N2", culture)}", text);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="CyclesPerSecondCalculatedEventArgs.ToString"/> omits GPU FPS when no GPU value is available.
+    /// </summary>
     [Fact]
     public void CyclesPerSecondCalculatedEventArgs_ToString_OmitsGpuFpsWhenNull()
     {
@@ -45,6 +57,9 @@ public sealed class CoreUtilityTests
         Assert.DoesNotContain("GPU FPS", text);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="EngineStateParts.All"/> includes every individual engine state flag.
+    /// </summary>
     [Fact]
     public void EngineStateParts_AllContainsEveryFlag()
     {
@@ -58,6 +73,9 @@ public sealed class CoreUtilityTests
         Assert.True(all.HasFlag(EngineStateParts.Audio));
     }
 
+    /// <summary>
+    /// Verifies that high-resolution timer duration and elapsed calculations are non-negative.
+    /// </summary>
     [Fact]
     public void HighResTimer_GetDurationAndElapsedSince_AreNonNegative()
     {

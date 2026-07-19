@@ -28,14 +28,35 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
     #region fields
 
+    /// <summary>
+    /// Stores the current Z-order used when sorting the tile for drawing.
+    /// </summary>
     protected internal int zOrder = 0;
+    /// <summary>
+    /// Stores whether the tile is currently visible.
+    /// </summary>
     protected internal bool visible;
 
+    /// <summary>
+    /// Stores the frame currently used when drawing the tile.
+    /// </summary>
     protected internal Frame frame;
+    /// <summary>
+    /// Stores whether fog rendering is enabled for the tile.
+    /// </summary>
     protected internal bool enableFog = false;
+    /// <summary>
+    /// Stores the animator responsible for advancing the tile's frames.
+    /// </summary>
     protected internal Animator? animator;
+    /// <summary>
+    /// Stores whether animation advancement is currently paused.
+    /// </summary>
     protected bool pauseAnimation;
 
+    /// <summary>
+    /// Stores the collider used for collision detection, when present.
+    /// </summary>
     protected ICollider? _collider;
 
     #endregion fields

@@ -4,14 +4,26 @@ using SkiaSharp.Views.Desktop;
 
 namespace Gondwana.WinForms.Rendering;
 
+/// <summary>
+/// Provides a Windows Forms control that hosts bitmap-based Gondwana rendering.
+/// </summary>
 public partial class WinFormBitmapRenderSurfaceControl : UserControl
 {
     private readonly SKControl _skControl;
 
+    /// <summary>
+    /// Gets the render surface adapter used by this control.
+    /// </summary>
     public WinFormBitmapRenderSurfaceAdapter Adapter { get; }
 
+    /// <summary>
+    /// Gets the render surface host used for displaying game content.
+    /// </summary>
     public RenderSurfaceHost<BitmapBackbuffer> Host { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WinFormBitmapRenderSurfaceControl"/> class.
+    /// </summary>
     public WinFormBitmapRenderSurfaceControl()
     {
         _skControl = new SKControl { Dock = DockStyle.Fill };
@@ -41,6 +53,10 @@ public partial class WinFormBitmapRenderSurfaceControl : UserControl
             BeginInvoke((Action)Adapter.RefreshDestinationSize);
     }
 
+    /// <summary>
+    /// Refreshes the render surface size when the control's parent changes.
+    /// </summary>
+    /// <param name="e">The event data.</param>
     protected override void OnParentChanged(EventArgs e)
     {
         base.OnParentChanged(e);

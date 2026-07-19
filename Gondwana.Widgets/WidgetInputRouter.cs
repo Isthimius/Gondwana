@@ -9,8 +9,14 @@ using System.Numerics;
 
 namespace Gondwana.Widgets;
 
+/// <summary>
+/// Routes mouse, touch, and keyboard input to registered widgets for a render surface host.
+/// </summary>
 public sealed class WidgetInputRouter : IDisposable
 {
+    /// <summary>
+    /// Identifies mouse pointer events in routed widget input.
+    /// </summary>
     public const int MousePointerId = -1;
 
     private static readonly MouseButton[] _mouseButtons =
@@ -36,6 +42,13 @@ public sealed class WidgetInputRouter : IDisposable
     private bool _isStarted;
     private bool _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WidgetInputRouter"/> class.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The render surface host whose widgets will receive routed input.</param>
+    /// <param name="keyboardEventPoller">The keyboard event poller that supplies keyboard input, or <see langword="null"/>.</param>
+    /// <param name="mouseEventPoller">The mouse event poller that supplies mouse input, or <see langword="null"/>.</param>
+    /// <param name="touchEventPoller">The touch event poller that supplies touch input, or <see langword="null"/>.</param>
     public WidgetInputRouter(
         RenderSurfaceHostBase renderSurfaceHost,
         KeyboardEventPoller? keyboardEventPoller,
@@ -51,8 +64,18 @@ public sealed class WidgetInputRouter : IDisposable
         _touchEventPoller = touchEventPoller;
     }
 
+    /// <summary>
+    /// Gets the widget that currently has keyboard focus.
+    /// </summary>
+    /// <value>
+    /// The focused widget, or <see langword="null"/> if no widget currently has focus.
+    /// </value>
     public WidgetBase? FocusedWidget => _focusedWidget;
 
+    /// <summary>
+    /// Registers a widget so that it can receive routed input.
+    /// </summary>
+    /// <param name="widget">The widget to register.</param>
     public void Register(WidgetBase widget)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -75,12 +98,20 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Unregisters a widget so that it no longer receives routed input.
+    /// </summary>
+    /// <param name="widget">The widget to unregister.</param>
     public void Unregister(WidgetBase widget)
     {
         ArgumentNullException.ThrowIfNull(widget);
         Unregister(widget, dispatchPointerUp: true);
     }
 
+    /// <summary>
+    /// Moves a registered widget to the front of the input routing order.
+    /// </summary>
+    /// <param name="widget">The widget to move to the front.</param>
     public void BringToFront(WidgetBase widget)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -95,6 +126,10 @@ public sealed class WidgetInputRouter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Assigns keyboard focus to the specified widget.
+    /// </summary>
+    /// <param name="widget">The widget to focus, or <see langword="null"/> to clear focus.</param>
     public void Focus(WidgetBase? widget)
     {
         if (ReferenceEquals(_focusedWidget, widget))
@@ -110,11 +145,17 @@ public sealed class WidgetInputRouter : IDisposable
         widget?.DispatchFocusGained();
     }
 
+    /// <summary>
+    /// Clears the current keyboard focus.
+    /// </summary>
     public void ClearFocus()
     {
         Focus(null);
     }
 
+    /// <summary>
+    /// Starts routing input events from the configured pollers to registered widgets.
+    /// </summary>
     public void Start()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -142,6 +183,9 @@ public sealed class WidgetInputRouter : IDisposable
         _isStarted = true;
     }
 
+    /// <summary>
+    /// Stops routing input events and releases current pointer and focus state.
+    /// </summary>
     public void Stop()
     {
         if (!_isStarted)
@@ -172,6 +216,9 @@ public sealed class WidgetInputRouter : IDisposable
         _isStarted = false;
     }
 
+    /// <summary>
+    /// Releases the resources used by the router and unregisters all widgets.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)
@@ -939,6 +986,11 @@ public sealed class WidgetInputRouter : IDisposable
 
     private sealed class WidgetHit
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WidgetHit"/> class.
+        /// </summary>
+        /// <param name="widget">The widget that was hit.</param>
+        /// <param name="view">The view in which the widget was hit.</param>
         public WidgetHit(
             WidgetBase widget,
             View view)
@@ -947,13 +999,26 @@ public sealed class WidgetInputRouter : IDisposable
             View = view;
         }
 
+        /// <summary>
+        /// Gets the widget that was hit.
+        /// </summary>
         public WidgetBase Widget { get; }
 
+        /// <summary>
+        /// Gets the view in which the widget was hit.
+        /// </summary>
         public View View { get; }
     }
 
     private sealed class PointerCapture
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PointerCapture"/> class.
+        /// </summary>
+        /// <param name="widget">The widget that captured the pointer.</param>
+        /// <param name="view">The view associated with the captured pointer event.</param>
+        /// <param name="button">The button associated with the captured pointer.</param>
+        /// <param name="lastPosition">The last known pointer position.</param>
         public PointerCapture(
             WidgetBase widget,
             View view,
@@ -966,12 +1031,27 @@ public sealed class WidgetInputRouter : IDisposable
             LastPosition = lastPosition;
         }
 
+        /// <summary>
+        /// Gets the widget that captured the pointer.
+        /// </summary>
         public WidgetBase Widget { get; }
 
+        /// <summary>
+        /// Gets the view associated with the captured pointer event.
+        /// </summary>
         public View View { get; }
 
+        /// <summary>
+        /// Gets the button associated with the captured pointer.
+        /// </summary>
         public WidgetPointerButtonEnum Button { get; }
 
+        /// <summary>
+        /// Gets or sets the last known pointer position.
+        /// </summary>
+        /// <value>
+        /// The last known pointer position, in pixels.
+        /// </value>
         public Point LastPosition { get; set; }
     }
 }

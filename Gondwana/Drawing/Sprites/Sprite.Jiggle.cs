@@ -2,6 +2,9 @@
 
 namespace Gondwana.Drawing.Sprites;
 
+/// <summary>
+/// Partial class containing jiggle animation members for <see cref="Sprite"/>.
+/// </summary>
 public partial class Sprite
 {
     // ------------------------------------------------------------

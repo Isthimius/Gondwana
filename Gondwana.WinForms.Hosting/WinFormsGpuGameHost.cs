@@ -31,14 +31,24 @@ public abstract class WinFormsGpuGameHost : WinFormsGameHostBase
 
     private sealed class SurfaceInitialization
     {
+        /// <summary>
+        /// Gets the render surface control supplied during host initialization.
+        /// </summary>
         public WinFormGpuRenderSurfaceControl RenderSurface { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SurfaceInitialization"/> class.
+        /// </summary>
+        /// <param name="renderSurface">The render surface control to associate with the host.</param>
         public SurfaceInitialization(WinFormGpuRenderSurfaceControl renderSurface)
         {
             RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
         }
     }
 
+    /// <summary>
+    /// Called after input is configured during engine startup to initialize widget input for the render surface host.
+    /// </summary>
     protected sealed override void OnInputConfigured()
     {
         base.OnInputConfigured();

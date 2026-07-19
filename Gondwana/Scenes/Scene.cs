@@ -83,6 +83,12 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         Init();
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Scene"/> class from serialized state.
+    /// </summary>
+    /// <param name="sceneLayers">The layers to attach to the scene, or <see langword="null"/> to create an empty collection.</param>
+    /// <param name="id">The unique identifier to assign to the scene, or <see langword="null"/> to generate a new identifier.</param>
+    /// <param name="collisionGroups">The collision group registry to use for the scene, or <see langword="null"/> to create a new registry.</param>
     [JsonConstructor]
     protected Scene(List<SceneLayer>? sceneLayers,
                     string? id,
@@ -825,17 +831,28 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
             FullRefreshNeeded = false;
         }
 
+        /// <summary>
+        /// Prevents layers from being added to the singleton empty scene.
+        /// </summary>
+        /// <param name="sceneLayer">The layer that was requested to be added.</param>
         protected override void OnSceneLayerAdded(SceneLayer sceneLayer)
             => throw new InvalidOperationException("Cannot add layers to Scene.Empty");
 
+        /// <summary>
+        /// Performs no action when a layer is removed from the singleton empty scene.
+        /// </summary>
+        /// <param name="sceneLayer">The layer being removed.</param>
         protected override void OnSceneLayerRemoved(SceneLayer sceneLayer)
         {
             // no-op
         }
 
+        /// <summary>
+        /// Prevents disposal of the singleton empty scene instance.
+        /// </summary>
         public override void Dispose()
         {
-            // Intentionally empty — singleton
+            // Intentionally empty ï¿½ singleton
         }
     }
 

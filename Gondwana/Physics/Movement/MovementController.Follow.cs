@@ -6,6 +6,9 @@ using System.Numerics;
 
 namespace Gondwana.Physics.Movement;
 
+/// <summary>
+/// Partial class containing target-follow movement methods.
+/// </summary>
 public sealed partial class MovementController
 {
     // --- Pixel-follow (DirectDrawing → DirectDrawing)

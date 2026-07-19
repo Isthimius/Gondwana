@@ -21,11 +21,20 @@ namespace Gondwana;
 [JsonObject(IsReference = true)]
 public sealed class EngineState
 {
+    /// <summary>
+    /// Represents the serialized tilesheet data captured for a single tilesheet entry.
+    /// </summary>
     private sealed class TilesheetStateEntry
     {
+        /// <summary>
+        /// Gets or sets the path to the external GTS file used for this tilesheet entry, when applicable.
+        /// </summary>
         [JsonProperty]
         public string? GtsPath { get; set; }
 
+        /// <summary>
+        /// Gets or sets the in-memory tilesheet definition associated with this entry.
+        /// </summary>
         [JsonProperty]
         public TilesheetDefinition? Definition { get; set; }
     }

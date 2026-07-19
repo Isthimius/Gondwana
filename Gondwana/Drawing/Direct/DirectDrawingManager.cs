@@ -43,6 +43,10 @@ public sealed class DirectDrawingManager : IDisposable
     private static readonly Lazy<DirectDrawingManager> _instance =
         new(() => new DirectDrawingManager());
 
+    /// <summary>
+    /// Gets the singleton instance of the direct drawing manager.
+    /// </summary>
+    /// <value>The shared <see cref="DirectDrawingManager"/> instance for the current process.</value>
     public static DirectDrawingManager Instance => _instance.Value;
 
     // ---- Storage (instance-level) ----
@@ -345,6 +349,9 @@ public sealed class DirectDrawingManager : IDisposable
         return result;
     }
 
+    /// <summary>
+    /// Releases all registered direct drawings managed by this instance.
+    /// </summary>
     public void Dispose()
     {
         ClearAll();

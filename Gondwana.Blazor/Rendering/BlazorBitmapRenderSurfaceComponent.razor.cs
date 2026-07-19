@@ -193,7 +193,14 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
 
     private sealed class CanvasSize
     {
+        /// <summary>
+        /// Gets or sets the canvas width in CSS pixels.
+        /// </summary>
         public int Width { get; set; }
+
+        /// <summary>
+        /// Gets or sets the canvas height in CSS pixels.
+        /// </summary>
         public int Height { get; set; }
     }
 }
