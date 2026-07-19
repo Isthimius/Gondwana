@@ -232,6 +232,9 @@ public abstract class BlazorGameHost : GameHostBase
     {
     }
 
+    /// <summary>
+    /// Called after input is configured during engine startup to initialize widget input for the render surface host.
+    /// </summary>
     protected sealed override void OnInputConfigured()
     {
         base.OnInputConfigured();

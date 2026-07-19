@@ -2,6 +2,10 @@
 
 namespace Gondwana.Logging;
 
+/// <summary>
+/// Partial <see cref="EngineLogger"/> implementation containing queued log event definitions used
+/// by asynchronous engine logging.
+/// </summary>
 public static partial class EngineLogger
 {
     /// <summary>

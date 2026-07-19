@@ -228,6 +228,9 @@ public sealed class FontManager : IDisposable
             throw new ObjectDisposedException(nameof(FontManager));
     }
 
+    /// <summary>
+    /// Disposes all loaded fonts managed by this instance and prevents further use.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)

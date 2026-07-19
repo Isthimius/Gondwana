@@ -263,6 +263,10 @@ public abstract class BackbufferBase : IDisposable
     protected internal Rectangle DirtyRectangle { get; private set; }
 
     private SKColor _clearColor = SKColors.Black;
+
+    /// <summary>
+    /// Paint used to fill cleared regions of the backbuffer with the current <see cref="ClearColor"/>.
+    /// </summary>
     protected readonly SKPaint _fillPaint = new()
     {
         IsAntialias = false,

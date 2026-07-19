@@ -5,6 +5,16 @@
 /// </summary>
 public static class CollisionDirectionHelper
 {
+    /// <summary>
+    /// Determines the directional relationship of <paramref name="other"/> relative to
+    /// <paramref name="primary"/> by comparing their center points.
+    /// </summary>
+    /// <param name="primary">The primary bounding box used as the directional reference.</param>
+    /// <param name="other">The other bounding box whose direction from <paramref name="primary"/> is evaluated.</param>
+    /// <returns>
+    /// A <see cref="CollisionDirectionFrom"/> value indicating which side of
+    /// <paramref name="primary"/> the center of <paramref name="other"/> is on.
+    /// </returns>
     public static CollisionDirectionFrom FromCenters(Aabb primary, Aabb other)
     {
         var pc = primary.Center;

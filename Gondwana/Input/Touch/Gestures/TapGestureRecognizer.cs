@@ -119,6 +119,10 @@ public sealed class TapGestureRecognizer : IDisposable
 
     private record struct TapState(Point StartPosition, DateTime StartTime, bool Cancelled)
     {
+        /// <summary>
+        /// Initializes a new tap tracking state starting at the specified position and the current UTC time.
+        /// </summary>
+        /// <param name="startPosition">The position where the tap began.</param>
         public TapState(Point startPosition) : this(startPosition, DateTime.UtcNow, false) { }
     }
 }

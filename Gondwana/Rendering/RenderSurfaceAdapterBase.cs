@@ -2,6 +2,10 @@
 
 namespace Gondwana.Rendering;
 
+/// <summary>
+/// Represents the abstract base class for render surface adapters that present backbuffer output
+/// to a destination surface.
+/// </summary>
 public abstract class RenderSurfaceAdapterBase
 {
     /// <summary>

@@ -104,6 +104,10 @@ public sealed class SwipeGestureRecognizer : IDisposable
 
     private readonly record struct SwipeState(Point StartPosition, DateTime StartTime)
     {
+        /// <summary>
+        /// Initializes a new swipe tracking state starting at the specified position and the current UTC time.
+        /// </summary>
+        /// <param name="startPosition">The position where the swipe began.</param>
         public SwipeState(Point startPosition) : this(startPosition, DateTime.UtcNow) { }
     }
 }

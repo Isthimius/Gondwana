@@ -4,6 +4,9 @@ using System.Numerics;
 
 namespace Gondwana.Physics.Movement;
 
+/// <summary>
+/// Partial class containing integrated velocity and acceleration movement methods.
+/// </summary>
 public sealed partial class MovementController
 {
     /// <summary>

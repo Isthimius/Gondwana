@@ -4,6 +4,9 @@ using System.Numerics;
 
 namespace Gondwana.Physics.Movement;
 
+/// <summary>
+/// Partial class containing scripted and tween-based movement methods.
+/// </summary>
 public sealed partial class MovementController
 {
     private Action<ScriptedMovement>? _scriptCompleted;

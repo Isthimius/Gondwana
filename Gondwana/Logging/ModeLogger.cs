@@ -2,6 +2,9 @@
 
 namespace Gondwana.Logging;
 
+/// <summary>
+/// Partial <see cref="EngineLogger"/> implementation containing the mode-aware typed logger wrapper.
+/// </summary>
 public static partial class EngineLogger
 {
     /// <summary>

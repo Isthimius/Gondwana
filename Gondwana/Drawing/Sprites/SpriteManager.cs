@@ -7,10 +7,17 @@ using System.Drawing;
 
 namespace Gondwana.Drawing.Sprites;
 
+/// <summary>
+/// Manages the lifecycle, lookup, and per-frame updates of all active <see cref="Sprite"/> instances.
+/// </summary>
 public sealed class SpriteManager : IDisposable
 {
     private static readonly Lazy<SpriteManager> _instance = new(() => new SpriteManager());
 
+    /// <summary>
+    /// Gets the singleton instance of the sprite manager.
+    /// </summary>
+    /// <value>The shared <see cref="SpriteManager"/> instance.</value>
     public static SpriteManager Instance => _instance.Value;
 
     internal readonly List<Sprite> _spriteList = new();
@@ -324,6 +331,9 @@ public sealed class SpriteManager : IDisposable
 
     #endregion internal methods
 
+    /// <summary>
+    /// Releases all sprites currently managed by this instance.
+    /// </summary>
     public void Dispose()
     {
         Clear();

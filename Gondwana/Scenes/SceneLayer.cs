@@ -142,6 +142,16 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     #region constructors / finalizer
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SceneLayer"/> class with the specified grid,
+    /// tile sizing, parallax, and coordinate system settings.
+    /// </summary>
+    /// <param name="columnCount">The number of tile columns in the layer.</param>
+    /// <param name="rowCount">The number of tile rows in the layer.</param>
+    /// <param name="width">The width of each tile in pixels.</param>
+    /// <param name="height">The height of each tile in pixels.</param>
+    /// <param name="parallax">The parallax factor applied when the layer scrolls relative to the camera.</param>
+    /// <param name="coordinateSystem">The coordinate system used to translate between grid and world-space positions.</param>
     protected internal SceneLayer(int columnCount,
                                   int rowCount,
                                   int width = 32,

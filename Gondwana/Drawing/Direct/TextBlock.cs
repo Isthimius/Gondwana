@@ -31,7 +31,7 @@ namespace Gondwana.Drawing.Direct;
 /// <example>
 /// // Centered, wrapped headline with shadow and outline
 /// var headline = new TextBlock(surface, new Rectangle(0, 0, 640, 140))
-///     .SetText("Gondwana welcomes you\n— render boldly.")
+///     .SetText("Gondwana welcomes you\n- render boldly.")
 ///     .SetFont(SKTypeface.Default, 28f, minSize: 16f)
 ///     .SetColors(SKColors.White, SKColors.Transparent)
 ///     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
@@ -142,6 +142,14 @@ public class TextBlock : DirectDrawingMovableBase
         _resolvedForeColor = _foreColor;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="TextBlock"/> that draws in world space on the specified scene layer.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The render surface host that owns this direct drawing.</param>
+    /// <param name="sceneLayer">The scene layer used for world-space positioning and refresh.</param>
+    /// <param name="view">The optional view associated with the text block.</param>
+    /// <param name="worldBounds">The text block bounds in world coordinates.</param>
+    /// <param name="nickname">An optional nickname used to identify the text block.</param>
     public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
                      SceneLayer sceneLayer,
                      View? view,
@@ -155,6 +163,13 @@ public class TextBlock : DirectDrawingMovableBase
                worldBounds: worldBounds,
                nickname: nickname) { }
 
+    /// <summary>
+    /// Creates a new <see cref="TextBlock"/> that draws in screen space relative to a view.
+    /// </summary>
+    /// <param name="renderSurfaceHost">The render surface host that owns this direct drawing.</param>
+    /// <param name="view">The view the text block is associated with.</param>
+    /// <param name="screenBounds">The text block bounds in screen coordinates.</param>
+    /// <param name="nickname">An optional nickname used to identify the text block.</param>
     public TextBlock(RenderSurfaceHostBase renderSurfaceHost,
                      View view,
                      Rectangle screenBounds,
@@ -201,7 +216,7 @@ public class TextBlock : DirectDrawingMovableBase
         }
         else
         {
-            // keep the animation’s target in sync with the new text
+            // keep the animation's target in sync with the new text
             _revealTargetCharCount = _text.Length;
 
             // if we had already revealed more than the new length, clamp it
@@ -211,7 +226,7 @@ public class TextBlock : DirectDrawingMovableBase
             // optional: smooth start after text swap
             _revealAccum = 0f;
             // if you added a dedicated reveal timer, warm it so first frame doesn't "time-warp"
-            _revealLastTick = 0;   // keep this if you’re using the separate reveal timer
+            _revealLastTick = 0;   // keep this if you're using the separate reveal timer
         }
 
         ForceRefresh();
@@ -294,10 +309,10 @@ public class TextBlock : DirectDrawingMovableBase
     /// Vertical offset in pixels for the shadow. Positive values move the shadow down, negative up.
     /// </param>
     /// <param name="alpha">
-    /// Opacity of the shadow (0–255). Higher values make the shadow darker and more opaque.
+    /// Opacity of the shadow (0-255). Higher values make the shadow darker and more opaque.
     /// </param>
     /// <param name="blurSigma">
-    /// Blur radius in pixels for the shadow’s softness. Set to 0 for a hard shadow. Typical range: 1.0–3.0.
+    /// Blur radius in pixels for the shadow's softness. Set to 0 for a hard shadow. Typical range: 1.0-3.0.
     /// </param>
     /// <remarks>
     /// <para>
@@ -652,6 +667,11 @@ public class TextBlock : DirectDrawingMovableBase
         base.Update(tick);
     }
 
+    /// <summary>
+    /// Draws the laid-out text block contents into the destination rectangle.
+    /// </summary>
+    /// <param name="backbuffer">The backbuffer that provides the target drawing surface.</param>
+    /// <param name="destRectScreen">The destination rectangle in screen space.</param>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         var canvas = backbuffer.Canvas;
@@ -1018,7 +1038,7 @@ public class TextBlock : DirectDrawingMovableBase
     /// <summary>Gets the vertical shadow offset (in pixels).</summary>
     public float ShadowDy => _shadowDy;
 
-    /// <summary>Gets the shadow opacity (0–255).</summary>
+    /// <summary>Gets the shadow opacity (0-255).</summary>
     public byte ShadowAlpha => _shadowAlpha;
 
     /// <summary>Gets the blur radius for the shadow (sigma, in pixels).</summary>
@@ -1093,6 +1113,10 @@ public class TextBlock : DirectDrawingMovableBase
 
     private readonly object _eventLock = new();
 
+    /// <summary>
+    /// Releases managed resources used by the text block.
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> when disposing managed resources; otherwise, <see langword="false"/>.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

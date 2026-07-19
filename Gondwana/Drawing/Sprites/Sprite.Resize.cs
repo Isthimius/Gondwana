@@ -3,6 +3,9 @@ using Gondwana.Physics.Collisions;
 
 namespace Gondwana.Drawing.Sprites;
 
+/// <summary>
+/// Partial class containing resize and pulse animation members for <see cref="Sprite"/>.
+/// </summary>
 public partial class Sprite
 {
     /// <summary>

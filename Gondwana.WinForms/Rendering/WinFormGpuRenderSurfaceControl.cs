@@ -4,6 +4,9 @@ using SkiaSharp.Views.Desktop;
 
 namespace Gondwana.WinForms.Rendering;
 
+/// <summary>
+/// Provides a Windows Forms control that hosts GPU-accelerated Gondwana rendering.
+/// </summary>
 public partial class WinFormGpuRenderSurfaceControl : UserControl
 {
     private readonly SKGLControl _glControl;
@@ -19,6 +22,9 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
     /// </summary>
     public RenderSurfaceHost<GpuBackbuffer> Host { get; private set; } = null!;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WinFormGpuRenderSurfaceControl"/> class.
+    /// </summary>
     public WinFormGpuRenderSurfaceControl()
     {
         _glControl = new SKGLControl { Dock = DockStyle.Fill };
@@ -47,6 +53,10 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
             BeginInvoke((Action)(() => _adapter?.RefreshDestinationSize()));
     }
 
+    /// <summary>
+    /// Refreshes the render surface size when the control's parent changes.
+    /// </summary>
+    /// <param name="e">The event data.</param>
     protected override void OnParentChanged(EventArgs e)
     {
         base.OnParentChanged(e);

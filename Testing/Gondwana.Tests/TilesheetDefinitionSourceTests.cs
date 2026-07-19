@@ -2,12 +2,18 @@ using Gondwana.Drawing.Tilesheets.GTS;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains unit tests for the <see cref="TilesheetDefinitionSource"/> type.
+/// </summary>
 public sealed class TilesheetDefinitionSourceTests
 {
     // -----------------------------------------------------------------------
     // Factory: None
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that the None factory creates a source with the None kind and no paths.
+    /// </summary>
     [Fact]
     public void None_HasNoneKindAndNullPaths()
     {
@@ -23,6 +29,9 @@ public sealed class TilesheetDefinitionSourceTests
     // Factory: Generated
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that the Generated factory creates a source with the Generated kind and no paths.
+    /// </summary>
     [Fact]
     public void Generated_HasGeneratedKindAndNullPaths()
     {
@@ -38,6 +47,9 @@ public sealed class TilesheetDefinitionSourceTests
     // Factory: LooseDefinitionFile
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that the loose definition file factory stores the source kind and GTS file path.
+    /// </summary>
     [Fact]
     public void LooseDefinitionFile_SetsKindAndGtsFilePath()
     {
@@ -49,6 +61,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Null(source.AssetEntryName);
     }
 
+    /// <summary>
+    /// Verifies that the loose definition file factory rejects null or whitespace file paths.
+    /// </summary>
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -62,6 +77,9 @@ public sealed class TilesheetDefinitionSourceTests
     // Factory: PackedDefinitionFile
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that the packed definition file factory stores the source kind and packed file information.
+    /// </summary>
     [Fact]
     public void PackedDefinitionFile_SetsKindAndBothPaths()
     {
@@ -73,6 +91,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Null(source.GtsFilePath);
     }
 
+    /// <summary>
+    /// Verifies that the packed definition file factory rejects null or whitespace assets file paths.
+    /// </summary>
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -82,6 +103,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Throws<ArgumentException>(() => TilesheetDefinitionSource.PackedDefinitionFile(assetsPath!, "entry.gts"));
     }
 
+    /// <summary>
+    /// Verifies that the packed definition file factory rejects null or whitespace entry names.
+    /// </summary>
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -95,6 +119,9 @@ public sealed class TilesheetDefinitionSourceTests
     // ToJson content — all 4 source kinds
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that serializing a definition with a None source writes the expected kind value.
+    /// </summary>
     [Fact]
     public void ToJson_SourceNone_SerializesKindAsZero()
     {
@@ -109,6 +136,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Contains("\"Kind\": 0", json);
     }
 
+    /// <summary>
+    /// Verifies that serializing a definition with a loose definition file source writes the kind and file path.
+    /// </summary>
     [Fact]
     public void ToJson_SourceLooseDefinitionFile_SerializesKindAndPath()
     {
@@ -124,6 +154,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Contains("/project/sheet.gts", json);
     }
 
+    /// <summary>
+    /// Verifies that serializing a definition with a packed definition file source writes the kind and packed paths.
+    /// </summary>
     [Fact]
     public void ToJson_SourcePackedDefinitionFile_SerializesKindAndBothPaths()
     {
@@ -140,6 +173,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Contains("sheet.gts", json);
     }
 
+    /// <summary>
+    /// Verifies that serializing a definition with a generated source writes the expected kind value.
+    /// </summary>
     [Fact]
     public void ToJson_SourceGenerated_SerializesKindAsThree()
     {
@@ -158,6 +194,9 @@ public sealed class TilesheetDefinitionSourceTests
     // ToJson/FromJson round-trip — all 4 source kinds
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that a None source preserves its kind through JSON round-tripping.
+    /// </summary>
     [Fact]
     public void RoundTrip_SourceNone_PreservesKind()
     {
@@ -169,6 +208,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Equal(TilesheetDefinitionSourceKind.None, restored.Source.Kind);
     }
 
+    /// <summary>
+    /// Verifies that a loose definition file source preserves its kind and path through JSON round-tripping.
+    /// </summary>
     [Fact]
     public void RoundTrip_SourceLooseDefinitionFile_PreservesKindAndPath()
     {
@@ -187,6 +229,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Null(restored.Source.AssetEntryName);
     }
 
+    /// <summary>
+    /// Verifies that a packed definition file source preserves its kind and packed file information through JSON round-tripping.
+    /// </summary>
     [Fact]
     public void RoundTrip_SourcePackedDefinitionFile_PreservesKindAndBothPaths()
     {
@@ -205,6 +250,9 @@ public sealed class TilesheetDefinitionSourceTests
         Assert.Null(restored.Source.GtsFilePath);
     }
 
+    /// <summary>
+    /// Verifies that a generated source preserves its kind through JSON round-tripping.
+    /// </summary>
     [Fact]
     public void RoundTrip_SourceGenerated_PreservesKind()
     {

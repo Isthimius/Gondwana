@@ -2,16 +2,25 @@ using Gondwana.Drawing.Tilesheets.GTS;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains unit tests for the <see cref="TilesheetDefinitionSerializer"/> class.
+/// </summary>
 public sealed class TilesheetDefinitionSerializerTests : IDisposable
 {
     private readonly string _tempDir;
 
+    /// <summary>
+    /// Initializes the temporary test directory used by file-based serializer tests.
+    /// </summary>
     public TilesheetDefinitionSerializerTests()
     {
         _tempDir = Path.Combine(Path.GetTempPath(), $"GondwanaTests_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempDir);
     }
 
+    /// <summary>
+    /// Releases resources used by this test fixture.
+    /// </summary>
     public void Dispose()
     {
         if (Directory.Exists(_tempDir))
@@ -22,6 +31,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     // Load(Stream) — preserves Source from JSON (defaults to None when not set)
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that loading from a stream defaults the source kind to None when it is not set.
+    /// </summary>
     [Fact]
     public void LoadStream_SetsSourceToNone()
     {
@@ -33,6 +45,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         Assert.Equal(TilesheetDefinitionSourceKind.None, loaded.Source.Kind);
     }
 
+    /// <summary>
+    /// Verifies that loading from a stream preserves the serialized definition content.
+    /// </summary>
     [Fact]
     public void LoadStream_PreservesDefinitionContent()
     {
@@ -56,6 +71,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     // Load(string) — source is stamped as LooseDefinitionFile
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that loading from a file stamps the source as a loose definition file.
+    /// </summary>
     [Fact]
     public void LoadFile_SetsSourceToLooseDefinitionFile()
     {
@@ -67,6 +85,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         Assert.Equal(Path.GetFullPath(path), definition.Source.GtsFilePath);
     }
 
+    /// <summary>
+    /// Verifies that loading a file preserves a generated source already stored in the JSON.
+    /// </summary>
     [Fact]
     public void LoadFile_WhenJsonContainsSourceGenerated_PreservesGenerated()
     {
@@ -83,6 +104,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         Assert.Equal(TilesheetDefinitionSourceKind.Generated, loaded.Source.Kind);
     }
 
+    /// <summary>
+    /// Verifies that loading a file stamps a None source as a loose definition file.
+    /// </summary>
     [Fact]
     public void LoadFile_WhenJsonContainsSourceNone_StampsLooseDefinitionFile()
     {
@@ -104,6 +128,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     // Save(string, TilesheetDefinition) — source stamping and preservation
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that saving a definition with a None source writes a loose definition file source to disk.
+    /// </summary>
     [Fact]
     public void SaveDefinition_WithSourceNone_StampsLooseDefinitionFileInSavedJson()
     {
@@ -121,6 +148,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         Assert.Equal(Path.GetFullPath(path), loaded.Source.GtsFilePath);
     }
 
+    /// <summary>
+    /// Verifies that saving a definition preserves an existing loose definition file source in the serialized JSON.
+    /// </summary>
     [Fact]
     public void SaveDefinition_WithSourceLooseDefinitionFile_PreservesSourceInSavedJson()
     {
@@ -139,6 +169,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         Assert.Equal("/original/location.gts", loaded.Source.GtsFilePath);
     }
 
+    /// <summary>
+    /// Verifies that saving a definition preserves a generated source in the serialized JSON.
+    /// </summary>
     [Fact]
     public void SaveDefinition_WithSourceGenerated_PreservesGeneratedInSavedJson()
     {
@@ -155,6 +188,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         Assert.Equal(TilesheetDefinitionSourceKind.Generated, loaded.Source.Kind);
     }
 
+    /// <summary>
+    /// Verifies that saving a definition preserves a packed definition file source in the serialized JSON.
+    /// </summary>
     [Fact]
     public void SaveDefinition_WithSourcePackedDefinitionFile_PreservesPackedInSavedJson()
     {
@@ -173,6 +209,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         Assert.Equal("sheet.gts", loaded.Source.AssetEntryName);
     }
 
+    /// <summary>
+    /// Verifies that saving a definition creates the target file on disk.
+    /// </summary>
     [Fact]
     public void SaveDefinition_CreatesFileOnDisk()
     {
@@ -188,6 +227,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     // Save(string, TilesheetDefinition) — does not mutate the passed-in Source
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Verifies that saving a definition with a None source does not mutate the original in-memory source.
+    /// </summary>
     [Fact]
     public void SaveDefinition_WithSourceNone_DoesNotMutateOriginalDefinitionSource()
     {

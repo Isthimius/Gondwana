@@ -63,7 +63,7 @@ It is intended to serve as a flexible foundation for custom 2D and 2.5D games.
 - **Cross-platform rendering** via SkiaSharp (`SKSurface`, `SKBitmap` backbuffers)  
 - **Backbuffer abstraction** (`BitmapBackbuffer`, `GpuBackbuffer`) for multiple platforms, with GPU FPS tracking  
 - **Platform adapters for WinForms, Avalonia, and Blazor** — WinForms targets Windows; Avalonia targets Windows, macOS, and Linux; and Blazor targets WebAssembly.
-- **Hosting abstractions** (`GameHostBase`, `WinFormsGameHost`, `AvaloniaGameHost`) for clean engine lifecycle management  
+- **Hosting abstractions** (`GameHostBase`, `WinFormsGameHost`, `AvaloniaGameHost`, `BlazorGameHost`) for clean engine lifecycle management  
 - **DirectDrawing system** for sprites, shapes, text, and effects:
   - `DirectRectangle`, `DirectImage`, `TextBlock`, `DirectParticles` (particle system with emitters and per-particle blend modes)
   - `ImageInstanceLayer` for efficient rendering of many reusable/movable bitmap instances  

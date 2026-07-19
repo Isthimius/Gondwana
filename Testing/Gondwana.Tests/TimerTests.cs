@@ -4,15 +4,24 @@ using EngineTimer = Gondwana.Timers.Timer;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains unit tests for the <see cref="EngineTimer"/> class.
+/// </summary>
 [Collection("NonParallelTimerTests")]
 public sealed class TimerTests : IDisposable
 {
+    /// <summary>
+    /// Initializes the timer registry to a known state before each test.
+    /// </summary>
     public TimerTests()
     {
         EngineTimer.ClearAll();
         EngineTimer.PausedAll = false;
     }
 
+    /// <summary>
+    /// Verifies that adding a timer with an explicit identifier registers it for lookup.
+    /// </summary>
     [Fact]
     public void AddAndGet_WithExplicitId_RegistersTimer()
     {
@@ -24,6 +33,9 @@ public sealed class TimerTests : IDisposable
         Assert.Equal(1, EngineTimer.Count);
     }
 
+    /// <summary>
+    /// Verifies that adding a timer without an identifier generates and registers one.
+    /// </summary>
     [Fact]
     public void AddWithoutId_GeneratesAndRegistersTimer()
     {
@@ -33,6 +45,9 @@ public sealed class TimerTests : IDisposable
         Assert.Contains(timer.TimerID, EngineTimer.TimerIDs);
     }
 
+    /// <summary>
+    /// Verifies that removing an existing or missing timer identifier is safe.
+    /// </summary>
     [Fact]
     public void Remove_ExistingAndMissingId_AreSafe()
     {
@@ -44,6 +59,9 @@ public sealed class TimerTests : IDisposable
         Assert.Equal(0, EngineTimer.Count);
     }
 
+    /// <summary>
+    /// Verifies that clearing all timers removes every registered timer.
+    /// </summary>
     [Fact]
     public void ClearAll_RemovesAllTimers()
     {
@@ -56,6 +74,9 @@ public sealed class TimerTests : IDisposable
         Assert.Empty(EngineTimer.TimerIDs);
     }
 
+    /// <summary>
+    /// Verifies that disposing a timer removes it from the registry.
+    /// </summary>
     [Fact]
     public void Dispose_RemovesTimer()
     {
@@ -68,6 +89,9 @@ public sealed class TimerTests : IDisposable
         Assert.DoesNotContain("disposable", EngineTimer.TimerIDs);
     }
 
+    /// <summary>
+    /// Verifies that raising timer events invokes the tick handler for timers of the matching type.
+    /// </summary>
     [Fact]
     public void RaiseTimerEvents_InvokesTickForMatchingType()
     {
@@ -81,6 +105,9 @@ public sealed class TimerTests : IDisposable
         Assert.True(ticks >= 1);
     }
 
+    /// <summary>
+    /// Verifies that raising timer events does not invoke timers of a different type.
+    /// </summary>
     [Fact]
     public void RaiseTimerEvents_DoesNotInvokeWhenTypeDiffers()
     {
@@ -94,6 +121,9 @@ public sealed class TimerTests : IDisposable
         Assert.Equal(0, ticks);
     }
 
+    /// <summary>
+    /// Verifies that a once timer is removed after its tick event is raised.
+    /// </summary>
     [Fact]
     public void RaiseTimerEvents_OnceTimerIsRemovedAfterTick()
     {
@@ -108,6 +138,9 @@ public sealed class TimerTests : IDisposable
         Assert.DoesNotContain("once", EngineTimer.TimerIDs);
     }
 
+    /// <summary>
+    /// Verifies that pausing all timers prevents tick events from being raised.
+    /// </summary>
     [Fact]
     public void RaiseTimerEvents_PausedAll_PreventsTick()
     {
@@ -122,6 +155,9 @@ public sealed class TimerTests : IDisposable
         Assert.Equal(0, ticks);
     }
 
+    /// <summary>
+    /// Verifies that repeating timers catch up on missed intervals when events are raised late.
+    /// </summary>
     [Fact]
     public void RaiseTimerEvents_RepeatingTimerCatchesUp()
     {
@@ -135,6 +171,9 @@ public sealed class TimerTests : IDisposable
         Assert.True(ticks >= 3);
     }
 
+    /// <summary>
+    /// Releases resources used by this test fixture.
+    /// </summary>
     public void Dispose()
     {
         EngineTimer.ClearAll();
@@ -156,5 +195,8 @@ public sealed class TimerTests : IDisposable
     }
 }
 
+/// <summary>
+/// Defines the non-parallelized test collection used by <see cref="TimerTests"/>.
+/// </summary>
 [CollectionDefinition("NonParallelTimerTests", DisableParallelization = true)]
 public sealed class NonParallelTimerTestsCollectionDefinition;
