@@ -110,6 +110,7 @@ protected override void OnStartEngine()
 -   `Gondwana.Blazor` --- Web assembly rendering and input adapters
 -   `Gondwana.Blazor.Hosting` --- Blazor-specific game host that integrates rendering and input into the Gondwana lifecycle
 -   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 

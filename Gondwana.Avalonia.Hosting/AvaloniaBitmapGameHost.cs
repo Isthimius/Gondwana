@@ -6,7 +6,7 @@ namespace Gondwana.Avalonia.Hosting;
 /// <summary>
 /// Provides a base class for hosting Gondwana games in Avalonia desktop applications.
 /// </summary>
-public abstract class AvaloniaGameHost : GameHostBase
+public abstract class AvaloniaBitmapGameHost : GameHostBase
 {
     /// <summary>
     /// Gets the render surface control used for displaying game content.
@@ -14,11 +14,11 @@ public abstract class AvaloniaGameHost : GameHostBase
     public AvaloniaBitmapRenderSurfaceControl RenderSurface { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AvaloniaGameHost"/> class.
+    /// Initializes a new instance of the <see cref="AvaloniaBitmapGameHost"/> class.
     /// </summary>
     /// <param name="renderSurface">The render surface control to use for rendering.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="renderSurface"/> is null.</exception>
-    protected AvaloniaGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
+    protected AvaloniaBitmapGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
     {
         RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
     }
@@ -77,7 +77,6 @@ public abstract class AvaloniaGameHost : GameHostBase
                 $"{nameof(BindScene)} cannot be called before {nameof(Scene)} has been created.");
 
         RenderSurface.Host.Bind(scene, false);
-        //OnSceneBound();   // called by base class
     }
 
     /// <summary>
@@ -113,5 +112,12 @@ public abstract class AvaloniaGameHost : GameHostBase
     /// </summary>
     protected virtual void OnTouchAdapterInitialized()
     {
+    }
+
+    protected sealed override void OnInputConfigured()
+    {
+        base.OnInputConfigured();
+
+        InitializeWidgetInput(RenderSurface.Host);
     }
 }

@@ -81,6 +81,7 @@ After initialization, the touch system is accessible via `Engine.Instance.Input.
 -   `Gondwana` --- Core engine
 -   `Gondwana.Audio.Browser` --- Browser-based audio playback support
 -   `Gondwana.Blazor.Hosting` --- Blazor-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 

@@ -26,10 +26,10 @@ using Gondwana.Widgets.Overlays;
 namespace Gondwana.Demos.SpotAvalonia;
 
 /// <summary>
-/// Game host for SpotAvalonia. Uses <see cref="AvaloniaGameHost"/> with the
+/// Game host for SpotAvalonia. Uses <see cref="AvaloniaBitmapGameHost"/> with the
 /// <see cref="AvaloniaBitmapRenderSurfaceControl"/> renderer for Avalonia desktop targets.
 /// </summary>
-internal sealed class SpotAvaloniaGameHost : AvaloniaGameHost
+internal sealed class SpotAvaloniaGameHost : AvaloniaBitmapGameHost
 {
     private bool _handleHumanInput = false;
     private bool _showScores = true;

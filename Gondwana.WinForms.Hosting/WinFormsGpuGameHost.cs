@@ -38,4 +38,11 @@ public abstract class WinFormsGpuGameHost : WinFormsGameHostBase
             RenderSurface = renderSurface ?? throw new ArgumentNullException(nameof(renderSurface));
         }
     }
+
+    protected sealed override void OnInputConfigured()
+    {
+        base.OnInputConfigured();
+
+        InitializeWidgetInput(RenderSurface.Host);
+    }
 }

@@ -2,6 +2,7 @@
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
 using Gondwana.Timers;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -67,6 +68,20 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// Gets the drawing mode for this composite (world or screen space).
     /// </summary>
     public DirectDrawingMode Mode { get; }
+
+    /// <summary>
+    /// Gets the scene layer shared by all children when <see cref="Mode"/> is
+    /// <see cref="DirectDrawingMode.SceneLayer"/>, or <see langword="null"/> when
+    /// the composite has no children or uses view mode.
+    /// </summary>
+    public SceneLayer? SceneLayer { get; private set; }
+
+    /// <summary>
+    /// Gets the view shared by all children when <see cref="Mode"/> is
+    /// <see cref="DirectDrawingMode.View"/>, or <see langword="null"/> when
+    /// the composite has no children or uses scene-layer mode.
+    /// </summary>
+    public View? View { get; private set; }
 
     /// <summary>
     /// Gets the read-only collection of child drawable items in this composite.
@@ -244,8 +259,16 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <returns>The bounding rectangle in screen coordinates, or an empty rectangle if no children are visible.</returns>
     public RectangleF GetDrawLocationScreen(View view)
     {
+        ArgumentNullException.ThrowIfNull(view);
+
         if (_children.Count == 0)
             return RectangleF.Empty;
+
+        if (Mode == DirectDrawingMode.View &&
+            !ReferenceEquals(View, view))
+        {
+            return RectangleF.Empty;
+        }
 
         float minX = float.MaxValue, minY = float.MaxValue;
         float maxX = float.MinValue, maxY = float.MinValue;
@@ -299,36 +322,63 @@ public class DirectComposite : IDirectDrawable, IMovable
     #region Collection Management
 
     /// <summary>
-    /// Adds a child and stores its local pixel offset from the composite anchor.
-    /// If <paramref name="keepCurrentOffset"/> is true (default), the offset is computed from the child's current Bounds.
-    /// Otherwise, pass an explicit local pixel offset.
+    /// Adds a child drawing and stores its local pixel offset from the composite anchor.
     /// </summary>
-    /// <param name="child">The child drawable to add to the composite.</param>
-    /// <param name="keepCurrentOffset">If true, computes the offset from the child's current position relative to the anchor. If false, uses the explicit offset.</param>
-    /// <param name="explicitLocalOffsetPx">Optional explicit pixel offset to use when keepCurrentOffset is false.</param>
-    /// <returns>This composite instance for method chaining.</returns>
-    public DirectComposite Add(DirectDrawingMovableBase child, bool keepCurrentOffset = true, Vector2? explicitLocalOffsetPx = null)
+    /// <param name="child">The child drawing to add.</param>
+    /// <param name="keepCurrentOffset">
+    /// <see langword="true"/> to preserve the child's current position relative to the
+    /// composite anchor; otherwise, use <paramref name="explicitLocalOffsetPx"/>.
+    /// </param>
+    /// <param name="explicitLocalOffsetPx">
+    /// The local offset to use when <paramref name="keepCurrentOffset"/> is
+    /// <see langword="false"/>.
+    /// </param>
+    /// <returns>This composite for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="child"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the child belongs to a different render surface host or uses a
+    /// different drawing mode.
+    /// </exception>
+    public DirectComposite Add(
+        DirectDrawingMovableBase child,
+        bool keepCurrentOffset = true,
+        Vector2? explicitLocalOffsetPx = null)
     {
-        if (child is null)
-            throw new ArgumentNullException(nameof(child));
+        ArgumentNullException.ThrowIfNull(child);
 
-        if (child.RenderSurfaceHost != RenderSurfaceHost)
-            throw new ArgumentException("Child's RenderSurfaceHost must match the Composite's RenderSurfaceHost.", nameof(child));
+        if (!ReferenceEquals(child.RenderSurfaceHost, RenderSurfaceHost))
+        {
+            throw new ArgumentException(
+                "The child must belong to the same RenderSurfaceHost as the composite.",
+                nameof(child));
+        }
+
+        if (child.Mode != Mode)
+        {
+            throw new ArgumentException(
+                $"The child drawing mode '{child.Mode}' does not match " +
+                $"the composite drawing mode '{Mode}'.",
+                nameof(child));
+        }
+
+        ValidateAndAssignTarget(child);
 
         if (_children.Contains(child))
             return this;
 
+        Vector2 offset = keepCurrentOffset
+            ? child.GetPosition() - new Vector2(_anchor.X, _anchor.Y)
+            : explicitLocalOffsetPx ?? Vector2.Zero;
+
         _children.Add(child);
+        _localOffsetPx[child] = offset;
         child.Disposing += OnChildDisposing;
 
-        Vector2 offset = keepCurrentOffset
-            ? new Vector2(child.ScreenBounds.X - _anchor.X, child.ScreenBounds.Y - _anchor.Y)
-            : (explicitLocalOffsetPx ?? Vector2.Zero);
+        child.SetPosition(
+            new Vector2(_anchor.X, _anchor.Y) + offset);
 
-        _localOffsetPx[child] = offset;
-
-        // Normalize immediately
-        child.SetPosition(new Vector2(_anchor.X, _anchor.Y) + offset);
         return this;
     }
 
@@ -339,9 +389,15 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <returns>This composite instance for method chaining.</returns>
     public DirectComposite Remove(DirectDrawingMovableBase child)
     {
-        if (child is null) throw new ArgumentNullException(nameof(child));
-        _children.Remove(child);
-        _localOffsetPx.Remove(child);
+        ArgumentNullException.ThrowIfNull(child);
+
+        if (_children.Remove(child))
+        {
+            child.Disposing -= OnChildDisposing;
+            _localOffsetPx.Remove(child);
+            ResetTargetWhenEmpty();
+        }
+
         return this;
     }
 
@@ -356,6 +412,7 @@ public class DirectComposite : IDirectDrawable, IMovable
 
         _children.Clear();
         _localOffsetPx.Clear();
+        ResetTargetWhenEmpty();
         return this;
     }
 
@@ -518,19 +575,74 @@ public class DirectComposite : IDirectDrawable, IMovable
 
         _children.Clear();
         _localOffsetPx.Clear();
+        ResetTargetWhenEmpty();
     }
 
     #endregion Disposal
 
     #region Private Methods
 
-    private void OnChildDisposing(object? sender, IDirectDrawable drawing)
+    private void ValidateAndAssignTarget(
+        DirectDrawingMovableBase child)
     {
-        if (drawing is DirectDrawingMovableBase m)
+        if (Mode == DirectDrawingMode.SceneLayer)
         {
-            _children.Remove(m);
-            _localOffsetPx.Remove(m);
+            SceneLayer childLayer = child.SceneLayer
+                ?? throw new ArgumentException(
+                    "A scene-layer child must reference a SceneLayer.",
+                    nameof(child));
+
+            if (SceneLayer is null)
+            {
+                SceneLayer = childLayer;
+            }
+            else if (!ReferenceEquals(SceneLayer, childLayer))
+            {
+                throw new ArgumentException(
+                    "All scene-layer children in a composite must reference the same SceneLayer.",
+                    nameof(child));
+            }
+
+            return;
         }
+
+        View childView = child.View
+            ?? throw new ArgumentException(
+                "A view child must reference a View.",
+                nameof(child));
+
+        if (View is null)
+        {
+            View = childView;
+        }
+        else if (!ReferenceEquals(View, childView))
+        {
+            throw new ArgumentException(
+                "All view children in a composite must reference the same View.",
+                nameof(child));
+        }
+    }
+
+    private void ResetTargetWhenEmpty()
+    {
+        if (_children.Count != 0)
+            return;
+
+        SceneLayer = null;
+        View = null;
+    }
+
+    private void OnChildDisposing(
+        object? sender,
+        IDirectDrawable drawing)
+    {
+        if (drawing is not DirectDrawingMovableBase child)
+            return;
+
+        child.Disposing -= OnChildDisposing;
+        _children.Remove(child);
+        _localOffsetPx.Remove(child);
+        ResetTargetWhenEmpty();
     }
 
     #endregion Private Methods

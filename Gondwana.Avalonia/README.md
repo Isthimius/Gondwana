@@ -91,6 +91,7 @@ pinch.PinchUpdated += (_, e) => Console.WriteLine($"Pinch scale delta: {e.ScaleD
 
 -   `Gondwana` --- Core engine
 -   `Gondwana.Avalonia.Hosting` --- Avalonia-specific game host that integrates rendering and input into the Gondwana lifecycle
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 

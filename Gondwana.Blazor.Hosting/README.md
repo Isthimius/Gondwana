@@ -57,6 +57,7 @@ Then in your Blazor page's `OnAfterRenderAsync`:
 -   `Gondwana` --- Core engine
 -   `Gondwana.Audio.Browser` --- Browser-based audio playback support
 -   `Gondwana.Blazor` --- Web assembly rendering and input adapters
+-   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 
 ## License
 
