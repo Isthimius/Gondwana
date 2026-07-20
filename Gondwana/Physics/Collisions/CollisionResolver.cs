@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Microsoft.Extensions.Logging;
+using System.Drawing;
 
 namespace Gondwana.Physics.Collisions;
 
@@ -79,6 +80,7 @@ internal sealed class CollisionResolver
                 continue;
             }
 
+            Engine.Logger.LogTrace("Solid collision detected between {Mover} and {Other}. Overlap: {Overlap}", mover, otherCollider, overlap);
             SolidOverlap?.Invoke(mover, otherCollider, overlap);
 
             // Centers for deciding push direction
