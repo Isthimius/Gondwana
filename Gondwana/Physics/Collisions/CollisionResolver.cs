@@ -48,13 +48,16 @@ internal sealed class CollisionResolver
 
     private void ResolveForMover(ICollider mover, ICollisionMovableEntity movableOwner)
     {
-        // Start from mover's current collision rect in world pixel space.
         Rectangle rect = mover.Owner.CollisionArea;
 
-        // Broad-phase query based on current rect.
         var aabb = Aabb.FromRectangle(rect);
 
-        _world.QueryAabb(aabb, mover.CollisionGroup, mover.CollidesWith, _queryResults, ignore: mover);
+        _world.QueryAabb(
+            aabb,
+            mover.CollisionGroup,
+            mover.CollidesWith,
+            _queryResults,
+            ignore: mover);
 
         int totalDx = 0;
         int totalDy = 0;
@@ -69,11 +72,12 @@ internal sealed class CollisionResolver
                 continue;
 
             Rectangle overlap = Rectangle.Intersect(rect, otherRect);
+
             if (overlap.IsEmpty)
                 continue;
 
-            // Trigger collisions: report only, no push-out.
-            if (mover.ResponseType == CollisionResponseType.Trigger || otherCollider.ResponseType == CollisionResponseType.Trigger)
+            if (mover.ResponseType == CollisionResponseType.Trigger ||
+                otherCollider.ResponseType == CollisionResponseType.Trigger)
             {
                 TriggerOverlap?.Invoke(mover, otherCollider, overlap);
                 continue;
@@ -81,10 +85,8 @@ internal sealed class CollisionResolver
 
             SolidOverlap?.Invoke(mover, otherCollider, overlap);
 
-            // Centers for deciding push direction
             float centerX = rect.Left + rect.Width * 0.5f;
             float centerY = rect.Top + rect.Height * 0.5f;
-
             float otherCenterX = otherRect.Left + otherRect.Width * 0.5f;
             float otherCenterY = otherRect.Top + otherRect.Height * 0.5f;
 
@@ -93,17 +95,22 @@ internal sealed class CollisionResolver
 
             if (overlap.Width < overlap.Height)
             {
-                dx = centerX < otherCenterX ? -overlap.Width : overlap.Width;
+                dx = centerX < otherCenterX
+                    ? -overlap.Width
+                    : overlap.Width;
+
                 hitX = true;
             }
             else
             {
-                dy = centerY < otherCenterY ? -overlap.Height : overlap.Height;
+                dy = centerY < otherCenterY
+                    ? -overlap.Height
+                    : overlap.Height;
+
                 hitY = true;
             }
 
-            rect.X += dx;
-            rect.Y += dy;
+            rect.Offset(dx, dy);
 
             totalDx += dx;
             totalDy += dy;
@@ -114,8 +121,6 @@ internal sealed class CollisionResolver
             movableOwner.TranslateWorldPx(totalDx, totalDy);
         }
 
-        // Cancel velocity along any axis that had a solid collision, so the entity
-        // slides along the unblocked axis instead of being stopped entirely.
         if (hitX || hitY)
         {
             movableOwner.CancelVelocityComponent(hitX, hitY);

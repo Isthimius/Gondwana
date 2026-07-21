@@ -181,15 +181,27 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         if (dx == 0 && dy == 0)
             return;
 
-        // Start from current world rect
-        var rect = CollisionArea;
-        rect.X += dx;
-        rect.Y += dy;
+        // Use the integer collision rectangle only to determine how a world-pixel
+        // translation maps into the scene layer's coordinate system.
+        var originalRect = CollisionArea;
+        var translatedRect = originalRect;
 
-        // Convert back to whatever coordinate system Sprite uses internally
-        var sceneCoord = GetSceneLayerCoordsFromSpriteWorldRect(rect);
+        translatedRect.X += dx;
+        translatedRect.Y += dy;
 
-        SetPosition(new Vector2(sceneCoord.X, sceneCoord.Y));
+        var originalSceneCoord =
+            GetSceneLayerCoordsFromSpriteWorldRect(originalRect);
+
+        var translatedSceneCoord =
+            GetSceneLayerCoordsFromSpriteWorldRect(translatedRect);
+
+        var sceneDelta = new Vector2(
+            translatedSceneCoord.X - originalSceneCoord.X,
+            translatedSceneCoord.Y - originalSceneCoord.Y);
+
+        // Apply only the calculated delta to the precise current position.
+        // Do not reconstruct the absolute position from the integer rectangle.
+        SetPosition(GetPosition() + sceneDelta);
     }
 
     /// <inheritdoc/>
