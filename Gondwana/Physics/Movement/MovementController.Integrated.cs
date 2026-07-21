@@ -1,5 +1,4 @@
-﻿using Gondwana.Physics.Movement;
-using Microsoft.Extensions.Logging;
+using Gondwana.Physics.Movement;
 using System.Drawing;
 using System.Numerics;
 
