@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Drawing;
-using Gondwana.Drawing.Sprites;
+﻿using System.Drawing;
 
 namespace Gondwana.Physics.Collisions;
 
@@ -48,12 +46,7 @@ internal sealed class CollisionResolver
         }
     }
 
-    //private long _resolveSequence;
-    //private int _resolveDepth;
-
-    private void ResolveForMover(
-    ICollider mover,
-    ICollisionMovableEntity movableOwner)
+    private void ResolveForMover(ICollider mover, ICollisionMovableEntity movableOwner)
     {
         Rectangle rect = mover.Owner.CollisionArea;
 
