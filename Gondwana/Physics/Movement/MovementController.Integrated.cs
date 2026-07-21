@@ -126,9 +126,7 @@ public sealed partial class MovementController
             return;
 
         var v = _state.Velocity;
-        Engine.Logger.LogTrace("ZeroVelocityComponent before - zeroX: {zeroX} / zeroY: {zeroY} / Velocity: {v}", zeroX, zeroY, v);
         _state.Velocity = new Vector2(zeroX ? 0f : v.X, zeroY ? 0f : v.Y);
-        Engine.Logger.LogTrace("ZeroVelocityComponent after - zeroX: {zeroX} / zeroY: {zeroY} / Velocity: {v}", zeroX, zeroY, _state.Velocity);
     }
 
     /// <summary>
