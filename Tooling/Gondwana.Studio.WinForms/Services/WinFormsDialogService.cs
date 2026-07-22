@@ -72,10 +72,11 @@ public sealed class WinFormsDialogService : IDialogService
     }
 
     /// <inheritdoc/>
-    public Task<string?> PromptAsync(string message, string title, string? defaultValue = null)
-    {
-        var result = InputDialog.Show(message, title, defaultValue);
-        return Task.FromResult(result);
+public Task<string?> PromptAsync(string message, string title, string? defaultValue = null)
+{
+    var result = InputDialog.Show(message, title, defaultValue, _owner);
+    return Task.FromResult(result);
+}
     }
 
     /// <inheritdoc/>
