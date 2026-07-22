@@ -32,7 +32,7 @@ public sealed class StudioPluginHost : CoreHost
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[Plugin] CreatePanel threw for '{plugin.Name}': {ex.Message}");
+                Log($"[Plugin] CreatePanel threw for '{plugin.Name}': {ex.Message}");
             }
         }
         return result;
@@ -54,7 +54,7 @@ public sealed class StudioPluginHost : CoreHost
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[Plugin] CreateMenuItem threw for '{plugin.Name}': {ex.Message}");
+                Log($"[Plugin] CreateMenuItem threw for '{plugin.Name}': {ex.Message}");
             }
         }
         return result;
