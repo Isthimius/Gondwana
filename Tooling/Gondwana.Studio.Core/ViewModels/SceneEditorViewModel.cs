@@ -19,19 +19,19 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
     private readonly IDialogService _dialogService;
 
     /// <summary>
-    /// Gets get.
+    /// Gets the tile palette loaded from the current tilesheet.
     /// </summary>
     public ObservableCollection<TileCellViewModel> TilePalette { get; } = [];
     /// <summary>
-    /// Gets get.
+    /// Gets the tiles placed on the scene canvas.
     /// </summary>
     public ObservableCollection<ScenePaintedTileViewModel> PaintedTiles { get; } = [];
     /// <summary>
-    /// Gets get.
+    /// Gets the entities placed on the scene.
     /// </summary>
     public ObservableCollection<SceneEntityViewModel> Entities { get; } = [];
     /// <summary>
-    /// Gets get.
+    /// Gets the collision rectangles defined on the scene.
     /// </summary>
     public ObservableCollection<SceneColliderViewModel> Colliders { get; } = [];
 

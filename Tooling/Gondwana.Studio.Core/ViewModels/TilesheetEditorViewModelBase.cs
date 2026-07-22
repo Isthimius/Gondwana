@@ -21,12 +21,12 @@ public partial class TilesheetEditorViewModelBase : ViewModelBase
     private readonly IDialogService _dialogService;
 
     /// <summary>
-    /// Gets get.
+    /// Gets the collection of tile cells in the tilesheet grid.
     /// </summary>
     public ObservableCollection<TileCellViewModel> TileCells { get; } = [];
 
     /// <summary>
-    /// Gets t.
+    /// Gets the subset of tile cells that have been assigned a name.
     /// </summary>
     public IEnumerable<TileCellViewModel> NamedTiles => TileCells.Where(t => !string.IsNullOrWhiteSpace(t.Name));
 

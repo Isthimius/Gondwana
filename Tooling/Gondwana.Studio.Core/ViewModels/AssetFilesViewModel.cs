@@ -20,7 +20,7 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     private readonly IDialogService _dialogService;
 
     /// <summary>
-    /// Gets get.
+    /// Gets the observable collection of asset records displayed in the grid.
     /// </summary>
     public ObservableCollection<AssetRecordViewModel> Records { get; } = new();
 

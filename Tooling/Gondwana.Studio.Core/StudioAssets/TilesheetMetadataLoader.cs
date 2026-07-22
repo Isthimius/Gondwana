@@ -21,12 +21,12 @@ public static class TilesheetMetadataLoader
     }
 
     /// <summary>
-    /// LoadAndRegisterTilesheet.
+    /// Loads and registers a tilesheet for use in the engine.
     /// </summary>
     /// <param name="metadataPath">metadataPath.</param>
-    /// <returns>The result.</returns>
+    /// <returns>The registered tilesheet.</returns>
     public static Tilesheet LoadAndRegisterTilesheet(string metadataPath)
     {
-        return null!;
+        throw new NotImplementedException("LoadAndRegisterTilesheet is not implemented in Gondwana.Studio.Core. Override this in a platform-specific subclass or provide an engine integration.");
     }
 }
