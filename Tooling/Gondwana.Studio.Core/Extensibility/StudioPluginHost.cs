@@ -83,6 +83,9 @@ public class StudioPluginHost
         => _plugins.Where(p => p.Enabled && p.Instance is TPlugin)
                    .Select(p => (TPlugin)p.Instance);
 
+    /// <summary>Writes a plugin-related message to the configured log sink.</summary>
+    protected void Log(string message) => _log(message);
+
     /// <summary>Disables a plugin that threw during a lifecycle call.</summary>
     protected void DisablePlugin(LoadedPlugin plugin, string reason)
     {

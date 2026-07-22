@@ -64,11 +64,4 @@ public sealed class StudioPluginHost : CoreHost
 
         return items;
     }
-
-    private void Log(string message)
-    {
-        // Surface errors via the Plugins list; nothing else to do here.
-        // In a future revision this can propagate to OutputViewModel.
-        System.Diagnostics.Debug.WriteLine(message);
-    }
 }
