@@ -1,12 +1,11 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Gondwana.Studio.Core.Services;
 using Gondwana.StudioAssets;
 using Newtonsoft.Json;
 
@@ -15,10 +14,11 @@ namespace Gondwana.Studio.ViewModels;
 /// <summary>
 /// AnimationEditorViewModel.
 /// </summary>
-public sealed partial class AnimationEditorViewModel : ViewModelBase
+public sealed partial class AnimationEditorViewModel : ViewModelBase, IDisposable
 {
-    private readonly Window _owner;
-    private readonly DispatcherTimer _previewTimer;
+    private readonly IDialogService _dialogService;
+    private readonly SynchronizationContext? _syncContext;
+    private readonly Timer _previewTimer;
     private int _previewFrameIndex;
     private int _previewDirection = 1;
     private DateTime _lastFrameTime;
@@ -59,34 +59,29 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
     /// <summary>
     /// AnimationEditorViewModel.
     /// </summary>
-    /// <param name="owner">owner.</param>
-    public AnimationEditorViewModel(Window owner)
+    /// <param name="dialogService">Platform dialog service.</param>
+    public AnimationEditorViewModel(IDialogService dialogService)
     {
-        _owner = owner;
-        _previewTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(16), DispatcherPriority.Normal, (_, _) => TickPreview());
+        _dialogService = dialogService;
+        _syncContext = SynchronizationContext.Current;
+        _previewTimer = new Timer(_ =>
+        {
+            if (_syncContext != null)
+                _syncContext.Post(__ => TickPreview(), null);
+            else
+                TickPreview();
+        }, null, Timeout.Infinite, Timeout.Infinite);
     }
 
     [RelayCommand]
     private async Task OpenTilesheetAsync()
     {
-        var files = await _owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Open Tilesheet Metadata",
-            AllowMultiple = false,
-            FileTypeFilter =
-            [
-                new FilePickerFileType("Gondwana Tilesheet") { Patterns = ["*.gondwana-tilesheet"] }
-            ]
-        });
+        var path = await _dialogService.OpenFileAsync(
+            "Open Tilesheet Metadata",
+            ["*.gondwana-tilesheet"]);
 
-        if (files.Count == 0)
-            return;
-
-        var path = files[0].TryGetLocalPath();
-        if (string.IsNullOrWhiteSpace(path))
-            return;
-
-        LoadTilesheet(path);
+        if (!string.IsNullOrWhiteSpace(path))
+            LoadTilesheet(path);
     }
 
     [RelayCommand]
@@ -148,7 +143,7 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
         _previewFrameIndex = 0;
         _previewDirection = 1;
         _lastFrameTime = DateTime.UtcNow;
-        _previewTimer.Start();
+        _previewTimer.Change(0, 16);
         UpdatePreviewText();
     }
 
@@ -156,7 +151,7 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
     private void StopPreview()
     {
         IsPreviewPlaying = false;
-        _previewTimer.Stop();
+        _previewTimer.Change(Timeout.Infinite, Timeout.Infinite);
         PreviewText = "Preview stopped";
     }
 
@@ -166,21 +161,12 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
         if (Frames.Count == 0 || string.IsNullOrWhiteSpace(TilesheetPath))
             return;
 
-        var saveTarget = await _owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            Title = "Save Animation",
-            SuggestedFileName = AnimationName,
-            DefaultExtension = "gondwana-animation",
-            FileTypeChoices =
-            [
-                new FilePickerFileType("Gondwana Animation") { Patterns = ["*.gondwana-animation"] }
-            ]
-        });
+        var path = await _dialogService.SaveFileAsync(
+            "Save Animation",
+            AnimationName,
+            "gondwana-animation",
+            ["*.gondwana-animation"]);
 
-        if (saveTarget is null)
-            return;
-
-        var path = saveTarget.TryGetLocalPath();
         if (string.IsNullOrWhiteSpace(path))
             return;
 
@@ -327,5 +313,14 @@ public sealed partial class AnimationEditorViewModel : ViewModelBase
 
         var frame = Frames[_previewFrameIndex];
         PreviewText = $"▶ Frame {_previewFrameIndex + 1}/{Frames.Count} — Tile {frame.TileIndex} ({frame.DurationMs}ms)";
+    }
+
+    /// <summary>
+    /// Dispose.
+    /// </summary>
+    public void Dispose()
+    {
+        _previewTimer.Change(Timeout.Infinite, Timeout.Infinite);
+        _previewTimer.Dispose();
     }
 }

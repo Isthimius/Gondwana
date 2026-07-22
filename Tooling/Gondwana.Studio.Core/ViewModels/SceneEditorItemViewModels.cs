@@ -1,5 +1,4 @@
-using Avalonia;
-using Avalonia.Media;
+using Gondwana.Studio.Core.Geometry;
 
 namespace Gondwana.Studio.ViewModels;
 
@@ -66,29 +65,30 @@ public sealed class SceneEntityViewModel : ViewModelBase
 /// </summary>
 public sealed class SceneColliderViewModel : ViewModelBase
 {
-    /// <summary>
-    /// Gets or sets set.
-    /// </summary>
-    public Rect Rect { get; set; }
-    /// <summary>
-    /// Gets or sets OrangeRed.
-    /// </summary>
-    public Color StrokeColor { get; set; } = Colors.OrangeRed;
+    private RectD _rect;
 
     /// <summary>
-    /// Gets X.
+    /// Gets or sets the collider bounds.
     /// </summary>
-    public double X => Rect.X;
-    /// <summary>
-    /// Gets Y.
-    /// </summary>
-    public double Y => Rect.Y;
-    /// <summary>
-    /// Gets Width.
-    /// </summary>
-    public double Width => Rect.Width;
-    /// <summary>
-    /// Gets Height.
-    /// </summary>
-    public double Height => Rect.Height;
+    public RectD Rect
+    {
+        get => _rect;
+        set
+        {
+            _rect = value;
+            OnPropertyChanged(nameof(X));
+            OnPropertyChanged(nameof(Y));
+            OnPropertyChanged(nameof(Width));
+            OnPropertyChanged(nameof(Height));
+        }
+    }
+
+    /// <summary>Gets X.</summary>
+    public double X => _rect.X;
+    /// <summary>Gets Y.</summary>
+    public double Y => _rect.Y;
+    /// <summary>Gets Width.</summary>
+    public double Width => _rect.Width;
+    /// <summary>Gets Height.</summary>
+    public double Height => _rect.Height;
 }

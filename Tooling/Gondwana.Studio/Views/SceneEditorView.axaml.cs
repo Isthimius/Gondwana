@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Gondwana.Studio.Core.Geometry;
 using Gondwana.Studio.ViewModels;
 
 namespace Gondwana.Studio.Views;
@@ -77,7 +78,7 @@ public partial class SceneEditorView : UserControl
         if (_drawingCollider)
         {
             var end = ScreenToWorld(vm, e.GetPosition(SceneCanvas));
-            var rect = new Rect(
+            var rect = new RectD(
                 Math.Min(_colliderStart.X, end.X),
                 Math.Min(_colliderStart.Y, end.Y),
                 Math.Abs(end.X - _colliderStart.X),

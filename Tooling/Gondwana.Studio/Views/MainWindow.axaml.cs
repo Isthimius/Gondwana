@@ -1,6 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Gondwana.Studio.Services;
 using Gondwana.Studio.ViewModels;
 using Gondwana.Studio.Extensibility;
 using System.IO;
@@ -12,6 +13,8 @@ namespace Gondwana.Studio.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private AvaloniaDialogService? _dialogService;
+
     /// <summary>
     /// MainWindow.
     /// </summary>
@@ -30,6 +33,7 @@ public partial class MainWindow : Window
 
         if (DataContext is MainWindowViewModel vm)
         {
+            _dialogService = new AvaloniaDialogService(this);
             vm.DirectoryPanel.NodeActivated += OnDirectoryNodeActivated;
             AttachPlugins(vm);
         }
@@ -41,8 +45,7 @@ public partial class MainWindow : Window
 
         if (node.IsCategory && node.Category == EngineStatePartsCategory.AssetsFiles)
         {
-            // Open (or focus) the AssetFiles editor document
-            var assetVm = new AssetFilesViewModel(this);
+            var assetVm = new AssetFilesViewModel(_dialogService!);
             vm.OpenDocumentTab("AssetFiles", "Asset Files", assetVm);
             return;
         }
@@ -86,7 +89,7 @@ public partial class MainWindow : Window
         if (DataContext is not MainWindowViewModel vm)
             return;
 
-        var editor = new TilesheetEditorViewModel(this);
+        var editor = new TilesheetEditorViewModel(_dialogService!);
         vm.OpenDocumentTab($"Tilesheet:{Guid.NewGuid()}", "Tilesheet Editor", editor);
     }
 
@@ -95,7 +98,7 @@ public partial class MainWindow : Window
         if (DataContext is not MainWindowViewModel vm)
             return;
 
-        var editor = new AnimationEditorViewModel(this);
+        var editor = new AnimationEditorViewModel(_dialogService!);
         vm.OpenDocumentTab($"Animation:{Guid.NewGuid()}", "Animation Editor", editor);
     }
 
@@ -104,7 +107,7 @@ public partial class MainWindow : Window
         if (DataContext is not MainWindowViewModel vm)
             return;
 
-        var editor = new SceneEditorViewModel(this);
+        var editor = new SceneEditorViewModel(_dialogService!);
         vm.OpenDocumentTab($"Scene:{Guid.NewGuid()}", "Scene Editor", editor);
     }
 
@@ -146,19 +149,19 @@ public partial class MainWindow : Window
     {
         if (path.EndsWith(".gondwana-tilesheet", StringComparison.OrdinalIgnoreCase))
         {
-            var editor = new TilesheetEditorViewModel(this);
+            var editor = new TilesheetEditorViewModel(_dialogService!);
             editor.LoadMetadata(path);
             vm.OpenDocumentTab($"Tilesheet:{path}", Path.GetFileName(path), editor);
         }
         else if (path.EndsWith(".gondwana-animation", StringComparison.OrdinalIgnoreCase))
         {
-            var editor = new AnimationEditorViewModel(this);
+            var editor = new AnimationEditorViewModel(_dialogService!);
             editor.LoadAnimation(path);
             vm.OpenDocumentTab($"Animation:{path}", Path.GetFileName(path), editor);
         }
         else if (path.EndsWith(".gondwana-scene", StringComparison.OrdinalIgnoreCase))
         {
-            var editor = new SceneEditorViewModel(this);
+            var editor = new SceneEditorViewModel(_dialogService!);
             editor.LoadScene(path);
             vm.OpenDocumentTab($"Scene:{path}", Path.GetFileName(path), editor);
         }
