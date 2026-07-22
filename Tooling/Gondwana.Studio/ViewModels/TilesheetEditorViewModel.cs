@@ -19,7 +19,14 @@ public sealed partial class TilesheetEditorViewModel : TilesheetEditorViewModelB
     public Bitmap? PreviewBitmap
     {
         get => _previewBitmap;
-        private set => SetProperty(ref _previewBitmap, value);
+        private set
+        {
+            var previousBitmap = _previewBitmap;
+            if (SetProperty(ref _previewBitmap, value))
+            {
+                previousBitmap?.Dispose();
+            }
+        }
     }
 
     /// <summary>
