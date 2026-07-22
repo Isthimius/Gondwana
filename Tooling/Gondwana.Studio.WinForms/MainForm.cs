@@ -106,6 +106,7 @@ public sealed class MainForm : Form
 
         _outputVm.Log("Gondwana Studio WinForms ready.");
 
+        _pluginHost.DiscoverAndLoad();
         AttachPlugins();
     }
 
