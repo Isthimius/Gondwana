@@ -100,7 +100,7 @@ public sealed class MainForm : Form
         newTilesheetItem.Click += OnNewTilesheetClicked;
         newAnimationItem.Click += OnNewAnimationClicked;
         newSceneItem.Click += OnNewSceneClicked;
-        openTilesheetItem.Click += async (_, _) => await OpenTypedFileAsync("*.gondwana-tilesheet");
+        openTilesheetItem.Click += async (_, _) => await OpenTypedFileAsync("*.gts", "*.gondwana-tilesheet");
         openAnimationItem.Click += async (_, _) => await OpenTypedFileAsync("*.gondwana-animation");
         openSceneItem.Click += async (_, _) => await OpenTypedFileAsync("*.gondwana-scene");
         exitItem.Click += (_, _) => Close();
@@ -150,9 +150,9 @@ public sealed class MainForm : Form
         OpenDocumentPanel($"Scene:{Guid.NewGuid()}", "Scene Editor",
             new SceneEditorPanel(new SceneEditorViewModel(_dialogService)));
 
-    private async Task OpenTypedFileAsync(string pattern)
+    private async Task OpenTypedFileAsync(params string[] patterns)
     {
-        var path = await _dialogService.OpenFileAsync("Open File", [pattern]);
+        var path = await _dialogService.OpenFileAsync("Open File", patterns);
         if (!string.IsNullOrWhiteSpace(path))
             OpenByPath(path);
     }
@@ -180,7 +180,8 @@ public sealed class MainForm : Form
             return;
         }
 
-        if (path.EndsWith(".gondwana-tilesheet", StringComparison.OrdinalIgnoreCase))
+        if (path.EndsWith(".gts", StringComparison.OrdinalIgnoreCase)
+            || path.EndsWith(".gondwana-tilesheet", StringComparison.OrdinalIgnoreCase))
         {
             var vm = new TilesheetEditorViewModelBase(_dialogService);
             vm.LoadMetadata(path);
@@ -212,6 +213,8 @@ public sealed class MainForm : Form
             node.Children.Clear();
 
         foreach (var file in Directory.EnumerateFiles(projectPath, "*.gondwana-tilesheet", SearchOption.AllDirectories))
+            _directoryVm.AddEntry(EngineStatePartsCategory.Tilesheets, Path.GetFileName(file), file);
+        foreach (var file in Directory.EnumerateFiles(projectPath, "*.gts", SearchOption.AllDirectories))
             _directoryVm.AddEntry(EngineStatePartsCategory.Tilesheets, Path.GetFileName(file), file);
 
         foreach (var file in Directory.EnumerateFiles(projectPath, "*.gondwana-animation", SearchOption.AllDirectories))
