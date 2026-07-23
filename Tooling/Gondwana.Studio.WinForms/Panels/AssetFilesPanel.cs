@@ -78,9 +78,17 @@ public sealed class AssetFilesPanel : UserControl
             AllowUserToAddRows = false,
             AllowUserToDeleteRows = false,
             SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-            AutoGenerateColumns = false,
-            DataSource = _vm.Records
+            AutoGenerateColumns = false
         };
+
+        var recordsSource = new BindingSource { DataSource = _vm.Records };
+        _grid.DataSource = recordsSource;
+
+        System.Collections.Specialized.NotifyCollectionChangedEventHandler recordsChanged = (_, _) =>
+            recordsSource.ResetBindings(false);
+
+        _vm.Records.CollectionChanged += recordsChanged;
+        Disposed += (_, _) => _vm.Records.CollectionChanged -= recordsChanged;
         _grid.Columns.AddRange(
             new DataGridViewTextBoxColumn { HeaderText = "Name", DataPropertyName = "AssetName", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill },
             new DataGridViewTextBoxColumn { HeaderText = "Type", DataPropertyName = "AssetType", Width = 100 },
