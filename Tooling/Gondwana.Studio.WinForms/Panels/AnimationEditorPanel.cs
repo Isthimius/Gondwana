@@ -48,7 +48,16 @@ public sealed class AnimationEditorPanel : UserControl
         ]);
 
         _paletteGrid = BuildGrid(["Index", "Name"], ["Index", "Name"]);
-        _paletteGrid.DataSource = _vm.TilePalette;
+
+        var paletteSource = new BindingSource { DataSource = _vm.TilePalette };
+        _paletteGrid.DataSource = paletteSource;
+
+        System.Collections.Specialized.NotifyCollectionChangedEventHandler paletteChanged = (_, _) =>
+            paletteSource.ResetBindings(false);
+
+        _vm.TilePalette.CollectionChanged += paletteChanged;
+        Disposed += (_, _) => _vm.TilePalette.CollectionChanged -= paletteChanged;
+
         _paletteGrid.SelectionChanged += OnPaletteSelectionChanged;
 
         _framesGrid = BuildGrid(["Tile Index", "Tile Name", "Duration (ms)"], ["TileIndex", "TileName", "DurationMs"]);
