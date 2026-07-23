@@ -263,8 +263,7 @@ public partial class TilesheetEditorViewModelBase : ViewModelBase
         var metadataDir = Path.GetDirectoryName(metadataPath) ?? string.Empty;
         var relativeImagePath = Path.GetRelativePath(metadataDir, ImagePath).Replace('\\', '/');
 
-        var areaWidth = RegionWidth > 0 ? RegionWidth : Math.Max(0, ImageWidth - RegionX);
-        var areaHeight = RegionHeight > 0 ? RegionHeight : Math.Max(0, ImageHeight - RegionY);
+        var (areaWidth, areaHeight) = GetEffectiveRegionSize();
         var definition = new TilesheetDefinition
         {
             Name = Path.GetFileNameWithoutExtension(metadataPath),
@@ -329,8 +328,7 @@ public partial class TilesheetEditorViewModelBase : ViewModelBase
         if (!CanRebuild())
             return;
 
-        var areaWidth = RegionWidth > 0 ? RegionWidth : Math.Max(0, ImageWidth - RegionX);
-        var areaHeight = RegionHeight > 0 ? RegionHeight : Math.Max(0, ImageHeight - RegionY);
+        var (areaWidth, areaHeight) = GetEffectiveRegionSize();
         if (areaWidth <= 0 || areaHeight <= 0)
             return;
 
@@ -444,5 +442,12 @@ public partial class TilesheetEditorViewModelBase : ViewModelBase
             tile.Name = names.TryGetValue(tile.Index, out var name) ? name : string.Empty;
 
         OnPropertyChanged(nameof(NamedTiles));
+    }
+
+    private (int width, int height) GetEffectiveRegionSize()
+    {
+        var width = RegionWidth > 0 ? RegionWidth : Math.Max(0, ImageWidth - RegionX);
+        var height = RegionHeight > 0 ? RegionHeight : Math.Max(0, ImageHeight - RegionY);
+        return (width, height);
     }
 }

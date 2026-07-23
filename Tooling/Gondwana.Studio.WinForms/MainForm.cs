@@ -100,9 +100,9 @@ public sealed class MainForm : Form
         newTilesheetItem.Click += OnNewTilesheetClicked;
         newAnimationItem.Click += OnNewAnimationClicked;
         newSceneItem.Click += OnNewSceneClicked;
-        openTilesheetItem.Click += async (_, _) => await OpenTypedFileAsync("*.gts", "*.gondwana-tilesheet");
-        openAnimationItem.Click += async (_, _) => await OpenTypedFileAsync("*.gondwana-animation");
-        openSceneItem.Click += async (_, _) => await OpenTypedFileAsync("*.gondwana-scene");
+        openTilesheetItem.Click += async (_, _) => await OpenTypedFileFromMenuAsync("*.gts", "*.gondwana-tilesheet");
+        openAnimationItem.Click += async (_, _) => await OpenTypedFileFromMenuAsync("*.gondwana-animation");
+        openSceneItem.Click += async (_, _) => await OpenTypedFileFromMenuAsync("*.gondwana-scene");
         exitItem.Click += (_, _) => Close();
 
         fileMenu.DropDownItems.AddRange([
@@ -155,6 +155,18 @@ public sealed class MainForm : Form
         var path = await _dialogService.OpenFileAsync("Open File", patterns);
         if (!string.IsNullOrWhiteSpace(path))
             OpenByPath(path);
+    }
+
+    private async Task OpenTypedFileFromMenuAsync(params string[] patterns)
+    {
+        try
+        {
+            await OpenTypedFileAsync(patterns);
+        }
+        catch (Exception ex)
+        {
+            _outputVm.Log($"Failed to open file: {ex.Message}");
+        }
     }
 
     private void OnNodeActivated(object? sender, DirectoryNodeViewModel node)

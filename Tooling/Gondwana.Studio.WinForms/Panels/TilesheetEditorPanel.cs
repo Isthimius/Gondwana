@@ -141,7 +141,8 @@ public sealed class TilesheetEditorPanel : UserControl
             return;
 
         dialog.ApplyTo(_vm);
-        _vm.RebuildGridCommand.Execute(null);
+        if (_vm.RebuildGridCommand.CanExecute(null))
+            _vm.RebuildGridCommand.Execute(null);
     }
 }
 
