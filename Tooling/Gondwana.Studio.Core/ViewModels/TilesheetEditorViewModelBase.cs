@@ -205,15 +205,24 @@ public partial class TilesheetEditorViewModelBase : ViewModelBase
     /// <param name="path">Absolute path to the image file.</param>
     public virtual void LoadImage(string path)
     {
-        using var bitmap = SKBitmap.Decode(path);
-        if (bitmap is null)
+        try
         {
-            StatusText = $"Failed to load image: {Path.GetFileName(path)}";
+            using var bitmap = SKBitmap.Decode(path);
+            if (bitmap is null)
+            {
+                StatusText = $"Failed to load image: {Path.GetFileName(path)}";
+                return;
+            }
+
+            ImageWidth = bitmap.Width;
+            ImageHeight = bitmap.Height;
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Failed to load image: {Path.GetFileName(path)} ({ex.Message})";
             return;
         }
 
-        ImageWidth = bitmap.Width;
-        ImageHeight = bitmap.Height;
         ImagePath = path;
         BuildGrid();
         StatusText = $"Loaded image: {Path.GetFileName(path)}";
