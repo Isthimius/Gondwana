@@ -51,9 +51,17 @@ public sealed class SceneEditorPanel : UserControl
             AllowUserToAddRows = false,
             AllowUserToDeleteRows = false,
             SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-            AutoGenerateColumns = false,
-            DataSource = _vm.TilePalette
+            AutoGenerateColumns = false
         };
+
+        var paletteSource = new BindingSource { DataSource = _vm.TilePalette };
+        _paletteGrid.DataSource = paletteSource;
+
+        System.Collections.Specialized.NotifyCollectionChangedEventHandler paletteChanged = (_, _) =>
+            paletteSource.ResetBindings(false);
+
+        _vm.TilePalette.CollectionChanged += paletteChanged;
+        Disposed += (_, _) => _vm.TilePalette.CollectionChanged -= paletteChanged;
         _paletteGrid.Columns.AddRange(
             new DataGridViewTextBoxColumn { HeaderText = "#", DataPropertyName = "Index", Width = 40 },
             new DataGridViewTextBoxColumn { HeaderText = "Name", DataPropertyName = "Name", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill }
