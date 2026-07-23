@@ -3,14 +3,13 @@ using Gondwana.Studio.ViewModels;
 using Gondwana.Studio.WinForms.Extensibility;
 using Gondwana.Studio.WinForms.Panels;
 using Gondwana.Studio.WinForms.Services;
+using WeifenLuo.WinFormsUI.Docking;
+using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Studio.WinForms;
 
 /// <summary>
-/// Main application window with dark-themed tabbed layout.
-/// The layout uses SplitContainer + TabControl to approximate docking.
-/// To upgrade to full docking, add WeifenLuo.WinFormsUI.DockPanel 3.1.0 and replace
-/// the layout with DockPanel and make each panel a DockContent with VS2015DarkTheme.
+/// Main application window with DockPanelSuite layout and VS dark theme.
 /// </summary>
 public sealed class MainForm : Form
 {
@@ -22,13 +21,14 @@ public sealed class MainForm : Form
     private readonly StudioPluginHost _pluginHost;
     private readonly DirectoryPanelViewModel _directoryVm;
     private readonly OutputViewModel _outputVm;
+    private readonly DockPanel _dockPanel;
+    private readonly VS2015DarkTheme _dockTheme;
 
     private readonly DirectoryPanel _directoryPanel;
     private readonly OutputPanel _outputPanel;
-    private readonly TabControl _documentTabs;
 
-    // Track open document tabs by key to avoid duplicates
-    private readonly Dictionary<string, TabPage> _openTabs = [];
+    // Track open documents by key to avoid duplicates
+    private readonly Dictionary<string, DockContent> _openDocuments = [];
 
     /// <summary>
     /// MainForm.
@@ -50,59 +50,25 @@ public sealed class MainForm : Form
 
         var menuStrip = BuildMenuStrip();
 
-        // Outer split: left = Directory, right = content area
-        var outerSplit = new SplitContainer
-        {
-            Dock = DockStyle.Fill,
-            SplitterDistance = 220,
-            Orientation = Orientation.Vertical,
-            BackColor = DarkBackground
-        };
-
         _directoryPanel = new DirectoryPanel(_directoryVm) { Dock = DockStyle.Fill };
         _directoryPanel.NodeActivated += OnNodeActivated;
         ApplyDarkColors(_directoryPanel);
-        outerSplit.Panel1.Controls.Add(_directoryPanel);
-
-        // Inner split: top = document tabs, bottom = output
-        var innerSplit = new SplitContainer
-        {
-            Dock = DockStyle.Fill,
-            Orientation = Orientation.Horizontal,
-            BackColor = DarkBackground
-        };
-        innerSplit.SplitterDistance = Math.Max(10, innerSplit.Height - 160);
-
-        _documentTabs = new TabControl
-        {
-            Dock = DockStyle.Fill,
-            DrawMode = TabDrawMode.OwnerDrawFixed,
-            ItemSize = new System.Drawing.Size(120, 24),
-            Multiline = true,
-            BackColor = DarkBackground
-        };
-        _documentTabs.DrawItem += OnDrawTab;
-        ApplyDarkColors(_documentTabs);
-        innerSplit.Panel1.Controls.Add(_documentTabs);
-
-        var outputHeader = new Label
-        {
-            Text = " Output",
-            Dock = DockStyle.Top,
-            Height = 22,
-            BackColor = System.Drawing.Color.FromArgb(45, 45, 48),
-            ForeColor = DarkForeground,
-            Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold)
-        };
         _outputPanel = new OutputPanel(_outputVm) { Dock = DockStyle.Fill };
-        innerSplit.Panel2.Controls.Add(_outputPanel);
-        innerSplit.Panel2.Controls.Add(outputHeader);
+        ApplyDarkColors(_outputPanel);
 
-        outerSplit.Panel2.Controls.Add(innerSplit);
+        _dockTheme = new VS2015DarkTheme();
+        _dockPanel = new DockPanel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = DarkBackground,
+            Theme = _dockTheme
+        };
 
-        Controls.Add(outerSplit);
+        Controls.Add(_dockPanel);
         Controls.Add(menuStrip);
         MainMenuStrip = menuStrip;
+
+        ShowToolWindows();
 
         _outputVm.Log("Gondwana Studio WinForms ready.");
 
@@ -208,9 +174,9 @@ public sealed class MainForm : Form
 
     private void OpenByPath(string path)
     {
-        if (_openTabs.TryGetValue(path, out var existing))
+        if (_openDocuments.TryGetValue(path, out var existing))
         {
-            _documentTabs.SelectedTab = existing;
+            existing.Activate();
             return;
         }
 
@@ -257,14 +223,21 @@ public sealed class MainForm : Form
 
     private void OpenDocumentPanel(string key, string title, Control content)
     {
-        content.Dock = DockStyle.Fill;
+        if (_openDocuments.TryGetValue(key, out var existing))
+        {
+            existing.Activate();
+            return;
+        }
+
         ApplyDarkColors(content);
 
-        var tab = new TabPage(title) { BackColor = DarkBackground, ForeColor = DarkForeground };
-        tab.Controls.Add(content);
-        _openTabs[key] = tab;
-        _documentTabs.TabPages.Add(tab);
-        _documentTabs.SelectedTab = tab;
+        var doc = new StudioDockContent(title, content, closeable: true, onClosed: () => _openDocuments.Remove(key))
+        {
+            DockAreas = DockAreas.Document | DockAreas.Float
+        };
+        _openDocuments[key] = doc;
+        doc.Show(_dockPanel, DockState.Document);
+        doc.Activate();
     }
 
     private void AttachPlugins()
@@ -280,25 +253,47 @@ public sealed class MainForm : Form
             OpenDocumentPanel($"Plugin:{pluginName}", pluginName, control);
     }
 
+    private void ShowToolWindows()
+    {
+        var directoryWindow = new StudioDockContent("Directory", _directoryPanel, closeable: false)
+        {
+            DockAreas = DockAreas.DockLeft | DockAreas.Float
+        };
+        directoryWindow.Show(_dockPanel, DockState.DockLeft);
+
+        var outputWindow = new StudioDockContent("Output", _outputPanel, closeable: false)
+        {
+            DockAreas = DockAreas.DockBottom | DockAreas.Float
+        };
+        outputWindow.Show(_dockPanel, DockState.DockBottom);
+    }
+
     private static void ApplyDarkColors(Control control)
     {
         control.BackColor = DarkSurface;
         control.ForeColor = DarkForeground;
     }
+}
 
-    private void OnDrawTab(object? sender, DrawItemEventArgs e)
+file sealed class StudioDockContent : DockContent
+{
+    private readonly Action? _onClosed;
+
+    public StudioDockContent(string title, Control content, bool closeable, Action? onClosed = null)
     {
-        var tabPage = _documentTabs.TabPages[e.Index];
-        var textBrush = new System.Drawing.SolidBrush(DarkForeground);
-        var bgBrush = new System.Drawing.SolidBrush(
-            e.State == DrawItemState.Selected
-                ? DarkBackground
-                : System.Drawing.Color.FromArgb(45, 45, 48));
+        Text = title;
+        CloseButton = closeable;
+        CloseButtonVisible = closeable;
+        _onClosed = onClosed;
 
-        e.Graphics.FillRectangle(bgBrush, e.Bounds);
-        e.Graphics.DrawString(tabPage.Text, e.Font ?? Font, textBrush, e.Bounds, StringFormat.GenericDefault);
-        bgBrush.Dispose();
-        textBrush.Dispose();
+        content.Dock = DockStyle.Fill;
+        Controls.Add(content);
+    }
+
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
+        _onClosed?.Invoke();
+        base.OnFormClosed(e);
     }
 }
 
@@ -345,4 +340,3 @@ file sealed class DarkColorTable : ProfessionalColorTable
     public override System.Drawing.Color MenuBorder => System.Drawing.Color.FromArgb(60, 60, 60);
     public override System.Drawing.Color MenuItemBorder => System.Drawing.Color.FromArgb(60, 60, 60);
 }
-
