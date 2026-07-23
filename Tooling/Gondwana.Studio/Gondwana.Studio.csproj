@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+    <ProjectReference Include="..\Gondwana.Studio.Core\Gondwana.Studio.Core.csproj" />
   </ItemGroup>
 
 </Project>

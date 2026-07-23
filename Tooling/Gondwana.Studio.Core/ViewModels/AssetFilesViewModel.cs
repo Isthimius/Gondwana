@@ -3,11 +3,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Gondwana.Assets;
+using Gondwana.Studio.Core.Services;
 
 namespace Gondwana.Studio.ViewModels;
 
@@ -18,8 +17,11 @@ namespace Gondwana.Studio.ViewModels;
 public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
 {
     private AssetsFile? _assetsFile;
-    private readonly Window _owner;
+    private readonly IDialogService _dialogService;
 
+    /// <summary>
+    /// Gets the observable collection of asset records displayed in the grid.
+    /// </summary>
     public ObservableCollection<AssetRecordViewModel> Records { get; } = new();
 
     [ObservableProperty]
@@ -46,14 +48,23 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     [NotifyCanExecuteChangedFor(nameof(DeleteCommand))]
     private AssetRecordViewModel? _selectedRecord;
 
+    /// <summary>
+    /// Gets a value indicating whether an asset file is open.
+    /// </summary>
     public bool HasFile => !string.IsNullOrEmpty(FilePath);
 
-    // Items for the type filter combo: "All Types" followed by each AssetTypes value.
+    /// <summary>
+    /// Gets items for the type filter combo: "All Types" followed by each AssetTypes value.
+    /// </summary>
     public ObservableCollection<string> TypeFilterItems { get; } = new();
 
-    public AssetFilesViewModel(Window owner)
+    /// <summary>
+    /// AssetFilesViewModel.
+    /// </summary>
+    /// <param name="dialogService">Platform dialog service.</param>
+    public AssetFilesViewModel(IDialogService dialogService)
     {
-        _owner = owner;
+        _dialogService = dialogService;
 
         TypeFilterItems.Add("All Types");
         foreach (var value in Enum.GetValues<AssetTypes>())
@@ -70,25 +81,21 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     [RelayCommand(CanExecute = nameof(CanAlwaysExecute))]
     private async Task NewAsync()
     {
-        var sp = _owner.StorageProvider;
-        var file = await sp.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            Title = "Create Asset File",
-            SuggestedFileName = "assets",
-            DefaultExtension = "gaf",
-            FileTypeChoices = AssetFileTypes()
-        });
-        if (file is null) return;
+        var path = await _dialogService.SaveFileAsync(
+            "Create Asset File", "assets", "gaf", ["*.gaf", "*.zip"]);
+        if (path is null) return;
 
-        var path = file.TryGetLocalPath()!;
-        var encrypt = await ConfirmAsync("Enable password protection for this asset file?", "Encryption");
+        var encrypt = await _dialogService.ConfirmAsync(
+            "Enable password protection for this asset file?", "Encryption");
         string? password = null;
         if (encrypt)
         {
-            password = await PromptAsync("Enter password for the new asset file:", "Password");
+            password = await _dialogService.PromptAsync(
+                "Enter password for the new asset file:", "Password");
             if (string.IsNullOrWhiteSpace(password))
             {
-                await AlertAsync("A password is required when encryption is enabled.", "Password Required");
+                await _dialogService.AlertAsync(
+                    "A password is required when encryption is enabled.", "Password Required");
                 return;
             }
         }
@@ -111,16 +118,9 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     [RelayCommand(CanExecute = nameof(CanAlwaysExecute))]
     private async Task OpenAsync()
     {
-        var sp = _owner.StorageProvider;
-        var files = await sp.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Open Asset File",
-            AllowMultiple = false,
-            FileTypeFilter = AssetFileTypes()
-        });
-        if (files.Count == 0) return;
-
-        var path = files[0].TryGetLocalPath()!;
+        var path = await _dialogService.OpenFileAsync(
+            "Open Asset File", ["*.gaf", "*.zip"]);
+        if (path is null) return;
 
         try
         {
@@ -134,7 +134,8 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
             }
             catch
             {
-                var password = await PromptAsync("Enter password for this asset file:", "Password");
+                var password = await _dialogService.PromptAsync(
+                    "Enter password for this asset file:", "Password");
                 _assetsFile?.Dispose();
                 _assetsFile = AssetsFile.LoadOrCreate(path, password, encrypt: true);
                 _ = _assetsFile.GetAllEntries().ToList();
@@ -167,28 +168,26 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     [RelayCommand(CanExecute = nameof(HasFile))]
     private async Task SaveAsAsync()
     {
-        var sp = _owner.StorageProvider;
-        var file = await sp.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            Title = "Save Asset File As",
-            SuggestedFileName = Path.GetFileName(_assetsFile!.FilePath),
-            DefaultExtension = Path.GetExtension(_assetsFile.FilePath).TrimStart('.'),
-            FileTypeChoices = AssetFileTypes()
-        });
-        if (file is null) return;
-
-        var path = file.TryGetLocalPath()!;
+        var path = await _dialogService.SaveFileAsync(
+            "Save Asset File As",
+            Path.GetFileName(_assetsFile!.FilePath),
+            Path.GetExtension(_assetsFile.FilePath).TrimStart('.'),
+            ["*.gaf", "*.zip"]);
+        if (path is null) return;
 
         try
         {
-            var encrypt = await ConfirmAsync("Enable password protection for the saved copy?", "Encryption");
+            var encrypt = await _dialogService.ConfirmAsync(
+                "Enable password protection for the saved copy?", "Encryption");
             string? password = null;
             if (encrypt)
             {
-                password = await PromptAsync("Enter password for the saved copy:", "Password");
+                password = await _dialogService.PromptAsync(
+                    "Enter password for the saved copy:", "Password");
                 if (string.IsNullOrWhiteSpace(password))
                 {
-                    await AlertAsync("A password is required when encryption is enabled.", "Password Required");
+                    await _dialogService.AlertAsync(
+                        "A password is required when encryption is enabled.", "Password Required");
                     return;
                 }
             }
@@ -216,25 +215,19 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     [RelayCommand(CanExecute = nameof(HasFile))]
     private async Task AddAsync()
     {
-        var sp = _owner.StorageProvider;
-        var files = await sp.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Import Asset",
-            AllowMultiple = true
-        });
+        var files = await _dialogService.OpenFilesAsync("Import Asset");
         if (files.Count == 0) return;
 
-        var typeName = await PickAssetTypeAsync();
+        var typeName = await _dialogService.PickAssetTypeAsync();
         if (typeName is null) return;
         var type = Enum.Parse<AssetTypes>(typeName);
 
         try
         {
-            foreach (var storageFile in files)
+            foreach (var filePath in files)
             {
-                var filePath = storageFile.TryGetLocalPath()!;
                 var defaultName = Path.GetFileName(filePath);
-                var customName = await PromptAsync(
+                var customName = await _dialogService.PromptAsync(
                     $"Enter asset name for '{defaultName}' (leave as-is to keep original):",
                     "Asset Name",
                     defaultName);
@@ -254,16 +247,12 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     private async Task ReplaceAsync()
     {
         var selected = SelectedRecord!;
-        var sp = _owner.StorageProvider;
-        var files = await sp.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = $"Replace '{selected.AssetName}'"
-        });
-        if (files.Count == 0) return;
+        var filePath = await _dialogService.OpenFileAsync(
+            $"Replace '{selected.AssetName}'", ["*.*"]);
+        if (filePath is null) return;
 
         try
         {
-            var filePath = files[0].TryGetLocalPath()!;
             using var stream = File.OpenRead(filePath);
             _assetsFile!.Add(selected.AssetType, selected.AssetName, stream);
             ReloadRecords();
@@ -279,7 +268,8 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     private async Task RenameAsync()
     {
         var selected = SelectedRecord!;
-        var newName = await PromptAsync("Enter new asset name:", "Rename Asset", selected.AssetName);
+        var newName = await _dialogService.PromptAsync(
+            "Enter new asset name:", "Rename Asset", selected.AssetName);
         if (string.IsNullOrWhiteSpace(newName) ||
             string.Equals(newName, selected.AssetName, StringComparison.OrdinalIgnoreCase))
             return;
@@ -289,7 +279,7 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
             using var stream = _assetsFile![selected.AssetType, selected.AssetName];
             if (stream is null)
             {
-                await AlertAsync("The selected asset could not be read.", "Read Failed");
+                await _dialogService.AlertAsync("The selected asset could not be read.", "Read Failed");
                 return;
             }
             _assetsFile.Add(selected.AssetType, newName, stream);
@@ -307,23 +297,19 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     private async Task ExportAsync()
     {
         var selected = SelectedRecord!;
-        var sp = _owner.StorageProvider;
-        var file = await sp.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            Title = $"Export '{selected.AssetName}'",
-            SuggestedFileName = selected.AssetName
-        });
-        if (file is null) return;
+        var savePath = await _dialogService.SaveFileAsync(
+            $"Export '{selected.AssetName}'", selected.AssetName, string.Empty, ["*.*"]);
+        if (savePath is null) return;
 
         try
         {
             using var stream = _assetsFile![selected.AssetType, selected.AssetName];
             if (stream is null)
             {
-                await AlertAsync("The selected asset could not be read.", "Read Failed");
+                await _dialogService.AlertAsync("The selected asset could not be read.", "Read Failed");
                 return;
             }
-            using var fileStream = File.Create(file.TryGetLocalPath()!);
+            using var fileStream = File.Create(savePath);
             stream.CopyTo(fileStream);
             StatusText = $"Exported: {selected.AssetName}";
         }
@@ -337,7 +323,8 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
     private async Task DeleteAsync()
     {
         var selected = SelectedRecord!;
-        var confirmed = await ConfirmAsync($"Delete '{selected.AssetName}'?", "Confirm Delete");
+        var confirmed = await _dialogService.ConfirmAsync(
+            $"Delete '{selected.AssetName}'?", "Confirm Delete");
         if (!confirmed) return;
 
         try
@@ -407,146 +394,16 @@ public sealed partial class AssetFilesViewModel : ViewModelBase, IDisposable
         }
     }
 
-    private async Task<bool> ConfirmAsync(string message, string title)
-    {
-        var dialog = new Window
-        {
-            Title = title,
-            Width = 400,
-            Height = 180,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        var result = false;
-        var panel = new Avalonia.Controls.StackPanel { Margin = new Avalonia.Thickness(16), Spacing = 12 };
-        panel.Children.Add(new TextBlock { Text = message, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
-        var buttons = new Avalonia.Controls.StackPanel
-        {
-            Orientation = Avalonia.Layout.Orientation.Horizontal,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
-            Spacing = 8
-        };
-        var yesBtn = new Button { Content = "Yes" };
-        var noBtn = new Button { Content = "No" };
-        yesBtn.Click += (_, _) => { result = true; dialog.Close(); };
-        noBtn.Click += (_, _) => { result = false; dialog.Close(); };
-        buttons.Children.Add(yesBtn);
-        buttons.Children.Add(noBtn);
-        panel.Children.Add(buttons);
-        dialog.Content = panel;
-
-        await dialog.ShowDialog(_owner);
-        return result;
-    }
-
-    private async Task AlertAsync(string message, string title)
-    {
-        var dialog = new Window
-        {
-            Title = title,
-            Width = 400,
-            Height = 180,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        var panel = new Avalonia.Controls.StackPanel { Margin = new Avalonia.Thickness(16), Spacing = 12 };
-        panel.Children.Add(new TextBlock { Text = message, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
-        var okBtn = new Button { Content = "OK", HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right };
-        okBtn.Click += (_, _) => dialog.Close();
-        panel.Children.Add(okBtn);
-        dialog.Content = panel;
-
-        await dialog.ShowDialog(_owner);
-    }
-
-    private async Task<string?> PromptAsync(string message, string title, string? defaultValue = null)
-    {
-        var dialog = new Window
-        {
-            Title = title,
-            Width = 420,
-            Height = 200,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        string? result = null;
-        var panel = new Avalonia.Controls.StackPanel { Margin = new Avalonia.Thickness(16), Spacing = 8 };
-        panel.Children.Add(new TextBlock { Text = message, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
-        var textBox = new TextBox { Text = defaultValue ?? string.Empty };
-        panel.Children.Add(textBox);
-        var buttons = new Avalonia.Controls.StackPanel
-        {
-            Orientation = Avalonia.Layout.Orientation.Horizontal,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
-            Spacing = 8
-        };
-        var okBtn = new Button { Content = "OK" };
-        var cancelBtn = new Button { Content = "Cancel" };
-        okBtn.Click += (_, _) => { result = textBox.Text; dialog.Close(); };
-        cancelBtn.Click += (_, _) => { result = null; dialog.Close(); };
-        buttons.Children.Add(okBtn);
-        buttons.Children.Add(cancelBtn);
-        panel.Children.Add(buttons);
-        dialog.Content = panel;
-
-        await dialog.ShowDialog(_owner);
-        return result;
-    }
-
-    private async Task<string?> PickAssetTypeAsync()
-    {
-        var dialog = new Window
-        {
-            Title = "Select Asset Type",
-            Width = 300,
-            Height = 220,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        string? result = null;
-        var panel = new Avalonia.Controls.StackPanel { Margin = new Avalonia.Thickness(16), Spacing = 8 };
-        panel.Children.Add(new TextBlock { Text = "Choose the type for imported assets:" });
-        var combo = new ComboBox { Width = 200 };
-        foreach (var v in Enum.GetValues<AssetTypes>())
-            combo.Items.Add(v.ToString());
-        combo.SelectedIndex = 0;
-        panel.Children.Add(combo);
-
-        var buttons = new Avalonia.Controls.StackPanel
-        {
-            Orientation = Avalonia.Layout.Orientation.Horizontal,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
-            Spacing = 8
-        };
-        var okBtn = new Button { Content = "OK" };
-        var cancelBtn = new Button { Content = "Cancel" };
-        okBtn.Click += (_, _) => { result = combo.SelectedItem?.ToString(); dialog.Close(); };
-        cancelBtn.Click += (_, _) => { result = null; dialog.Close(); };
-        buttons.Children.Add(okBtn);
-        buttons.Children.Add(cancelBtn);
-        panel.Children.Add(buttons);
-        dialog.Content = panel;
-
-        await dialog.ShowDialog(_owner);
-        return result;
-    }
-
     private async Task ShowErrorAsync(string message, Exception ex)
     {
         StatusText = message;
-        await AlertAsync(message + Environment.NewLine + Environment.NewLine + ex.Message, "Error");
+        await _dialogService.AlertAsync(
+            message + Environment.NewLine + Environment.NewLine + ex.Message, "Error");
     }
 
-    private static FilePickerFileType[] AssetFileTypes() =>
-    [
-        new FilePickerFileType("Asset Files") { Patterns = ["*.gaf", "*.zip"] },
-        new FilePickerFileType("All Files") { Patterns = ["*.*"] }
-    ];
-
+    /// <summary>
+    /// Dispose.
+    /// </summary>
     public void Dispose()
     {
         _assetsFile?.Dispose();

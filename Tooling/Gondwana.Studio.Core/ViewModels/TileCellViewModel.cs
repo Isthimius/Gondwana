@@ -1,36 +1,36 @@
 namespace Gondwana.Studio.ViewModels;
 
 /// <summary>
-/// TileCellViewModel.
+/// Represents a single tile cell within a tilesheet editor grid.
 /// </summary>
 public sealed class TileCellViewModel : ViewModelBase
 {
     /// <summary>
-    /// Gets or sets init.
+    /// Gets the zero-based sequential index of this tile.
     /// </summary>
     public int Index { get; init; }
     /// <summary>
-    /// Gets or sets init.
+    /// Gets the column position of this tile in the grid.
     /// </summary>
     public int X { get; init; }
     /// <summary>
-    /// Gets or sets init.
+    /// Gets the row position of this tile in the grid.
     /// </summary>
     public int Y { get; init; }
     /// <summary>
-    /// Gets or sets init.
+    /// Gets the left pixel offset of this tile within the tilesheet image.
     /// </summary>
     public double Left { get; init; }
     /// <summary>
-    /// Gets or sets init.
+    /// Gets the top pixel offset of this tile within the tilesheet image.
     /// </summary>
     public double Top { get; init; }
     /// <summary>
-    /// Gets or sets init.
+    /// Gets the pixel width of this tile.
     /// </summary>
     public double Width { get; init; }
     /// <summary>
-    /// Gets or sets init.
+    /// Gets the pixel height of this tile.
     /// </summary>
     public double Height { get; init; }
 

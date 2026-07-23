@@ -1,67 +1,62 @@
-using Avalonia.Controls;
 using CoreHost = Gondwana.Studio.Core.Extensibility.StudioPluginHost;
 
-namespace Gondwana.Studio.Extensibility;
+namespace Gondwana.Studio.WinForms.Extensibility;
 
 /// <summary>
-/// Avalonia-specific plugin host. Extends the framework-neutral <see cref="CoreHost"/>
-/// by adding methods that retrieve Avalonia UI contributions from loaded plugins.
+/// WinForms studio plugin host. Extends the framework-neutral <see cref="CoreHost"/>
+/// by adding methods that retrieve WinForms UI contributions from loaded plugins.
 /// </summary>
 public sealed class StudioPluginHost : CoreHost
 {
     /// <summary>
     /// StudioPluginHost.
     /// </summary>
-    /// <param name="log">log.</param>
+    /// <param name="log">Logging callback.</param>
     public StudioPluginHost(Action<string> log) : base(log)
     {
     }
 
     /// <summary>
-    /// GetPluginPanels.
+    /// Returns panels contributed by WinForms-compatible plugins.
     /// </summary>
-    /// <returns>The result.</returns>
     public IEnumerable<(string pluginName, Control panel)> GetPluginPanels()
     {
-        var panels = new List<(string pluginName, Control panel)>();
+        var result = new List<(string, Control)>();
         foreach (var plugin in GetPluginsAs<IStudioPlugin>())
         {
             try
             {
                 var panel = plugin.CreatePanel();
                 if (panel is not null)
-                    panels.Add((plugin.Name, panel));
+                    result.Add((plugin.Name, panel));
             }
             catch (Exception ex)
             {
                 Log($"[Plugin] CreatePanel threw for '{plugin.Name}': {ex.Message}");
             }
         }
-
-        return panels;
+        return result;
     }
 
     /// <summary>
-    /// GetPluginMenuItems.
+    /// Returns menu items contributed by WinForms-compatible plugins.
     /// </summary>
-    /// <returns>The result.</returns>
-    public IEnumerable<MenuItem> GetPluginMenuItems()
+    public IEnumerable<ToolStripMenuItem> GetPluginMenuItems()
     {
-        var items = new List<MenuItem>();
+        var result = new List<ToolStripMenuItem>();
         foreach (var plugin in GetPluginsAs<IStudioPlugin>())
         {
             try
             {
-                var menu = plugin.CreateMenuItem();
-                if (menu is not null)
-                    items.Add(menu);
+                var item = plugin.CreateMenuItem();
+                if (item is not null)
+                    result.Add(item);
             }
             catch (Exception ex)
             {
                 Log($"[Plugin] CreateMenuItem threw for '{plugin.Name}': {ex.Message}");
             }
         }
-
-        return items;
+        return result;
     }
 }
