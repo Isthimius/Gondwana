@@ -65,7 +65,14 @@ public sealed class TilesheetEditorPanel : UserControl
             new DataGridViewTextBoxColumn { HeaderText = "X", DataPropertyName = "X", Width = 45 },
             new DataGridViewTextBoxColumn { HeaderText = "Y", DataPropertyName = "Y", Width = 45 }
         );
-        _grid.DataSource = _vm.TileCells;
+        var tileCellsSource = new BindingSource { DataSource = _vm.TileCells };
+        _grid.DataSource = tileCellsSource;
+
+        System.Collections.Specialized.NotifyCollectionChangedEventHandler tileCellsChanged = (_, _) =>
+            tileCellsSource.ResetBindings(false);
+
+        _vm.TileCells.CollectionChanged += tileCellsChanged;
+        Disposed += (_, _) => _vm.TileCells.CollectionChanged -= tileCellsChanged;
         _grid.SelectionChanged += OnGridSelectionChanged;
 
         var editPanel = new Panel { Dock = DockStyle.Right, Width = 240, Padding = new Padding(8) };
