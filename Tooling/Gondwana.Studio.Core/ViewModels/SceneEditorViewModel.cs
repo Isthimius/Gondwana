@@ -2,11 +2,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Gondwana.Studio.Core.Geometry;
+using Gondwana.Studio.Core.Services;
 using Gondwana.StudioAssets;
 using Newtonsoft.Json;
 
@@ -17,22 +16,22 @@ namespace Gondwana.Studio.ViewModels;
 /// </summary>
 public sealed partial class SceneEditorViewModel : ViewModelBase
 {
-    private readonly Window _owner;
+    private readonly IDialogService _dialogService;
 
     /// <summary>
-    /// Gets get.
+    /// Gets the tile palette loaded from the current tilesheet.
     /// </summary>
     public ObservableCollection<TileCellViewModel> TilePalette { get; } = [];
     /// <summary>
-    /// Gets get.
+    /// Gets the tiles placed on the scene canvas.
     /// </summary>
     public ObservableCollection<ScenePaintedTileViewModel> PaintedTiles { get; } = [];
     /// <summary>
-    /// Gets get.
+    /// Gets the entities placed on the scene.
     /// </summary>
     public ObservableCollection<SceneEntityViewModel> Entities { get; } = [];
     /// <summary>
-    /// Gets get.
+    /// Gets the collision rectangles defined on the scene.
     /// </summary>
     public ObservableCollection<SceneColliderViewModel> Colliders { get; } = [];
 
@@ -75,29 +74,19 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
     /// <summary>
     /// SceneEditorViewModel.
     /// </summary>
-    /// <param name="owner">owner.</param>
-    public SceneEditorViewModel(Window owner)
+    /// <param name="dialogService">Platform dialog service.</param>
+    public SceneEditorViewModel(IDialogService dialogService)
     {
-        _owner = owner;
+        _dialogService = dialogService;
     }
 
     [RelayCommand]
     private async Task OpenTilesheetAsync()
     {
-        var files = await _owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Open Tilesheet Metadata",
-            AllowMultiple = false,
-            FileTypeFilter =
-            [
-                new FilePickerFileType("Gondwana Tilesheet") { Patterns = ["*.gondwana-tilesheet"] }
-            ]
-        });
+        var path = await _dialogService.OpenFileAsync(
+            "Open Tilesheet Metadata",
+            ["*.gondwana-tilesheet"]);
 
-        if (files.Count == 0)
-            return;
-
-        var path = files[0].TryGetLocalPath();
         if (!string.IsNullOrWhiteSpace(path))
             LoadTilesheet(path);
     }
@@ -111,21 +100,12 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
             return;
         }
 
-        var saveTarget = await _owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            Title = "Save Scene",
-            SuggestedFileName = string.IsNullOrWhiteSpace(ScenePath) ? "scene" : Path.GetFileNameWithoutExtension(ScenePath),
-            DefaultExtension = "gondwana-scene",
-            FileTypeChoices =
-            [
-                new FilePickerFileType("Gondwana Scene") { Patterns = ["*.gondwana-scene"] }
-            ]
-        });
+        var path = await _dialogService.SaveFileAsync(
+            "Save Scene",
+            string.IsNullOrWhiteSpace(ScenePath) ? "scene" : Path.GetFileNameWithoutExtension(ScenePath),
+            "gondwana-scene",
+            ["*.gondwana-scene"]);
 
-        if (saveTarget is null)
-            return;
-
-        var path = saveTarget.TryGetLocalPath();
         if (string.IsNullOrWhiteSpace(path))
             return;
 
@@ -210,9 +190,9 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
     /// AddCollider.
     /// </summary>
     /// <param name="worldRect">worldRect.</param>
-    public void AddCollider(Rect worldRect)
+    public void AddCollider(RectD worldRect)
     {
-        if (worldRect.Width <= 0 || worldRect.Height <= 0)
+        if (worldRect.IsEmpty)
             return;
 
         Colliders.Add(new SceneColliderViewModel { Rect = worldRect });
@@ -259,7 +239,10 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
             Entities.Add(new SceneEntityViewModel { Name = entity.Name, X = entity.X, Y = entity.Y });
 
         foreach (var collider in scene.Colliders)
-            Colliders.Add(new SceneColliderViewModel { Rect = new Rect(collider.X, collider.Y, collider.Width, collider.Height) });
+            Colliders.Add(new SceneColliderViewModel
+            {
+                Rect = new RectD(collider.X, collider.Y, collider.Width, collider.Height)
+            });
     }
 
     /// <summary>
@@ -287,10 +270,10 @@ public sealed partial class SceneEditorViewModel : ViewModelBase
             Entities = Entities.Select(e => new SceneEntityAsset { Name = e.Name, X = (float)e.X, Y = (float)e.Y }).ToList(),
             Colliders = Colliders.Select(c => new SceneColliderAsset
             {
-                X = (float)c.Rect.X,
-                Y = (float)c.Rect.Y,
-                Width = (float)c.Rect.Width,
-                Height = (float)c.Rect.Height
+                X = (float)c.X,
+                Y = (float)c.Y,
+                Width = (float)c.Width,
+                Height = (float)c.Height
             }).ToList()
         };
 

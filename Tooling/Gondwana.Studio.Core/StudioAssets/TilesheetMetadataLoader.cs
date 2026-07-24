@@ -1,4 +1,3 @@
-using System.Drawing;
 using Gondwana.Drawing.Tilesheets;
 using Newtonsoft.Json;
 
@@ -22,25 +21,12 @@ public static class TilesheetMetadataLoader
     }
 
     /// <summary>
-    /// LoadAndRegisterTilesheet.
+    /// Loads and registers a tilesheet for use in the engine.
     /// </summary>
     /// <param name="metadataPath">metadataPath.</param>
-    /// <returns>The result.</returns>
+    /// <returns>The registered tilesheet.</returns>
     public static Tilesheet LoadAndRegisterTilesheet(string metadataPath)
     {
-        return null;
-
-        var metadata = Load(metadataPath);
-        var metadataDir = Path.GetDirectoryName(metadataPath) ?? string.Empty;
-        var imagePath = Path.GetFullPath(Path.Combine(metadataDir, metadata.ImagePath));
-        var name = Path.GetFileNameWithoutExtension(metadataPath);
-
-        //var sheet = new Tilesheet(name, imagePath)
-        //{
-        //    //TileSize = new Size(metadata.TileWidth, metadata.TileHeight)
-        //};
-
-        //sheet.ValueBag.Set(new ValueKey<TilesheetMetadataAsset>("gondwana.studio.tilesheet"), metadata);
-        //return sheet;
+        throw new NotImplementedException("LoadAndRegisterTilesheet is not implemented in Gondwana.Studio.Core. Override this in a platform-specific subclass or provide an engine integration.");
     }
 }
