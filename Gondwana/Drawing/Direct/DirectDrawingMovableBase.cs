@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Numerics;
 using Gondwana.Physics.Movement;
 using Gondwana.Rendering;
@@ -42,7 +42,7 @@ namespace Gondwana.Drawing.Direct;
 /// Thread safety: This class is not thread-safe. All operations should be performed on the UI thread.
 /// </para>
 /// </remarks>
-public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
+public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompositeChild
 {
     // update timing for fixed-step physics
     private float _accum;
@@ -210,6 +210,30 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IMovable
 
         // mark new area dirty
         ForceRefresh();
+    }
+
+    void IDirectCompositeChild.SetIsVisible(bool visible)
+    {
+        Visible = visible;
+    }
+
+    void IDirectCompositeChild.SetZOrder(int zOrder)
+    {
+        ZOrder = zOrder;
+    }
+
+    void IDirectCompositeChild.SetOpacity(float opacity)
+    {
+        Opacity = opacity;
+    }
+
+    void IDirectCompositeChild.FadeTo(
+        float targetOpacity,
+        float durationSec)
+    {
+        base.FadeTo(
+            targetOpacity,
+            durationSec);
     }
 
     /// <summary>

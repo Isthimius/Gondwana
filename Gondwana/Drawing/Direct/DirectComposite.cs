@@ -25,18 +25,18 @@ namespace Gondwana.Drawing.Direct;
 /// relationships are rejected.
 /// </para>
 /// </remarks>
-public class DirectComposite : IDirectDrawable, IMovable
+public class DirectComposite : IDirectCompositeChild
 {
     private static readonly object _parentSyncRoot = new();
 
-    private static readonly Dictionary<IDirectDrawable, DirectComposite> _parents =
+    private static readonly Dictionary<IDirectCompositeChild, DirectComposite> _parents =
         new(ReferenceEqualityComparer.Instance);
 
-    private readonly List<IDirectDrawable> _children = [];
-    private readonly Dictionary<IDirectDrawable, Vector2> _localOffsetPx =
+    private readonly List<IDirectCompositeChild> _children = [];
+    private readonly Dictionary<IDirectCompositeChild, Vector2> _localOffsetPx =
         new(ReferenceEqualityComparer.Instance);
 
-    private readonly ReadOnlyCollection<IDirectDrawable> _readOnlyChildren;
+    private readonly ReadOnlyCollection<IDirectCompositeChild> _readOnlyChildren;
 
     private PointF _anchor;
     private long _lastTick = HighResTimer.GetCurrentTick();
@@ -68,7 +68,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         _anchor = anchor;
         Nickname = nickname ?? Id.ToString();
 
-        _readOnlyChildren = new ReadOnlyCollection<IDirectDrawable>(_children);
+        _readOnlyChildren = new ReadOnlyCollection<IDirectCompositeChild>(_children);
 
         Movement = new MovementController(
             this,
@@ -118,7 +118,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <summary>
     /// Gets the children owned by the composite.
     /// </summary>
-    public ReadOnlyCollection<IDirectDrawable> Children => _readOnlyChildren;
+    public ReadOnlyCollection<IDirectCompositeChild> Children => _readOnlyChildren;
 
     /// <summary>
     /// Gets the movement controller used to move the composite anchor.
@@ -138,8 +138,8 @@ public class DirectComposite : IDirectDrawable, IMovable
         get => _children.Any(static child => child.Visible);
         set
         {
-            foreach (IDirectDrawable child in _children)
-                SetChildVisibility(child, value);
+            foreach (IDirectCompositeChild child in _children)
+                child.SetIsVisible(value);
         }
     }
 
@@ -191,25 +191,22 @@ public class DirectComposite : IDirectDrawable, IMovable
         _anchor = new PointF(x, y);
         var anchor = new Vector2(x, y);
 
-        foreach (IDirectDrawable child in _children)
+        foreach (IDirectCompositeChild child in _children)
         {
             Vector2 offset =
                 _localOffsetPx.TryGetValue(child, out Vector2 value)
                     ? value
                     : Vector2.Zero;
 
-            GetMovable(child).SetPosition(anchor + offset);
+            child.SetPosition(anchor + offset);
         }
 
         return this;
     }
 
     /// <summary>
-    /// Adds a movable direct drawable or another composite as a child.
+    /// Adds a composite-compatible direct drawable as a child.
     /// </summary>
-    /// <typeparam name="TChild">
-    /// A reference type implementing both <see cref="IDirectDrawable"/> and <see cref="IMovable"/>.
-    /// </typeparam>
     /// <param name="child">The child to add.</param>
     /// <param name="keepCurrentOffset">
     /// <see langword="true"/> to preserve the child's current offset from the
@@ -227,11 +224,10 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <exception cref="InvalidOperationException">
     /// Thrown when the child already has another parent or would create a cycle.
     /// </exception>
-    public DirectComposite Add<TChild>(
-        TChild child,
+    public DirectComposite Add(
+        IDirectCompositeChild child,
         bool keepCurrentOffset = true,
         Vector2? explicitLocalOffsetPx = null)
-        where TChild : class, IDirectDrawable, IMovable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(child);
@@ -276,7 +272,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// </summary>
     /// <param name="child">The child to detach.</param>
     /// <returns>The current composite.</returns>
-    public DirectComposite Remove(IDirectDrawable child)
+    public DirectComposite Remove(IDirectCompositeChild child)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(child);
@@ -300,7 +296,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        foreach (IDirectDrawable child in _children)
+        foreach (IDirectCompositeChild child in _children)
         {
             child.Disposing -= OnChildDisposing;
             UnregisterParent(child);
@@ -320,7 +316,7 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <param name="newLocalOffsetPx">The new offset from the composite anchor.</param>
     /// <returns>The current composite.</returns>
     public DirectComposite SetLocalOffset(
-        IDirectDrawable child,
+        IDirectCompositeChild child,
         Vector2 newLocalOffsetPx)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -331,7 +327,7 @@ public class DirectComposite : IDirectDrawable, IMovable
 
         _localOffsetPx[child] = newLocalOffsetPx;
 
-        GetMovable(child).SetPosition(
+        child.SetPosition(
             new Vector2(_anchor.X, _anchor.Y) +
             newLocalOffsetPx);
 
@@ -345,8 +341,8 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <returns>The current composite.</returns>
     public DirectComposite SetZOrder(int zOrder)
     {
-        foreach (IDirectDrawable child in _children)
-            SetChildZOrder(child, zOrder);
+        foreach (IDirectCompositeChild child in _children)
+            child.SetZOrder(zOrder);
 
         return this;
     }
@@ -358,8 +354,8 @@ public class DirectComposite : IDirectDrawable, IMovable
     /// <returns>The current composite.</returns>
     public DirectComposite SetOpacity(float opacity)
     {
-        foreach (IDirectDrawable child in _children)
-            SetChildOpacity(child, opacity);
+        foreach (IDirectCompositeChild child in _children)
+            child.SetOpacity(opacity);
 
         return this;
     }
@@ -385,8 +381,8 @@ public class DirectComposite : IDirectDrawable, IMovable
         float targetOpacity,
         float durationSec)
     {
-        foreach (IDirectDrawable child in _children)
-            FadeChildTo(child, targetOpacity, durationSec);
+        foreach (IDirectCompositeChild child in _children)
+            child.FadeTo(targetOpacity, durationSec);
 
         return this;
     }
@@ -427,7 +423,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         float maxX = float.MinValue;
         float maxY = float.MinValue;
 
-        foreach (IDirectDrawable child in _children)
+        foreach (IDirectCompositeChild child in _children)
         {
             if (!child.Visible)
                 continue;
@@ -463,6 +459,30 @@ public class DirectComposite : IDirectDrawable, IMovable
     {
     }
 
+    void IDirectCompositeChild.SetIsVisible(bool visible)
+    {
+        SetIsVisible(visible);
+    }
+
+    void IDirectCompositeChild.SetZOrder(int zOrder)
+    {
+        SetZOrder(zOrder);
+    }
+
+    void IDirectCompositeChild.SetOpacity(float opacity)
+    {
+        SetOpacity(opacity);
+    }
+
+    void IDirectCompositeChild.FadeTo(
+        float targetOpacity,
+        float durationSec)
+    {
+        FadeTo(
+            targetOpacity,
+            durationSec);
+    }
+
     /// <summary>
     /// Advances composite movement.
     /// </summary>
@@ -490,12 +510,12 @@ public class DirectComposite : IDirectDrawable, IMovable
 
         Disposing?.Invoke(this, this);
 
-        IDirectDrawable[] children = [.. _children];
+        IDirectCompositeChild[] children = [.. _children];
 
-        foreach (IDirectDrawable child in children)
+        foreach (IDirectCompositeChild child in children)
             child.Dispose();
 
-        foreach (IDirectDrawable child in _children)
+        foreach (IDirectCompositeChild child in _children)
         {
             child.Disposing -= OnChildDisposing;
             UnregisterParent(child);
@@ -508,14 +528,14 @@ public class DirectComposite : IDirectDrawable, IMovable
     }
 
     private Rectangle GetBounds(
-        Func<IDirectDrawable, Rectangle> selector)
+        Func<IDirectCompositeChild, Rectangle> selector)
     {
         float minX = float.MaxValue;
         float minY = float.MaxValue;
         float maxX = float.MinValue;
         float maxY = float.MinValue;
 
-        foreach (IDirectDrawable child in _children)
+        foreach (IDirectCompositeChild child in _children)
         {
             if (!child.Visible)
                 continue;
@@ -541,7 +561,7 @@ public class DirectComposite : IDirectDrawable, IMovable
             (int)Math.Ceiling(maxY));
     }
 
-    private void ValidateChildIdentity(IDirectDrawable child)
+    private void ValidateChildIdentity(IDirectCompositeChild child)
     {
         if (!ReferenceEquals(
                 child.RenderSurfaceHost,
@@ -561,12 +581,12 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
     }
 
-    private void ValidateAndAssignTarget(IDirectDrawable child)
+    private void ValidateAndAssignTarget(IDirectCompositeChild child)
     {
         if (Mode == DirectDrawingMode.SceneLayer)
         {
             SceneLayer childLayer =
-                GetSceneLayer(child) ??
+                child.SceneLayer ??
                 throw new ArgumentException(
                     "A scene-layer child must reference a SceneLayer.",
                     nameof(child));
@@ -588,7 +608,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
 
         View childView =
-            GetView(child) ??
+            child.View ??
             throw new ArgumentException(
                 "A view child must reference a View.",
                 nameof(child));
@@ -607,7 +627,7 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
     }
 
-    private void ValidateParentRelationship(IDirectDrawable child)
+    private void ValidateParentRelationship(IDirectCompositeChild child)
     {
         lock (_parentSyncRoot)
         {
@@ -641,13 +661,13 @@ public class DirectComposite : IDirectDrawable, IMovable
         }
     }
 
-    private void RegisterParent(IDirectDrawable child)
+    private void RegisterParent(IDirectCompositeChild child)
     {
         lock (_parentSyncRoot)
             _parents.Add(child, this);
     }
 
-    private void UnregisterParent(IDirectDrawable child)
+    private void UnregisterParent(IDirectCompositeChild child)
     {
         lock (_parentSyncRoot)
         {
@@ -672,8 +692,11 @@ public class DirectComposite : IDirectDrawable, IMovable
 
     private void OnChildDisposing(
         object? sender,
-        IDirectDrawable child)
+        IDirectDrawable drawing)
     {
+        if (drawing is not IDirectCompositeChild child)
+            return;
+
         child.Disposing -= OnChildDisposing;
         _children.Remove(child);
         _localOffsetPx.Remove(child);
@@ -681,114 +704,4 @@ public class DirectComposite : IDirectDrawable, IMovable
         ResetTargetWhenEmpty();
     }
 
-    private static IMovable GetMovable(IDirectDrawable child)
-    {
-        return child as IMovable ??
-               throw new InvalidOperationException(
-                   $"Composite child '{child.Nickname}' no longer implements IMovable.");
-    }
-
-    private static SceneLayer? GetSceneLayer(IDirectDrawable child) =>
-        child switch
-        {
-            DirectDrawingBase drawing => drawing.SceneLayer,
-            DirectComposite composite => composite.SceneLayer,
-            _ => null
-        };
-
-    private static View? GetView(IDirectDrawable child) =>
-        child switch
-        {
-            DirectDrawingBase drawing => drawing.View,
-            DirectComposite composite => composite.View,
-            _ => null
-        };
-
-    private static void SetChildVisibility(
-        IDirectDrawable child,
-        bool visible)
-    {
-        switch (child)
-        {
-            case DirectDrawingBase drawing:
-                drawing.Visible = visible;
-                break;
-
-            case DirectComposite composite:
-                composite.Visible = visible;
-                break;
-
-            default:
-                throw UnsupportedChildType(child);
-        }
-    }
-
-    private static void SetChildZOrder(
-        IDirectDrawable child,
-        int zOrder)
-    {
-        switch (child)
-        {
-            case DirectDrawingBase drawing:
-                drawing.ZOrder = zOrder;
-                break;
-
-            case DirectComposite composite:
-                composite.SetZOrder(zOrder);
-                break;
-
-            default:
-                throw UnsupportedChildType(child);
-        }
-    }
-
-    private static void SetChildOpacity(
-        IDirectDrawable child,
-        float opacity)
-    {
-        switch (child)
-        {
-            case DirectDrawingBase drawing:
-                drawing.Opacity = opacity;
-                break;
-
-            case DirectComposite composite:
-                composite.SetOpacity(opacity);
-                break;
-
-            default:
-                throw UnsupportedChildType(child);
-        }
-    }
-
-    private static void FadeChildTo(
-        IDirectDrawable child,
-        float targetOpacity,
-        float durationSec)
-    {
-        switch (child)
-        {
-            case DirectDrawingBase drawing:
-                drawing.FadeTo(
-                    targetOpacity,
-                    durationSec);
-                break;
-
-            case DirectComposite composite:
-                composite.FadeTo(
-                    targetOpacity,
-                    durationSec);
-                break;
-
-            default:
-                throw UnsupportedChildType(child);
-        }
-    }
-
-    private static InvalidOperationException UnsupportedChildType(
-        IDirectDrawable child)
-    {
-        return new InvalidOperationException(
-            $"Composite child type '{child.GetType().FullName}' does not support recursive visual operations.");
-    }
 }
