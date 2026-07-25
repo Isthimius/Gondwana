@@ -607,12 +607,22 @@ public class DirectComposite : IDirectCompositeChild
             return;
         }
 
-        View childView =
-            child.View ??
+        if (child.View is null)
+        {
+            if (child is DirectComposite compositeChild &&
+                compositeChild.Children.Count == 0)
+            {
+                throw new ArgumentException(
+                    "An empty composite cannot be added in view mode because it has no View yet. Add at least one descendant first.",
+                    nameof(child));
+            }
+
             throw new ArgumentException(
                 "A view child must reference a View.",
                 nameof(child));
+        }
 
+        View childView = child.View;
         if (View is null)
         {
             View = childView;
