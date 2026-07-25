@@ -1,6 +1,5 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
