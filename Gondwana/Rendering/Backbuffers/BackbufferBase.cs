@@ -1,5 +1,6 @@
 ﻿using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
 using Microsoft.Extensions.Logging;
@@ -377,7 +378,7 @@ public abstract class BackbufferBase : IDisposable
             if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
                 Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), GridLinePaint);
 
-            if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)
+            if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible && tile.CollisionsEnabled)
             {
                 var colRectScreen = tile.GetCollisionAreaScreen(view).ToSKRect();
                 Canvas.DrawRect(colRectScreen, CollisionBoxPaint);
