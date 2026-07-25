@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -10,6 +10,9 @@
 	<ItemGroup>
 		<PackageReference Include="coverlet.collector" Version="6.0.4" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies"
+						  Version="3.119.2"
+						  PrivateAssets="all" />
 		<PackageReference Include="xunit" Version="2.9.3" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
 	</ItemGroup>
@@ -18,10 +21,6 @@
 		<ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
 		<ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
 	</ItemGroup>
-
-	<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies"
-                  Version="3.119.2"
-                  PrivateAssets="all" />
 
 	<ItemGroup>
 		<Using Include="Xunit" />
