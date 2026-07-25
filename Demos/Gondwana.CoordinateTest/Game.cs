@@ -122,6 +122,8 @@ public class Game : IDisposable
         frameSequence.SequenceCycleType = CycleType.PingPong;
         sprite1.TileAnimator.CurrentCycle = new Cycle(frameSequence, 0.05f, "ani");
         sprite1.TileAnimator.StartAnimation();
+
+        sprite1.SceneLayer.ShowCollisionBoxes = true;
     }
 
     private DirectRectangle? _directRectangle;
@@ -246,7 +248,7 @@ public class Game : IDisposable
         var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.Orthogonal);
 
         sceneLayer1.ShowGridLines = true;
-        sceneLayer1.ShowCollisionBoxes = false;
+        sceneLayer1.ShowCollisionBoxes = true;
         sceneLayer2.ShowGridLines = true;
 
         var sourceTilesheet = TilesheetRegistry.Instance.GetAll()["tiles"];

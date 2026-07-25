@@ -377,7 +377,7 @@ public abstract class BackbufferBase : IDisposable
             if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
                 Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), GridLinePaint);
 
-            if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible)
+            if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible && tile.CollisionsEnabled)
             {
                 var colRectScreen = tile.GetCollisionAreaScreen(view).ToSKRect();
                 Canvas.DrawRect(colRectScreen, CollisionBoxPaint);
