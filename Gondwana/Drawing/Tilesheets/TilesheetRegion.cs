@@ -220,13 +220,10 @@ public sealed class TilesheetRegion : IDisposable
     {
         ThrowIfDisposed();
 
-        if (_tileCache is null)
-            BuildTileCache();
-
         if (!IsFrameCoordinateValid(x, y))
             return _collisionAdjust;
 
-        if (_tileCache![x, y] is { } slice)
+        if (_tileCache is not null && _tileCache[x, y] is { } slice)
             return slice.CollisionAdjust;
 
         return GetStoredFrameCollisionAdjust(x, y);
