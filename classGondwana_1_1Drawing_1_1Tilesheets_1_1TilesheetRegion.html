@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -101,7 +101,7 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Drawing_1_1Tilesheets
 </div><!--header-->
 <div class="contents">
 
-<p>Represents a rectangular region within a tilesheet that contains a grid of tiles.  
+<p>Represents a rectangular region within a tilesheet that contains a grid of frames.  
  <a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Tilesheets.TilesheetRegion:</div>
@@ -113,19 +113,23 @@ Inheritance diagram for Gondwana.Drawing.Tilesheets.TilesheetRegion:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1f5a8a145a4db0265ec7d19f2de04d03" id="r_a1f5a8a145a4db0265ec7d19f2de04d03"><td class="memItemLeft" align="right" valign="top">SKImage?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a1f5a8a145a4db0265ec7d19f2de04d03">GetImage</a> (int x, int y)</td></tr>
-<tr class="memdesc:a1f5a8a145a4db0265ec7d19f2de04d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the image for the tile at the specified grid coordinates.  <br /></td></tr>
 <tr class="separator:a1f5a8a145a4db0265ec7d19f2de04d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a336750f7bc8073697ccf03a7037cb87c" id="r_a336750f7bc8073697ccf03a7037cb87c"><td class="memItemLeft" align="right" valign="top">SKBitmap?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a336750f7bc8073697ccf03a7037cb87c">GetBitmap</a> (int x, int y)</td></tr>
-<tr class="memdesc:a336750f7bc8073697ccf03a7037cb87c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bitmap for the tile at the specified grid coordinates.  <br /></td></tr>
 <tr class="separator:a336750f7bc8073697ccf03a7037cb87c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b79fdd0e65b33bb473d063e57a94a2a" id="r_a0b79fdd0e65b33bb473d063e57a94a2a"><td class="memItemLeft" align="right" valign="top">Dictionary&lt;(int x, int y), SKBitmap &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a0b79fdd0e65b33bb473d063e57a94a2a">GetAllBitmaps</a> ()</td></tr>
-<tr class="memdesc:a0b79fdd0e65b33bb473d063e57a94a2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all bitmaps in this region as a dictionary keyed by their grid coordinates.  <br /></td></tr>
 <tr class="separator:a0b79fdd0e65b33bb473d063e57a94a2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add47325469353bfc96dfbccaa721e998" id="r_add47325469353bfc96dfbccaa721e998"><td class="memItemLeft" align="right" valign="top">Dictionary&lt;(int x, int y), SKImage &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#add47325469353bfc96dfbccaa721e998">GetAllImages</a> ()</td></tr>
-<tr class="memdesc:add47325469353bfc96dfbccaa721e998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all images in this region as a dictionary keyed by their grid coordinates.  <br /></td></tr>
 <tr class="separator:add47325469353bfc96dfbccaa721e998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88f6068af0a9127725375b6aa8660a05" id="r_a88f6068af0a9127725375b6aa8660a05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a88f6068af0a9127725375b6aa8660a05">GetFrameCollisionAdjust</a> (int x, int y)</td></tr>
+<tr class="memdesc:a88f6068af0a9127725375b6aa8660a05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effective collision adjustment for one frame.  <br /></td></tr>
+<tr class="separator:a88f6068af0a9127725375b6aa8660a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7085c20b0e8c651934e95027119ace9d" id="r_a7085c20b0e8c651934e95027119ace9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7085c20b0e8c651934e95027119ace9d">SetFrameCollisionAdjust</a> (int x, int y, <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> collisionAdjust)</td></tr>
+<tr class="memdesc:a7085c20b0e8c651934e95027119ace9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the collision adjustment for one frame and updates its cache entry.  <br /></td></tr>
+<tr class="separator:a7085c20b0e8c651934e95027119ace9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83104cce2dcaf023028cf5850ef63b53" id="r_a83104cce2dcaf023028cf5850ef63b53"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a83104cce2dcaf023028cf5850ef63b53">GetFrameCollisionArea</a> (int x, int y)</td></tr>
+<tr class="memdesc:a83104cce2dcaf023028cf5850ef63b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the frame-local collision rectangle for one frame.  <br /></td></tr>
+<tr class="separator:a83104cce2dcaf023028cf5850ef63b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefb4133ea192c0a298134f2e7cebe729" id="r_aefb4133ea192c0a298134f2e7cebe729"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">Dispose</a> ()</td></tr>
-<tr class="memdesc:aefb4133ea192c0a298134f2e7cebe729"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by this TilesheetRegion, including the tile cache.  <br /></td></tr>
 <tr class="separator:aefb4133ea192c0a298134f2e7cebe729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
@@ -140,40 +144,38 @@ Properties</h2></td></tr>
 <tr class="memdesc:afe617c08fedd3ba6ae5f7622c5e0ba4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tilesheet that owns this region.  <br /></td></tr>
 <tr class="separator:afe617c08fedd3ba6ae5f7622c5e0ba4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adef4e4a14635522de774b357df1a5e26" id="r_adef4e4a14635522de774b357df1a5e26"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#adef4e4a14635522de774b357df1a5e26">Name</a> = <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a52a05822424baaa432ca55e592e12c1b">DefaultRegionName</a><code> [get]</code></td></tr>
-<tr class="memdesc:adef4e4a14635522de774b357df1a5e26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the name of this tilesheet region.  <br /></td></tr>
+<tr class="memdesc:adef4e4a14635522de774b357df1a5e26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the region name.  <br /></td></tr>
 <tr class="separator:adef4e4a14635522de774b357df1a5e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a103042c56580fe4614b2f5fd800450c3" id="r_a103042c56580fe4614b2f5fd800450c3"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a103042c56580fe4614b2f5fd800450c3">Area</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a103042c56580fe4614b2f5fd800450c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the rectangular area that this region occupies within the tilesheet. Setting this property rebuilds the internal tile cache.  <br /></td></tr>
 <tr class="separator:a103042c56580fe4614b2f5fd800450c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b891f59dc32e1926655c1bbe9e6212c" id="r_a8b891f59dc32e1926655c1bbe9e6212c"><td class="memItemLeft" align="right" valign="top">Size&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a8b891f59dc32e1926655c1bbe9e6212c">TileSize</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a8b891f59dc32e1926655c1bbe9e6212c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the size of each individual tile in this region. Setting this property rebuilds the internal tile cache.  <br /></td></tr>
 <tr class="separator:a8b891f59dc32e1926655c1bbe9e6212c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6734b2a46042ed4ef7b5f0e183274c9b" id="r_a6734b2a46042ed4ef7b5f0e183274c9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a6734b2a46042ed4ef7b5f0e183274c9b">TilePadding</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a6734b2a46042ed4ef7b5f0e183274c9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the spacing (padding) around each tile within this region. Setting this property rebuilds the internal tile cache.  <br /></td></tr>
 <tr class="separator:a6734b2a46042ed4ef7b5f0e183274c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08cd7497917f8541d5f4b00e01f3b945" id="r_a08cd7497917f8541d5f4b00e01f3b945"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a08cd7497917f8541d5f4b00e01f3b945">RegionMargin</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a08cd7497917f8541d5f4b00e01f3b945"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the margin spacing around the entire region. Setting this property rebuilds the internal tile cache.  <br /></td></tr>
 <tr class="separator:a08cd7497917f8541d5f4b00e01f3b945"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59d41b78bcd54660b382a312452bb7ce" id="r_a59d41b78bcd54660b382a312452bb7ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a59d41b78bcd54660b382a312452bb7ce">Overhang</a> = Spacing.None<code> [get, set]</code></td></tr>
-<tr class="memdesc:a59d41b78bcd54660b382a312452bb7ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the overhang dimensions in pixels that extend beyond a tile's primary area. Overhang values define how much a tile's visual representation exceeds its logical boundaries in each direction (left, top, right, and bottom).  <br /></td></tr>
+<tr class="memdesc:a59d41b78bcd54660b382a312452bb7ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets visual overhang. This affects rendering, not slicing.  <br /></td></tr>
 <tr class="separator:a59d41b78bcd54660b382a312452bb7ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a764f33f21e9f8d29079815898647faac" id="r_a764f33f21e9f8d29079815898647faac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac">CollisionAdjust</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a764f33f21e9f8d29079815898647faac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the region-level collision adjustment. Assigning this value overwrites every frame adjustment in the region and updates cached metadata.  <br /></td></tr>
+<tr class="separator:a764f33f21e9f8d29079815898647faac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6602473f6853b688946c23b94bf542da" id="r_a6602473f6853b688946c23b94bf542da"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a6602473f6853b688946c23b94bf542da">CollisionArea</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6602473f6853b688946c23b94bf542da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the region-default frame-local collision rectangle.  <br /></td></tr>
+<tr class="separator:a6602473f6853b688946c23b94bf542da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c877739b31c4ea9c00b5cb0eee137a5" id="r_a7c877739b31c4ea9c00b5cb0eee137a5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7c877739b31c4ea9c00b5cb0eee137a5">Columns</a><code> [get]</code></td></tr>
-<tr class="memdesc:a7c877739b31c4ea9c00b5cb0eee137a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of columns (horizontal tiles) in this region.  <br /></td></tr>
 <tr class="separator:a7c877739b31c4ea9c00b5cb0eee137a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a206c5cf6d83fc4ff6e6d29d4d0716477" id="r_a206c5cf6d83fc4ff6e6d29d4d0716477"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a206c5cf6d83fc4ff6e6d29d4d0716477">Rows</a><code> [get]</code></td></tr>
-<tr class="memdesc:a206c5cf6d83fc4ff6e6d29d4d0716477"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of rows (vertical tiles) in this region.  <br /></td></tr>
 <tr class="separator:a206c5cf6d83fc4ff6e6d29d4d0716477"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9753537c47c09930f4476a9d44540c97" id="r_a9753537c47c09930f4476a9d44540c97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a9753537c47c09930f4476a9d44540c97">TileWidthIncludingPadding</a><code> [get]</code></td></tr>
-<tr class="memdesc:a9753537c47c09930f4476a9d44540c97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total width of a single tile including its padding.  <br /></td></tr>
 <tr class="separator:a9753537c47c09930f4476a9d44540c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff5b3d53abbdfd791a174f38436c2320" id="r_aff5b3d53abbdfd791a174f38436c2320"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aff5b3d53abbdfd791a174f38436c2320">TileHeightIncludingPadding</a><code> [get]</code></td></tr>
-<tr class="memdesc:aff5b3d53abbdfd791a174f38436c2320"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total height of a single tile including its padding.  <br /></td></tr>
 <tr class="separator:aff5b3d53abbdfd791a174f38436c2320"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Represents a rectangular region within a tilesheet that contains a grid of tiles. </p>
+<div class="textblock"><p>Represents a rectangular region within a tilesheet that contains a grid of frames. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00010">10</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00011">11</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="aefb4133ea192c0a298134f2e7cebe729" name="aefb4133ea192c0a298134f2e7cebe729"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aefb4133ea192c0a298134f2e7cebe729">&#9670;&#160;</a></span>Dispose()</h2>
@@ -190,9 +192,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Releases all resources used by this TilesheetRegion, including the tile cache. </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00428">428</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00431">431</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -211,16 +211,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets all bitmaps in this region as a dictionary keyed by their grid coordinates. </p>
-<dl class="section return"><dt>Returns</dt><dd>A dictionary mapping (x, y) coordinates to their corresponding SKBitmap instances.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00233">233</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00170">170</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -239,16 +230,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets all images in this region as a dictionary keyed by their grid coordinates. </p>
-<dl class="section return"><dt>Returns</dt><dd>A dictionary mapping (x, y) coordinates to their corresponding SKImage instances.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00264">264</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00193">193</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -278,23 +260,69 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the bitmap for the tile at the specified grid coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td>The column index of the tile.</td></tr>
-    <tr><td class="paramname">y</td><td>The row index of the tile.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The SKBitmap for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
-  </table>
-  </dd>
-</dl>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00153">153</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00211">211</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+</div>
+</div>
+<a id="a88f6068af0a9127725375b6aa8660a05" name="a88f6068af0a9127725375b6aa8660a05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88f6068af0a9127725375b6aa8660a05">&#9670;&#160;</a></span>GetFrameCollisionAdjust()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> Gondwana.Drawing.Tilesheets.TilesheetRegion.GetFrameCollisionAdjust </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the effective collision adjustment for one frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00219">219</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
+<a id="a83104cce2dcaf023028cf5850ef63b53" name="a83104cce2dcaf023028cf5850ef63b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83104cce2dcaf023028cf5850ef63b53">&#9670;&#160;</a></span>GetFrameCollisionArea()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Rectangle Gondwana.Drawing.Tilesheets.TilesheetRegion.GetFrameCollisionArea </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the frame-local collision rectangle for one frame. </p>
 
 </div>
 </div>
@@ -324,23 +352,45 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the image for the tile at the specified grid coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td>The column index of the tile.</td></tr>
-    <tr><td class="paramname">y</td><td>The row index of the tile.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The SKImage for the tile, or null if the coordinates are out of bounds or the tile cache is invalid.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ObjectDisposedException</td><td>Thrown when this instance has been disposed.</td></tr>
-  </table>
-  </dd>
-</dl>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00136">136</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00187">187</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+</div>
+</div>
+<a id="a7085c20b0e8c651934e95027119ace9d" name="a7085c20b0e8c651934e95027119ace9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7085c20b0e8c651934e95027119ace9d">&#9670;&#160;</a></span>SetFrameCollisionAdjust()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Tilesheets.TilesheetRegion.SetFrameCollisionAdjust </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td>
+          <td class="paramname"><em>collisionAdjust</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the collision adjustment for one frame and updates its cache entry. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00235">235</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -367,7 +417,7 @@ Properties</h2></td></tr>
 
 <p>The default name assigned to tilesheet regions when no name is specified. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00015">15</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00016">16</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -392,9 +442,59 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the rectangular area that this region occupies within the tilesheet. Setting this property rebuilds the internal tile cache. </p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00064">64</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00092">92</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+</div>
+</div>
+<a id="a764f33f21e9f8d29079815898647faac" name="a764f33f21e9f8d29079815898647faac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764f33f21e9f8d29079815898647faac">&#9670;&#160;</a></span>CollisionAdjust</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> Gondwana.Drawing.Tilesheets.TilesheetRegion.CollisionAdjust</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the region-level collision adjustment. Assigning this value overwrites every frame adjustment in the region and updates cached metadata. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00113">113</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6602473f6853b688946c23b94bf542da" name="a6602473f6853b688946c23b94bf542da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6602473f6853b688946c23b94bf542da">&#9670;&#160;</a></span>CollisionArea</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Rectangle Gondwana.Drawing.Tilesheets.TilesheetRegion.CollisionArea</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the region-default frame-local collision rectangle. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00128">128</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -418,9 +518,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the number of columns (horizontal tiles) in this region. </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00159">159</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00131">131</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -444,9 +542,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the name of this tilesheet region. </p>
+<p>Gets the region name. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00086">86</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00062">62</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -470,10 +568,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Represents the overhang dimensions in pixels that extend beyond a tile's primary area. Overhang values define how much a tile's visual representation exceeds its logical boundaries in each direction (left, top, right, and bottom). </p>
-<p>This property only affects how the tile is rendered; it does not affect how the tile is sliced and cached. </p>
+<p>Gets or sets visual overhang. This affects rendering, not slicing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00154">154</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00107">107</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -497,9 +594,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the margin spacing around the entire region. Setting this property rebuilds the internal tile cache. </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00136">136</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00094">94</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -523,9 +618,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the number of rows (vertical tiles) in this region. </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00164">164</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00132">132</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -549,9 +642,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the total height of a single tile including its padding. </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00174">174</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00134">134</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -575,9 +666,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the spacing (padding) around each tile within this region. Setting this property rebuilds the internal tile cache. </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00122">122</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00084">84</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -603,7 +692,7 @@ Properties</h2></td></tr>
 
 <p>Gets the tilesheet that owns this region. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00081">81</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00057">57</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -627,10 +716,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the size of each individual tile in this region. Setting this property rebuilds the internal tile cache. </p>
-<p>The tile size defines the source pixel dimensions of each tile's primary area, excluding any padding </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00108">108</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00074">74</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -654,9 +740,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the total width of a single tile including its padding. </p>
-
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00169">169</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00133">133</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>

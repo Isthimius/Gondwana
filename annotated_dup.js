@@ -94,6 +94,7 @@ var annotated_dup =
           [ "DirectRectangle", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle" ],
           [ "DirectSvg", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg" ],
           [ "DirectVideo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo" ],
+          [ "IDirectCompositeChild", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild" ],
           [ "IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable" ],
           [ "TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock" ]
         ] ],
@@ -107,6 +108,7 @@ var annotated_dup =
           [ "GTS", "namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html", [
             [ "TilesheetDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition" ],
             [ "TilesheetDefinitionSource", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource" ],
+            [ "TilesheetFrameDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition" ],
             [ "TilesheetImageDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition" ],
             [ "TilesheetMaskDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetMaskDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetMaskDefinition" ],
             [ "TilesheetRegionDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition" ]
@@ -178,9 +180,8 @@ var annotated_dup =
         [ "Collisions", "namespaceGondwana_1_1Physics_1_1Collisions.html", [
           [ "Aabb", "structGondwana_1_1Physics_1_1Collisions_1_1Aabb.html", "structGondwana_1_1Physics_1_1Collisions_1_1Aabb" ],
           [ "ColliderRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry" ],
-          [ "CollisionDetectionAdjustment", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment.html", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment" ],
+          [ "CollisionAdjust", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust" ],
           [ "CollisionGroupRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry" ],
-          [ "CollisionResult", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionResult.html", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionResult" ],
           [ "ICollider", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider" ],
           [ "ICollisionEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity" ],
           [ "ICollisionMovableEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity" ]
@@ -233,9 +234,18 @@ var annotated_dup =
         [ "VlcVideoPlayer", "classGondwana_1_1Video_1_1VlcVideoPlayer.html", "classGondwana_1_1Video_1_1VlcVideoPlayer" ]
       ] ],
       [ "Widgets", "namespaceGondwana_1_1Widgets.html", [
+        [ "Controls", "namespaceGondwana_1_1Widgets_1_1Controls.html", [
+          [ "ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget" ]
+        ] ],
+        [ "Dialogs", "namespaceGondwana_1_1Widgets_1_1Dialogs.html", [
+          [ "AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox" ],
+          [ "DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox" ]
+        ] ],
         [ "Overlays", "namespaceGondwana_1_1Widgets_1_1Overlays.html", [
           [ "SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen" ]
         ] ],
+        [ "ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", "classGondwana_1_1Widgets_1_1ContainerWidget" ],
+        [ "DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", "classGondwana_1_1Widgets_1_1DraggableContainerWidget" ],
         [ "DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", "classGondwana_1_1Widgets_1_1DraggableWidgetBase" ],
         [ "WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", "classGondwana_1_1Widgets_1_1WidgetBase" ],
         [ "WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs" ],

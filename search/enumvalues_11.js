@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['s_0',['s',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a5dbc98dcc983a70728bd082d1a47546e',1,'Gondwana.Drawing.Coordinates.S'],['../namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472a5dbc98dcc983a70728bd082d1a47546e',1,'Gondwana.Physics.Collisions.S']]],
+  ['s_0',['S',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a5dbc98dcc983a70728bd082d1a47546e',1,'Gondwana::Drawing::Coordinates']]],
   ['scenelayer_1',['SceneLayer',['../namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c',1,'Gondwana::Drawing::Direct']]],
   ['scenes_2',['Scenes',['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575abb34f602e45a9fbcb2cdfee7a48673fc',1,'Gondwana']]],
   ['scrolllock_3',['ScrollLock',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a7d7902d5e2998e4fb2b8694a2de4ff65',1,'Gondwana::Blazor::Input::Keyboard']]],
-  ['se_4',['se',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5af003c44deab679aa2edfaff864c77402',1,'Gondwana.Drawing.Coordinates.SE'],['../namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472af003c44deab679aa2edfaff864c77402',1,'Gondwana.Physics.Collisions.SE']]],
+  ['se_4',['SE',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5af003c44deab679aa2edfaff864c77402',1,'Gondwana::Drawing::Coordinates']]],
   ['semicolon_5',['Semicolon',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a9806fa37a3ecd39bf637c203aa011ed0',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['shift_6',['Shift',['../namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92ea825a3d98017bab11815ad2817201324c',1,'Gondwana::Input::Keyboard']]],
   ['shiftleft_7',['ShiftLeft',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ad9382145a142cc7df5f733332c9cb812',1,'Gondwana::Blazor::Input::Keyboard']]],
@@ -21,7 +21,7 @@ var searchData=
   ['stretch_18',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560',1,'Gondwana::Drawing::Direct::DirectImage']]],
   ['stylus_19',['Stylus',['../namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473feaf9eccd07c9abd3e633298d3239fa3b98',1,'Gondwana::Widgets']]],
   ['svg_20',['Svg',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1a9a612a14f347adfbf122cc7c0e985b',1,'Gondwana::Assets']]],
-  ['sw_21',['sw',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Drawing.Coordinates.SW'],['../namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana.Physics.Collisions.SW']]],
+  ['sw_21',['SW',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana::Drawing::Coordinates']]],
   ['swipe_22',['Swipe',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa78076ce792c4640bf99c598c92bd69e7',1,'Gondwana::Input::Touch::Gestures']]],
   ['synchronous_23',['Synchronous',['../namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249da2fe4167817733fec8e6ba1afddf78f1b',1,'Gondwana::Logging']]]
 ];

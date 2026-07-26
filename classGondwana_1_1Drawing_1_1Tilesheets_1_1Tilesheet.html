@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -112,104 +112,77 @@ Inheritance diagram for Gondwana.Drawing.Tilesheets.Tilesheet:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6f2503e21d4a13f17d05d062d80e2972" id="r_a6f2503e21d4a13f17d05d062d80e2972"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html">TilesheetRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a6f2503e21d4a13f17d05d062d80e2972">AddRegion</a> (string name, Rectangle area, Size tileSize, <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>? tilePadding=null, <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>? regionMargin=null, <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>? overhangPixels=null)</td></tr>
-<tr class="memdesc:a6f2503e21d4a13f17d05d062d80e2972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a region to this tilesheet.  <br /></td></tr>
-<tr class="separator:a6f2503e21d4a13f17d05d062d80e2972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0460490784db1dd5dbdc0619f417c74e" id="r_a0460490784db1dd5dbdc0619f417c74e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html">TilesheetRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a0460490784db1dd5dbdc0619f417c74e">AddRegion</a> (string name, Rectangle area, Size tileSize, <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>? tilePadding=null, <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>? regionMargin=null, <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>? overhangPixels=null, <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>? collisionAdjust=null)</td></tr>
+<tr class="memdesc:a0460490784db1dd5dbdc0619f417c74e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a region and initializes all of its frames with the supplied collision adjustment.  <br /></td></tr>
+<tr class="separator:a0460490784db1dd5dbdc0619f417c74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2730cfc80015daf18fbce69b0de4890" id="r_ad2730cfc80015daf18fbce69b0de4890"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html">TilesheetRegion</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ad2730cfc80015daf18fbce69b0de4890">GetRegion</a> (string name)</td></tr>
-<tr class="memdesc:ad2730cfc80015daf18fbce69b0de4890"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the tilesheet region with the specified name.  <br /></td></tr>
 <tr class="separator:ad2730cfc80015daf18fbce69b0de4890"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57062c3c15f7c25353f12f83640a0148" id="r_a57062c3c15f7c25353f12f83640a0148"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a57062c3c15f7c25353f12f83640a0148">RemoveRegion</a> (string name, bool dispose=true)</td></tr>
-<tr class="memdesc:a57062c3c15f7c25353f12f83640a0148"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the tilesheet region with the specified name.  <br /></td></tr>
 <tr class="separator:a57062c3c15f7c25353f12f83640a0148"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a218462ee9898722f377b95826f8161a1" id="r_a218462ee9898722f377b95826f8161a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a218462ee9898722f377b95826f8161a1">GetFrame</a> (string regionName, int x, int y)</td></tr>
-<tr class="memdesc:a218462ee9898722f377b95826f8161a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a Frame representing the tile at the given region and sheet coordinates.  <br /></td></tr>
 <tr class="separator:a218462ee9898722f377b95826f8161a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbbce469cd716c169fac51a6bc42c471" id="r_acbbce469cd716c169fac51a6bc42c471"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#acbbce469cd716c169fac51a6bc42c471">GetFrame</a> (int x, int y)</td></tr>
-<tr class="memdesc:acbbce469cd716c169fac51a6bc42c471"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a Frame representing the tile at the default region and sheet coordinates.  <br /></td></tr>
 <tr class="separator:acbbce469cd716c169fac51a6bc42c471"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a319188d2d81776215ec095aa8ae92f0b" id="r_a319188d2d81776215ec095aa8ae92f0b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a319188d2d81776215ec095aa8ae92f0b">ApplyMask</a> (SKColor? maskColor=null, byte tolerance=5)</td></tr>
-<tr class="memdesc:a319188d2d81776215ec095aa8ae92f0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent, and then premultiplies the alpha channel.  <br /></td></tr>
 <tr class="separator:a319188d2d81776215ec095aa8ae92f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d352c40b4c8e243323726fc60396909" id="r_a4d352c40b4c8e243323726fc60396909"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a4d352c40b4c8e243323726fc60396909">ApplyPremultiplyAlpha</a> ()</td></tr>
-<tr class="memdesc:a4d352c40b4c8e243323726fc60396909"><td class="mdescLeft">&#160;</td><td class="mdescRight">Premultiplies the alpha channel of the bitmap, improving rendering performance and quality. Preserves the original bitmap in SkBitmapOriginal before applying the operation.  <br /></td></tr>
 <tr class="separator:a4d352c40b4c8e243323726fc60396909"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a971d93cabf9046246996e2ae59073f41" id="r_a971d93cabf9046246996e2ae59073f41"><td class="memItemLeft" align="right" valign="top">byte[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a971d93cabf9046246996e2ae59073f41">ToByteArray</a> (SKEncodedImageFormat format=SKEncodedImageFormat.Png, int quality=100)</td></tr>
-<tr class="memdesc:a971d93cabf9046246996e2ae59073f41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the tilesheet bitmap to a byte array in the specified image format.  <br /></td></tr>
 <tr class="separator:a971d93cabf9046246996e2ae59073f41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27a83b061bdc523d3a4371e810a25e18" id="r_a27a83b061bdc523d3a4371e810a25e18"><td class="memItemLeft" align="right" valign="top">SKImage?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a27a83b061bdc523d3a4371e810a25e18">GetImage</a> (string regionName, int x, int y)</td></tr>
-<tr class="memdesc:a27a83b061bdc523d3a4371e810a25e18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the SkiaSharp image for the tile at the specified region and coordinates.  <br /></td></tr>
 <tr class="separator:a27a83b061bdc523d3a4371e810a25e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a663115b9c0e9ab89fad30d0e9b634282" id="r_a663115b9c0e9ab89fad30d0e9b634282"><td class="memItemLeft" align="right" valign="top">SKBitmap?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a663115b9c0e9ab89fad30d0e9b634282">GetBitmap</a> (string regionName, int x, int y)</td></tr>
-<tr class="memdesc:a663115b9c0e9ab89fad30d0e9b634282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the SkiaSharp bitmap for the tile at the specified region and coordinates.  <br /></td></tr>
 <tr class="separator:a663115b9c0e9ab89fad30d0e9b634282"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80820bf120d578511d9fd78c471e5d2e" id="r_a80820bf120d578511d9fd78c471e5d2e"><td class="memItemLeft" align="right" valign="top">Dictionary&lt;(string regionName, int x, int y), SKBitmap &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a80820bf120d578511d9fd78c471e5d2e">GetAllBitmaps</a> ()</td></tr>
-<tr class="memdesc:a80820bf120d578511d9fd78c471e5d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves all tile bitmaps from the tilesheet as a dictionary indexed by their region and coordinates.  <br /></td></tr>
 <tr class="separator:a80820bf120d578511d9fd78c471e5d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5020a027011ffc49e56e9b937f8c363f" id="r_a5020a027011ffc49e56e9b937f8c363f"><td class="memItemLeft" align="right" valign="top">Dictionary&lt;(string regionName, int x, int y), SKImage &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a5020a027011ffc49e56e9b937f8c363f">GetAllImages</a> ()</td></tr>
-<tr class="memdesc:a5020a027011ffc49e56e9b937f8c363f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves all tile images from the tilesheet as a dictionary indexed by their region and coordinates.  <br /></td></tr>
 <tr class="separator:a5020a027011ffc49e56e9b937f8c363f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8048a44ff4133047244f5f4e9e7b7876" id="r_a8048a44ff4133047244f5f4e9e7b7876"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a8048a44ff4133047244f5f4e9e7b7876">Dispose</a> ()</td></tr>
-<tr class="memdesc:a8048a44ff4133047244f5f4e9e7b7876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by this tilesheet, including cached tiles, bitmaps, and registration in the TilesheetRegistry.  <br /></td></tr>
 <tr class="separator:a8048a44ff4133047244f5f4e9e7b7876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ac09643888382111a32e3bc8cc5fd0b47" id="r_ac09643888382111a32e3bc8cc5fd0b47"><td class="memItemLeft" align="right" valign="top">SKBitmap&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ac09643888382111a32e3bc8cc5fd0b47">SkBitmap</a> = null!<code> [get]</code></td></tr>
-<tr class="memdesc:ac09643888382111a32e3bc8cc5fd0b47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the SkiaSharp bitmap containing the tilesheet image. This may be a modified version if alpha masking or premultiplication has been applied.  <br /></td></tr>
 <tr class="separator:ac09643888382111a32e3bc8cc5fd0b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab812c3b15d2a42afb089120be989d36a" id="r_ab812c3b15d2a42afb089120be989d36a"><td class="memItemLeft" align="right" valign="top">SKBitmap?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ab812c3b15d2a42afb089120be989d36a">SkBitmapOriginal</a> = null<code> [get]</code></td></tr>
-<tr class="memdesc:ab812c3b15d2a42afb089120be989d36a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the original SkiaSharp bitmap before any alpha masking or premultiplication was applied. Returns <code>null</code> if no modifications have been made.  <br /></td></tr>
+<tr class="memitem:ab812c3b15d2a42afb089120be989d36a" id="r_ab812c3b15d2a42afb089120be989d36a"><td class="memItemLeft" align="right" valign="top">SKBitmap?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ab812c3b15d2a42afb089120be989d36a">SkBitmapOriginal</a><code> [get]</code></td></tr>
 <tr class="separator:ab812c3b15d2a42afb089120be989d36a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93ae6a42470c6e5c37e99ef34619fedd" id="r_a93ae6a42470c6e5c37e99ef34619fedd"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a93ae6a42470c6e5c37e99ef34619fedd">Name</a> = string.Empty<code> [get, set]</code></td></tr>
-<tr class="memdesc:a93ae6a42470c6e5c37e99ef34619fedd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the name of this tilesheet. Changing the name updates the tilesheet's registration in the TilesheetRegistry.  <br /></td></tr>
 <tr class="separator:a93ae6a42470c6e5c37e99ef34619fedd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84b22d4b2e161b03a6550146ef8d0f16" id="r_a84b22d4b2e161b03a6550146ef8d0f16"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html">TilesheetRegion</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a84b22d4b2e161b03a6550146ef8d0f16">Regions</a> = new()<code> [get]</code></td></tr>
-<tr class="memdesc:a84b22d4b2e161b03a6550146ef8d0f16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the regions that define tile layouts within this tilesheet. Each region may define its own area, tile size, spacing, and overhang settings.  <br /></td></tr>
 <tr class="separator:a84b22d4b2e161b03a6550146ef8d0f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cdca5cd02b0ea9b876872d04605edac" id="r_a0cdca5cd02b0ea9b876872d04605edac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html">TilesheetRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a0cdca5cd02b0ea9b876872d04605edac">DefaultRegion</a><code> [get]</code></td></tr>
-<tr class="memdesc:a0cdca5cd02b0ea9b876872d04605edac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the default region from the tilesheet.  <br /></td></tr>
 <tr class="separator:a0cdca5cd02b0ea9b876872d04605edac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e2ab2692d9d5d9b1381de837440f783" id="r_a0e2ab2692d9d5d9b1381de837440f783"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a0e2ab2692d9d5d9b1381de837440f783">ValueBag</a> = new()<code> [get, set]</code></td></tr>
-<tr class="memdesc:a0e2ab2692d9d5d9b1381de837440f783"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet.  <br /></td></tr>
 <tr class="separator:a0e2ab2692d9d5d9b1381de837440f783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cd8a11e3cc74568582bdc0fffe1dc13" id="r_a1cd8a11e3cc74568582bdc0fffe1dc13"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFileIdentifier.html">AssetsFileIdentifier</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a1cd8a11e3cc74568582bdc0fffe1dc13">AssetIdentifier</a><code> [get]</code></td></tr>
-<tr class="memdesc:a1cd8a11e3cc74568582bdc0fffe1dc13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the asset identifier if this tilesheet was loaded from an assets file. Returns <code>null</code> if the tilesheet was loaded from another source.  <br /></td></tr>
 <tr class="separator:a1cd8a11e3cc74568582bdc0fffe1dc13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab128d8f8c07a397659c042d22f38bb7a" id="r_ab128d8f8c07a397659c042d22f38bb7a"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ab128d8f8c07a397659c042d22f38bb7a">ImageFilePath</a> = string.Empty<code> [get]</code></td></tr>
-<tr class="memdesc:ab128d8f8c07a397659c042d22f38bb7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file path of the image file if this tilesheet was loaded from a file. Returns an empty string if the tilesheet was loaded from another source.  <br /></td></tr>
 <tr class="separator:ab128d8f8c07a397659c042d22f38bb7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86af944fb2baa1c46e92602a4be0d0d0" id="r_a86af944fb2baa1c46e92602a4be0d0d0"><td class="memItemLeft" align="right" valign="top">SKColor?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a86af944fb2baa1c46e92602a4be0d0d0">MaskColor</a> = null<code> [get]</code></td></tr>
-<tr class="memdesc:a86af944fb2baa1c46e92602a4be0d0d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the color used for alpha masking, if ApplyMask has been called. Returns <code>null</code> if no mask has been applied.  <br /></td></tr>
+<tr class="memitem:a86af944fb2baa1c46e92602a4be0d0d0" id="r_a86af944fb2baa1c46e92602a4be0d0d0"><td class="memItemLeft" align="right" valign="top">SKColor?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a86af944fb2baa1c46e92602a4be0d0d0">MaskColor</a><code> [get]</code></td></tr>
 <tr class="separator:a86af944fb2baa1c46e92602a4be0d0d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49ad16968a869fdcc37342cb3a8a62c4" id="r_a49ad16968a869fdcc37342cb3a8a62c4"><td class="memItemLeft" align="right" valign="top">byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a49ad16968a869fdcc37342cb3a8a62c4">MaskTolerance</a> = 5<code> [get]</code></td></tr>
-<tr class="memdesc:a49ad16968a869fdcc37342cb3a8a62c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tolerance value used when applying the alpha mask. This determines how closely pixels must match the mask color to be made transparent.  <br /></td></tr>
 <tr class="separator:a49ad16968a869fdcc37342cb3a8a62c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08caff22bc95261f54e223abe85def16" id="r_a08caff22bc95261f54e223abe85def16"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a08caff22bc95261f54e223abe85def16">Premultiplied</a> = false<code> [get]</code></td></tr>
-<tr class="memdesc:a08caff22bc95261f54e223abe85def16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the bitmap has been premultiplied with its alpha channel. This is <code>true</code> after calling ApplyMask or ApplyPremultiplyAlpha.  <br /></td></tr>
+<tr class="memitem:a08caff22bc95261f54e223abe85def16" id="r_a08caff22bc95261f54e223abe85def16"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a08caff22bc95261f54e223abe85def16">Premultiplied</a><code> [get]</code></td></tr>
 <tr class="separator:a08caff22bc95261f54e223abe85def16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cb3063b7aab538de3976c8c1e3acaa6" id="r_a4cb3063b7aab538de3976c8c1e3acaa6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html">TilesheetRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a4cb3063b7aab538de3976c8c1e3acaa6">this[string regionName]</a><code> [get]</code></td></tr>
-<tr class="memdesc:a4cb3063b7aab538de3976c8c1e3acaa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tilesheet region with the specified name.  <br /></td></tr>
 <tr class="separator:a4cb3063b7aab538de3976c8c1e3acaa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd3180f77b82dace7652bd1db6a48d57" id="r_acd3180f77b82dace7652bd1db6a48d57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#acd3180f77b82dace7652bd1db6a48d57">this[string regionName, int x, int y]</a><code> [get]</code></td></tr>
-<tr class="memdesc:acd3180f77b82dace7652bd1db6a48d57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a Frame representing the tile at the given region and sheet coordinates.  <br /></td></tr>
 <tr class="separator:acd3180f77b82dace7652bd1db6a48d57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a119e1cf3fbc3015da90b2615b87b9024" id="r_a119e1cf3fbc3015da90b2615b87b9024"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a119e1cf3fbc3015da90b2615b87b9024">this[int x, int y]</a><code> [get]</code></td></tr>
-<tr class="memdesc:a119e1cf3fbc3015da90b2615b87b9024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a Frame representing the tile at the default region and sheet coordinates.  <br /></td></tr>
 <tr class="separator:a119e1cf3fbc3015da90b2615b87b9024"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a30c37d7f145913bf74416c0d9f2c3844" id="r_a30c37d7f145913bf74416c0d9f2c3844"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a30c37d7f145913bf74416c0d9f2c3844">Disposed</a></td></tr>
-<tr class="memdesc:a30c37d7f145913bf74416c0d9f2c3844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when this tilesheet is disposed.  <br /></td></tr>
 <tr class="separator:a30c37d7f145913bf74416c0d9f2c3844"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a tilesheet image and metadata for rendering tiles. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00012">12</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00013">13</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6f2503e21d4a13f17d05d062d80e2972" name="a6f2503e21d4a13f17d05d062d80e2972"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6f2503e21d4a13f17d05d062d80e2972">&#9670;&#160;</a></span>AddRegion()</h2>
+<a id="a0460490784db1dd5dbdc0619f417c74e" name="a0460490784db1dd5dbdc0619f417c74e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0460490784db1dd5dbdc0619f417c74e">&#9670;&#160;</a></span>AddRegion()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -248,7 +221,13 @@ Events</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>?&#160;</td>
-          <td class="paramname"><em>overhangPixels</em> = <code>null</code>&#160;</td>
+          <td class="paramname"><em>overhangPixels</em> = <code>null</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>?&#160;</td>
+          <td class="paramname"><em>collisionAdjust</em> = <code>null</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -258,27 +237,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Adds a region to this tilesheet. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The name to assign to this region.</td></tr>
-    <tr><td class="paramname">area</td><td>The rectangular area of the source image occupied by this region.</td></tr>
-    <tr><td class="paramname">tileSize</td><td>The size of each individual tile in this region.</td></tr>
-    <tr><td class="paramname">tilePadding</td><td>The horizontal and vertical spacing between tiles in this region.</td></tr>
-    <tr><td class="paramname">regionMargin</td><td>The margin around the region.</td></tr>
-    <tr><td class="paramname">overhangPixels</td><td>The overhang dimensions for tiles in this region.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The newly created TilesheetRegion.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentException</td><td>Thrown when the region name is null, whitespace, or already exists.</td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Adds a region and initializes all of its frames with the supplied collision adjustment. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00210">210</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00128">128</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -308,22 +269,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Applies an alpha mask to the tilesheet, making pixels matching the specified color transparent, and then premultiplies the alpha channel. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">maskColor</td><td>The color to treat as transparent. If <code>null</code>, defaults to white.</td></tr>
-    <tr><td class="paramname">tolerance</td><td>The tolerance for color matching (0-255). Lower values require closer matches.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentException</td><td>Thrown when the bitmap is null or empty.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00307">307</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00191">191</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -342,15 +288,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Premultiplies the alpha channel of the bitmap, improving rendering performance and quality. Preserves the original bitmap in SkBitmapOriginal before applying the operation. </p>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentException</td><td>Thrown when the bitmap is null or empty.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00354">354</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00229">229</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -369,9 +307,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Releases all resources used by this tilesheet, including cached tiles, bitmaps, and registration in the TilesheetRegistry. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00556">556</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00328">328</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -390,10 +326,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieves all tile bitmaps from the tilesheet as a dictionary indexed by their region and coordinates. </p>
-<dl class="section return"><dt>Returns</dt><dd>A dictionary where keys are (regionName, x, y) tuples representing tile coordinates and values are the corresponding SKBitmap instances. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00433">433</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00260">260</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -412,10 +345,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieves all tile images from the tilesheet as a dictionary indexed by their region and coordinates. </p>
-<dl class="section return"><dt>Returns</dt><dd>A dictionary where keys are (regionName, x, y) tuples representing tile coordinates and values are the corresponding SKImage instances. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00457">457</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00273">273</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -451,19 +381,6 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieves the SkiaSharp bitmap for the tile at the specified region and coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">regionName</td><td>The name of the tilesheet region.</td></tr>
-    <tr><td class="paramname">x</td><td>The zero-based tile column index within the region.</td></tr>
-    <tr><td class="paramname">y</td><td>The zero-based tile row index within the region.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The SKBitmap for the specified tile, or <code>null</code> if the region or coordinates are out of bounds or the tile cache is not initialized. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00416">416</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
-
 </div>
 </div>
 <a id="acbbce469cd716c169fac51a6bc42c471" name="acbbce469cd716c169fac51a6bc42c471"></a>
@@ -491,15 +408,6 @@ Events</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Returns a Frame representing the tile at the default region and sheet coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td>Zero-based tile column index within the region.</td></tr>
-    <tr><td class="paramname">y</td><td>Zero-based tile row index within the region.</td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
@@ -535,16 +443,6 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a Frame representing the tile at the given region and sheet coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">regionName</td><td>The name of the tilesheet region.</td></tr>
-    <tr><td class="paramname">x</td><td>Zero-based tile column index within the region.</td></tr>
-    <tr><td class="paramname">y</td><td>Zero-based tile row index within the region.</td></tr>
-  </table>
-  </dd>
-</dl>
-
 </div>
 </div>
 <a id="a27a83b061bdc523d3a4371e810a25e18" name="a27a83b061bdc523d3a4371e810a25e18"></a>
@@ -579,19 +477,6 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieves the SkiaSharp image for the tile at the specified region and coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">regionName</td><td>The name of the tilesheet region.</td></tr>
-    <tr><td class="paramname">x</td><td>The zero-based tile column index within the region.</td></tr>
-    <tr><td class="paramname">y</td><td>The zero-based tile row index within the region.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The SKImage for the specified tile, or <code>null</code> if the region or coordinates are out of bounds or the tile cache is not initialized. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00396">396</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
-
 </div>
 </div>
 <a id="ad2730cfc80015daf18fbce69b0de4890" name="ad2730cfc80015daf18fbce69b0de4890"></a>
@@ -610,16 +495,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieves the tilesheet region with the specified name. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The name of the region to retrieve.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The matching TilesheetRegion, or <code>null</code> if no matching region exists. If multiple regions have the same name, only the first match will be returned. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00246">246</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00157">157</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -649,17 +525,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Removes the tilesheet region with the specified name. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The name of the region to remove.</td></tr>
-    <tr><td class="paramname">dispose</td><td>Whether the removed region should be disposed.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><code>true</code> if a matching region was found and removed; otherwise, <code>false</code>. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00268">268</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00171">171</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -689,23 +555,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Encodes the tilesheet bitmap to a byte array in the specified image format. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">format</td><td>The image format to encode to. Defaults to PNG.</td></tr>
-    <tr><td class="paramname">quality</td><td>The encoding quality (0-100). Defaults to 100 (highest quality).</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A byte array containing the encoded image data.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentException</td><td>Thrown when the bitmap is null or empty.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00378">378</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00244">244</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -730,9 +580,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the asset identifier if this tilesheet was loaded from an assets file. Returns <code>null</code> if the tilesheet was loaded from another source. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00171">171</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00119">119</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -756,9 +604,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the default region from the tilesheet. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00160">160</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00117">117</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -782,9 +628,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the file path of the image file if this tilesheet was loaded from a file. Returns an empty string if the tilesheet was loaded from another source. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00177">177</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00120">120</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -798,7 +642,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">SKColor? Gondwana.Drawing.Tilesheets.Tilesheet.MaskColor = null</td>
+          <td class="memname">SKColor? Gondwana.Drawing.Tilesheets.Tilesheet.MaskColor</td>
         </tr>
       </table>
   </td>
@@ -808,9 +652,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the color used for alpha masking, if ApplyMask has been called. Returns <code>null</code> if no mask has been applied. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00183">183</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00121">121</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -834,9 +676,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the tolerance value used when applying the alpha mask. This determines how closely pixels must match the mask color to be made transparent. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00189">189</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00122">122</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -860,9 +700,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the name of this tilesheet. Changing the name updates the tilesheet's registration in the TilesheetRegistry. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00149">149</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00115">115</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -876,7 +714,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool Gondwana.Drawing.Tilesheets.Tilesheet.Premultiplied = false</td>
+          <td class="memname">bool Gondwana.Drawing.Tilesheets.Tilesheet.Premultiplied</td>
         </tr>
       </table>
   </td>
@@ -886,9 +724,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a value indicating whether the bitmap has been premultiplied with its alpha channel. This is <code>true</code> after calling ApplyMask or ApplyPremultiplyAlpha. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00195">195</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00123">123</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -912,9 +748,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the regions that define tile layouts within this tilesheet. Each region may define its own area, tile size, spacing, and overhang settings. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00155">155</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00116">116</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -938,9 +772,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the SkiaSharp bitmap containing the tilesheet image. This may be a modified version if alpha masking or premultiplication has been applied. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00137">137</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00113">113</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -954,7 +786,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">SKBitmap? Gondwana.Drawing.Tilesheets.Tilesheet.SkBitmapOriginal = null</td>
+          <td class="memname">SKBitmap? Gondwana.Drawing.Tilesheets.Tilesheet.SkBitmapOriginal</td>
         </tr>
       </table>
   </td>
@@ -964,9 +796,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the original SkiaSharp bitmap before any alpha masking or premultiplication was applied. Returns <code>null</code> if no modifications have been made. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00143">143</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00114">114</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -990,17 +820,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a Frame representing the tile at the default region and sheet coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td>Zero-based tile column index within the region.</td></tr>
-    <tr><td class="paramname">y</td><td>Zero-based tile row index within the region.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A Frame representing the specified tile.</dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00503">503</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00295">295</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -1024,18 +844,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a Frame representing the tile at the given region and sheet coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">regionName</td><td>The name of the tilesheet region.</td></tr>
-    <tr><td class="paramname">x</td><td>Zero-based tile column index within the region.</td></tr>
-    <tr><td class="paramname">y</td><td>Zero-based tile row index within the region.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A Frame representing the specified tile.</dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00494">494</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00292">292</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -1059,22 +868,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the tilesheet region with the specified name. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">regionName</td><td>The name of the region to retrieve.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The matching TilesheetRegion.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentException</td><td>Thrown when no region with the specified name exists.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00484">484</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00286">286</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -1098,9 +892,7 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the value bag for storing arbitrary typed values associated with this tilesheet. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00165">165</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00118">118</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>
@@ -1117,9 +909,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Occurs when this tilesheet is disposed. </p>
-
-<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00017">17</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tilesheet_8cs_source.html#l00015">15</a> of file <a class="el" href="Tilesheet_8cs_source.html">Tilesheet.cs</a>.</p>
 
 </div>
 </div>

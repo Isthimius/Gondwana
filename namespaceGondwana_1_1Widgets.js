@@ -1,6 +1,10 @@
 var namespaceGondwana_1_1Widgets =
 [
+    [ "Controls", "namespaceGondwana_1_1Widgets_1_1Controls.html", "namespaceGondwana_1_1Widgets_1_1Controls" ],
+    [ "Dialogs", "namespaceGondwana_1_1Widgets_1_1Dialogs.html", "namespaceGondwana_1_1Widgets_1_1Dialogs" ],
     [ "Overlays", "namespaceGondwana_1_1Widgets_1_1Overlays.html", "namespaceGondwana_1_1Widgets_1_1Overlays" ],
+    [ "ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", "classGondwana_1_1Widgets_1_1ContainerWidget" ],
+    [ "DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", "classGondwana_1_1Widgets_1_1DraggableContainerWidget" ],
     [ "DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", "classGondwana_1_1Widgets_1_1DraggableWidgetBase" ],
     [ "WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", "classGondwana_1_1Widgets_1_1WidgetBase" ],
     [ "WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs" ],

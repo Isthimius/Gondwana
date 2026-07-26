@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['e_0',['e',['../namespaceGondwana_1_1Physics_1_1Collisions.html#a8d7349199cbb40b39bce58a01d74d472a3a3ea00cfc35332cedf6e5e9a32e94da',1,'Gondwana.Physics.Collisions.E'],['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da',1,'Gondwana.Drawing.Coordinates.E']]],
+  ['e_0',['E',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a3a3ea00cfc35332cedf6e5e9a32e94da',1,'Gondwana::Drawing::Coordinates']]],
   ['easeincubic_1',['EaseInCubic',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca13f3932381b4de8932a9a30d7aeaa289',1,'Gondwana::Physics::Movement::Easing']]],
   ['easeinoutcubic_2',['EaseInOutCubic',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca51e1906b67f89bfc0e47c85379fe4eec',1,'Gondwana::Physics::Movement::Easing']]],
   ['easeinoutquad_3',['EaseInOutQuad',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bcad37eb834b1eb836f03c9aafdc55e2e6d',1,'Gondwana::Physics::Movement::Easing']]],

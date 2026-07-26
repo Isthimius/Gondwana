@@ -9,5 +9,6 @@ var searchData=
   ['blazormouseadapter_6',['BlazorMouseAdapter',['../classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html',1,'Gondwana::Blazor::Input::Mouse']]],
   ['blazortouchadapter_7',['BlazorTouchAdapter',['../classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html',1,'Gondwana::Blazor::Input::Touch']]],
   ['browseraudiomanager_8',['BrowserAudioManager',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html',1,'Gondwana::Audio::Browser']]],
-  ['browseraudioplayer_9',['BrowserAudioPlayer',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html',1,'Gondwana::Audio::Browser']]]
+  ['browseraudioplayer_9',['BrowserAudioPlayer',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html',1,'Gondwana::Audio::Browser']]],
+  ['buttonwidget_10',['ButtonWidget',['../classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html',1,'Gondwana::Widgets::Controls']]]
 ];

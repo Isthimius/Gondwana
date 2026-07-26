@@ -1,13 +1,15 @@
 var classGondwana_1_1Drawing_1_1Tile =
 [
     [ "CompareTo", "classGondwana_1_1Drawing_1_1Tile.html#a88e851955c75d87fb4077eb257b32684", null ],
+    [ "CopyCollisionSettingsFrom", "classGondwana_1_1Drawing_1_1Tile.html#a565151265749a82230c3b5f4c32b5104", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022", null ],
     [ "Draw", "classGondwana_1_1Drawing_1_1Tile.html#a4927327e6c632c964beae3b3bcdcb69b", null ],
     [ "GetCollisionAreaScreen", "classGondwana_1_1Drawing_1_1Tile.html#a196e3fa81e6244609b0ca81d914d9f06", null ],
     [ "GetDrawLocationScreen", "classGondwana_1_1Drawing_1_1Tile.html#a2c2d0e6d13d966cf1faca72bd05a85c9", null ],
     [ "_collider", "classGondwana_1_1Drawing_1_1Tile.html#abdab6a1ccfd3c2f07bc61b98e1cf84a1", null ],
     [ "pauseAnimation", "classGondwana_1_1Drawing_1_1Tile.html#a55b7cf5594bcb95ab5893c3c43842673", null ],
-    [ "AdjustCollisionArea", "classGondwana_1_1Drawing_1_1Tile.html#ac8f79979d79887bc43b245de84e9a052", null ],
+    [ "AdjustCollisionArea", "classGondwana_1_1Drawing_1_1Tile.html#acf06592c3e663726e5b7b93effe52bdc", null ],
+    [ "AdjustCollisionAreaByFrame", "classGondwana_1_1Drawing_1_1Tile.html#a6d0cea14ef259899fc970c5faac4360f", null ],
     [ "Collider", "classGondwana_1_1Drawing_1_1Tile.html#a50bde19a832324893f058b03e14cf7f3", null ],
     [ "CollisionArea", "classGondwana_1_1Drawing_1_1Tile.html#a39985eb5adff013e78446f18336963e9", null ],
     [ "CollisionsEnabled", "classGondwana_1_1Drawing_1_1Tile.html#a04aecd48929540170b3fbe43cb5e06f8", null ],

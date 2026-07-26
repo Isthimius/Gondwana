@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.1</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Drawing_1_1Tilesheets
 </div><!--header-->
 <div class="contents">
 
-<p>Defines a rectangular region within a tilesheet, including its location, tile dimensions, and spacing parameters.  
+<p>Defines a rectangular region within a tilesheet, including layout and collision metadata.  
  <a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
@@ -108,26 +108,31 @@ Properties</h2></td></tr>
 <tr class="memdesc:a02cb0e0fe4c22b14b949c867354e109c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the name of the region.  <br /></td></tr>
 <tr class="separator:a02cb0e0fe4c22b14b949c867354e109c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b1fa621ea7ae5e6e16364ee43bef6eb" id="r_a3b1fa621ea7ae5e6e16364ee43bef6eb"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#a3b1fa621ea7ae5e6e16364ee43bef6eb">Area</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a3b1fa621ea7ae5e6e16364ee43bef6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the rectangular area defining the bounds of this region within the tilesheet image.  <br /></td></tr>
+<tr class="memdesc:a3b1fa621ea7ae5e6e16364ee43bef6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the rectangular bounds of this region in the source image.  <br /></td></tr>
 <tr class="separator:a3b1fa621ea7ae5e6e16364ee43bef6eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86e768a81b31434fa4995ad4d735dfa3" id="r_a86e768a81b31434fa4995ad4d735dfa3"><td class="memItemLeft" align="right" valign="top">Size&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#a86e768a81b31434fa4995ad4d735dfa3">TileSize</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a86e768a81b31434fa4995ad4d735dfa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the size of individual tiles within this region.  <br /></td></tr>
+<tr class="memdesc:a86e768a81b31434fa4995ad4d735dfa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the size of individual frames in this region.  <br /></td></tr>
 <tr class="separator:a86e768a81b31434fa4995ad4d735dfa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5ec70d2f4cead1454dd2582f548d276" id="r_ac5ec70d2f4cead1454dd2582f548d276"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#ac5ec70d2f4cead1454dd2582f548d276">TilePadding</a> = Spacing.None<code> [get, set]</code></td></tr>
-<tr class="memdesc:ac5ec70d2f4cead1454dd2582f548d276"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the spacing between adjacent tiles within the region.  <br /></td></tr>
+<tr class="memdesc:ac5ec70d2f4cead1454dd2582f548d276"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the spacing between adjacent frames.  <br /></td></tr>
 <tr class="separator:ac5ec70d2f4cead1454dd2582f548d276"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af86de085d7ed014264dbb97296dfad57" id="r_af86de085d7ed014264dbb97296dfad57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#af86de085d7ed014264dbb97296dfad57">RegionMargin</a> = Spacing.None<code> [get, set]</code></td></tr>
-<tr class="memdesc:af86de085d7ed014264dbb97296dfad57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the margin space around the entire region.  <br /></td></tr>
+<tr class="memdesc:af86de085d7ed014264dbb97296dfad57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the margin around the frame grid.  <br /></td></tr>
 <tr class="separator:af86de085d7ed014264dbb97296dfad57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a46fa8ce742ef034c03c5cb2b5cc2d7" id="r_a3a46fa8ce742ef034c03c5cb2b5cc2d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#a3a46fa8ce742ef034c03c5cb2b5cc2d7">Overhang</a> = Spacing.None<code> [get, set]</code></td></tr>
-<tr class="memdesc:a3a46fa8ce742ef034c03c5cb2b5cc2d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the overhang spacing that extends beyond the standard tile boundaries.  <br /></td></tr>
+<tr class="memdesc:a3a46fa8ce742ef034c03c5cb2b5cc2d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the visual overhang beyond the logical tile bounds.  <br /></td></tr>
 <tr class="separator:a3a46fa8ce742ef034c03c5cb2b5cc2d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4597b16cf71f14011fb93319d3e07fc4" id="r_a4597b16cf71f14011fb93319d3e07fc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#a4597b16cf71f14011fb93319d3e07fc4">CollisionAdjust</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a4597b16cf71f14011fb93319d3e07fc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the region-level collision adjustment applied to all frames by default.  <br /></td></tr>
+<tr class="separator:a4597b16cf71f14011fb93319d3e07fc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae56ef927ed6a1b5bb4cd0b26773332a9" id="r_ae56ef927ed6a1b5bb4cd0b26773332a9"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition.html">TilesheetFrameDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#ae56ef927ed6a1b5bb4cd0b26773332a9">Frames</a> = []<code> [get, set]</code></td></tr>
+<tr class="memdesc:ae56ef927ed6a1b5bb4cd0b26773332a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the final per-frame collision metadata for this region.  <br /></td></tr>
+<tr class="separator:ae56ef927ed6a1b5bb4cd0b26773332a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Defines a rectangular region within a tilesheet, including its location, tile dimensions, and spacing parameters. </p>
-<p>A tilesheet can contain multiple regions, each representing a distinct grid of tiles with its own layout parameters. This class encapsulates all the information needed to correctly parse and extract individual tiles from a region. </p>
+<div class="textblock"><p>Defines a rectangular region within a tilesheet, including layout and collision metadata. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00012">12</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00009">9</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 </div><h2 class="groupheader">Property Documentation</h2>
 <a id="a3b1fa621ea7ae5e6e16364ee43bef6eb" name="a3b1fa621ea7ae5e6e16364ee43bef6eb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3b1fa621ea7ae5e6e16364ee43bef6eb">&#9670;&#160;</a></span>Area</h2>
@@ -149,10 +154,68 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the rectangular area defining the bounds of this region within the tilesheet image. </p>
-<p>The area is specified in pixel coordinates relative to the top-left corner of the tilesheet image. </p>
+<p>Gets or sets the rectangular bounds of this region in the source image. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00030">30</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00019">19</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="a4597b16cf71f14011fb93319d3e07fc4" name="a4597b16cf71f14011fb93319d3e07fc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4597b16cf71f14011fb93319d3e07fc4">&#9670;&#160;</a></span>CollisionAdjust</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition.CollisionAdjust</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code hl_namespace" href="namespaceGondwana.html">Gondwana</a>.<a class="code hl_namespace" href="namespaceGondwana_1_1Physics.html">Physics</a>.<a class="code hl_namespace" href="namespaceGondwana_1_1Physics_1_1Collisions.html">Collisions</a>.<a class="code hl_struct" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>.<a class="code hl_variable" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#a31dae28e59b8d486a2153d0b263d7ecb">None</a></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Collisions_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Collisions.html">Gondwana.Physics.Collisions</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Physics_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics.html">Gondwana.Physics</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
+<div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioInterop_8cs_source.html#l00004">BrowserAudioInterop.cs:4</a></div></div>
+<div class="ttc" id="astructGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust_html"><div class="ttname"><a href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">Gondwana.Physics.Collisions.CollisionAdjust</a></div><div class="ttdoc">Pixel adjustments applied to visual bounds to produce a collision rectangle.</div><div class="ttdef"><b>Definition</b> <a href="CollisionAdjust_8cs_source.html#l00016">CollisionAdjust.cs:17</a></div></div>
+<div class="ttc" id="astructGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust_html_a31dae28e59b8d486a2153d0b263d7ecb"><div class="ttname"><a href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#a31dae28e59b8d486a2153d0b263d7ecb">Gondwana.Physics.Collisions.CollisionAdjust.None</a></div><div class="ttdeci">static readonly CollisionAdjust None</div><div class="ttdoc">Represents an adjustment with no pixel offsets.</div><div class="ttdef"><b>Definition</b> <a href="CollisionAdjust_8cs_source.html#l00045">CollisionAdjust.cs:45</a></div></div>
+</div><!-- fragment -->
+<p>Gets or sets the region-level collision adjustment applied to all frames by default. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00044">44</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="ae56ef927ed6a1b5bb4cd0b26773332a9" name="ae56ef927ed6a1b5bb4cd0b26773332a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae56ef927ed6a1b5bb4cd0b26773332a9">&#9670;&#160;</a></span>Frames</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">List&lt;<a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition.html">TilesheetFrameDefinition</a>&gt; Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition.Frames = []</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the final per-frame collision metadata for this region. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00050">50</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -177,10 +240,8 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the name of the region. </p>
-<p>Defaults to TilesheetRegion.DefaultRegionName.</p>
-<p>Region names are used to reference specific regions within a tilesheet, allowing multiple tile layouts to coexist within a single image file. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00022">22</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00014">14</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -204,11 +265,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the overhang spacing that extends beyond the standard tile boundaries. </p>
-<p>Defaults to Spacing.None.</p>
-<p>Overhang allows tiles to visually extend beyond their logical grid boundaries, which is useful for tiles with effects like shadows, glows, or other visual elements that bleed into adjacent tile spaces while maintaining proper grid alignment. </p>
+<p>Gets or sets the visual overhang beyond the logical tile bounds. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00069">69</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00039">39</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -232,11 +291,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the margin space around the entire region. </p>
-<p>Defaults to Spacing.None.</p>
-<p>Region margin defines the space between the region's boundary (Area) and the first tile. This accounts for any border or padding around the tile grid itself. </p>
+<p>Gets or sets the margin around the frame grid. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00058">58</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00034">34</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -260,11 +317,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the spacing between adjacent tiles within the region. </p>
-<p>Defaults to Spacing.None.</p>
-<p>Tile padding defines the gap between tiles in the grid. This is useful for tilesheets where tiles are separated by borders or gutters to prevent texture bleeding. </p>
+<p>Gets or sets the spacing between adjacent frames. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00048">48</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00029">29</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -288,10 +343,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the size of individual tiles within this region. </p>
-<p>All tiles within a region share the same dimensions. The tile size does not include padding or margins. </p>
+<p>Gets or sets the size of individual frames in this region. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00038">38</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00024">24</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>

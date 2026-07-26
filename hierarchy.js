@@ -6,9 +6,7 @@ var hierarchy =
     [ "Gondwana.Audio.Browser.BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", null ],
     [ "Gondwana.Rendering.Views.Camera", "classGondwana_1_1Rendering_1_1Views_1_1Camera.html", null ],
     [ "Gondwana.Physics.Collisions.ColliderRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html", null ],
-    [ "Gondwana.Physics.Collisions.CollisionDetectionAdjustment", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionDetectionAdjustment.html", null ],
     [ "Gondwana.Physics.Collisions.CollisionGroupRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html", null ],
-    [ "Gondwana.Physics.Collisions.CollisionResult", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionResult.html", null ],
     [ "Control", null, [
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html", null ]
     ] ],
@@ -88,13 +86,24 @@ var hierarchy =
       [ "Gondwana.Drawing.Animation.Cycle", "classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html", null ],
       [ "Gondwana.Drawing.Direct.DirectDrawingManager", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html", null ],
       [ "Gondwana.Drawing.Direct.IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", [
-        [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", [
-          [ "Gondwana.Widgets.WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", [
-            [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
-            [ "Gondwana.Widgets.Overlays.SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", null ]
-          ] ]
-        ] ],
-        [ "Gondwana.Drawing.Direct.DirectDrawingBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html", null ]
+        [ "Gondwana.Drawing.Direct.DirectDrawingBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html", null ],
+        [ "Gondwana.Drawing.Direct.IDirectCompositeChild", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html", [
+          [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", [
+            [ "Gondwana.Widgets.WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", [
+              [ "Gondwana.Widgets.ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", [
+                [ "Gondwana.Widgets.DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", [
+                  [ "Gondwana.Widgets.Dialogs.DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", [
+                    [ "Gondwana.Widgets.Dialogs.AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", null ]
+                  ] ]
+                ] ]
+              ] ],
+              [ "Gondwana.Widgets.Controls.ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", null ],
+              [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
+              [ "Gondwana.Widgets.Overlays.SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", null ]
+            ] ]
+          ] ],
+          [ "Gondwana.Drawing.Direct.DirectDrawingMovableBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html", null ]
+        ] ]
       ] ],
       [ "Gondwana.Drawing.Sprites.Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", null ],
       [ "Gondwana.Drawing.Sprites.SpriteManager", "classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html", null ],
@@ -151,7 +160,8 @@ var hierarchy =
       [ "Gondwana.Scenes.SceneLayer", "classGondwana_1_1Scenes_1_1SceneLayer.html", null ]
     ] ],
     [ "IEquatable", null, [
-      [ "Gondwana.Assets.AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", null ]
+      [ "Gondwana.Assets.AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", null ],
+      [ "Gondwana.Physics.Collisions.CollisionAdjust", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html", null ]
     ] ],
     [ "Gondwana.Input.Gamepad.IGamepadAdapter", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html", [
       [ "Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter", "classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadAdapter.html", null ],
@@ -180,8 +190,7 @@ var hierarchy =
       [ "Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html", null ]
     ] ],
     [ "Gondwana.Physics.Movement.IMovable", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html", [
-      [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", null ],
-      [ "Gondwana.Drawing.Direct.DirectDrawingMovableBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html", null ],
+      [ "Gondwana.Drawing.Direct.IDirectCompositeChild", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html", null ],
       [ "Gondwana.Physics.Movement.IMovableOnSceneLayer", "interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html", [
         [ "Gondwana.Drawing.Sprites.CompositeSprite", "classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html", null ]
       ] ]
@@ -229,6 +238,7 @@ var hierarchy =
     [ "Gondwana.Physics.Movement.Scripted.ScriptedMovement", "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSource", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html", null ],
+    [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetFrameDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetImageDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetMaskDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetMaskDefinition.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html", null ],
