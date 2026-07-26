@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.5.2 - July 26, 2026
+
+
+
+## Added
+- Add core and winforms support for Gondwana.Studio
+- Add CollisionAdjust to improve collision handling
+
+
+
+
 # v2.5.1 - July 19, 2026
 
 

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 
 
+# v2.5.2 - July 26, 2026
+
+
+
+## Added
+- Add CollisionAdjust to improve collision handling
+
+
+
+## Fixed
+- Resolve collision behavior and movement checks
+- Only show collision boxes for collidable tiles
+
+
+
+## Refactoring
+- Simplify widget inheritance structure
+
+
+
+
 # v2.5.1 - July 19, 2026
 
 
