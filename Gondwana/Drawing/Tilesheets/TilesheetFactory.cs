@@ -60,13 +60,12 @@ internal static class TilesheetFactory
 
             // Region construction already applies the region default. Apply only
             // persisted frame records afterward so frame-specific values survive.
-            foreach (var frame in region.Frames ?? [])
-            {
-                runtimeRegion.SetFrameCollisionAdjust(
-                    frame.XTile,
-                    frame.YTile,
-                    frame.CollisionAdjust ?? region.CollisionAdjust);
-            }
+foreach (var frame in region.Frames ?? [])
+{
+    var adjust = frame.CollisionAdjust ?? region.CollisionAdjust;
+    if (adjust != region.CollisionAdjust)
+        runtimeRegion.SetFrameCollisionAdjust(frame.XTile, frame.YTile, adjust);
+}
         }
 
         if (definition.Mask is not null)
