@@ -138,7 +138,7 @@ public class DirectRectangle : DirectDrawingMovableBase
                            SceneLayer sceneLayer,
                            Rectangle worldBounds,
                            string? nickname = null)
-        : this(color, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, worldBounds, null, nickname) { }
+        : this(color, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, nickname) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectRectangle"/> class for view (screen-space) rendering.

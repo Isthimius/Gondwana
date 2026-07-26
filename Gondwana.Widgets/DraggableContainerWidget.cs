@@ -7,9 +7,9 @@ using System.Numerics;
 namespace Gondwana.Widgets;
 
 /// <summary>
-/// Base type for leaf widgets that can be repositioned through pointer dragging.
+/// Base type for container widgets that can be repositioned through pointer dragging.
 /// </summary>
-public abstract class DraggableWidgetBase : WidgetBase
+public abstract class DraggableContainerWidget : ContainerWidget
 {
     private readonly WidgetDragBehavior _dragBehavior;
 
@@ -19,7 +19,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     public event Action<WidgetDragEventArgs>? DragStarted;
 
     /// <summary>
-    /// Raised after the widget is repositioned during an active drag.
+    /// Raised after the container is repositioned during an active drag.
     /// </summary>
     public event Action<WidgetDragEventArgs>? Dragged;
 
@@ -29,9 +29,9 @@ public abstract class DraggableWidgetBase : WidgetBase
     public event Action<WidgetDragEventArgs>? DragEnded;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DraggableWidgetBase"/> class.
+    /// Initializes a new instance of the <see cref="DraggableContainerWidget"/> class.
     /// </summary>
-    protected DraggableWidgetBase(
+    protected DraggableContainerWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         DirectDrawingMode mode,
         PointF anchor = default,
@@ -174,7 +174,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     }
 
     /// <summary>
-    /// Called after the widget moves during dragging.
+    /// Called after the container moves during dragging.
     /// </summary>
     protected virtual void OnDragged(
         WidgetDragEventArgs args)
