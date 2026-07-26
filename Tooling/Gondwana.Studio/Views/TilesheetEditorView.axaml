@@ -4,7 +4,7 @@
              x:Class="Gondwana.Studio.Views.TilesheetEditorView"
              x:DataType="vm:TilesheetEditorViewModel"
              DragDrop.AllowDrop="True">
-  <Grid ColumnDefinitions="3*,1*" RowDefinitions="Auto,*,Auto">
+  <Grid ColumnDefinitions="3*,Auto" RowDefinitions="Auto,*,Auto">
     <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8" Spacing="6">
       <Button Content="Open Image" Command="{Binding OpenImageCommand}" />
       <Button Content="Save Metadata" Command="{Binding SaveCommand}" />
@@ -27,15 +27,25 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="vm:TileCellViewModel">
-                <Button Background="#00FFFFFF"
-                        BorderBrush="#66FFFFFF"
-                        BorderThickness="1"
-                        Width="{Binding Width}"
+                <Canvas Width="{Binding Width}"
                         Height="{Binding Height}"
                         Canvas.Left="{Binding Left}"
-                        Canvas.Top="{Binding Top}"
-                        Tag="{Binding}"
-                        Click="OnTileCellClicked"/>
+                        Canvas.Top="{Binding Top}">
+                  <Button Background="#00FFFFFF"
+                          BorderBrush="#66FFFFFF"
+                          BorderThickness="1"
+                          Width="{Binding Width}"
+                          Height="{Binding Height}"
+                          Tag="{Binding}"
+                          Click="OnTileCellClicked" />
+                  <Border Canvas.Left="{Binding CollisionAdjustLeft}"
+                          Canvas.Top="{Binding CollisionAdjustTop}"
+                          Width="{Binding CollisionWidth}"
+                          Height="{Binding CollisionHeight}"
+                          BorderBrush="#FFFF3B30"
+                          BorderThickness="1.5"
+                          IsHitTestVisible="False" />
+                </Canvas>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
@@ -43,20 +53,57 @@
       </ScrollViewer>
     </Border>
 
-    <StackPanel Grid.Row="1" Grid.Column="1" Margin="8" Spacing="6">
-      <TextBlock Text="Selected Tile" FontWeight="Bold"/>
-      <TextBlock Text="{Binding SelectedTile.Index, StringFormat='Index: {0}'}" />
-      <TextBox Text="{Binding SelectedTileName}" Watermark="Tile name..." />
-      <Button Content="Apply Name" Command="{Binding ApplyTileNameCommand}" />
-      <TextBlock Text="Named tiles" FontWeight="Bold" Margin="0,12,0,0"/>
-      <ListBox ItemsSource="{Binding NamedTiles}">
-        <ListBox.ItemTemplate>
-          <DataTemplate x:DataType="vm:TileCellViewModel">
-            <TextBlock Text="{Binding Name, StringFormat='[{0}]'}"/>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-    </StackPanel>
+    <ScrollViewer Grid.Row="1" Grid.Column="1" Width="300" Margin="8">
+      <StackPanel Spacing="6">
+        <TextBlock Text="Region Collision Adjust" FontWeight="Bold" />
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Top" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="0" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding CollisionAdjustTop, Mode=TwoWay}" />
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Bottom" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding CollisionAdjustBottom, Mode=TwoWay}" />
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="Left" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="2" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding CollisionAdjustLeft, Mode=TwoWay}" />
+          <TextBlock Grid.Row="3" Grid.Column="0" Text="Right" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="3" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding CollisionAdjustRight, Mode=TwoWay}" />
+        </Grid>
+
+        <Separator Margin="0,8" />
+
+        <TextBlock Text="Selected Frame" FontWeight="Bold" />
+        <TextBlock Text="{Binding SelectedTile.Index, StringFormat='Index: {0}'}" />
+        <TextBox Text="{Binding SelectedTileName}" Watermark="Tile name..." />
+        <Button Content="Apply Name" Command="{Binding ApplyTileNameCommand}" />
+
+        <TextBlock Text="Frame Collision Adjust" FontWeight="Bold" Margin="0,8,0,0" />
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Top" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="0" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding SelectedTile.CollisionAdjustTop, Mode=TwoWay}" />
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Bottom" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding SelectedTile.CollisionAdjustBottom, Mode=TwoWay}" />
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="Left" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="2" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding SelectedTile.CollisionAdjustLeft, Mode=TwoWay}" />
+          <TextBlock Grid.Row="3" Grid.Column="0" Text="Right" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="3" Grid.Column="1" Minimum="-32768" Maximum="32768"
+                         Value="{Binding SelectedTile.CollisionAdjustRight, Mode=TwoWay}" />
+        </Grid>
+
+        <TextBlock Text="Named tiles" FontWeight="Bold" Margin="0,12,0,0" />
+        <ListBox ItemsSource="{Binding NamedTiles}" MinHeight="100">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:TileCellViewModel">
+              <TextBlock Text="{Binding Name, StringFormat='[{0}]'}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </StackPanel>
+    </ScrollViewer>
 
     <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="8" Text="{Binding StatusText}" />
   </Grid>

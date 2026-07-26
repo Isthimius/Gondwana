@@ -1,6 +1,7 @@
 using System.Drawing;
 using SkiaSharp;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Physics.Collisions;
 
 namespace Gondwana.Drawing;
 
@@ -32,9 +33,6 @@ public struct Frame
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
-    /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
-    /// <param name="xTile">The horizontal tile coordinate (column index) within the tilesheet.</param>
-    /// <param name="yTile">The vertical tile coordinate (row index) within the tilesheet.</param>
     public Frame(Tilesheet tilesheet, int xTile, int yTile)
     {
         Tilesheet = tilesheet;
@@ -46,10 +44,6 @@ public struct Frame
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
-    /// <param name="tilesheet">The tilesheet containing the source bitmap.</param>
-    /// <param name="regionName">The tilesheet region containing the source bitmap.</param>
-    /// <param name="xTile">The horizontal tile coordinate (column index) within the tilesheet.</param>
-    /// <param name="yTile">The vertical tile coordinate (row index) within the tilesheet.</param>
     public Frame(Tilesheet tilesheet, string regionName, int xTile, int yTile)
     {
         Tilesheet = tilesheet;
@@ -59,28 +53,50 @@ public struct Frame
     }
 
     /// <summary>
-    /// Gets the SkiaSharp bitmap for this frame at the specified tile coordinates.
-    /// Returns <see langword="null"/> if the tilesheet is not available.
+    /// Gets the SkiaSharp bitmap for this frame.
     /// </summary>
-    /// <returns>The frame bitmap, or <see langword="null"/>.</returns>
     public readonly SKBitmap? SkBitmap => Tilesheet?.GetBitmap(RegionName, XTile, YTile);
 
     /// <summary>
-    /// Gets the SkiaSharp image for this frame at the specified tile coordinates.
-    /// Returns <see langword="null"/> if the tilesheet is not available.
+    /// Gets the SkiaSharp image for this frame.
     /// </summary>
-    /// <returns>The frame image, or <see langword="null"/>.</returns>
     public readonly SKImage? SkImage => Tilesheet?.GetImage(RegionName, XTile, YTile);
 
     /// <summary>
-    /// Gets the base tile size (without overhang) from the tilesheet.
-    /// Returns <see cref="Size.Empty"/> if the tilesheet is not available.
+    /// Gets the base tile size, without overhang.
     /// </summary>
     public readonly Size TileSize => Tilesheet?.GetRegion(RegionName)?.TileSize ?? Size.Empty;
 
     /// <summary>
-    /// Gets the overhang dimensions (in pixels) that extend beyond the base tile boundaries.
-    /// Returns <see cref="Spacing.None"/> if the tilesheet is not available.
+    /// Gets the overhang dimensions for this frame.
     /// </summary>
     public readonly Spacing Overhang => Tilesheet?.GetRegion(RegionName)?.Overhang ?? Spacing.None;
+
+    /// <summary>
+    /// Gets or sets the collision adjustment associated with this frame's region coordinates.
+    /// </summary>
+    /// <remarks>
+    /// A frame is a lightweight tilesheet reference, so assigning this property updates the
+    /// authoritative per-frame metadata owned by <see cref="TilesheetRegion"/> and its cache.
+    /// </remarks>
+    public CollisionAdjust CollisionAdjust
+    {
+        readonly get => Tilesheet?.GetRegion(RegionName)?.GetFrameCollisionAdjust(XTile, YTile)
+            ?? Gondwana.Physics.Collisions.CollisionAdjust.None;
+        set
+        {
+            var region = Tilesheet?.GetRegion(RegionName)
+                ?? throw new InvalidOperationException(
+                    $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+
+            region.SetFrameCollisionAdjust(XTile, YTile, value);
+        }
+    }
+
+    /// <summary>
+    /// Gets the frame-local collision rectangle derived from <see cref="TileSize"/> and
+    /// <see cref="CollisionAdjust"/>.
+    /// </summary>
+    public readonly Rectangle CollisionArea =>
+        CollisionAdjust.ApplyTo(new Rectangle(Point.Empty, TileSize));
 }
