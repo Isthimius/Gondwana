@@ -1,9 +1,11 @@
-﻿using SkiaSharp;
+using Gondwana.Physics.Collisions;
+using SkiaSharp;
+using System.Drawing;
 
 namespace Gondwana.Drawing.Tilesheets;
 
 /// <summary>
-/// Represents a cached slice of a tilesheet region containing both bitmap and image representations of a single tile.
+/// Represents a cached tilesheet-region slice and its per-frame collision metadata.
 /// </summary>
 internal readonly struct TilesheetRegionSlice
 {
@@ -18,13 +20,32 @@ internal readonly struct TilesheetRegionSlice
     public readonly SKImage Image;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TilesheetRegionSlice"/> struct with the specified bitmap and image.
+    /// The collision adjustment associated with this cached frame.
     /// </summary>
-    /// <param name="bmp">The SKBitmap representation of the tile.</param>
-    /// <param name="img">The SKImage representation of the tile.</param>
-    public TilesheetRegionSlice(SKBitmap bmp, SKImage img)
+    public readonly CollisionAdjust CollisionAdjust;
+
+    /// <summary>
+    /// Gets the frame-local collision rectangle.
+    /// </summary>
+    public readonly Rectangle CollisionArea =>
+        CollisionAdjust.ApplyTo(new Rectangle(0, 0, Bitmap.Width, Bitmap.Height));
+
+    /// <summary>
+    /// Initializes a new cached tilesheet slice.
+    /// </summary>
+    public TilesheetRegionSlice(
+        SKBitmap bmp,
+        SKImage img,
+        CollisionAdjust collisionAdjust)
     {
         Bitmap = bmp;
         Image = img;
+        CollisionAdjust = collisionAdjust;
     }
+
+    /// <summary>
+    /// Returns a cache entry that reuses the image resources with updated collision metadata.
+    /// </summary>
+    public readonly TilesheetRegionSlice WithCollisionAdjust(CollisionAdjust collisionAdjust) =>
+        new(Bitmap, Image, collisionAdjust);
 }
