@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Physics.Collisions;
@@ -20,7 +21,6 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
     /// <summary>
     /// Gets the collection of all tiles that are currently animating in the scene.
-    /// Used to track and update animated tiles during the render cycle.
     /// </summary>
     public static List<Tile> TilesAnimating { get; } = new();
 
@@ -28,87 +28,43 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
     #region fields
 
-    /// <summary>
-    /// Stores the current Z-order used when sorting the tile for drawing.
-    /// </summary>
     protected internal int zOrder = 0;
-    /// <summary>
-    /// Stores whether the tile is currently visible.
-    /// </summary>
     protected internal bool visible;
-
-    /// <summary>
-    /// Stores the frame currently used when drawing the tile.
-    /// </summary>
     protected internal Frame frame;
-    /// <summary>
-    /// Stores whether fog rendering is enabled for the tile.
-    /// </summary>
     protected internal bool enableFog = false;
-    /// <summary>
-    /// Stores the animator responsible for advancing the tile's frames.
-    /// </summary>
     protected internal Animator? animator;
-    /// <summary>
-    /// Stores whether animation advancement is currently paused.
-    /// </summary>
     protected bool pauseAnimation;
-
-    /// <summary>
-    /// Stores the collider used for collision detection, when present.
-    /// </summary>
     protected ICollider? _collider;
+
+    private CollisionAdjust _adjustCollisionArea = CollisionAdjust.None;
+    private bool _adjustCollisionAreaByFrame;
+    private bool _hasAssignedFrame;
+    private bool _collisionAdjustExplicitlySet;
+    private bool _collisionsEnabled;
 
     #endregion fields
 
     #region abstract properties
 
-    /// <summary>
-    /// Gets a value indicating whether the tile's position is fixed in screen space (e.g., UI elements)
-    /// or moves with the world (e.g., game objects).
-    /// </summary>
     public abstract bool IsPositionFixed { get; }
-
-    /// <summary>
-    /// Gets the tile's draw location in world coordinates as a rectangle.
-    /// This represents the area occupied by the tile in the game world.
-    /// </summary>
     public abstract Rectangle DrawLocationWorld { get; }
-    
-    /// <summary>
-    /// Gets the tile's position within its scene layer using the layer's coordinate system.
-    /// </summary>
     public abstract PointF SceneLayerCoordinates { get; }
-    
-    /// <summary>
-    /// Gets the scene layer that contains this tile.
-    /// </summary>
     public abstract SceneLayer SceneLayer { get; }
 
     #endregion abstract properties
 
     #region IDrawable members
 
-    /// <summary>
-    /// Gets the unique identifier for this tile instance.
-    /// </summary>
     [JsonProperty]
     public Guid Id { get; private set; } = Guid.NewGuid();
 
-    /// <summary>
-    /// Gets or sets an optional friendly name for the tile, useful for debugging and identification.
-    /// </summary>
     [JsonProperty]
     public string? Nickname { get; set; }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether the tile is visible and should be rendered.
-    /// Setting this property triggers a refresh of the tile's screen area.
-    /// </summary>
     [JsonProperty]
     public virtual bool Visible
     {
-        get { return visible; }
+        get => visible;
         set
         {
             visible = value;
@@ -116,15 +72,10 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
-    /// <summary>
-    /// Gets or sets the Z-order (depth) of the tile for rendering priority.
-    /// Higher values are drawn later (on top of lower values).
-    /// Setting this property triggers a refresh of the tile's screen area.
-    /// </summary>
     [JsonProperty]
     public virtual int ZOrder
     {
-        get { return zOrder; }
+        get => zOrder;
         set
         {
             zOrder = value;
@@ -132,104 +83,70 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
-    /// <summary>
-    /// Converts the tile's world location to screen coordinates based on the specified view.
-    /// </summary>
-    /// <param name="view">The view containing camera and viewport information for the transformation.</param>
-    /// <returns>The tile's location in screen space as a rectangle.</returns>
-    public virtual RectangleF GetDrawLocationScreen(View view)
-    {
-        return view.WorldRectToScreenRect(SceneLayer, DrawLocationWorld);
-    }
+    public virtual RectangleF GetDrawLocationScreen(View view) =>
+        view.WorldRectToScreenRect(SceneLayer, DrawLocationWorld);
 
-    /// <summary>
-    /// Converts the tile's collision area from world coordinates to screen coordinates.
-    /// </summary>
-    /// <param name="view">The view containing camera and viewport information for the transformation.</param>
-    /// <returns>The tile's collision area in screen space as a rectangle.</returns>
-    public virtual RectangleF GetCollisionAreaScreen(View view)
-    {
-        return view.WorldRectToScreenRect(SceneLayer, CollisionArea);
-    }
+    public virtual RectangleF GetCollisionAreaScreen(View view) =>
+        view.WorldRectToScreenRect(SceneLayer, CollisionArea);
 
-    /// <summary>
-    /// Renders the tile to the specified backbuffer at the given screen location.
-    /// </summary>
-    /// <param name="backbuffer">The backbuffer to render to.</param>
-    /// <param name="destRectScreen">The destination rectangle in screen coordinates where the tile should be drawn.</param>
-    public virtual void Draw(BackbufferBase backbuffer, RectangleF destRectScreen) => backbuffer.DrawTileFrame(this, destRectScreen);
+    public virtual void Draw(BackbufferBase backbuffer, RectangleF destRectScreen) =>
+        backbuffer.DrawTileFrame(this, destRectScreen);
 
     #endregion IDrawable members
 
-    /// <summary>
-    /// Gets the overhang dimensions (in pixels) that extend beyond the tile's primary area.
-    /// This is typically used for tiles with visual elements that exceed their logical boundaries.
-    /// </summary>
     [JsonIgnore]
     public virtual Spacing Overhang => frame.Overhang;
 
     /// <summary>
-    /// Gets or sets the current frame being displayed for this tile.
-    /// Setting this property triggers a refresh of both the old and new tile areas to handle size changes.
+    /// Gets or sets the current frame. The initial frame supplies the tile's default
+    /// collision adjustment. Later frame changes update collision bounds only when
+    /// <see cref="AdjustCollisionAreaByFrame"/> is enabled.
     /// </summary>
     [JsonProperty]
     public virtual Frame CurrentFrame
     {
-        get { return frame; }
+        get => frame;
         set
         {
-            // animation might change Tile size, so add before and after
+            // Animation may change tile size, so invalidate before and after.
             SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+
             frame = value;
+
+            bool hasFrame = value.Tilesheet is not null;
+            if (hasFrame &&
+                (_adjustCollisionAreaByFrame ||
+                 (!_hasAssignedFrame && !_collisionAdjustExplicitlySet)))
+            {
+                SetCollisionAdjustFromFrame(value);
+            }
+
+            _hasAssignedFrame = hasFrame;
+
             SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 
-    /// <summary>
-    /// Gets the animator responsible for managing frame transitions and animation sequences for this tile.
-    /// </summary>
     [JsonIgnore]
     public virtual Animator TileAnimator => animator!;
 
-    /// <summary>
-    /// Gets or sets a value indicating whether the tile's animation is currently paused.
-    /// </summary>
     [JsonIgnore]
     public virtual bool PauseAnimation { get; set; }
 
-    /// <summary>
-    /// Gets the collider used for collision detection with this tile.
-    /// Returns null if the tile has no collision detection.
-    /// </summary>
     [JsonIgnore]
     public virtual ICollider? Collider => _collider;
 
     /// <summary>
-    /// Gets the effective collision area of the tile in world coordinates,
-    /// incorporating any adjustments specified by <see cref="AdjustCollisionArea"/>.
+    /// Gets the effective collision area in world coordinates.
     /// </summary>
     [JsonIgnore]
-    public virtual Rectangle CollisionArea
-    {
-        get
-        {
-            Rectangle rect = DrawLocationWorld;
-            rect.Y += AdjustCollisionArea.Top;
-            rect.X += AdjustCollisionArea.Left;
-            rect.Height += AdjustCollisionArea.Bottom - AdjustCollisionArea.Top;
-            rect.Width += AdjustCollisionArea.Right - AdjustCollisionArea.Left;
-            return rect;
-        }
-    }
+    public virtual Rectangle CollisionArea =>
+        AdjustCollisionArea.ApplyTo(DrawLocationWorld);
 
-    /// <summary>
-    /// Gets or sets a value indicating whether fog of war rendering is enabled for this tile.
-    /// Setting this property triggers a refresh of the tile's screen area.
-    /// </summary>
     [JsonProperty]
     public virtual bool EnableFog
     {
-        get { return enableFog; }
+        get => enableFog;
         set
         {
             enableFog = value;
@@ -237,27 +154,45 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
-    /// <summary>
-    /// Used to determine polygonal area when drawing grid lines or fog.
-    /// Override this property in a derived class to define custom areas for these effects.
-    /// </summary>
     [JsonIgnore]
-    public virtual Point[] OutlinePointsWorld => SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
+    public virtual Point[] OutlinePointsWorld =>
+        SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
 
     /// <summary>
-    /// Gets or sets the collision area adjustment values that modify the tile's collision boundaries.
-    /// Use this to fine-tune the collision detection area relative to the tile's visual bounds.
+    /// Gets or sets whether frame changes replace the tile's collision adjustment
+    /// with the newly selected frame's adjustment.
+    /// </summary>
+    /// <remarks>
+    /// The default is <see langword="false"/>, which keeps the collision area static
+    /// across animation frames after the initial frame supplies its default value.
+    /// </remarks>
+    [JsonProperty]
+    public virtual bool AdjustCollisionAreaByFrame
+    {
+        get => _adjustCollisionAreaByFrame;
+        set
+        {
+            _adjustCollisionAreaByFrame = value;
+
+            if (value && frame.Tilesheet is not null)
+                SetCollisionAdjustFromFrame(frame);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the collision adjustment used to derive <see cref="CollisionArea"/>.
     /// </summary>
     [JsonProperty]
-    public virtual CollisionDetectionAdjustment AdjustCollisionArea { get; set; } = CollisionDetectionAdjustment.None;
+    public virtual CollisionAdjust AdjustCollisionArea
+    {
+        get => _adjustCollisionArea;
+        set
+        {
+            _adjustCollisionArea = value;
+            _collisionAdjustExplicitlySet = true;
+        }
+    }
 
-    private bool _collisionsEnabled = false;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether collision detection is enabled for this tile.
-    /// When set to true, the tile's collider is registered with the scene layer's collision system.
-    /// When set to false, the collider is unregistered and collisions will not be detected.
-    /// </summary>
     [JsonProperty]
     public bool CollisionsEnabled
     {
@@ -273,25 +208,40 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
-    /// <summary>
-    /// Gets the value bag for storing arbitrary typed values associated with this tile.
-    /// Useful for attaching custom game-specific data without subclassing.
-    /// </summary>
     [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
 
+    /// <summary>
+    /// Copies collision behavior and the effective collision adjustment from another tile.
+    /// </summary>
+    protected void CopyCollisionSettingsFrom(Tile source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        _adjustCollisionArea = source._adjustCollisionArea;
+        _adjustCollisionAreaByFrame = source._adjustCollisionAreaByFrame;
+        _hasAssignedFrame = frame.Tilesheet is not null;
+        _collisionAdjustExplicitlySet = source._collisionAdjustExplicitlySet;
+    }
+
+    private void SetCollisionAdjustFromFrame(Frame value)
+    {
+        // Deliberately bypass the public setter: following a frame should not mark
+        // the adjustment as an explicit tile-level override.
+        _adjustCollisionArea = value.CollisionAdjust;
+    }
+
+    [OnDeserialized]
+    private void OnTileDeserialized(StreamingContext context)
+    {
+        _hasAssignedFrame = frame.Tilesheet is not null;
+
+        if (_adjustCollisionAreaByFrame && _hasAssignedFrame)
+            SetCollisionAdjustFromFrame(frame);
+    }
+
     #region IComparable<Tile> Members
 
-    /// <summary>
-    /// Compares this tile to another tile for sorting purposes.
-    /// Fixed-position tiles are rendered first, followed by tiles sorted by Y-coordinate, Z-order, and X-coordinate.
-    /// </summary>
-    /// <param name="tile">The tile to compare with this instance.</param>
-    /// <returns>
-    /// A negative value if this tile should be drawn before the other tile,
-    /// zero if they have the same draw order,
-    /// or a positive value if this tile should be drawn after the other tile.
-    /// </returns>
     public int CompareTo(Tile? tile)
     {
         if (tile is null)
@@ -300,44 +250,31 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         float thisLoc = GetTileLocForCompare(this);
         float tileLoc = GetTileLocForCompare(tile);
 
-        // Handle fixed position vs non-fixed first
         if (IsPositionFixed && !tile.IsPositionFixed)
             return -1;
 
         if (!IsPositionFixed && tile.IsPositionFixed)
             return 1;
 
-        // Use tuple comparison for the rest (Y, Z, X)
         return (thisLoc, zOrder, SceneLayerCoordinates.X)
-             .CompareTo((tileLoc, tile.zOrder, tile.SceneLayerCoordinates.X));
+            .CompareTo((tileLoc, tile.zOrder, tile.SceneLayerCoordinates.X));
     }
 
-    /// <summary>
-    /// if position is fixed, use top of primary (i.e., non-overhanging) area;
-    /// otherwise, use bottom of location for comparison
-    /// </summary>
-    private static float GetTileLocForCompare(Tile tile)
-    {
-        return tile.IsPositionFixed
+    private static float GetTileLocForCompare(Tile tile) =>
+        tile.IsPositionFixed
             ? tile.DrawLocationWorld.Top + tile.Overhang.Top
             : tile.DrawLocationWorld.Bottom - tile.Overhang.Bottom - 1;
-    }
+
     #endregion IComparable<Tile> Members
 
     #region IDisposable Members
 
-    /// <summary>
-    /// Releases all resources used by the tile, including removing it from animation tracking,
-    /// disposing its animator, and clearing collision references.
-    /// </summary>
     public virtual void Dispose()
     {
         if (TilesAnimating.IndexOf(this) != -1)
             TilesAnimating.Remove(this);
 
-        // dispose any associate Animator instances
-        if (animator != null)
-            animator.Dispose();
+        animator?.Dispose();
 
         SceneLayer.ColliderRegistry.Unregister(_collider!);
         _collider = null;
