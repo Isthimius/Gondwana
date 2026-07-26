@@ -1,10 +1,11 @@
+using System.Drawing;
+using Newtonsoft.Json.Linq;
+using SkiaSharp;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Scenes;
-using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Tests;
 
@@ -167,24 +168,47 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
     [Fact]
     public void GtsJson_WithoutCollisionMetadata_UsesCompatibleDefaults()
     {
-        const string json = """
+        var definition = new TilesheetDefinition
         {
-          "Name": "Legacy",
-          "Image": { "FilePath": "legacy.png" },
-          "Regions": [
+            Name = "Legacy",
+            Image = new TilesheetImageDefinition
             {
-              "Name": "default",
-              "Area": { "X": 0, "Y": 0, "Width": 16, "Height": 16 },
-              "TileSize": { "Width": 16, "Height": 16 }
+                FilePath = "legacy.png"
+            },
+            Regions =
+            [
+                new TilesheetRegionDefinition
+            {
+                Name = TilesheetRegion.DefaultRegionName,
+                Area = new Rectangle(0, 0, 16, 16),
+                TileSize = new Size(16, 16)
             }
-          ]
-        }
-        """;
+            ]
+        };
 
-        var loaded = TilesheetDefinitionSerializer.FromJson(json);
+        // Generate structurally valid GTS JSON using the real serializer, then
+        // remove metadata that would not exist in an older definition file.
+        var jsonObject = JObject.Parse(
+            TilesheetDefinitionSerializer.ToJson(definition));
+
+        var regionObject = Assert.IsType<JObject>(
+            jsonObject[nameof(TilesheetDefinition.Regions)]![0]);
+
+        regionObject.Remove(
+            nameof(TilesheetRegionDefinition.CollisionAdjust));
+
+        regionObject.Remove(
+            nameof(TilesheetRegionDefinition.Frames));
+
+        var loaded = TilesheetDefinitionSerializer.FromJson(
+            jsonObject.ToString());
+
         var region = Assert.Single(loaded.Regions);
 
-        Assert.Equal(CollisionAdjust.None, region.CollisionAdjust);
+        Assert.Equal(
+            CollisionAdjust.None,
+            region.CollisionAdjust);
+
         Assert.Empty(region.Frames);
     }
 
