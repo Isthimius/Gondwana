@@ -447,6 +447,8 @@ public partial class TilesheetEditorViewModelBase : ViewModelBase
                     out var loadedCollisionAdjust))
                 {
                     tile.CollisionAdjust = loadedCollisionAdjust;
+                    if (existingTiles.TryGetValue((x, y), out var existingTile))
+                        tile.Name = existingTile.Name;
                 }
                 else if (existingTiles.TryGetValue(
                     (x, y),
