@@ -1,4 +1,5 @@
 # Gondwana Game Engine
+
 [![NuGet](https://img.shields.io/nuget/v/Gondwana)](https://www.nuget.org/packages/Gondwana)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Gondwana)](https://www.nuget.org/packages/Gondwana)
 [![License](https://img.shields.io/github/license/Isthimius/Gondwana)](https://github.com/Isthimius/Gondwana/blob/master/LICENSE)
@@ -7,15 +8,15 @@
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20WebAssembly-blue)
 
-<img alt="gondwana-logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
+<img alt="Gondwana logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
 
-**Gondwana** is a cross-platform 2D and 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, particle effects, and layered scene rendering.
+**Gondwana** is a cross-platform 2D and 2.5D game and rendering engine written in C# and .NET 8. It provides fine-grained control over rendering, timing, movement, input, collision detection, and scene composition, with built-in support for layered worlds, multiple views, parallax, z-ordering, pixel overhang, particles, and several grid projections.
 
-Gondwana targets desktop and web platforms through SkiaSharp-based rendering, with dedicated integrations for WinForms, Avalonia, and Blazor, and NAudio-based sound support.
+Gondwana targets Windows, Linux, macOS, and WebAssembly through SkiaSharp-based rendering, with dedicated integrations for WinForms, Avalonia, and Blazor. Optional packages add desktop and browser audio, MIDI playback, SDL2 gamepad input, video playback, hosting, and reusable game UI widgets.
 
-Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers can own the game loop and rendering flow end to end when needed, while still benefiting from sensible defaults that allow simpler games to come together quickly.
+Rather than hiding the render pipeline behind an editor, Gondwana embraces a code-first, engine-driven design. Developers retain direct ownership of the game loop and rendering flow when needed, while sensible defaults and ready-to-use hosts keep smaller games approachable.
 
-This approach brings classic Win32/GDI-era rendering principles into a modern, modular architecture with explicit control over draw order, dirty-region updates, scene composition, and timing. The result is a predictable, debuggable engine that works out of the box without getting in the way as projects grow.
+The engine carries forward the predictability of classic Win32/GDI-era rendering—explicit draw order, dirty-region updates, scene composition, and timing—inside a modern, modular architecture. The result is an engine intended to be understandable, debuggable, and useful without demanding that a project surrender control as it grows.
 
 ## Get Started
 
@@ -36,164 +37,177 @@ This approach brings classic Win32/GDI-era rendering principles into a modern, m
 
 **Spot!**
 
-<img width="45%" alt="spot_1-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" />   <img width="45%" alt="spot_2-ezgif com-optimize" src="https://github.com/user-attachments/assets/0aef0b63-1c16-44be-b6a6-d456f4799ce8" />
+<img width="45%" alt="Spot gameplay preview 1" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" /> <img width="45%" alt="Spot gameplay preview 2" src="https://github.com/user-attachments/assets/0aef0b63-1c16-44be-b6a6-d456f4799ce8" />
 
-**Particle Test** <br />
-<img width="800" height="388" alt="particles" src="https://github.com/user-attachments/assets/105740af-e8e5-4f92-92e2-7986612008a1" />
+**Particle Test**  
+<img width="800" height="388" alt="Gondwana particle-system demonstration" src="https://github.com/user-attachments/assets/105740af-e8e5-4f92-92e2-7986612008a1" />
 
-**Coordinates Test** <br />
-<img width="800" height="447" alt="coordinates" src="https://github.com/user-attachments/assets/6ae8183e-b4e6-4740-9a01-9679ed66cd40" />
+**Coordinates Test**  
+<img width="800" height="447" alt="Gondwana coordinate-system demonstration" src="https://github.com/user-attachments/assets/6ae8183e-b4e6-4740-9a01-9679ed66cd40" />
 
 ---
 
 ## 🎯 Who Gondwana Is For
 
-Gondwana a code-first game engine for .NET developers who want to build games in C#, instead of just clicking an editor. Gondwana features:
-- Fine-grained control over rendering and timing
-- Deterministic, debuggable draw pipelines
-- A code-first engine without editor lock-in
-- A modern .NET engine that respects classic rendering principles
+Gondwana is for .NET developers who want to build games in C# rather than assemble them entirely through an editor. It is a good fit when you value:
 
-It is intended to serve as a flexible foundation for custom 2D and 2.5D games.
+- Fine-grained control over rendering, timing, input, and movement
+- Deterministic, debuggable draw and update pipelines
+- A code-first workflow without editor lock-in
+- A reusable foundation for custom 2D and 2.5D games
+- Modern .NET architecture grounded in proven rendering principles
+
+Gondwana is deliberately an engine and framework, not an all-encompassing visual game-making suite. Its tooling supports the code-first workflow rather than replacing it.
 
 ---
 
 ## ✨ Features
 
-- **Cross-platform rendering** via SkiaSharp (`SKSurface`, `SKBitmap` backbuffers)  
-- **Backbuffer abstraction** (`BitmapBackbuffer`, `GpuBackbuffer`) for multiple platforms, with GPU FPS tracking  
-- **Platform adapters for WinForms, Avalonia, and Blazor** — WinForms targets Windows; Avalonia targets Windows, macOS, and Linux; and Blazor targets WebAssembly.
-- **Hosting abstractions** (`GameHostBase`, `WinFormsGameHost`, `AvaloniaGameHost`, `BlazorGameHost`) for clean engine lifecycle management  
-- **DirectDrawing system** for sprites, shapes, text, and effects:
-  - `DirectRectangle`, `DirectImage`, `TextBlock`, `DirectParticles` (particle system with emitters and per-particle blend modes)
-  - `ImageInstanceLayer` for efficient rendering of many reusable/movable bitmap instances  
-- **Sprite effects** — jiggle (visual-only offsets), pulse/loop resize behaviors with completion events  
-- **High-resolution timing** (`HighResTimer`) for smooth frame updates  
-- **Thread-safe rendering manager** (`DirectDrawingManager`) with Z-order sorting
-- **Native, first-class sprite and camera movement** with easing-based tweening, target following, and smooth interpolation.
-- **Font asset type and `FontManager`** for centralized font loading and management  
-- **Extensible resource pipeline** for tilesheets, sprites, fonts, and audio  
-- **SDL2 gamepad input** via the dedicated `Gondwana.Input.SDL2` package  
-- **Video & audio integration** (`LibVLCSharp`, `NAudio`, MIDI via `Gondwana.Audio.Midi`)
+- **Cross-platform rendering** through SkiaSharp using CPU bitmap and GPU-backed surfaces
+- **Backbuffer abstraction** through `BitmapBackbuffer` and `GpuBackbuffer`, including GPU FPS tracking
+- **Platform adapters for WinForms, Avalonia, and Blazor**:
+  - WinForms for Windows
+  - Avalonia for Windows, macOS, and Linux
+  - Blazor for WebAssembly
+- **Structured host lifecycle** through `GameHostBase` and ready-to-use WinForms, Avalonia, and Blazor hosts
+- **View-centric layered scenes** with multiple cameras, viewports, parallax, stable z-ordering, and world-space dirty-region tracking
+- **Multiple coordinate systems**: orthogonal, rhombic isometric, axial isometric, flat-top hex, pointy-top hex, and oblique
+- **DirectDrawing system** for sprites, shapes, text, overlays, and effects:
+  - `DirectRectangle`, `DirectImage`, `TextBlock`, and `DirectParticles`
+  - `ImageInstanceLayer` for efficient rendering of many reusable, movable bitmap instances
+  - `DirectComposite` for grouped drawing elements with consistent view or scene-layer ownership
+- **Reusable game UI widgets** with lifecycle events, automatic input registration, focus, keyboard and pointer routing, dragging, hit testing, and components such as `SplashScreen`
+- **Sprite and camera movement** with easing-based tweening, target following, smooth interpolation, and scripted motion paths
+- **Sprite effects** including visual jiggle and pulsing or looping resize behaviors with completion events
+- **Collision detection and kinematic resolution**, including per-frame and per-tile collision adjustments for more precise collision geometry
+- **High-resolution timing** through `HighResTimer`
+- **Thread-safe drawable management** with deterministic z-order sorting
+- **Asset support** for tilesheets, sprites, fonts, audio, and packaged Gondwana asset files
+- **Centralized font management** through the font asset type and `FontManager`
+- **Unified keyboard, mouse, touch, and gamepad input**, with SDL2 gamepad support available as a dedicated package
+- **Audio, MIDI, browser audio, and experimental video integration** through optional packages
 
 ---
 
-## 📂 Project Structure
+## 📂 Architecture
 
-At runtime, Gondwana is driven by a central `Engine` loop responsible for advancing time, polling platform-specific input, updating game state, and rendering only what has changed. The engine is built around a world-space, view-centric rendering model designed to minimize redraw work while supporting multiple cameras and scene layers.
+At runtime, Gondwana is driven by a central `Engine` loop responsible for advancing time, polling input, updating engine state, and rendering changed content. The engine uses a world-space, view-centric rendering model designed to minimize redraw work while supporting multiple cameras and scene layers.
 
 ### Runtime Flow
 
-Each engine cycle proceeds through the following stages:
+Each engine cycle proceeds through four broad stages:
 
-1. **World-space change tracking**  
-   For CPU-bound rendering, any state changes enqueue world-space dirty regions into the owning `SceneLayer`’s `RefreshQueue`. This allows the engine to track *what* changed and *where*, without relying on full-frame redraws.
+1. **Update and input**  
+   High-resolution timers advance engine time while platform adapters poll keyboard, pointer, touch, and gamepad state. Movement controllers, widgets, animations, and game code can update world state in response.
 
-2. **View-based rendering**  
-   During rendering, the `ViewRenderer` iterates active `View` instances in deterministic Z-order. 
-   For CPU bitmap backbuffers, each view applies its camera and viewport transforms, then asks 
-   visible scene layers to redraw only the affected dirty regions into the backbuffer. GPU-backed 
-   surfaces use a separate full-viewport render path, favoring predictable GPU synchronization over 
-   dirty-region optimization.
+2. **World-space change tracking**  
+   On CPU bitmap backbuffers, state changes enqueue world-space dirty regions in the owning `SceneLayer`'s `RefreshQueue`. The engine therefore knows both *what* changed and *where* without requiring a full-frame repaint.
 
-3. **Composition and presentation**  
-   Sprites and tiles are drawn from cached tilesheets, animations advance frame-by-frame, and the composed backbuffer is finally presented by the platform host (WinForms, Web, etc.).
+3. **View-based rendering**  
+   `ViewRenderer` processes active `View` instances in deterministic z-order. Each view applies its camera and viewport transforms and renders its visible scene layers. CPU-backed surfaces redraw affected regions; GPU-backed surfaces use a full-viewport path designed around predictable GPU synchronization.
 
-4. **Timers and input polling**  
-   High-resolution timers advance simulation time while input adapters poll keyboard, mouse, and gamepad state. These events may move sprites, advance animations, or otherwise modify scene state.
+4. **Composition and presentation**  
+   Tiles, sprites, direct drawings, particles, widgets, and other content are composed into the backbuffer, which the platform host then presents.
 
-This dirty-region, view-centric design allows Gondwana to efficiently render complex scenes with multiple layers and cameras while keeping the core engine logic platform-agnostic. By separating world updates from presentation concerns, the engine remains predictable, debuggable, and scalable as projects grow.
+Separating world updates from platform presentation keeps the core engine platform-agnostic and makes rendering behavior easier to inspect, reason about, and extend.
 
-### Core Namespaces (high level)
+### Major Namespaces and Assemblies
 
-| Namespace                          | Responsibility                                                                                         |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Gondwana**                       | Core engine loop, lifecycle management, configuration, and global services.                            |
-| **Gondwana.Assets**                | Asset type definitions, asset file loading, and asset identifiers.                                     |
-| **Gondwana.Audio**                 | Platform-agnostic audio resource loading and playback management.                                      |
-| **Gondwana.Physics.Collisions**    | Bounding-volume collision detection and kinematic physics integration.                                 |
-| **Gondwana.Configuration**         | Engine configuration model and configuration file loading.                                             |
-| **Gondwana.Drawing**               | Low-level drawing primitives, sprites, tilesheets, animation, particles, and direct drawables.         |
-| **Gondwana.Input**                 | Unified input polling for keyboard, mouse, and gamepad devices.                                        |
-| **Gondwana.Logging**               | Engine-internal logging, log events, and logging mode configuration.                                   |
-| **Gondwana.Movement**              | Sprite movement controllers, easing functions, and scripted motion paths.                              |
-| **Gondwana.Rendering**             | Backbuffer abstractions, view rendering, cameras, and platform-agnostic draw flow.                     |
-| **Gondwana.Scenes**                | Hierarchical scene graph — Scenes, SceneLayers, and grid-based spatial organization.                   |
-| **Gondwana.Timers**                | High-resolution timing, scheduled callbacks, and engine-cycle events.                                  |
-| **Gondwana.Audio / Video**         | Audio playback, mixing, MIDI support, and experimental video integration.                              |
-| **Gondwana.Hosting**               | Cross-platform host lifecycle base class (`GameHostBase`) for engine init and teardown.                |
-| **Gondwana.WinForms**              | Windows-specific platform adapters responsible for hosting render surfaces and wiring input.           |
-| **Gondwana.Avalonia**              | Cross-platform adapters responsible for hosting render surfaces and wiring input for Win / Mac / Linux.|
-| **Gondwana.Widgets**               | Pre-built Gondwana-native UI components and widgets.                                                   |
-
+| Namespace / assembly | Responsibility |
+| --- | --- |
+| **Gondwana** | Engine loop, lifecycle, configuration, shared services, and core abstractions |
+| **Gondwana.Assets** | Asset identifiers, asset types, packaged asset files, and loading |
+| **Gondwana.Audio** | Platform-agnostic audio resources and playback management |
+| **Gondwana.Configuration** | Engine configuration models and configuration-file loading |
+| **Gondwana.Drawing** | Sprites, tilesheets, animation, particles, text, shapes, composites, and direct drawing |
+| **Gondwana.Drawing.Coordinates** | Orthogonal, isometric, hexagonal, and oblique coordinate transforms |
+| **Gondwana.Input** | Keyboard, mouse, touch, gesture, and gamepad input |
+| **Gondwana.Logging** | Engine logging and logging configuration |
+| **Gondwana.Movement** | Movement controllers, easing, following, interpolation, and scripted paths |
+| **Gondwana.Physics.Collisions** | Collision detection, collision geometry, and kinematic resolution |
+| **Gondwana.Rendering** | Backbuffers, cameras, views, render surfaces, and platform-agnostic draw flow |
+| **Gondwana.Scenes** | Scenes, scene layers, spatial organization, and refresh tracking |
+| **Gondwana.Timers** | High-resolution timing, scheduled callbacks, and engine-cycle events |
+| **Gondwana.Hosting** | Cross-platform `GameHostBase` lifecycle |
+| **Gondwana.Widgets** | Reusable game UI, widget lifecycle, focus, input routing, and interaction |
+| **Gondwana.WinForms** | Windows render-surface and input adapters |
+| **Gondwana.Avalonia** | Windows, macOS, and Linux render-surface and input adapters |
+| **Gondwana.Blazor** | WebAssembly rendering, input, browser integration, and components |
 
 ---
 
 ## 📦 Packages
 
-All runtime packages are available on NuGet. Install only what your project needs.
+Runtime packages are available on NuGet. Install only the pieces your project needs.
 
 | Package | Description |
-| ------- | ----------- |
-| [`Gondwana`](https://www.nuget.org/packages/Gondwana) | Core engine — required by all projects. |
-| [`Gondwana.Hosting`](https://www.nuget.org/packages/Gondwana.Hosting) | Cross-platform `GameHostBase` for structured engine startup and lifecycle. |
-| [`Gondwana.WinForms`](https://www.nuget.org/packages/Gondwana.WinForms) | WinForms rendering and input adapters (Windows). |
-| [`Gondwana.WinForms.Hosting`](https://www.nuget.org/packages/Gondwana.WinForms.Hosting) | Ready-to-use `WinFormsGameHost` for WinForms desktop games. |
-| [`Gondwana.Avalonia`](https://www.nuget.org/packages/Gondwana.Avalonia) | Avalonia rendering and input adapters (desktop - Windows, macOS, Linux). |
-| [`Gondwana.Avalonia.Hosting`](https://www.nuget.org/packages/Gondwana.Avalonia.Hosting) | Ready-to-use `AvaloniaGameHost` for Avalonia-based desktop games. |
-| [`Gondwana.Blazor`](https://www.nuget.org/packages/Gondwana.Blazor) | Blazor WebAssembly rendering and hosting components for browser-based games. |
-| [`Gondwana.Input.SDL2`](https://www.nuget.org/packages/Gondwana.Input.SDL2) | SDL2 gamepad input (cross-platform; requires native SDL2). |
-| [`Gondwana.Audio.Midi`](https://www.nuget.org/packages/Gondwana.Audio.Midi) | MIDI audio playback and SoundFont support. |
-| [`Gondwana.Audio.Browser`](https://www.nuget.org/packages/Gondwana.Audio.Browser) | Browser/WASM audio playback via HTML5 Audio API and JavaScript interop. |
-| [`Gondwana.Video`](https://www.nuget.org/packages/Gondwana.Video) | Experimental video playback via LibVLCSharp. |
+| --- | --- |
+| [`Gondwana`](https://www.nuget.org/packages/Gondwana) | Core engine; required by Gondwana projects |
+| [`Gondwana.Hosting`](https://www.nuget.org/packages/Gondwana.Hosting) | Cross-platform `GameHostBase` for structured startup, shutdown, and lifecycle management |
+| [`Gondwana.Widgets`](https://www.nuget.org/packages/Gondwana.Widgets) | Reusable game UI widgets, overlays, HUD elements, and unified widget input routing |
+| [`Gondwana.WinForms`](https://www.nuget.org/packages/Gondwana.WinForms) | WinForms rendering and input adapters for Windows |
+| [`Gondwana.WinForms.Hosting`](https://www.nuget.org/packages/Gondwana.WinForms.Hosting) | Ready-to-use `WinFormsGameHost` |
+| [`Gondwana.Avalonia`](https://www.nuget.org/packages/Gondwana.Avalonia) | Avalonia rendering and input adapters for Windows, macOS, and Linux |
+| [`Gondwana.Avalonia.Hosting`](https://www.nuget.org/packages/Gondwana.Avalonia.Hosting) | Ready-to-use `AvaloniaGameHost` |
+| [`Gondwana.Blazor`](https://www.nuget.org/packages/Gondwana.Blazor) | Blazor WebAssembly rendering, input, and browser components |
+| [`Gondwana.Blazor.Hosting`](https://www.nuget.org/packages/Gondwana.Blazor.Hosting) | Ready-to-use Blazor host lifecycle integration |
+| [`Gondwana.Input.SDL2`](https://www.nuget.org/packages/Gondwana.Input.SDL2) | Cross-platform SDL2 gamepad input; requires native SDL2 |
+| [`Gondwana.Audio.Midi`](https://www.nuget.org/packages/Gondwana.Audio.Midi) | MIDI playback and SoundFont support |
+| [`Gondwana.Audio.Browser`](https://www.nuget.org/packages/Gondwana.Audio.Browser) | Browser and WebAssembly audio through the HTML5 Audio API and JavaScript interop |
+| [`Gondwana.Video`](https://www.nuget.org/packages/Gondwana.Video) | Experimental video playback through LibVLCSharp |
 
 ---
 
 ## 🧰 Tooling
 
-| Tool | Install | Description |
-| ---- | ------- | ----------- |
-| **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project scaffolds: `gondwana-winforms` (Windows desktop), `gondwana-avalonia` (cross-platform desktop), `gondwana-blazor` (browser WebAssembly). |
-| **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | `gondwana` CLI — create projects, validate your environment (`gondwana doctor`), pack and inspect asset files, and manage templates. |
-| **Gondwana.Studio** | Build from source (`Tooling/Gondwana.Studio`) | Dark-themed cross-platform Avalonia IDE with dockable windows for working with Gondwana projects. |
+| Tool | Install / location | Description |
+| --- | --- | --- |
+| **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project templates for `gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor` |
+| **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating projects, checking an environment with `gondwana doctor`, and packing or inspecting asset files |
+| **Gondwana.Studio** | Build from `Tooling/Gondwana.Studio` | Cross-platform Avalonia front end for Gondwana project and asset tooling |
+| **Gondwana.Studio.WinForms** | Build from `Tooling/Gondwana.Studio.WinForms` | Windows-native Studio front end sharing framework-agnostic editor logic with the Avalonia application |
 
 ---
 
 ## 🧭 Key Design Principles
-- **Dirty-region rendering (`RefreshQueue`)**: On CPU bitmap backbuffers, the engine tracks what changed and redraws only those world-space regions instead of repainting the whole screen every frame.
-- **World-space first**: The engine reasons in world pixels; views/cameras/viewport transforms convert world → screen at render time. This keeps logic consistent and avoids “screen math” leaking into gameplay code.
-- **Layered scenes**: A Scene is composed of SceneLayers, with adjustable parallax. Each layer maintains its own refresh tracking and draw path.
-- **View-centric rendering**: Rendering flows through View / ViewRenderer so multiple cameras/viewports or multiplayer split views are natural, not bolted on.
-- **Adapters at the edges**: Platform projects (WinForms/Avalonia) host the render surface and input wiring, while the core engine stays platform-agnostic.
-- **Deterministic ordering**: Where ordering matters (views, layers, drawables), the engine uses stable sort rules so rendering remains predictable and debuggable.
+
+- **Code first**: Game code owns behavior and can reach the rendering and update pipeline directly.
+- **World space first**: Gameplay and scene logic operate in world pixels; views and cameras convert world coordinates to screen coordinates at render time.
+- **Dirty-region rendering where it pays**: CPU bitmap backbuffers redraw changed world-space regions rather than repainting the entire frame.
+- **Layered, view-centric scenes**: Scenes contain independently rendered `SceneLayer` instances, while `View` and `ViewRenderer` make multiple cameras, viewports, and split views natural.
+- **Adapters at the edges**: Platform projects host render surfaces and wire native input while the core remains platform-agnostic.
+- **Explicit composition**: Sprites, direct drawings, composites, widgets, and scene layers have clear ownership and ordering rules.
+- **Deterministic behavior**: Stable ordering and explicit timing make rendering and movement easier to debug.
+- **Modularity without ceremony**: Hosting, widgets, platform adapters, audio, input, and video remain separate packages so applications take only what they need.
 
 ---
 
 ## 🛠 Roadmap
 
-_Gondwana is actively evolving, with a focus on strengthening core features and tooling rather than chasing engine sprawl._
+_Gondwana is actively evolving, with an emphasis on strengthening the engine and its tooling rather than chasing feature-list sprawl._
 
-- [ ] supplemental UI tooling for level design  
-- [ ] More samples: tile maps, platformer demo
-- [x] WebAssembly support (via Avalonia)
-- [ ] Tilemap .tmx support
+- [ ] Supplemental level- and asset-design tooling
+- [ ] Additional samples, including tile-map and platformer demonstrations
+- [x] WebAssembly support through Blazor
+- [ ] TMX tile-map support
 - [ ] Native, first-class pathfinding
-- [ ] Enhancing rendering pipeline extensibility
+- [ ] Further rendering-pipeline extensibility
 - [ ] Initial client/server networking support
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!  
-- Open an issue for bugs or feature requests.  
-- Fork, branch, and PR to contribute code.  
+Contributions are welcome.
+
+- Open an issue for a bug report or feature request.
+- Fork the repository, create a focused branch, and submit a pull request.
 
 ---
 
 ## 📜 License
 
-MIT License — see [LICENSE](LICENSE) for details.  
+Gondwana is available under the [MIT License](LICENSE).
 
-**Third-Party Libraries** <br />
-Gondwana uses **Skia** (© Google) via **SkiaSharp** (© Microsoft and contributors), licensed under the BSD 3-Clause license.
+**Third-party libraries**  
+Gondwana uses **Skia** (© Google) through **SkiaSharp** (© Microsoft and contributors), licensed under the BSD 3-Clause license.
