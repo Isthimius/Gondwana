@@ -123,7 +123,7 @@ Separating world updates from platform presentation keeps the core engine platfo
 | **Gondwana.Drawing.Coordinates** | Orthogonal, isometric, hexagonal, and oblique coordinate transforms |
 | **Gondwana.Input** | Keyboard, mouse, touch, gesture, and gamepad input |
 | **Gondwana.Logging** | Engine logging and logging configuration |
-| **Gondwana.Movement** | Movement controllers, easing, following, interpolation, and scripted paths |
+| **Gondwana.Physics.Movement** | Movement controllers, easing, following, interpolation, and scripted paths |
 | **Gondwana.Physics.Collisions** | Collision detection, collision geometry, and kinematic resolution |
 | **Gondwana.Rendering** | Backbuffers, cameras, views, render surfaces, and platform-agnostic draw flow |
 | **Gondwana.Scenes** | Scenes, scene layers, spatial organization, and refresh tracking |
