@@ -1,6 +1,7 @@
 using System.Drawing;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
+using Gondwana.Timers;
 
 namespace Gondwana.Tests.Input;
 

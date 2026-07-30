@@ -73,7 +73,7 @@ public sealed class TilesheetGtsParityTests : IDisposable
         using var restored = TilesheetFactory.FromDefinition(definition);
 
         Assert.Equal(original.Name, restored.Name);
-        Assert.Equal(original.ImageFilePath, restored.ImageFilePath);
+        Assert.Equal(Path.GetFullPath(original.ImageFilePath), Path.GetFullPath(restored.ImageFilePath));
         Assert.Equal(original.MaskColor, restored.MaskColor);
         Assert.Equal(original.MaskTolerance, restored.MaskTolerance);
         Assert.True(restored.Premultiplied);

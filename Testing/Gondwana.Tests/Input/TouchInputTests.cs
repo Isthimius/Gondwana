@@ -1,6 +1,7 @@
 using System.Drawing;
 using Gondwana.Input.Touch;
 using Gondwana.Input.Touch.Gestures;
+using Gondwana.Timers;
 
 namespace Gondwana.Tests.Input;
 
