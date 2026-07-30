@@ -15,12 +15,11 @@ public sealed class WidgetKeyboardEventArgs : WidgetEventArgs
     /// <param name="keyAction">The key action (pressed, released, repeated).</param>
     /// <param name="modifiers">The keyboard modifier state at the time of the event.</param>
     /// <param name="tick">The engine tick at which the event was emitted.</param>
-    public WidgetKeyboardEventArgs(
-        WidgetBase widget,
-        int key,
-        KeyAction keyAction,
-        KeyboardModifierState modifiers,
-        long tick = 0)
+    public WidgetKeyboardEventArgs(WidgetBase widget,
+                                   int key,
+                                   KeyAction keyAction,
+                                   KeyboardModifierState modifiers,
+                                   long tick = 0)
         : base(widget, tick)
     {
         Key = key;

@@ -23,15 +23,14 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
     /// The identifier of the pointer that produced the event. Mouse input uses
     /// <see cref="WidgetInputRouter.MousePointerId"/>; touch input uses its contact ID.
     /// </param>
-    public WidgetPointerEventArgs(
-        WidgetBase widget,
-        View view,
-        PointF screenPositionPx,
-        WidgetPointerButtonEnum button = WidgetPointerButtonEnum.None,
-        int clickCount = 0,
-        Vector2 deltaPx = default,
-        long tick = 0,
-        int pointerId = 0)
+    public WidgetPointerEventArgs(WidgetBase widget,
+                                  View view,
+                                  PointF screenPositionPx,
+                                  WidgetPointerButtonEnum button = WidgetPointerButtonEnum.None,
+                                  int clickCount = 0,
+                                  Vector2 deltaPx = default,
+                                  long tick = 0,
+                                  int pointerId = 0)
         : base(widget, tick)
     {
         View = view ?? throw new ArgumentNullException(nameof(view));

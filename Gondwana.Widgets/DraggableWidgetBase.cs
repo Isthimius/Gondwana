@@ -1,8 +1,8 @@
+using System.Drawing;
+using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
-using System.Drawing;
-using System.Numerics;
 
 namespace Gondwana.Widgets;
 
@@ -31,19 +31,13 @@ public abstract class DraggableWidgetBase : WidgetBase
     /// <summary>
     /// Initializes a new instance of the <see cref="DraggableWidgetBase"/> class.
     /// </summary>
-    protected DraggableWidgetBase(
-        RenderSurfaceHostBase renderSurfaceHost,
-        DirectDrawingMode mode,
-        PointF anchor = default,
-        string? nickname = null)
-        : base(
-            renderSurfaceHost,
-            mode,
-            anchor,
-            nickname)
+    protected DraggableWidgetBase(RenderSurfaceHostBase renderSurfaceHost,
+                                  DirectDrawingMode mode,
+                                  PointF anchor = default,
+                                  string? nickname = null)
+        : base(renderSurfaceHost, mode, anchor, nickname)
     {
-        _dragBehavior =
-            new WidgetDragBehavior(this);
+        _dragBehavior = new WidgetDragBehavior(this);
     }
 
     /// <summary>
@@ -58,8 +52,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     /// <summary>
     /// Gets whether a drag operation is active.
     /// </summary>
-    public bool IsDragging =>
-        _dragBehavior.IsDragging;
+    public bool IsDragging => _dragBehavior.IsDragging;
 
     /// <summary>
     /// Gets or sets the minimum pointer movement required to begin dragging.
@@ -74,34 +67,25 @@ public abstract class DraggableWidgetBase : WidgetBase
     protected sealed override void ProcessHidden()
     {
         base.ProcessHidden();
-
-        _dragBehavior.ResetPointerState(
-            clearClickSuppression: true);
+        _dragBehavior.ResetPointerState(clearClickSuppression: true);
     }
 
     /// <inheritdoc/>
     protected sealed override void ProcessCancelled()
     {
         base.ProcessCancelled();
-
-        _dragBehavior.ResetPointerState(
-            clearClickSuppression: true);
+        _dragBehavior.ResetPointerState(clearClickSuppression: true);
     }
 
     /// <inheritdoc/>
-    protected sealed override void ProcessPointerDown(
-        WidgetPointerEventArgs args)
+    protected sealed override void ProcessPointerDown(WidgetPointerEventArgs args)
     {
         base.ProcessPointerDown(args);
-
-        _dragBehavior.ProcessPointerDown(
-            args,
-            CanStartDrag);
+        _dragBehavior.ProcessPointerDown(args, CanStartDrag);
     }
 
     /// <inheritdoc/>
-    protected sealed override void ProcessPointerMove(
-        WidgetPointerEventArgs args)
+    protected sealed override void ProcessPointerMove(WidgetPointerEventArgs args)
     {
         base.ProcessPointerMove(args);
 
@@ -114,8 +98,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     }
 
     /// <inheritdoc/>
-    protected sealed override void ProcessPointerUp(
-        WidgetPointerEventArgs args)
+    protected sealed override void ProcessPointerUp(WidgetPointerEventArgs args)
     {
         base.ProcessPointerUp(args);
 
@@ -127,8 +110,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     }
 
     /// <inheritdoc/>
-    protected sealed override bool ShouldDispatchPointerClick(
-        WidgetPointerEventArgs args)
+    protected sealed override bool ShouldDispatchPointerClick(WidgetPointerEventArgs args)
     {
         return base.ShouldDispatchPointerClick(args) &&
                _dragBehavior.ShouldDispatchPointerClick(args);
@@ -137,8 +119,7 @@ public abstract class DraggableWidgetBase : WidgetBase
     /// <summary>
     /// Determines whether a pointer-down event may begin drag tracking.
     /// </summary>
-    protected virtual bool CanStartDrag(
-        WidgetPointerEventArgs args)
+    protected virtual bool CanStartDrag(WidgetPointerEventArgs args)
     {
         return _dragBehavior.CanStartDrag(args);
     }
@@ -146,21 +127,16 @@ public abstract class DraggableWidgetBase : WidgetBase
     /// <summary>
     /// Converts total screen movement into this widget's coordinate space.
     /// </summary>
-    protected virtual Vector2 ConvertScreenDeltaToPositionDelta(
-        Vector2 totalScreenDeltaPx,
-        View view)
+    protected virtual Vector2 ConvertScreenDeltaToPositionDelta(Vector2 totalScreenDeltaPx,
+                                                                View view)
     {
-        return _dragBehavior
-            .ConvertScreenDeltaToPositionDelta(
-                totalScreenDeltaPx,
-                view);
+        return _dragBehavior.ConvertScreenDeltaToPositionDelta(totalScreenDeltaPx, view);
     }
 
     /// <summary>
     /// Constrains a proposed anchor position before it is applied.
     /// </summary>
-    protected virtual Vector2 ConstrainDragPosition(
-        Vector2 proposedPositionPx)
+    protected virtual Vector2 ConstrainDragPosition(Vector2 proposedPositionPx)
     {
         return proposedPositionPx;
     }
@@ -168,43 +144,37 @@ public abstract class DraggableWidgetBase : WidgetBase
     /// <summary>
     /// Called when dragging begins.
     /// </summary>
-    protected virtual void OnDragStarted(
-        WidgetDragEventArgs args)
+    protected virtual void OnDragStarted(WidgetDragEventArgs args)
     {
     }
 
     /// <summary>
     /// Called after the widget moves during dragging.
     /// </summary>
-    protected virtual void OnDragged(
-        WidgetDragEventArgs args)
+    protected virtual void OnDragged(WidgetDragEventArgs args)
     {
     }
 
     /// <summary>
     /// Called when dragging ends.
     /// </summary>
-    protected virtual void OnDragEnded(
-        WidgetDragEventArgs args)
+    protected virtual void OnDragEnded(WidgetDragEventArgs args)
     {
     }
 
-    private void DispatchDragStarted(
-        WidgetDragEventArgs args)
+    private void DispatchDragStarted(WidgetDragEventArgs args)
     {
         OnDragStarted(args);
         DragStarted?.Invoke(args);
     }
 
-    private void DispatchDragged(
-        WidgetDragEventArgs args)
+    private void DispatchDragged(WidgetDragEventArgs args)
     {
         OnDragged(args);
         Dragged?.Invoke(args);
     }
 
-    private void DispatchDragEnded(
-        WidgetDragEventArgs args)
+    private void DispatchDragEnded(WidgetDragEventArgs args)
     {
         OnDragEnded(args);
         DragEnded?.Invoke(args);

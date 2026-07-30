@@ -1,11 +1,12 @@
 using System.Drawing;
+using Microsoft.Extensions.Logging;
+using SkiaSharp;
 using Gondwana.Drawing.Direct;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Timers;
-using Microsoft.Extensions.Logging;
-using SkiaSharp;
+
 using Timer = Gondwana.Timers.Timer;
 
 namespace Gondwana.Widgets.Overlays;
@@ -370,7 +371,7 @@ public sealed class SplashScreen : WidgetBase
         return completionSource.Task;
     }
 
-    private async Task ExecuteHoldDelegatesAsync(
+    private static async Task ExecuteHoldDelegatesAsync(
         Action? onHoldingSync,
         Func<Task>? onHoldingAsync)
     {

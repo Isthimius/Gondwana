@@ -1,7 +1,7 @@
-﻿using Gondwana.Drawing.Direct;
+﻿using System.Drawing;
+using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
-using System.Drawing;
 
 namespace Gondwana.Widgets;
 
@@ -87,11 +87,10 @@ public abstract class WidgetBase : DirectComposite
     /// <param name="mode">The drawing mode used to render the widget.</param>
     /// <param name="anchor">The anchor position used by the widget.</param>
     /// <param name="nickname">The optional nickname assigned to the widget.</param>
-    protected WidgetBase(
-        RenderSurfaceHostBase renderSurfaceHost,
-        DirectDrawingMode mode,
-        PointF anchor = default,
-        string? nickname = null)
+    protected WidgetBase(RenderSurfaceHostBase renderSurfaceHost,
+                         DirectDrawingMode mode,
+                         PointF anchor = default,
+                         string? nickname = null)
         : base(renderSurfaceHost, mode, anchor, nickname)
     {
     }
@@ -196,9 +195,8 @@ public abstract class WidgetBase : DirectComposite
     /// <returns>
     /// <c>true</c> if the widget contains the specified screen position; otherwise, <c>false</c>.
     /// </returns>
-    public virtual bool HitTest(
-        View view,
-        Point screenPositionPx)
+    public virtual bool HitTest(View view,
+                                Point screenPositionPx)
     {
         ArgumentNullException.ThrowIfNull(view);
 
@@ -209,18 +207,16 @@ public abstract class WidgetBase : DirectComposite
             return false;
         }
 
-        if (Mode == DirectDrawingMode.View &&
-            !ReferenceEquals(View, view))
+        if (Mode == DirectDrawingMode.View
+                 && !ReferenceEquals(View, view))
         {
             return false;
         }
 
         RectangleF screenBounds = GetDrawLocationScreen(view);
 
-        return !screenBounds.IsEmpty &&
-               screenBounds.Contains(
-                   screenPositionPx.X,
-                   screenPositionPx.Y);
+        return !screenBounds.IsEmpty
+            && screenBounds.Contains(screenPositionPx.X, screenPositionPx.Y);
     }
 
     /// <summary>
@@ -230,26 +226,20 @@ public abstract class WidgetBase : DirectComposite
     /// <returns>
     /// <c>true</c> if the widget contains the specified screen position; otherwise, <c>false</c>.
     /// </returns>
-    public virtual bool HitTest(
-        Point screenPositionPx)
+    public virtual bool HitTest(Point screenPositionPx)
     {
         var views = RenderSurfaceHost.ViewManager.Views;
 
-        for (int index = views.Count - 1;
-             index >= 0;
-             index--)
+        for (int index = views.Count - 1; index >= 0; index--)
         {
             View view = views[index];
 
-            if (!view.Viewport.TargetRectPx.Contains(
-                screenPositionPx))
+            if (!view.Viewport.TargetRectPx.Contains(screenPositionPx))
             {
                 continue;
             }
 
-            return HitTest(
-                view,
-                screenPositionPx);
+            return HitTest(view, screenPositionPx);
         }
 
         return false;

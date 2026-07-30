@@ -1,7 +1,7 @@
-using Gondwana.Drawing.Direct;
-using Gondwana.Rendering;
 using System.Drawing;
 using System.Numerics;
+using Gondwana.Drawing.Direct;
+using Gondwana.Rendering;
 
 namespace Gondwana.Widgets;
 
@@ -20,26 +20,18 @@ public abstract class ContainerWidget : WidgetBase
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerWidget"/> class.
     /// </summary>
-    protected ContainerWidget(
-        RenderSurfaceHostBase renderSurfaceHost,
-        DirectDrawingMode mode,
-        PointF anchor = default,
-        string? nickname = null)
-        : base(
-            renderSurfaceHost,
-            mode,
-            anchor,
-            nickname)
+    protected ContainerWidget(RenderSurfaceHostBase renderSurfaceHost,
+                              DirectDrawingMode mode,
+                              PointF anchor = default,
+                              string? nickname = null)
+        : base(renderSurfaceHost, mode, anchor, nickname)
     {
     }
 
     /// <summary>
     /// Gets a snapshot of the child widgets directly owned by this container.
     /// </summary>
-    public IReadOnlyList<WidgetBase> ChildWidgets =>
-        Children
-            .OfType<WidgetBase>()
-            .ToArray();
+    public IReadOnlyList<WidgetBase> ChildWidgets => Children.OfType<WidgetBase>().ToArray();
 
     /// <summary>
     /// Adds a child widget at a local offset from this container's anchor.
@@ -48,26 +40,19 @@ public abstract class ContainerWidget : WidgetBase
     /// <param name="widget">The widget to add.</param>
     /// <param name="localOffsetPx">The local offset from the container anchor.</param>
     /// <returns>The added widget.</returns>
-    protected TWidget AddChild<TWidget>(
-        TWidget widget,
-        Vector2 localOffsetPx)
-        where TWidget : WidgetBase
+    protected TWidget AddChild<TWidget>(TWidget widget,
+                                        Vector2 localOffsetPx)
+                                        where TWidget : WidgetBase
     {
         ArgumentNullException.ThrowIfNull(widget);
 
         if (Children.Contains(widget))
             return widget;
 
-        Add(
-            widget,
-            keepCurrentOffset: false,
-            explicitLocalOffsetPx: localOffsetPx);
+        Add(widget, keepCurrentOffset: false, explicitLocalOffsetPx: localOffsetPx);
 
-        widget.KeyboardInput +=
-            OnChildKeyboardInput;
-
-        widget.Disposing +=
-            OnChildDisposing;
+        widget.KeyboardInput += OnChildKeyboardInput;
+        widget.Disposing += OnChildDisposing;
 
         if (_isShown)
             widget.Show();
@@ -86,9 +71,7 @@ public abstract class ContainerWidget : WidgetBase
     /// <see langword="true"/> when the widget was a direct child; otherwise,
     /// <see langword="false"/>.
     /// </returns>
-    protected bool RemoveChild(
-        WidgetBase widget,
-        bool dispose = false)
+    protected bool RemoveChild(WidgetBase widget, bool dispose = false)
     {
         ArgumentNullException.ThrowIfNull(widget);
 
@@ -98,11 +81,8 @@ public abstract class ContainerWidget : WidgetBase
         if (_isShown)
             widget.Hide();
 
-        widget.KeyboardInput -=
-            OnChildKeyboardInput;
-
-        widget.Disposing -=
-            OnChildDisposing;
+        widget.KeyboardInput -= OnChildKeyboardInput;
+        widget.Disposing -= OnChildDisposing;
 
         Remove(widget);
 
@@ -159,52 +139,37 @@ public abstract class ContainerWidget : WidgetBase
     {
         foreach (WidgetBase child in GetChildWidgetSnapshot())
         {
-            child.KeyboardInput -=
-                OnChildKeyboardInput;
-
-            child.Disposing -=
-                OnChildDisposing;
+            child.KeyboardInput -= OnChildKeyboardInput;
+            child.Disposing -= OnChildDisposing;
         }
 
         base.Dispose();
     }
 
-    private void OnChildKeyboardInput(
-        WidgetKeyboardEventArgs args)
+    private void OnChildKeyboardInput(WidgetKeyboardEventArgs args)
     {
         if (args.Handled)
             return;
 
-        var parentArgs =
-            new WidgetKeyboardEventArgs(
-                this,
-                args.Key,
-                args.KeyAction,
-                args.Modifiers,
-                args.Tick);
+        var parentArgs = new WidgetKeyboardEventArgs(this,
+                                                     args.Key,
+                                                     args.KeyAction,
+                                                     args.Modifiers,
+                                                     args.Tick);
 
         DispatchKeyboardInput(parentArgs);
 
-        args.Handled =
-            parentArgs.Handled;
+        args.Handled = parentArgs.Handled;
     }
 
-    private void OnChildDisposing(
-        object? sender,
-        IDirectDrawable child)
+    private void OnChildDisposing(object? sender, IDirectDrawable child)
     {
         if (child is not WidgetBase widget)
             return;
 
-        widget.KeyboardInput -=
-            OnChildKeyboardInput;
-
-        widget.Disposing -=
-            OnChildDisposing;
+        widget.KeyboardInput -= OnChildKeyboardInput;
+        widget.Disposing -= OnChildDisposing;
     }
 
-    private WidgetBase[] GetChildWidgetSnapshot() =>
-        Children
-            .OfType<WidgetBase>()
-            .ToArray();
+    private WidgetBase[] GetChildWidgetSnapshot() => Children.OfType<WidgetBase>().ToArray();
 }
