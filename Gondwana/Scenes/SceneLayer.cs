@@ -761,7 +761,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
         BuildTileColliders();
-        RefreshQueue = new RefreshQueue();
+        // Unbound scenes retain dirty regions for a future bitmap host. Once bound,
+        // the scene policy disables queue writes for full-frame GL rendering.
+        RefreshQueue = new RefreshQueue(() => Scene?.UsesDirtyRegionRendering ?? true);
     }
 
     private void SaveGridCoordinatesToSceneLayerTiles()

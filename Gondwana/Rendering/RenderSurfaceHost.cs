@@ -455,10 +455,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             try
             {
-                // 1) Force-refresh all DirectDrawings that overlay this view.
+                // 1) View overlays are drawn unconditionally by this full-frame path.
+                // They must not enqueue dirty regions that GL rendering never consumes.
                 var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
-                foreach (var overlay in overlays)
-                    overlay.ForceRefresh();
 
                 var vp = view.Viewport.TargetRectPx;
 

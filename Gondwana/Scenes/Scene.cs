@@ -192,6 +192,13 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     }
 
     /// <summary>
+    /// Gets whether the scene's current host consumes dirty-region refresh queues.
+    /// Unbound scenes retain invalidations for a future bitmap host.
+    /// </summary>
+    [JsonIgnore]
+    internal bool UsesDirtyRegionRendering => BoundRenderSurfaceHost?.Backbuffer.IsGlThreadRendered != true;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the entire scene needs to be refreshed on the next render.
     /// </summary>
     /// <value>
@@ -317,6 +324,15 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
             }
 
             _boundRenderSurfaceHost = host;
+        }
+
+        // A GPU host redraws the full frame and never consumes RefreshQueue. Remove
+        // anything accumulated before binding; future additions are rejected by the
+        // queue's scene-policy callback.
+        if (!UsesDirtyRegionRendering)
+        {
+            foreach (var layer in _sceneLayers)
+                layer.RefreshQueue.ClearRefreshQueue();
         }
     }
 
