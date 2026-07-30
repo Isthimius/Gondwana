@@ -1,6 +1,7 @@
 ﻿using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
+using Gondwana.Timers;
 using SkiaSharp;
 
 namespace Gondwana.Rendering;
@@ -88,7 +89,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return null;
 
-        var tick = Gondwana.Timers.HighResTimer.GetCurrentTick();
+        var tick = HighResTimer.GetCurrentTick();
 
         RenderToBackbuffer(tick);
         Backbuffer.EndFrame();
