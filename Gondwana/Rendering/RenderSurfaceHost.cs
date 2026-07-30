@@ -220,6 +220,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// <see langword="false"/> to allow cameras to move freely beyond the scene boundaries.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="newScene"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="newScene"/> is already bound to a different render surface host.
+    /// </exception>
     /// <remarks>
     /// <para>
     /// Binding a scene unregisters event handlers from the previous scene (if any), registers handlers
@@ -239,18 +242,40 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (newScene == _scene)
             return;
 
-        // Unregister from the old scene (if any)
-        if (_scene != null)
-        {
-            _scene.SceneDisposing -= OnSourceDisposing;
-        }
+        // Claim the new scene before releasing the old one. If another host owns it,
+        // Bind fails without disturbing this host's current scene.
+        newScene.BindRenderSurfaceHost(this);
 
         var oldScene = _scene;
-        _scene = newScene;
 
-        ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
-        _scene.SceneDisposing += OnSourceDisposing;
-        _scene.FullRefreshNeeded = true;
+        try
+        {
+            // Unregister from and release the old scene.
+            if (oldScene != null)
+            {
+                oldScene.SceneDisposing -= OnSourceDisposing;
+                oldScene.UnbindRenderSurfaceHost(this);
+            }
+
+            _scene = newScene;
+
+            ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
+            _scene.SceneDisposing += OnSourceDisposing;
+            _scene.FullRefreshNeeded = true;
+        }
+        catch
+        {
+            newScene.UnbindRenderSurfaceHost(this);
+            _scene = oldScene;
+
+            if (oldScene != null)
+            {
+                oldScene.BindRenderSurfaceHost(this);
+                oldScene.SceneDisposing += OnSourceDisposing;
+            }
+
+            throw;
+        }
 
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, _scene));
     }
@@ -641,8 +666,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method releases managed resources including the backbuffer. It does not unregister
-    /// from the scene; that should be handled by the scene's disposal logic.
+    /// This method releases managed resources including the backbuffer and releases its scene binding.
     /// </para>
     /// <para>
     /// After calling <see cref="Dispose()"/>, this instance should not be used. Calling
@@ -673,6 +697,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         if (disposing)
         {
+            if (_scene != null)
+            {
+                _scene.SceneDisposing -= OnSourceDisposing;
+                _scene.UnbindRenderSurfaceHost(this);
+                _scene = Scene.Empty;
+            }
+
             _backbuffer = null;
         }
 
@@ -687,7 +718,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void OnSourceDisposing(Scene scene)
     {
-        _scene = null;
+        scene.SceneDisposing -= OnSourceDisposing;
+        scene.UnbindRenderSurfaceHost(this);
+        _scene = Scene.Empty;
     }
 
     private void OnRenderSurfaceAdapterResized(RenderSurfaceAdapterResizedEventArgs args)
