@@ -893,6 +893,7 @@ public sealed class Engine : IDisposable
         Input.GamepadManager?.Update();
 
         // raise event
+        // GL thread rendering is done as part of this invocation
         AfterFrameRender?.Invoke();
 
         // raise post-cycle timer events
