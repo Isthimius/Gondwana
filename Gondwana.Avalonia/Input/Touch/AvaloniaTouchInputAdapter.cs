@@ -17,8 +17,9 @@ namespace Gondwana.Avalonia.Input.Touch;
 /// <remarks>
 /// <para>
 /// On physical touch devices (Android, iOS), each finger contact is tracked by Avalonia's pointer ID and
-/// exposed as a unique <see cref="TouchPoint"/>. On desktop platforms where no hardware touch screen is
-/// present, mouse pointer events are emulated as a single touch point with <c>Id = 0</c>.
+/// exposed as a unique <see cref="TouchPoint"/>. Mouse pointers are ignored by default so an application
+/// that also initializes <c>AvaloniaMouseAdapter</c> does not receive duplicate mouse and touch input.
+/// Pass <c>emulateMouse: true</c> to the constructor when single-contact mouse emulation is desired.
 /// </para>
 /// <para>
 /// Dispose this adapter to unsubscribe from all Avalonia pointer events.
@@ -27,8 +28,10 @@ namespace Gondwana.Avalonia.Input.Touch;
 public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
 {
     private readonly Control _control;
+    private readonly bool _emulateMouse;
     private readonly Dictionary<int, TouchPoint> _activeTouches = new();
     private TouchPoint[] _activeTouchesSnapshot = Array.Empty<TouchPoint>();
+    private readonly ConcurrentQueue<TouchPoint> _pendingBegins = new();
     private readonly ConcurrentQueue<TouchPoint> _pendingEnds = new();
     private bool _isDisposed;
 
@@ -43,12 +46,17 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
     /// The Avalonia <see cref="Control"/> whose pointer events will be translated into touch events.
     /// Must not be <see langword="null"/>.
     /// </param>
+    /// <param name="emulateMouse">
+    /// When <c>true</c>, primary mouse-button input is also exposed as touch ID 0.
+    /// The default is <c>false</c> to keep mouse and physical touch distinct.
+    /// </param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="control"/> is <see langword="null"/>.
     /// </exception>
-    public AvaloniaTouchInputAdapter(Control control)
+    public AvaloniaTouchInputAdapter(Control control, bool emulateMouse = false)
     {
         _control = control ?? throw new ArgumentNullException(nameof(control));
+        _emulateMouse = emulateMouse;
 
         _control.PointerPressed += OnPointerPressed;
         _control.PointerMoved += OnPointerMoved;
@@ -60,6 +68,9 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        if (e.Pointer.Type == PointerType.Mouse && !_emulateMouse)
+            return;
+
         // For mouse pointers, only emulate touch for the primary (left) button.
         // Right- and middle-clicks should not generate touch events.
         if (e.Pointer.Type == PointerType.Mouse &&
@@ -72,10 +83,14 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
 
         _activeTouches[id] = point;
         RebuildSnapshot();
+        _pendingBegins.Enqueue(point);
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
+        if (e.Pointer.Type == PointerType.Mouse && !_emulateMouse)
+            return;
+
         var id = GetTouchId(e.Pointer);
 
         // Only track movement for contacts that are already active (i.e., button/finger is held).
@@ -92,6 +107,9 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
 
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
+        if (e.Pointer.Type == PointerType.Mouse && !_emulateMouse)
+            return;
+
         var id = GetTouchId(e.Pointer);
 
         if (!_activeTouches.ContainsKey(id))
@@ -107,6 +125,9 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
 
     private void OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
+        if (e.Pointer.Type == PointerType.Mouse && !_emulateMouse)
+            return;
+
         // The system cancelled the pointer (e.g. incoming call on Android).
         var id = GetTouchId(e.Pointer);
 
@@ -117,6 +138,18 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
         _activeTouches.Remove(id);
         RebuildSnapshot();
         _pendingEnds.Enqueue(point);
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<TouchPoint> ConsumeBeganTouches()
+    {
+        if (_pendingBegins.IsEmpty)
+            return Array.Empty<TouchPoint>();
+
+        var snapshot = new List<TouchPoint>(_pendingBegins.Count);
+        while (_pendingBegins.TryDequeue(out var point))
+            snapshot.Add(point);
+        return snapshot;
     }
 
     /// <inheritdoc />

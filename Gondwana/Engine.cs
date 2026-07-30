@@ -992,9 +992,8 @@ public sealed class Engine : IDisposable
 
                 // managed cleanup...
                 Input.KeyboardEventPoller?.StopMonitoringAllKeys();
-                Input.MouseEventPoller?.StopMonitoringMouse();
-                Input.TouchEventPoller?.StopMonitoringTouch();
-                (Input.TouchEventPoller?.Adapter as IDisposable)?.Dispose();
+                MouseEventPoller.Reset();
+                TouchEventPoller.Reset();
 
                 if (Input.GamepadManager is not null)
                     foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)

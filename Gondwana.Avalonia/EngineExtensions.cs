@@ -63,8 +63,8 @@ public static class EngineExtensions
     /// <remarks>
     /// <para>
     /// On touch-capable devices (Android, iOS), each finger contact is tracked by Avalonia's pointer ID.
-    /// On desktop platforms without a physical touch screen, mouse pointer events are emulated as a single
-    /// touch contact with <c>Id = 0</c>, so desktop mouse behaviour is not affected.
+    /// Mouse pointers are ignored by default, keeping mouse clicks distinct from physical touch contacts.
+    /// Set <paramref name="emulateMouse"/> to <c>true</c> only when a mouse should also produce touch ID 0.
     /// </para>
     /// <para>
     /// After calling this method, access the touch system via <c>engine.Input.TouchEventPoller</c> and attach
@@ -76,8 +76,12 @@ public static class EngineExtensions
     /// <param name="control">
     /// The Avalonia control (or window surface) to capture pointer/touch input from.
     /// </param>
+    /// <param name="emulateMouse">Whether primary mouse input should also emulate touch input.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is <see langword="null"/>.</exception>
-    public static void InitializeAvaloniaTouchAdapter(this Engine engine, Control control)
+    public static void InitializeAvaloniaTouchAdapter(
+        this Engine engine,
+        Control control,
+        bool emulateMouse = false)
     {
         Engine.Logger.LogInformation("Initializing AvaloniaTouchInputAdapter...");
 
@@ -87,6 +91,6 @@ public static class EngineExtensions
             throw new ArgumentNullException(nameof(control));
         }
 
-        engine.Input.TouchAdapter = new AvaloniaTouchInputAdapter(control);
+        engine.Input.TouchAdapter = new AvaloniaTouchInputAdapter(control, emulateMouse);
     }
 }

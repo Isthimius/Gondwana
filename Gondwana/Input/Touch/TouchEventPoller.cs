@@ -20,7 +20,7 @@ namespace Gondwana.Input.Touch;
 /// transitions, and raise events on the engine thread.
 /// </para>
 /// </remarks>
-public sealed class TouchEventPoller : ITouchInput
+public sealed class TouchEventPoller : ITouchInput, IDisposable
 {
     /// <summary>
     /// Gets the singleton instance of the <see cref="TouchEventPoller"/> class.
@@ -46,9 +46,22 @@ public sealed class TouchEventPoller : ITouchInput
     /// </param>
     public static void Initialize(ITouchAdapter adapter, TouchEventConfiguration? config = null)
     {
+        ArgumentNullException.ThrowIfNull(adapter);
+
         config ??= new TouchEventConfiguration(
             secondsBetweenEvents: Engine.Instance.Configuration.TimeBetweenTouchEvents);
+
+        Instance?.Dispose();
         Instance = new TouchEventPoller(adapter, config);
+    }
+
+    /// <summary>
+    /// Disposes and clears the current singleton instance, including its adapter.
+    /// </summary>
+    public static void Reset()
+    {
+        Instance?.Dispose();
+        Instance = null;
     }
 
     private readonly Dictionary<int, TouchPoint> _activeTouches = new();
@@ -65,7 +78,7 @@ public sealed class TouchEventPoller : ITouchInput
     public ITouchAdapter? Adapter { get; private set; }
 
     /// <summary>
-    /// Gets the current touch event configuration, which controls throttling interval and pause state.
+    /// Gets the current touch event configuration, which controls movement-event throttling and pause state.
     /// Returns <c>null</c> if touch monitoring has been stopped or not yet configured.
     /// </summary>
     public TouchEventConfiguration? Configuration { get; private set; }
@@ -113,6 +126,7 @@ public sealed class TouchEventPoller : ITouchInput
     /// Gets the pinch gesture recognizer used by this poller.
     /// </summary>
     public PinchGestureRecognizer PinchRecognizer { get; }
+    private bool _isDisposed;
 
     private TouchEventPoller(ITouchAdapter adapter, TouchEventConfiguration config)
     {
@@ -122,11 +136,17 @@ public sealed class TouchEventPoller : ITouchInput
         TapRecognizer = new TapGestureRecognizer(this);
         SwipeRecognizer = new SwipeGestureRecognizer(this);
         PinchRecognizer = new PinchGestureRecognizer(this);
+        TapRecognizer.CompetingSwipeRecognizer = SwipeRecognizer;
 
         TapRecognizer.Tapped += (_, e) => TouchEvent?.Invoke(new GestureEventArgs(e));
         SwipeRecognizer.Swiped += (_, e) => TouchEvent?.Invoke(new GestureEventArgs(e));
-        PinchRecognizer.PinchUpdated += (_, e) => TouchEvent?.Invoke(new GestureEventArgs(e));
+        PinchRecognizer.PinchStarted += OnPinch;
+        PinchRecognizer.PinchUpdated += OnPinch;
+        PinchRecognizer.PinchEnded += OnPinch;
     }
+
+    private void OnPinch(object? sender, PinchedEventArgs e)
+        => TouchEvent?.Invoke(new GestureEventArgs(e));
 
     /// <summary>
     /// Polls the touch adapter for input state changes and raises touch events when appropriate
@@ -136,19 +156,18 @@ public sealed class TouchEventPoller : ITouchInput
     /// Each call performs the following steps:
     /// <list type="number">
     /// <item><description>
-    /// Drains <see cref="ITouchAdapter.ConsumeEndedTouches"/>, fires <see cref="TouchEnded"/>
-    /// for each known contact, and removes it from tracked state. This step always runs
-    /// regardless of throttle state so gesture recognizers receive prompt phase notifications.
+    /// Drains queued beginnings and endings. Lifecycle transitions are never throttled; only
+    /// movement events are eligible for throttling.
     /// </description></item>
     /// <item><description>
-    /// When not paused and the throttle interval has elapsed: compares
-    /// <see cref="ITouchAdapter.ActiveTouches"/> against the last-known snapshot —
-    /// new IDs fire <see cref="TouchBegan"/>; same ID with a moved position fires <see cref="TouchMoved"/>.
+    /// When not paused, compares <see cref="ITouchAdapter.ActiveTouches"/> against the
+    /// last-emitted state. New IDs fire <see cref="TouchBegan"/> immediately; moved contacts
+    /// fire <see cref="TouchMoved"/> when the movement throttle interval has elapsed.
     /// </description></item>
-    /// <item><description>Updates the internal active-contact snapshot.</description></item>
     /// <item><description>
-    /// Advances the throttle timestamp only when at least one event was actually emitted,
-    /// so an idle poller never resets the throttle window.
+    /// Updates <see cref="ActiveTouches"/> from the poller's last-emitted contact state.
+    /// During movement throttling, positions therefore intentionally lag adapter state until
+    /// the next movement event is emitted.
     /// </description></item>
     /// </list>
     /// </remarks>
@@ -158,53 +177,74 @@ public sealed class TouchEventPoller : ITouchInput
     /// </param>
     internal void PollForEvents(long tick)
     {
-        if (Adapter is null) return;
+        if (_isDisposed || Adapter is null) return;
 
-        bool eventEmitted = false;
-
-        // Step 1: Always drain ended/cancelled contacts — prompt delivery is required for
-        // gesture recognizers (e.g. tap duration) regardless of throttle state.
+        var began = Adapter.ConsumeBeganTouches();
         var ended = Adapter.ConsumeEndedTouches();
+
+        // A paused/stopped poller deliberately establishes a new logical contact boundary.
+        // Drain transient queues, forget prior contacts, and begin fresh on resume.
+        if (Configuration is null || Configuration.IsPaused)
+        {
+            ClearContactState();
+            return;
+        }
+
+        // Lifecycle transitions are lossless and are never throttled.
+        foreach (var beganPoint in began)
+        {
+            if (_activeTouches.ContainsKey(beganPoint.Id))
+                continue;
+
+            var normalized = new TouchPoint(
+                beganPoint.Id,
+                beganPoint.Position,
+                TouchPhase.Began);
+
+            _activeTouches[normalized.Id] = normalized;
+            TouchBegan?.Invoke(this, new TouchEventArgs(normalized, tick));
+        }
+
         foreach (var endedPoint in ended)
         {
+            // A beginning and ending may both have occurred between engine polls. The queued
+            // beginning above ensures consumers still receive a complete lifecycle.
             if (_activeTouches.Remove(endedPoint.Id))
-            {
                 TouchEnded?.Invoke(this, new TouchEventArgs(endedPoint, tick));
-                eventEmitted = true;
+        }
+
+        var currentActive = Adapter.ActiveTouches;
+
+        // Discover active contacts for adapters that use the default empty beginning queue.
+        foreach (var point in currentActive)
+        {
+            if (!_activeTouches.ContainsKey(point.Id))
+            {
+                var normalized = new TouchPoint(point.Id, point.Position, TouchPhase.Began);
+                _activeTouches[normalized.Id] = normalized;
+                TouchBegan?.Invoke(this, new TouchEventArgs(normalized, tick));
             }
         }
 
-        // Step 2: Only emit Began/Moved events when not paused and throttle interval has elapsed.
-        if (Configuration is not null && !Configuration.IsPaused && Configuration.ReadyForNextEvent(tick))
+        bool movementEmitted = false;
+        if (Configuration.ReadyForNextEvent(tick))
         {
-            var currentActive = Adapter.ActiveTouches;
             foreach (var point in currentActive)
             {
-                if (!_activeTouches.TryGetValue(point.Id, out var known))
-                {
-                    // New contact
-                    _activeTouches[point.Id] = point;
-                    TouchBegan?.Invoke(this, new TouchEventArgs(point, tick));
-                    eventEmitted = true;
-                }
-                else if (known.Position != point.Position)
-                {
-                    // Existing contact moved. The poller owns phase semantics for transition events,
-                    // so TouchPhase.Moved is always correct here regardless of the adapter's stored phase.
-                    var movedPoint = new TouchPoint(point.Id, point.Position, TouchPhase.Moved);
-                    _activeTouches[point.Id] = movedPoint;
-                    TouchMoved?.Invoke(this, new TouchEventArgs(movedPoint, tick));
-                    eventEmitted = true;
-                }
+                if (!_activeTouches.TryGetValue(point.Id, out var known) ||
+                    known.Position == point.Position)
+                    continue;
+
+                var movedPoint = new TouchPoint(point.Id, point.Position, TouchPhase.Moved);
+                _activeTouches[point.Id] = movedPoint;
+                TouchMoved?.Invoke(this, new TouchEventArgs(movedPoint, tick));
+                movementEmitted = true;
             }
         }
 
-        // Step 3: Always update snapshot so ActiveTouches reflects current reality.
         _activeTouchesSnapshot = _activeTouches.Values.ToArray();
 
-        // Step 4: Advance the throttle timestamp only when an event was actually emitted,
-        // so an idle poller never resets the throttle window and defers real touches.
-        if (eventEmitted && Configuration is not null)
+        if (movementEmitted)
             Configuration._lastEventTick = tick;
     }
 
@@ -214,7 +254,8 @@ public sealed class TouchEventPoller : ITouchInput
     /// Call this method to begin monitoring touch input or to change monitoring settings.
     /// </summary>
     /// <param name="timeBetweenEvents">
-    /// The minimum time interval in seconds between consecutive touch events. Use the
+    /// The minimum time interval in seconds between consecutive touch movement events. Touch
+    /// beginnings, endings, and cancellations are never throttled. Use the
     /// default time between touch events from <see cref="Engine.Configuration.TimeBetweenTouchEvents"/>
     /// when a value less than zero is supplied. A value of 0 means no throttling.
     /// </param>
@@ -235,5 +276,45 @@ public sealed class TouchEventPoller : ITouchInput
     /// Stops monitoring touch input by clearing the configuration. After calling this method,
     /// touch events will no longer be raised until <see cref="StartMonitoringTouch"/> is called again.
     /// </summary>
-    public void StopMonitoringTouch() => Configuration = null;
+    public void StopMonitoringTouch()
+    {
+        Configuration = null;
+        ClearContactState();
+    }
+
+    private void ClearContactState()
+    {
+        _activeTouches.Clear();
+        _activeTouchesSnapshot = Array.Empty<TouchPoint>();
+        TapRecognizer.Reset();
+        SwipeRecognizer.Reset();
+        PinchRecognizer.Reset();
+    }
+
+    /// <summary>
+    /// Releases recognizers and the current platform adapter.
+    /// </summary>
+    public void Dispose()
+    {
+        if (_isDisposed)
+            return;
+
+        _isDisposed = true;
+
+        TapRecognizer.Dispose();
+        SwipeRecognizer.Dispose();
+        PinchRecognizer.PinchStarted -= OnPinch;
+        PinchRecognizer.PinchUpdated -= OnPinch;
+        PinchRecognizer.PinchEnded -= OnPinch;
+        PinchRecognizer.Dispose();
+
+        (Adapter as IDisposable)?.Dispose();
+        Adapter = null;
+        Configuration = null;
+        _activeTouches.Clear();
+        _activeTouchesSnapshot = Array.Empty<TouchPoint>();
+
+        if (ReferenceEquals(Instance, this))
+            Instance = null;
+    }
 }

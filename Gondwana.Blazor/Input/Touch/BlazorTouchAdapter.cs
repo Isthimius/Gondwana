@@ -30,6 +30,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     private readonly BlazorBitmapRenderSurfaceComponent _component;
     private readonly Dictionary<long, GondwanaTouchPoint> _activeTouches = new();
     private GondwanaTouchPoint[] _activeTouchesSnapshot = Array.Empty<GondwanaTouchPoint>();
+    private readonly ConcurrentQueue<GondwanaTouchPoint> _pendingBegins = new();
     private readonly ConcurrentQueue<GondwanaTouchPoint> _pendingEnds = new();
     private bool _isDisposed;
 
@@ -61,6 +62,7 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
         {
             var point = new GondwanaTouchPoint((int)t.Identifier, GetPosition(t), TouchPhase.Began);
             _activeTouches[t.Identifier] = point;
+            _pendingBegins.Enqueue(point);
         }
         RebuildSnapshot();
     }
@@ -101,6 +103,18 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
             _pendingEnds.Enqueue(point);
         }
         RebuildSnapshot();
+    }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<GondwanaTouchPoint> ConsumeBeganTouches()
+    {
+        if (_pendingBegins.IsEmpty)
+            return Array.Empty<GondwanaTouchPoint>();
+
+        var snapshot = new List<GondwanaTouchPoint>(_pendingBegins.Count);
+        while (_pendingBegins.TryDequeue(out var point))
+            snapshot.Add(point);
+        return snapshot;
     }
 
     /// <inheritdoc/>

@@ -9,6 +9,15 @@ namespace Gondwana.Input.Touch;
 public interface ITouchAdapter
 {
     /// <summary>
+    /// Drains and returns all touch contacts that began since the last call.
+    /// Keeping beginnings in a queue prevents a short tap that begins and ends between two
+    /// engine polls from being lost. Adapters that do not maintain a beginning queue may rely
+    /// on the default empty implementation; the poller will still discover active contacts
+    /// from <see cref="ActiveTouches"/>.
+    /// </summary>
+    IReadOnlyList<TouchPoint> ConsumeBeganTouches() => Array.Empty<TouchPoint>();
+
+    /// <summary>
     /// Gets the list of touch contact points that are currently active (in contact with the surface).
     /// This list reflects the state at the most recent platform pointer event.
     /// An empty list indicates no fingers are currently in contact.

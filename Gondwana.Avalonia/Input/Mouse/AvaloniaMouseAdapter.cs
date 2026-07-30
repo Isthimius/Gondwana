@@ -11,8 +11,9 @@ namespace Gondwana.Avalonia.Input.Mouse;
 /// Provides a mouse/pointer input adapter for Avalonia applications, tracking pointer position,
 /// button states, modifier keys, and scroll events.
 /// </summary>
-public sealed class AvaloniaMouseAdapter : IMouseAdapter
+public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
 {
+    private readonly Control _control;
     private readonly HashSet<GondwanaMouseButton> _pressed = new();
     private Point _currentPosition;
     private KeyboardModifierState _modifiers;
@@ -45,13 +46,12 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is <see langword="null"/>.</exception>
     public AvaloniaMouseAdapter(Control control)
     {
-        if (control == null)
-            throw new ArgumentNullException(nameof(control));
+        _control = control ?? throw new ArgumentNullException(nameof(control));
 
-        control.PointerPressed += OnPointerPressed;
-        control.PointerReleased += OnPointerReleased;
-        control.PointerMoved += OnPointerMoved;
-        control.PointerWheelChanged += OnPointerWheelChanged;
+        _control.PointerPressed += OnPointerPressed;
+        _control.PointerReleased += OnPointerReleased;
+        _control.PointerMoved += OnPointerMoved;
+        _control.PointerWheelChanged += OnPointerWheelChanged;
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -106,5 +106,14 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter
         // Multiply by 120 to approximate Windows WHEEL_DELTA units for compatibility.
         var delta = (int)(e.Delta.Y * 120);
         Interlocked.Add(ref _scrollDelta, delta);
+    }
+
+    /// <summary>Unsubscribes from the control's pointer events.</summary>
+    public void Dispose()
+    {
+        _control.PointerPressed -= OnPointerPressed;
+        _control.PointerReleased -= OnPointerReleased;
+        _control.PointerMoved -= OnPointerMoved;
+        _control.PointerWheelChanged -= OnPointerWheelChanged;
     }
 }

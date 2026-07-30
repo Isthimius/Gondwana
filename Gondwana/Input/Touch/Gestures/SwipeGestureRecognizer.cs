@@ -1,3 +1,4 @@
+using Gondwana.Timers;
 using System.Drawing;
 
 namespace Gondwana.Input.Touch.Gestures;
@@ -20,6 +21,8 @@ public sealed class SwipeGestureRecognizer : IDisposable
 {
     private readonly ITouchInput _touchInput;
     private readonly Dictionary<int, SwipeState> _activeSwipes = new();
+    private readonly HashSet<int> _activeContacts = new();
+    private bool _isMultiTouchSequence;
     private bool _isDisposed;
 
     /// <summary>
@@ -28,6 +31,13 @@ public sealed class SwipeGestureRecognizer : IDisposable
     /// Default is <c>200</c> pixels per second.
     /// </summary>
     public double MinimumSwipeSpeedPixelsPerSecond { get; set; } = 200;
+
+    /// <summary>
+    /// Gets or sets the minimum straight-line travel distance required for a swipe.
+    /// This prevents a short, fast tap from also being recognized as a swipe.
+    /// Default is <c>30</c> pixels.
+    /// </summary>
+    public double MinimumSwipeDistancePixels { get; set; } = 30;
 
     /// <summary>
     /// Occurs when a qualifying swipe gesture is detected.
@@ -53,11 +63,31 @@ public sealed class SwipeGestureRecognizer : IDisposable
 
     private void OnTouchBegan(object? sender, TouchEventArgs e)
     {
-        _activeSwipes[e.Touch.Id] = new SwipeState(e.Touch.Position);
+        _activeContacts.Add(e.Touch.Id);
+
+        if (_activeContacts.Count > 1)
+        {
+            _isMultiTouchSequence = true;
+            _activeSwipes.Clear();
+            return;
+        }
+
+        if (!_isMultiTouchSequence)
+            _activeSwipes[e.Touch.Id] = new SwipeState(e.Touch.Position, e.Tick);
     }
 
     private void OnTouchEnded(object? sender, TouchEventArgs e)
     {
+        _activeContacts.Remove(e.Touch.Id);
+
+        if (_isMultiTouchSequence)
+        {
+            _activeSwipes.Remove(e.Touch.Id);
+            if (_activeContacts.Count == 0)
+                _isMultiTouchSequence = false;
+            return;
+        }
+
         if (!_activeSwipes.TryGetValue(e.Touch.Id, out var state))
             return;
 
@@ -72,14 +102,14 @@ public sealed class SwipeGestureRecognizer : IDisposable
         var dy = endPos.Y - state.StartPosition.Y;
 
         var distance = Math.Sqrt(dx * dx + dy * dy);
-        var elapsed = (DateTime.UtcNow - state.StartTime).TotalSeconds;
+        var elapsed = HighResTimer.GetDuration(state.StartTick, e.Tick);
 
         if (elapsed <= 0)
             return;
 
         var speed = distance / elapsed;
 
-        if (speed < MinimumSwipeSpeedPixelsPerSecond)
+        if (!WouldRecognize(distance, elapsed))
             return;
 
         var direction = Math.Abs(dx) >= Math.Abs(dy)
@@ -100,14 +130,20 @@ public sealed class SwipeGestureRecognizer : IDisposable
 
         _touchInput.TouchBegan -= OnTouchBegan;
         _touchInput.TouchEnded -= OnTouchEnded;
+        Reset();
     }
 
-    private readonly record struct SwipeState(Point StartPosition, DateTime StartTime)
+    internal void Reset()
     {
-        /// <summary>
-        /// Initializes a new swipe tracking state starting at the specified position and the current UTC time.
-        /// </summary>
-        /// <param name="startPosition">The position where the swipe began.</param>
-        public SwipeState(Point startPosition) : this(startPosition, DateTime.UtcNow) { }
+        _activeSwipes.Clear();
+        _activeContacts.Clear();
+        _isMultiTouchSequence = false;
     }
+
+    internal bool WouldRecognize(double distance, double elapsedSeconds)
+        => elapsedSeconds > 0 &&
+           distance >= MinimumSwipeDistancePixels &&
+           distance / elapsedSeconds >= MinimumSwipeSpeedPixelsPerSecond;
+
+    private readonly record struct SwipeState(Point StartPosition, long StartTick);
 }
