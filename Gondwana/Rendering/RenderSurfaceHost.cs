@@ -294,115 +294,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // can silently discard dirty rects that were added after the last GL frame.
         // Instead, always re-render the entire surface each GL paint callback.
         if (Backbuffer.IsGlThreadRendered)
-        {
             RenderToBackbufferGpuFull(tick);
-            RenderBackbufferEnd?.Invoke();
-            return;
-        }
-
-        if (ViewManager.Views.Count == 0)
-        {
-            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
-            Scene.FullRefreshNeeded = false;
-            RenderBackbufferEnd?.Invoke();
-            return;
-        }
-
-        // 0) If there are no visible SceneLayers, just clear and publish the full frame.
-        if (Scene.CountOfVisibleLayers == 0)
-        {
-            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
-            Scene.FullRefreshNeeded = false;
-        }
         else
-        {
-            // 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
-            //    This already clears the whole backbuffer and enqueues a full rect per layer.
-            if (Scene.FullRefreshNeeded)
-            {
-                // this will mark the Scene.IsDirty flag as true
-                EnqueueFullSceneRefresh();
-            }
-            else
-            {
-                // scene is not dirty, this frame is done...
-                if (!Scene.IsDirty)
-                {
-                    RenderBackbufferNoOp?.Invoke();
-                    return;
-                }
-            }
-        }
-
-        // 2) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
-        foreach (var view in ViewManager.Views)
-        {
-            RenderContext.Push(view, tick);
-
-            try
-            {
-                // 2.1) Force-refresh all DirectDrawings that overlay this view
-                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
-                foreach (var overlay in overlays)
-                {
-                    overlay.ForceRefresh();
-                }
-
-                // 2.2) identify dirty SCREEN areas across all layers for this view
-                var dirtyScreenRects = CollectDirtyScreenArea(view);
-
-                // 2.3) Clip to this view's viewport
-                var vp = view.Viewport.TargetRectPx;
-
-                // clip inclusive to current viewport
-                Backbuffer.Canvas.Save();
-                Backbuffer.Canvas.ResetMatrix();
-                Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
-
-                // clip exclusive to higher Z-order views
-                foreach (var blocker in ViewManager.GetViewsAbove(view))
-                {
-                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
-                    if (!overlap.IsEmpty)
-                        Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
-                }
-
-                // 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
-                PreclearScreenAreas(view, dirtyScreenRects);
-
-                // 2.5) Render each visible layer's dirty regions for this view
-                //      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings
-                var sceneLayers = Scene.VisibleSceneLayers;
-
-                for (int i = 0; i < sceneLayers.Count; i++)
-                {
-                    var layer = sceneLayers[i];
-                    RenderLayerDirtyRegions(view, layer);
-                }
-
-                // 2.6) draw all View-based DirectDrawings for this view
-                for (int i = 0; i < overlays.Count; i++)
-                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
-
-                // 2.7) Restore from viewport clip
-                Backbuffer.Canvas.Restore();
-            }
-            finally
-            {
-                RenderContext.Pop();
-            }
-        }
-
-        // 3) Clear layer queues now that we've consumed them (avoids re-drawing same tiles next frame)
-        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
-            Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
-
-        Scene.FullRefreshNeeded = false;
-
-        // Notify subscribers that all scene content has been drawn and the canvas is ready for
-        // post-scene effects.  Fires before RenderBackbufferEnd so subscribers still have a
-        // chance to draw into the canvas before it is presented to the adapter.
-        InvokePostSceneCanvasHooks();
+            RenderToBackbufferBitmap(tick);
 
         RenderBackbufferEnd?.Invoke();
     }
@@ -511,6 +405,113 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // Notify subscribers that all scene content has been drawn and the canvas is ready for
         // post-scene effects.  For GPU surfaces this runs on the GL thread while GRContext is
         // current, so subscribers may safely issue Skia GPU draw calls.
+        InvokePostSceneCanvasHooks();
+    }
+
+    private void RenderToBackbufferBitmap(long tick)
+    {
+        if (ViewManager.Views.Count == 0)
+        {
+            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Scene.FullRefreshNeeded = false;
+            RenderBackbufferEnd?.Invoke();
+            return;
+        }
+
+        // 0) If there are no visible SceneLayers, just clear and publish the full frame.
+        if (Scene.CountOfVisibleLayers == 0)
+        {
+            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Scene.FullRefreshNeeded = false;
+        }
+        else
+        {
+            // 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
+            //    This already clears the whole backbuffer and enqueues a full rect per layer.
+            if (Scene.FullRefreshNeeded)
+            {
+                // this will mark the Scene.IsDirty flag as true
+                EnqueueFullSceneRefresh();
+            }
+            else
+            {
+                // scene is not dirty, this frame is done...
+                if (!Scene.IsDirty)
+                {
+                    RenderBackbufferNoOp?.Invoke();
+                    return;
+                }
+            }
+        }
+
+        // 2) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
+        foreach (var view in ViewManager.Views)
+        {
+            RenderContext.Push(view, tick);
+
+            try
+            {
+                // 2.1) Force-refresh all DirectDrawings that overlay this view
+                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+                foreach (var overlay in overlays)
+                {
+                    overlay.ForceRefresh();
+                }
+
+                // 2.2) identify dirty SCREEN areas across all layers for this view
+                var dirtyScreenRects = CollectDirtyScreenArea(view);
+
+                // 2.3) Clip to this view's viewport
+                var vp = view.Viewport.TargetRectPx;
+
+                // clip inclusive to current viewport
+                Backbuffer.Canvas.Save();
+                Backbuffer.Canvas.ResetMatrix();
+                Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
+
+                // clip exclusive to higher Z-order views
+                foreach (var blocker in ViewManager.GetViewsAbove(view))
+                {
+                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
+                    if (!overlap.IsEmpty)
+                        Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
+                }
+
+                // 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
+                PreclearScreenAreas(view, dirtyScreenRects);
+
+                // 2.5) Render each visible layer's dirty regions for this view
+                //      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings
+                var sceneLayers = Scene.VisibleSceneLayers;
+
+                for (int i = 0; i < sceneLayers.Count; i++)
+                {
+                    var layer = sceneLayers[i];
+                    RenderLayerDirtyRegions(view, layer);
+                }
+
+                // 2.6) draw all View-based DirectDrawings for this view
+                for (int i = 0; i < overlays.Count; i++)
+                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+
+                // 2.7) Restore from viewport clip
+                Backbuffer.Canvas.Restore();
+            }
+            finally
+            {
+                RenderContext.Pop();
+            }
+        }
+
+        // 3) Clear layer queues now that we've consumed them (avoids re-drawing same tiles next frame)
+        for (int i = 0; i < Scene.CountOfVisibleLayers; i++)
+            Scene.VisibleSceneLayers[i].RefreshQueue.ClearRefreshQueue();
+
+        Scene.FullRefreshNeeded = false;
+
+        // Notify subscribers that all scene content has been drawn and the canvas is ready for
+        // post-scene effects.  Fires before RenderBackbufferEnd so subscribers still have a
+        // chance to draw into the canvas before it is presented to the adapter.
         InvokePostSceneCanvasHooks();
     }
 
