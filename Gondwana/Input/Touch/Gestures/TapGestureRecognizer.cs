@@ -29,6 +29,7 @@ public sealed class TapGestureRecognizer : IDisposable
     private readonly Dictionary<int, TapState> _activeTaps = new();
     private readonly HashSet<int> _activeContacts = new();
     private bool _isMultiTouchSequence;
+
     internal SwipeGestureRecognizer? CompetingSwipeRecognizer { get; set; }
 
     private bool _isDisposed;
