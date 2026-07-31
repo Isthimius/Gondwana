@@ -408,13 +408,47 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         InvokePostSceneCanvasHooks();
     }
 
+    /// <summary>
+    /// Dirty-region rendering path used exclusively for non-GL backbuffers
+    /// (typically <see cref="BitmapBackbuffer"/>).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method runs on the engine thread as part of the normal
+    /// <see cref="Engine"/> foreground cycle. Unlike the full-frame GPU path, it
+    /// uses each visible <see cref="SceneLayer"/>'s <see cref="RefreshQueue"/> to
+    /// identify the world regions that have changed and redraw only the corresponding
+    /// screen regions.
+    /// </para>
+    /// <para>
+    /// When <see cref="Scene.FullRefreshNeeded"/> is set, the visible world extent
+    /// of every view is added to each layer's refresh queue. Otherwise, a clean
+    /// scene may return without performing any drawing.
+    /// </para>
+    /// <para>
+    /// For each configured view, dirty world rectangles are projected into screen
+    /// coordinates, clipped to the view's viewport, and excluded from areas occupied
+    /// by higher-Z-order views. Cleared screen regions are propagated back to
+    /// overlapping scene layers so that removing or moving foreground content does
+    /// not erase unchanged background content.
+    /// </para>
+    /// <para>
+    /// After all views have been processed, the consumed refresh queues are cleared,
+    /// <see cref="Scene.FullRefreshNeeded"/> is reset, and post-scene canvas hooks
+    /// are invoked. Presentation is performed separately by
+    /// <see cref="PresentBackbufferToAdapter"/> after this method returns.
+    /// </para>
+    /// </remarks>
+    /// <param name="tick">
+    /// The current high-resolution engine tick used to establish the
+    /// <see cref="RenderContext"/> for this frame.
+    /// </param>
     private void RenderToBackbufferBitmap(long tick)
     {
         if (ViewManager.Views.Count == 0)
         {
             Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
             Scene.FullRefreshNeeded = false;
-            RenderBackbufferEnd?.Invoke();
             return;
         }
 
