@@ -251,10 +251,27 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         try
         {
             // Unregister from and release the old scene.
-            if (oldScene != null)
+            if (!ReferenceEquals(oldScene, Scene.Empty))
             {
                 oldScene.SceneDisposing -= OnSourceDisposing;
                 oldScene.UnbindRenderSurfaceHost(this);
+            }
+
+            _scene = newScene;
+
+            ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
+            _scene.SceneDisposing += OnSourceDisposing;
+            _scene.FullRefreshNeeded = true;
+        }
+        catch
+        {
+            newScene.UnbindRenderSurfaceHost(this);
+            _scene = oldScene;
+
+            if (!ReferenceEquals(oldScene, Scene.Empty))
+            {
+                oldScene.BindRenderSurfaceHost(this);
+                oldScene.SceneDisposing += OnSourceDisposing;
             }
 
             _scene = newScene;
