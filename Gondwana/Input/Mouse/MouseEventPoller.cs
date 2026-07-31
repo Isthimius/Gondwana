@@ -181,8 +181,10 @@ public sealed class MouseEventPoller : IDisposable
 
         // now decide whether to emit an event
         bool moved = (Configuration?.TrackMouseMovement ?? false) && _lastPosition != currentPos;
-        // Adapter deltas are consumable values that reset to zero after each read.
-        bool scrolled = scrollDelta != 0;
+        // Emit a scroll event only when the delta is non-zero and has changed since the last poll.
+        // This works for both adapters that reset delta to 0 after each read and adapters that
+        // hold a persistent delta until it changes, preventing repeated events on every poll.
+        bool scrolled = scrollDelta != 0 && scrollDelta != _lastScrollDelta;
         _lastScrollDelta = scrollDelta;
 
         if (anyButtonChange || moved || scrolled || isAnyButtonDown)
