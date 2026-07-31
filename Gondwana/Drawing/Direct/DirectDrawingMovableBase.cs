@@ -240,9 +240,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
         Opacity = opacity;
     }
 
-    void IDirectCompositeChild.FadeTo(
-        float targetOpacity,
-        float durationSec)
+    void IDirectCompositeChild.FadeTo(float targetOpacity, float durationSec)
     {
         base.FadeTo(
             targetOpacity,

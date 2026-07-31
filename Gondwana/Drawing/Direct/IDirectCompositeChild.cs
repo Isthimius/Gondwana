@@ -56,7 +56,5 @@ public interface IDirectCompositeChild : IDirectDrawable, IMovable
     /// </summary>
     /// <param name="targetOpacity">The target opacity in the range 0 through 1.</param>
     /// <param name="durationSec">The fade duration in seconds.</param>
-    void FadeTo(
-        float targetOpacity,
-        float durationSec);
+    void FadeTo(float targetOpacity, float durationSec);
 }
