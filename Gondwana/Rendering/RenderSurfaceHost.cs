@@ -695,39 +695,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private bool _disposed;
 
-    /// <summary>
-    /// Releases all resources used by this <see cref="RenderSurfaceHost{TBackbuffer}"/> instance.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This method releases managed resources including the backbuffer and releases its scene binding.
-    /// </para>
-    /// <para>
-    /// After calling <see cref="Dispose()"/>, this instance should not be used. Calling
-    /// <see cref="Dispose()"/> multiple times is safe and has no additional effect.
-    /// </para>
-    /// </remarks>
-    public void Dispose()
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
     {
-        Dispose(true);
-    }
-
-    /// <summary>
-    /// Releases resources used by this <see cref="RenderSurfaceHost{TBackbuffer}"/> instance.
-    /// </summary>
-    /// <param name="disposing">
-    /// <see langword="true"/> to release both managed and unmanaged resources;
-    /// <see langword="false"/> to release only unmanaged resources (called from finalizer).
-    /// </param>
-    /// <remarks>
-    /// When <paramref name="disposing"/> is <see langword="true"/>, this method releases the backbuffer
-    /// and clears the reference. Derived classes should override this method to release additional resources.
-    /// </remarks>
-    public void Dispose(bool disposing)
-    {
-        if (_disposed) return;
-
-        base.Dispose(disposing);
+        if (_disposed)
+            return;
 
         if (disposing)
         {
@@ -742,9 +714,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
 
         _disposed = true;
-    }
 
-    ~RenderSurfaceHost() => Dispose(false);
+        base.Dispose(disposing);
+    }
 
     #endregion IDisposable
 
