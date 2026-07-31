@@ -236,10 +236,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </remarks>
     public void Bind(Scene newScene, bool limitCameraToWorldBoundPx = true)
     {
-        if (newScene == null)
-            throw new ArgumentNullException(nameof(newScene), "Cannot bind to null Scene.");
+        ArgumentNullException.ThrowIfNull(newScene, "Cannot bind to null Scene.");
 
-        if (newScene == _scene)
+        if (ReferenceEquals(newScene, _scene))
             return;
 
         // Claim the new scene before releasing the old one. If another host owns it,
@@ -258,34 +257,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             }
 
             _scene = newScene;
-
             ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
+
             _scene.SceneDisposing += OnSourceDisposing;
             _scene.FullRefreshNeeded = true;
         }
         catch
         {
+            // Release the failed new binding and restore the previous scene.
             newScene.UnbindRenderSurfaceHost(this);
             _scene = oldScene;
 
             if (!ReferenceEquals(oldScene, Scene.Empty))
-            {
-                oldScene.BindRenderSurfaceHost(this);
-                oldScene.SceneDisposing += OnSourceDisposing;
-            }
-
-            _scene = newScene;
-
-            ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
-            _scene.SceneDisposing += OnSourceDisposing;
-            _scene.FullRefreshNeeded = true;
-        }
-        catch
-        {
-            newScene.UnbindRenderSurfaceHost(this);
-            _scene = oldScene;
-
-            if (oldScene != null)
             {
                 oldScene.BindRenderSurfaceHost(this);
                 oldScene.SceneDisposing += OnSourceDisposing;
