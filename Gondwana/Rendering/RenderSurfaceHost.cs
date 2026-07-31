@@ -274,23 +274,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 oldScene.SceneDisposing += OnSourceDisposing;
             }
 
-            _scene = newScene;
-
-            ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
-            _scene.SceneDisposing += OnSourceDisposing;
-            _scene.FullRefreshNeeded = true;
-        }
-        catch
-        {
-            newScene.UnbindRenderSurfaceHost(this);
-            _scene = oldScene;
-
-            if (oldScene != null)
-            {
-                oldScene.BindRenderSurfaceHost(this);
-                oldScene.SceneDisposing += OnSourceDisposing;
-            }
-
             throw;
         }
 
