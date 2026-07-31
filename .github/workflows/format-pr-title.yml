@@ -8,8 +8,8 @@ jobs:
   format-title:
     runs-on: ubuntu-latest
 
-    # Only run on PRs targeting master, and skip the changelog commit PR if
-    # one is ever opened (the release script commits directly, but just in case).
+    # Only run for same-repository PRs targeting master. This avoids running
+    # Copilot against untrusted fork content under pull_request_target.
     if: |
       github.event.pull_request.base.ref == 'master' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
@@ -18,27 +18,58 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      models: read
+      copilot-requests: write
 
     steps:
-      - name: Checkout PR branch (shallow + merge base for diff)
-        uses: actions/checkout@v4
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Install GitHub Copilot CLI
+        run: npm install -g @github/copilot
+
       - name: Fetch master for diff base
         run: git fetch origin master --depth=50
 
+      - name: Inspect current PR state
+        id: state
+        env:
+          CURRENT_TITLE: ${{ github.event.pull_request.title }}
+          CURRENT_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python3 <<'PY' >> "$GITHUB_OUTPUT"
+          import os
+          import re
+
+          title = os.environ.get("CURRENT_TITLE", "").strip()
+          body = os.environ.get("CURRENT_BODY", "").strip()
+
+          conventional_title = re.fullmatch(
+              r"[a-z]+(?:\([a-z0-9._-]+\))?!?: .{3,}",
+              title,
+          ) is not None
+
+          print(f"needs_title={'false' if conventional_title else 'true'}")
+          print(f"needs_body={'false' if body else 'true'}")
+          PY
+
       - name: Build diff and commit summary
         id: context
+        if: steps.state.outputs.needs_title == 'true' || steps.state.outputs.needs_body == 'true'
         run: |
           BASE=$(git merge-base origin/master HEAD)
 
-          # File-level change summary (max 60 lines to stay within token budget)
+          # File-level change summary, capped to keep the prompt reasonably small.
           DIFF_STAT=$(git diff "$BASE"...HEAD --stat | head -60)
 
-          # Commit messages on this branch (max 30)
+          # Commit messages on this branch, capped for the same reason.
           COMMITS=$(git log "$BASE"...HEAD --oneline | head -30)
 
           OUTPUT_DELIM=$(uuidgen)
@@ -52,30 +83,32 @@ jobs:
             echo "$OUTPUT_DELIM"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Generate PR title via GitHub Models
-        id: generate
+      - name: Generate PR title with GitHub Copilot
+        id: generate_title
+        if: steps.state.outputs.needs_title == 'true'
         env:
-          COPILOT_GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           DIFF_STAT: ${{ steps.context.outputs.diff_stat }}
           COMMITS: ${{ steps.context.outputs.commits }}
         run: |
-          MODEL_TOKEN="${COPILOT_GH_TOKEN:-$GH_TOKEN}"
-
           PROMPT=$(cat <<EOF
-          You are a commit message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
+          You are a commit-message author for the Gondwana game engine, a C#/.NET 8 cross-platform 2.5D engine.
 
-          Review the full set of changes currently in this pull request and generate:
-          1. A single conventional commit message suitable as the GitHub PR squash-merge title.
+          Review the commit list and changed-file summary below. Generate one conventional commit title suitable for the pull request's squash-merge commit.
 
           Rules:
-          - The title must follow: type(scope): short description
+          - Format: type(scope): short description
           - Valid types: feat, fix, perf, refactor, docs, test, build, ci, chore, revert
-          - Valid scopes (pick the best fit): rendering, input, audio, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, blazor, midi, sdl2, core
-          - Title description: imperative mood, lowercase, no period, max 60 chars
-          - Breaking change: append ! after scope, e.g. feat(rendering)!
-          - Return ONLY this format:
-            TITLE: <commit message>
+          - Preferred scopes: rendering, scenes, input, audio, collisions, physics, tilesheets, widgets, wasm, hosting, cli, templates, demos, assets, video, winforms, avalonia, blazor, studio, tooling, midi, sdl2, core
+          - A different concise lowercase scope is allowed when it fits better
+          - Use imperative mood
+          - Keep the description lowercase
+          - Do not end with a period
+          - Keep the description at or below 60 characters
+          - For a breaking change, append ! after the scope
+          - Return exactly one line in this format:
+            TITLE: type(scope): short description
+          - Do not use tools; all required context is included below
 
           Commits on this branch:
           $COMMITS
@@ -85,106 +118,88 @@ jobs:
           EOF
           )
 
-          REQUEST_BODY=$(python3 -c "
-          import sys, json
-          prompt = sys.stdin.read()
-          print(json.dumps({
-            'model': 'gpt-4o-mini',
-            'messages': [{'role': 'user', 'content': prompt}],
-            'max_tokens': 500,
-            'temperature': 0.3
-          }))
-          " <<< "$PROMPT")
-
-          if [ -z "$MODEL_TOKEN" ]; then
-            echo "::warning::No token available for GitHub Models API. Falling back to deterministic title generation."
-            API_RESPONSE=""
-          else
-            API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-              "https://models.inference.ai.azure.com/chat/completions" \
-              -H "Authorization: Bearer $MODEL_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "$REQUEST_BODY" 2>/dev/null || echo "")
-          fi
-
-          HTTP_STATUS=$(printf '%s' "$API_RESPONSE" | tail -1)
-          RESPONSE_BODY=$(printf '%s' "$API_RESPONSE" | head -n -1)
-
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "::warning::GitHub Models API returned HTTP $HTTP_STATUS. Falling back to deterministic title generation."
+          if ! RAW=$(copilot -p "$PROMPT" \
+            -s \
+            --model auto \
+            --no-ask-user \
+            --no-color \
+            --no-custom-instructions); then
+            echo "::warning::Copilot CLI failed while generating the PR title."
             RAW=""
-          else
-            RAW=$(printf '%s' "$RESPONSE_BODY" \
-              | python3 -c 'import sys, json; d=json.load(sys.stdin); print(d.get("choices", [{}])[0].get("message", {}).get("content", ""))' \
-              2>/dev/null || echo "")
           fi
 
-          if [ -z "$RAW" ]; then
-            echo "::warning::GitHub Models API call failed. Falling back to deterministic title generation."
-          fi
+          TITLE=$(printf '%s' "$RAW" | python3 -c "$(cat <<'PY'
+          import re
+          import sys
 
-          PARSED=$(printf '%s' "$RAW" | python3 -c "$(cat <<'PY'
-          import sys, re, json
           text = sys.stdin.read().strip()
-          title = ''
+          title = ""
 
-          m = re.search(r'TITLE:\s*(.+)', text)
-          if m:
-              title = m.group(1).strip().strip('"').strip("'")
-
-          if not title:
-              m = re.search(r'git commit -m ["\'](.*?)["\']', text, re.DOTALL)
-              if m:
-                  title = m.group(1).strip().splitlines()[0].strip()
+          match = re.search(r"(?im)^\s*TITLE:\s*(.+?)\s*$", text)
+          if match:
+              title = match.group(1).strip().strip('"').strip("'")
 
           if not title:
               for line in text.splitlines():
-                  line = line.strip().strip('"').strip("'")
-                  if re.match(r'^[a-z]+(\([a-z0-9._-]+\))?!?: .', line):
-                      title = line
+                  candidate = line.strip().strip('"').strip("'")
+                  if re.fullmatch(r"[a-z]+(?:\([a-z0-9._-]+\))?!?: .{3,}", candidate):
+                      title = candidate
                       break
 
-          print(json.dumps({"title": title}))
-          PY
-          )" 2>/dev/null || echo '{}')
+          valid_types = "feat|fix|perf|refactor|docs|test|build|ci|chore|revert"
+          pattern = re.compile(
+              rf"^(?:{valid_types})\([a-z0-9._-]+\)!?: (?P<description>.+)$"
+          )
+          valid = pattern.fullmatch(title)
 
-          TITLE=$(printf '%s' "$PARSED" | python3 -c 'import sys, json; print(json.load(sys.stdin).get("title", ""))' 2>/dev/null || echo "")
-          # Basic sanity check: must match conventional commit pattern
-          if echo "$TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
-            echo "title=$TITLE" >> "$GITHUB_OUTPUT"
-            echo "Generated title: $TITLE"
-          else
+          if valid:
+              description = valid.group("description")
+              if (
+                  3 <= len(description) <= 60
+                  and description == description.lower()
+                  and not description.endswith(".")
+              ):
+                  print(title)
+          PY
+          )" 2>/dev/null || true)
+
+          if [ -z "$TITLE" ]; then
             FALLBACK_TITLE=$(printf '%s\n' "$COMMITS" \
               | sed -E 's/^[0-9a-f]{7,}[[:space:]]+//' \
-              | grep -m1 -E '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}' || true)
+              | grep -m1 -E '^(feat|fix|perf|refactor|docs|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: .{3,}' \
+              || true)
+
             if [ -z "$FALLBACK_TITLE" ]; then
               FALLBACK_TITLE="chore(core): update pull request"
             fi
-            echo "::warning::Generated title did not pass validation: '$TITLE'. Using fallback '$FALLBACK_TITLE'."
-            echo "title=$FALLBACK_TITLE" >> "$GITHUB_OUTPUT"
+
+            echo "::warning::Copilot did not return a valid title. Using fallback '$FALLBACK_TITLE'."
+            TITLE="$FALLBACK_TITLE"
           fi
 
-      - name: Generate PR description body
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+          echo "Selected title: $TITLE"
+
+      - name: Generate PR description with GitHub Copilot
         id: generate_description
+        if: steps.state.outputs.needs_body == 'true'
         env:
-          COPILOT_GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           COMMITS: ${{ steps.context.outputs.commits }}
           DIFF_STAT: ${{ steps.context.outputs.diff_stat }}
         run: |
-          MODEL_TOKEN="${COPILOT_GH_TOKEN:-$GH_TOKEN}"
-
           PROMPT=$(cat <<EOF
-          You are writing the "Summary" section for a GitHub pull request in the Gondwana game engine repository.
+          You are writing the Summary section for a pull request in the Gondwana game engine repository.
 
-          Using only the commit list and changed-files stat below, infer the most likely PR intent and produce concise summary bullets.
+          Using only the commit list and changed-file summary below, infer the most likely pull request intent and produce concise summary bullets.
 
           Rules:
-          - Return 2 to 4 markdown bullet points.
-          - Each bullet must start with "- ".
-          - No heading text.
-          - Keep each bullet under 120 characters.
-          - Focus on user-visible behavior and key technical changes.
+          - Return 2 to 4 Markdown bullet points
+          - Each bullet must start with "- "
+          - Do not include a heading
+          - Keep each bullet under 120 characters
+          - Focus on user-visible behavior and important technical changes
+          - Do not use tools; all required context is included below
 
           Commits on this branch:
           $COMMITS
@@ -194,60 +209,45 @@ jobs:
           EOF
           )
 
-          REQUEST_BODY=$(python3 -c "
-          import sys, json
-          prompt = sys.stdin.read()
-          print(json.dumps({
-            'model': 'gpt-4o-mini',
-            'messages': [{'role': 'user', 'content': prompt}],
-            'max_tokens': 350,
-            'temperature': 0.2
-          }))
-          " <<< "$PROMPT")
-
-          if [ -z "$MODEL_TOKEN" ]; then
-            echo "::warning::No token available for GitHub Models API. Falling back to commit-based summary."
-            API_RESPONSE=""
-          else
-            API_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-              "https://models.inference.ai.azure.com/chat/completions" \
-              -H "Authorization: Bearer $MODEL_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "$REQUEST_BODY" 2>/dev/null || echo "")
-          fi
-
-          HTTP_STATUS=$(printf '%s' "$API_RESPONSE" | tail -1)
-          RESPONSE_BODY=$(printf '%s' "$API_RESPONSE" | head -n -1)
-
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "::warning::GitHub Models API returned HTTP $HTTP_STATUS for PR summary generation."
+          if ! RAW_SUMMARY=$(copilot -p "$PROMPT" \
+            -s \
+            --model auto \
+            --no-ask-user \
+            --no-color \
+            --no-custom-instructions); then
+            echo "::warning::Copilot CLI failed while generating the PR description."
             RAW_SUMMARY=""
-          else
-            RAW_SUMMARY=$(printf '%s' "$RESPONSE_BODY" \
-              | python3 -c 'import sys, json; d=json.load(sys.stdin); print(d.get("choices", [{}])[0].get("message", {}).get("content", ""))' \
-              2>/dev/null || echo "")
           fi
 
           SUMMARY_BULLETS=$(printf '%s' "$RAW_SUMMARY" | python3 -c "$(cat <<'PY'
-          import re, sys
+          import re
+          import sys
+
           lines = []
+
           for raw in sys.stdin.read().splitlines():
               line = raw.strip()
-              if not line or line.startswith('```'):
+
+              if not line or line.startswith("```"):
                   continue
-              if line.lower().startswith('summary'):
+
+              if line.lower().startswith("summary"):
                   continue
-              if line.startswith(('-', '*')):
+
+              if line.startswith(("-", "*")):
                   line = line[1:].strip()
-              elif re.match(r'^\d+[.)]\s+', line):
-                  line = re.sub(r'^\d+[.)]\s+', '', line)
+              elif re.match(r"^\d+[.)]\s+", line):
+                  line = re.sub(r"^\d+[.)]\s+", "", line)
               else:
                   continue
+
               if line:
-                  lines.append(f"- {line}")
+                  lines.append(f"- {line[:117].rstrip()}")
+
               if len(lines) == 4:
                   break
-          print('\n'.join(lines))
+
+          print("\n".join(lines))
           PY
           )")
 
@@ -260,45 +260,26 @@ jobs:
           fi
 
           if [ -z "$(printf '%s' "$SUMMARY_BULLETS" | tr -d '[:space:]')" ]; then
-            SUMMARY_BULLETS="- Automated summary was unavailable; please review this PR before merge."
+            SUMMARY_BULLETS="- Automated summary was unavailable; please review this pull request before merge."
           fi
-
-          DESC="$SUMMARY_BULLETS"
 
           DELIM=$(uuidgen)
           {
             echo "body<<$DELIM"
-            printf '%s\n' "$DESC"
+            printf '%s\n' "$SUMMARY_BULLETS"
             echo "$DELIM"
           } >> "$GITHUB_OUTPUT"
 
       - name: Update PR title
-        if: steps.generate.outputs.title != ''
+        if: steps.generate_title.outputs.title != ''
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          NEW_TITLE: ${{ steps.generate.outputs.title }}
+          NEW_TITLE: ${{ steps.generate_title.outputs.title }}
         run: |
-          CURRENT_TITLE=$(python3 - <<'PY'
-          import json
-          import os
+          CURRENT_TITLE=$(gh pr view "$PR_NUMBER" --json title --jq '.title // ""')
 
-          path = os.environ.get("GITHUB_EVENT_PATH")
-          title = ""
-
-          if path and os.path.exists(path):
-              try:
-                  with open(path, encoding="utf-8") as handle:
-                      event = json.load(handle)
-                  title = event.get("pull_request", {}).get("title") or ""
-              except (OSError, json.JSONDecodeError):
-                  title = ""
-
-          print(title)
-          PY
-          )
-
-          # Lock title once it is in conventional commit format.
+          # Preserve a title that someone manually fixed while this job was running.
           if echo "$CURRENT_TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
             echo "PR title is already conventional. Skipping update."
             exit 0
@@ -318,11 +299,11 @@ jobs:
       - name: Update PR description when body is blank
         if: steps.generate_description.outputs.body != ''
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           NEW_BODY: ${{ steps.generate_description.outputs.body }}
         run: |
-          CURRENT_BODY=$(python3 -c 'import json, os; ev=json.load(open(os.environ["GITHUB_EVENT_PATH"])); print(ev.get("pull_request", {}).get("body") or "")')
+          CURRENT_BODY=$(gh pr view "$PR_NUMBER" --json body --jq '.body // ""')
 
           if [ -n "$(printf '%s' "$CURRENT_BODY" | tr -d '[:space:]')" ]; then
             echo "PR description is not blank. Skipping update."
@@ -334,5 +315,5 @@ jobs:
             exit 0
           fi
 
-          echo "Regenerating blank PR description for #$PR_NUMBER"
+          echo "Populating blank PR description for #$PR_NUMBER"
           gh pr edit "$PR_NUMBER" --body "$NEW_BODY"
