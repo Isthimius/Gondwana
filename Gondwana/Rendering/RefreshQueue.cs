@@ -7,10 +7,15 @@ namespace Gondwana.Rendering;
 
 internal sealed class RefreshQueue
 {
+    private readonly Func<bool> _isEnabled;
     private readonly List<Rectangle> _worldRects;   // World-space dirty regions (pixels)
     private readonly object _syncRoot = new();      // Guards _worldRects for cross-thread access
 
-    internal RefreshQueue() => _worldRects = new List<Rectangle>(64);
+    internal RefreshQueue(Func<bool> isEnabled)
+    {
+        _isEnabled = isEnabled ?? throw new ArgumentNullException(nameof(isEnabled));
+        _worldRects = new List<Rectangle>(64);
+    }
 
     /// <summary>
     /// True if there is at least one world-space dirty rectangle enqueued.
@@ -49,7 +54,7 @@ internal sealed class RefreshQueue
     /// </summary>
     internal void AddWorldRect(Rectangle worldPixelRange)
     {
-        if (worldPixelRange.IsEmpty)
+        if (!_isEnabled() || worldPixelRange.IsEmpty)
             return;
 
         // ensure we're on the engine thread
@@ -75,7 +80,7 @@ internal sealed class RefreshQueue
 
     internal void AddViewScreenRect(View view, SceneLayer sceneLayer, Rectangle screenPixelRange)
     {
-        if (screenPixelRange.IsEmpty)
+        if (!_isEnabled() || screenPixelRange.IsEmpty)
             return;
         
         if (view is null)

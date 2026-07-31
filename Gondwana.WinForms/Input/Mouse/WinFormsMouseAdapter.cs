@@ -6,8 +6,9 @@ namespace Gondwana.WinForms.Input.Mouse;
 /// <summary>
 /// Provides a mouse input adapter for WinForms applications, tracking mouse position, button states, and scroll events.
 /// </summary>
-public sealed class WinFormsMouseAdapter : IMouseAdapter
+public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
 {
+    private readonly Control _control;
     private readonly HashSet<MouseButton> _pressed = new();
     private readonly object _pressedLock = new();
     private Point _currentPosition;
@@ -57,13 +58,12 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is <see langword="null"/>.</exception>
     public WinFormsMouseAdapter(Control control)
     {
-        if (control == null)
-            throw new ArgumentNullException(nameof(control));
+        _control = control ?? throw new ArgumentNullException(nameof(control));
 
-        control.MouseDown += OnMouseDown;
-        control.MouseUp += OnMouseUp;
-        control.MouseMove += OnMouseMove;
-        control.MouseWheel += OnMouseWheel;
+        _control.MouseDown += OnMouseDown;
+        _control.MouseUp += OnMouseUp;
+        _control.MouseMove += OnMouseMove;
+        _control.MouseWheel += OnMouseWheel;
     }
 
     private void OnMouseDown(object? sender, System.Windows.Forms.MouseEventArgs e)
@@ -106,5 +106,14 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter
     private void OnMouseWheel(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
         Interlocked.Add(ref _scrollDelta, e.Delta);
+    }
+
+    /// <summary>Unsubscribes from the control's mouse events.</summary>
+    public void Dispose()
+    {
+        _control.MouseDown -= OnMouseDown;
+        _control.MouseUp -= OnMouseUp;
+        _control.MouseMove -= OnMouseMove;
+        _control.MouseWheel -= OnMouseWheel;
     }
 }

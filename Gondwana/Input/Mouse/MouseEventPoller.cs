@@ -9,7 +9,7 @@ namespace Gondwana.Input.Mouse;
 /// events with comprehensive information including button states, position data, scroll deltas,
 /// and keyboard modifier states, with support for event throttling and pause functionality.
 /// </summary>
-public sealed class MouseEventPoller
+public sealed class MouseEventPoller : IDisposable
 {
     /// <summary>
     /// Gets the singleton instance of the <see cref="MouseEventPoller"/> class.
@@ -35,6 +35,8 @@ public sealed class MouseEventPoller
     /// </param>
     public static void Initialize(IMouseAdapter adapter, MouseEventConfiguration? mouseEventConfiguration = null)
     {
+        ArgumentNullException.ThrowIfNull(adapter);
+
         if (mouseEventConfiguration == null)
         {
             mouseEventConfiguration = new MouseEventConfiguration(
@@ -42,7 +44,15 @@ public sealed class MouseEventPoller
                 secondsBetweenEvents: Engine.Instance.Configuration.TimeBetweenMouseEvents);
         }
 
+        Instance?.Dispose();
         Instance = new MouseEventPoller(adapter, mouseEventConfiguration);
+    }
+
+    /// <summary>Disposes and clears the current singleton instance.</summary>
+    public static void Reset()
+    {
+        Instance?.Dispose();
+        Instance = null;
     }
 
     /// <summary>
@@ -56,7 +66,8 @@ public sealed class MouseEventPoller
 
     private readonly Dictionary<MouseButton, MouseButtonState> _buttonStates = new();
     private Point _lastPosition = new(0, 0);
-    private int _lastScrollDelta = 0;
+    private int _lastScrollDelta;
+    private bool _isDisposed;
 
     /// <summary>
     /// Gets the mouse adapter currently in use, which provides access to the underlying mouse
@@ -170,7 +181,11 @@ public sealed class MouseEventPoller
 
         // now decide whether to emit an event
         bool moved = (Configuration?.TrackMouseMovement ?? false) && _lastPosition != currentPos;
-        bool scrolled = _lastScrollDelta != scrollDelta;
+        // Emit a scroll event only when the delta is non-zero and has changed since the last poll.
+        // This works for both adapters that reset delta to 0 after each read and adapters that
+        // hold a persistent delta until it changes, preventing repeated events on every poll.
+        bool scrolled = scrollDelta != 0 && scrollDelta != _lastScrollDelta;
+        _lastScrollDelta = scrollDelta;
 
         if (anyButtonChange || moved || scrolled || isAnyButtonDown)
         {
@@ -184,7 +199,7 @@ public sealed class MouseEventPoller
                 tick));
 
             _lastPosition = currentPos;
-            _lastScrollDelta = scrollDelta;
+            Configuration!._lastEventTick = tick;
         }
     }
 
@@ -224,4 +239,17 @@ public sealed class MouseEventPoller
     /// or when transitioning between scenes.
     /// </summary>
     public void StopMonitoringMouse() => Configuration = null;
+
+    /// <summary>Releases the current platform adapter when it supports disposal.</summary>
+    public void Dispose()
+    {
+        if (_isDisposed) return;
+        _isDisposed = true;
+        (Adapter as IDisposable)?.Dispose();
+        Adapter = null;
+        Configuration = null;
+
+        if (ReferenceEquals(Instance, this))
+            Instance = null;
+    }
 }

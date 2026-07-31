@@ -220,6 +220,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// <see langword="false"/> to allow cameras to move freely beyond the scene boundaries.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="newScene"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="newScene"/> is already bound to a different render surface host.
+    /// </exception>
     /// <remarks>
     /// <para>
     /// Binding a scene unregisters event handlers from the previous scene (if any), registers handlers
@@ -233,24 +236,46 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </remarks>
     public void Bind(Scene newScene, bool limitCameraToWorldBoundPx = true)
     {
-        if (newScene == null)
-            throw new ArgumentNullException(nameof(newScene), "Cannot bind to null Scene.");
+        ArgumentNullException.ThrowIfNull(newScene, "Cannot bind to null Scene.");
 
-        if (newScene == _scene)
+        if (ReferenceEquals(newScene, _scene))
             return;
 
-        // Unregister from the old scene (if any)
-        if (_scene != null)
-        {
-            _scene.SceneDisposing -= OnSourceDisposing;
-        }
+        // Claim the new scene before releasing the old one. If another host owns it,
+        // Bind fails without disturbing this host's current scene.
+        newScene.BindRenderSurfaceHost(this);
 
         var oldScene = _scene;
-        _scene = newScene;
 
-        ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
-        _scene.SceneDisposing += OnSourceDisposing;
-        _scene.FullRefreshNeeded = true;
+        try
+        {
+            // Unregister from and release the old scene.
+            if (!ReferenceEquals(oldScene, Scene.Empty))
+            {
+                oldScene.SceneDisposing -= OnSourceDisposing;
+                oldScene.UnbindRenderSurfaceHost(this);
+            }
+
+            _scene = newScene;
+            ViewManager.BindToScene(_scene, limitCameraToWorldBoundPx);
+
+            _scene.SceneDisposing += OnSourceDisposing;
+            _scene.FullRefreshNeeded = true;
+        }
+        catch
+        {
+            // Release the failed new binding and restore the previous scene.
+            newScene.UnbindRenderSurfaceHost(this);
+            _scene = oldScene;
+
+            if (!ReferenceEquals(oldScene, Scene.Empty))
+            {
+                oldScene.BindRenderSurfaceHost(this);
+                oldScene.SceneDisposing += OnSourceDisposing;
+            }
+
+            throw;
+        }
 
         BindToScene?.Invoke(this, new RenderSurfaceHostBindEventArgs(oldScene, _scene));
     }
@@ -269,17 +294,161 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // can silently discard dirty rects that were added after the last GL frame.
         // Instead, always re-render the entire surface each GL paint callback.
         if (Backbuffer.IsGlThreadRendered)
-        {
             RenderToBackbufferGpuFull(tick);
-            RenderBackbufferEnd?.Invoke();
-            return;
-        }
+        else
+            RenderToBackbufferBitmap(tick);
 
+        RenderBackbufferEnd?.Invoke();
+    }
+
+    /// <summary>
+    /// Full-surface rendering path used exclusively for GL-thread-rendered backbuffers
+    /// (i.e. <see cref="GpuBackbuffer"/>).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The standard dirty-rectangle path (<see cref="EnqueueFullSceneRefresh"/>,
+    /// <see cref="CollectDirtyScreenArea"/>, and <see cref="RefreshQueue.ClearRefreshQueue"/>)
+    /// relies on posting work items to the engine thread.  When
+    /// <see cref="BackbufferBase.IsGlThreadRendered"/> is <see langword="true"/> this posting
+    /// causes two races:
+    /// </para>
+    /// <list type="number">
+    /// <item><description>
+    ///   Full-refresh world rects enqueued by <see cref="EnqueueFullSceneRefresh"/> are not yet
+    ///   present in the queue when <see cref="CollectDirtyScreenArea"/> runs in the same GL frame,
+    ///   so large regions are silently skipped.
+    /// </description></item>
+    /// <item><description>
+    ///   The posted <see cref="RefreshQueue.ClearRefreshQueue"/> may execute on the engine thread
+    ///   after new dirty rects have been added by game logic, wiping those rects before the next
+    ///   GL frame can render them.
+    /// </description></item>
+    /// </list>
+    /// <para>
+    /// This method bypasses the <see cref="RefreshQueue"/> entirely: it clears and re-draws the
+    /// full viewport on every GL paint callback, which is correct because the GL paint fires once
+    /// per vsync and there is no partial-blit optimisation to preserve.
+    /// </para>
+    /// </remarks>
+    private void RenderToBackbufferGpuFull(long tick)
+    {
+        // When there are no views at all, clear the whole surface and bail.
+        // If there ARE views but no scene layers, we fall through so view-mode
+        // DirectDrawings (e.g. a splash screen overlay) are still rendered.
         if (ViewManager.Views.Count == 0)
         {
             Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
             Scene.FullRefreshNeeded = false;
-            RenderBackbufferEnd?.Invoke();
+            return;
+        }
+
+        foreach (var view in ViewManager.Views)
+        {
+            RenderContext.Push(view, tick);
+
+            try
+            {
+                // 1) View overlays are drawn unconditionally by this full-frame path.
+                // They must not enqueue dirty regions that GL rendering never consumes.
+                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
+
+                var vp = view.Viewport.TargetRectPx;
+
+                // 2) Clip to this view's viewport, excluding areas covered by higher Z-order views.
+                Backbuffer.Canvas.Save();
+                Backbuffer.Canvas.ResetMatrix();
+                Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
+
+                foreach (var blocker in ViewManager.GetViewsAbove(view))
+                {
+                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
+                    if (!overlap.IsEmpty)
+                        Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
+                }
+
+                // 3) Clear the full viewport.
+                Backbuffer.ClearRect(vp);
+
+                // 4) Render every visible layer for the full viewport extent (layers are drawn
+                //    back-to-front by ascending Z-order, which VisibleSceneLayers already provides).
+                var sceneLayers = Scene.VisibleSceneLayers;
+
+                for (int i = 0; i < sceneLayers.Count; i++)
+                {
+                    var layer = sceneLayers[i];
+
+                    // Compute the world-space rect visible through this viewport for this layer,
+                    // expanded by one tile in each direction to cover boundary rounding.
+                    var layerWorldRectF = view.ScreenRectToWorldRect(layer, vp);
+                    layerWorldRectF.Inflate(layer.TileWidth, layer.TileHeight);
+                    var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
+
+                    var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
+                    Backbuffer.DrawDrawables(view, drawables, vp);
+                }
+
+                // 5) Render view-based DirectDrawings on top.
+                for (int i = 0; i < overlays.Count; i++)
+                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+
+                Backbuffer.Canvas.Restore();
+            }
+            finally
+            {
+                RenderContext.Pop();
+            }
+        }
+
+        Scene.FullRefreshNeeded = false;
+
+        // Notify subscribers that all scene content has been drawn and the canvas is ready for
+        // post-scene effects.  For GPU surfaces this runs on the GL thread while GRContext is
+        // current, so subscribers may safely issue Skia GPU draw calls.
+        InvokePostSceneCanvasHooks();
+    }
+
+    /// <summary>
+    /// Dirty-region rendering path used exclusively for non-GL backbuffers
+    /// (typically <see cref="BitmapBackbuffer"/>).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method runs on the engine thread as part of the normal
+    /// <see cref="Engine"/> foreground cycle. Unlike the full-frame GPU path, it
+    /// uses each visible <see cref="SceneLayer"/>'s <see cref="RefreshQueue"/> to
+    /// identify the world regions that have changed and redraw only the corresponding
+    /// screen regions.
+    /// </para>
+    /// <para>
+    /// When <see cref="Scene.FullRefreshNeeded"/> is set, the visible world extent
+    /// of every view is added to each layer's refresh queue. Otherwise, a clean
+    /// scene may return without performing any drawing.
+    /// </para>
+    /// <para>
+    /// For each configured view, dirty world rectangles are projected into screen
+    /// coordinates, clipped to the view's viewport, and excluded from areas occupied
+    /// by higher-Z-order views. Cleared screen regions are propagated back to
+    /// overlapping scene layers so that removing or moving foreground content does
+    /// not erase unchanged background content.
+    /// </para>
+    /// <para>
+    /// After all views have been processed, the consumed refresh queues are cleared,
+    /// <see cref="Scene.FullRefreshNeeded"/> is reset, and post-scene canvas hooks
+    /// are invoked. Presentation is performed separately by
+    /// <see cref="PresentBackbufferToAdapter"/> after this method returns.
+    /// </para>
+    /// </remarks>
+    /// <param name="tick">
+    /// The current high-resolution engine tick used to establish the
+    /// <see cref="RenderContext"/> for this frame.
+    /// </param>
+    private void RenderToBackbufferBitmap(long tick)
+    {
+        if (ViewManager.Views.Count == 0)
+        {
+            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            Scene.FullRefreshNeeded = false;
             return;
         }
 
@@ -377,116 +546,6 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // Notify subscribers that all scene content has been drawn and the canvas is ready for
         // post-scene effects.  Fires before RenderBackbufferEnd so subscribers still have a
         // chance to draw into the canvas before it is presented to the adapter.
-        InvokePostSceneCanvasHooks();
-
-        RenderBackbufferEnd?.Invoke();
-    }
-
-    /// <summary>
-    /// Full-surface rendering path used exclusively for GL-thread-rendered backbuffers
-    /// (i.e. <see cref="GpuBackbuffer"/>).
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The standard dirty-rectangle path (<see cref="EnqueueFullSceneRefresh"/>,
-    /// <see cref="CollectDirtyScreenArea"/>, and <see cref="RefreshQueue.ClearRefreshQueue"/>)
-    /// relies on posting work items to the engine thread.  When
-    /// <see cref="BackbufferBase.IsGlThreadRendered"/> is <see langword="true"/> this posting
-    /// causes two races:
-    /// </para>
-    /// <list type="number">
-    /// <item><description>
-    ///   Full-refresh world rects enqueued by <see cref="EnqueueFullSceneRefresh"/> are not yet
-    ///   present in the queue when <see cref="CollectDirtyScreenArea"/> runs in the same GL frame,
-    ///   so large regions are silently skipped.
-    /// </description></item>
-    /// <item><description>
-    ///   The posted <see cref="RefreshQueue.ClearRefreshQueue"/> may execute on the engine thread
-    ///   after new dirty rects have been added by game logic, wiping those rects before the next
-    ///   GL frame can render them.
-    /// </description></item>
-    /// </list>
-    /// <para>
-    /// This method bypasses the <see cref="RefreshQueue"/> entirely: it clears and re-draws the
-    /// full viewport on every GL paint callback, which is correct because the GL paint fires once
-    /// per vsync and there is no partial-blit optimisation to preserve.
-    /// </para>
-    /// </remarks>
-    private void RenderToBackbufferGpuFull(long tick)
-    {
-        // When there are no views at all, clear the whole surface and bail.
-        // If there ARE views but no scene layers, we fall through so view-mode
-        // DirectDrawings (e.g. a splash screen overlay) are still rendered.
-        if (ViewManager.Views.Count == 0)
-        {
-            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
-            Scene.FullRefreshNeeded = false;
-            return;
-        }
-
-        foreach (var view in ViewManager.Views)
-        {
-            RenderContext.Push(view, tick);
-
-            try
-            {
-                // 1) Force-refresh all DirectDrawings that overlay this view.
-                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
-                foreach (var overlay in overlays)
-                    overlay.ForceRefresh();
-
-                var vp = view.Viewport.TargetRectPx;
-
-                // 2) Clip to this view's viewport, excluding areas covered by higher Z-order views.
-                Backbuffer.Canvas.Save();
-                Backbuffer.Canvas.ResetMatrix();
-                Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
-
-                foreach (var blocker in ViewManager.GetViewsAbove(view))
-                {
-                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
-                    if (!overlap.IsEmpty)
-                        Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
-                }
-
-                // 3) Clear the full viewport.
-                Backbuffer.ClearRect(vp);
-
-                // 4) Render every visible layer for the full viewport extent (layers are drawn
-                //    back-to-front by ascending Z-order, which VisibleSceneLayers already provides).
-                var sceneLayers = Scene.VisibleSceneLayers;
-
-                for (int i = 0; i < sceneLayers.Count; i++)
-                {
-                    var layer = sceneLayers[i];
-
-                    // Compute the world-space rect visible through this viewport for this layer,
-                    // expanded by one tile in each direction to cover boundary rounding.
-                    var layerWorldRectF = view.ScreenRectToWorldRect(layer, vp);
-                    layerWorldRectF.Inflate(layer.TileWidth, layer.TileHeight);
-                    var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
-
-                    var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
-                    Backbuffer.DrawDrawables(view, drawables, vp);
-                }
-
-                // 5) Render view-based DirectDrawings on top.
-                for (int i = 0; i < overlays.Count; i++)
-                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
-
-                Backbuffer.Canvas.Restore();
-            }
-            finally
-            {
-                RenderContext.Pop();
-            }
-        }
-
-        Scene.FullRefreshNeeded = false;
-
-        // Notify subscribers that all scene content has been drawn and the canvas is ready for
-        // post-scene effects.  For GPU surfaces this runs on the GL thread while GRContext is
-        // current, so subscribers may safely issue Skia GPU draw calls.
         InvokePostSceneCanvasHooks();
     }
 
@@ -636,50 +695,28 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private bool _disposed;
 
-    /// <summary>
-    /// Releases all resources used by this <see cref="RenderSurfaceHost{TBackbuffer}"/> instance.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This method releases managed resources including the backbuffer. It does not unregister
-    /// from the scene; that should be handled by the scene's disposal logic.
-    /// </para>
-    /// <para>
-    /// After calling <see cref="Dispose()"/>, this instance should not be used. Calling
-    /// <see cref="Dispose()"/> multiple times is safe and has no additional effect.
-    /// </para>
-    /// </remarks>
-    public void Dispose()
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
     {
-        Dispose(true);
-    }
-
-    /// <summary>
-    /// Releases resources used by this <see cref="RenderSurfaceHost{TBackbuffer}"/> instance.
-    /// </summary>
-    /// <param name="disposing">
-    /// <see langword="true"/> to release both managed and unmanaged resources;
-    /// <see langword="false"/> to release only unmanaged resources (called from finalizer).
-    /// </param>
-    /// <remarks>
-    /// When <paramref name="disposing"/> is <see langword="true"/>, this method releases the backbuffer
-    /// and clears the reference. Derived classes should override this method to release additional resources.
-    /// </remarks>
-    public void Dispose(bool disposing)
-    {
-        if (_disposed) return;
-
-        base.Dispose(disposing);
+        if (_disposed)
+            return;
 
         if (disposing)
         {
+            if (_scene != null)
+            {
+                _scene.SceneDisposing -= OnSourceDisposing;
+                _scene.UnbindRenderSurfaceHost(this);
+                _scene = Scene.Empty;
+            }
+
             _backbuffer = null;
         }
 
         _disposed = true;
-    }
 
-    ~RenderSurfaceHost() => Dispose(false);
+        base.Dispose(disposing);
+    }
 
     #endregion IDisposable
 
@@ -687,7 +724,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void OnSourceDisposing(Scene scene)
     {
-        _scene = null;
+        scene.SceneDisposing -= OnSourceDisposing;
+        scene.UnbindRenderSurfaceHost(this);
+        _scene = Scene.Empty;
     }
 
     private void OnRenderSurfaceAdapterResized(RenderSurfaceAdapterResizedEventArgs args)

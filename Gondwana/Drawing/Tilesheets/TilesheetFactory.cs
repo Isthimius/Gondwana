@@ -60,12 +60,17 @@ internal static class TilesheetFactory
 
             // Region construction already applies the region default. Apply only
             // persisted frame records afterward so frame-specific values survive.
-foreach (var frame in region.Frames ?? [])
-{
-    var adjust = frame.CollisionAdjust ?? region.CollisionAdjust;
-    if (adjust != region.CollisionAdjust)
-        runtimeRegion.SetFrameCollisionAdjust(frame.XTile, frame.YTile, adjust);
-}
+            foreach (var frame in region.Frames ?? [])
+            {
+                var adjust = frame.CollisionAdjust ?? region.CollisionAdjust;
+                if (adjust != region.CollisionAdjust)
+                {
+                    runtimeRegion.SetFrameCollisionAdjust(
+                        frame.XTile,
+                        frame.YTile,
+                        adjust);
+                }
+            }
         }
 
         if (definition.Mask is not null)
@@ -138,6 +143,8 @@ foreach (var frame in region.Frames ?? [])
             ?? throw new InvalidOperationException(
                 "TilesheetDefinition must specify an image source.");
 
+        ValidateImageDefinition(image, defaultAssetsFile);
+
         if (!string.IsNullOrWhiteSpace(image.FilePath))
         {
             return new Tilesheet(
@@ -146,33 +153,64 @@ foreach (var frame in region.Frames ?? [])
                 addDefaultRegion);
         }
 
-        if (!string.IsNullOrWhiteSpace(image.AssetEntryName))
+        AssetsFile assetsFile;
+
+        if (!string.IsNullOrWhiteSpace(image.AssetsFilePath))
         {
-            AssetsFile assetsFile;
-
-            if (!string.IsNullOrWhiteSpace(image.AssetsFilePath))
-            {
-                assetsFile = LoadExistingAssetsFile(
-                    ResolvePath(image.AssetsFilePath, baseDirectory));
-            }
-            else if (defaultAssetsFile is not null)
-            {
-                assetsFile = defaultAssetsFile;
-            }
-            else
-            {
-                throw new InvalidOperationException(
-                    "TilesheetDefinition image specifies an AssetEntryName but does not specify an AssetsFilePath, and no default AssetsFile was provided.");
-            }
-
-            return new Tilesheet(
-                assetsFile,
-                image.AssetEntryName,
-                addDefaultRegion);
+            assetsFile = LoadExistingAssetsFile(
+                ResolvePath(image.AssetsFilePath, baseDirectory));
+        }
+        else
+        {
+            assetsFile = defaultAssetsFile!;
         }
 
-        throw new InvalidOperationException(
-            "TilesheetDefinition must specify either Image.FilePath or Image.AssetEntryName.");
+        var tilesheet = new Tilesheet(
+            assetsFile,
+            image.AssetEntryName!,
+            addDefaultRegion);
+
+        // The asset entry identifies the image; it is not necessarily the logical
+        // name assigned to the tilesheet by the GTS definition.
+        tilesheet.Name = definition.Name;
+
+        return tilesheet;
+    }
+
+    private static void ValidateImageDefinition(
+        TilesheetImageDefinition image,
+        AssetsFile? defaultAssetsFile)
+    {
+        var hasFilePath = !string.IsNullOrWhiteSpace(image.FilePath);
+        var hasAssetsFilePath = !string.IsNullOrWhiteSpace(image.AssetsFilePath);
+        var hasAssetEntryName = !string.IsNullOrWhiteSpace(image.AssetEntryName);
+
+        if (hasFilePath && (hasAssetsFilePath || hasAssetEntryName))
+        {
+            throw new InvalidOperationException(
+                "TilesheetDefinition image source is ambiguous. Image.FilePath cannot be combined with Image.AssetsFilePath or Image.AssetEntryName.");
+        }
+
+        if (hasAssetsFilePath && !hasAssetEntryName)
+        {
+            throw new InvalidOperationException(
+                "TilesheetDefinition image specifies an AssetsFilePath but does not specify an AssetEntryName.");
+        }
+
+        if (hasFilePath)
+            return;
+
+        if (!hasAssetEntryName)
+        {
+            throw new InvalidOperationException(
+                "TilesheetDefinition must specify either Image.FilePath or Image.AssetEntryName.");
+        }
+
+        if (!hasAssetsFilePath && defaultAssetsFile is null)
+        {
+            throw new InvalidOperationException(
+                "TilesheetDefinition image specifies an AssetEntryName but does not specify an AssetsFilePath, and no default AssetsFile was provided.");
+        }
     }
 
     private static AssetsFile LoadExistingAssetsFile(string path)

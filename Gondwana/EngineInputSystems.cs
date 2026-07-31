@@ -83,8 +83,9 @@ public sealed class EngineInputSystems
         get => TouchEventPoller.Instance?.Adapter;
         set
         {
-            (TouchEventPoller.Instance?.Adapter as IDisposable)?.Dispose();
-            if (value != null)
+            if (value is null)
+                TouchEventPoller.Reset();
+            else
                 TouchEventPoller.Initialize(value);
         }
     }

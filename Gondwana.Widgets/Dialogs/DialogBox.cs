@@ -1,12 +1,12 @@
+using System.Drawing;
+using System.Numerics;
+using SkiaSharp;
 using Gondwana.Drawing.Direct;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Widgets.Controls;
-using SkiaSharp;
-using System.Drawing;
-using System.Numerics;
 
 namespace Gondwana.Widgets.Dialogs;
 
@@ -16,8 +16,12 @@ namespace Gondwana.Widgets.Dialogs;
 /// </summary>
 public abstract class DialogBox : DraggableContainerWidget
 {
-    private const int DefaultTitleBarHeight = 36;
-    private const int DefaultCloseButtonSize = 28;
+    protected const int DefaultTitleBarHeight = 36;
+    protected const int DefaultCloseButtonSize = 28;
+
+    protected readonly static Color DefaultPanelColor = Color.FromArgb(245, 36, 36, 44);
+    protected readonly static Color DefaultPanelBorderColor = Color.FromArgb(255, 140, 140, 155);
+    protected readonly static Color DefaultTitleBarColor = Color.FromArgb(255, 57, 57, 72);
 
     private bool _disposed;
 
@@ -26,41 +30,26 @@ public abstract class DialogBox : DraggableContainerWidget
     /// </summary>
     public event Action<DialogResult>? Closed;
 
+    #region constructors
+
     /// <summary>
     /// Initializes a view-level dialog.
     /// </summary>
-    protected DialogBox(
-        RenderSurfaceHostBase renderSurfaceHost,
-        View view,
-        Rectangle bounds,
-        string title,
-        bool showCloseButton = true,
-        string? nickname = null)
-        : base(
-            renderSurfaceHost,
-            DirectDrawingMode.View,
-            bounds.Location,
-            nickname)
+    protected DialogBox(RenderSurfaceHostBase renderSurfaceHost,
+                        View view,
+                        Rectangle bounds,
+                        string title,
+                        bool showCloseButton = true,
+                        string? nickname = null)
+        : base(renderSurfaceHost, DirectDrawingMode.View, bounds.Location, nickname)
     {
         ValidateBounds(bounds);
 
         DialogSize = bounds.Size;
 
-        Panel = CreatePanel(
-            renderSurfaceHost,
-            view,
-            bounds);
-
-        TitleBar = CreateTitleBar(
-            renderSurfaceHost,
-            view,
-            bounds);
-
-        TitleText = CreateTitleText(
-            renderSurfaceHost,
-            view,
-            bounds,
-            title);
+        Panel = CreatePanel(renderSurfaceHost, view, bounds);
+        TitleBar = CreateTitleBar(renderSurfaceHost, view, bounds);
+        TitleText = CreateTitleText(renderSurfaceHost, view, bounds, title);
 
         Add(Panel);
         Add(TitleBar);
@@ -68,18 +57,10 @@ public abstract class DialogBox : DraggableContainerWidget
 
         if (showCloseButton)
         {
-            CloseButton =
-                CreateCloseButton(
-                    renderSurfaceHost,
-                    view,
-                    bounds);
+            CloseButton = CreateCloseButton(renderSurfaceHost, view, bounds);
+            AddChild(CloseButton, GetCloseButtonOffset(bounds.Size));
 
-            AddChild(
-                CloseButton,
-                GetCloseButtonOffset(bounds.Size));
-
-            CloseButton.Clicked +=
-                OnCloseButtonClicked;
+            CloseButton.Clicked += OnCloseButtonClicked;
         }
 
         CompleteInitialization();
@@ -88,38 +69,21 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <summary>
     /// Initializes a scene-layer dialog.
     /// </summary>
-    protected DialogBox(
-        RenderSurfaceHostBase renderSurfaceHost,
-        SceneLayer sceneLayer,
-        Rectangle bounds,
-        string title,
-        bool showCloseButton = true,
-        string? nickname = null)
-        : base(
-            renderSurfaceHost,
-            DirectDrawingMode.SceneLayer,
-            bounds.Location,
-            nickname)
+    protected DialogBox(RenderSurfaceHostBase renderSurfaceHost,
+                        SceneLayer sceneLayer,
+                        Rectangle bounds,
+                        string title,
+                        bool showCloseButton = true,
+                        string? nickname = null)
+        : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, bounds.Location, nickname)
     {
         ValidateBounds(bounds);
 
         DialogSize = bounds.Size;
 
-        Panel = CreatePanel(
-            renderSurfaceHost,
-            sceneLayer,
-            bounds);
-
-        TitleBar = CreateTitleBar(
-            renderSurfaceHost,
-            sceneLayer,
-            bounds);
-
-        TitleText = CreateTitleText(
-            renderSurfaceHost,
-            sceneLayer,
-            bounds,
-            title);
+        Panel = CreatePanel(renderSurfaceHost, sceneLayer, bounds);
+        TitleBar = CreateTitleBar(renderSurfaceHost, sceneLayer, bounds);
+        TitleText = CreateTitleText(renderSurfaceHost, sceneLayer, bounds, title);
 
         Add(Panel);
         Add(TitleBar);
@@ -127,22 +91,18 @@ public abstract class DialogBox : DraggableContainerWidget
 
         if (showCloseButton)
         {
-            CloseButton =
-                CreateCloseButton(
-                    renderSurfaceHost,
-                    sceneLayer,
-                    bounds);
+            CloseButton = CreateCloseButton(renderSurfaceHost, sceneLayer, bounds);
+            AddChild(CloseButton, GetCloseButtonOffset(bounds.Size));
 
-            AddChild(
-                CloseButton,
-                GetCloseButtonOffset(bounds.Size));
-
-            CloseButton.Clicked +=
-                OnCloseButtonClicked;
+            CloseButton.Clicked += OnCloseButtonClicked;
         }
 
         CompleteInitialization();
     }
+
+    #endregion constructors
+
+    #region public properties
 
     /// <summary>
     /// Gets the dialog panel.
@@ -200,11 +160,14 @@ public abstract class DialogBox : DraggableContainerWidget
     /// </remarks>
     public int CancelKey { get; set; } = 27;
 
+    #endregion public properties
+
+    #region exposed methods and hooks
+
     /// <summary>
     /// Closes the dialog with the specified result.
     /// </summary>
-    public void Close(
-        DialogResult result = DialogResult.Close)
+    public void Close(DialogResult result = DialogResult.Close)
     {
         if (IsClosed)
             return;
@@ -224,8 +187,7 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <summary>
     /// Called after the dialog closes.
     /// </summary>
-    protected virtual void OnClosed(
-        DialogResult result)
+    protected virtual void OnClosed(DialogResult result)
     {
     }
 
@@ -238,33 +200,23 @@ public abstract class DialogBox : DraggableContainerWidget
     }
 
     /// <inheritdoc/>
-    protected override bool CanStartDrag(
-        WidgetPointerEventArgs args)
+    protected override bool CanStartDrag(WidgetPointerEventArgs args)
     {
         if (!base.CanStartDrag(args))
             return false;
 
-        RectangleF titleBarBounds =
-            TitleBar.GetDrawLocationScreen(
-                args.View);
+        RectangleF titleBarBounds = TitleBar.GetDrawLocationScreen(args.View);
 
-        return titleBarBounds.Contains(
-            args.ScreenPositionPx.X,
-            args.ScreenPositionPx.Y);
+        return titleBarBounds.Contains(args.ScreenPositionPx.X, args.ScreenPositionPx.Y);
     }
 
     /// <inheritdoc/>
-    protected override void OnKeyboardInput(
-        WidgetKeyboardEventArgs args)
+    protected override void OnKeyboardInput(WidgetKeyboardEventArgs args)
     {
         base.OnKeyboardInput(args);
 
-        if (args.Handled ||
-            args.KeyAction !=
-                KeyAction.Pressed)
-        {
+        if (args.Handled || args.KeyAction != KeyAction.Pressed)
             return;
-        }
 
         if (args.Key == CancelKey)
         {
@@ -297,12 +249,15 @@ public abstract class DialogBox : DraggableContainerWidget
 
         if (CloseButton is not null)
         {
-            CloseButton.Clicked -=
-                OnCloseButtonClicked;
+            CloseButton.Clicked -= OnCloseButtonClicked;
         }
 
         base.Dispose();
     }
+
+    #endregion exposed methods and hooks
+
+    #region private methods
 
     private void CompleteInitialization()
     {
@@ -316,12 +271,9 @@ public abstract class DialogBox : DraggableContainerWidget
         Close(DialogResult.Cancel);
     }
 
-    private static void ValidateBounds(
-        Rectangle bounds)
+    private static void ValidateBounds(Rectangle bounds)
     {
-        if (bounds.Width <= 0 ||
-            bounds.Height <=
-                DefaultTitleBarHeight)
+        if (bounds.Width <= 0 || bounds.Height <= DefaultTitleBarHeight)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(bounds),
@@ -330,161 +282,96 @@ public abstract class DialogBox : DraggableContainerWidget
         }
     }
 
-    private static Vector2 GetCloseButtonOffset(
-        Size size)
+    private static Vector2 GetCloseButtonOffset(Size size)
     {
-        return new Vector2(
-            size.Width -
-            DefaultCloseButtonSize -
-            4,
-            4);
+        return new Vector2(size.Width - DefaultCloseButtonSize - 4, 4);
     }
 
-    private static DirectRectangle CreatePanel(
-        RenderSurfaceHostBase host,
-        View view,
-        Rectangle bounds)
+    private static DirectRectangle CreatePanel(RenderSurfaceHostBase host,
+                                               View view,
+                                               Rectangle bounds)
     {
-        return ConfigurePanel(
-            new DirectRectangle(
-                Color.FromArgb(
-                    245,
-                    36,
-                    36,
-                    44),
-                host,
-                view,
-                bounds));
+        return ConfigurePanel(new DirectRectangle(DefaultPanelColor,
+                              host,
+                              view,
+                              bounds));
     }
 
-    private static DirectRectangle CreatePanel(
-        RenderSurfaceHostBase host,
-        SceneLayer layer,
-        Rectangle bounds)
+    private static DirectRectangle CreatePanel(RenderSurfaceHostBase host,
+                                               SceneLayer layer,
+                                               Rectangle bounds)
     {
-        return ConfigurePanel(
-            new DirectRectangle(
-                Color.FromArgb(
-                    245,
-                    36,
-                    36,
-                    44),
-                host,
-                layer,
-                bounds));
+        return ConfigurePanel(new DirectRectangle(DefaultPanelColor,
+                              host,
+                              layer,
+                              bounds));
     }
 
-    private static DirectRectangle ConfigurePanel(
-        DirectRectangle panel)
+    private static DirectRectangle ConfigurePanel(DirectRectangle panel)
     {
-        panel
-            .SetFilled(true)
-            .SetBorderColor(
-                Color.FromArgb(
-                    255,
-                    140,
-                    140,
-                    155))
-            .SetStrokeWidth(2f)
-            .SetCornerRadius(8f);
+        panel.SetFilled(true)
+             .SetBorderColor(DefaultPanelBorderColor)
+             .SetStrokeWidth(2f)
+             .SetCornerRadius(8f);
 
         panel.ZOrder = 10_000;
 
         return panel;
     }
 
-    private static DirectRectangle CreateTitleBar(
-        RenderSurfaceHostBase host,
-        View view,
-        Rectangle bounds)
+    private static DirectRectangle CreateTitleBar(RenderSurfaceHostBase host,
+                                                  View view,
+                                                  Rectangle bounds)
     {
-        return ConfigureTitleBar(
-            new DirectRectangle(
-                Color.FromArgb(
-                    255,
-                    57,
-                    57,
-                    72),
-                host,
-                view,
-                GetTitleBarBounds(bounds)));
+        return ConfigureTitleBar(new DirectRectangle(DefaultTitleBarColor,
+                                                     host,
+                                                     view,
+                                                     GetTitleBarBounds(bounds)));
     }
 
-    private static DirectRectangle CreateTitleBar(
-        RenderSurfaceHostBase host,
-        SceneLayer layer,
-        Rectangle bounds)
+    private static DirectRectangle CreateTitleBar(RenderSurfaceHostBase host,
+                                                  SceneLayer layer,
+                                                  Rectangle bounds)
     {
-        return ConfigureTitleBar(
-            new DirectRectangle(
-                Color.FromArgb(
-                    255,
-                    57,
-                    57,
-                    72),
-                host,
-                layer,
-                GetTitleBarBounds(bounds)));
+        return ConfigureTitleBar(new DirectRectangle(DefaultTitleBarColor,
+                                                     host,
+                                                     layer,
+                                                     GetTitleBarBounds(bounds)));
     }
 
-    private static DirectRectangle ConfigureTitleBar(
-        DirectRectangle titleBar)
+    private static DirectRectangle ConfigureTitleBar(DirectRectangle titleBar)
     {
-        titleBar
-            .SetFilled(true)
-            .SetCornerRadius(8f);
+        titleBar.SetFilled(true)
+                .SetCornerRadius(8f);
 
         titleBar.ZOrder = 10_001;
 
         return titleBar;
     }
 
-    private static TextBlock CreateTitleText(
-        RenderSurfaceHostBase host,
-        View view,
-        Rectangle bounds,
-        string title)
+    private static TextBlock CreateTitleText(RenderSurfaceHostBase host,
+                                             View view,
+                                             Rectangle bounds,
+                                             string title)
     {
-        return ConfigureTitleText(
-            new TextBlock(
-                host,
-                view,
-                GetTitleTextBounds(bounds)),
-            title);
+        return ConfigureTitleText(new TextBlock(host, view, GetTitleTextBounds(bounds)), title);
     }
 
-    private static TextBlock CreateTitleText(
-        RenderSurfaceHostBase host,
-        SceneLayer layer,
-        Rectangle bounds,
-        string title)
+    private static TextBlock CreateTitleText(RenderSurfaceHostBase host,
+                                             SceneLayer layer,
+                                             Rectangle bounds,
+                                             string title)
     {
-        return ConfigureTitleText(
-            new TextBlock(
-                host,
-                layer,
-                view: null,
-                worldBounds: GetTitleTextBounds(bounds)),
-            title);
+        return ConfigureTitleText(new TextBlock(host, layer, view: null, worldBounds: GetTitleTextBounds(bounds)), title);
     }
 
-    private static TextBlock ConfigureTitleText(
-        TextBlock titleText,
-        string title)
+    private static TextBlock ConfigureTitleText(TextBlock titleText, string title)
     {
-        titleText
-            .SetText(title)
-            .SetFont(
-                SKTypeface.Default,
-                18f,
-                minSize: 12f)
-            .SetColors(
-                SKColors.White,
-                SKColors.Transparent)
-            .SetAlignment(
-                SKTextAlign.Left,
-                TextBlock.VerticalAlign.Center)
-            .EnableWrapping(false);
+        titleText.SetText(title)
+                 .SetFont(SKTypeface.Default, 18f, minSize: 12f)
+                 .SetColors(SKColors.White, SKColors.Transparent)
+                 .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+                 .EnableWrapping(false);
 
         titleText.HorizontalPadding = 12f;
         titleText.ZOrder = 10_002;
@@ -492,89 +379,47 @@ public abstract class DialogBox : DraggableContainerWidget
         return titleText;
     }
 
-    private static ButtonWidget CreateCloseButton(
-        RenderSurfaceHostBase host,
-        View view,
-        Rectangle bounds)
+    private static ButtonWidget CreateCloseButton(RenderSurfaceHostBase host,
+                                                  View view,
+                                                  Rectangle bounds)
     {
-        return ConfigureCloseButton(
-            new ButtonWidget(
-                host,
-                view,
-                GetCloseButtonBounds(bounds),
-                "×"));
+        return ConfigureCloseButton(new ButtonWidget(host, view, GetCloseButtonBounds(bounds), "×"));
     }
 
-    private static ButtonWidget CreateCloseButton(
-        RenderSurfaceHostBase host,
-        SceneLayer layer,
-        Rectangle bounds)
+    private static ButtonWidget CreateCloseButton(RenderSurfaceHostBase host,
+                                                  SceneLayer layer,
+                                                  Rectangle bounds)
     {
-        return ConfigureCloseButton(
-            new ButtonWidget(
-                host,
-                layer,
-                GetCloseButtonBounds(bounds),
-                "×"));
+        return ConfigureCloseButton(new ButtonWidget(host, layer, GetCloseButtonBounds(bounds), "×"));
     }
 
-    private static ButtonWidget ConfigureCloseButton(
-        ButtonWidget closeButton)
+    private static ButtonWidget ConfigureCloseButton(ButtonWidget closeButton)
     {
-        closeButton
-            .SetBackgroundColors(
-                Color.FromArgb(
-                    0,
-                    0,
-                    0,
-                    0),
-                Color.FromArgb(
-                    255,
-                    110,
-                    55,
-                    62),
-                Color.FromArgb(
-                    255,
-                    145,
-                    45,
-                    55))
-            .SetTextColor(Color.White)
-            .SetButtonZOrder(10_003);
+        closeButton.SetBackgroundColors(Color.FromArgb(0, 0, 0, 0),
+                                        Color.FromArgb(255, 110, 55, 62),
+                                        Color.FromArgb(255, 145, 45, 55))
+                   .SetTextColor(Color.White)
+                   .SetButtonZOrder(10_003);
 
         return closeButton;
     }
 
-    private static Rectangle GetTitleBarBounds(
-        Rectangle bounds)
+    private static Rectangle GetTitleBarBounds(Rectangle bounds)
     {
-        return new Rectangle(
-            bounds.X,
-            bounds.Y,
-            bounds.Width,
-            DefaultTitleBarHeight);
+        return new Rectangle(bounds.X, bounds.Y, bounds.Width, DefaultTitleBarHeight);
     }
 
     private static Rectangle GetTitleTextBounds(
         Rectangle bounds)
     {
-        return new Rectangle(
-            bounds.X,
-            bounds.Y,
-            bounds.Width -
-            DefaultCloseButtonSize -
-            12,
-            DefaultTitleBarHeight);
+        return new Rectangle(bounds.X, bounds.Y, bounds.Width - DefaultCloseButtonSize - 12, DefaultTitleBarHeight);
     }
 
     private static Rectangle GetCloseButtonBounds(
         Rectangle bounds)
     {
-        return new Rectangle(
-            bounds.Right -
-            DefaultCloseButtonSize -
-            4,
-            bounds.Y + 4,
-            DefaultCloseButtonSize,
-            DefaultCloseButtonSize);
+        return new Rectangle(bounds.Right - DefaultCloseButtonSize - 4, bounds.Y + 4, DefaultCloseButtonSize, DefaultCloseButtonSize);
     }
+
+    #endregion private methods
 }

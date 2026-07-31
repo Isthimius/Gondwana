@@ -1,10 +1,10 @@
+using System.Drawing;
+using System.Numerics;
+using SkiaSharp;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Widgets.Controls;
-using SkiaSharp;
-using System.Drawing;
-using System.Numerics;
 
 namespace Gondwana.Widgets.Dialogs;
 
@@ -17,6 +17,8 @@ public sealed class AboutBox : DialogBox
     private const int DefaultHeight = 330;
 
     private bool _disposed;
+
+    #region constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AboutBox"/> class.
@@ -32,55 +34,42 @@ public sealed class AboutBox : DialogBox
     /// Optional dialog bounds. When omitted, the dialog is centered in the view.
     /// </param>
     /// <param name="nickname">An optional diagnostic nickname.</param>
-    public AboutBox(
-        RenderSurfaceHostBase renderSurfaceHost,
-        View view,
-        string applicationName,
-        string version,
-        string? description = null,
-        string? copyright = null,
-        SKImage? logo = null,
-        Rectangle? bounds = null,
-        string? nickname = null)
-        : base(
-            renderSurfaceHost,
-            view,
-            ResolveBounds(view, bounds),
-            $"About {applicationName}",
-            showCloseButton: true,
-            nickname: nickname ??
-                      "__gondwana_about__")
+    public AboutBox(RenderSurfaceHostBase renderSurfaceHost,
+                    View view,
+                    string applicationName,
+                    string version,
+                    string? description = null,
+                    string? copyright = null,
+                    SKImage? logo = null,
+                    Rectangle? bounds = null,
+                    string? nickname = null)
+        : base(renderSurfaceHost,
+               view,
+               ResolveBounds(view, bounds),
+               $"About {applicationName}",
+               showCloseButton: true,
+               nickname: nickname ?? "__gondwana_about__")
     {
         ApplicationName = applicationName;
         Version = version;
         Description = description;
         Copyright = copyright;
 
-        Rectangle resolvedBounds =
-            ResolveBounds(view, bounds);
+        Rectangle resolvedBounds = ResolveBounds(view, bounds);
 
-        int contentTop =
-            resolvedBounds.Top + 52;
-
-        int contentLeft =
-            resolvedBounds.Left + 24;
+        int contentTop = resolvedBounds.Top + 52;
+        int contentLeft = resolvedBounds.Left + 24;
 
         int contentRightPadding = 24;
 
         if (logo is not null)
         {
-            Logo = new DirectImage(
-                    logo,
-                    renderSurfaceHost,
-                    view,
-                    new Rectangle(
-                        contentLeft,
-                        contentTop,
-                        112,
-                        112),
-                    $"{Nickname}.logo")
-                .SetScaleMode(
-                    DirectImage.ScaleMode.Fit);
+            var logoScreenBounds = new Rectangle(contentLeft, contentTop, 112, 112);
+            Logo = new DirectImage(logo,
+                                   renderSurfaceHost,
+                                   view,
+                                   logoScreenBounds,
+                                   $"{Nickname}.logo").SetScaleMode(DirectImage.ScaleMode.Fit);
 
             Logo.ZOrder = 10_002;
             Add(Logo);
@@ -88,125 +77,61 @@ public sealed class AboutBox : DialogBox
             contentLeft += 132;
         }
 
-        HeaderText = new TextBlock(
-                renderSurfaceHost,
-                view,
-                new Rectangle(
-                    contentLeft,
-                    contentTop,
-                    resolvedBounds.Right -
-                    contentRightPadding -
-                    contentLeft,
-                    44),
-                $"{Nickname}.header")
-            .SetText(applicationName)
-            .SetFont(
-                SKTypeface.Default,
-                26f,
-                minSize: 16f)
-            .SetColors(
-                SKColors.White,
-                SKColors.Transparent)
-            .SetAlignment(
-                SKTextAlign.Left,
-                TextBlock.VerticalAlign.Center)
-            .EnableWrapping(false);
+        var headerTextScreenBounds = new Rectangle(contentLeft, contentTop, resolvedBounds.Right - contentRightPadding - contentLeft, 44);
+        HeaderText = new TextBlock(renderSurfaceHost,
+                                   view,
+                                   headerTextScreenBounds,
+                                   $"{Nickname}.header").SetText(applicationName)
+                                                        .SetFont(SKTypeface.Default, 26f, minSize: 16f)
+                                                        .SetColors(SKColors.White, SKColors.Transparent)
+                                                        .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+                                                        .EnableWrapping(false);
 
         HeaderText.ZOrder = 10_002;
         Add(HeaderText);
 
-        VersionText = new TextBlock(
-                renderSurfaceHost,
-                view,
-                new Rectangle(
-                    contentLeft,
-                    contentTop + 44,
-                    resolvedBounds.Right -
-                    contentRightPadding -
-                    contentLeft,
-                    30),
-                $"{Nickname}.version")
-            .SetText($"Version {version}")
-            .SetFont(
-                SKTypeface.Default,
-                15f,
-                minSize: 11f)
-            .SetColors(
-                new SKColor(
-                    205,
-                    205,
-                    215),
-                SKColors.Transparent)
-            .SetAlignment(
-                SKTextAlign.Left,
-                TextBlock.VerticalAlign.Center)
-            .EnableWrapping(false);
+        var versionTextScreenBounds = new Rectangle(contentLeft, contentTop + 44, resolvedBounds.Right - contentRightPadding - contentLeft, 30);
+        VersionText = new TextBlock(renderSurfaceHost,
+                                    view,
+                                    versionTextScreenBounds,
+                                    $"{Nickname}.version").SetText($"Version {version}")
+                                                          .SetFont(SKTypeface.Default, 15f, minSize: 11f)
+                                                          .SetColors(new SKColor(205, 205, 215), SKColors.Transparent)
+                                                          .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Center)
+                                                          .EnableWrapping(false);
 
         VersionText.ZOrder = 10_002;
         Add(VersionText);
 
-        string detailText =
-            string.Join(
-                Environment.NewLine + Environment.NewLine,
-                new[]
-                {
-                    description,
-                    copyright
-                }
-                .Where(static value =>
-                    !string.IsNullOrWhiteSpace(value)));
+        var detailsTextScreenBounds = new Rectangle(resolvedBounds.Left + 24, contentTop + 126, resolvedBounds.Width - 48, resolvedBounds.Height - 222);
+        string detailText = string.Join(Environment.NewLine + Environment.NewLine,
+                                        new[] { description, copyright }
+                                    .Where(static value => !string.IsNullOrWhiteSpace(value)));
 
-        DetailsText = new TextBlock(
-                renderSurfaceHost,
-                view,
-                new Rectangle(
-                    resolvedBounds.Left + 24,
-                    contentTop + 126,
-                    resolvedBounds.Width - 48,
-                    resolvedBounds.Height - 222),
-                $"{Nickname}.details")
-            .SetText(detailText)
-            .SetFont(
-                SKTypeface.Default,
-                14f,
-                minSize: 10f)
-            .SetColors(
-                new SKColor(
-                    225,
-                    225,
-                    232),
-                SKColors.Transparent)
-            .SetAlignment(
-                SKTextAlign.Left,
-                TextBlock.VerticalAlign.Top)
-            .EnableWrapping(true);
+        DetailsText = new TextBlock(renderSurfaceHost,
+                                    view,
+                                    detailsTextScreenBounds,
+                                    $"{Nickname}.details").SetText(detailText)
+                                                          .SetFont(SKTypeface.Default, 14f, minSize: 10f)
+                                                          .SetColors(new SKColor(225, 225, 232), SKColors.Transparent)
+                                                          .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
+                                                          .EnableWrapping(true);
 
         DetailsText.ZOrder = 10_002;
         Add(DetailsText);
 
-        Rectangle okBounds =
-            new(
-                resolvedBounds.Right - 116,
-                resolvedBounds.Bottom - 54,
-                92,
-                34);
+        Rectangle okBounds = new(resolvedBounds.Right - 116, resolvedBounds.Bottom - 54, 92, 34);
+        OkButton = new ButtonWidget(renderSurfaceHost, view, okBounds, "OK", $"{Nickname}.ok");
 
-        OkButton = new ButtonWidget(
-            renderSurfaceHost,
-            view,
-            okBounds,
-            "OK",
-            $"{Nickname}.ok");
-
-        AddChild(
-            OkButton,
-            new Vector2(
-                resolvedBounds.Width - 116,
-                resolvedBounds.Height - 54));
+        AddChild(OkButton, new Vector2(resolvedBounds.Width - 116, resolvedBounds.Height - 54));
 
         OkButton.SetButtonZOrder(10_003);
         OkButton.Clicked += OnOkClicked;
     }
+
+    #endregion constructors
+
+    #region public properties
 
     /// <summary>
     /// Gets the application name.
@@ -253,6 +178,10 @@ public sealed class AboutBox : DialogBox
     /// </summary>
     public ButtonWidget OkButton { get; }
 
+    #endregion public properties
+
+    #region exposed methods
+
     /// <inheritdoc/>
     protected override void OnAcceptRequested()
     {
@@ -271,49 +200,34 @@ public sealed class AboutBox : DialogBox
         base.Dispose();
     }
 
+    #endregion exposed methods
+
+    #region private methods
+
     private void OnOkClicked()
     {
         Close(DialogResult.OK);
     }
 
-    private static Rectangle ResolveBounds(
-        View view,
-        Rectangle? bounds)
+    private static Rectangle ResolveBounds(View view, Rectangle? bounds)
     {
         ArgumentNullException.ThrowIfNull(view);
 
         if (bounds is not null)
             return bounds.Value;
 
-        Rectangle viewport =
-            view.Viewport.TargetRectPx;
+        Rectangle viewport = view.Viewport.TargetRectPx;
 
-        int availableWidth =
-            Math.Max(
-                1,
-                viewport.Width - 40);
+        int availableWidth = Math.Max(1, viewport.Width - 40);
+        int availableHeight = Math.Max(1, viewport.Height - 40);
+        int width = Math.Min(DefaultWidth, availableWidth);
+        int height = Math.Min(DefaultHeight, availableHeight);
 
-        int availableHeight =
-            Math.Max(
-                1,
-                viewport.Height - 40);
-
-        int width =
-            Math.Min(
-                DefaultWidth,
-                availableWidth);
-
-        int height =
-            Math.Min(
-                DefaultHeight,
-                availableHeight);
-
-        return new Rectangle(
-            viewport.Left +
-            (viewport.Width - width) / 2,
-            viewport.Top +
-            (viewport.Height - height) / 2,
-            width,
-            height);
+        return new Rectangle(viewport.Left + (viewport.Width - width) / 2,
+                             viewport.Top + (viewport.Height - height) / 2,
+                             width,
+                             height);
     }
+
+    #endregion private methods
 }

@@ -12,8 +12,9 @@ namespace Gondwana.Blazor.Input.Mouse;
 /// Provides a mouse/pointer input adapter for Blazor applications, tracking pointer position,
 /// button states, modifier keys, and scroll wheel input.
 /// </summary>
-public sealed class BlazorMouseAdapter : IMouseAdapter
+public sealed class BlazorMouseAdapter : IMouseAdapter, IDisposable
 {
+    private readonly BlazorBitmapRenderSurfaceComponent _component;
     private readonly HashSet<GondwanaMouseButton> _pressed = new();
     private readonly object _pressedLock = new();
     private Point _currentPosition;
@@ -47,11 +48,12 @@ public sealed class BlazorMouseAdapter : IMouseAdapter
     public BlazorMouseAdapter(BlazorBitmapRenderSurfaceComponent component)
     {
         ArgumentNullException.ThrowIfNull(component);
+        _component = component;
 
-        component.MouseDown += OnMouseDown;
-        component.MouseUp += OnMouseUp;
-        component.MouseMove += OnMouseMove;
-        component.Wheel += OnWheel;
+        _component.MouseDown += OnMouseDown;
+        _component.MouseUp += OnMouseUp;
+        _component.MouseMove += OnMouseMove;
+        _component.Wheel += OnWheel;
     }
 
     private void OnMouseDown(BrowserMouseEventArgs e)
@@ -94,4 +96,13 @@ public sealed class BlazorMouseAdapter : IMouseAdapter
         2 => GondwanaMouseButton.Right,
         _ => GondwanaMouseButton.None
     };
+
+    /// <summary>Unsubscribes from the render component's mouse events.</summary>
+    public void Dispose()
+    {
+        _component.MouseDown -= OnMouseDown;
+        _component.MouseUp -= OnMouseUp;
+        _component.MouseMove -= OnMouseMove;
+        _component.Wheel -= OnWheel;
+    }
 }

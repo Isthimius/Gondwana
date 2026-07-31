@@ -6,12 +6,9 @@ internal static class WidgetInputRouterRegistry
 {
     private static readonly object _syncRoot = new();
 
-    private static readonly Dictionary<RenderSurfaceHostBase, WidgetInputRouter> _routers =
-        new(ReferenceEqualityComparer.Instance);
+    private static readonly Dictionary<RenderSurfaceHostBase, WidgetInputRouter> _routers = new(ReferenceEqualityComparer.Instance);
 
-    internal static void Attach(
-        RenderSurfaceHostBase renderSurfaceHost,
-        WidgetInputRouter router)
+    internal static void Attach(RenderSurfaceHostBase renderSurfaceHost, WidgetInputRouter router)
     {
         ArgumentNullException.ThrowIfNull(renderSurfaceHost);
         ArgumentNullException.ThrowIfNull(router);
@@ -21,17 +18,14 @@ internal static class WidgetInputRouterRegistry
             if (_routers.TryGetValue(renderSurfaceHost, out WidgetInputRouter? existing) &&
                 !ReferenceEquals(existing, router))
             {
-                throw new InvalidOperationException(
-                    "A widget input router is already attached to this render surface host.");
+                throw new InvalidOperationException("A widget input router is already attached to this render surface host.");
             }
 
             _routers[renderSurfaceHost] = router;
         }
     }
 
-    internal static void Detach(
-        RenderSurfaceHostBase renderSurfaceHost,
-        WidgetInputRouter router)
+    internal static void Detach(RenderSurfaceHostBase renderSurfaceHost, WidgetInputRouter router)
     {
         lock (_syncRoot)
         {
@@ -97,10 +91,7 @@ internal static class WidgetInputRouterRegistry
 
         lock (_syncRoot)
         {
-            _routers.TryGetValue(
-                widget.RenderSurfaceHost,
-                out WidgetInputRouter? router);
-
+            _routers.TryGetValue(widget.RenderSurfaceHost, out WidgetInputRouter? router);
             return router;
         }
     }

@@ -17,13 +17,12 @@ public sealed class WidgetDragEventArgs : WidgetEventArgs
     /// <param name="button">The pointer button used for dragging.</param>
     /// <param name="tick">The engine tick associated with the event.</param>
     /// <param name="pointerId">The identifier of the pointer performing the drag.</param>
-    public WidgetDragEventArgs(
-        WidgetBase widget,
-        PointF startScreenPositionPx,
-        PointF currentScreenPositionPx,
-        WidgetPointerButtonEnum button = WidgetPointerButtonEnum.Left,
-        long tick = 0,
-        int pointerId = 0)
+    public WidgetDragEventArgs(WidgetBase widget,
+                               PointF startScreenPositionPx,
+                               PointF currentScreenPositionPx,
+                               WidgetPointerButtonEnum button = WidgetPointerButtonEnum.Left,
+                               long tick = 0,
+                               int pointerId = 0)
         : base(widget, tick)
     {
         StartScreenPositionPx = startScreenPositionPx;
@@ -55,7 +54,6 @@ public sealed class WidgetDragEventArgs : WidgetEventArgs
     /// <summary>
     /// Gets the total drag offset from the drag start position.
     /// </summary>
-    public Vector2 TotalDeltaPx => new(
-        CurrentScreenPositionPx.X - StartScreenPositionPx.X,
-        CurrentScreenPositionPx.Y - StartScreenPositionPx.Y);
+    public Vector2 TotalDeltaPx => new(CurrentScreenPositionPx.X - StartScreenPositionPx.X,
+                                       CurrentScreenPositionPx.Y - StartScreenPositionPx.Y);
 }

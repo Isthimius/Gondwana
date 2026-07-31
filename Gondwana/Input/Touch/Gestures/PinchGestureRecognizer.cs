@@ -24,14 +24,21 @@ public sealed class PinchGestureRecognizer : IDisposable
 {
     private readonly ITouchInput _touchInput;
     private readonly Dictionary<int, Point> _activePoints = new();
+    private double _startingDistance;
     private double _lastDistance = 0;
     private bool _isDisposed;
+
+    /// <summary>Occurs when exactly two contacts establish a pinch gesture.</summary>
+    public event EventHandler<PinchedEventArgs>? PinchStarted;
 
     /// <summary>
     /// Occurs whenever the distance between two active touch contact points changes during a pinch
     /// or spread gesture. The event data includes the relative scale delta and current distance.
     /// </summary>
     public event EventHandler<PinchedEventArgs>? PinchUpdated;
+
+    /// <summary>Occurs when the current two-contact pinch ends or is interrupted.</summary>
+    public event EventHandler<PinchedEventArgs>? PinchEnded;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PinchGestureRecognizer"/> class, subscribing
@@ -54,15 +61,17 @@ public sealed class PinchGestureRecognizer : IDisposable
     private void OnTouchBegan(object? sender, TouchEventArgs e)
     {
         var prevCount = _activePoints.Count;
+
+        if (prevCount == 2)
+            Emit(PinchPhase.Ended, PinchEnded);
+
         _activePoints[e.Touch.Id] = e.Touch.Position;
         var newCount = _activePoints.Count;
 
-        // Transition into "exactly 2" — baseline the distance so the first move has a reference.
-        // Any other count change (1→3, 3→4, etc.) clears the baseline so updates pause.
         if (prevCount != 2 && newCount == 2)
-            _lastDistance = GetCurrentDistance();
+            BeginPinch();
         else if (newCount != 2)
-            _lastDistance = 0;
+            ClearBaseline();
     }
 
     private void OnTouchMoved(object? sender, TouchEventArgs e)
@@ -79,8 +88,7 @@ public sealed class PinchGestureRecognizer : IDisposable
 
             if (currentDistance > 0)
             {
-                var scaleDelta = currentDistance / _lastDistance;
-                PinchUpdated?.Invoke(this, new PinchedEventArgs(scaleDelta, currentDistance));
+                Emit(PinchPhase.Updated, PinchUpdated, currentDistance);
             }
 
             _lastDistance = currentDistance;
@@ -90,24 +98,74 @@ public sealed class PinchGestureRecognizer : IDisposable
     private void OnTouchEnded(object? sender, TouchEventArgs e)
     {
         var prevCount = _activePoints.Count;
+
+        if (_activePoints.ContainsKey(e.Touch.Id))
+            _activePoints[e.Touch.Id] = e.Touch.Position;
+
+        if (prevCount == 2)
+            Emit(PinchPhase.Ended, PinchEnded);
+
         _activePoints.Remove(e.Touch.Id);
         var newCount = _activePoints.Count;
 
-        // Transition from 3+ down to exactly 2 — re-baseline so there is no position jump.
         if (prevCount != 2 && newCount == 2)
-            _lastDistance = GetCurrentDistance();
+            BeginPinch();
         else if (newCount < 2)
-            _lastDistance = 0;
+            ClearBaseline();
+    }
+
+    private void BeginPinch()
+    {
+        _startingDistance = GetCurrentDistance();
+        _lastDistance = _startingDistance;
+        Emit(PinchPhase.Began, PinchStarted, _startingDistance);
+    }
+
+    private void ClearBaseline()
+    {
+        _startingDistance = 0;
+        _lastDistance = 0;
+    }
+
+    private void Emit(PinchPhase phase,
+                      EventHandler<PinchedEventArgs>? handler,
+                      double? currentDistance = null)
+    {
+        if (_activePoints.Count != 2)
+            return;
+
+        var pair = _activePoints.OrderBy(kvp => kvp.Key).Take(2).ToArray();
+        var a = pair[0].Value;
+        var b = pair[1].Value;
+        var distance = currentDistance ?? GetDistance(a, b);
+        var center = new PointF((a.X + b.X) / 2f, (a.Y + b.Y) / 2f);
+
+        handler?.Invoke(this, new PinchedEventArgs(phase,
+                                                   new[] { pair[0].Key, pair[1].Key },
+                                                   center,
+                                                   _startingDistance,
+                                                   _lastDistance,
+                                                   distance));
     }
 
     private double GetCurrentDistance()
     {
         using var enumerator = _activePoints.Values.GetEnumerator();
-        if (!enumerator.MoveNext()) return 0;
+        if (!enumerator.MoveNext())
+            return 0;
+        
         var a = enumerator.Current;
-        if (!enumerator.MoveNext()) return 0;
+        
+        if (!enumerator.MoveNext())
+            return 0;
+
         var b = enumerator.Current;
 
+        return GetDistance(a, b);
+    }
+
+    private static double GetDistance(Point a, Point b)
+    {
         var dx = a.X - b.X;
         var dy = a.Y - b.Y;
         return Math.Sqrt(dx * dx + dy * dy);
@@ -125,5 +183,12 @@ public sealed class PinchGestureRecognizer : IDisposable
         _touchInput.TouchBegan -= OnTouchBegan;
         _touchInput.TouchMoved -= OnTouchMoved;
         _touchInput.TouchEnded -= OnTouchEnded;
+        Reset();
+    }
+
+    internal void Reset()
+    {
+        _activePoints.Clear();
+        ClearBaseline();
     }
 }

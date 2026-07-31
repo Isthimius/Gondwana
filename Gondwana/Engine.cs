@@ -893,6 +893,7 @@ public sealed class Engine : IDisposable
         Input.GamepadManager?.Update();
 
         // raise event
+        // GL thread rendering is done as part of this invocation
         AfterFrameRender?.Invoke();
 
         // raise post-cycle timer events
@@ -992,9 +993,8 @@ public sealed class Engine : IDisposable
 
                 // managed cleanup...
                 Input.KeyboardEventPoller?.StopMonitoringAllKeys();
-                Input.MouseEventPoller?.StopMonitoringMouse();
-                Input.TouchEventPoller?.StopMonitoringTouch();
-                (Input.TouchEventPoller?.Adapter as IDisposable)?.Dispose();
+                MouseEventPoller.Reset();
+                TouchEventPoller.Reset();
 
                 if (Input.GamepadManager is not null)
                     foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)

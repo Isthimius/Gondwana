@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Physics.Collisions;
+using Gondwana.Rendering;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -32,6 +33,12 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 {
     [JsonProperty]
     private readonly List<SceneLayer> _sceneLayers = [];
+
+    [JsonIgnore]
+    private readonly object _renderSurfaceHostSync = new();
+
+    [JsonIgnore]
+    private RenderSurfaceHostBase? _boundRenderSurfaceHost;
     
     #region Scene events
 
@@ -168,6 +175,30 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     public int Count => _sceneLayers?.Count ?? 0;
 
     /// <summary>
+    /// Gets the render surface host currently bound to this scene.
+    /// </summary>
+    /// <remarks>
+    /// A scene may be actively bound to at most one render surface host. Multiple camera
+    /// perspectives into the same scene should be represented by multiple views on that host.
+    /// </remarks>
+    [JsonIgnore]
+    internal RenderSurfaceHostBase? BoundRenderSurfaceHost
+    {
+        get
+        {
+            lock (_renderSurfaceHostSync)
+                return _boundRenderSurfaceHost;
+        }
+    }
+
+    /// <summary>
+    /// Gets whether the scene's current host consumes dirty-region refresh queues.
+    /// Unbound scenes retain invalidations for a future bitmap host.
+    /// </summary>
+    [JsonIgnore]
+    internal bool UsesDirtyRegionRendering => BoundRenderSurfaceHost?.Backbuffer.IsGlThreadRendered != true;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the entire scene needs to be refreshed on the next render.
     /// </summary>
     /// <value>
@@ -267,6 +298,61 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     #endregion public properties
 
     #region internal properties and methods
+
+    /// <summary>
+    /// Claims this scene for the specified render surface host.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the scene is already bound to a different host.
+    /// </exception>
+    internal void BindRenderSurfaceHost(RenderSurfaceHostBase host)
+    {
+        ArgumentNullException.ThrowIfNull(host);
+
+        // Scene.Empty is a shared null-object placeholder and is never treated as an
+        // actively rendered scene for binding ownership purposes.
+        if (ReferenceEquals(this, Empty))
+            return;
+
+        lock (_renderSurfaceHostSync)
+        {
+            if (_boundRenderSurfaceHost is not null &&
+                !ReferenceEquals(_boundRenderSurfaceHost, host))
+            {
+                throw new InvalidOperationException(
+                    $"Scene '{ID}' is already bound to another RenderSurfaceHost.");
+            }
+
+            _boundRenderSurfaceHost = host;
+        }
+
+        // A GPU host redraws the full frame and never consumes RefreshQueue. Remove
+        // anything accumulated before binding; future additions are rejected by the
+        // queue's scene-policy callback.
+        if (!UsesDirtyRegionRendering)
+        {
+            foreach (var layer in _sceneLayers)
+                layer.RefreshQueue.ClearRefreshQueue();
+        }
+    }
+
+    /// <summary>
+    /// Releases this scene when it is currently owned by the specified host.
+    /// Calls from any other host are ignored.
+    /// </summary>
+    internal void UnbindRenderSurfaceHost(RenderSurfaceHostBase host)
+    {
+        ArgumentNullException.ThrowIfNull(host);
+
+        if (ReferenceEquals(this, Empty))
+            return;
+
+        lock (_renderSurfaceHostSync)
+        {
+            if (ReferenceEquals(_boundRenderSurfaceHost, host))
+                _boundRenderSurfaceHost = null;
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether any visible layer in this scene has pending updates
