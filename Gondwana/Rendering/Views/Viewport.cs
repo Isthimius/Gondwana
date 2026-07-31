@@ -15,6 +15,7 @@ public sealed class Viewport
     private float _zoomLerpPerSecond;
     private float? _zoomDurationSeconds;
     private float _zoomElapsedSeconds;
+    private float _zoomStart;
 
     /// <summary>
     /// Fired whenever <see cref="TargetRectPx"/> changes (viewport resized or moved).
@@ -97,6 +98,8 @@ public sealed class Viewport
         _zoomLerpPerSecond = 0f;
         _zoomDurationSeconds = null;
         _zoomElapsedSeconds = 0f;
+        _zoomStart = zoom;
+
         Zoom = zoom;
     }
 
@@ -112,6 +115,7 @@ public sealed class Viewport
             return;
         }
 
+        _zoomStart = _zoom;
         _zoomTarget = targetZoom;
         _zoomLerpPerSecond = lerpPerSecond;
         _zoomDurationSeconds = null;
@@ -130,13 +134,14 @@ public sealed class Viewport
             return;
         }
 
-        // Same math as Camera.PanToOverDuration: exp(-k*T) = 0.01 → k = -ln(0.01) / T
-        float k = -(float)Math.Log(0.01f) / durationSeconds;
-
+        _zoomStart = _zoom;
         _zoomTarget = targetZoom;
-        _zoomLerpPerSecond = k;
+
         _zoomDurationSeconds = durationSeconds;
         _zoomElapsedSeconds = 0f;
+
+        // The fixed-duration path calculates progress directly.
+        _zoomLerpPerSecond = 0f;
     }
 
     /// <summary>
@@ -145,7 +150,7 @@ public sealed class Viewport
     /// </summary>
     internal void UpdateZoom(float dtSeconds)
     {
-        if (_zoomTarget is null || _zoomLerpPerSecond <= 0f)
+        if (_zoomTarget is null)
             return;
 
         float target = _zoomTarget.Value;
@@ -153,27 +158,39 @@ public sealed class Viewport
 
         if (_zoomDurationSeconds is { } durationSeconds)
         {
-            _zoomElapsedSeconds += dt;
+            _zoomElapsedSeconds = Math.Min(_zoomElapsedSeconds + dt, durationSeconds);
 
-            // Duration-based APIs should complete at the requested time rather
-            // than allowing the exponential tail to continue indefinitely.
+            float progress = durationSeconds > 0f ? _zoomElapsedSeconds / durationSeconds : 1f;
+
+            // Preserve the existing exponential ease-out character, but normalize
+            // it so progress reaches exactly 1 at the requested duration.
+            const float decay = 4.605170186f; // -ln(0.01)
+
+            float normalization = 1f - MathF.Exp(-decay);
+            float easedProgress = (1f - MathF.Exp(-decay * progress)) / normalization;
+
+            Zoom = _zoomStart + (target - _zoomStart) * easedProgress;
+
             if (_zoomElapsedSeconds >= durationSeconds)
             {
+                // This no longer causes a visible jump: easedProgress is already 1.
                 SnapZoom(target);
-                return;
             }
+
+            return;
         }
 
-        float current = _zoom;
-        float t = 1f - (float)Math.Exp(-_zoomLerpPerSecond * dt);
-        float newZoom = current + (target - current) * t;
+        if (_zoomLerpPerSecond <= 0f)
+            return;
 
-        Zoom = newZoom; // go through property so events fire
+        float t = 1f - MathF.Exp(-_zoomLerpPerSecond * dt);
 
-        // Close enough → snap and finish.
+        float newZoom = _zoom + (target - _zoom) * t;
+
+        Zoom = newZoom;
+
         if (Math.Abs(newZoom - target) < 1e-4f)
             SnapZoom(target);
     }
-
     #endregion zoom zoom
 }
