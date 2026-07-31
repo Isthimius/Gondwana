@@ -91,30 +91,47 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
     }
 
     /// <summary>
-    /// Gets the movement controller that manages physics-based position, velocity, and forces for this direct drawing.
+    /// Gets the movement controller responsible for changing this direct drawing's
+    /// position over time.
     /// </summary>
     /// <value>
-    /// A <see cref="MovementController"/> instance providing access to movement state, velocity, acceleration,
-    /// friction, and other physics properties.
+    /// A <see cref="MovementController"/> configured to move this drawing in
+    /// <see cref="MovementSpace.Pixel"/>.
     /// </value>
     /// <remarks>
     /// <para>
-    /// Use the movement controller to:
+    /// The controller supports follow, scripted, and integrated movement:
+    /// </para>
     /// <list type="bullet">
-    /// <item><description>Apply forces and impulses (e.g., <c>Movement.ApplyForce()</c>, <c>Movement.ApplyImpulse()</c>).</description></item>
-    /// <item><description>Set or query velocity (e.g., <c>Movement.Velocity</c>).</description></item>
-    /// <item><description>Configure friction, mass, and other physical properties.</description></item>
-    /// <item><description>Enable or disable movement integration.</description></item>
+    /// <item>
+    /// <description>
+    /// Follow movement continuously tracks a live pixel-space or grid-space target.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// Scripted movement performs authored operations such as
+    /// <c>MoveTo</c>, <c>MoveBy</c>, and <c>MoveToward</c>.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// Integrated movement advances velocity, acceleration, maximum-speed limits,
+    /// and linear damping over time.
+    /// </description>
+    /// </item>
     /// </list>
+    /// <para>
+    /// Movement coordinates represent the drawing's upper-left position. For
+    /// <see cref="DirectDrawingMode.SceneLayer"/> drawings, they are world pixels.
+    /// For <see cref="DirectDrawingMode.View"/> drawings, they are absolute
+    /// screen pixels.
     /// </para>
     /// <para>
-    /// The controller is automatically integrated each frame by <see cref="Update"/> using a fixed timestep
-    /// (240 Hz). Position changes from the controller are synchronized to the drawing's bounds, triggering
-    /// dirty-rectangle updates as needed.
-    /// </para>
-    /// <para>
-    /// The controller operates in pixel space (<see cref="MovementSpace.Pixel"/>), matching the coordinate
-    /// system used by the drawing's bounds (either world or screen coordinates depending on the mode).
+    /// The controller is advanced automatically by <see cref="Update(long)"/>
+    /// once per engine update using the actual elapsed duration. Game code should
+    /// configure movement through this property rather than calling
+    /// <c>AdvanceMovement</c> directly.
     /// </para>
     /// </remarks>
     public MovementController Movement { get; }
