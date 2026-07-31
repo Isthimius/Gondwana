@@ -158,7 +158,54 @@ jobs:
               | sed -E 's/^[0-9a-f]{7,}[[:space:]]+//' \
               | grep -m1 -E '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}' || true)
             if [ -z "$FALLBACK_TITLE" ]; then
-              FALLBACK_TITLE="chore(core): update pull request"
+              FALLBACK_TITLE=$(python3 - <<'PY'
+import os, re, collections
+
+diff_stat = os.environ.get("DIFF_STAT", "")
+commits  = os.environ.get("COMMITS", "")
+
+SCOPE_MAP = [
+    (r'^\.github/',                      'ci'),
+    (r'^Tooling/Gondwana\.Cli/',         'cli'),
+    (r'^Tooling/Gondwana\.Templates/',   'templates'),
+    (r'^Demos/',                         'demos'),
+    (r'^Testing/',                       'test'),
+    (r'^Gondwana/Drawing/',              'rendering'),
+    (r'^Gondwana/Input/',                'input'),
+    (r'^Gondwana/Audio/',                'audio'),
+    (r'^Gondwana/',                      'core'),
+]
+
+scope_counts = collections.Counter()
+for line in diff_stat.splitlines():
+    m = re.match(r'^\s*([\w./\-\s]+?)\s+\|', line)
+    if not m:
+        continue
+    path = m.group(1).strip()
+    for pattern, scope in SCOPE_MAP:
+        if re.match(pattern, path, re.IGNORECASE):
+            scope_counts[scope] += 1
+            break
+    else:
+        scope_counts['core'] += 1
+
+type_hint = 'chore'
+for line in commits.splitlines():
+    msg = re.sub(r'^[0-9a-f]+\s+', '', line).lower()
+    if re.search(r'\b(add|implement|introduce|new|support|enable)\b', msg):
+        type_hint = 'feat'
+        break
+    if re.search(r'\b(fix|bug|correct|resolve|repair|patch)\b', msg):
+        type_hint = 'fix'
+        break
+    if re.search(r'\b(refactor|move|rename|reorganize|restructure)\b', msg):
+        type_hint = 'refactor'
+        break
+
+scope = scope_counts.most_common(1)[0][0] if scope_counts else 'core'
+print(f"{type_hint}({scope}): update {scope} implementation")
+PY
+              )
             fi
             echo "::warning::Generated title did not pass validation: '$TITLE'. Using fallback '$FALLBACK_TITLE'."
             echo "title=$FALLBACK_TITLE" >> "$GITHUB_OUTPUT"
@@ -298,10 +345,22 @@ jobs:
           PY
           )
 
-          # Lock title once it is in conventional commit format.
+          # Lock title once it is in conventional commit format, but only if it
+          # was not produced by the generic auto-generated fallback — those
+          # should be regenerated when new commits arrive.
+          GENERIC_FALLBACKS="chore(core): update pull request"
           if echo "$CURRENT_TITLE" | grep -qE '^[a-z]+(\([a-z0-9._-]+\))?!?: .{3,}'; then
-            echo "PR title is already conventional. Skipping update."
-            exit 0
+            IS_GENERIC=false
+            while IFS= read -r fallback; do
+              if [ "$CURRENT_TITLE" = "$fallback" ]; then
+                IS_GENERIC=true
+                break
+              fi
+            done <<< "$GENERIC_FALLBACKS"
+            if [ "$IS_GENERIC" = "false" ]; then
+              echo "PR title is already conventional. Skipping update."
+              exit 0
+            fi
           fi
 
           if [ "$CURRENT_TITLE" = "$NEW_TITLE" ]; then
