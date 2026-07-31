@@ -683,9 +683,7 @@ public class TextBlock : DirectDrawingMovableBase
         {
             // SceneLayer-mode has View == null by design; use the ambient render context.
             var contextZoom = RenderContext.Current?.ViewportZoom ?? 1f;
-            zoom = (contextZoom > 0f)
-                ? (1f / contextZoom)
-                : 1f;
+            zoom = (contextZoom > 0f) ? contextZoom : 1f;
         }
         else
         {
@@ -867,6 +865,14 @@ public class TextBlock : DirectDrawingMovableBase
         }
 
         canvas.Restore();
+    }
+
+    internal static float ResolveTextScale(DirectDrawingMode mode, float viewportZoom)
+    {
+        if (mode != DirectDrawingMode.SceneLayer)
+            return 1f;
+
+        return viewportZoom > 0f ? viewportZoom : 1f;
     }
 
     private void RebuildLayout(SKPaint paint, float maxWidth)

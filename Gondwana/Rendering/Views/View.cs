@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
-using Gondwana.Logging;
 using Gondwana.Scenes;
-using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering.Views;
 
@@ -104,10 +102,10 @@ public sealed class View
         float localX = screenPoint.X - offsetX;
         float localY = screenPoint.Y - offsetY;
 
-        // screen = offset + (world - camera*p) / zoom
-        // camera = (world - local*zoom) / p
-        float camTargetX = (worldUnderCursor.X - localX * targetZoom) / parallax;
-        float camTargetY = (worldUnderCursor.Y - localY * targetZoom) / parallax;
+        // screen = offset + (world - camera*p) * zoom
+        // camera = (world - local/zoom) / p
+        float camTargetX = (worldUnderCursor.X - localX / targetZoom) / parallax;
+        float camTargetY = (worldUnderCursor.Y - localY / targetZoom) / parallax;
 
         var cameraTargetUL = new PointF(camTargetX, camTargetY);
 
@@ -141,7 +139,7 @@ public sealed class View
     /// </returns>
     /// <remarks>
     /// The transformation formula is:
-    /// <code>world = camera * parallax + (screen - offset) * zoom</code>
+    /// <code>world = camera * parallax + (screen - offset) / zoom</code>
     /// This is commonly used for mouse picking and screen-to-world raycasting.
     /// </remarks>
     public PointF ScreenPxToWorldPx(SceneLayer layer, PointF screenPx)
@@ -152,10 +150,10 @@ public sealed class View
         float parallax = layer.Parallax;
 
         float worldX = Camera.PositionPx.X * parallax
-                     + (screenPx.X - offsetX) * zoom;
+                     + (screenPx.X - offsetX) / zoom;
 
         float worldY = Camera.PositionPx.Y * parallax
-                     + (screenPx.Y - offsetY) * zoom;
+                     + (screenPx.Y - offsetY) / zoom;
 
         return new PointF(worldX, worldY);
     }
@@ -176,7 +174,7 @@ public sealed class View
     /// </returns>
     /// <remarks>
     /// The transformation formula is:
-    /// <code>screen = offset + (world - camera * parallax) / zoom</code>
+    /// <code>screen = offset + (world - camera * parallax) * zoom</code>
     /// This is commonly used for rendering world objects to screen coordinates
     /// and for UI elements that track world positions.
     /// </remarks>
@@ -187,8 +185,8 @@ public sealed class View
         float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
         float parallax = layer.Parallax;
 
-        float screenX = offsetX + (worldPx.X - Camera.PositionPx.X * parallax) / zoom;
-        float screenY = offsetY + (worldPx.Y - Camera.PositionPx.Y * parallax) / zoom;
+        float screenX = offsetX + (worldPx.X - Camera.PositionPx.X * parallax) * zoom;
+        float screenY = offsetY + (worldPx.Y - Camera.PositionPx.Y * parallax) * zoom;
 
         return new PointF(screenX, screenY);
     }
@@ -212,7 +210,7 @@ public sealed class View
     /// for this View, using the specified layer's parallax factor.
     ///
     /// Matches the render path:
-    ///   screen = offset + (world - camera * parallax) / zoom
+    ///   screen = offset + (world - camera * parallax) * zoom
     /// </summary>
     /// <param name="layer">Scene layer whose parallax should be applied.</param>
     /// <param name="worldRect">World-space rectangle (in pixels).</param>
@@ -223,21 +221,20 @@ public sealed class View
             throw new ArgumentNullException(nameof(layer));
 
         float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
-        float inverseZoom = 1f / zoom;
 
         float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
         float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
 
         float parallax = layer.Parallax;
 
-        // screen = offset + (world - camera * p) / zoom
+        // screen = offset + (world - camera * p) * zoom
         float localLeft = worldRect.Left - Camera.PositionPx.X * parallax;
         float localTop = worldRect.Top - Camera.PositionPx.Y * parallax;
 
-        float scaledLeft = localLeft * inverseZoom;
-        float scaledTop = localTop * inverseZoom;
-        float scaledWidth = worldRect.Width * inverseZoom;
-        float scaledHeight = worldRect.Height * inverseZoom;
+        float scaledLeft = localLeft * zoom;
+        float scaledTop = localTop * zoom;
+        float scaledWidth = worldRect.Width * zoom;
+        float scaledHeight = worldRect.Height * zoom;
 
         float screenLeft = offsetX + scaledLeft;
         float screenTop = offsetY + scaledTop;
@@ -251,7 +248,7 @@ public sealed class View
     /// and the layer's parallax factor.
     ///
     /// Inverse of:
-    ///     screen = offset + (world - camera * p) / zoom
+    ///     screen = offset + (world - camera * p) * zoom
     /// </summary>
     public RectangleF ScreenRectToWorldRect(SceneLayer layer, RectangleF screenRect)
     {
@@ -269,12 +266,12 @@ public sealed class View
         float localLeft = screenRect.Left - offsetX;
         float localTop = screenRect.Top - offsetY;
 
-        // world = camera*parallax + local * zoom
-        float worldLeft = Camera.PositionPx.X * parallax + localLeft * zoom;
-        float worldTop = Camera.PositionPx.Y * parallax + localTop * zoom;
+        // world = camera*parallax + local / zoom
+        float worldLeft = Camera.PositionPx.X * parallax + localLeft / zoom;
+        float worldTop = Camera.PositionPx.Y * parallax + localTop / zoom;
 
-        float worldWidth = screenRect.Width * zoom;
-        float worldHeight = screenRect.Height * zoom;
+        float worldWidth = screenRect.Width / zoom;
+        float worldHeight = screenRect.Height / zoom;
 
         return new RectangleF(worldLeft, worldTop, worldWidth, worldHeight);
     }
