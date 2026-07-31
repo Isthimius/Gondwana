@@ -325,6 +325,15 @@ public sealed class Camera
     }
 
     /// <summary>
+    /// Cancels an active explicit pan without changing the configured follow target.
+    /// </summary>
+    internal void CancelPan()
+    {
+        _panTargetUpperLeftPx = null;
+        _panLerpPerSecond = 0f;
+    }
+
+    /// <summary>
     /// Configures the camera to follow a dynamically supplied world-space
     /// target position. Each update, the supplier is called to get the
     /// desired target "point of interest" in world pixels (typically a

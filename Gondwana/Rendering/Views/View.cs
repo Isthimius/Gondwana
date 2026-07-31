@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
+using Gondwana.Logging;
 using Gondwana.Scenes;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering.Views;
 
@@ -11,6 +13,10 @@ namespace Gondwana.Rendering.Views;
 /// </summary>
 public sealed class View
 {
+    private SceneLayer? _zoomAnchorLayer;
+    private PointF _zoomAnchorScreenPoint;
+    private PointF _zoomAnchorWorldPoint;
+
     /// <summary>
     /// Gets the unique identifier for this view instance.
     /// </summary>
@@ -63,10 +69,8 @@ public sealed class View
     }
 
     /// <summary>
-    /// Smoothly zooms the view so that a given screen-space point appears to
-    /// zoom in/out around a fixed world position beneath it, similar to
-    /// map-style mouse-wheel zoom. Both the viewport zoom and camera position
-    /// are animated over the specified duration.
+    /// Zooms the view around a screen-space point while keeping the world point
+    /// beneath that location fixed throughout the operation.
     /// </summary>
     /// <param name="layer">
     /// Reference layer whose parallax factor is used for the world-space transform.
@@ -79,21 +83,82 @@ public sealed class View
     /// Desired zoom factor after the animation completes.
     /// </param>
     /// <param name="durationSeconds">
-    /// Approximate duration in seconds for the zoom + pan animation.
-    /// Values &lt;= 0 snap immediately.
+    /// Duration in seconds for the zoom animation. Values &lt;= 0 snap immediately.
     /// </param>
+    /// <remarks>
+    /// During a smooth zoom, the viewport zoom is animated and the camera position
+    /// is recomputed after every intermediate zoom update. This prevents the anchor
+    /// point from drifting while zoom and camera movement are in progress.
+    /// </remarks>
     public void ZoomAroundScreenPoint(SceneLayer layer, PointF screenPoint, float targetZoom, float durationSeconds)
     {
-        if (layer is null)
-            throw new ArgumentNullException(nameof(layer));
+        ArgumentNullException.ThrowIfNull(layer);
 
         targetZoom = Math.Clamp(targetZoom, MinZoom, MaxZoom);
 
-        // World under cursor BEFORE zoom changes
-        var worldUnderCursor = ScreenPxToWorldPx(layer, screenPoint);
+        PointF worldUnderCursor = ScreenPxToWorldPx(layer, screenPoint);
 
-        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X;
-        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y;
+        // Anchored zoom owns camera positioning until the zoom completes. Cancel an
+        // unrelated explicit pan, but leave follow configuration intact so it can
+        // resume on the next update after the anchored zoom finishes.
+        Camera.CancelPan();
+
+        if (durationSeconds <= 0f)
+        {
+            ClearZoomAnchor();
+            Viewport.SnapZoom(targetZoom);
+            SnapCameraToZoomAnchor(layer, screenPoint, worldUnderCursor);
+            return;
+        }
+
+        _zoomAnchorLayer = layer;
+        _zoomAnchorScreenPoint = screenPoint;
+        _zoomAnchorWorldPoint = worldUnderCursor;
+
+        Viewport.ZoomToOverDuration(targetZoom, durationSeconds);
+    }
+
+    /// <summary>
+    /// Advances camera and zoom state for this view.
+    /// </summary>
+    internal void Update(float dtSeconds)
+    {
+        if (_zoomAnchorLayer is { } anchorLayer)
+        {
+            // Update zoom first, then derive the one camera position that keeps
+            // the selected world point at the selected screen point.
+            Viewport.UpdateZoom(dtSeconds);
+            SnapCameraToZoomAnchor(
+                anchorLayer,
+                _zoomAnchorScreenPoint,
+                _zoomAnchorWorldPoint);
+
+            if (!Viewport.IsZoomAnimating)
+                ClearZoomAnchor();
+
+            return;
+        }
+
+        Camera.Update(dtSeconds);
+        Viewport.UpdateZoom(dtSeconds);
+    }
+
+    private void SnapCameraToZoomAnchor(
+        SceneLayer layer,
+        PointF screenPoint,
+        PointF worldPoint)
+    {
+        float zoom = Viewport.Zoom > 0f
+            ? Viewport.Zoom
+            : 1f;
+
+        float offsetX =
+            Viewport.TargetRectPx.Left
+            + Viewport.ScreenOffsetPx.X;
+
+        float offsetY =
+            Viewport.TargetRectPx.Top
+            + Viewport.ScreenOffsetPx.Y;
 
         float parallax = layer.Parallax;
         if (Math.Abs(parallax) < 1e-6f)
@@ -104,21 +169,22 @@ public sealed class View
 
         // screen = offset + (world - camera*p) * zoom
         // camera = (world - local/zoom) / p
-        float camTargetX = (worldUnderCursor.X - localX / targetZoom) / parallax;
-        float camTargetY = (worldUnderCursor.Y - localY / targetZoom) / parallax;
+        float cameraX =
+            (worldPoint.X - localX / zoom)
+            / parallax;
 
-        var cameraTargetUL = new PointF(camTargetX, camTargetY);
+        float cameraY =
+            (worldPoint.Y - localY / zoom)
+            / parallax;
 
-        if (durationSeconds <= 0f)
-        {
-            Viewport.SnapZoom(targetZoom);
-            Camera.SnapTo(cameraTargetUL);
-        }
-        else
-        {
-            Viewport.ZoomToOverDuration(targetZoom, durationSeconds);
-            Camera.PanToOverDuration(cameraTargetUL, durationSeconds);
-        }
+        Camera.SnapTo(new PointF(cameraX, cameraY));
+    }
+
+    private void ClearZoomAnchor()
+    {
+        _zoomAnchorLayer = null;
+        _zoomAnchorScreenPoint = PointF.Empty;
+        _zoomAnchorWorldPoint = PointF.Empty;
     }
 
     #region Coordinate conversion methods
