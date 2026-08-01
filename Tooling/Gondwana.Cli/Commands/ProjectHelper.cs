@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Xml.Linq;
+using Spectre.Console;
 
 namespace Gondwana.Cli.Commands;
 
@@ -66,7 +67,24 @@ internal static class ProjectHelper
         {
             var document = XDocument.Load(csprojPath);
             var sdk = document.Root?.Attribute("Sdk")?.Value ?? string.Empty;
-            return sdk.Contains("BlazorWebAssembly", StringComparison.OrdinalIgnoreCase);
+            if (sdk.Contains("BlazorWebAssembly", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            var packageReferences = document.Descendants()
+                .Where(e => e.Name.LocalName == "PackageReference")
+                .Select(e => e.Attribute("Include")?.Value)
+                .Where(v => !string.IsNullOrWhiteSpace(v));
+
+            if (packageReferences.Any(v => string.Equals(v, "Gondwana.Blazor", StringComparison.OrdinalIgnoreCase)))
+                return true;
+
+            var projectReferences = document.Descendants()
+                .Where(e => e.Name.LocalName == "ProjectReference")
+                .Select(e => e.Attribute("Include")?.Value)
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .Select(v => Path.GetFileNameWithoutExtension(v));
+
+            return projectReferences.Any(v => string.Equals(v, "Gondwana.Blazor", StringComparison.OrdinalIgnoreCase));
         }
         catch
         {
@@ -152,6 +170,67 @@ internal static class ProjectHelper
         }
 
         return fullZip;
+    }
+
+    public static int EnsureBlazorWasmToolsInstalled(bool skipWorkload)
+    {
+        if (skipWorkload)
+            return 0;
+
+        AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
+        var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
+        if (workloadExit != 0)
+            AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
+
+        return workloadExit;
+    }
+
+    public static int PublishBlazorProject(string csprojPath, string configuration, bool skipWorkload, out string? wwwroot)
+    {
+        wwwroot = null;
+
+        var workloadExit = EnsureBlazorWasmToolsInstalled(skipWorkload);
+        if (workloadExit != 0)
+            return workloadExit;
+
+        AnsiConsole.MarkupLine($"[dim]Publishing in {configuration} configuration...[/]");
+        var publishExit = ProcessHelper.RunLive("dotnet", ["publish", csprojPath, "-c", configuration]);
+        if (publishExit != 0)
+        {
+            AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
+            return publishExit;
+        }
+
+        wwwroot = TryLocateBlazorPublishRoot(csprojPath, configuration);
+        return 0;
+    }
+
+    public static string? TryGetBlazorPublishRoot(string csprojPath, string configuration, bool skipBuild, bool skipWorkload, out int exitCode)
+    {
+        exitCode = 0;
+
+        if (!skipBuild)
+        {
+            var publishExit = PublishBlazorProject(csprojPath, configuration, skipWorkload, out var wwwroot);
+            exitCode = publishExit;
+            return publishExit == 0 ? wwwroot : null;
+        }
+
+        return TryLocateBlazorPublishRoot(csprojPath, configuration);
+    }
+
+    public static string? CreateBlazorItchPackage(string csprojPath, string configuration, bool skipBuild, bool skipWorkload, string? outputPath, out int exitCode)
+    {
+        var wwwroot = TryGetBlazorPublishRoot(csprojPath, configuration, skipBuild, skipWorkload, out exitCode);
+        if (exitCode != 0)
+            return null;
+
+        if (wwwroot is null || !Directory.Exists(wwwroot))
+            return null;
+
+        var projectName = Path.GetFileNameWithoutExtension(csprojPath);
+        var defaultZipPath = Path.Combine(Path.GetDirectoryName(wwwroot)!, $"{projectName}-itch.zip");
+        return CreateZipFromDirectoryContents(wwwroot, outputPath ?? defaultZipPath);
     }
 
     public static void MirrorDirectory(string sourceDirectory, string destinationDirectory)
