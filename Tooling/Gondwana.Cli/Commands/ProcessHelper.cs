@@ -96,15 +96,32 @@ internal static class ProcessHelper
     {
         try
         {
-            var psi = new ProcessStartInfo
+            var resolved = ResolveWindowsExecutable(fileName);
+            ProcessStartInfo psi;
+            if (IsWindowsScript(resolved))
             {
-                FileName = fileName,
-                Arguments = arguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
+                psi = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c \"{resolved}\" {arguments}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
+            }
+            else
+            {
+                psi = new ProcessStartInfo
+                {
+                    FileName = resolved,
+                    Arguments = arguments,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
+            }
 
             using var process = Process.Start(psi);
             if (process is null)
@@ -164,12 +181,19 @@ internal static class ProcessHelper
     {
         try
         {
+            var resolved = ResolveWindowsExecutable(fileName);
             var psi = new ProcessStartInfo
             {
-                FileName = fileName,
+                FileName = IsWindowsScript(resolved) ? "cmd.exe" : resolved,
                 UseShellExecute = false,
                 CreateNoWindow = false,
             };
+
+            if (IsWindowsScript(resolved))
+            {
+                psi.ArgumentList.Add("/c");
+                psi.ArgumentList.Add(resolved);
+            }
 
             foreach (var arg in arguments)
                 psi.ArgumentList.Add(arg);
@@ -186,4 +210,30 @@ internal static class ProcessHelper
             return -1;
         }
     }
+
+    private static string ResolveWindowsExecutable(string fileName)
+    {
+        if (!OperatingSystem.IsWindows() || Path.IsPathRooted(fileName) || Path.HasExtension(fileName))
+            return fileName;
+
+        var pathExt = Environment.GetEnvironmentVariable("PATHEXT") ?? ".COM;.EXE;.BAT;.CMD";
+        var searchPaths = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var ext in pathExt.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            foreach (var dir in searchPaths)
+            {
+                var candidate = Path.Combine(dir.Trim(), fileName + ext);
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+        }
+
+        return fileName;
+    }
+
+    private static bool IsWindowsScript(string filePath) =>
+        filePath.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) ||
+        filePath.EndsWith(".bat", StringComparison.OrdinalIgnoreCase);
 }

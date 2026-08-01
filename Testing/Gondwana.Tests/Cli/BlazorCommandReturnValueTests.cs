@@ -242,27 +242,44 @@ public sealed class BlazorCommandReturnValueTests
 
         private void CreateFakeButler()
         {
-            var scriptPath = Path.Combine(_toolsDirectory, "butler");
-            File.WriteAllText(scriptPath,
-                """
-                #!/usr/bin/env bash
-                set -e
-
-                if [ "$1" = "--version" ]; then
-                  echo "butler fake"
-                  exit 0
-                fi
-
-                if [ "$1" = "push" ]; then
-                  printf '%s\n' "$@" > "$FAKE_BUTLER_LOG"
-                  exit 0
-                fi
-
-                exit 0
-                """);
-
-            if (!OperatingSystem.IsWindows())
+            if (OperatingSystem.IsWindows())
             {
+                var cmdPath = Path.Combine(_toolsDirectory, "butler.cmd");
+                File.WriteAllText(cmdPath,
+                    """
+                    @echo off
+                    if "%1"=="--version" (
+                      echo butler fake
+                      exit /b 0
+                    )
+                    if "%1"=="push" (
+                      echo %*>"%FAKE_BUTLER_LOG%"
+                      exit /b 0
+                    )
+                    exit /b 0
+                    """);
+            }
+            else
+            {
+                var scriptPath = Path.Combine(_toolsDirectory, "butler");
+                File.WriteAllText(scriptPath,
+                    """
+                    #!/usr/bin/env bash
+                    set -e
+
+                    if [ "$1" = "--version" ]; then
+                      echo "butler fake"
+                      exit 0
+                    fi
+
+                    if [ "$1" = "push" ]; then
+                      printf '%s\n' "$@" > "$FAKE_BUTLER_LOG"
+                      exit 0
+                    fi
+
+                    exit 0
+                    """);
+
                 File.SetUnixFileMode(scriptPath,
                     UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
                     UnixFileMode.GroupRead | UnixFileMode.GroupExecute |
