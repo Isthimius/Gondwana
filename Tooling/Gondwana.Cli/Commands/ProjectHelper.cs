@@ -172,20 +172,26 @@ internal static class ProjectHelper
         return fullZip;
     }
 
+    public static int EnsureBlazorWasmToolsInstalled(bool skipWorkload)
+    {
+        if (skipWorkload)
+            return 0;
+
+        AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
+        var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
+        if (workloadExit != 0)
+            AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
+
+        return workloadExit;
+    }
+
     public static int PublishBlazorProject(string csprojPath, string configuration, bool skipWorkload, out string? wwwroot)
     {
         wwwroot = null;
 
-        if (!skipWorkload)
-        {
-            AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
-            var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
-            if (workloadExit != 0)
-            {
-                AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
-                return workloadExit;
-            }
-        }
+        var workloadExit = EnsureBlazorWasmToolsInstalled(skipWorkload);
+        if (workloadExit != 0)
+            return workloadExit;
 
         AnsiConsole.MarkupLine($"[dim]Publishing in {configuration} configuration...[/]");
         var publishExit = ProcessHelper.RunLive("dotnet", ["publish", csprojPath, "-c", configuration]);
