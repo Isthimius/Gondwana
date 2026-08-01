@@ -68,48 +68,20 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
             return 1;
         }
 
-        // Check if this is a Blazor WebAssembly project
-        var csprojContent = File.ReadAllText(csprojPath!);
-        if (!csprojContent.Contains("Microsoft.NET.Sdk.BlazorWebAssembly", StringComparison.OrdinalIgnoreCase))
+        if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
             AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\". Continuing anyway...[/]");
+            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        string? publishOutput = null;
+        var publishOutput = ProjectHelper.TryGetBlazorPublishRoot(csprojPath!, settings.Configuration, settings.SkipBuild, settings.SkipWorkload, out var exitCode);
+        if (exitCode != 0)
+            return exitCode;
 
-        if (!settings.SkipBuild)
-        {
-            if (!settings.SkipWorkload)
-            {
-                AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
-                var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
-                if (workloadExit != 0)
-                {
-                    AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
-                    return workloadExit;
-                }
-            }
-
-            AnsiConsole.MarkupLine($"[dim]Publishing Blazor WebAssembly project in {settings.Configuration} configuration...[/]");
-            var publishExit = ProcessHelper.RunLive("dotnet", new[]
-            {
-                "publish", csprojPath!, "-c", settings.Configuration
-            });
-
-            if (publishExit != 0)
-            {
-                AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
-                return publishExit;
-            }
-        }
-
-        // Locate the wwwroot directory
-        publishOutput = ProjectHelper.TryLocateBlazorPublishRoot(csprojPath!, settings.Configuration);
         if (publishOutput is null || !Directory.Exists(publishOutput))
         {
-            AnsiConsole.MarkupLine("[red]Blazor publish output not found.[/]");
-            AnsiConsole.MarkupLine("[dim]Expected wwwroot in: bin/<configuration>/net8.0/publish/wwwroot/[/]");
+            AnsiConsole.MarkupLine("[red]Blazor publish wwwroot not found.[/]");
+            AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the Blazor project first.[/]");
             return 1;
         }
 

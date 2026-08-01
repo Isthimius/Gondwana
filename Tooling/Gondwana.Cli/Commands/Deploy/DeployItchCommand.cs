@@ -60,7 +60,7 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
             AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\". Continuing anyway...[/]");
+            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
         var butlerCheck = ProcessHelper.Run("butler", "--version", out var butlerExit);
@@ -71,50 +71,26 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
             return 1;
         }
 
-        if (!settings.SkipBuild)
-        {
-            if (!settings.SkipWorkload)
-            {
-                AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
-                var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
-                if (workloadExit != 0)
-                {
-                    AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
-                    return workloadExit;
-                }
-            }
+        var zipPath = Path.Combine(Path.GetTempPath(), $"gondwana-blazor-{Path.GetRandomFileName()}.zip");
+        var createdZipPath = ProjectHelper.CreateBlazorItchPackage(csprojPath!, settings.Configuration, settings.SkipBuild, settings.SkipWorkload, zipPath, out var exitCode);
+        if (exitCode != 0)
+            return exitCode;
 
-            var publishExit = ProcessHelper.RunLive("dotnet", new[]
-            {
-                "publish", csprojPath!, "-c", settings.Configuration
-            });
-
-            if (publishExit != 0)
-            {
-                AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
-                return publishExit;
-            }
-        }
-
-        var deployDir = ProjectHelper.TryLocateBlazorPublishRoot(csprojPath!, settings.Configuration);
-        if (deployDir is null || !Directory.Exists(deployDir))
+        if (createdZipPath is null)
         {
             AnsiConsole.MarkupLine("[red]Blazor publish wwwroot not found.[/]");
             AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the Blazor project first.[/]");
             return 1;
         }
 
-        var zipPath = Path.Combine(Path.GetTempPath(), $"gondwana-blazor-{Path.GetRandomFileName()}.zip");
-
         try
         {
-            ProjectHelper.CreateZipFromDirectoryContents(deployDir, zipPath);
             AnsiConsole.MarkupLine($"Uploading [bold]{Markup.Escape(settings.ItchGame!)}[/] to channel [bold]{Markup.Escape(settings.ItchChannel)}[/]...");
 
             var pushExit = ProcessHelper.RunLive("butler", new[]
             {
                 "push",
-                zipPath,
+                createdZipPath,
                 $"{settings.ItchGame}:{settings.ItchChannel}"
             });
 

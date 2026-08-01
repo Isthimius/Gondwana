@@ -44,47 +44,22 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
         if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
             AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\". Continuing anyway...[/]");
+            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
         var projectName = Path.GetFileNameWithoutExtension(csprojPath);
         AnsiConsole.MarkupLine($"Packaging [bold]{Markup.Escape(projectName)}[/] for itch.io...");
 
-        if (!settings.SkipBuild)
-        {
-            if (!settings.SkipWorkload)
-            {
-                AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
-                var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
-                if (workloadExit != 0)
-                {
-                    AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
-                    return workloadExit;
-                }
-            }
+        var zipPath = ProjectHelper.CreateBlazorItchPackage(csprojPath!, settings.Configuration, settings.SkipBuild, settings.SkipWorkload, settings.Output, out var exitCode);
+        if (exitCode != 0)
+            return exitCode;
 
-            var publishExit = ProcessHelper.RunLive("dotnet", new[]
-            {
-                "publish", csprojPath!, "-c", settings.Configuration
-            });
-
-            if (publishExit != 0)
-            {
-                AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
-                return publishExit;
-            }
-        }
-
-        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(csprojPath!, settings.Configuration);
-        if (wwwroot is null || !Directory.Exists(wwwroot))
+        if (zipPath is null)
         {
             AnsiConsole.MarkupLine("[red]Blazor publish wwwroot not found.[/]");
             AnsiConsole.MarkupLine("[dim]Run without --skip-build or publish the Blazor project first.[/]");
             return 1;
         }
-
-        var defaultZipPath = Path.Combine(Path.GetDirectoryName(wwwroot)!, $"{projectName}-itch.zip");
-        var zipPath = ProjectHelper.CreateZipFromDirectoryContents(wwwroot, settings.Output ?? defaultZipPath);
 
         AnsiConsole.MarkupLine("[green]Itch package created![/]");
         Console.WriteLine(zipPath);
