@@ -47,7 +47,7 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
             AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        var projectName = Path.GetFileNameWithoutExtension(csprojPath);
+        var projectName = Path.GetFileNameWithoutExtension(csprojPath!);
         AnsiConsole.MarkupLine($"Packaging [bold]{Markup.Escape(projectName)}[/] for itch.io...");
 
         var zipPath = ProjectHelper.CreateBlazorItchPackage(csprojPath!, settings.Configuration, settings.SkipBuild, settings.SkipWorkload, settings.Output, out var exitCode);
