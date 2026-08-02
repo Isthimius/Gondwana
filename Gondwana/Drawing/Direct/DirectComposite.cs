@@ -25,7 +25,7 @@ namespace Gondwana.Drawing.Direct;
 /// relationships are rejected.
 /// </para>
 /// </remarks>
-public class DirectComposite : IDirectCompositeChild
+public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
 {
     private static readonly object _parentSyncRoot = new();
 
@@ -42,10 +42,16 @@ public class DirectComposite : IDirectCompositeChild
     private long _lastTick = HighResTimer.GetCurrentTick();
     private bool _disposed;
 
+    #region events
+
     /// <summary>
     /// Occurs when the composite is being disposed.
     /// </summary>
     public event EventHandler<IDirectDrawable>? Disposing;
+
+    #endregion events
+
+    #region constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectComposite"/> class.
@@ -54,15 +60,12 @@ public class DirectComposite : IDirectCompositeChild
     /// <param name="mode">The coordinate mode used by the composite and all of its children.</param>
     /// <param name="anchor">The composite anchor, in mode-appropriate pixels.</param>
     /// <param name="nickname">An optional diagnostic nickname.</param>
-    public DirectComposite(
-        RenderSurfaceHostBase renderSurfaceHost,
-        DirectDrawingMode mode,
-        PointF anchor = default,
-        string? nickname = null)
+    public DirectComposite(RenderSurfaceHostBase renderSurfaceHost,
+                           DirectDrawingMode mode,
+                           PointF anchor = default,
+                           string? nickname = null)
     {
-        RenderSurfaceHost =
-            renderSurfaceHost ??
-            throw new ArgumentNullException(nameof(renderSurfaceHost));
+        RenderSurfaceHost = renderSurfaceHost ?? throw new ArgumentNullException(nameof(renderSurfaceHost));
 
         Mode = mode;
         _anchor = anchor;
@@ -70,12 +73,14 @@ public class DirectComposite : IDirectCompositeChild
 
         _readOnlyChildren = new ReadOnlyCollection<IDirectCompositeChild>(_children);
 
-        Movement = new MovementController(
-            this,
-            MovementState.ForPixel());
+        Movement = new MovementController(this, MovementState.ForPixel());
 
         DirectDrawingManager.Instance.AddOrReplace(this);
     }
+
+    #endregion constructors
+
+    #region public properties
 
     /// <summary>
     /// Gets the unique identifier of the composite.
@@ -118,6 +123,9 @@ public class DirectComposite : IDirectCompositeChild
     /// <summary>
     /// Gets the children owned by the composite.
     /// </summary>
+    /// <remarks>
+    /// Implements <see cref="IDirectCompositeContainer.Children"/>.
+    /// </remarks>
     public ReadOnlyCollection<IDirectCompositeChild> Children => _readOnlyChildren;
 
     /// <summary>
@@ -155,14 +163,16 @@ public class DirectComposite : IDirectCompositeChild
     /// <summary>
     /// Gets the union of all visible descendants' screen-space bounds.
     /// </summary>
-    public Rectangle ScreenBounds =>
-        GetBounds(static child => child.ScreenBounds);
+    public Rectangle ScreenBounds => GetBounds(static child => child.ScreenBounds);
 
     /// <summary>
     /// Gets the union of all visible descendants' world-space bounds.
     /// </summary>
-    public Rectangle WorldBounds =>
-        GetBounds(static child => child.WorldBounds);
+    public Rectangle WorldBounds => GetBounds(static child => child.WorldBounds);
+    
+    #endregion public properties
+
+    #region public methods
 
     /// <summary>
     /// Gets the current composite anchor.
@@ -193,11 +203,7 @@ public class DirectComposite : IDirectCompositeChild
 
         foreach (IDirectCompositeChild child in _children)
         {
-            Vector2 offset =
-                _localOffsetPx.TryGetValue(child, out Vector2 value)
-                    ? value
-                    : Vector2.Zero;
-
+            Vector2 offset = _localOffsetPx.TryGetValue(child, out Vector2 value) ? value : Vector2.Zero;
             child.SetPosition(anchor + offset);
         }
 
@@ -224,10 +230,9 @@ public class DirectComposite : IDirectCompositeChild
     /// <exception cref="InvalidOperationException">
     /// Thrown when the child already has another parent or would create a cycle.
     /// </exception>
-    public DirectComposite Add(
-        IDirectCompositeChild child,
-        bool keepCurrentOffset = true,
-        Vector2? explicitLocalOffsetPx = null)
+    public virtual DirectComposite Add(IDirectCompositeChild child,
+                                       bool keepCurrentOffset = true,
+                                       Vector2? explicitLocalOffsetPx = null)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(child);
@@ -239,9 +244,7 @@ public class DirectComposite : IDirectCompositeChild
         ValidateParentRelationship(child);
         ValidateAndAssignTarget(child);
 
-        Vector2 offset = keepCurrentOffset
-            ? child.GetPosition() - new Vector2(_anchor.X, _anchor.Y)
-            : explicitLocalOffsetPx ?? Vector2.Zero;
+        Vector2 offset = keepCurrentOffset ? child.GetPosition() - new Vector2(_anchor.X, _anchor.Y) : explicitLocalOffsetPx ?? Vector2.Zero;
 
         RegisterParent(child);
 
@@ -251,8 +254,9 @@ public class DirectComposite : IDirectCompositeChild
             _localOffsetPx[child] = offset;
             child.Disposing += OnChildDisposing;
 
-            child.SetPosition(
-                new Vector2(_anchor.X, _anchor.Y) + offset);
+            child.SetPosition(new Vector2(_anchor.X, _anchor.Y) + offset);
+
+            OnChildAdded(child);
         }
         catch
         {
@@ -272,7 +276,7 @@ public class DirectComposite : IDirectCompositeChild
     /// </summary>
     /// <param name="child">The child to detach.</param>
     /// <returns>The current composite.</returns>
-    public DirectComposite Remove(IDirectCompositeChild child)
+    public virtual DirectComposite Remove(IDirectCompositeChild child)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(child);
@@ -285,6 +289,8 @@ public class DirectComposite : IDirectCompositeChild
         UnregisterParent(child);
         ResetTargetWhenEmpty();
 
+        OnChildRemoved(child);
+
         return this;
     }
 
@@ -292,11 +298,13 @@ public class DirectComposite : IDirectCompositeChild
     /// Removes every child without disposing them.
     /// </summary>
     /// <returns>The current composite.</returns>
-    public DirectComposite Clear()
+    public virtual DirectComposite Clear()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        foreach (IDirectCompositeChild child in _children)
+        IDirectCompositeChild[] children = [.. _children];
+
+        foreach (IDirectCompositeChild child in children)
         {
             child.Disposing -= OnChildDisposing;
             UnregisterParent(child);
@@ -305,6 +313,9 @@ public class DirectComposite : IDirectCompositeChild
         _children.Clear();
         _localOffsetPx.Clear();
         ResetTargetWhenEmpty();
+
+        foreach (IDirectCompositeChild child in children)
+            OnChildRemoved(child);
 
         return this;
     }
@@ -315,9 +326,8 @@ public class DirectComposite : IDirectCompositeChild
     /// <param name="child">The child whose offset should change.</param>
     /// <param name="newLocalOffsetPx">The new offset from the composite anchor.</param>
     /// <returns>The current composite.</returns>
-    public DirectComposite SetLocalOffset(
-        IDirectCompositeChild child,
-        Vector2 newLocalOffsetPx)
+    public DirectComposite SetLocalOffset(IDirectCompositeChild child,
+                                          Vector2 newLocalOffsetPx)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(child);
@@ -327,9 +337,7 @@ public class DirectComposite : IDirectCompositeChild
 
         _localOffsetPx[child] = newLocalOffsetPx;
 
-        child.SetPosition(
-            new Vector2(_anchor.X, _anchor.Y) +
-            newLocalOffsetPx);
+        child.SetPosition(new Vector2(_anchor.X, _anchor.Y) + newLocalOffsetPx);
 
         return this;
     }
@@ -377,9 +385,7 @@ public class DirectComposite : IDirectCompositeChild
     /// <param name="targetOpacity">The target opacity.</param>
     /// <param name="durationSec">The animation duration in seconds.</param>
     /// <returns>The current composite.</returns>
-    public DirectComposite FadeTo(
-        float targetOpacity,
-        float durationSec)
+    public DirectComposite FadeTo(float targetOpacity, float durationSec)
     {
         foreach (IDirectCompositeChild child in _children)
             child.FadeTo(targetOpacity, durationSec);
@@ -392,16 +398,14 @@ public class DirectComposite : IDirectCompositeChild
     /// </summary>
     /// <param name="durationSec">The animation duration in seconds.</param>
     /// <returns>The current composite.</returns>
-    public DirectComposite FadeIn(float durationSec) =>
-        FadeTo(1f, durationSec);
+    public DirectComposite FadeIn(float durationSec) => FadeTo(1f, durationSec);
 
     /// <summary>
     /// Fades every descendant to zero opacity.
     /// </summary>
     /// <param name="durationSec">The animation duration in seconds.</param>
     /// <returns>The current composite.</returns>
-    public DirectComposite FadeOut(float durationSec) =>
-        FadeTo(0f, durationSec);
+    public DirectComposite FadeOut(float durationSec) => FadeTo(0f, durationSec);
 
     /// <summary>
     /// Gets the union of all visible descendants as projected through a view.
@@ -412,8 +416,7 @@ public class DirectComposite : IDirectCompositeChild
     {
         ArgumentNullException.ThrowIfNull(view);
 
-        if (Mode == DirectDrawingMode.View &&
-            !ReferenceEquals(View, view))
+        if (Mode == DirectDrawingMode.View && !ReferenceEquals(View, view))
         {
             return RectangleF.Empty;
         }
@@ -428,8 +431,7 @@ public class DirectComposite : IDirectCompositeChild
             if (!child.Visible)
                 continue;
 
-            RectangleF bounds =
-                child.GetDrawLocationScreen(view);
+            RectangleF bounds = child.GetDrawLocationScreen(view);
 
             if (bounds.IsEmpty)
                 continue;
@@ -453,40 +455,18 @@ public class DirectComposite : IDirectCompositeChild
     /// <summary>
     /// Performs no direct rendering because descendants render independently.
     /// </summary>
-    public void Draw(
-        BackbufferBase backbuffer,
-        RectangleF destRectScreen)
-    {
-    }
-
-    void IDirectCompositeChild.SetIsVisible(bool visible)
-    {
-        SetIsVisible(visible);
-    }
-
-    void IDirectCompositeChild.SetZOrder(int zOrder)
-    {
-        SetZOrder(zOrder);
-    }
-
-    void IDirectCompositeChild.SetOpacity(float opacity)
-    {
-        SetOpacity(opacity);
-    }
-
-    void IDirectCompositeChild.FadeTo(
-        float targetOpacity,
-        float durationSec)
-    {
-        FadeTo(
-            targetOpacity,
-            durationSec);
-    }
+    /// <param name="backbuffer">The backbuffer to draw to (not used).</param>
+    /// <param name="destRectScreen">The destination rectangle in screen coordinates (not used).</param>
+    public void Draw(BackbufferBase backbuffer, RectangleF destRectScreen) { }
 
     /// <summary>
     /// Advances composite movement.
     /// </summary>
     /// <param name="tick">The current engine tick.</param>
+    /// <remarks>
+    /// This method uses the tick to calculate elapsed time and advance the movement controller.
+    /// If the tick is less than or equal to the last processed tick, no update occurs.
+    /// </remarks>
     public void Update(long tick)
     {
         if (_disposed || tick <= _lastTick)
@@ -527,8 +507,70 @@ public class DirectComposite : IDirectCompositeChild
         Disposing = null;
     }
 
-    private Rectangle GetBounds(
-        Func<IDirectCompositeChild, Rectangle> selector)
+    #endregion public methods
+
+    #region IDirectCompositeChild explicit interface implementations
+
+    void IDirectCompositeChild.SetIsVisible(bool visible) => SetIsVisible(visible);
+
+    void IDirectCompositeChild.SetZOrder(int zOrder) => SetZOrder(zOrder);
+
+    void IDirectCompositeChild.SetOpacity(float opacity) => SetOpacity(opacity);
+
+    void IDirectCompositeChild.FadeTo(float targetOpacity, float durationSec) => FadeTo(targetOpacity, durationSec);
+
+    #endregion IDirectCompositeChild explicit interface implementations
+
+    #region IDirectCompositeContainer explicit interface implementations
+
+    IReadOnlyCollection<IDirectCompositeChild> IDirectCompositeContainer.Children => Children;
+
+    IDirectCompositeContainer IDirectCompositeContainer.Add(IDirectCompositeChild child, bool keepCurrentOffset, Vector2? explicitLocalOffsetPx)
+    {
+        return Add(child, keepCurrentOffset, explicitLocalOffsetPx);
+    }
+
+    IDirectCompositeContainer IDirectCompositeContainer.Remove(IDirectCompositeChild child)
+    {
+        return Remove(child);
+    }
+
+    IDirectCompositeContainer IDirectCompositeContainer.Clear()
+    {
+        return Clear();
+    }
+
+    #endregion IDirectCompositeContainer explicit interface implementations
+
+    #region protected hooks
+
+    /// <summary>
+    /// Called after a child has been successfully added.
+    /// </summary>
+    /// <param name="child">The child that was added.</param>
+    /// <remarks>
+    /// Overrides should perform only non-throwing bookkeeping. Derived types that
+    /// need additional validation should override <see cref="Add"/>, perform that
+    /// validation before calling the base implementation, and then allow this
+    /// callback to perform the resulting bookkeeping.
+    /// </remarks>
+    protected virtual void OnChildAdded(IDirectCompositeChild child)
+    {
+    }
+
+    /// <summary>
+    /// Called after a child has been removed from the composite.
+    /// </summary>
+    /// <param name="child">The child that was removed.</param>
+    protected virtual void OnChildRemoved(IDirectCompositeChild child)
+    {
+    }
+
+    #endregion protected hooks
+
+    #region private methods
+
+    private Rectangle GetBounds(Func<IDirectCompositeChild, Rectangle> selector)
     {
         float minX = float.MaxValue;
         float minY = float.MaxValue;
@@ -563,21 +605,14 @@ public class DirectComposite : IDirectCompositeChild
 
     private void ValidateChildIdentity(IDirectCompositeChild child)
     {
-        if (!ReferenceEquals(
-                child.RenderSurfaceHost,
-                RenderSurfaceHost))
+        if (!ReferenceEquals(child.RenderSurfaceHost, RenderSurfaceHost))
         {
-            throw new ArgumentException(
-                "The child must belong to the same RenderSurfaceHost as the composite.",
-                nameof(child));
+            throw new ArgumentException("The child must belong to the same RenderSurfaceHost as the composite.", nameof(child));
         }
 
         if (child.Mode != Mode)
         {
-            throw new ArgumentException(
-                $"The child drawing mode '{child.Mode}' does not match " +
-                $"the composite drawing mode '{Mode}'.",
-                nameof(child));
+            throw new ArgumentException($"The child drawing mode '{child.Mode}' does not match the composite drawing mode '{Mode}'.", nameof(child));
         }
     }
 
@@ -585,23 +620,15 @@ public class DirectComposite : IDirectCompositeChild
     {
         if (Mode == DirectDrawingMode.SceneLayer)
         {
-            SceneLayer childLayer =
-                child.SceneLayer ??
-                throw new ArgumentException(
-                    "A scene-layer child must reference a SceneLayer.",
-                    nameof(child));
+            SceneLayer childLayer = child.SceneLayer ?? throw new ArgumentException("A scene-layer child must reference a SceneLayer.", nameof(child));
 
             if (SceneLayer is null)
             {
                 SceneLayer = childLayer;
             }
-            else if (!ReferenceEquals(
-                         SceneLayer,
-                         childLayer))
+            else if (!ReferenceEquals(SceneLayer, childLayer))
             {
-                throw new ArgumentException(
-                    "All scene-layer children in a composite must reference the same SceneLayer.",
-                    nameof(child));
+                throw new ArgumentException("All scene-layer children in a composite must reference the same SceneLayer.", nameof(child));
             }
 
             return;
@@ -617,9 +644,7 @@ public class DirectComposite : IDirectCompositeChild
                     nameof(child));
             }
 
-            throw new ArgumentException(
-                "A view child must reference a View.",
-                nameof(child));
+            throw new ArgumentException("A view child must reference a View.", nameof(child));
         }
 
         View childView = child.View;
@@ -627,13 +652,9 @@ public class DirectComposite : IDirectCompositeChild
         {
             View = childView;
         }
-        else if (!ReferenceEquals(
-                     View,
-                     childView))
+        else if (!ReferenceEquals(View, childView))
         {
-            throw new ArgumentException(
-                "All view children in a composite must reference the same View.",
-                nameof(child));
+            throw new ArgumentException("All view children in a composite must reference the same View.", nameof(child));
         }
     }
 
@@ -641,12 +662,9 @@ public class DirectComposite : IDirectCompositeChild
     {
         lock (_parentSyncRoot)
         {
-            if (_parents.TryGetValue(
-                    child,
-                    out DirectComposite? existingParent))
+            if (_parents.TryGetValue(child, out DirectComposite? existingParent))
             {
-                throw new InvalidOperationException(
-                    $"The child already belongs to composite '{existingParent.Nickname}'.");
+                throw new InvalidOperationException($"The child already belongs to composite '{existingParent.Nickname}'.");
             }
 
             if (child is not DirectComposite childComposite)
@@ -656,17 +674,12 @@ public class DirectComposite : IDirectCompositeChild
 
             while (ancestor is not null)
             {
-                if (ReferenceEquals(
-                        ancestor,
-                        childComposite))
+                if (ReferenceEquals(ancestor, childComposite))
                 {
-                    throw new InvalidOperationException(
-                        "Adding the child would create a recursive composite cycle.");
+                    throw new InvalidOperationException("Adding the child would create a recursive composite cycle.");
                 }
 
-                _parents.TryGetValue(
-                    ancestor,
-                    out ancestor);
+                _parents.TryGetValue(ancestor, out ancestor);
             }
         }
     }
@@ -681,9 +694,7 @@ public class DirectComposite : IDirectCompositeChild
     {
         lock (_parentSyncRoot)
         {
-            if (_parents.TryGetValue(
-                    child,
-                    out DirectComposite? parent) &&
+            if (_parents.TryGetValue(child, out DirectComposite? parent) &&
                 ReferenceEquals(parent, this))
             {
                 _parents.Remove(child);
@@ -700,18 +711,22 @@ public class DirectComposite : IDirectCompositeChild
         View = null;
     }
 
-    private void OnChildDisposing(
-        object? sender,
-        IDirectDrawable drawing)
+    private void OnChildDisposing(object? sender, IDirectDrawable drawing)
     {
         if (drawing is not IDirectCompositeChild child)
             return;
 
         child.Disposing -= OnChildDisposing;
-        _children.Remove(child);
+
+        if (!_children.Remove(child))
+            return;
+
         _localOffsetPx.Remove(child);
         UnregisterParent(child);
         ResetTargetWhenEmpty();
+
+        OnChildRemoved(child);
     }
 
+    #endregion private methods
 }

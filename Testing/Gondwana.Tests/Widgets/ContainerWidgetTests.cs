@@ -244,7 +244,7 @@ public sealed class ContainerWidgetTests
             WidgetBase widget,
             Vector2 offset)
         {
-            AddChild(
+            Add(
                 widget,
                 offset);
         }
