@@ -75,12 +75,17 @@ public sealed class AboutBox : DialogBox
         {
             if (uriLauncher is null)
             {
-                throw new ArgumentNullException(nameof(uriLauncher), "A URI launcher is required when a hyperlink URI is provided.");
+                throw new ArgumentNullException(nameof(uriLauncher), "A URI launcher is required when configuring the hyperlink.");
             }
 
             if (hyperlinkUri is null)
             {
-                throw new ArgumentNullException(nameof(hyperlinkUri), "A hyperlink URI is required when a URI launcher is provided.");
+                throw new ArgumentNullException(nameof(hyperlinkUri), "A hyperlink URI is required when configuring the hyperlink.");
+            }
+
+            if (!hyperlinkUri.IsAbsoluteUri)
+            {
+                throw new ArgumentException("The hyperlink URI must be absolute.", nameof(hyperlinkUri));
             }
         }
 
