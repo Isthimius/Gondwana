@@ -56,9 +56,11 @@ public sealed class HyperlinkWidget : WidgetBase
         ArgumentNullException.ThrowIfNull(view);
         ArgumentNullException.ThrowIfNull(navigateUri);
 
+        if (!navigateUri.IsAbsoluteUri)
+            throw new ArgumentException("The URI must be absolute.", nameof(navigateUri));
+
         _uriLauncher = uriLauncher;
         NavigateUri = navigateUri;
-
         Label = CreateLabel(renderSurfaceHost, view, bounds, text);
 
         Add(Label);
