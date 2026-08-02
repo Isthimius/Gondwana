@@ -44,10 +44,6 @@ namespace Gondwana.Drawing.Direct;
 /// </remarks>
 public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompositeChild
 {
-    // update timing for fixed-step physics
-    private float _accum;
-    private const float _fixedDt = 1f / 240f;
-    private const int _maxSubsteps = 8;
     private Vector2 _posPx;
 
     /// <summary>
@@ -95,30 +91,47 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
     }
 
     /// <summary>
-    /// Gets the movement controller that manages physics-based position, velocity, and forces for this direct drawing.
+    /// Gets the movement controller responsible for changing this direct drawing's
+    /// position over time.
     /// </summary>
     /// <value>
-    /// A <see cref="MovementController"/> instance providing access to movement state, velocity, acceleration,
-    /// friction, and other physics properties.
+    /// A <see cref="MovementController"/> configured to move this drawing in
+    /// <see cref="MovementSpace.Pixel"/>.
     /// </value>
     /// <remarks>
     /// <para>
-    /// Use the movement controller to:
+    /// The controller supports follow, scripted, and integrated movement:
+    /// </para>
     /// <list type="bullet">
-    /// <item><description>Apply forces and impulses (e.g., <c>Movement.ApplyForce()</c>, <c>Movement.ApplyImpulse()</c>).</description></item>
-    /// <item><description>Set or query velocity (e.g., <c>Movement.Velocity</c>).</description></item>
-    /// <item><description>Configure friction, mass, and other physical properties.</description></item>
-    /// <item><description>Enable or disable movement integration.</description></item>
+    /// <item>
+    /// <description>
+    /// Follow movement continuously tracks a live pixel-space or grid-space target.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// Scripted movement performs authored operations such as
+    /// <c>MoveTo</c>, <c>MoveBy</c>, and <c>MoveToward</c>.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// Integrated movement advances velocity, acceleration, maximum-speed limits,
+    /// and linear damping over time.
+    /// </description>
+    /// </item>
     /// </list>
+    /// <para>
+    /// Movement coordinates represent the drawing's upper-left position. For
+    /// <see cref="DirectDrawingMode.SceneLayer"/> drawings, they are world pixels.
+    /// For <see cref="DirectDrawingMode.View"/> drawings, they are absolute
+    /// screen pixels.
     /// </para>
     /// <para>
-    /// The controller is automatically integrated each frame by <see cref="Update"/> using a fixed timestep
-    /// (240 Hz). Position changes from the controller are synchronized to the drawing's bounds, triggering
-    /// dirty-rectangle updates as needed.
-    /// </para>
-    /// <para>
-    /// The controller operates in pixel space (<see cref="MovementSpace.Pixel"/>), matching the coordinate
-    /// system used by the drawing's bounds (either world or screen coordinates depending on the mode).
+    /// The controller is advanced automatically by <see cref="Update(long)"/>
+    /// once per engine update using the actual elapsed duration. Game code should
+    /// configure movement through this property rather than calling
+    /// <c>AdvanceMovement</c> directly.
     /// </para>
     /// </remarks>
     public MovementController Movement { get; }
@@ -227,9 +240,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
         Opacity = opacity;
     }
 
-    void IDirectCompositeChild.FadeTo(
-        float targetOpacity,
-        float durationSec)
+    void IDirectCompositeChild.FadeTo(float targetOpacity, float durationSec)
     {
         base.FadeTo(
             targetOpacity,
@@ -237,34 +248,20 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
     }
 
     /// <summary>
-    /// Performs per-frame update logic, including fixed-timestep physics integration for movement.
+    /// Advances this direct drawing's movement using the elapsed time since
+    /// its previous update, then performs the standard direct-drawing update logic.
     /// </summary>
-    /// <param name="tick">The current engine tick value from <see cref="HighResTimer"/>.</param>
+    /// <param name="tick">
+    /// The current engine tick value supplied by the direct-drawing update cycle.
+    /// </param>
     /// <remarks>
     /// <para>
-    /// This method overrides <see cref="DirectDrawingBase.Update"/> to add physics integration via
-    /// the <see cref="Movement"/> controller. It uses a fixed-timestep accumulator pattern to ensure
-    /// stable, deterministic movement regardless of frame rate variations.
+    /// Movement is advanced once per engine update using the actual elapsed duration
+    /// calculated from <see cref="_lastTick"/> and <paramref name="tick"/>.
     /// </para>
     /// <para>
-    /// The update process works as follows:
-    /// <list type="number">
-    /// <item><description>Calculates the elapsed time since the last frame, clamping large deltas (>66ms) to prevent instability during frame rate drops, alt-tab, or debugger pauses.</description></item>
-    /// <item><description>Accumulates the frame delta time and subdivides it into fixed timesteps of ~4.16ms (240 Hz).</description></item>
-    /// <item><description>Integrates movement physics at the fixed timestep for up to 8 substeps per frame to prevent spiral of death.</description></item>
-    /// <item><description>If the maximum substep limit is reached, discards remaining accumulated time to maintain real-time responsiveness.</description></item>
-    /// <item><description>Calls <c>base.Update(tick)</c> to perform fade and reveal animations from <see cref="DirectDrawingBase"/>.</description></item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// The fixed timestep ensures that physics simulations produce consistent, reproducible results across
-    /// different hardware and frame rates. The substep limit (8 steps) prevents performance degradation
-    /// when the frame rate drops significantly, trading some physics accuracy for real-time responsiveness.
-    /// </para>
-    /// <para>
-    /// Override this method in derived classes to add custom per-frame logic (such as AI updates or
-    /// animation state changes). Always call <c>base.Update(tick)</c> to preserve movement integration
-    /// and fade/reveal animations.
+    /// The base implementation is called afterward to advance inherited behavior,
+    /// including fade and reveal animations, and to record the current tick.
     /// </para>
     /// </remarks>
     public override void Update(long tick)
@@ -272,26 +269,10 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
         if (tick <= _lastTick)
             return;
 
-        // 1) clamp giant stalls (alt-tab, debugger break, GC, etc.)
-        const float MaxFrameDt = 1f / 15f; // ~66ms
-        float dt = MathF.Min(HighResTimer.GetDuration(_lastTick, tick), MaxFrameDt);
+        float dt =
+            HighResTimer.GetDuration(_lastTick, tick);
 
-        // 2) accumulate time
-        _accum += dt;
-
-        int steps = 0;
-        while (_accum >= _fixedDt && steps < _maxSubsteps)
-        {
-            // Always integrate at the fixed step (not dt!)
-            Movement.AdvanceMovement(_fixedDt);
-
-            _accum -= _fixedDt;
-            steps++;
-        }
-
-        // 3) if we hit the cap, drop remainder so we don't spiral
-        if (steps == _maxSubsteps)
-            _accum = 0f;
+        Movement.AdvanceMovement(dt);
 
         base.Update(tick);
     }
