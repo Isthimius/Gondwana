@@ -677,19 +677,7 @@ public class TextBlock : DirectDrawingMovableBase
         var canvas = backbuffer.Canvas;
         var rect = destRectScreen.ToSKRect();
 
-        float zoom;
-
-        if (Mode == DirectDrawingMode.SceneLayer)
-        {
-            // SceneLayer-mode has View == null by design; use the ambient render context.
-            var contextZoom = RenderContext.Current?.ViewportZoom ?? 1f;
-            zoom = (contextZoom > 0f) ? contextZoom : 1f;
-        }
-        else
-        {
-            // View-mode is screen/UI; do not compensate for camera zoom.
-            zoom = 1f;
-        }
+        float zoom = ResolveTextScale(Mode, RenderContext.Current?.ViewportZoom ?? 1f);
 
         // Scale "pixel-like" adornments with zoom so text behaves like other world-space drawables.
         float hPad = HorizontalPadding * zoom;
