@@ -17,16 +17,25 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
     /// <returns>The pixel position of the tile's anchor point.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        int W = sceneLayer.TileWidth;
-        int H = sceneLayer.TileHeight;
-        int col = (int)Math.Round(gp.X);
-        int row = (int)Math.Round(gp.Y);
+        int width = sceneLayer.TileWidth;
+        int height = sceneLayer.TileHeight;
+
+        // The layout uses even-q offset coordinates. Interpolate the
+        // staggered Y offset between the surrounding integer columns.
+        int baseColumn = (int)MathF.Floor(gp.X);
+        float columnProgress = gp.X - baseColumn;
+
+        // Preserve the existing integer-division behavior for odd tile heights.
+        float halfHeight = height / 2;
+        float currentColumnOffsetY = (baseColumn & 1) == 0 ? 0f : halfHeight;
+        float nextColumnOffsetY = ((baseColumn + 1) & 1) == 0 ? 0f : halfHeight;
+        float offsetY = currentColumnOffsetY + ((nextColumnOffsetY - currentColumnOffsetY) * columnProgress);
 
         var origin = sceneLayer.OriginPx;
-        int x = (int)Math.Floor(-origin.X + col * (W * 0.75f));
-        int y = (int)Math.Floor(-origin.Y + row * (double)H + ((col & 1) == 0 ? 0 : H / 2));
+        float x = -origin.X + (gp.X * width * 0.75f);
+        float y = -origin.Y + (gp.Y * height) + offsetY;
 
-        return new Point(x, y);
+        return new Point((int)MathF.Floor(x), (int)MathF.Floor(y));
     }
 
     /// <summary>
