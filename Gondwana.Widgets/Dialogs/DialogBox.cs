@@ -58,7 +58,7 @@ public abstract class DialogBox : DraggableContainerWidget
         if (showCloseButton)
         {
             CloseButton = CreateCloseButton(renderSurfaceHost, view, bounds);
-            AddChild(CloseButton, GetCloseButtonOffset(bounds.Size));
+            Add(CloseButton, GetCloseButtonOffset(bounds.Size));
 
             CloseButton.Clicked += OnCloseButtonClicked;
         }
@@ -92,7 +92,7 @@ public abstract class DialogBox : DraggableContainerWidget
         if (showCloseButton)
         {
             CloseButton = CreateCloseButton(renderSurfaceHost, sceneLayer, bounds);
-            AddChild(CloseButton, GetCloseButtonOffset(bounds.Size));
+            Add(CloseButton, GetCloseButtonOffset(bounds.Size));
 
             CloseButton.Clicked += OnCloseButtonClicked;
         }

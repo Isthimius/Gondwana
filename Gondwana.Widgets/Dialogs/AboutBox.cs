@@ -34,6 +34,15 @@ public sealed class AboutBox : DialogBox
     /// Optional dialog bounds. When omitted, the dialog is centered in the view.
     /// </param>
     /// <param name="nickname">An optional diagnostic nickname.</param>
+    /// <param name="uriLauncher">
+    /// The optional platform service used to open the hyperlink URI.
+    /// </param>
+    /// <param name="hyperlinkUri">
+    /// The optional external URI displayed by the dialog.
+    /// </param>
+    /// <param name="hyperlinkText">
+    /// The optional hyperlink display text. When omitted, the URI is displayed.
+    /// </param>
     public AboutBox(RenderSurfaceHostBase renderSurfaceHost,
                     View view,
                     string applicationName,
@@ -42,7 +51,10 @@ public sealed class AboutBox : DialogBox
                     string? copyright = null,
                     SKImage? logo = null,
                     Rectangle? bounds = null,
-                    string? nickname = null)
+                    string? nickname = null,
+                    IExternalUriLauncher? uriLauncher = null,
+                    Uri? hyperlinkUri = null,
+                    string? hyperlinkText = null)
         : base(renderSurfaceHost,
                view,
                ResolveBounds(view, bounds),
@@ -54,6 +66,23 @@ public sealed class AboutBox : DialogBox
         Version = version;
         Description = description;
         Copyright = copyright;
+
+        bool hasHyperlinkConfiguration = uriLauncher is not null ||
+                                         hyperlinkUri is not null ||
+                                         hyperlinkText is not null;
+
+        if (hasHyperlinkConfiguration)
+        {
+            if (uriLauncher is null)
+            {
+                throw new ArgumentNullException(nameof(uriLauncher), "A URI launcher is required when a hyperlink URI is provided.");
+            }
+
+            if (hyperlinkUri is null)
+            {
+                throw new ArgumentNullException(nameof(hyperlinkUri), "A hyperlink URI is required when a URI launcher is provided.");
+            }
+        }
 
         Rectangle resolvedBounds = ResolveBounds(view, bounds);
 
@@ -103,6 +132,26 @@ public sealed class AboutBox : DialogBox
         VersionText.ZOrder = 10_002;
         Add(VersionText);
 
+        if (uriLauncher is not null && hyperlinkUri is not null)
+        {
+            Rectangle hyperlinkBounds = new(contentLeft,
+                                            contentTop + 74,
+                                            resolvedBounds.Right - contentRightPadding - contentLeft,
+                                            28);
+
+            Hyperlink = new HyperlinkWidget(uriLauncher,
+                                            renderSurfaceHost,
+                                            view,
+                                            hyperlinkBounds,
+                                            hyperlinkText ?? hyperlinkUri.ToString(),
+                                            hyperlinkUri,
+                                            $"{Nickname}.hyperlink");
+
+            Hyperlink.Label.ZOrder = 10_002;
+            Add(Hyperlink, new Vector2(hyperlinkBounds.Left - resolvedBounds.Left,
+                                                   hyperlinkBounds.Top - resolvedBounds.Top));
+        }
+
         var detailsTextScreenBounds = new Rectangle(resolvedBounds.Left + 24, contentTop + 126, resolvedBounds.Width - 48, resolvedBounds.Height - 222);
         string detailText = string.Join(Environment.NewLine + Environment.NewLine,
                                         new[] { description, copyright }
@@ -123,7 +172,7 @@ public sealed class AboutBox : DialogBox
         Rectangle okBounds = new(resolvedBounds.Right - 116, resolvedBounds.Bottom - 54, 92, 34);
         OkButton = new ButtonWidget(renderSurfaceHost, view, okBounds, "OK", $"{Nickname}.ok");
 
-        AddChild(OkButton, new Vector2(resolvedBounds.Width - 116, resolvedBounds.Height - 54));
+        Add(OkButton, new Vector2(resolvedBounds.Width - 116, resolvedBounds.Height - 54));
 
         OkButton.SetButtonZOrder(10_003);
         OkButton.Clicked += OnOkClicked;
@@ -177,6 +226,11 @@ public sealed class AboutBox : DialogBox
     /// Gets the OK button.
     /// </summary>
     public ButtonWidget OkButton { get; }
+
+    /// <summary>
+    /// Gets the optional external hyperlink displayed by the dialog.
+    /// </summary>
+    public HyperlinkWidget? Hyperlink { get; }
 
     #endregion public properties
 
