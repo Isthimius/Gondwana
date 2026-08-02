@@ -25,64 +25,31 @@ internal sealed class RunBlazorCommand : Command<RunBlazorCommand.Settings>
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
-        var projectPath = settings.Project ?? Directory.GetCurrentDirectory();
-
-        string? csprojPath;
-        if (File.Exists(projectPath) && projectPath.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+        if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))
         {
-            csprojPath = projectPath;
-        }
-        else if (Directory.Exists(projectPath))
-        {
-            var found = Directory.GetFiles(projectPath, "*.csproj");
-            if (found.Length == 0)
-            {
-                AnsiConsole.MarkupLine("[red]No .csproj found in the specified directory.[/]");
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            if (error!.Contains("No .csproj found", StringComparison.Ordinal))
                 AnsiConsole.MarkupLine("[dim]Pass -p|--project <path-to.csproj> to specify the project.[/]");
-                return 1;
-            }
-            if (found.Length > 1)
-            {
-                AnsiConsole.MarkupLine("[red]Multiple .csproj files found. Pass -p|--project <path-to.csproj> to specify one.[/]");
-                return 1;
-            }
-            csprojPath = found[0];
-        }
-        else
-        {
-            AnsiConsole.MarkupLine($"[red]Project path not found: {Markup.Escape(projectPath)}[/]");
             return 1;
         }
 
-        // Check if this is a Blazor WebAssembly project
-        var csprojContent = File.ReadAllText(csprojPath);
-        if (!csprojContent.Contains("Microsoft.NET.Sdk.BlazorWebAssembly", StringComparison.OrdinalIgnoreCase) &&
-            !csprojContent.Contains("Gondwana.Blazor", StringComparison.OrdinalIgnoreCase))
+        if (!ProjectHelper.IsBlazorWebAssemblyProject(csprojPath!))
         {
             AnsiConsole.MarkupLine("[yellow]Warning:[/] This project does not appear to be a Blazor WebAssembly project.");
-            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or Gondwana.Blazor package reference. Continuing anyway...[/]");
+            AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        AnsiConsole.MarkupLine($"Running [bold]{Markup.Escape(Path.GetFileNameWithoutExtension(csprojPath))}[/] in the browser...");
+        AnsiConsole.MarkupLine($"Running [bold]{Markup.Escape(Path.GetFileNameWithoutExtension(csprojPath!))}[/] in the browser...");
 
-        // 1. Install wasm-tools workload
-        if (!settings.SkipWorkload)
-        {
-            AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
-            var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
-            if (workloadExit != 0)
-            {
-                AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
-                return workloadExit;
-            }
-        }
+        var workloadExit = ProjectHelper.EnsureBlazorWasmToolsInstalled(settings.SkipWorkload);
+        if (workloadExit != 0)
+            return workloadExit;
 
-        // 2. Run the Blazor dev server and open the browser once it is ready
         AnsiConsole.MarkupLine("[dim]Starting Blazor WebAssembly dev server...[/]");
         var runArgs = new List<string>
         {
             "run",
-            "--project", csprojPath,
+            "--project", csprojPath!,
             "-c", settings.Configuration,
         };
 
