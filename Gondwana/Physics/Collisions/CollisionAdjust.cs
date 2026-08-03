@@ -4,37 +4,36 @@ using System.Drawing;
 namespace Gondwana.Physics.Collisions;
 
 /// <summary>
-/// Pixel adjustments applied to visual bounds to produce a collision rectangle.
+/// Per-edge inset amounts applied to visual bounds to produce a collision rectangle.
 /// </summary>
 /// <remarks>
 /// <para>
-/// The top and left values move those edges relative to the visual rectangle.
-/// The bottom and right values adjust the rectangle's far edges. The same
-/// collision calculation is preserved.
+/// Positive values move the corresponding edge inward toward the center of the
+/// rectangle. Negative values move the edge outward, expanding the rectangle.
 /// </para>
 /// </remarks>
 public struct CollisionAdjust : IEquatable<CollisionAdjust>
 {
     /// <summary>
-    /// Gets or sets the pixel adjustment applied to the top edge.
+    /// Gets or sets the number of pixels by which to inset the top edge.
     /// </summary>
     [JsonProperty]
     public int Top { get; set; }
 
     /// <summary>
-    /// Gets or sets the pixel adjustment applied to the bottom edge.
+    /// Gets or sets the number of pixels by which to inset the bottom edge.
     /// </summary>
     [JsonProperty]
     public int Bottom { get; set; }
 
     /// <summary>
-    /// Gets or sets the pixel adjustment applied to the left edge.
+    /// Gets or sets the number of pixels by which to inset the left edge.
     /// </summary>
     [JsonProperty]
     public int Left { get; set; }
 
     /// <summary>
-    /// Gets or sets the pixel adjustment applied to the right edge.
+    /// Gets or sets the number of pixels by which to inset the right edge.
     /// </summary>
     [JsonProperty]
     public int Right { get; set; }
@@ -47,10 +46,10 @@ public struct CollisionAdjust : IEquatable<CollisionAdjust>
     /// <summary>
     /// Initializes a new instance of the <see cref="CollisionAdjust"/> struct.
     /// </summary>
-    /// <param name="top">The pixel adjustment for the top edge.</param>
-    /// <param name="bottom">The pixel adjustment for the bottom edge.</param>
-    /// <param name="left">The pixel adjustment for the left edge.</param>
-    /// <param name="right">The pixel adjustment for the right edge.</param>
+    /// <param name="top">The signed inset amount for the top edge.</param>
+    /// <param name="bottom">The signed inset amount for the bottom edge.</param>
+    /// <param name="left">The signed inset amount for the left edge.</param>
+    /// <param name="right">The signed inset amount for the right edge.</param>
     public CollisionAdjust(int top, int bottom, int left, int right)
     {
         Top = top;
@@ -66,11 +65,11 @@ public struct CollisionAdjust : IEquatable<CollisionAdjust>
     /// <returns>The derived collision rectangle.</returns>
     public readonly Rectangle ApplyTo(Rectangle rectangle)
     {
-        rectangle.Y += Top;
-        rectangle.X += Left;
-        rectangle.Height += Bottom - Top;
-        rectangle.Width += Right - Left;
-        return rectangle;
+        return Rectangle.FromLTRB(
+            rectangle.Left + Left,
+            rectangle.Top + Top,
+            rectangle.Right - Right,
+            rectangle.Bottom - Bottom);
     }
 
     /// <inheritdoc/>
