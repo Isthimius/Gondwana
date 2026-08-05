@@ -303,8 +303,14 @@ public sealed class MainForm : Form
 
     private static void ApplyDarkColors(Control control)
     {
-        control.BackColor = DarkSurface;
-        control.ForeColor = DarkForeground;
+        if (control.BackColor == default || control.BackColor == SystemColors.Control)
+            control.BackColor = DarkSurface;
+
+        if (control.ForeColor == default || control.ForeColor == SystemColors.ControlText)
+            control.ForeColor = DarkForeground;
+
+        foreach (Control child in control.Controls)
+            ApplyDarkColors(child);
     }
 }
 
