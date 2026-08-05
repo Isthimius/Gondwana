@@ -189,6 +189,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
                                 bool immediate = false)
     {
         IsOpen = false;
+        IsPointerInputEnabled = false;
         SetEntryInputEnabled(false);
         SetSelectedIndex(-1);
         CancelPendingClose();
