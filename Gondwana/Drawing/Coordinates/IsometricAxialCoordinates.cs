@@ -4,12 +4,10 @@ using Gondwana.Scenes;
 namespace Gondwana.Drawing.Coordinates;
 
 /// <summary>
-/// Diagonal-Isometric (Square Matrix, **no 45° rotation**)
-/// - World/layout is axis-aligned (rectangular bounds, no dx/dy mixing)
-/// - Each grid cell renders a diamond inside its W×H footprint
-/// - Column centers advance by (W/2, 0); row centers by (0, H/2)
-///   (i.e., tight diamond packing without rotating the world axes)
-/// Pixel anchor = TOP vertex of the diamond
+/// Axial isometric projection using a horizontal column axis and a diagonal row axis.
+/// Each grid cell renders a diamond inside its W×H footprint. Column anchors advance
+/// by (W, 0), while row anchors advance by (W/2, H/2), packing the diamonds edge-to-edge.
+/// The pixel anchor is the top vertex of the diamond.
 /// </summary>
 internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
 {
@@ -35,13 +33,8 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        // gp is already in grid-space.
-        float gx = gp.X;
-        float gy = gp.Y;
-
-        // STEP BY FULL TILE SIZE (W, H)
-        float px = -originX + gx * W;
-        float py = -originY + gy * H;
+        float px = -originX + gp.X * W + gp.Y * halfW;
+        float py = -originY + gp.Y * halfH;
 
         return new Point((int)Math.Floor(px), (int)Math.Floor(py));
     }
@@ -59,9 +52,8 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
 
-        // Inverse for full-tile stepping
-        float gxF = (pixelPt.X + originX) / W;
-        float gyF = (pixelPt.Y + originY) / H;
+        float gyF = (pixelPt.Y + originY) / halfH;
+        float gxF = (pixelPt.X + originX - gyF * halfW) / W;
 
         return new PointF(gxF, gyF);
     }

@@ -20,7 +20,7 @@ namespace Gondwana.Drawing.Coordinates;
 /// using transparency in the unused corners of the tile's bounding box.
 /// </para>
 /// </remarks>
-internal sealed class ObliqueCoordinates : ISceneLayerCoordinates
+internal sealed class ObliqueRightCoordinates : ISceneLayerCoordinates
 {
     /// <summary>
     /// Gets the anchor pixel position for a tile at the specified scene layer coordinates.

@@ -36,6 +36,12 @@ public enum CoordinateSystemTypes
 
     /// <summary>
     /// Oblique projection using a right-receding, sheared square lattice.
+    /// Numeric value 5 is retained for compatibility with existing serialized layers.
     /// </summary>
-    Oblique = 5
+    ObliqueRight = 5,
+
+    /// <summary>
+    /// Oblique projection using a left-receding, sheared square lattice.
+    /// </summary>
+    ObliqueLeft = 6
 }
