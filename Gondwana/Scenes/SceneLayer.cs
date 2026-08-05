@@ -219,7 +219,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <item><description><see cref="CoordinateSystemTypes.IsometricAxial"/> - Axial isometric projection</description></item>
     /// <item><description><see cref="CoordinateSystemTypes.HexAxialFlatTop"/> - Hexagonal grid with flat-top orientation</description></item>
     /// <item><description><see cref="CoordinateSystemTypes.HexAxialPointedTop"/> - Hexagonal grid with pointed-top orientation</description></item>
-    /// <item><description><see cref="CoordinateSystemTypes.Oblique"/> - Oblique projection</description></item>
+    /// <item><description><see cref="CoordinateSystemTypes.ObliqueRight"/> - Right-receding oblique projection</description></item>
+    /// <item><description><see cref="CoordinateSystemTypes.ObliqueLeft"/> - Left-receding oblique projection</description></item>
     /// </list>
     /// <para>
     /// Changing the coordinate system after layer creation is supported but may produce unexpected
@@ -238,7 +239,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 IsometricAxialCoordinates => CoordinateSystemTypes.IsometricAxial,
                 HexAxialFlatTopCoordinates => CoordinateSystemTypes.HexAxialFlatTop,
                 HexAxialPointedTop => CoordinateSystemTypes.HexAxialPointedTop,
-                ObliqueCoordinates => CoordinateSystemTypes.Oblique,
+                ObliqueRightCoordinates => CoordinateSystemTypes.ObliqueRight,
+                ObliqueLeftCoordinates => CoordinateSystemTypes.ObliqueLeft,
                 _ => throw new InvalidOperationException($"Unknown coordinate system type: {CoordinateSystem.GetType().Name}")
             };
         }
@@ -251,7 +253,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 CoordinateSystemTypes.IsometricAxial => new IsometricAxialCoordinates(),
                 CoordinateSystemTypes.HexAxialFlatTop => new HexAxialFlatTopCoordinates(),
                 CoordinateSystemTypes.HexAxialPointedTop => new HexAxialPointedTop(),
-                CoordinateSystemTypes.Oblique => new ObliqueCoordinates(),
+                CoordinateSystemTypes.ObliqueRight => new ObliqueRightCoordinates(),
+                CoordinateSystemTypes.ObliqueLeft => new ObliqueLeftCoordinates(),
                 _ => throw new ArgumentOutOfRangeException(nameof(value), $"Unknown coordinate system type: {value}")
             };
         }
@@ -660,9 +663,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     }
 
     /// <summary>
-    /// Converts a grid coordinate (col,row) into the world-space pixel anchor
-    /// where that tile begins. This returns the tile's top-left anchor in world
-    /// pixels, not the tile center.
+    /// Converts a grid coordinate (col,row) into the projection-defined world-space
+    /// pixel anchor for that tile. Rectangular and oblique systems use the top-left
+    /// corner of the image bounds; isometric systems use the diamond's top vertex.
     /// </summary>
     public PointF GridToWorldPx(PointF grid) => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
 

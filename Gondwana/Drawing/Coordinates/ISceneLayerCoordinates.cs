@@ -12,15 +12,15 @@ namespace Gondwana.Drawing.Coordinates;
 internal interface ISceneLayerCoordinates
 {
     /// <summary>
-    /// Returns the world-space pixel position of the *top-left anchor* of the tile
-    /// at the given grid coordinate (col,row) in this SceneLayer.
+    /// Returns the projection-defined world-space pixel anchor of the tile at the
+    /// given grid coordinate (col,row) in this SceneLayer.
     /// 
     /// This is the starting pixel used to draw the tile’s image or polygon.
     /// Every tile's shape (square, isometric, hex) is positioned by taking this
     /// anchor pixel and adding its local geometry.
     /// 
-    /// In other words: given grid coordinates, this tells you exactly where on
-    /// the world the tile begins.
+    /// For rectangular and oblique tiles this is the top-left corner of the image
+    /// bounding box. For isometric diamonds it is the top vertex.
     /// </summary>
     Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF layerPoint);
 
