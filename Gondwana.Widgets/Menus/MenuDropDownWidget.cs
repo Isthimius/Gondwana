@@ -157,6 +157,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
         if (!Visible)
             Show();
 
+        IsPointerInputEnabled = true;
         IsOpen = true;
         SetEntryInputEnabled(true);
 
