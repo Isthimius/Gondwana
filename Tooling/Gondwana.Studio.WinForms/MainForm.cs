@@ -39,6 +39,7 @@ public sealed class MainForm : Form
         _outputVm = new OutputViewModel();
         _dialogService = new WinFormsDialogService(this);
         _pluginHost = new StudioPluginHost(msg => _outputVm.Log(msg));
+        _dockTheme = new VS2015DarkTheme();
 
         Text = "Gondwana Studio";
         Width = 1280;
@@ -52,11 +53,10 @@ public sealed class MainForm : Form
 
         _directoryPanel = new DirectoryPanel(_directoryVm) { Dock = DockStyle.Fill };
         _directoryPanel.NodeActivated += OnNodeActivated;
-        ApplyDarkColors(_directoryPanel);
+        ApplyStudioTheme(_directoryPanel);
         _outputPanel = new OutputPanel(_outputVm) { Dock = DockStyle.Fill };
-        ApplyDarkColors(_outputPanel);
+        ApplyStudioTheme(_outputPanel);
 
-        _dockTheme = new VS2015DarkTheme();
         _dockPanel = new DockPanel
         {
             Dock = DockStyle.Fill,
@@ -244,7 +244,7 @@ public sealed class MainForm : Form
             return;
         }
 
-        ApplyDarkColors(content);
+        ApplyStudioTheme(content);
 
         var doc = new StudioDockContent(title, content, closeable: true, onClosed: () => _openDocuments.Remove(key))
         {
@@ -283,10 +283,34 @@ public sealed class MainForm : Form
         outputWindow.Show(_dockPanel, DockState.DockBottom);
     }
 
+    private void ApplyStudioTheme(Control control)
+    {
+        ApplyDarkColors(control);
+        ApplyDockTheme(control);
+    }
+
+    private void ApplyDockTheme(Control control)
+    {
+        if (control is ToolStrip toolStrip)
+            _dockTheme.ApplyTo(toolStrip);
+
+        if (control.ContextMenuStrip is { } contextMenuStrip)
+            _dockTheme.ApplyTo(contextMenuStrip);
+
+        foreach (Control child in control.Controls)
+            ApplyDockTheme(child);
+    }
+
     private static void ApplyDarkColors(Control control)
     {
-        control.BackColor = DarkSurface;
-        control.ForeColor = DarkForeground;
+        if (control.BackColor == default || control.BackColor == SystemColors.Control)
+            control.BackColor = DarkSurface;
+
+        if (control.ForeColor == default || control.ForeColor == SystemColors.ControlText)
+            control.ForeColor = DarkForeground;
+
+        foreach (Control child in control.Controls)
+            ApplyDarkColors(child);
     }
 }
 
