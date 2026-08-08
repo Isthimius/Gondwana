@@ -93,6 +93,14 @@ public sealed class TilesheetGtsParityTests : IDisposable
         Assert.Equal(
             originalRegion.GetFrameCollisionAdjust(1, 0),
             restoredRegion.GetFrameCollisionAdjust(1, 0));
+        Assert.False(
+            restoredRegion.TryGetFrameCollisionAdjustOverride(0, 0, out _));
+        Assert.True(
+            restoredRegion.TryGetFrameCollisionAdjustOverride(
+                1,
+                0,
+                out var restoredFrameAdjust));
+        Assert.Equal(frameAdjust, restoredFrameAdjust);
     }
 
     /// <summary>

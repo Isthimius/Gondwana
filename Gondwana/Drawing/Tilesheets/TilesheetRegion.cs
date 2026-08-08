@@ -107,8 +107,8 @@ public sealed class TilesheetRegion : IDisposable
     public Spacing Overhang { get; set; } = Spacing.None;
 
     /// <summary>
-    /// Gets or sets the region-level collision adjustment. Assigning this value
-    /// overwrites every frame adjustment in the region and updates cached metadata.
+    /// Gets or sets the collision adjustment inherited by frames that do not have
+    /// an explicit frame-level override.
     /// </summary>
     public CollisionAdjust CollisionAdjust
     {
@@ -117,8 +117,7 @@ public sealed class TilesheetRegion : IDisposable
         {
             ThrowIfDisposed();
             _collisionAdjust = value;
-            _frameCollisionAdjustments.Clear();
-            ApplyCollisionAdjustToCache(value);
+            ApplyDefaultCollisionAdjustToCache();
         }
     }
 
@@ -230,6 +229,34 @@ public sealed class TilesheetRegion : IDisposable
     }
 
     /// <summary>
+    /// Attempts to get the explicit collision adjustment assigned to one frame.
+    /// </summary>
+    /// <remarks>
+    /// A <see langword="false"/> result means the frame inherits
+    /// <see cref="CollisionAdjust"/>.
+    /// </remarks>
+    public bool TryGetFrameCollisionAdjustOverride(
+        int x,
+        int y,
+        out CollisionAdjust collisionAdjust)
+    {
+        ThrowIfDisposed();
+
+        if (_tileCache is null)
+            BuildTileCache();
+
+        if (!IsFrameCoordinateValid(x, y))
+        {
+            collisionAdjust = Gondwana.Physics.Collisions.CollisionAdjust.None;
+            return false;
+        }
+
+        return _frameCollisionAdjustments.TryGetValue(
+            (x, y),
+            out collisionAdjust);
+    }
+
+    /// <summary>
     /// Sets the collision adjustment for one frame and updates its cache entry.
     /// </summary>
     public void SetFrameCollisionAdjust(int x, int y, CollisionAdjust collisionAdjust)
@@ -246,14 +273,41 @@ public sealed class TilesheetRegion : IDisposable
                 $"Frame coordinates ({x}, {y}) are outside region '{Name}'.");
         }
 
-        var key = (x, y);
-        if (collisionAdjust == _collisionAdjust)
-            _frameCollisionAdjustments.Remove(key);
-        else
-            _frameCollisionAdjustments[key] = collisionAdjust;
+        _frameCollisionAdjustments[(x, y)] = collisionAdjust;
 
         if (_tileCache![x, y] is { } slice)
             _tileCache[x, y] = slice.WithCollisionAdjust(collisionAdjust);
+    }
+
+    /// <summary>
+    /// Removes a frame-level collision adjustment so the frame once again inherits
+    /// <see cref="CollisionAdjust"/>.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> when an explicit frame override was removed;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool ClearFrameCollisionAdjustOverride(int x, int y)
+    {
+        ThrowIfDisposed();
+
+        if (_tileCache is null)
+            BuildTileCache();
+
+        if (!IsFrameCoordinateValid(x, y))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(x),
+                $"Frame coordinates ({x}, {y}) are outside region '{Name}'.");
+        }
+
+        if (!_frameCollisionAdjustments.Remove((x, y)))
+            return false;
+
+        if (_tileCache![x, y] is { } slice)
+            _tileCache[x, y] = slice.WithCollisionAdjust(_collisionAdjust);
+
+        return true;
     }
 
     /// <summary>
@@ -398,7 +452,7 @@ public sealed class TilesheetRegion : IDisposable
         (uint)x < (uint)_tileCache.GetLength(0) &&
         (uint)y < (uint)_tileCache.GetLength(1);
 
-    private void ApplyCollisionAdjustToCache(CollisionAdjust collisionAdjust)
+    private void ApplyDefaultCollisionAdjustToCache()
     {
         if (_tileCache is null)
             return;
@@ -407,8 +461,11 @@ public sealed class TilesheetRegion : IDisposable
         {
             for (int x = 0; x < _tileCache.GetLength(0); x++)
             {
-                if (_tileCache[x, y] is { } slice)
-                    _tileCache[x, y] = slice.WithCollisionAdjust(collisionAdjust);
+                if (!_frameCollisionAdjustments.ContainsKey((x, y)) &&
+                    _tileCache[x, y] is { } slice)
+                {
+                    _tileCache[x, y] = slice.WithCollisionAdjust(_collisionAdjust);
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Physics.Collisions;
 using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Tilesheets.GTS;
@@ -227,17 +228,25 @@ public static class TilesheetDefinitionSerializer
             CollisionAdjust = region.CollisionAdjust
         };
 
-        // Persist every effective value. This keeps the format deterministic and means
-        // deserialization never has to infer whether a frame used an inherited value.
+        // Persist every frame coordinate while retaining the distinction between an
+        // inherited region default (null) and an explicit frame-level override.
         for (int y = 0; y < region.Rows; y++)
         {
             for (int x = 0; x < region.Columns; x++)
             {
+                CollisionAdjust? collisionAdjust =
+                    region.TryGetFrameCollisionAdjustOverride(
+                        x,
+                        y,
+                        out var frameCollisionAdjust)
+                    ? frameCollisionAdjust
+                    : null;
+
                 definition.Frames.Add(new TilesheetFrameDefinition
                 {
                     XTile = x,
                     YTile = y,
-                    CollisionAdjust = region.GetFrameCollisionAdjust(x, y)
+                    CollisionAdjust = collisionAdjust
                 });
             }
         }

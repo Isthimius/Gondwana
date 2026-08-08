@@ -94,6 +94,29 @@ public struct Frame
     }
 
     /// <summary>
+    /// Gets whether this frame has an explicit collision adjustment rather than
+    /// inheriting its region's <see cref="TilesheetRegion.CollisionAdjust"/>.
+    /// </summary>
+    public readonly bool HasCollisionAdjustOverride =>
+        Tilesheet?.GetRegion(RegionName)?.TryGetFrameCollisionAdjustOverride(
+            XTile,
+            YTile,
+            out _) == true;
+
+    /// <summary>
+    /// Removes this frame's explicit collision adjustment so it once again inherits
+    /// its region's <see cref="TilesheetRegion.CollisionAdjust"/>.
+    /// </summary>
+    public readonly bool ClearCollisionAdjustOverride()
+    {
+        var region = Tilesheet?.GetRegion(RegionName)
+            ?? throw new InvalidOperationException(
+                $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+
+        return region.ClearFrameCollisionAdjustOverride(XTile, YTile);
+    }
+
+    /// <summary>
     /// Gets the frame-local collision rectangle derived from <see cref="TileSize"/> and
     /// <see cref="CollisionAdjust"/>.
     /// </summary>
