@@ -93,6 +93,14 @@ public sealed class TilesheetGtsParityTests : IDisposable
         Assert.Equal(
             originalRegion.GetFrameCollisionAdjust(1, 0),
             restoredRegion.GetFrameCollisionAdjust(1, 0));
+        Assert.False(
+            restoredRegion.TryGetFrameCollisionAdjustOverride(0, 0, out _));
+        Assert.True(
+            restoredRegion.TryGetFrameCollisionAdjustOverride(
+                1,
+                0,
+                out var restoredFrameAdjust));
+        Assert.Equal(frameAdjust, restoredFrameAdjust);
     }
 
     /// <summary>
@@ -217,6 +225,121 @@ public sealed class TilesheetGtsParityTests : IDisposable
         Assert.Contains(
             "no ImageFilePath or AssetIdentifier",
             exception.Message);
+    }
+
+    /// <summary>
+    /// Verifies that explicitly persisting a bitmap-backed tilesheet writes its source
+    /// image and allows ordinary GTS conversion afterward.
+    /// </summary>
+    [Fact]
+    public void PersistImageToFile_PromotesBitmapBackedTilesheetToFileBacked()
+    {
+        var imagePath = Path.Combine(_tempDir, "persisted", "generated.png");
+        var bitmap = new SKBitmap(24, 12);
+        bitmap.Erase(new SKColor(10, 20, 30, 255));
+
+        using var tilesheet = TilesheetFactory.FromBitmap("Generated", bitmap);
+        tilesheet.PersistImageToFile(imagePath);
+
+        Assert.Equal(Path.GetFullPath(imagePath), tilesheet.ImageFilePath);
+        Assert.Null(tilesheet.AssetIdentifier);
+        Assert.True(File.Exists(imagePath));
+
+        using var persistedBitmap = SKBitmap.Decode(imagePath);
+        Assert.NotNull(persistedBitmap);
+        Assert.Equal(24, persistedBitmap.Width);
+        Assert.Equal(12, persistedBitmap.Height);
+
+        var definition = TilesheetDefinitionSerializer.FromTilesheet(tilesheet);
+        Assert.Equal(Path.GetFullPath(imagePath).Replace('\\', '/'), definition.Image.FilePath);
+    }
+
+    /// <summary>
+    /// Verifies that saving a bitmap-backed tilesheet as GTS automatically persists a
+    /// sibling PNG and records that image using a relative path.
+    /// </summary>
+    [Fact]
+    public void Save_BitmapBackedTilesheet_AutomaticallyPersistsSiblingImage()
+    {
+        var gtsPath = Path.Combine(_tempDir, "generated", "terrain.gts");
+        var expectedImagePath = Path.ChangeExtension(gtsPath, ".png");
+
+        var bitmap = new SKBitmap(32, 16);
+        bitmap.Erase(new SKColor(40, 80, 120, 255));
+
+        using var tilesheet = TilesheetFactory.FromBitmap("Terrain", bitmap);
+        tilesheet.DefaultRegion.TileSize = new Size(16, 16);
+
+        TilesheetDefinitionSerializer.Save(gtsPath, tilesheet);
+
+        Assert.True(File.Exists(gtsPath));
+        Assert.True(File.Exists(expectedImagePath));
+        Assert.Equal(
+            Path.GetFullPath(expectedImagePath),
+            tilesheet.ImageFilePath);
+
+        var definition = TilesheetDefinitionSerializer.Load(gtsPath);
+        Assert.Equal("terrain.png", definition.Image.FilePath);
+
+        using var restored = TilesheetFactory.FromDefinition(
+            definition,
+            Path.GetDirectoryName(gtsPath));
+
+        Assert.Equal(tilesheet.Name, restored.Name);
+        Assert.Equal(tilesheet.DefaultRegion.TileSize, restored.DefaultRegion.TileSize);
+    }
+
+    /// <summary>
+    /// Verifies that automatic image persistence does not replace or duplicate an
+    /// existing file-backed source.
+    /// </summary>
+    [Fact]
+    public void Save_FileBackedTilesheet_DoesNotCreateSiblingImage()
+    {
+        var sourceImagePath = CreateImageFile("existing-source.png", 16, 16);
+        var gtsPath = Path.Combine(_tempDir, "definitions", "sheet.gts");
+        var siblingImagePath = Path.ChangeExtension(gtsPath, ".png");
+
+        using var tilesheet = TilesheetFactory.FromImageFile(
+            "Existing Source",
+            sourceImagePath);
+
+        TilesheetDefinitionSerializer.Save(gtsPath, tilesheet);
+
+        Assert.False(File.Exists(siblingImagePath));
+        Assert.Equal(
+            Path.GetFullPath(sourceImagePath),
+            tilesheet.ImageFilePath);
+
+        var definition = TilesheetDefinitionSerializer.Load(gtsPath);
+        Assert.Equal(
+            Path.GetRelativePath(
+                    Path.GetDirectoryName(gtsPath)!,
+                    sourceImagePath)
+                .Replace('\\', '/'),
+            definition.Image.FilePath);
+    }
+
+    /// <summary>
+    /// Verifies that persisting a transformed tilesheet writes its unprocessed source
+    /// bitmap so GTS loading can reapply the stored mask exactly once.
+    /// </summary>
+    [Fact]
+    public void PersistImageToFile_WithMask_PersistsOriginalSourceBitmap()
+    {
+        var imagePath = Path.Combine(_tempDir, "masked-source.png");
+        var bitmap = new SKBitmap(16, 16);
+        bitmap.Erase(SKColors.White);
+
+        using var tilesheet = TilesheetFactory.FromBitmap("Masked", bitmap);
+        tilesheet.ApplyMask(SKColors.White, tolerance: 0);
+        Assert.Equal(0, tilesheet.SkBitmap.GetPixel(0, 0).Alpha);
+
+        tilesheet.PersistImageToFile(imagePath);
+
+        using var persistedBitmap = SKBitmap.Decode(imagePath);
+        Assert.NotNull(persistedBitmap);
+        Assert.Equal(255, persistedBitmap.GetPixel(0, 0).Alpha);
     }
 
     private string CreateImageFile(string fileName, int width, int height)

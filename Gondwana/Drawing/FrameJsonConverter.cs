@@ -16,10 +16,9 @@ internal sealed class FrameJsonConverter : JsonConverter<Frame>
     /// <param name="writer">The JSON writer to write to.</param>
     /// <param name="value">The frame value to serialize.</param>
     /// <param name="serializer">The serializer invoking this converter.</param>
-    public override void WriteJson(
-        JsonWriter writer,
-        Frame value,
-        JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer,
+                                   Frame value,
+                                   JsonSerializer serializer)
     {
         if (value.Tilesheet is null)
         {
@@ -53,12 +52,11 @@ internal sealed class FrameJsonConverter : JsonConverter<Frame>
     /// <param name="hasExistingValue">Indicates whether <paramref name="existingValue"/> contains a usable value.</param>
     /// <param name="serializer">The serializer invoking this converter.</param>
     /// <returns>The deserialized <see cref="Frame"/>.</returns>
-    public override Frame ReadJson(
-        JsonReader reader,
-        Type objectType,
-        Frame existingValue,
-        bool hasExistingValue,
-        JsonSerializer serializer)
+    public override Frame ReadJson(JsonReader reader,
+                                   Type objectType,
+                                   Frame existingValue,
+                                   bool hasExistingValue,
+                                   JsonSerializer serializer)
     {
         if (reader.TokenType == JsonToken.Null)
             return default;
@@ -66,8 +64,7 @@ internal sealed class FrameJsonConverter : JsonConverter<Frame>
         var obj = JObject.Load(reader);
 
         var tilesheetName = obj.Value<string>("tilesheet");
-        var regionName = obj.Value<string>("regionName")
-            ?? TilesheetRegion.DefaultRegionName;
+        var regionName = obj.Value<string>("regionName") ?? TilesheetRegion.DefaultRegionName;
 
         var xTile = obj.Value<int?>("xTile") ?? 0;
         var yTile = obj.Value<int?>("yTile") ?? 0;
@@ -83,10 +80,6 @@ internal sealed class FrameJsonConverter : JsonConverter<Frame>
                 $"Could not resolve Tilesheet '{tilesheetName}' while deserializing Frame.");
         }
 
-        return new Frame(
-            tilesheet,
-            regionName,
-            xTile,
-            yTile);
+        return new Frame(tilesheet, regionName, xTile, yTile);
     }
 }

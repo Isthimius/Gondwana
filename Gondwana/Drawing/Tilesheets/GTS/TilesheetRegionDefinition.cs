@@ -41,11 +41,11 @@ public sealed class TilesheetRegionDefinition
     /// <summary>
     /// Gets or sets the region-level collision adjustment applied to all frames by default.
     /// </summary>
-    public CollisionAdjust CollisionAdjust { get; set; } =
-        Gondwana.Physics.Collisions.CollisionAdjust.None;
+    public CollisionAdjust CollisionAdjust { get; set; } = CollisionAdjust.None;
 
     /// <summary>
-    /// Gets or sets the final per-frame collision metadata for this region.
+    /// Gets or sets per-frame collision metadata for this region. A missing collision
+    /// adjustment on a frame means that frame inherits <see cref="CollisionAdjust"/>.
     /// </summary>
     public List<TilesheetFrameDefinition> Frames { get; set; } = [];
 }

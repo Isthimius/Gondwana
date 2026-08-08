@@ -68,10 +68,11 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
     }
 
     /// <summary>
-    /// Verifies that assigning the region default overwrites every frame and its cached metadata.
+    /// Verifies that changing the region default updates inheriting frames while preserving
+    /// explicit frame overrides and their cached metadata.
     /// </summary>
     [Fact]
-    public void RegionCollisionAdjust_PropagatesToAllFramesAndCache()
+    public void RegionCollisionAdjust_UpdatesInheritedFramesAndPreservesOverrides()
     {
         using var tilesheet = CreateRuntimeTilesheet();
         var region = tilesheet.DefaultRegion;
@@ -95,7 +96,36 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         region.CollisionAdjust = replacementDefault;
 
         Assert.Equal(replacementDefault, tilesheet.GetFrame(0, 0).CollisionAdjust);
-        Assert.Equal(replacementDefault, tilesheet.GetFrame(1, 0).CollisionAdjust);
+        Assert.Equal(frameOverride, tilesheet.GetFrame(1, 0).CollisionAdjust);
+        Assert.Equal(
+            frameOverride.ApplyTo(new Rectangle(0, 0, 16, 16)),
+            tilesheet.GetFrame(1, 0).CollisionArea);
+    }
+
+    /// <summary>
+    /// Verifies that assigning a frame value creates an explicit override even when the
+    /// value currently equals the region default, and that the override can be cleared.
+    /// </summary>
+    [Fact]
+    public void FrameCollisionAdjust_EqualToRegionDefault_RemainsIndependentUntilCleared()
+    {
+        using var tilesheet = CreateRuntimeTilesheet();
+        var region = tilesheet.DefaultRegion;
+        var initialDefault = new CollisionAdjust(1, 1, 2, 2);
+        region.CollisionAdjust = initialDefault;
+
+        var frame = tilesheet.GetFrame(1, 0);
+        frame.CollisionAdjust = initialDefault;
+
+        Assert.True(frame.HasCollisionAdjustOverride);
+
+        var replacementDefault = new CollisionAdjust(3, 3, 4, 4);
+        region.CollisionAdjust = replacementDefault;
+
+        Assert.Equal(initialDefault, frame.CollisionAdjust);
+        Assert.True(frame.ClearCollisionAdjustOverride());
+        Assert.False(frame.HasCollisionAdjustOverride);
+        Assert.Equal(replacementDefault, frame.CollisionAdjust);
     }
 
     /// <summary>
@@ -230,10 +260,70 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
     }
 
     /// <summary>
-    /// Verifies runtime-to-GTS conversion writes every frame's final effective value.
+    /// Verifies that GTS loading distinguishes inheritance from an explicit override
+    /// whose value happens to equal the current region default.
     /// </summary>
     [Fact]
-    public void FromTilesheet_SerializesEveryEffectiveFrameAdjustment()
+    public void FromDefinition_PreservesExplicitOverrideEqualToRegionDefault()
+    {
+        var imagePath = Path.Combine(_tempDir, "equal-override.png");
+        using (var bitmap = new SKBitmap(32, 16))
+        using (var image = SKImage.FromBitmap(bitmap))
+        using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+        {
+            File.WriteAllBytes(imagePath, data.ToArray());
+        }
+
+        var regionAdjust = new CollisionAdjust(1, 1, 2, 2);
+        var definition = new TilesheetDefinition
+        {
+            Name = "Sheet",
+            Image = new TilesheetImageDefinition { FilePath = imagePath },
+            Regions =
+            [
+                new TilesheetRegionDefinition
+                {
+                    Name = TilesheetRegion.DefaultRegionName,
+                    Area = new Rectangle(0, 0, 32, 16),
+                    TileSize = new Size(16, 16),
+                    CollisionAdjust = regionAdjust,
+                    Frames =
+                    [
+                        new TilesheetFrameDefinition
+                        {
+                            XTile = 0,
+                            YTile = 0
+                        },
+                        new TilesheetFrameDefinition
+                        {
+                            XTile = 1,
+                            YTile = 0,
+                            CollisionAdjust = regionAdjust
+                        }
+                    ]
+                }
+            ]
+        };
+
+        using var tilesheet = TilesheetFactory.FromDefinition(definition);
+        var region = tilesheet.DefaultRegion;
+
+        Assert.False(region.TryGetFrameCollisionAdjustOverride(0, 0, out _));
+        Assert.True(region.TryGetFrameCollisionAdjustOverride(1, 0, out _));
+
+        var replacementDefault = new CollisionAdjust(3, 3, 4, 4);
+        region.CollisionAdjust = replacementDefault;
+
+        Assert.Equal(replacementDefault, tilesheet.GetFrame(0, 0).CollisionAdjust);
+        Assert.Equal(regionAdjust, tilesheet.GetFrame(1, 0).CollisionAdjust);
+    }
+
+    /// <summary>
+    /// Verifies runtime-to-GTS conversion preserves inherited values and explicit
+    /// frame-level overrides as distinct states.
+    /// </summary>
+    [Fact]
+    public void FromTilesheet_PreservesInheritedAndExplicitFrameAdjustments()
     {
         var imagePath = Path.Combine(_tempDir, "sheet.png");
         using (var bitmap = new SKBitmap(32, 16))
@@ -253,9 +343,7 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         var serializedRegion = Assert.Single(definition.Regions);
 
         Assert.Equal(2, serializedRegion.Frames.Count);
-        Assert.Equal(
-            region.CollisionAdjust,
-            serializedRegion.Frames[0].CollisionAdjust.GetValueOrDefault());
+        Assert.Null(serializedRegion.Frames[0].CollisionAdjust);
         Assert.Equal(
             region.GetFrameCollisionAdjust(1, 0),
             serializedRegion.Frames[1].CollisionAdjust.GetValueOrDefault());
