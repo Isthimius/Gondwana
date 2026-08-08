@@ -587,14 +587,14 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     }
 
     // Fast, branch-free tint (multiplies RGB by tint).
-    // alpha = lifeAlpha * globalAlpha). Assumes particle base alpha = 255.
+    // Alpha combines the particle's base alpha, life fade, and tint alpha.
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private SKColor ApplyTint(SKColor c, byte lifeAlpha, SKColor tint)
     {
         int r = (c.Red * tint.Red) / 255;
         int g = (c.Green * tint.Green) / 255;
         int b = (c.Blue * tint.Blue) / 255;
-        int a = (lifeAlpha * tint.Alpha) / 255;
+        int a = (c.Alpha * lifeAlpha * tint.Alpha) / (255 * 255);
 
         return new SKColor((byte)r, (byte)g, (byte)b, (byte)a);
     }

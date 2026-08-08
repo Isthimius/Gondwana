@@ -61,7 +61,7 @@ public enum EngineStateParts
     /// <summary>
     /// Represents all engine state parts combined. This is a convenience value that includes
     /// <see cref="AssetsFiles"/>, <see cref="Tilesheets"/>, <see cref="Cycles"/>, <see cref="Scenes"/>,
-    /// <see cref="Sprites"/>, <see cref="Audio"/>, and <see cref="ValueBag"/>. Use this when you need
+    /// <see cref="Sprites"/>, and <see cref="Audio"/>. Use this when you need
     /// to manage, save, or load the complete engine state without selectively choosing individual parts.
     /// </summary>
     All = AssetsFiles | Tilesheets | Cycles | Scenes | Sprites | Audio
