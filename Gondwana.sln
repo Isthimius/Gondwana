@@ -177,7 +177,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spot.Blazor", "Demos\Spot.B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Widgets", "Gondwana.Widgets\Gondwana.Widgets.csproj", "{718CCF23-2105-4FDF-822C-8B12798A3A4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tilesheets.WinForms", "tooling\Gondwana.Tilesheets.WinForms\Gondwana.Tilesheets.WinForms.csproj", "{638853CB-A9E9-4229-80F4-C4FCB4E71333}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tilesheets.WinForms", "Tooling\Gondwana.Tilesheets.WinForms\Gondwana.Tilesheets.WinForms.csproj", "{638853CB-A9E9-4229-80F4-C4FCB4E71333}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
