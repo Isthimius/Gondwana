@@ -251,7 +251,7 @@ public sealed class TilesheetGtsParityTests : IDisposable
         Assert.Equal(12, persistedBitmap.Height);
 
         var definition = TilesheetDefinitionSerializer.FromTilesheet(tilesheet);
-        Assert.Equal(Path.GetFullPath(imagePath), definition.Image.FilePath);
+        Assert.Equal(Path.GetFullPath(imagePath).Replace('\\', '/'), definition.Image.FilePath);
     }
 
     /// <summary>
