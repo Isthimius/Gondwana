@@ -99,6 +99,19 @@ public static class TilesheetDefinitionSerializer
         };
     }
 
+    /// <summary>
+    /// Saves a runtime tilesheet as a GTS definition file.
+    /// </summary>
+    /// <param name="filePath">The destination GTS file path.</param>
+    /// <param name="tilesheet">The runtime tilesheet to serialize.</param>
+    /// <param name="makePathsRelative">
+    /// Whether persistent source paths should be relative to the GTS file.
+    /// </param>
+    /// <remarks>
+    /// When <paramref name="tilesheet"/> has no file or asset source, its source
+    /// bitmap is automatically persisted as a PNG beside the GTS file using the
+    /// same base file name.
+    /// </remarks>
     public static void Save(
         string filePath,
         Tilesheet tilesheet,
@@ -110,6 +123,13 @@ public static class TilesheetDefinitionSerializer
         ArgumentNullException.ThrowIfNull(tilesheet);
 
         var fullPath = Path.GetFullPath(filePath);
+        if (string.IsNullOrWhiteSpace(tilesheet.ImageFilePath) &&
+            tilesheet.AssetIdentifier is null)
+        {
+            tilesheet.PersistImageToFile(
+                Path.ChangeExtension(fullPath, ".png"));
+        }
+
         var definition = FromTilesheet(
             tilesheet,
             Path.GetDirectoryName(fullPath),

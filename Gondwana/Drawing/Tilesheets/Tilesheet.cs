@@ -97,8 +97,10 @@ public sealed class Tilesheet : IDisposable
             {
                 for (int x = 0; x < region.Columns; x++)
                 {
-                    var frameCollisionAdjust = region.GetFrameCollisionAdjust(x, y);
-                    if (frameCollisionAdjust != region.CollisionAdjust)
+                    if (region.TryGetFrameCollisionAdjustOverride(
+                        x,
+                        y,
+                        out var frameCollisionAdjust))
                     {
                         copiedRegion.SetFrameCollisionAdjust(
                             x,
@@ -249,6 +251,60 @@ public sealed class Tilesheet : IDisposable
             throw new ArgumentException("Invalid bitmap.");
 
         return SkBitmap.EncodeBitmapToBytes(format, quality);
+    }
+
+    /// <summary>
+    /// Persists this tilesheet's source image to a file and promotes the tilesheet
+    /// from a runtime-only bitmap to a file-backed tilesheet.
+    /// </summary>
+    /// <param name="imageFilePath">The destination image file path.</param>
+    /// <param name="format">The encoded image format.</param>
+    /// <param name="quality">The encoding quality from 0 through 100.</param>
+    /// <remarks>
+    /// When masking or alpha premultiplication has transformed the runtime bitmap,
+    /// the original source bitmap is persisted. The corresponding GTS metadata will
+    /// reapply that transformation when the tilesheet is loaded.
+    /// </remarks>
+    public void PersistImageToFile(
+        string imageFilePath,
+        SKEncodedImageFormat format = SKEncodedImageFormat.Png,
+        int quality = 100)
+    {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(Tilesheet));
+
+        if (string.IsNullOrWhiteSpace(imageFilePath))
+        {
+            throw new ArgumentException(
+                "Image file path must be a non-empty string.",
+                nameof(imageFilePath));
+        }
+
+        if (quality is < 0 or > 100)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(quality),
+                quality,
+                "Image encoding quality must be between 0 and 100.");
+        }
+
+        if (SkBitmap == null || SkBitmap.IsEmpty)
+        {
+            throw new InvalidOperationException(
+                "Tilesheet does not contain a valid bitmap to persist.");
+        }
+
+        var fullPath = Path.GetFullPath(imageFilePath);
+        var directory = Path.GetDirectoryName(fullPath);
+        if (!string.IsNullOrWhiteSpace(directory))
+            Directory.CreateDirectory(directory);
+
+        var sourceBitmap = SkBitmapOriginal ?? SkBitmap;
+        var imageBytes = sourceBitmap.EncodeBitmapToBytes(format, quality);
+        File.WriteAllBytes(fullPath, imageBytes);
+
+        ImageFilePath = fullPath;
+        AssetIdentifier = null;
     }
 
     public SKImage? GetImage(string regionName, int x, int y) =>

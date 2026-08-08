@@ -58,12 +58,11 @@ internal static class TilesheetFactory
                 region.Overhang,
                 region.CollisionAdjust);
 
-            // Region construction already applies the region default. Apply only
-            // persisted frame records afterward so frame-specific values survive.
+            // A missing frame value inherits the region default. A present value is
+            // an explicit override, even when it currently equals that default.
             foreach (var frame in region.Frames ?? [])
             {
-                var adjust = frame.CollisionAdjust ?? region.CollisionAdjust;
-                if (adjust != region.CollisionAdjust)
+                if (frame.CollisionAdjust is { } adjust)
                 {
                     runtimeRegion.SetFrameCollisionAdjust(
                         frame.XTile,

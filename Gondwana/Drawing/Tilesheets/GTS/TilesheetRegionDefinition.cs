@@ -44,7 +44,8 @@ public sealed class TilesheetRegionDefinition
     public CollisionAdjust CollisionAdjust { get; set; } = CollisionAdjust.None;
 
     /// <summary>
-    /// Gets or sets the final per-frame collision metadata for this region.
+    /// Gets or sets per-frame collision metadata for this region. A missing collision
+    /// adjustment on a frame means that frame inherits <see cref="CollisionAdjust"/>.
     /// </summary>
     public List<TilesheetFrameDefinition> Frames { get; set; } = [];
 }
