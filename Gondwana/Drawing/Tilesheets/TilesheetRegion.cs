@@ -232,8 +232,9 @@ public sealed class TilesheetRegion : IDisposable
     /// Attempts to get the explicit collision adjustment assigned to one frame.
     /// </summary>
     /// <remarks>
-    /// A <see langword="false"/> result means the frame inherits
-    /// <see cref="CollisionAdjust"/>.
+    /// Returns <see langword="true"/> when an explicit frame-level override exists.
+    /// When <see langword="false"/>, no override exists (the frame inherits <see cref="CollisionAdjust"/>).
+    /// The <paramref name="collisionAdjust"/> out parameter is only meaningful when the method returns <see langword="true"/>.
     /// </remarks>
     public bool TryGetFrameCollisionAdjustOverride(
         int x,
@@ -247,7 +248,7 @@ public sealed class TilesheetRegion : IDisposable
 
         if (!IsFrameCoordinateValid(x, y))
         {
-            collisionAdjust = Gondwana.Physics.Collisions.CollisionAdjust.None;
+            collisionAdjust = default;
             return false;
         }
 
