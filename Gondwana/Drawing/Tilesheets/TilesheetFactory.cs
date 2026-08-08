@@ -9,17 +9,15 @@ namespace Gondwana.Drawing.Tilesheets;
 /// </summary>
 internal static class TilesheetFactory
 {
-    internal static Tilesheet FromBitmap(string name, SKBitmap bitmap) =>
-        new(name, bitmap);
+    #region factory methods
 
-    internal static Tilesheet FromStream(string name, Stream stream) =>
-        new(name, stream);
+    internal static Tilesheet FromBitmap(string name, SKBitmap bitmap) => new(name, bitmap);
 
-    internal static Tilesheet FromImageFile(string name, string imageFilePath) =>
-        new(name, imageFilePath);
+    internal static Tilesheet FromStream(string name, Stream stream) => new(name, stream);
 
-    internal static Tilesheet FromAssetsFile(AssetsFile assetsFile, string entryName) =>
-        new(assetsFile, entryName);
+    internal static Tilesheet FromImageFile(string name, string imageFilePath) => new(name, imageFilePath);
+
+    internal static Tilesheet FromAssetsFile(AssetsFile assetsFile, string entryName) => new(assetsFile, entryName);
 
     internal static Tilesheet FromDefinitionFile(string gtsPath)
     {
@@ -34,10 +32,9 @@ internal static class TilesheetFactory
         return FromDefinition(definition, Path.GetDirectoryName(fullPath));
     }
 
-    internal static Tilesheet FromDefinition(
-        TilesheetDefinition definition,
-        string? baseDirectory = null,
-        AssetsFile? defaultAssetsFile = null)
+    internal static Tilesheet FromDefinition(TilesheetDefinition definition,
+                                             string? baseDirectory = null,
+                                             AssetsFile? defaultAssetsFile = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
 
@@ -90,9 +87,7 @@ internal static class TilesheetFactory
         return tilesheet;
     }
 
-    internal static Tilesheet FromDefinitionAsset(
-        AssetsFile assetsFile,
-        string gtsEntryName)
+    internal static Tilesheet FromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName)
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
 
@@ -103,9 +98,7 @@ internal static class TilesheetFactory
                 nameof(gtsEntryName));
         }
 
-        using var stream = assetsFile.Get(
-            AssetTypes.TilesheetDefinition,
-            gtsEntryName);
+        using var stream = assetsFile.Get(AssetTypes.TilesheetDefinition, gtsEntryName);
 
         if (stream is null)
         {
@@ -131,6 +124,10 @@ internal static class TilesheetFactory
             baseDirectory,
             defaultAssetsFile: assetsFile);
     }
+
+    #endregion factory methods
+
+    #region private methods
 
     private static Tilesheet CreateTilesheet(
         TilesheetDefinition definition,
@@ -176,9 +173,7 @@ internal static class TilesheetFactory
         return tilesheet;
     }
 
-    private static void ValidateImageDefinition(
-        TilesheetImageDefinition image,
-        AssetsFile? defaultAssetsFile)
+    private static void ValidateImageDefinition(TilesheetImageDefinition image, AssetsFile? defaultAssetsFile)
     {
         var hasFilePath = !string.IsNullOrWhiteSpace(image.FilePath);
         var hasAssetsFilePath = !string.IsNullOrWhiteSpace(image.AssetsFilePath);
@@ -231,4 +226,6 @@ internal static class TilesheetFactory
 
         return Path.GetFullPath(Path.Combine(baseDirectory, path));
     }
+
+    #endregion private methods
 }

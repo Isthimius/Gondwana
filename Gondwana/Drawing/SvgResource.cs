@@ -43,9 +43,8 @@ public sealed class SvgResource : IDisposable
             throw new InvalidOperationException("Failed to parse SVG content.");
 
         var cull = svg.Picture.CullRect;
-        var intrinsic = new SizeF(
-            cull.Width > 0 ? cull.Width : 1f,
-            cull.Height > 0 ? cull.Height : 1f);
+        var intrinsic = new SizeF(cull.Width > 0 ? cull.Width : 1f,
+                                  cull.Height > 0 ? cull.Height : 1f);
 
         return new SvgResource(svg.Picture, intrinsic);
     }

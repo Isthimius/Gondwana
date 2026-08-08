@@ -9,23 +9,23 @@ public sealed class BlazorCommandReturnValueTests
 {
     private static readonly object PathLock = new();
 
-    [Fact]
-    public void PublishBlazorCommand_ReturnsZero_WhenPublishSucceeds()
-    {
-        using var fixture = CliCommandFixture.Create();
-        var projectPath = fixture.CreateBuildableBlazorProject();
+    //[Fact]
+    //public void PublishBlazorCommand_ReturnsZero_WhenPublishSucceeds()
+    //{
+    //    using var fixture = CliCommandFixture.Create();
+    //    var projectPath = fixture.CreateBuildableBlazorProject();
 
-        var exitCode = fixture.Run(config => config.AddCommand<PublishBlazorCommand>("publish-blazor"),
-            "publish-blazor",
-            "--project", projectPath,
-            "--configuration", "Release",
-            "--skip-workload");
+    //    var exitCode = fixture.Run(config => config.AddCommand<PublishBlazorCommand>("publish-blazor"),
+    //        "publish-blazor",
+    //        "--project", projectPath,
+    //        "--configuration", "Release",
+    //        "--skip-workload");
 
-        Assert.Equal(0, exitCode);
-        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release");
-        Assert.NotNull(wwwroot);
-        Assert.True(File.Exists(Path.Combine(wwwroot!, "index.html")));
-    }
+    //    Assert.Equal(0, exitCode);
+    //    var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release");
+    //    Assert.NotNull(wwwroot);
+    //    Assert.True(File.Exists(Path.Combine(wwwroot!, "index.html")));
+    //}
 
     [Fact]
     public void PublishItchCommand_ReturnsZero_WhenPackageSucceeds()

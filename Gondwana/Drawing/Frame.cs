@@ -120,6 +120,5 @@ public struct Frame
     /// Gets the frame-local collision rectangle derived from <see cref="TileSize"/> and
     /// <see cref="CollisionAdjust"/>.
     /// </summary>
-    public readonly Rectangle CollisionArea =>
-        CollisionAdjust.ApplyTo(new Rectangle(Point.Empty, TileSize));
+    public readonly Rectangle CollisionArea => CollisionAdjust.ApplyTo(new Rectangle(Point.Empty, TileSize));
 }
