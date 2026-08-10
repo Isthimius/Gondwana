@@ -1,5 +1,5 @@
 {
-  "EngineConfiguration": {
+  "EngineConfig": {
     "TargetFPS": 60,
     "SamplingTimeForCPS": 1.5,
     "TimeBetweenKeyboardEvents": 0.03,
