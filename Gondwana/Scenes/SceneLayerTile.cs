@@ -26,9 +26,6 @@ public class SceneLayerTile : Tile
     [JsonProperty]
     internal Point sceneLayerCoordinates;
 
-    [JsonIgnore]
-    internal ICollider? Collider;
-
     #endregion private / internal fields
 
     #region constructors / finalizer
@@ -39,6 +36,18 @@ public class SceneLayerTile : Tile
         zOrder = 0;
         visible = true;
         parentSceneLayer = sceneLayer;
+    }
+
+    /// <summary>
+    /// Ensures this fixed layer tile has the collider used by the public
+    /// <see cref="Tile.Collider"/> and <see cref="Tile.CollisionsEnabled"/> APIs.
+    /// </summary>
+    internal void EnsureCollider()
+    {
+        _collider ??= new TileCollider(
+            this,
+            collisionGroup: CollisionMasks.None,
+            collidesWith: CollisionMasks.None);
     }
 
     /// <summary>
