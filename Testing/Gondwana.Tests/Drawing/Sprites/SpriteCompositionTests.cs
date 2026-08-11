@@ -7,6 +7,7 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests.Drawing.Sprites;
 
+[Collection("SpriteManager")]
 public sealed class SpriteCompositionTests : IDisposable
 {
     private readonly List<Sprite> _sprites = new();
