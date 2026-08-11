@@ -24,8 +24,12 @@ public sealed class ImageInstance
     public required SKBitmap Bitmap { get; set; }
 
     /// <summary>
-    /// Gets or sets the destination bounds of the image in screen space.
+    /// Gets or sets the destination bounds of the image in the coordinate space used by
+    /// the containing <see cref="ImageInstanceLayer"/>.
     /// </summary>
+    /// <remarks>
+    /// Bounds are world pixels in scene-layer mode and screen pixels in view mode.
+    /// </remarks>
     public required RectangleF Bounds { get; set; }
 
     /// <summary>
