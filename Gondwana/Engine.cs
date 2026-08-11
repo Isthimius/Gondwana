@@ -74,6 +74,7 @@ public sealed class Engine : IDisposable
     private double _netFPS = 0;
 
     private Task? _cycleTask;
+    private EngineConfigurationFile? _configurationFile;
 
     #endregion private fields
 
@@ -291,9 +292,19 @@ public sealed class Engine : IDisposable
         else
             UiDispatcher!.Post(() => PreInitialization?.Invoke());
 
-        Configuration = EngineConfigurationFile.Load(configFileName, autoSaveConfig).EngineConfig;
+        try
+        {
+            _configurationFile?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving the engine configuration during initialization.");
+        }
 
-        EngineLogger.Mode = Configuration.LoggingMode;
+        _configurationFile = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
+        Configuration = _configurationFile.EngineConfig;
+
+        ConfigureLogging(Configuration);
 
         if (Configuration.StateFiles?.Any() ?? false)
         {
@@ -953,6 +964,22 @@ public sealed class Engine : IDisposable
         _netCyclesThisMeasure = 0;
     }
 
+    private static void ConfigureLogging(EngineConfiguration configuration)
+    {
+        // Logging may already be active because hosts can configure it before
+        // Engine.Initialize. Recreate the async pipeline so its channel uses
+        // the capacity loaded from this configuration.
+        EngineLogger.StopAsyncLogging(flush: true);
+
+        if (configuration.LoggingMode == EngineLoggingMode.Asynchronous)
+        {
+            EngineLogger.SwitchToAsync(configuration.LoggingQueueCapacity);
+            return;
+        }
+
+        EngineLogger.Mode = EngineLoggingMode.Synchronous;
+    }
+
     #endregion private methods
 
     #region IDisposable support
@@ -1000,8 +1027,21 @@ public sealed class Engine : IDisposable
                     foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)
                         Input.GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
 
-                if (Configuration.LoggingMode == EngineLoggingMode.Asynchronous && Configuration.FlushAsyncLogsOnShutdown)
-                    EngineLogger.StopAsyncLogging(flush: true);
+                try
+                {
+                    _configurationFile?.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error saving the engine configuration during disposal.");
+                }
+                finally
+                {
+                    _configurationFile = null;
+                }
+
+                if (EngineLogger.Mode == EngineLoggingMode.Asynchronous)
+                    EngineLogger.StopAsyncLogging(flush: Configuration.FlushAsyncLogsOnShutdown);
 
                 Timer.ClearAll();
                 State.Clear();
@@ -1043,7 +1083,8 @@ public sealed class Engine : IDisposable
     ///   <item><description>Waiting for the background thread to exit</description></item>
     ///   <item><description>Raising the <see cref="Disposing"/> event</description></item>
     ///   <item><description>Cleaning up input subsystems</description></item>
-    ///   <item><description>Flushing asynchronous logs if configured</description></item>
+    ///   <item><description>Saving configuration changes when automatic saving is enabled</description></item>
+    ///   <item><description>Stopping asynchronous logging and flushing queued entries if configured</description></item>
     ///   <item><description>Clearing timers and state</description></item>
     ///   <item><description>Raising the <see cref="Disposed"/> event</description></item>
     /// </list>
