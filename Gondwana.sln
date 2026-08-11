@@ -129,17 +129,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentat
 		Solution Items\documentation\rendering-pipeline-sequence.puml = Solution Items\documentation\rendering-pipeline-sequence.puml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Assets.WinForms", "Tooling\Gondwana.Assets.WinForms\Gondwana.Tooling.Assets.WinForms.csproj", "{F059118F-6A87-7D7B-03FE-2B7D24A12554}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Assets.WinForms", "Tooling\Gondwana.Tooling.Assets.WinForms\Gondwana.Tooling.Assets.WinForms.csproj", "{F059118F-6A87-7D7B-03FE-2B7D24A12554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Avalonia", "Tooling\Gondwana.Studio\Gondwana.Tooling.Studio.Avalonia.csproj", "{7472B43A-FACF-4F8D-BF93-B409561F2685}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Avalonia", "Tooling\Gondwana.Tooling.Studio.Avalonia\Gondwana.Tooling.Studio.Avalonia.csproj", "{7472B43A-FACF-4F8D-BF93-B409561F2685}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Templates", "Tooling\Gondwana.Templates\Gondwana.Templates.csproj", "{98C81696-AE38-5E2D-E2A5-70DBBD23CEE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Cli", "Tooling\Gondwana.Cli\Gondwana.Cli.csproj", "{B3A1C2D4-5E6F-7A8B-9C0D-E1F2A3B4C5D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Core", "Tooling\Gondwana.Studio.Core\Gondwana.Tooling.Studio.Core.csproj", "{3E8AA6A4-FCC4-7C4F-138C-4BDED8567E12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Core", "Tooling\Gondwana.Tooling.Studio.Core\Gondwana.Tooling.Studio.Core.csproj", "{3E8AA6A4-FCC4-7C4F-138C-4BDED8567E12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.WinForms", "Tooling\Gondwana.Studio.WinForms\Gondwana.Tooling.Studio.WinForms.csproj", "{B2C3D4E5-F6A7-8901-BCDE-F12345678901}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.WinForms", "Tooling\Gondwana.Tooling.Studio.WinForms\Gondwana.Tooling.Studio.WinForms.csproj", "{B2C3D4E5-F6A7-8901-BCDE-F12345678901}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Avalonia", "Gondwana.Avalonia\Gondwana.Avalonia.csproj", "{76A8E796-93C9-06E9-CD9C-CC5D0705AA91}"
 EndProject
@@ -177,7 +177,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spot.Blazor", "Demos\Spot.B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Widgets", "Gondwana.Widgets\Gondwana.Widgets.csproj", "{718CCF23-2105-4FDF-822C-8B12798A3A4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Tilesheets.WinForms", "Tooling\Gondwana.Tilesheets.WinForms\Gondwana.Tooling.Tilesheets.WinForms.csproj", "{638853CB-A9E9-4229-80F4-C4FCB4E71333}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Tilesheets.WinForms", "Tooling\Gondwana.Tooling.Tilesheets.WinForms\Gondwana.Tooling.Tilesheets.WinForms.csproj", "{638853CB-A9E9-4229-80F4-C4FCB4E71333}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
