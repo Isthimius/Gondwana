@@ -1,6 +1,6 @@
 using Gondwana.Assets;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// Wraps a single AssetFile entry for display in the DataGrid.

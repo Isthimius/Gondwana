@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Gondwana.Studio.Core.Extensibility;
+namespace Gondwana.Tooling.Studio.Core.Extensibility;
 
 /// <summary>
 /// Discovers and manages studio plugins from assemblies in a <c>plugins/</c>

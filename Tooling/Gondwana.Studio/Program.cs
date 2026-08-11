@@ -1,7 +1,7 @@
 using Avalonia;
 using System;
 
-namespace Gondwana.Studio;
+namespace Gondwana.Tooling.Studio.Avalonia;
 
 sealed class Program
 {

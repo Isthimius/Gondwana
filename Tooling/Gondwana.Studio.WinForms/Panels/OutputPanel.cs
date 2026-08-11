@@ -1,7 +1,7 @@
 using System.Collections.Specialized;
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.WinForms.Panels;
+namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 /// <summary>
 /// Panel that shows log output from the studio.

@@ -1,6 +1,6 @@
-# Gondwana.Assets.WinForms
+# Gondwana.Tooling.Assets.WinForms
 
-**Gondwana.Assets.WinForms** provides WinForms-based tooling for creating, editing, and managing Gondwana asset files.
+**Gondwana.Tooling.Assets.WinForms** provides WinForms-based tooling for creating, editing, and managing Gondwana asset files.
 
 It is intended for development workflows rather than runtime use.
 

@@ -1,12 +1,16 @@
 using System;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using Gondwana.Studio.Services;
-using Gondwana.Studio.ViewModels;
-using Gondwana.Studio.Extensibility;
+using global::Avalonia.Controls;
+using global::Avalonia.Platform.Storage;
+using global::Avalonia.Interactivity;
+using Gondwana.Tooling.Studio.Avalonia.Services;
+using Gondwana.Tooling.Studio.Avalonia.ViewModels;
+using Gondwana.Tooling.Studio.Avalonia.Extensibility;
+using Gondwana.Tooling.StudioAssets;
+using Gondwana.Tooling.Studio.Core;
 using System.IO;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.Views;
+namespace Gondwana.Tooling.Studio.Avalonia.Views;
 
 /// <summary>
 /// MainWindow.
@@ -56,7 +60,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void OnOpenProjectClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void OnOpenProjectClicked(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not MainWindowViewModel vm)
             return;
@@ -78,13 +82,13 @@ public partial class MainWindow : Window
         RegisterProjectFiles(vm, projectPath);
     }
 
-    private void OnCloseProjectClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnCloseProjectClicked(object? sender, RoutedEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm)
             vm.CloseProject();
     }
 
-    private void OnNewTilesheetClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnNewTilesheetClicked(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not MainWindowViewModel vm)
             return;
@@ -93,7 +97,7 @@ public partial class MainWindow : Window
         vm.OpenDocumentTab($"Tilesheet:{Guid.NewGuid()}", "Tilesheet Editor", editor);
     }
 
-    private void OnNewAnimationClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnNewAnimationClicked(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not MainWindowViewModel vm)
             return;
@@ -102,7 +106,7 @@ public partial class MainWindow : Window
         vm.OpenDocumentTab($"Animation:{Guid.NewGuid()}", "Animation Editor", editor);
     }
 
-    private void OnNewSceneClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnNewSceneClicked(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not MainWindowViewModel vm)
             return;
@@ -111,17 +115,17 @@ public partial class MainWindow : Window
         vm.OpenDocumentTab($"Scene:{Guid.NewGuid()}", "Scene Editor", editor);
     }
 
-    private async void OnOpenTilesheetClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void OnOpenTilesheetClicked(object? sender, RoutedEventArgs e)
     {
         await OpenTypedFileAsync("*.gondwana-tilesheet");
     }
 
-    private async void OnOpenAnimationClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void OnOpenAnimationClicked(object? sender, RoutedEventArgs e)
     {
         await OpenTypedFileAsync("*.gondwana-animation");
     }
 
-    private async void OnOpenSceneClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void OnOpenSceneClicked(object? sender, RoutedEventArgs e)
     {
         await OpenTypedFileAsync("*.gondwana-scene");
     }

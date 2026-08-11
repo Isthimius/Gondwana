@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Tilesheets.WinForms
+﻿namespace Gondwana.Tooling.Tilesheets.WinForms
 {
     partial class Form1
     {

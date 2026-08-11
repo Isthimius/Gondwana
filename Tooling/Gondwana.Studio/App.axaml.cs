@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Gondwana.Studio.ViewModels;
-using Gondwana.Studio.Views;
+using Gondwana.Tooling.Studio.Avalonia.ViewModels;
+using Gondwana.Tooling.Studio.Avalonia.Views;
 
-namespace Gondwana.Studio;
+namespace Gondwana.Tooling.Studio.Avalonia;
 
 public partial class App : Application
 {

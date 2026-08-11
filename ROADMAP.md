@@ -109,10 +109,10 @@ The level should be editable in Tiled (https://www.mapeditor.org/) and reload in
 
 </details>
 
-## Gondwana.Studio Tooling (3)
+## Gondwana.Tooling.Studio Tooling (3)
 
 <details>
-<summary><strong>#110 feat: Scene / Room Editor panel in Gondwana.Studio</strong></summary>
+<summary><strong>#110 feat: Scene / Room Editor panel in Gondwana.Tooling.Studio</strong></summary>
 
 - **Issue:** [#110](https://github.com/Isthimius/Gondwana/issues/110)
 - **State:** OPEN
@@ -123,7 +123,7 @@ The level should be editable in Tiled (https://www.mapeditor.org/) and reload in
 ### Ticket Details
 
 ## Summary
-There is no visual Scene Editor in Gondwana.Studio. Developers currently hand-code all scene layout. FlatRedBall Glue and GameMaker's room editor are both central to their workflows. This issue tracks adding a **Scene Editor** dockable panel.
+There is no visual Scene Editor in Gondwana.Tooling.Studio. Developers currently hand-code all scene layout. FlatRedBall Glue and GameMaker's room editor are both central to their workflows. This issue tracks adding a **Scene Editor** dockable panel.
 
 ## Scope of Work
 Add a `SceneEditorView` (Avalonia UserControl) that:
@@ -170,12 +170,12 @@ A runtime `SceneLoader` reads `.gondwana-scene` and constructs engine objects ac
 - `Gondwana/Scenes/Scene.cs`
 - `Gondwana/Scenes/SceneLayer.cs`
 - `Gondwana/Drawing/Tilesheets/TilesheetRegistry.cs`
-- `Tooling/Gondwana.Studio/Views/`
+- `Tooling/Gondwana.Tooling.Studio/Views/`
 
 </details>
 
 <details>
-<summary><strong>#109 feat: Animation Editor panel in Gondwana.Studio</strong></summary>
+<summary><strong>#109 feat: Animation Editor panel in Gondwana.Tooling.Studio</strong></summary>
 
 - **Issue:** [#109](https://github.com/Isthimius/Gondwana/issues/109)
 - **State:** OPEN
@@ -186,7 +186,7 @@ A runtime `SceneLoader` reads `.gondwana-scene` and constructs engine objects ac
 ### Ticket Details
 
 ## Summary
-There is no visual animation editor in Gondwana.Studio. FlatRedBall Glue ships a full animation editor for defining frame sequences with timing. This issue tracks adding an **Animation Editor** dockable panel to Gondwana.Studio.
+There is no visual animation editor in Gondwana.Tooling.Studio. FlatRedBall Glue ships a full animation editor for defining frame sequences with timing. This issue tracks adding an **Animation Editor** dockable panel to Gondwana.Tooling.Studio.
 
 ## Scope of Work
 Add an `AnimationEditorView` (Avalonia UserControl) that:
@@ -230,12 +230,12 @@ No new engine code is required — loading is purely deserialization.
 - `Gondwana/Drawing/Animation/Cycle.cs`
 - `Gondwana/Drawing/Animation/CycleType.cs`
 - `Gondwana/Drawing/Animation/Animator.cs`
-- `Tooling/Gondwana.Studio/Views/`
+- `Tooling/Gondwana.Tooling.Studio/Views/`
 
 </details>
 
 <details>
-<summary><strong>#108 feat: Tilesheet Editor panel in Gondwana.Studio</strong></summary>
+<summary><strong>#108 feat: Tilesheet Editor panel in Gondwana.Tooling.Studio</strong></summary>
 
 - **Issue:** [#108](https://github.com/Isthimius/Gondwana/issues/108)
 - **State:** OPEN
@@ -246,10 +246,10 @@ No new engine code is required — loading is purely deserialization.
 ### Ticket Details
 
 ## Summary
-Gondwana.Studio currently has directory and asset-file views but no visual sprite/tilesheet editor. FlatRedBall Glue and GameMaker both have integrated tilesheet/animation editors. This issue tracks adding a **Tilesheet Editor** dockable panel to Gondwana.Studio.
+Gondwana.Tooling.Studio currently has directory and asset-file views but no visual sprite/tilesheet editor. FlatRedBall Glue and GameMaker both have integrated tilesheet/animation editors. This issue tracks adding a **Tilesheet Editor** dockable panel to Gondwana.Tooling.Studio.
 
 ## Current State
-The IDE lives at `Tooling/Gondwana.Studio/`. It uses Avalonia with dockable windows (`Docking/`) and already has asset file panels (`Views/AssetFilesView.axaml`).
+The IDE lives at `Tooling/Gondwana.Tooling.Studio/`. It uses Avalonia with dockable windows (`Docking/`) and already has asset file panels (`Views/AssetFilesView.axaml`).
 
 ## Scope of Work
 Add a `TilesheetEditorView` (Avalonia UserControl) that:
@@ -284,8 +284,8 @@ This must be deserializable by `TilesheetRegistry` at runtime.
 - [ ] Runtime `TilesheetRegistry` can load the exported file and render tiles correctly
 
 ## Key Files / References
-- `Tooling/Gondwana.Studio/Views/`
-- `Tooling/Gondwana.Studio/Docking/`
+- `Tooling/Gondwana.Tooling.Studio/Views/`
+- `Tooling/Gondwana.Tooling.Studio/Docking/`
 - `Gondwana/Drawing/Tilesheets/Tilesheet.cs`
 - `Gondwana/Drawing/Tilesheets/TilesheetRegistry.cs`
 
@@ -1153,7 +1153,7 @@ imported.ExportAnimations("hero/");
 ```
 
 ### Notes
-- The package must be standalone (no Gondwana.Studio dependency)
+- The package must be standalone (no Gondwana.Tooling.Studio dependency)
 - Layer compositing uses Aseprite's blend modes (Normal, Multiply, Screen, etc.)
 - Only RGB and RGBA colour modes need to be supported in v1 (Indexed mode is optional)
 
@@ -1168,7 +1168,7 @@ imported.ExportAnimations("hero/");
 - Aseprite file spec: https://github.com/aseprite/aseprite/blob/main/docs/ase-file-specs.md
 - `Gondwana/Drawing/Tilesheets/Tilesheet.cs`
 - `Gondwana/Drawing/Animation/FrameSequence.cs`
-- Existing asset package for reference: `Tooling/Gondwana.Assets.WinForms/`
+- Existing asset package for reference: `Tooling/Gondwana.Tooling.Assets.WinForms/`
 
 </details>
 

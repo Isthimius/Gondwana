@@ -1,7 +1,7 @@
 using Avalonia.Controls;
-using CoreHost = Gondwana.Studio.Core.Extensibility.StudioPluginHost;
+using CoreHost = Gondwana.Tooling.Studio.Core.Extensibility.StudioPluginHost;
 
-namespace Gondwana.Studio.Extensibility;
+namespace Gondwana.Tooling.Studio.Avalonia.Extensibility;
 
 /// <summary>
 /// Avalonia-specific plugin host. Extends the framework-neutral <see cref="CoreHost"/>

@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Tilesheets;
 using Newtonsoft.Json;
 
-namespace Gondwana.StudioAssets;
+namespace Gondwana.Tooling.StudioAssets;
 
 /// <summary>
 /// TilesheetMetadataLoader.
@@ -27,6 +27,6 @@ public static class TilesheetMetadataLoader
     /// <returns>The registered tilesheet.</returns>
     public static Tilesheet LoadAndRegisterTilesheet(string metadataPath)
     {
-        throw new NotImplementedException("LoadAndRegisterTilesheet is not implemented in Gondwana.Studio.Core. Override this in a platform-specific subclass or provide an engine integration.");
+        throw new NotImplementedException("LoadAndRegisterTilesheet is not implemented in Gondwana.Tooling.Studio.Core. Override this in a platform-specific subclass or provide an engine integration.");
     }
 }

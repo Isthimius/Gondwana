@@ -1,8 +1,9 @@
 using System.IO;
 using Avalonia.Media.Imaging;
-using Gondwana.Studio.Core.Services;
+using Gondwana.Tooling.Studio.Core.Services;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.Avalonia.ViewModels;
 
 /// <summary>
 /// Avalonia-specific tilesheet editor ViewModel.

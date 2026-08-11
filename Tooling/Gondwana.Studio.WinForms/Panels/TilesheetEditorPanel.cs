@@ -1,10 +1,10 @@
 using Gondwana.Physics.Collisions;
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 
-namespace Gondwana.Studio.WinForms.Panels;
+namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 /// <summary>
 /// WinForms tilesheet editor panel with region/frame collision-bound editing and preview.

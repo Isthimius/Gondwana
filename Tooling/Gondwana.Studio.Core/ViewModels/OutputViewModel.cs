@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// OutputViewModel.

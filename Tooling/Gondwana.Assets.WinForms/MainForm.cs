@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Gondwana.Assets;
 
-namespace Gondwana.Assets.WinForms;
+namespace Gondwana.Tooling.Assets.WinForms;
 
 public sealed partial class MainForm : Form
 {

@@ -1,7 +1,7 @@
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 
-namespace Gondwana.Studio.Documents;
+namespace Gondwana.Tooling.Studio.Documents;
 
 /// <summary>
 /// Represents an editor session for a tilesheet, including editable definition data and source provenance.

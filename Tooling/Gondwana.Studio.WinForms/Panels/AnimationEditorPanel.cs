@@ -1,6 +1,6 @@
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.WinForms.Panels;
+namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 /// <summary>
 /// Panel for the animation editor.

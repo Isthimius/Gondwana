@@ -2,12 +2,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Avalonia.Controls;
-using Avalonia.Controls.Templates;
+using global::Avalonia.Controls;
+using global::Avalonia.Controls.Templates;
 using Dock.Model.Core;
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.Avalonia.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio;
+namespace Gondwana.Tooling.Studio.Avalonia;
 
 /// <summary>
 /// Resolves view-model and dockable content objects to Avalonia views.

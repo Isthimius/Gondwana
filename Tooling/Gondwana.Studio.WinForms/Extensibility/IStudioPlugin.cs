@@ -1,6 +1,6 @@
-using CorePlugin = Gondwana.Studio.Core.Extensibility.IStudioPlugin;
+using CorePlugin = Gondwana.Tooling.Studio.Core.Extensibility.IStudioPlugin;
 
-namespace Gondwana.Studio.WinForms.Extensibility;
+namespace Gondwana.Tooling.Studio.WinForms.Extensibility;
 
 /// <summary>
 /// WinForms-specific studio plugin interface.

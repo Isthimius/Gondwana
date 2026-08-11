@@ -2,10 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using Gondwana.Studio.Core.Geometry;
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.Core.Geometry;
+using Gondwana.Tooling.Studio.Avalonia.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.Views;
+namespace Gondwana.Tooling.Studio.Avalonia.Views;
 
 /// <summary>
 /// SceneEditorView.

@@ -1,4 +1,4 @@
-namespace Gondwana.Studio.Core.Geometry;
+namespace Gondwana.Tooling.Studio.Core.Geometry;
 
 /// <summary>
 /// A platform-neutral rectangle with double-precision coordinates.

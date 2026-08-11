@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Gondwana.Assets;
-using Gondwana.Studio.Core.Services;
+using Gondwana.Tooling.Studio.Core.Services;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// View-model for the AssetFiles document panel.

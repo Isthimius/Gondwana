@@ -1,6 +1,6 @@
 using Gondwana.Physics.Collisions;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// Represents a single tile cell within a tilesheet editor grid.

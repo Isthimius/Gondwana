@@ -1,4 +1,4 @@
-namespace Gondwana.Studio.WinForms.Services;
+namespace Gondwana.Tooling.Studio.WinForms.Services;
 
 /// <summary>
 /// Simple text-input dialog.

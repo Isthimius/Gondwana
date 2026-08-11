@@ -1,7 +1,7 @@
 using Avalonia.Controls;
-using CorePlugin = Gondwana.Studio.Core.Extensibility.IStudioPlugin;
+using CorePlugin = Gondwana.Tooling.Studio.Core.Extensibility.IStudioPlugin;
 
-namespace Gondwana.Studio.Extensibility;
+namespace Gondwana.Tooling.Studio.Avalonia.Extensibility;
 
 /// <summary>
 /// Defines extensibility points for contributing panels, menu items, and project lifecycle behavior to Gondwana Studio.

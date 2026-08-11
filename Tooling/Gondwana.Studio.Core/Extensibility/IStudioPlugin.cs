@@ -1,4 +1,4 @@
-namespace Gondwana.Studio.Core.Extensibility;
+namespace Gondwana.Tooling.Studio.Core.Extensibility;
 
 /// <summary>
 /// Framework-neutral interface for Gondwana Studio plugins.

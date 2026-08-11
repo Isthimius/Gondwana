@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Gondwana.Studio.Views;
+namespace Gondwana.Tooling.Studio.Avalonia.Views;
 
 /// <summary>
 /// AnimationEditorView.

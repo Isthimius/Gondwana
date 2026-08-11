@@ -1,7 +1,7 @@
 using Gondwana.Assets;
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.WinForms.Panels;
+namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 /// <summary>
 /// Panel for managing a Gondwana asset file (.gaf).

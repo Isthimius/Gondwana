@@ -5,9 +5,10 @@ using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.Mvvm;
 using Dock.Model.Mvvm.Controls;
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.Avalonia.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.Docking;
+namespace Gondwana.Tooling.Studio.Avalonia.Docking;
 
 /// <summary>
 /// Builds the initial docking layout:

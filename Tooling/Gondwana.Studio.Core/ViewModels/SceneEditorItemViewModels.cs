@@ -1,6 +1,6 @@
-using Gondwana.Studio.Core.Geometry;
+using Gondwana.Tooling.Studio.Core.Geometry;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// Represents a tile placed on the scene canvas at a specific grid position.

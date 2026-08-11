@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Gondwana.StudioAssets;
+namespace Gondwana.Tooling.StudioAssets;
 
 /// <summary>
 /// AnimationAsset.

@@ -9,11 +9,11 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
-using Gondwana.Studio.Core.Services;
-using Gondwana.StudioAssets;
+using Gondwana.Tooling.Studio.Core.Services;
+using Gondwana.Tooling.StudioAssets;
 using SkiaSharp;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// Platform-neutral base for the tilesheet editor.

@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:Gondwana.Studio.ViewModels"
-             x:Class="Gondwana.Studio.Views.OutputView"
+             xmlns:vm="using:Gondwana.Tooling.Studio.ViewModels"
+             x:Class="Gondwana.Tooling.Studio.Avalonia.Views.OutputView"
              x:DataType="vm:OutputViewModel">
   <ScrollViewer Margin="4">
     <TextBox IsReadOnly="True"

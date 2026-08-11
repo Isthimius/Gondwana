@@ -1,8 +1,9 @@
 using Dock.Model.Controls;
-using Gondwana.Studio.Docking;
-using Gondwana.Studio.Extensibility;
+using Gondwana.Tooling.Studio.Avalonia.Docking;
+using Gondwana.Tooling.Studio.Avalonia.Extensibility;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.Avalonia.ViewModels;
 
 /// <summary>
 /// Root view-model for the main window. Owns the dock factory and layout.

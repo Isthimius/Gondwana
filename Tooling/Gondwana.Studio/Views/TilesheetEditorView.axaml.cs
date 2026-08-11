@@ -1,10 +1,11 @@
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
-using Gondwana.Studio.ViewModels;
+using global::Avalonia.Controls;
+using global::Avalonia.Input;
+using global::Avalonia.Interactivity;
+using global::Avalonia.Platform.Storage;
+using Gondwana.Tooling.Studio.Avalonia.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.Views;
+namespace Gondwana.Tooling.Studio.Avalonia.Views;
 
 /// <summary>
 /// TilesheetEditorView.

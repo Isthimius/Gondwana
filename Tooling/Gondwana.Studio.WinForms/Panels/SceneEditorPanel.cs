@@ -1,7 +1,7 @@
-using Gondwana.Studio.Core.Geometry;
-using Gondwana.Studio.ViewModels;
+using Gondwana.Tooling.Studio.Core.Geometry;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.WinForms.Panels;
+namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 /// <summary>
 /// Panel for the scene editor.

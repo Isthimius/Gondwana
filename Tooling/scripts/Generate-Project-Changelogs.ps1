@@ -76,9 +76,9 @@ $DefaultProjects = @(
     "Gondwana.WinForms",
     "Gondwana.WinForms.Hosting",
     "Tooling/Gondwana.Cli",
-    "Tooling/Gondwana.Studio",
+    "Tooling/Gondwana.Tooling.Studio",
     "Tooling/Gondwana.Templates",
-    "Tooling/Gondwana.Assets.WinForms"
+    "Tooling/Gondwana.Tooling.Assets.WinForms"
 )
 
 if (-not $Projects) {

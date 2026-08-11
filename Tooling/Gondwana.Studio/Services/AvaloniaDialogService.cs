@@ -1,11 +1,12 @@
-using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
-using Avalonia.Platform.Storage;
+using global::Avalonia.Controls;
+using global::Avalonia.Layout;
+using global::Avalonia.Media;
+using global::Avalonia.Platform.Storage;
+using global::Avalonia;
 using Gondwana.Assets;
-using Gondwana.Studio.Core.Services;
+using Gondwana.Tooling.Studio.Core.Services;
 
-namespace Gondwana.Studio.Services;
+namespace Gondwana.Tooling.Studio.Avalonia.Services;
 
 /// <summary>
 /// Avalonia implementation of <see cref="IDialogService"/>.
@@ -178,7 +179,7 @@ public sealed class AvaloniaDialogService : IDialogService
             WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
 
-        panel = new StackPanel { Margin = new Avalonia.Thickness(16), Spacing = 12 };
+        panel = new StackPanel { Margin = new Thickness(16), Spacing = 12 };
         dialog.Content = panel;
         return dialog;
     }

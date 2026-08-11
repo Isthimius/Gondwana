@@ -3,7 +3,7 @@ using Gondwana.Scenes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Gondwana.StudioAssets;
+namespace Gondwana.Tooling.StudioAssets;
 
 /// <summary>
 /// SceneLoader.
@@ -66,10 +66,10 @@ public static class SceneLoader
         }
 
         if (sceneAsset.Entities.Count > 0)
-            scene.ValueBag.Set(new ValueKey<List<SceneEntityAsset>>("gondwana.studio.scene.entities"), sceneAsset.Entities);
+            scene.ValueBag.Set(new ValueKey<List<SceneEntityAsset>>("Gondwana.Tooling.Studio.scene.entities"), sceneAsset.Entities);
 
         if (sceneAsset.Colliders.Count > 0)
-            scene.ValueBag.Set(new ValueKey<List<SceneColliderAsset>>("gondwana.studio.scene.colliders"), sceneAsset.Colliders);
+            scene.ValueBag.Set(new ValueKey<List<SceneColliderAsset>>("Gondwana.Tooling.Studio.scene.colliders"), sceneAsset.Colliders);
 
         return scene;
     }

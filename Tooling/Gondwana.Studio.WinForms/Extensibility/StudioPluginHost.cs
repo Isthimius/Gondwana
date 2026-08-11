@@ -1,6 +1,6 @@
-using CoreHost = Gondwana.Studio.Core.Extensibility.StudioPluginHost;
+using CoreHost = Gondwana.Tooling.Studio.Core.Extensibility.StudioPluginHost;
 
-namespace Gondwana.Studio.WinForms.Extensibility;
+namespace Gondwana.Tooling.Studio.WinForms.Extensibility;
 
 /// <summary>
 /// WinForms studio plugin host. Extends the framework-neutral <see cref="CoreHost"/>

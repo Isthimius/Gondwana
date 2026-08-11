@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Gondwana.Studio.Core.Geometry;
-using Gondwana.Studio.Core.Services;
-using Gondwana.StudioAssets;
+using Gondwana.Tooling.Studio.Core.Geometry;
+using Gondwana.Tooling.Studio.Core.Services;
+using Gondwana.Tooling.StudioAssets;
 using Newtonsoft.Json;
 
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// SceneEditorViewModel.

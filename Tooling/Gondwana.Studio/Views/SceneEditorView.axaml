@@ -1,7 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:Gondwana.Studio.ViewModels"
-             x:Class="Gondwana.Studio.Views.SceneEditorView"
+             xmlns:vm="using:Gondwana.Tooling.Studio.ViewModels"
+             xmlns:avm="using:Gondwana.Tooling.Studio.Avalonia.ViewModels"
+             x:Class="Gondwana.Tooling.Studio.Avalonia.Views.SceneEditorView"
              x:DataType="vm:SceneEditorViewModel">
   <Grid ColumnDefinitions="280,*" RowDefinitions="Auto,*,Auto">
     <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8" Spacing="6">

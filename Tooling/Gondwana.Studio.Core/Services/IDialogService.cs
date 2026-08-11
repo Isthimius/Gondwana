@@ -1,4 +1,4 @@
-namespace Gondwana.Studio.Core.Services;
+namespace Gondwana.Tooling.Studio.Core.Services;
 
 /// <summary>
 /// Platform-neutral abstraction for file and user-interaction dialogs used by

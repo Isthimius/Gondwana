@@ -2,7 +2,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Newtonsoft.Json;
 
-namespace Gondwana.StudioAssets;
+namespace Gondwana.Tooling.StudioAssets;
 
 /// <summary>
 /// AnimationAssetLoader.

@@ -1,7 +1,7 @@
 using Gondwana.Assets;
-using Gondwana.Studio.Core.Services;
+using Gondwana.Tooling.Studio.Core.Services;
 
-namespace Gondwana.Studio.WinForms.Services;
+namespace Gondwana.Tooling.Studio.WinForms.Services;
 
 /// <summary>
 /// WinForms implementation of <see cref="IDialogService"/>.

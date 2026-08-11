@@ -1,4 +1,4 @@
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// Represents a single frame within an animation sequence.

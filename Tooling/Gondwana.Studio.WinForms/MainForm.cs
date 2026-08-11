@@ -1,12 +1,12 @@
 using System.IO;
-using Gondwana.Studio.ViewModels;
-using Gondwana.Studio.WinForms.Extensibility;
-using Gondwana.Studio.WinForms.Panels;
-using Gondwana.Studio.WinForms.Services;
+using Gondwana.Tooling.Studio.ViewModels;
+using Gondwana.Tooling.Studio.WinForms.Extensibility;
+using Gondwana.Tooling.Studio.WinForms.Panels;
+using Gondwana.Tooling.Studio.WinForms.Services;
 using WeifenLuo.WinFormsUI.Docking;
 using WeifenLuo.WinFormsUI.ThemeVS2015;
 
-namespace Gondwana.Studio.WinForms;
+namespace Gondwana.Tooling.Studio.WinForms;
 
 /// <summary>
 /// Main application window with DockPanelSuite layout and VS dark theme.

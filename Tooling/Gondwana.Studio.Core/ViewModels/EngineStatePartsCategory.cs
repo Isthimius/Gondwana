@@ -1,4 +1,4 @@
-namespace Gondwana.Studio.ViewModels;
+namespace Gondwana.Tooling.Studio.ViewModels;
 
 /// <summary>
 /// Maps to individual (non-composite) EngineStateParts values,

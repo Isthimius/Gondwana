@@ -1,8 +1,10 @@
-using Avalonia.Controls;
-using Avalonia.Input;
-using Gondwana.Studio.ViewModels;
+using global::Avalonia.Controls;
+using global::Avalonia.Input;
+using global::Avalonia;
+using Gondwana.Tooling.Studio.Avalonia.ViewModels;
+using Gondwana.Tooling.Studio.ViewModels;
 
-namespace Gondwana.Studio.Views;
+namespace Gondwana.Tooling.Studio.Avalonia.Views;
 
 public partial class DirectoryPanelView : UserControl
 {
@@ -11,13 +13,13 @@ public partial class DirectoryPanelView : UserControl
         InitializeComponent();
     }
 
-    protected override void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
         DirectoryTree.DoubleTapped += OnTreeDoubleTapped;
     }
 
-    protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         DirectoryTree.DoubleTapped -= OnTreeDoubleTapped;
         base.OnDetachedFromVisualTree(e);

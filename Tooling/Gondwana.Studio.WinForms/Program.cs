@@ -1,4 +1,4 @@
-namespace Gondwana.Studio.WinForms;
+namespace Gondwana.Tooling.Studio.WinForms;
 
 static class Program
 {

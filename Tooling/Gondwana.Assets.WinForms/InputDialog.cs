@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Assets.WinForms;
+﻿namespace Gondwana.Tooling.Assets.WinForms;
 
 internal sealed class InputDialog : Form
 {
