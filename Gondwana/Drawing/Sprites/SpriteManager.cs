@@ -81,13 +81,7 @@ public sealed class SpriteManager : IDisposable
     /// <returns>The cloned sprite.</returns>
     public Sprite CloneSprite(Sprite sprite, SceneLayer sceneLayer)
     {
-        Sprite newSprite = new Sprite(sprite);
-
-        if (newSprite.SceneLayer != sceneLayer)
-        {
-            newSprite._sceneLayer = sceneLayer;
-            newSprite._sceneLayer.RefreshQueue.AddWorldRect(newSprite.DrawLocationWorld);
-        }
+        Sprite newSprite = new Sprite(sprite, sceneLayer);
 
         SpriteCreated?.Invoke(newSprite);
         return newSprite;
