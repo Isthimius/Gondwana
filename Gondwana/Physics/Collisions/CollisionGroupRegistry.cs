@@ -73,6 +73,21 @@ public sealed class CollisionGroupRegistry
     }
 
     /// <summary>
+    /// Combines previously defined collision groups into one bit mask.
+    /// An empty collection resolves to <see cref="CollisionMasks.None"/>.
+    /// </summary>
+    public int GetMask(IEnumerable<string> names)
+    {
+        ArgumentNullException.ThrowIfNull(names);
+
+        int mask = CollisionMasks.None;
+        foreach (var name in names)
+            mask |= Get(name);
+
+        return mask;
+    }
+
+    /// <summary>
     /// Gets a read-only collection of all defined collision group names.
     /// </summary>
     public IReadOnlyCollection<string> GetGroupNames() => _groups.Keys.ToArray();

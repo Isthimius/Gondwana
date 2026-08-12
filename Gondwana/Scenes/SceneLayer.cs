@@ -136,6 +136,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private int _tileWidth;     // rendered width
     private int _tileHeight;    // rendered height
     private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
+    private string _defaultTileCollisionProfile = CollisionProfileNames.World;
 
     #endregion private fields
 
@@ -634,6 +635,30 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public CollisionGroupRegistry CollisionGroups => Scene.CollisionGroups;
 
+    /// <summary>
+    /// Gets or sets the scene collision profile applied to fixed tiles on this layer.
+    /// The default is <see cref="CollisionProfileNames.World"/>.
+    /// </summary>
+    [JsonProperty]
+    public string DefaultTileCollisionProfile
+    {
+        get => _defaultTileCollisionProfile;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException(
+                    "Default tile collision profile cannot be empty.",
+                    nameof(value));
+            }
+
+            _defaultTileCollisionProfile = value;
+
+            if (Scene is not null && _sceneLayerTileArray is not null)
+                ApplyDefaultTileCollisionProfile();
+        }
+    }
+
     #endregion properties
 
     #region public methods
@@ -659,6 +684,23 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         _tileWidth = newWidth;
         _tileHeight = newHeight;
         SceneLayerTileSizeChanged?.Invoke(this);
+    }
+
+    /// <summary>
+    /// Applies <see cref="DefaultTileCollisionProfile"/> to every fixed tile on
+    /// this layer. The layer must already belong to a scene.
+    /// </summary>
+    internal void ApplyDefaultTileCollisionProfile()
+    {
+        if (Scene is null || _sceneLayerTileArray is null)
+            return;
+
+        // Resolve once up front so an invalid profile fails before partially
+        // updating the layer.
+        Scene.CollisionProfiles.Get(_defaultTileCollisionProfile);
+
+        foreach (var tile in _sceneLayerTileArray)
+            tile?.SetCollisionProfile(_defaultTileCollisionProfile);
     }
 
     /// <summary>

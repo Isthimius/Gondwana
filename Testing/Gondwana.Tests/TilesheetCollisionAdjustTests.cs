@@ -245,6 +245,9 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
             nameof(TilesheetRegionDefinition.CollisionAdjust));
 
         regionObject.Remove(
+            nameof(TilesheetRegionDefinition.CollisionType));
+
+        regionObject.Remove(
             nameof(TilesheetRegionDefinition.Frames));
 
         var loaded = TilesheetDefinitionSerializer.FromJson(
@@ -255,6 +258,10 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         Assert.Equal(
             CollisionAdjust.None,
             region.CollisionAdjust);
+
+        Assert.Equal(
+            TileCollisionType.None,
+            region.CollisionType);
 
         Assert.Empty(region.Frames);
     }

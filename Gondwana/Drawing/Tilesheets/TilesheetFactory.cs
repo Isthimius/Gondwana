@@ -53,7 +53,8 @@ internal static class TilesheetFactory
                 region.TilePadding,
                 region.RegionMargin,
                 region.Overhang,
-                region.CollisionAdjust);
+                region.CollisionAdjust,
+                region.CollisionType);
 
             // A missing frame value inherits the region default. A present value is
             // an explicit override, even when it currently equals that default.
@@ -65,6 +66,14 @@ internal static class TilesheetFactory
                         frame.XTile,
                         frame.YTile,
                         adjust);
+                }
+
+                if (frame.CollisionType is { } collisionType)
+                {
+                    runtimeRegion.SetFrameCollisionType(
+                        frame.XTile,
+                        frame.YTile,
+                        collisionType);
                 }
             }
         }

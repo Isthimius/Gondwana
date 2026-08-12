@@ -22,4 +22,11 @@ public sealed class TilesheetFrameDefinition
     /// A missing value inherits the region adjustment for backward compatibility.
     /// </summary>
     public CollisionAdjust? CollisionAdjust { get; set; }
+
+    /// <summary>
+    /// Gets or sets the frame-specific collision type. A missing value inherits
+    /// the region collision type; an explicit <see cref="TileCollisionType.None"/>
+    /// disables collision for this frame.
+    /// </summary>
+    public TileCollisionType? CollisionType { get; set; }
 }
