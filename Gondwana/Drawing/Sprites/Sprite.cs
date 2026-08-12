@@ -74,12 +74,17 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// <summary>
     /// Copy constructor used by <see cref="SpriteManager.CloneSprite(Sprite)"/>.
     /// </summary>
-    internal Sprite(Sprite sprite)
+    internal Sprite(Sprite sprite, SceneLayer sceneLayer)
     {
-        animator = new Animator(this);
-        SpriteManager.Instance.AddSprite(this);
+        ArgumentNullException.ThrowIfNull(sprite);
 
-        _sceneLayer = sprite._sceneLayer;
+        _sceneLayer = sceneLayer
+            ?? throw new ArgumentNullException(
+                nameof(sceneLayer),
+                "Sprite must be attached to a SceneLayer.");
+
+        animator = new Animator(this);
+
         frame = sprite.frame;
         CopyCollisionSettingsFrom(sprite);
         _horizAlign = sprite._horizAlign;
@@ -102,6 +107,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             collidesWith: CollisionMasks.All);
 
         _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+        SpriteManager.Instance.AddSprite(this);
     }
 
     ~Sprite()

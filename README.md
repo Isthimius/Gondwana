@@ -24,7 +24,7 @@ The engine carries forward the predictability of classic Win32/GDI-era rendering
 
 ## Documentation & Resources
 
-- 📘 **[Engine Architecture & Guides](https://github.com/Isthimius/Gondwana/wiki)**
+- 📘 **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)**
 - 📚 **[API Reference](https://isthimius.github.io/Gondwana/)**
 - 📦 **[NuGet Package](https://www.nuget.org/packages/Gondwana)**
 - 🏷️ **[GitHub Releases](https://github.com/Isthimius/Gondwana/releases)**

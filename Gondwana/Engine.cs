@@ -292,7 +292,15 @@ public sealed class Engine : IDisposable
         else
             UiDispatcher!.Post(() => PreInitialization?.Invoke());
 
-        _configurationFile?.Dispose();
+        try
+        {
+            _configurationFile?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving the engine configuration during initialization.");
+        }
+
         _configurationFile = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
         Configuration = _configurationFile.EngineConfig;
 

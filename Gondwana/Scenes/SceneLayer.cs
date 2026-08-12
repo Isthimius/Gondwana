@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
@@ -789,7 +788,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             if (tile is null)
                 continue;
 
-            tile.Collider ??= new TileCollider(tile, collisionGroup: CollisionMasks.None, collidesWith: CollisionMasks.None);
+            tile.EnsureCollider();
         }
     }
 
