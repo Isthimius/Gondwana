@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gondwana.Tooling.Studio.ViewModels"
+             xmlns:avm="using:Gondwana.Tooling.Studio.Avalonia.ViewModels"
+             x:Class="Gondwana.Tooling.Studio.Avalonia.Views.AnimationEditorView"
+             x:DataType="vm:AnimationEditorViewModel">
+  <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="1.4*,2*">
+    <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8" Spacing="6">
+      <Button Content="Open Tilesheet" Command="{Binding OpenTilesheetCommand}" />
+      <TextBlock Text="Name" VerticalAlignment="Center"/>
+      <TextBox Width="180" Text="{Binding AnimationName}" />
+      <TextBlock Text="Cycle" VerticalAlignment="Center"/>
+      <ComboBox Width="120" SelectedItem="{Binding CycleType}">
+        <x:String>Once</x:String>
+        <x:String>Loop</x:String>
+        <x:String>PingPong</x:String>
+      </ComboBox>
+      <Button Content="Save Animation" Command="{Binding SaveCommand}" />
+    </StackPanel>
+
+    <StackPanel Grid.Row="1" Grid.Column="0" Margin="8" Spacing="6">
+      <TextBlock Text="Tile Palette" FontWeight="Bold"/>
+      <ListBox ItemsSource="{Binding TilePalette}" SelectedItem="{Binding SelectedPaletteTile}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="vm:TileCellViewModel">
+            <TextBlock Text="{Binding Name}" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+      <Button Content="Add Frame" Command="{Binding AddFrameCommand}" />
+    </StackPanel>
+
+    <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="*,Auto,Auto" Margin="8">
+      <DataGrid Grid.Row="0"
+                ItemsSource="{Binding Frames}"
+                SelectedItem="{Binding SelectedFrame}"
+                AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Tile" Binding="{Binding TileName}" Width="*" />
+          <DataGridTextColumn Header="Index" Binding="{Binding TileIndex}" Width="80" />
+          <DataGridTextColumn Header="Duration (ms)" Binding="{Binding DurationMs}" Width="120" />
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+        <Button Content="Remove" Command="{Binding RemoveFrameCommand}" />
+        <Button Content="Move Up" Command="{Binding MoveFrameUpCommand}" />
+        <Button Content="Move Down" Command="{Binding MoveFrameDownCommand}" />
+      </StackPanel>
+
+      <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+        <Button Content="▶ Preview" Command="{Binding StartPreviewCommand}" />
+        <Button Content="■ Stop" Command="{Binding StopPreviewCommand}" />
+        <TextBlock Text="{Binding PreviewText}" VerticalAlignment="Center"/>
+      </StackPanel>
+    </Grid>
+
+    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="8" Text="{Binding StatusText}" />
+  </Grid>
+</UserControl>

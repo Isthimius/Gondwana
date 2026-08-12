@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Gondwana.Tooling.Studio.ViewModels"
+             x:Class="Gondwana.Tooling.Studio.Avalonia.Views.OutputView"
+             x:DataType="vm:OutputViewModel">
+  <ScrollViewer Margin="4">
+    <TextBox IsReadOnly="True"
+             Text="{Binding CombinedText}"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             FontFamily="Consolas"
+             FontSize="12"/>
+  </ScrollViewer>
+</UserControl>

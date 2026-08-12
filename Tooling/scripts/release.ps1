@@ -72,16 +72,16 @@ $ProjectChangelogGroups = @(
         IncludePaths = @("Tooling/Gondwana.Cli/**/*")
     },
     [pscustomobject]@{
-        Name         = "Tooling / Gondwana.Studio"
-        IncludePaths = @("Tooling/Gondwana.Studio/**/*")
+        Name         = "Tooling / Gondwana.Tooling.Studio"
+        IncludePaths = @("Tooling/Gondwana.Tooling.Studio/**/*")
     },
     [pscustomobject]@{
         Name         = "Tooling / Gondwana.Templates"
         IncludePaths = @("Tooling/Gondwana.Templates/**/*")
     },
     [pscustomobject]@{
-        Name         = "Tooling / Gondwana.Assets.WinForms"
-        IncludePaths = @("Tooling/Gondwana.Assets.WinForms/**/*")
+        Name         = "Tooling / Gondwana.Tooling.Assets.WinForms"
+        IncludePaths = @("Tooling/Gondwana.Tooling.Assets.WinForms/**/*")
     },
     [pscustomobject]@{
         Name         = "Build / Repository"
