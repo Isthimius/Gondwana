@@ -327,7 +327,11 @@ public abstract class BackbufferBase : IDisposable
             }
             drawable.Draw(this, destRectScreen);
 
-            AddToBackbufferDirtyRectangle(destRectScreen.ToPixelAlignedRect());
+            RectangleF visualBoundsScreen = drawable is Sprite drawnSprite
+                ? drawnSprite.GetVisualBoundsScreen(destRectScreen)
+                : destRectScreen;
+
+            AddToBackbufferDirtyRectangle(visualBoundsScreen.ToPixelAlignedRect());
 
             if (drawable is Tile tile)
                 tiles.Add(tile);

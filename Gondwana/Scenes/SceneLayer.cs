@@ -882,7 +882,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 continue;
 
             // Defensive overlap check (cheap)
-            if (!sprite.DrawLocationWorld.IntersectsWith(queryRect))
+            if (!sprite.VisualBoundsWorld.IntersectsWith(queryRect))
                 continue;
 
             list.Add(sprite);

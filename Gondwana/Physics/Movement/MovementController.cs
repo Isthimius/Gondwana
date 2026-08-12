@@ -121,7 +121,7 @@ public sealed partial class MovementController : IDisposable
     /// to the opposite side.
     /// Only meaningful for Grid space; ignored for Pixel space.
     /// </summary>
-    public bool WrapX { get; internal set; }
+    public bool WrapX { get; set; }
 
     /// <summary>
     /// Enables or disables vertical world wrapping.
@@ -129,7 +129,7 @@ public sealed partial class MovementController : IDisposable
     /// to the opposite side.
     /// Only meaningful for Grid space; ignored for Pixel space.
     /// </summary>
-    public bool WrapY { get; internal set; }
+    public bool WrapY { get; set; }
 
     /// <summary>
     /// Immediately stops all forms of movement — follow, scripted, and integrated.
