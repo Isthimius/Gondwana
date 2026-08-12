@@ -44,8 +44,14 @@ public sealed class TilesheetRegionDefinition
     public CollisionAdjust CollisionAdjust { get; set; } = CollisionAdjust.None;
 
     /// <summary>
+    /// Gets or sets the region-level collision type inherited by frames without
+    /// an explicit collision-type override.
+    /// </summary>
+    public TileCollisionType CollisionType { get; set; } = TileCollisionType.None;
+
+    /// <summary>
     /// Gets or sets per-frame collision metadata for this region. A missing collision
-    /// adjustment on a frame means that frame inherits <see cref="CollisionAdjust"/>.
+    /// property on a frame means that frame inherits the corresponding region value.
     /// </summary>
     public List<TilesheetFrameDefinition> Frames { get; set; } = [];
 }

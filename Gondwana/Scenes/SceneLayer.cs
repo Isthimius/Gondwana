@@ -136,6 +136,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private int _tileWidth;     // rendered width
     private int _tileHeight;    // rendered height
     private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
+    private string _defaultTileCollisionProfile = CollisionProfileNames.World;
 
     #endregion private fields
 
@@ -634,6 +635,37 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public CollisionGroupRegistry CollisionGroups => Scene.CollisionGroups;
 
+    /// <summary>
+    /// Gets or sets the scene collision profile applied to fixed tiles on this layer.
+    /// The default is <see cref="CollisionProfileNames.World"/>.
+    /// </summary>
+    [JsonProperty]
+    public string DefaultTileCollisionProfile
+    {
+        get => _defaultTileCollisionProfile;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException(
+                    "Default tile collision profile cannot be empty.",
+                    nameof(value));
+            }
+
+            if (Scene is not null)
+            {
+                var profile = Scene.CollisionProfiles.Get(value);
+                _ = profile.ResolveCollisionGroup(Scene.CollisionGroups);
+                _ = profile.ResolveCollidesWith(Scene.CollisionGroups);
+            }
+
+            _defaultTileCollisionProfile = value;
+
+            if (Scene is not null && _sceneLayerTileArray is not null)
+                ApplyDefaultTileCollisionProfile();
+        }
+    }
+
     #endregion properties
 
     #region public methods
@@ -659,6 +691,23 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         _tileWidth = newWidth;
         _tileHeight = newHeight;
         SceneLayerTileSizeChanged?.Invoke(this);
+    }
+
+    /// <summary>
+    /// Applies <see cref="DefaultTileCollisionProfile"/> to every fixed tile on
+    /// this layer. The layer must already belong to a scene.
+    /// </summary>
+    internal void ApplyDefaultTileCollisionProfile()
+    {
+        if (Scene is null || _sceneLayerTileArray is null)
+            return;
+
+        // Resolve once up front so an invalid profile fails before partially
+        // updating the layer.
+        Scene.CollisionProfiles.Get(_defaultTileCollisionProfile);
+
+        foreach (var tile in _sceneLayerTileArray)
+            tile?.SetCollisionProfile(_defaultTileCollisionProfile);
     }
 
     /// <summary>
@@ -1057,15 +1106,15 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public static SceneLayer Empty { get; } = new EmptySceneLayer();
 
     private sealed class EmptySceneLayer : SceneLayer
+{
+    internal EmptySceneLayer()
+        : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
     {
-        internal EmptySceneLayer()
-            : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
-        {
-            Visible = false;
-            ZOrder = int.MinValue;
-            Parallax = 1f;
-        }
+        Visible = false;
+        ZOrder = int.MinValue;
+        Parallax = 1f;
     }
+}
 
     #endregion empty SceneLayer
 }

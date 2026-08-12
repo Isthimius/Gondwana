@@ -39,6 +39,17 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     private Sprite() { }
 
     protected internal Sprite(SceneLayer sceneLayer, Frame frame)
+        : this(
+            sceneLayer,
+            frame,
+            SpriteManager.Instance.DefaultCollisionProfile)
+    {
+    }
+
+    protected internal Sprite(
+        SceneLayer sceneLayer,
+        Frame frame,
+        string collisionProfileName)
     {
         _sceneLayer = sceneLayer
             ?? throw new ArgumentNullException(
@@ -51,6 +62,18 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _vertAlign = VerticalAlignment.Bottom;
         _nudgeX = 0;
         _nudgeY = 0;
+
+        Movement = new MovementController(
+            this,
+            MovementState.ForSceneLayer(),
+            SceneLayer);
+
+        AttachCollider(new TileCollider(
+            this,
+            collisionGroup: CollisionMasks.None,
+            collidesWith: CollisionMasks.None));
+
+        SetCollisionProfile(collisionProfileName);
         CurrentFrame = frame;
 
         _renderSize = SpriteManager.Instance.SizeNewSpritesToSceneLayer
@@ -58,16 +81,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             : CurrentFrame.TileSize;
 
         zOrder = 1;
-
-        Movement = new MovementController(
-            this,
-            MovementState.ForSceneLayer(),
-            SceneLayer);
-
-        _collider = new TileCollider(
-            this,
-            collisionGroup: CollisionMasks.All,
-            collidesWith: CollisionMasks.All);
 
         _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
         SpriteManager.Instance.AddSprite(this);
@@ -104,10 +117,13 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             MovementState.ForSceneLayer(),
             SceneLayer);
 
-        _collider = new TileCollider(
+        AttachCollider(new TileCollider(
             this,
-            collisionGroup: CollisionMasks.All,
-            collidesWith: CollisionMasks.All);
+            collisionGroup: CollisionMasks.None,
+            collidesWith: CollisionMasks.None));
+
+        if (string.IsNullOrWhiteSpace(CollisionProfileName))
+            SetCollisionProfile(SpriteManager.Instance.DefaultCollisionProfile);
 
         _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
         SpriteManager.Instance.AddSprite(this);
@@ -129,10 +145,13 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             MovementState.ForSceneLayer(),
             SceneLayer);
 
-        _collider = new TileCollider(
+        AttachCollider(new TileCollider(
             this,
-            collisionGroup: CollisionMasks.All,
-            collidesWith: CollisionMasks.All);
+            collisionGroup: CollisionMasks.None,
+            collidesWith: CollisionMasks.None));
+
+        if (string.IsNullOrWhiteSpace(CollisionProfileName))
+            SetCollisionProfile(SpriteManager.Instance.DefaultCollisionProfile);
 
         if (_sceneLayer != null)
             _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);

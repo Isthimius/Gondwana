@@ -91,7 +91,8 @@ public sealed class Tilesheet : IDisposable
                 region.TilePadding,
                 region.RegionMargin,
                 region.Overhang,
-                region.CollisionAdjust);
+                region.CollisionAdjust,
+                region.CollisionType);
 
             for (int y = 0; y < region.Rows; y++)
             {
@@ -106,6 +107,17 @@ public sealed class Tilesheet : IDisposable
                             x,
                             y,
                             frameCollisionAdjust);
+                    }
+
+                    if (region.TryGetFrameCollisionTypeOverride(
+                        x,
+                        y,
+                        out var frameCollisionType))
+                    {
+                        copiedRegion.SetFrameCollisionType(
+                            x,
+                            y,
+                            frameCollisionType);
                     }
                 }
             }
@@ -125,7 +137,7 @@ public sealed class Tilesheet : IDisposable
     public bool Premultiplied { get; private set; }
 
     /// <summary>
-    /// Adds a region and initializes all of its frames with the supplied collision adjustment.
+    /// Adds a region with the supplied default collision adjustment and collision type.
     /// </summary>
     public TilesheetRegion AddRegion(
         string name,
@@ -134,7 +146,8 @@ public sealed class Tilesheet : IDisposable
         Spacing? tilePadding = null,
         Spacing? regionMargin = null,
         Spacing? overhangPixels = null,
-        CollisionAdjust? collisionAdjust = null)
+        CollisionAdjust? collisionAdjust = null,
+        TileCollisionType collisionType = TileCollisionType.None)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Region name must be a non-empty string.", nameof(name));
@@ -150,7 +163,8 @@ public sealed class Tilesheet : IDisposable
             tilePadding ?? Spacing.None,
             regionMargin ?? Spacing.None,
             overhangPixels ?? Spacing.None,
-            collisionAdjust ?? CollisionAdjust.None);
+            collisionAdjust ?? CollisionAdjust.None,
+            collisionType);
 
         Regions.Add(region);
         return region;
@@ -367,7 +381,8 @@ public sealed class Tilesheet : IDisposable
         Spacing? tilePadding = null,
         Spacing? regionMargin = null,
         Spacing? overhangPixels = null,
-        CollisionAdjust? collisionAdjust = null)
+        CollisionAdjust? collisionAdjust = null,
+        TileCollisionType collisionType = TileCollisionType.None)
     {
         AddRegion(
             TilesheetRegion.DefaultRegionName,
@@ -376,7 +391,8 @@ public sealed class Tilesheet : IDisposable
             tilePadding ?? Spacing.None,
             regionMargin ?? Spacing.None,
             overhangPixels ?? Spacing.None,
-            collisionAdjust ?? CollisionAdjust.None);
+            collisionAdjust ?? CollisionAdjust.None,
+            collisionType);
     }
 
     private bool _disposed;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
@@ -96,14 +97,17 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// <param name="sceneLayers">The layers to attach to the scene, or <see langword="null"/> to create an empty collection.</param>
     /// <param name="id">The unique identifier to assign to the scene, or <see langword="null"/> to generate a new identifier.</param>
     /// <param name="collisionGroups">The collision group registry to use for the scene, or <see langword="null"/> to create a new registry.</param>
+    /// <param name="collisionProfiles">The collision profile registry to use for the scene, or <see langword="null"/> to create the standard profiles.</param>
     [JsonConstructor]
     protected Scene(List<SceneLayer>? sceneLayers,
                     string? id,
-                    CollisionGroupRegistry? collisionGroups)
+                    CollisionGroupRegistry? collisionGroups,
+                    CollisionProfileRegistry? collisionProfiles)
     {
         _sceneLayers = sceneLayers ?? new List<SceneLayer>();
         ID = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString() : id;
         CollisionGroups = collisionGroups ?? new CollisionGroupRegistry();
+        CollisionProfiles = collisionProfiles ?? new CollisionProfileRegistry();
         ValueBag = new TypedValueBag();
 
         Init();
@@ -294,6 +298,13 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// removing, and querying collision groups as needed.</remarks>
     [JsonProperty]
     public CollisionGroupRegistry CollisionGroups { get; private set; } = new();
+
+    /// <summary>
+    /// Gets the named collision-filtering profiles used by layers and sprites in
+    /// this scene. Profiles resolve their group names through <see cref="CollisionGroups"/>.
+    /// </summary>
+    [JsonProperty]
+    public CollisionProfileRegistry CollisionProfiles { get; private set; } = new();
 
     #endregion public properties
 
@@ -597,6 +608,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     protected virtual void OnSceneLayerAdded(SceneLayer sceneLayer)
     {
         sceneLayer.Scene = this;
+        sceneLayer.ApplyDefaultTileCollisionProfile();
+        SpriteManager.Instance.RefreshCollisionProfiles(sceneLayer);
 
         sceneLayer.Disposing += sceneLayerDisposing;
         sceneLayer.VisibleChanged += visChgDel;

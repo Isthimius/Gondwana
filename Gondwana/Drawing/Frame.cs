@@ -121,4 +121,45 @@ public struct Frame
     /// <see cref="CollisionAdjust"/>.
     /// </summary>
     public readonly Rectangle CollisionArea => CollisionAdjust.ApplyTo(new Rectangle(Point.Empty, TileSize));
+
+    /// <summary>
+    /// Gets or sets the effective collision type associated with this frame's
+    /// region coordinates.
+    /// </summary>
+    public TileCollisionType CollisionType
+    {
+        readonly get => Tilesheet?.GetRegion(RegionName)?.GetFrameCollisionType(XTile, YTile)
+            ?? TileCollisionType.None;
+        set
+        {
+            var region = Tilesheet?.GetRegion(RegionName)
+                ?? throw new InvalidOperationException(
+                    $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+
+            region.SetFrameCollisionType(XTile, YTile, value);
+        }
+    }
+
+    /// <summary>
+    /// Gets whether this frame has an explicit collision type rather than
+    /// inheriting its region's <see cref="TilesheetRegion.CollisionType"/>.
+    /// </summary>
+    public readonly bool HasCollisionTypeOverride =>
+        Tilesheet?.GetRegion(RegionName)?.TryGetFrameCollisionTypeOverride(
+            XTile,
+            YTile,
+            out _) == true;
+
+    /// <summary>
+    /// Removes this frame's explicit collision type so it once again inherits
+    /// its region's <see cref="TilesheetRegion.CollisionType"/>.
+    /// </summary>
+    public readonly bool ClearCollisionTypeOverride()
+    {
+        var region = Tilesheet?.GetRegion(RegionName)
+            ?? throw new InvalidOperationException(
+                $"Tilesheet region '{RegionName}' could not be resolved for this frame.");
+
+        return region.ClearFrameCollisionTypeOverride(XTile, YTile);
+    }
 }

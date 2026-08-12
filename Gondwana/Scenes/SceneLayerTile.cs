@@ -44,10 +44,13 @@ public class SceneLayerTile : Tile
     /// </summary>
     internal void EnsureCollider()
     {
-        _collider ??= new TileCollider(
-            this,
-            collisionGroup: CollisionMasks.None,
-            collidesWith: CollisionMasks.None);
+        if (_collider is null)
+        {
+            AttachCollider(new TileCollider(
+                this,
+                collisionGroup: CollisionMasks.None,
+                collidesWith: CollisionMasks.None));
+        }
     }
 
     /// <summary>

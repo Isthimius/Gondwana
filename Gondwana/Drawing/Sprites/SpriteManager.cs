@@ -1,9 +1,10 @@
+using System.Collections.ObjectModel;
+using System.Drawing;
+using Gondwana.Physics.Collisions;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
-using System.Collections.ObjectModel;
-using System.Drawing;
 
 namespace Gondwana.Drawing.Sprites;
 
@@ -49,6 +50,23 @@ public sealed class SpriteManager : IDisposable
     /// </summary>
     public bool SizeNewSpritesToSceneLayer { get; set; } = true;
 
+private string _defaultCollisionProfile = CollisionProfileNames.Actor;
+
+/// <summary>
+/// Gets or sets the scene collision profile assigned to newly created sprites
+/// when no profile is specified explicitly.
+/// </summary>
+public string DefaultCollisionProfile
+{
+    get => _defaultCollisionProfile;
+    set
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Default collision profile cannot be empty.", nameof(value));
+
+        _defaultCollisionProfile = value;
+    }
+}
     #region public methods
 
     /// <summary>
@@ -57,10 +75,21 @@ public sealed class SpriteManager : IDisposable
     /// <param name="sceneLayer">The scene layer on which to create the sprite.</param>
     /// <param name="frame">The frame to use for the sprite.</param>
     /// <param name="id">Optional nickname/identifier for the sprite.</param>
+    /// <param name="collisionProfileName">
+    /// Optional scene collision profile. When omitted, <see cref="DefaultCollisionProfile"/> is used.
+    /// </param>
     /// <returns>The newly created sprite.</returns>
-    public Sprite CreateSprite(SceneLayer sceneLayer, Frame frame, string? id = null)
+    public Sprite CreateSprite(
+        SceneLayer sceneLayer,
+        Frame frame,
+        string? id = null,
+        string? collisionProfileName = null)
     {
-        var sprite = new Sprite(sceneLayer, frame);
+        var profileName = string.IsNullOrWhiteSpace(collisionProfileName)
+            ? DefaultCollisionProfile
+            : collisionProfileName;
+
+        var sprite = new Sprite(sceneLayer, frame, profileName);
         sprite.Nickname = id;
         SpriteCreated?.Invoke(sprite);
         return sprite;
@@ -275,6 +304,25 @@ public sealed class SpriteManager : IDisposable
     {
         lock (_spriteListLock)
             _spriteList.Add(sprite);
+    }
+
+    /// <summary>
+    /// Resolves retained collision profile names for sprites whose layer has just
+    /// become attached to a scene.
+    /// </summary>
+    internal void RefreshCollisionProfiles(SceneLayer sceneLayer)
+    {
+        ArgumentNullException.ThrowIfNull(sceneLayer);
+
+        List<Sprite> snapshot;
+        lock (_spriteListLock)
+            snapshot = new List<Sprite>(_spriteList);
+
+        foreach (var sprite in snapshot)
+        {
+            if (ReferenceEquals(sprite.SceneLayer, sceneLayer))
+                sprite.RefreshCollisionProfile();
+        }
     }
 
     internal void MoveSprites(long tick)

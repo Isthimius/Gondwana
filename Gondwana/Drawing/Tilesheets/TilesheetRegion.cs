@@ -17,7 +17,9 @@ public sealed class TilesheetRegion : IDisposable
 
     private TilesheetRegionSlice?[,]? _tileCache;
     private readonly Dictionary<(int x, int y), CollisionAdjust> _frameCollisionAdjustments = [];
+    private readonly Dictionary<(int x, int y), TileCollisionType> _frameCollisionTypes = [];
     private CollisionAdjust _collisionAdjust = Gondwana.Physics.Collisions.CollisionAdjust.None;
+    private TileCollisionType _collisionType = TileCollisionType.None;
     private bool _disposed;
 
     private TilesheetRegion() { }
@@ -30,7 +32,8 @@ public sealed class TilesheetRegion : IDisposable
         Spacing tilePadding,
         Spacing regionMargin,
         Spacing overhangPixels,
-        CollisionAdjust collisionAdjust)
+        CollisionAdjust collisionAdjust,
+        TileCollisionType collisionType)
     {
         Tilesheet = tilesheet ?? throw new ArgumentNullException(nameof(tilesheet));
         Name = string.IsNullOrWhiteSpace(name) ? DefaultRegionName : name;
@@ -42,6 +45,7 @@ public sealed class TilesheetRegion : IDisposable
         _regionMargin = regionMargin;
         Overhang = overhangPixels;
         _collisionAdjust = collisionAdjust;
+        _collisionType = collisionType;
 
         BuildTileCache();
     }
@@ -126,6 +130,20 @@ public sealed class TilesheetRegion : IDisposable
     /// </summary>
     public Rectangle CollisionArea =>
         _collisionAdjust.ApplyTo(new Rectangle(Point.Empty, _tileSize));
+
+    /// <summary>
+    /// Gets or sets the collision type inherited by frames that do not have an
+    /// explicit frame-level override.
+    /// </summary>
+    public TileCollisionType CollisionType
+    {
+        get => _collisionType;
+        set
+        {
+            ThrowIfDisposed();
+            _collisionType = value;
+        }
+    }
 
     public int Columns => _tileCache?.GetLength(0) ?? 0;
     public int Rows => _tileCache?.GetLength(1) ?? 0;
@@ -319,6 +337,84 @@ public sealed class TilesheetRegion : IDisposable
             .ApplyTo(new Rectangle(Point.Empty, _tileSize));
 
     /// <summary>
+    /// Gets the effective collision type for one frame.
+    /// </summary>
+    public TileCollisionType GetFrameCollisionType(int x, int y)
+    {
+        ThrowIfDisposed();
+
+        if (!IsFrameCoordinateValid(x, y))
+            return _collisionType;
+
+        return _frameCollisionTypes.TryGetValue((x, y), out var collisionType)
+            ? collisionType
+            : _collisionType;
+    }
+
+    /// <summary>
+    /// Attempts to get the explicit collision type assigned to one frame.
+    /// </summary>
+    public bool TryGetFrameCollisionTypeOverride(
+        int x,
+        int y,
+        out TileCollisionType collisionType)
+    {
+        ThrowIfDisposed();
+
+        if (_tileCache is null)
+            BuildTileCache();
+
+        if (!IsFrameCoordinateValid(x, y))
+        {
+            collisionType = default;
+            return false;
+        }
+
+        return _frameCollisionTypes.TryGetValue((x, y), out collisionType);
+    }
+
+    /// <summary>
+    /// Sets an explicit collision type for one frame.
+    /// </summary>
+    public void SetFrameCollisionType(int x, int y, TileCollisionType collisionType)
+    {
+        ThrowIfDisposed();
+
+        if (_tileCache is null)
+            BuildTileCache();
+
+        if (!IsFrameCoordinateValid(x, y))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(x),
+                $"Frame coordinates ({x}, {y}) are outside region '{Name}'.");
+        }
+
+        _frameCollisionTypes[(x, y)] = collisionType;
+    }
+
+    /// <summary>
+    /// Removes a frame-level collision type so the frame once again inherits
+    /// <see cref="CollisionType"/>.
+    /// </summary>
+    public bool ClearFrameCollisionTypeOverride(int x, int y)
+    {
+        ThrowIfDisposed();
+
+        if (_tileCache is null)
+            BuildTileCache();
+
+        if (!IsFrameCoordinateValid(x, y))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(x),
+                $"Frame coordinates ({x}, {y}) are outside region '{Name}'.");
+        }
+
+        return _frameCollisionTypes.Remove((x, y));
+    }
+
+    /// <summary>
     /// Builds the internal image/cache slices while preserving frame collision overrides.
     /// </summary>
     internal void BuildTileCache()
@@ -361,6 +457,7 @@ public sealed class TilesheetRegion : IDisposable
             return;
 
         PruneFrameCollisionAdjustments(xTiles, yTiles);
+        PruneFrameCollisionTypes(xTiles, yTiles);
         _tileCache = new TilesheetRegionSlice?[xTiles, yTiles];
 
         var regionArea = Area;
@@ -480,6 +577,15 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
+    private void PruneFrameCollisionTypes(int columns, int rows)
+    {
+        foreach (var key in _frameCollisionTypes.Keys.ToArray())
+        {
+            if ((uint)key.x >= (uint)columns || (uint)key.y >= (uint)rows)
+                _frameCollisionTypes.Remove(key);
+        }
+    }
+
     private void ThrowIfDisposed()
     {
         if (_disposed)
@@ -494,5 +600,6 @@ public sealed class TilesheetRegion : IDisposable
         _disposed = true;
         ClearTileCache();
         _frameCollisionAdjustments.Clear();
+        _frameCollisionTypes.Clear();
     }
 }

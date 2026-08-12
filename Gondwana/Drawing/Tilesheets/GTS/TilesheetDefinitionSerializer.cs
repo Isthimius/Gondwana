@@ -245,7 +245,8 @@ public static class TilesheetDefinitionSerializer
             TilePadding = region.TilePadding,
             RegionMargin = region.RegionMargin,
             Overhang = region.Overhang,
-            CollisionAdjust = region.CollisionAdjust
+            CollisionAdjust = region.CollisionAdjust,
+            CollisionType = region.CollisionType
         };
 
         // Persist every frame coordinate while retaining the distinction between an
@@ -262,11 +263,20 @@ public static class TilesheetDefinitionSerializer
                     ? frameCollisionAdjust
                     : null;
 
+                TileCollisionType? collisionType =
+                    region.TryGetFrameCollisionTypeOverride(
+                        x,
+                        y,
+                        out var frameCollisionType)
+                    ? frameCollisionType
+                    : null;
+
                 definition.Frames.Add(new TilesheetFrameDefinition
                 {
                     XTile = x,
                     YTile = y,
-                    CollisionAdjust = collisionAdjust
+                    CollisionAdjust = collisionAdjust,
+                    CollisionType = collisionType
                 });
             }
         }
