@@ -170,7 +170,7 @@ A runtime `SceneLoader` reads `.gondwana-scene` and constructs engine objects ac
 - `Gondwana/Scenes/Scene.cs`
 - `Gondwana/Scenes/SceneLayer.cs`
 - `Gondwana/Drawing/Tilesheets/TilesheetRegistry.cs`
-- `Tooling/Gondwana.Tooling.Studio/Views/`
+- `Tooling/Gondwana.Tooling.Studio.Avalonia/Views/`
 
 </details>
 
