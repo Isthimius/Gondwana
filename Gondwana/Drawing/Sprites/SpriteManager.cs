@@ -180,12 +180,12 @@ public sealed class SpriteManager : IDisposable
             {
                 if (fullEnclosures)
                 {
-                    if (worldRect.Contains(sprite.DrawLocationWorld))
+                    if (worldRect.Contains(sprite.VisualBoundsWorld))
                         retSprites.Add(sprite);
                 }
                 else
                 {
-                    if (sprite.DrawLocationWorld.IntersectsWith(worldRect))
+                    if (sprite.VisualBoundsWorld.IntersectsWith(worldRect))
                         retSprites.Add(sprite);
                 }
             }
@@ -219,7 +219,7 @@ public sealed class SpriteManager : IDisposable
         {
             if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
-                var rectScreen = sprite.GetDrawLocationScreen(view).ToPixelAlignedRect();
+                var rectScreen = sprite.GetVisualBoundsScreen(view).ToPixelAlignedRect();
 
                 if (fullEnclosures)
                 {
@@ -259,7 +259,7 @@ public sealed class SpriteManager : IDisposable
         {
             if ((sceneLayer is null) || (sprite.SceneLayer == sceneLayer))
             {
-                if (sprite.GetDrawLocationScreen(view).Contains(viewPxlPt))
+                if (sprite.GetVisualBoundsScreen(view).Contains(viewPxlPt))
                     retSprites.Add(sprite);
             }
         }
