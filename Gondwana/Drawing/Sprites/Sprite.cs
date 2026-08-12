@@ -82,16 +82,6 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
         zOrder = 1;
 
-        Movement = new MovementController(
-            this,
-            MovementState.ForSceneLayer(),
-            SceneLayer);
-
-        _collider = new TileCollider(
-            this,
-            collisionGroup: CollisionMasks.All,
-            collidesWith: CollisionMasks.All);
-
         _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
         SpriteManager.Instance.AddSprite(this);
     }
