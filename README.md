@@ -164,7 +164,7 @@ Runtime packages are available on NuGet. Install only the pieces your project ne
 | --- | --- | --- |
 | **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project templates for `gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor` |
 | **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating projects, checking an environment with `gondwana doctor`, and packing or inspecting asset files |
-| **Gondwana.Tooling.Studio** | Build from `Tooling/Gondwana.Tooling.Studio` | Cross-platform Avalonia front end for Gondwana project and asset tooling |
+| **Gondwana.Tooling.Studio.Avalonia** | Build from `Tooling/Gondwana.Tooling.Studio.Avalonia` | Cross-platform Avalonia front end for Gondwana project and asset tooling |
 | **Gondwana.Tooling.Studio.WinForms** | Build from `Tooling/Gondwana.Tooling.Studio.WinForms` | Windows-native Studio front end sharing framework-agnostic editor logic with the Avalonia application |
 
 ---
