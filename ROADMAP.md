@@ -249,7 +249,7 @@ No new engine code is required — loading is purely deserialization.
 Gondwana.Tooling.Studio currently has directory and asset-file views but no visual sprite/tilesheet editor. FlatRedBall Glue and GameMaker both have integrated tilesheet/animation editors. This issue tracks adding a **Tilesheet Editor** dockable panel to Gondwana.Tooling.Studio.
 
 ## Current State
-The IDE lives at `Tooling/Gondwana.Tooling.Studio/`. It uses Avalonia with dockable windows (`Docking/`) and already has asset file panels (`Views/AssetFilesView.axaml`).
+The IDE lives at `Tooling/Gondwana.Tooling.Studio.Avalonia/`. It uses Avalonia with dockable windows (`Docking/`) and already has asset file panels (`Views/AssetFilesView.axaml`).
 
 ## Scope of Work
 Add a `TilesheetEditorView` (Avalonia UserControl) that:
