@@ -644,18 +644,27 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         get => _defaultTileCollisionProfile;
         set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentException(
-                    "Default tile collision profile cannot be empty.",
-                    nameof(value));
-            }
+set
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        throw new ArgumentException(
+            "Default tile collision profile cannot be empty.",
+            nameof(value));
+    }
 
-            _defaultTileCollisionProfile = value;
+    if (Scene is not null)
+    {
+        var profile = Scene.CollisionProfiles.Get(value);
+        _ = profile.ResolveCollisionGroup(Scene.CollisionGroups);
+        _ = profile.ResolveCollidesWith(Scene.CollisionGroups);
+    }
 
-            if (Scene is not null && _sceneLayerTileArray is not null)
-                ApplyDefaultTileCollisionProfile();
+    _defaultTileCollisionProfile = value;
+
+    if (Scene is not null && _sceneLayerTileArray is not null)
+        ApplyDefaultTileCollisionProfile();
+}
         }
     }
 
