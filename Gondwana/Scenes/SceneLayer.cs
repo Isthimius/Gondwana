@@ -644,27 +644,25 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         get => _defaultTileCollisionProfile;
         set
-set
-{
-    if (string.IsNullOrWhiteSpace(value))
-    {
-        throw new ArgumentException(
-            "Default tile collision profile cannot be empty.",
-            nameof(value));
-    }
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException(
+                    "Default tile collision profile cannot be empty.",
+                    nameof(value));
+            }
 
-    if (Scene is not null)
-    {
-        var profile = Scene.CollisionProfiles.Get(value);
-        _ = profile.ResolveCollisionGroup(Scene.CollisionGroups);
-        _ = profile.ResolveCollidesWith(Scene.CollisionGroups);
-    }
+            if (Scene is not null)
+            {
+                var profile = Scene.CollisionProfiles.Get(value);
+                _ = profile.ResolveCollisionGroup(Scene.CollisionGroups);
+                _ = profile.ResolveCollidesWith(Scene.CollisionGroups);
+            }
 
-    _defaultTileCollisionProfile = value;
+            _defaultTileCollisionProfile = value;
 
-    if (Scene is not null && _sceneLayerTileArray is not null)
-        ApplyDefaultTileCollisionProfile();
-}
+            if (Scene is not null && _sceneLayerTileArray is not null)
+                ApplyDefaultTileCollisionProfile();
         }
     }
 
@@ -1108,15 +1106,15 @@ set
     public static SceneLayer Empty { get; } = new EmptySceneLayer();
 
     private sealed class EmptySceneLayer : SceneLayer
+{
+    internal EmptySceneLayer()
+        : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
     {
-        internal EmptySceneLayer()
-            : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
-        {
-            Visible = false;
-            ZOrder = int.MinValue;
-            Parallax = 1f;
-        }
+        Visible = false;
+        ZOrder = int.MinValue;
+        Parallax = 1f;
     }
+}
 
     #endregion empty SceneLayer
 }
