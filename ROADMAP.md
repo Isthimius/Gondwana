@@ -284,8 +284,8 @@ This must be deserializable by `TilesheetRegistry` at runtime.
 - [ ] Runtime `TilesheetRegistry` can load the exported file and render tiles correctly
 
 ## Key Files / References
-- `Tooling/Gondwana.Tooling.Studio/Views/`
-- `Tooling/Gondwana.Tooling.Studio/Docking/`
+- `Tooling/Gondwana.Tooling.Studio.Avalonia/Views/`
+- `Tooling/Gondwana.Tooling.Studio.Avalonia/Docking/`
 - `Gondwana/Drawing/Tilesheets/Tilesheet.cs`
 - `Gondwana/Drawing/Tilesheets/TilesheetRegistry.cs`
 
