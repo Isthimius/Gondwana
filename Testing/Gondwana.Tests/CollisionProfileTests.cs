@@ -27,7 +27,7 @@ public sealed class CollisionProfileTests
         using var scene = new Scene();
         var layer = scene.AddLayer(2, 1, 16, 16);
 
-        foreach (var tile in layer)
+        foreach (SceneLayerTile tile in layer)
         {
             Assert.Equal(CollisionProfileNames.World, tile.CollisionProfileName);
             Assert.Equal(scene.CollisionGroups.WorldStatic, tile.Collider!.CollisionGroup);
@@ -38,7 +38,7 @@ public sealed class CollisionProfileTests
 
         layer.DefaultTileCollisionProfile = CollisionProfileNames.Sensor;
 
-        foreach (var tile in layer)
+        foreach (SceneLayerTile tile in layer)
         {
             Assert.Equal(CollisionProfileNames.Sensor, tile.CollisionProfileName);
             Assert.Equal(scene.CollisionGroups.Triggers, tile.Collider!.CollisionGroup);
@@ -90,7 +90,7 @@ public sealed class CollisionProfileTests
     public void SpriteProfile_ResolvesWhenExistingLayerIsAttachedToScene()
     {
         var layer = new SceneLayer(1, 1, 16, 16);
-        var bitmap = new SkiaSharp.SKBitmap(16, 16);
+        var bitmap = new global::SkiaSharp.SKBitmap(16, 16);
         using var tilesheet = Gondwana.Drawing.Tilesheets.TilesheetFactory.FromBitmap(
             "DeferredProfile",
             bitmap);
