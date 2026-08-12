@@ -5,6 +5,7 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Physics.Collisions;
 using Gondwana.Physics.Movement;
+using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 
@@ -27,6 +28,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     private int _nudgeX;
     private int _nudgeY;
     private Size _renderSize;
+    private float _rotation;
 
     internal bool _pendingDispose;
 
@@ -67,7 +69,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             collisionGroup: CollisionMasks.All,
             collidesWith: CollisionMasks.All);
 
-        _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+        _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
         SpriteManager.Instance.AddSprite(this);
     }
 
@@ -92,6 +94,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _nudgeX = sprite._nudgeX;
         _nudgeY = sprite._nudgeY;
         _renderSize = sprite._renderSize;
+        _rotation = sprite._rotation;
         ZOrder = sprite.zOrder;
         visible = sprite.visible;
         _sceneLayerCoordinates = sprite.SceneLayerCoordinates;
@@ -106,7 +109,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             collisionGroup: CollisionMasks.All,
             collidesWith: CollisionMasks.All);
 
-        _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+        _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
         SpriteManager.Instance.AddSprite(this);
     }
 
@@ -132,7 +135,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             collidesWith: CollisionMasks.All);
 
         if (_sceneLayer != null)
-            _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+            _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
 
         SpriteManager.Instance.AddSprite(this);
     }
@@ -145,11 +148,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     public void SetPosition(Vector2 pos)
     {
         PointF oldCoord = _sceneLayerCoordinates;
-        Rectangle oldDraw = DrawLocationWorld;
+        Rectangle oldDraw = VisualBoundsWorld;
 
         _sceneLayerCoordinates = new PointF(pos.X, pos.Y);
 
-        Rectangle newDraw = DrawLocationWorld;
+        Rectangle newDraw = VisualBoundsWorld;
         Rectangle movementWorldRect = Rectangle.Union(oldDraw, newDraw);
         movementWorldRect.Inflate(5, 5);
 
@@ -157,6 +160,52 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         SpriteMoved?.Invoke(
             new SpriteMovedEventArgs(this, oldCoord, _sceneLayerCoordinates));
     }
+
+    /// <summary>
+    /// Gets or sets the clockwise visual rotation, in degrees, around the
+    /// center of the sprite's render rectangle.
+    /// </summary>
+    /// <remarks>
+    /// Rotation affects rendering and dirty-region bounds. Collision geometry
+    /// remains axis-aligned and continues to use <see cref="Tile.CollisionArea"/>.
+    /// </remarks>
+    [JsonProperty]
+    public float Rotation
+    {
+        get => _rotation;
+        set
+        {
+            if (!float.IsFinite(value))
+                throw new ArgumentOutOfRangeException(nameof(value), "Rotation must be a finite number of degrees.");
+
+            float normalized = value % 360f;
+            if (normalized < 0f)
+                normalized += 360f;
+
+            if (_rotation.Equals(normalized))
+                return;
+
+            Rectangle oldBounds = VisualBoundsWorld;
+            _rotation = normalized;
+            InvalidateVisualChange(oldBounds, VisualBoundsWorld);
+        }
+    }
+
+    /// <summary>
+    /// Gets the axis-aligned world-pixel bounds enclosing the rotated sprite.
+    /// </summary>
+    [JsonIgnore]
+    public Rectangle VisualBoundsWorld =>
+        GetRotatedBounds(DrawLocationWorld, Rotation);
+
+    /// <summary>
+    /// Gets the axis-aligned screen-pixel bounds enclosing the rotated sprite.
+    /// </summary>
+    public RectangleF GetVisualBoundsScreen(View view) =>
+        GetRotatedBounds(GetDrawLocationScreen(view), Rotation);
+
+    internal RectangleF GetVisualBoundsScreen(RectangleF renderRectScreen) =>
+        GetRotatedBounds(renderRectScreen, Rotation);
 
     /// <summary>
     /// Applies a world-pixel translation without rebuilding the absolute position
@@ -193,6 +242,29 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     public MovementController Movement { get; private set; }
 
     [JsonProperty]
+    public override Frame CurrentFrame
+    {
+        get => base.CurrentFrame;
+        set
+        {
+            Rectangle oldBounds = VisualBoundsWorld;
+            base.CurrentFrame = value;
+            InvalidateVisualChange(oldBounds, VisualBoundsWorld);
+        }
+    }
+
+    [JsonProperty]
+    public override bool Visible
+    {
+        get => visible;
+        set
+        {
+            visible = value;
+            _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
+        }
+    }
+
+    [JsonProperty]
     public HorizontalAlignment HorizAlign
     {
         get => _horizAlign;
@@ -200,10 +272,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         {
             if (_sceneLayer != null)
             {
-                var oldRect = DrawLocationWorld;
+                var oldRect = VisualBoundsWorld;
                 _horizAlign = value;
-                _sceneLayer.RefreshQueue.AddWorldRect(
-                    Rectangle.Union(oldRect, DrawLocationWorld));
+                InvalidateVisualChange(oldRect, VisualBoundsWorld);
             }
             else
             {
@@ -220,10 +291,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         {
             if (_sceneLayer != null)
             {
-                var oldRect = DrawLocationWorld;
+                var oldRect = VisualBoundsWorld;
                 _vertAlign = value;
-                _sceneLayer.RefreshQueue.AddWorldRect(
-                    Rectangle.Union(oldRect, DrawLocationWorld));
+                InvalidateVisualChange(oldRect, VisualBoundsWorld);
             }
             else
             {
@@ -240,10 +310,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         {
             if (_sceneLayer != null)
             {
-                var oldRect = DrawLocationWorld;
+                var oldRect = VisualBoundsWorld;
                 _nudgeX = value;
-                _sceneLayer.RefreshQueue.AddWorldRect(
-                    Rectangle.Union(oldRect, DrawLocationWorld));
+                InvalidateVisualChange(oldRect, VisualBoundsWorld);
             }
             else
             {
@@ -260,10 +329,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         {
             if (_sceneLayer != null)
             {
-                var oldRect = DrawLocationWorld;
+                var oldRect = VisualBoundsWorld;
                 _nudgeY = value;
-                _sceneLayer.RefreshQueue.AddWorldRect(
-                    Rectangle.Union(oldRect, DrawLocationWorld));
+                InvalidateVisualChange(oldRect, VisualBoundsWorld);
             }
             else
             {
@@ -280,11 +348,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         {
             if (_sceneLayer != null)
             {
-                var oldRect = DrawLocationWorld;
+                var oldRect = VisualBoundsWorld;
                 _renderSize = value;
-                var unionRect = Rectangle.Union(oldRect, DrawLocationWorld);
-                unionRect.Inflate(3, 3);
-                _sceneLayer.RefreshQueue.AddWorldRect(unionRect);
+                InvalidateVisualChange(oldRect, VisualBoundsWorld);
             }
             else
             {
@@ -340,10 +406,14 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     public override SceneLayer SceneLayer => _sceneLayer;
 
     [JsonProperty]
-    public virtual new int ZOrder
+    public override int ZOrder
     {
         get => zOrder;
-        set => base.ZOrder = Math.Max(1, value);
+        set
+        {
+            zOrder = Math.Max(1, value);
+            _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
+        }
     }
 
     internal PointF GetSceneLayerCoordsFromSpriteWorldRect(Rectangle worldRectPx)
@@ -387,11 +457,51 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         Disposing?.Invoke(this);
 
         if (_sceneLayer != null)
-            _sceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+            _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
 
         SpriteMoved = null;
         Disposing = null;
 
         base.Dispose();
+    }
+
+    private void InvalidateVisualChange(Rectangle oldBounds, Rectangle newBounds)
+    {
+        Rectangle dirtyBounds = Rectangle.Union(oldBounds, newBounds);
+        dirtyBounds.Inflate(2, 2);
+        _sceneLayer.RefreshQueue.AddWorldRect(dirtyBounds);
+    }
+
+    private static Rectangle GetRotatedBounds(Rectangle rect, float degrees)
+    {
+        RectangleF bounds = GetRotatedBounds(
+            new RectangleF(rect.X, rect.Y, rect.Width, rect.Height),
+            degrees);
+
+        return Rectangle.FromLTRB(
+            (int)MathF.Floor(bounds.Left),
+            (int)MathF.Floor(bounds.Top),
+            (int)MathF.Ceiling(bounds.Right),
+            (int)MathF.Ceiling(bounds.Bottom));
+    }
+
+    private static RectangleF GetRotatedBounds(RectangleF rect, float degrees)
+    {
+        if (rect.IsEmpty || degrees % 360f == 0f)
+            return rect;
+
+        float radians = degrees * MathF.PI / 180f;
+        float sin = MathF.Abs(MathF.Sin(radians));
+        float cos = MathF.Abs(MathF.Cos(radians));
+        float width = rect.Width * cos + rect.Height * sin;
+        float height = rect.Width * sin + rect.Height * cos;
+        float centerX = rect.Left + rect.Width * 0.5f;
+        float centerY = rect.Top + rect.Height * 0.5f;
+
+        return new RectangleF(
+            centerX - width * 0.5f,
+            centerY - height * 0.5f,
+            width,
+            height);
     }
 }

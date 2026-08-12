@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Gondwana.Demos.SpaceDuel</RootNamespace>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
+        <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
+        <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Assets\ships.png" />
+    </ItemGroup>
+
+</Project>
