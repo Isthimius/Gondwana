@@ -175,11 +175,18 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         get => _rotation;
         set
         {
-            if (_rotation.Equals(value))
+            if (!float.IsFinite(value))
+                throw new ArgumentOutOfRangeException(nameof(value), "Rotation must be a finite number of degrees.");
+
+            float normalized = value % 360f;
+            if (normalized < 0f)
+                normalized += 360f;
+
+            if (_rotation.Equals(normalized))
                 return;
 
             Rectangle oldBounds = VisualBoundsWorld;
-            _rotation = value;
+            _rotation = normalized;
             InvalidateVisualChange(oldBounds, VisualBoundsWorld);
         }
     }
