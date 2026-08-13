@@ -42,6 +42,9 @@ The engine carries forward the predictability of classic Win32/GDI-era rendering
 **Platformer Demo**
 <img width="800" height="506" alt="Recording2026-08-13085051-ezgif com-video-to-gif-converter (1)" src="https://github.com/user-attachments/assets/fc7e5a89-dcd1-4d85-ab6c-071190336a0f" />
 
+**Space Shooter Demo**
+<img width="800" height="557" alt="Recording2026-08-13090352-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/58eadce8-d5f6-4e2d-a97a-fdeee142eab0" />
+
 **Particle Test**  
 <img width="800" height="388" alt="Gondwana particle-system demonstration" src="https://github.com/user-attachments/assets/105740af-e8e5-4f92-92e2-7986612008a1" />
 
