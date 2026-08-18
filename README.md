@@ -192,13 +192,13 @@ Runtime packages are available on NuGet. Install only the pieces your project ne
 
 _Gondwana is actively evolving, with an emphasis on strengthening the engine and its tooling rather than chasing feature-list sprawl._
 
-- [ ] Supplemental level- and asset-design tooling
-- [ ] Additional samples, including tile-map and platformer demonstrations
-- [x] WebAssembly support through Blazor
-- [ ] TMX tile-map support
-- [ ] Native, first-class pathfinding
-- [ ] Further rendering-pipeline extensibility
-- [ ] Initial client/server networking support
+* [x] WebAssembly support through Blazor
+* [ ] Tilesheet and SceneLayer tooling, including TMX support
+* [ ] Fully featured platformer demonstration
+* [ ] WebGL-backed Blazor rendering adapter
+* [ ] Expanded 2D physics and collision shapes
+* [ ] Native, first-class pathfinding
+* [ ] Initial client/server networking support
 
 ---
 
