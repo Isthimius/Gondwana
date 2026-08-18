@@ -36,7 +36,6 @@ The engine carries forward the predictability of classic Win32/GDI-era rendering
 ## 🎬 Demo Previews
 
 **Spot!**
-
 <img width="45%" alt="Spot gameplay preview 1" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" /> <img width="45%" alt="Spot gameplay preview 2" src="https://github.com/user-attachments/assets/0aef0b63-1c16-44be-b6a6-d456f4799ce8" />
 
 **Platformer Demo**
@@ -190,7 +189,7 @@ Runtime packages are available on NuGet. Install only the pieces your project ne
 
 ## 🛠 Roadmap
 
-_Gondwana is actively evolving, with an emphasis on strengthening the engine and its tooling rather than chasing feature-list sprawl._
+_Gondwana is actively evolving, with an emphasis on strengthening the engine and its tooling._
 
 - [ ] Supplemental level- and asset-design tooling
 - [ ] Additional samples, including tile-map and platformer demonstrations
