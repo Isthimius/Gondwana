@@ -16,6 +16,9 @@ on:
       - '.github/release.yml'
       - 'CHANGELOG.md'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
