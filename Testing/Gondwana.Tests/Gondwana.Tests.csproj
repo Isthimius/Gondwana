@@ -10,6 +10,7 @@
 	<ItemGroup>
 		<PackageReference Include="coverlet.collector" Version="6.0.4" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies"
 						  Version="3.119.2"
 						  PrivateAssets="all" />
