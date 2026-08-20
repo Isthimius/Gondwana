@@ -784,7 +784,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         var img = Backbuffer.Snapshot();
 
         // Post to UI thread
-        Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter!.Present(img, dirty.ToSKRectI(), dirty.ToSKRect()));
+        Engine.Instance.UiDispatcher!.Post(() =>
+            RenderSurfaceAdapter!.Present(img, clamped.ToSKRectI(), clamped.ToSKRect()));
     }
 
     private void InvokePostSceneCanvasHooks()
