@@ -55,6 +55,7 @@ For a guided introduction, see **[Make Your First Game in 1 Hour with Gondwana](
 - 🏷️ **[GitHub Releases](https://github.com/Isthimius/Gondwana/releases)**
 - 📜 **[Release History](https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md)**
 - ✅ **[Latest CI Run](https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml)**
+- 💬 **[Discussions](https://github.com/Isthimius/Gondwana/discussions)**
 
 ---
 
