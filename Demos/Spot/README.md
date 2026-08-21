@@ -1,6 +1,6 @@
 ﻿# Spot!
 
-**Spot!** is a small, turn-based territory game for Windows and the primary playable showcase for the [Gondwana Game Engine](../..). It is built entirely in C# and .NET 8 using Gondwana's WinForms hosting, rendering, input, audio, sprite, particle, movement, and scene systems.
+**Spot!** is a small, turn-based territory game for Windows and the primary playable showcase for the [Gondwana Game Engine](https://github.com/Isthimius/Gondwana/). It is built entirely in C# and .NET 8 using Gondwana's WinForms hosting, rendering, input, audio, sprite, particle, movement, and scene systems.
 
 <p>
   <img width="49%" alt="Spot gameplay showing the game board and score display" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" />
