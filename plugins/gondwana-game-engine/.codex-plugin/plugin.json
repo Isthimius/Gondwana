@@ -1,0 +1,40 @@
+{
+  "name": "gondwana-game-engine",
+  "version": "0.1.0",
+  "description": "Build, debug, and understand games using the Gondwana .NET game engine.",
+  "author": {
+    "name": "Hidden Worlds Games",
+    "url": "https://github.com/Isthimius/Gondwana"
+  },
+  "homepage": "https://github.com/Isthimius/Gondwana/wiki",
+  "repository": "https://github.com/Isthimius/Gondwana",
+  "license": "MIT",
+  "keywords": [
+    "gondwana",
+    "game-engine",
+    "gamedev",
+    "csharp",
+    "dotnet",
+    "2d",
+    "2.5d"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Gondwana Game Engine",
+    "shortDescription": "Build and debug games with Gondwana",
+    "longDescription": "Build, debug, and understand Gondwana games using Gondwana-specific workflows grounded in the current engine source, tests, demos, templates, and official wiki documentation.",
+    "developerName": "Hidden Worlds Games",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "websiteURL": "https://github.com/Isthimius/Gondwana",
+    "defaultPrompt": [
+      "Build a simple game with Gondwana.",
+      "Debug this Gondwana game or engine behavior.",
+      "Explain how this Gondwana API works."
+    ],
+    "screenshots": []
+  }
+}

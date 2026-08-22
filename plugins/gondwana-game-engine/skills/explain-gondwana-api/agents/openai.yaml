@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain Gondwana"
+  short_description: "Explain current Gondwana APIs and architecture"
+  default_prompt: "Use $explain-gondwana-api to explain how this Gondwana API or subsystem works."

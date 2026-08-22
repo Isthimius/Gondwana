@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debug a Gondwana Game"
+  short_description: "Diagnose Gondwana behavior from live source"
+  default_prompt: "Use $debug-gondwana-game to diagnose this Gondwana problem and propose the smallest correct fix."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create a Gondwana Game"
+  short_description: "Build games with current Gondwana APIs"
+  default_prompt: "Use $create-gondwana-game to build a small game with Gondwana."
