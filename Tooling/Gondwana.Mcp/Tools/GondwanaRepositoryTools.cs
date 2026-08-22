@@ -12,6 +12,7 @@ public sealed class GondwanaRepositoryTools
         Name = "get_repository_info",
         Title = "Get Gondwana repository info",
         ReadOnly = true,
+        Destructive = false,
         Idempotent = true,
         OpenWorld = false,
         UseStructuredContent = true)]
@@ -27,6 +28,7 @@ public sealed class GondwanaRepositoryTools
         Name = "list_repository",
         Title = "List Gondwana repository path",
         ReadOnly = true,
+        Destructive = false,
         Idempotent = true,
         OpenWorld = false,
         UseStructuredContent = true)]
@@ -46,6 +48,7 @@ public sealed class GondwanaRepositoryTools
         Name = "read_repository_file",
         Title = "Read Gondwana repository file",
         ReadOnly = true,
+        Destructive = false,
         Idempotent = true,
         OpenWorld = false,
         UseStructuredContent = true)]
@@ -74,6 +77,7 @@ public sealed class GondwanaRepositoryTools
         Name = "search_repository",
         Title = "Search Gondwana source",
         ReadOnly = true,
+        Destructive = false,
         Idempotent = true,
         OpenWorld = false,
         UseStructuredContent = true)]

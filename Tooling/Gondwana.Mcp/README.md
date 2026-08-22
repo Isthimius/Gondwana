@@ -47,7 +47,7 @@ Wiki tools:
 - `read_wiki_page`
 - `search_wiki`
 
-Every MCP tool is annotated as read-only and idempotent.
+Every MCP tool is explicitly annotated as read-only, non-destructive, idempotent, and closed-world.
 
 ## GitHub authentication
 
@@ -82,6 +82,20 @@ Non-secret limits live in `appsettings.json`:
 
 Secrets should come from environment variables, user secrets, or the deployment platform's secret store.
 
+For OpenAI Plugin Directory domain verification, set the portal-issued token only in deployment configuration:
+
+```text
+GondwanaMcp__OpenAiAppsChallengeToken=<exact token from OpenAI>
+```
+
+After redeploying, the server exposes the exact token as plain text at:
+
+```text
+/.well-known/openai-apps-challenge
+```
+
+When no challenge token is configured, that endpoint returns `404`.
+
 For production, set `AllowedHosts` to the exact public host name instead of using a wildcard.
 
 ## Docker
@@ -98,6 +112,7 @@ Run locally:
 docker run --rm -p 8080:8080 ^
   -e AllowedHosts=localhost ^
   -e GondwanaMcp__GitHubToken=github_pat_... ^
+  -e GondwanaMcp__OpenAiAppsChallengeToken=optional-review-token ^
   gondwana-mcp
 ```
 
@@ -115,4 +130,4 @@ The service exposes no generic URL-fetch, arbitrary-repository, Git write, issue
 
 Source-sensitive questions should normally begin with `get_repository_info` and then inspect current source/tests. The wiki remains the explanation of intended architecture and usage; source and tests remain authoritative for current implementation.
 
-This project is the repository-access layer intended for later packaging as the official Gondwana AI plugin/app.
+This project is the repository-access layer used by the Gondwana Game Engine plugin.

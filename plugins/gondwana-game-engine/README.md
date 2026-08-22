@@ -39,11 +39,18 @@ Each bundled skill also declares the same Streamable HTTP MCP dependency in `age
 
 The MCP service authenticates to GitHub server-side and remains scoped to the official `Isthimius/Gondwana` repository and Gondwana wiki.
 
-## App binding
+## Public submission
 
-The plugin intentionally does not yet contain `.app.json`.
+The current OpenAI plugin submission flow supports skills-plus-MCP plugins directly. This package therefore does not require `.app.json` for the Gondwana public submission.
 
-An app-backed ChatGPT connection requires the real registered app/connector identifier. Do not commit an invented ID or placeholder value. Add `.app.json` and the corresponding `apps` declaration in `.codex-plugin/plugin.json` only after the Gondwana MCP endpoint has been registered with the target OpenAI environment.
+Publication material is kept with the plugin:
+
+- `PRIVACY.md`
+- `TERMS.md`
+- `SUPPORT.md`
+- `SUBMISSION.md`
+
+The existing repository-root `gondwana-logo.png` is the production logo to upload in the submission portal. The plugin has no custom UI, so screenshots should remain empty.
 
 ## Read-only boundary
 

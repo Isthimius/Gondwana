@@ -13,6 +13,9 @@ public sealed class GondwanaMcpOptions
 
     public string? GitHubToken { get; set; }
 
+    // Set only when the OpenAI submission portal issues a domain-verification token.
+    public string? OpenAiAppsChallengeToken { get; set; }
+
     public int MaxFileBytes { get; set; } = 524_288;
 
     public int MaxLinesPerRead { get; set; } = 400;
