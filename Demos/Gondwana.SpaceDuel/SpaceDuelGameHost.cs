@@ -25,7 +25,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
     private const int WorldTileSize = 64;
     private const float PlayerTurnSpeed = 190f;
     private const float EnemyTurnSpeed = 115f;
-    private const float PlayerAcceleration = 5.5f;  
+    private const float PlayerAcceleration = 5.5f;
     private const float EnemyAcceleration = 3.4f;
     private const float PlayerMaxSpeed = 5.8f;
     private const float EnemyMaxSpeed = 4.1f;
