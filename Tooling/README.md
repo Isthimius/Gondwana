@@ -12,6 +12,10 @@ This folder contains developer tooling projects and scripts used across the Gond
   The `gondwana` command-line tool for project scaffolding, environment checks, asset tasks, and publish/deploy workflows.  
   See: [`Gondwana.Cli/README.md`](./Gondwana.Cli/README.md)
 
+- [`Gondwana.Mcp`](./Gondwana.Mcp/)  
+  Read-only Model Context Protocol server that exposes the official Gondwana repository and wiki to MCP-capable AI clients.  
+  See: [`Gondwana.Mcp/README.md`](./Gondwana.Mcp/README.md)
+
 - [`Gondwana.Templates`](./Gondwana.Templates/)  
   `dotnet new` templates for creating Gondwana starter projects.  
   See: [`Gondwana.Templates/README.md`](./Gondwana.Templates/README.md)

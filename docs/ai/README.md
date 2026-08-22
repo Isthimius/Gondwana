@@ -48,8 +48,10 @@ A better sequence is:
 
 This keeps the working context focused and reduces the chance of importing unrelated assumptions from another subsystem.
 
-## Future Tooling
+## Repository-Aware Tooling
 
-This directory is also intended to remain a stable entry point for repository-aware tooling such as a read-only Gondwana MCP service.
+[`Tooling/Gondwana.Mcp/`](../../Tooling/Gondwana.Mcp/) contains Gondwana's read-only Model Context Protocol server.
 
-Such tooling should expose the current repository and wiki without redefining either one. The repository should continue to own implementation truth; the wiki should continue to own explanatory documentation.
+The MCP service exposes bounded repository list/read/search tools plus wiki list/read/search tools. It is hard-wired to `Isthimius/Gondwana`, defaults source reads to `master`, and exposes no write-capable GitHub operations.
+
+The service does not redefine documentation or implementation truth. It makes the existing sources reachable to external AI clients: the repository continues to own implementation truth, and the wiki continues to own explanatory documentation.
